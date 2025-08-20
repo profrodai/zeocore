@@ -1,0 +1,136 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quack-core"
+version = "0.1.0"
+description = "Core infrastructure for the Quack ecosystem of media production tools"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "AGPL-3.0" }
+authors = [
+    { name = "Rod Rivera", email = "rod@aiproduct.engineer" }
+]
+keywords = [
+    "automation",
+    "content-creation",
+    "media-production",
+    "workflows",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "pydantic>=2.6.0",
+    "pyyaml>=6.0.1",
+    "rich>=13.6.0",
+    "tqdm",
+    "Jinja2",
+    "pydantic[email]",
+]
+
+[project.optional-dependencies]
+# HTTP Adapter dependencies
+http = [
+    "fastapi>=0.112",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2",
+    "httpx>=0.27"
+]
+http-dev = [
+    "fastapi>=0.112",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2",
+    "httpx>=0.27",
+    "pytest-asyncio>=0.21"
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.2.0",
+    "mypy>=1.8.0",
+    "isort",
+    "hatchling",
+    "black>=23.0.0",
+    "hypothesis",
+    "python-docx"
+]
+gmail = [
+    "google-api-python-client>=2.0.0",
+    "google-auth-httplib2>=0.1.0",
+    "google-auth-oauthlib>=0.4.0",
+]
+notion = [
+    "notion-client>=1.0.0",
+]
+google = [
+    "google-api-python-client>=2.0.0",
+    "google-auth-httplib2>=0.1.0",
+    "google-auth-oauthlib>=0.4.0",
+]
+drive = [
+    "google-api-python-client>=2.0.0",
+    "google-auth-httplib2>=0.1.0",
+    "google-auth-oauthlib>=0.4.0",
+]
+pandoc = ["pypandoc", "beautifulsoup4"]
+llms = ["tiktoken", "openai", "anthropic"]
+github = ["requests"]
+all = [
+    "google-api-python-client>=2.0.0",
+    "google-auth-httplib2>=0.1.0",
+    "google-auth-oauthlib>=0.4.0",
+    "notion-client>=1.0.0",
+    "pypandoc",
+    "beautifulsoup4",
+    "tiktoken",
+    "openai",
+    "anthropic",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ducktyper-ai/quackverse"
+"Bug Tracker" = "https://github.com/ducktyper-ai/quackverse/issues"
+
+[tool.hatch.version]
+path = "src/quackcore/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/quackcore"]
+
+[project.entry-points."quackcore.plugins"]
+paths = "quackcore.paths.plugin:create_plugin"
+fs = "quackcore.fs.plugin:create_plugin"
+config = "quackcore.config.plugin:create_plugin"
+prompt = "quackcore.prompt.plugin:create_plugin"
+
+[tool.coverage.run]
+source = ["quackcore"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]
+
+# Add pytest configuration
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests (may require external services)",
+    "slow: marks tests as slow (may take longer to run)",
+    "e2e: marks tests as end-to-end tests (testing complete workflows)",
+    "unit: marks tests as unit tests",
+    "smoke: marks tests as smoke tests (basic functionality tests)"
+]
