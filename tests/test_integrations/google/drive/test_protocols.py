@@ -5,7 +5,7 @@ Tests for Google Drive protocols module.
 
 from unittest.mock import MagicMock
 
-from quackcore.integrations.google.drive.protocols import (
+from quack_core.integrations.google.drive.protocols import (
     DriveFilesResource,
     DrivePermissionsResource,
     DriveRequest,

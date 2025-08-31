@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/errors/base.py
 """
-Base error classes for QuackCore.
+Base error classes for quack_core.
 
 This module defines the base exception hierarchy for all errors in the QuackCore
 ecosystem, providing consistent error handling and detailed diagnostic information.

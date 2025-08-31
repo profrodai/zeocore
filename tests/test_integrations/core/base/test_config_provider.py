@@ -8,8 +8,8 @@ from unittest.mock import patch
 
 import pytest
 
-from quackcore.errors import QuackConfigurationError
-from quackcore.integrations.core.base import BaseConfigProvider
+from quack_core.errors import QuackConfigurationError
+from quack_core.integrations.core.base import BaseConfigProvider
 
 from .config_provider_impl import (
     MockConfigProvider,

@@ -10,7 +10,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
 
-from quackcore.integrations.core.results import (
+from quack_core.integrations.core.results import (
     AuthResult,
     ConfigResult,
     IntegrationResult,

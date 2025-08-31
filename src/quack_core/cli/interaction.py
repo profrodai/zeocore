@@ -10,7 +10,7 @@ import getpass
 from collections.abc import Callable
 from typing import TypeVar, overload
 
-from quackcore.cli.formatting import print_error
+from quack_core.cli.formatting import print_error
 
 T = TypeVar("T")  # Generic type for flexible typing
 

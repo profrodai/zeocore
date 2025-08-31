@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-from quackcore.errors import (
+from quack_core.errors import (
     QuackFileExistsError,
     QuackFileNotFoundError,
     QuackIOError,
@@ -16,10 +16,10 @@ from quackcore.errors import (
 )
 
 # Import path normalization helper
-from quackcore.fs._helpers.path_utils import _normalize_path_param
+from quack_core.fs._helpers.path_utils import _normalize_path_param
 
 # Import from within package
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 # Initialize module logger
 logger = get_logger(__name__)
@@ -66,7 +66,7 @@ def _safe_copy(src: Any, dst: Any, overwrite: bool = False) -> Path:
         else:
             logger.info(f"Copying file {src_path} to {dst_path}")
             # Use a locally imported ensure_directory to avoid circular imports
-            from quackcore.fs._helpers.file_ops import _ensure_directory
+            from quack_core.fs._helpers.file_ops import _ensure_directory
             _ensure_directory(dst_path.parent)
             shutil.copy2(src_path, dst_path)
         return dst_path
@@ -114,7 +114,7 @@ def _safe_move(src: Any, dst: Any, overwrite: bool = False) -> Path:
     try:
         logger.info(f"Moving {src_path} to {dst_path}")
         # Use a locally imported ensure_directory to avoid circular imports
-        from quackcore.fs._helpers.file_ops import _ensure_directory
+        from quack_core.fs._helpers.file_ops import _ensure_directory
         _ensure_directory(dst_path.parent)
 
         if dst_path.exists() and overwrite:

@@ -12,15 +12,15 @@ from typing import Any
 from unittest.mock import patch
 
 # Import the main package
-import quackcore.toolkit
-from quackcore.toolkit.base import BaseQuackToolPlugin
-from quackcore.toolkit.mixins.env_init import ToolEnvInitializerMixin
-from quackcore.toolkit.mixins.integration_enabled import IntegrationEnabledMixin
-from quackcore.toolkit.mixins.lifecycle import QuackToolLifecycleMixin
-from quackcore.toolkit.mixins.output_handler import OutputFormatMixin
+import quack_core.toolkit
+from quack_core.toolkit.base import BaseQuackToolPlugin
+from quack_core.toolkit.mixins.env_init import ToolEnvInitializerMixin
+from quack_core.toolkit.mixins.integration_enabled import IntegrationEnabledMixin
+from quack_core.toolkit.mixins.lifecycle import QuackToolLifecycleMixin
+from quack_core.toolkit.mixins.output_handler import OutputFormatMixin
 
 # Import components directly to avoid circular imports
-from quackcore.toolkit.protocol import QuackToolPluginProtocol
+from quack_core.toolkit.protocol import QuackToolPluginProtocol
 
 
 class TestToolkitImports(unittest.TestCase):
@@ -33,17 +33,17 @@ class TestToolkitImports(unittest.TestCase):
         Test that all expected classes and modules are imported.
         """
         # Check that the BaseQuackToolPlugin class is available
-        self.assertTrue(hasattr(quackcore.toolkit, "BaseQuackToolPlugin"))
-        self.assertTrue(callable(quackcore.toolkit.BaseQuackToolPlugin))
+        self.assertTrue(hasattr(quack_core.toolkit, "BaseQuackToolPlugin"))
+        self.assertTrue(callable(quack_core.toolkit.BaseQuackToolPlugin))
 
         # Check that the protocol is available
-        self.assertTrue(hasattr(quackcore.toolkit, "QuackToolPluginProtocol"))
+        self.assertTrue(hasattr(quack_core.toolkit, "QuackToolPluginProtocol"))
 
         # Check that all mixins are available
-        self.assertTrue(hasattr(quackcore.toolkit, "IntegrationEnabledMixin"))
-        self.assertTrue(hasattr(quackcore.toolkit, "OutputFormatMixin"))
-        self.assertTrue(hasattr(quackcore.toolkit, "ToolEnvInitializerMixin"))
-        self.assertTrue(hasattr(quackcore.toolkit, "QuackToolLifecycleMixin"))
+        self.assertTrue(hasattr(quack_core.toolkit, "IntegrationEnabledMixin"))
+        self.assertTrue(hasattr(quack_core.toolkit, "OutputFormatMixin"))
+        self.assertTrue(hasattr(quack_core.toolkit, "ToolEnvInitializerMixin"))
+        self.assertTrue(hasattr(quack_core.toolkit, "QuackToolLifecycleMixin"))
 
     def test_mixin_compatibility(self) -> None:
         """
@@ -105,12 +105,12 @@ class TestToolkitImportsPytest:
 
     def test_module_attributes(self) -> None:
         """Test that the toolkit module has the expected attributes."""
-        assert hasattr(quackcore.toolkit, "__all__")
-        assert isinstance(quackcore.toolkit.__all__, list)
+        assert hasattr(quack_core.toolkit, "__all__")
+        assert isinstance(quack_core.toolkit.__all__, list)
 
         # Check that all items in __all__ are actually in the module
-        for item in quackcore.toolkit.__all__:
-            assert hasattr(quackcore.toolkit, item)
+        for item in quack_core.toolkit.__all__:
+            assert hasattr(quack_core.toolkit, item)
 
     def test_importing_protocol(self) -> None:
         """Test importing the protocol directly."""
@@ -119,19 +119,19 @@ class TestToolkitImportsPytest:
 
     def test_importing_base(self) -> None:
         """Test importing the base module directly."""
-        import quackcore.toolkit.base as base
+        import quack_core.toolkit.base as base
 
         assert isinstance(base, ModuleType)
         assert hasattr(base, "BaseQuackToolPlugin")
 
     def test_importing_mixins(self) -> None:
         """Test importing the mixins directly."""
-        import quackcore.toolkit.mixins as mixins
+        import quack_core.toolkit.mixins as mixins
 
         assert isinstance(mixins, ModuleType)
 
         # Import from individual modules
-        from quackcore.toolkit.mixins import (
+        from quack_core.toolkit.mixins import (
             IntegrationEnabledMixin,
             OutputFormatMixin,
             QuackToolLifecycleMixin,

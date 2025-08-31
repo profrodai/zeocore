@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/cli/boostrap.py
 """
-CLI bootstrapper for QuackCore.
+CLI bootstrapper for quack_core.
 
 This module provides utilities for initializing CLI applications with consistent
 configuration, logging, and environment setup. It serves as the foundation for
@@ -13,10 +13,10 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
 # Import these directly from their modules to ensure mocks work
-from quackcore.cli.config import find_project_root, load_config
-from quackcore.cli.context import QuackContext
-from quackcore.cli.logging import setup_logging
-from quackcore.errors import QuackError
+from quack_core.cli.config import find_project_root, load_config
+from quack_core.cli.context import QuackContext
+from quack_core.cli.logging import setup_logging
+from quack_core.errors import QuackError
 
 
 def init_cli_env(
@@ -112,7 +112,7 @@ def init_cli_env(
 
 
 if TYPE_CHECKING:
-    from quackcore.cli.options import CliOptions
+    from quack_core.cli.options import CliOptions
 
 
 def from_cli_options(

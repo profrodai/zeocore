@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.cli.progress import (
+from quack_core.cli.progress import (
     ProgressReporter,
     SimpleProgress,
     show_progress,

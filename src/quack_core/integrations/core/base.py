@@ -12,18 +12,18 @@ import os
 from abc import ABC, abstractmethod
 from typing import Any
 
-from quackcore.errors import QuackConfigurationError
-from quackcore.integrations.core.protocols import (
+from quack_core.errors import QuackConfigurationError
+from quack_core.integrations.core.protocols import (
     AuthProviderProtocol,
     ConfigProviderProtocol,
     IntegrationProtocol,
 )
-from quackcore.integrations.core.results import (
+from quack_core.integrations.core.results import (
     AuthResult,
     ConfigResult,
     IntegrationResult,
 )
-from quackcore.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
 
 
 class BaseAuthProvider(ABC, AuthProviderProtocol):
@@ -60,7 +60,7 @@ class BaseAuthProvider(ABC, AuthProviderProtocol):
             str: Resolved absolute path
         """
         try:
-            from quackcore.fs.service import standalone
+            from quack_core.fs.service import standalone
 
             result = standalone.resolve_path(file_path)
             if hasattr(result, "path"):
@@ -68,7 +68,7 @@ class BaseAuthProvider(ABC, AuthProviderProtocol):
             return str(result)
         except Exception as e:
             self.logger.warning(f"Could not resolve project path: {e}")
-            from quackcore.fs.service import standalone
+            from quack_core.fs.service import standalone
 
             normalized_path = standalone.normalize_path(file_path)
             return str(normalized_path)
@@ -135,7 +135,7 @@ class BaseAuthProvider(ABC, AuthProviderProtocol):
             return False
 
         try:
-            from quackcore.fs.service import standalone
+            from quack_core.fs.service import standalone
 
             parts = standalone.split_path(self.credentials_file)
             # Normalize to a simple list of path components
@@ -203,7 +203,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
                     "Configuration file not found in default locations."
                 )
 
-        from quackcore.fs.service import standalone
+        from quack_core.fs.service import standalone
 
         file_info = standalone.get_file_info(config_path)
         if not file_info.success or not file_info.exists:
@@ -253,7 +253,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
         """
         env_var = f"QUACK_{self.name.upper()}_CONFIG"
         if config_path := os.environ.get(env_var):
-            from quackcore.fs.service import standalone
+            from quack_core.fs.service import standalone
 
             expanded_path = standalone.expand_user_vars(config_path)
             # Extract path from result
@@ -266,7 +266,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
 
         project_root = None
         try:
-            from quackcore.paths import service as paths
+            from quack_core.paths import service as paths
 
             if hasattr(paths, "get_project_root"):
                 project_root_result = paths.get_project_root()
@@ -277,7 +277,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
             self.logger.debug(
                 f"Project root not found, checking only direct paths: {e}")
 
-        from quackcore.fs.service import standalone
+        from quack_core.fs.service import standalone
 
         for location in self.DEFAULT_CONFIG_LOCATIONS:
             expanded_location = standalone.expand_user_vars(location)
@@ -325,7 +325,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
             str: Resolved absolute path.
         """
         try:
-            from quackcore.fs.service import standalone
+            from quack_core.fs.service import standalone
 
             result = standalone.resolve_path(file_path)
             if hasattr(result, "path"):
@@ -404,7 +404,7 @@ class BaseIntegrationService(ABC, IntegrationProtocol):
         """
         self.config_path = config_path
         try:
-            from quackcore.fs.service import standalone
+            from quack_core.fs.service import standalone
 
             result = standalone.resolve_path(config_path)
             self.config_path = str(result.path) if hasattr(result, "path") else str(

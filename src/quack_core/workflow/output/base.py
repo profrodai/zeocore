@@ -2,7 +2,7 @@
 """
 Abstract base class for output writers.
 
-This module defines the common interface for all output writers in QuackCore.
+This module defines the common interface for all output writers in quack_core.
 Output writers are responsible for serializing and persisting data to files in
 various formats.
 """

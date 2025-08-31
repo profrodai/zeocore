@@ -10,8 +10,8 @@ from unittest.mock import MagicMock
 import pytest
 from pydantic import ValidationError
 
-from quackcore.cli.context import QuackContext
-from quackcore.config.models import QuackConfig
+from quack_core.cli.context import QuackContext
+from quack_core.config.models import QuackConfig
 
 
 class TestQuackContext:

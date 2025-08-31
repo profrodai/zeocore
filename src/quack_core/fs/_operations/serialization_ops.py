@@ -10,10 +10,10 @@ import json
 from pathlib import Path
 from typing import Any, TypeVar
 
-from quackcore.errors import (
+from quack_core.errors import (
     QuackValidationError,
 )
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 # Set up logger
 logger = get_logger(__name__)

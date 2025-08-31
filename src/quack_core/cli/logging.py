@@ -11,8 +11,8 @@ import logging
 import os
 from typing import Protocol, TypeVar
 
-from quackcore.cli.options import LogLevel
-from quackcore.config.models import QuackConfig
+from quack_core.cli.options import LogLevel
+from quack_core.config.models import QuackConfig
 
 T = TypeVar("T")  # Generic type for flexible typing
 
@@ -84,7 +84,7 @@ def _add_file_handler(
         console_formatter: Optional formatter to use for consistency with console output
     """
     # Import create_directory from the filesystem service to handle directory creation.
-    from quackcore.fs.service import create_directory
+    from quack_core.fs.service import create_directory
 
     try:
         # Expect the logging file setting to be provided as a string.

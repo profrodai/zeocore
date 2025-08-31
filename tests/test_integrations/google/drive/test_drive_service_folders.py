@@ -5,9 +5,9 @@ Tests for Google Drive service folder _operations.
 
 from unittest.mock import MagicMock, patch
 
-from quackcore.errors import QuackApiError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.google.drive.service import GoogleDriveService
+from quack_core.errors import QuackApiError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.drive.service import GoogleDriveService
 
 
 class TestGoogleDriveServiceFolders:

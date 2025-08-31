@@ -11,10 +11,10 @@ to quack-core.fs or built-in os.path utilities.
 import os
 from typing import Any
 
-from quackcore.errors import QuackFileNotFoundError, wrap_io_errors
-from quackcore.fs.service import standalone
-from quackcore.logging import get_logger
-from quackcore.paths._internal.context import PathInfo
+from quack_core.errors import QuackFileNotFoundError, wrap_io_errors
+from quack_core.fs.service import standalone
+from quack_core.logging import get_logger
+from quack_core.paths._internal.context import PathInfo
 
 # Get module-specific logger
 logger = get_logger(__name__)

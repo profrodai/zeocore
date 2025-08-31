@@ -5,8 +5,8 @@ One-shot Prompting strategy for the PromptBooster.
 This strategy provides a single example demonstration to guide the LLM.
 """
 
-from quackcore.prompt.registry import register_prompt_strategy
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.registry import register_prompt_strategy
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 def render(task_description: str, example: str) -> str:

@@ -7,7 +7,7 @@ import unittest
 
 import pytest
 
-from quackcore.toolkit.mixins.lifecycle import QuackToolLifecycleMixin
+from quack_core.toolkit.mixins.lifecycle import QuackToolLifecycleMixin
 
 
 class TestQuackToolLifecycleMixin(unittest.TestCase):

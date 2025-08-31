@@ -14,15 +14,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.integrations.core import IntegrationResult
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.plugins.protocols import QuackPluginMetadata
-from quackcore.toolkit.base import BaseQuackToolPlugin
-from quackcore.toolkit.mixins.env_init import ToolEnvInitializerMixin
-from quackcore.toolkit.mixins.integration_enabled import IntegrationEnabledMixin
-from quackcore.toolkit.mixins.lifecycle import QuackToolLifecycleMixin
-from quackcore.toolkit.mixins.output_handler import OutputFormatMixin
-from quackcore.workflow.output import YAMLOutputWriter
+from quack_core.integrations.core import IntegrationResult
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.plugins.protocols import QuackPluginMetadata
+from quack_core.toolkit.base import BaseQuackToolPlugin
+from quack_core.toolkit.mixins.env_init import ToolEnvInitializerMixin
+from quack_core.toolkit.mixins.integration_enabled import IntegrationEnabledMixin
+from quack_core.toolkit.mixins.lifecycle import QuackToolLifecycleMixin
+from quack_core.toolkit.mixins.output_handler import OutputFormatMixin
+from quack_core.workflow.output import YAMLOutputWriter
 
 # Custom test implementations
 

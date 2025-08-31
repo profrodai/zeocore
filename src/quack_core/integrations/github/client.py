@@ -1,11 +1,11 @@
 # quack-core/src/quack-core/integrations/github/client.py
-"""GitHub API client for QuackCore."""
+"""GitHub API client for quack_core."""
 
 from typing import Any, Literal
 
 import requests
 
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 from .models import GitHubRepo, GitHubUser, PullRequest
 from .operations import (

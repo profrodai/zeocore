@@ -5,7 +5,7 @@ Mock resource objects for Google Drive testing.
 
 from typing import Any, TypeVar, cast
 
-from quackcore.integrations.google.drive.protocols import (
+from quack_core.integrations.google.drive.protocols import (
     DriveFilesResource,
     DrivePermissionsResource,
     DriveRequest,

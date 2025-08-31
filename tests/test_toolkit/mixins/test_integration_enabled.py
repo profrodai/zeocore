@@ -11,9 +11,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 # Import the module directly to allow correct patching
-import quackcore.integrations.core
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.toolkit.mixins.integration_enabled import IntegrationEnabledMixin
+import quack_core.integrations.core
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.toolkit.mixins.integration_enabled import IntegrationEnabledMixin
 
 
 class MockIntegrationService(BaseIntegrationService):
@@ -51,7 +51,7 @@ class TestIntegrationEnabledMixin(unittest.TestCase):
     Test cases for IntegrationEnabledMixin using unittest.
     """
 
-    @patch.object(quackcore.integrations.core, "get_integration_service")
+    @patch.object(quack_core.integrations.core, "get_integration_service")
     def test_resolve_integration(self, mock_get_integration: MagicMock) -> None:
         """
         Test that resolve_integration correctly resolves the integration service.
@@ -73,7 +73,7 @@ class TestIntegrationEnabledMixin(unittest.TestCase):
         self.assertTrue(mock_service.initialized)
         mock_get_integration.assert_called_once_with(MockIntegrationService)
 
-    @patch.object(quackcore.integrations.core, "get_integration_service")
+    @patch.object(quack_core.integrations.core, "get_integration_service")
     def test_resolve_integration_none(self, mock_get_integration: MagicMock) -> None:
         """
         Test that resolve_integration handles None return from get_integration_service.
@@ -93,7 +93,7 @@ class TestIntegrationEnabledMixin(unittest.TestCase):
         self.assertIsNone(result)
         mock_get_integration.assert_called_once_with(MockIntegrationService)
 
-    @patch.object(quackcore.integrations.core, "get_integration_service")
+    @patch.object(quack_core.integrations.core, "get_integration_service")
     def test_resolve_integration_no_initialize(self,
                                                mock_get_integration: MagicMock) -> None:
         """
@@ -115,7 +115,7 @@ class TestIntegrationEnabledMixin(unittest.TestCase):
         self.assertEqual(result, mock_service)
         mock_get_integration.assert_called_once_with(AnotherMockService)
 
-    @patch.object(quackcore.integrations.core, "get_integration_service")
+    @patch.object(quack_core.integrations.core, "get_integration_service")
     def test_integration_property(self, mock_get_integration: MagicMock) -> None:
         """
         Test that the integration property works correctly.
@@ -156,7 +156,7 @@ def integration_enabled_mixin() -> Generator[
     mock_service.initialize()  # Initialize it
 
     # Start a patch that will affect all code in this context
-    with patch.object(quackcore.integrations.core, "get_integration_service",
+    with patch.object(quack_core.integrations.core, "get_integration_service",
                       return_value=mock_service) as mock_get_integration:
         # Initialize the mixin
         mixin = TestMixin()
@@ -178,7 +178,7 @@ class TestIntegrationEnabledMixinWithPytest:
     ) -> None:
         """Test resolving an integration service."""
         # Patch the get_integration_service function before the test
-        with patch.object(quackcore.integrations.core,
+        with patch.object(quack_core.integrations.core,
                           "get_integration_service") as mock_get_integration:
             # Setup
             mock_service = MockIntegrationService()

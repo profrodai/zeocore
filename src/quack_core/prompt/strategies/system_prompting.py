@@ -5,8 +5,8 @@ System Prompting strategy for the PromptBooster.
 This strategy sets additional instructions or constraints at the system level.
 """
 
-from quackcore.prompt.registry import register_prompt_strategy
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.registry import register_prompt_strategy
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 def render(task_description: str, system_instructions: str) -> str:

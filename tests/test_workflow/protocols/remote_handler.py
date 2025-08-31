@@ -1,8 +1,8 @@
 # quack-core/tests/test_workflow/protocols/remote_handler.py
 from pathlib import Path
 
-from quackcore.workflow.protocols.remote_handler import RemoteFileHandler
-from quackcore.workflow.results import InputResult
+from quack_core.workflow.protocols.remote_handler import RemoteFileHandler
+from quack_core.workflow.results import InputResult
 
 
 class Good:

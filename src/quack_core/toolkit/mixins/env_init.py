@@ -8,7 +8,7 @@ their environment by importing and initializing the tool's module.
 
 import importlib
 
-from quackcore.integrations.core import IntegrationResult
+from quack_core.integrations.core import IntegrationResult
 
 
 class ToolEnvInitializerMixin:

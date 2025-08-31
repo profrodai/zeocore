@@ -7,14 +7,14 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from quackcore.errors import QuackApiError
-from quackcore.integrations.github.models import (
+from quack_core.errors import QuackApiError
+from quack_core.integrations.github.models import (
     GitHubRepo,
     GitHubUser,
     PullRequest,
     PullRequestStatus,
 )
-from quackcore.integrations.github.operations import (
+from quack_core.integrations.github.operations import (
     add_issue_comment,
     check_repository_exists,
     create_issue,

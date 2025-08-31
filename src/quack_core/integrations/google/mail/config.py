@@ -8,7 +8,7 @@ settings specific to the Gmail service.
 
 from pydantic import Field
 
-from quackcore.integrations.google.config import GoogleMailConfig
+from quack_core.integrations.google.config import GoogleMailConfig
 
 
 class GmailServiceConfig(GoogleMailConfig):

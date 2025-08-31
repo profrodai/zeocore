@@ -7,10 +7,10 @@ This provides the core functionality and initialization for the service.
 
 from pathlib import Path
 
-from quackcore.fs._helpers.path_utils import _extract_path_str, _safe_path_str
-from quackcore.fs._operations import FileSystemOperations
-from quackcore.fs.results import DataResult, OperationResult
-from quackcore.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.fs._helpers.path_utils import _extract_path_str, _safe_path_str
+from quack_core.fs._operations import FileSystemOperations
+from quack_core.fs.results import DataResult, OperationResult
+from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
 
 
 class FileSystemService:

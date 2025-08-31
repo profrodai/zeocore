@@ -7,8 +7,8 @@ from collections.abc import Callable
 
 import pytest
 
-from quackcore.errors import QuackPluginError
-from quackcore.plugins.protocols import (
+from quack_core.errors import QuackPluginError
+from quack_core.plugins.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,
     ProviderPluginProtocol,
@@ -16,7 +16,7 @@ from quackcore.plugins.protocols import (
     QuackPluginProtocol,
     WorkflowPluginProtocol,
 )
-from quackcore.plugins.registry import PluginRegistry
+from quack_core.plugins.registry import PluginRegistry
 
 
 # Mock plugin implementations for testing
@@ -569,7 +569,7 @@ class TestPluginRegistry:
 
     def test_plugin_capabilities_filtering(self) -> None:
         """Test filtering plugins by capability."""
-        from quackcore.plugins.protocols import QuackPluginMetadata
+        from quack_core.plugins.protocols import QuackPluginMetadata
 
         class CapabilityPlugin(QuackPluginProtocol):
             """Plugin with capabilities for testing."""
@@ -684,7 +684,7 @@ class TestPluginRegistry:
         from typing import cast
         from unittest.mock import patch
 
-        from quackcore.plugins.discovery import PluginLoader
+        from quack_core.plugins.discovery import PluginLoader
 
         loader = PluginLoader()
 
@@ -768,7 +768,7 @@ class TestPluginRegistry:
         """Test loading a built-in plugin."""
         from unittest.mock import MagicMock, patch
 
-        from quackcore.plugins.discovery import PluginLoader
+        from quack_core.plugins.discovery import PluginLoader
 
         loader = PluginLoader()
 
@@ -794,7 +794,7 @@ class TestPluginRegistry:
         """Test discovering an external plugin."""
         from unittest.mock import MagicMock, patch
 
-        from quackcore.plugins.discovery import PluginLoader
+        from quack_core.plugins.discovery import PluginLoader
 
         loader = PluginLoader()
 

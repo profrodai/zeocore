@@ -1,19 +1,19 @@
 # quack-core/src/quack-core/cli/__init__.py
 """
-CLI package for QuackCore.
+CLI package for quack_core.
 
 This package provides utilities for building command-line interfaces
 for QuackVerse tools with consistent behavior and user experience.
 """
 
 # Bootstrap and core functionality
-from quackcore.cli.boostrap import from_cli_options, init_cli_env
-from quackcore.cli.config import (
+from quack_core.cli.boostrap import from_cli_options, init_cli_env
+from quack_core.cli.config import (
     find_project_root,
     load_config,
 )
-from quackcore.cli.context import QuackContext
-from quackcore.cli.error import (
+from quack_core.cli.context import QuackContext
+from quack_core.cli.error import (
     ensure_single_instance,
     format_cli_error,
     get_cli_info,
@@ -21,7 +21,7 @@ from quackcore.cli.error import (
 )
 
 # Text formatting and display
-from quackcore.cli.formatting import (
+from quack_core.cli.formatting import (
     colorize,
     dict_to_table,
     print_debug,
@@ -33,17 +33,17 @@ from quackcore.cli.formatting import (
 )
 
 # User interaction
-from quackcore.cli.interaction import (
+from quack_core.cli.interaction import (
     ask,
     ask_choice,
     confirm,
     with_spinner,
 )
-from quackcore.cli.logging import LoggerFactory, setup_logging
-from quackcore.cli.options import CliOptions, resolve_cli_args
+from quack_core.cli.logging import LoggerFactory, setup_logging
+from quack_core.cli.options import CliOptions, resolve_cli_args
 
 # Progress tracking
-from quackcore.cli.progress import (
+from quack_core.cli.progress import (
     ProgressCallback,
     ProgressReporter,
     SimpleProgress,
@@ -51,7 +51,7 @@ from quackcore.cli.progress import (
 )
 
 # Terminal utilities
-from quackcore.cli.terminal import (
+from quack_core.cli.terminal import (
     get_terminal_size,
     supports_color,
     truncate_text,

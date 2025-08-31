@@ -21,10 +21,10 @@ from typing import Protocol, TypeVar, cast
 
 from googleapiclient.errors import HttpError
 
-from quackcore.fs.service import standalone
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.google.mail.protocols import GmailRequest, GmailService
-from quackcore.integrations.google.mail.utils.api import execute_api_request
+from quack_core.fs.service import standalone
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.mail.protocols import GmailRequest, GmailService
+from quack_core.integrations.google.mail.utils.api import execute_api_request
 
 T = TypeVar("T")  # Generic type for result content
 

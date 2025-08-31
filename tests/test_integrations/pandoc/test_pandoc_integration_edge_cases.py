@@ -9,12 +9,12 @@ to ensure robust behavior in all situations.
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.pandoc import (
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.pandoc import (
     ConversionMetrics,
     FileInfo,
 )
-from quackcore.integrations.pandoc.service import PandocIntegration
+from quack_core.integrations.pandoc.service import PandocIntegration
 
 # --- Tests for PandocIntegration edge cases ---
 

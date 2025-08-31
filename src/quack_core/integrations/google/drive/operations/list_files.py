@@ -9,13 +9,13 @@ including query building and result formatting.
 import logging
 from collections.abc import Iterable, Mapping
 
-from quackcore.errors import QuackApiError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.google.drive.models import DriveFile, DriveFolder
-from quackcore.integrations.google.drive.protocols import DriveService
-from quackcore.integrations.google.drive.utils.api import execute_api_request
-from quackcore.integrations.google.drive.utils.query import build_query
-from quackcore.logging import get_logger
+from quack_core.errors import QuackApiError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
+from quack_core.integrations.google.drive.protocols import DriveService
+from quack_core.integrations.google.drive.utils.api import execute_api_request
+from quack_core.integrations.google.drive.utils.query import build_query
+from quack_core.logging import get_logger
 
 
 def list_files(

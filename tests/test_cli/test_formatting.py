@@ -6,7 +6,7 @@ Tests for the CLI formatting module.
 import sys
 from unittest.mock import patch
 
-from quackcore.cli.formatting import (
+from quack_core.cli.formatting import (
     Color,
     colorize,
     dict_to_table,

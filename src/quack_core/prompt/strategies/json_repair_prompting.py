@@ -5,8 +5,8 @@ JSON Repair Prompting strategy for the PromptBooster.
 This strategy repairs incomplete or malformed JSON into valid JSON.
 """
 
-from quackcore.prompt.registry import register_prompt_strategy
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.registry import register_prompt_strategy
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 def render(incomplete_json: str) -> str:

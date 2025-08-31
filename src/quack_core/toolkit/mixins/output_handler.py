@@ -7,7 +7,7 @@ tools should override `get_output_writer()` directly in BaseQuackToolPlugin.
 """
 
 
-from quackcore.workflow.output import OutputWriter
+from quack_core.workflow.output import OutputWriter
 
 
 class OutputFormatMixin:

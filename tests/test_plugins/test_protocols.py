@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from quackcore.plugins.protocols import (
+from quack_core.plugins.protocols import (
     CommandPluginProtocol,
     ConfigurablePluginProtocol,
     ExtensionPluginProtocol,

@@ -11,7 +11,7 @@ from unittest.mock import patch
 import pytest
 import yaml
 
-from quackcore.config.loader import (
+from quack_core.config.loader import (
     DEFAULT_CONFIG_VALUES,
     _convert_env_value,
     _deep_merge,
@@ -21,8 +21,8 @@ from quackcore.config.loader import (
     load_yaml_config,
     merge_configs,
 )
-from quackcore.config.models import QuackConfig
-from quackcore.errors import QuackConfigurationError
+from quack_core.config.models import QuackConfig
+from quack_core.errors import QuackConfigurationError
 
 
 class TestConfigLoader:

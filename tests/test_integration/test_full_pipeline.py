@@ -9,17 +9,17 @@ from pathlib import Path
 import pytest
 import yaml
 
-from quackcore.config.loader import load_config
-from quackcore.config.models import QuackConfig
-from quackcore.errors import QuackError
-from quackcore.fs.service import FileSystemService
-from quackcore.paths import PathResolver
-from quackcore.paths import service as paths
-from quackcore.plugins.protocols import (
+from quack_core.config.loader import load_config
+from quack_core.config.models import QuackConfig
+from quack_core.errors import QuackError
+from quack_core.fs.service import FileSystemService
+from quack_core.paths import PathResolver
+from quack_core.paths import service as paths
+from quack_core.plugins.protocols import (
     CommandPluginProtocol,
     ProviderPluginProtocol,
 )
-from quackcore.plugins.registry import PluginRegistry
+from quack_core.plugins.registry import PluginRegistry
 
 
 # Test plugins to register in the registry
@@ -128,7 +128,7 @@ class SampleConfigProvider(ProviderPluginProtocol):
 
     def get_value(self, path: str, default: object | None = None) -> object | None:
         """Get a configuration value by path."""
-        from quackcore.config.utils import get_config_value
+        from quack_core.config.utils import get_config_value
 
         return get_config_value(self.config, path, default)
 

@@ -9,8 +9,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackError, QuackFileNotFoundError
-from quackcore.errors.handlers import ErrorHandler, global_error_handler, handle_errors
+from quack_core.errors import QuackError, QuackFileNotFoundError
+from quack_core.errors.handlers import ErrorHandler, global_error_handler, handle_errors
 
 
 class TestErrorHandler:

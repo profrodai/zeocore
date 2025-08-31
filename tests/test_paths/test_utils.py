@@ -10,9 +10,9 @@ from unittest.mock import patch
 
 import pytest
 
-from quackcore.errors import QuackFileNotFoundError
-from quackcore.fs.service import standalone as fs_standalone
-from quackcore.paths import service as paths
+from quack_core.errors import QuackFileNotFoundError
+from quack_core.fs.service import standalone as fs_standalone
+from quack_core.paths import service as paths
 
 
 # Create mock DataResult for fs operations

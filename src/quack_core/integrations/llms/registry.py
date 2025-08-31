@@ -7,13 +7,13 @@ dynamic loading and access to different LLM implementations.
 """
 
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.llms.clients.anthropic import AnthropicClient
-from quackcore.integrations.llms.clients.base import LLMClient
-from quackcore.integrations.llms.clients.mock import MockLLMClient
-from quackcore.integrations.llms.clients.ollama import OllamaClient
-from quackcore.integrations.llms.clients.openai import OpenAIClient
-from quackcore.logging import get_logger
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.llms.clients.anthropic import AnthropicClient
+from quack_core.integrations.llms.clients.base import LLMClient
+from quack_core.integrations.llms.clients.mock import MockLLMClient
+from quack_core.integrations.llms.clients.ollama import OllamaClient
+from quack_core.integrations.llms.clients.openai import OpenAIClient
+from quack_core.logging import get_logger
 
 # Global registry of LLM clients
 _LLM_REGISTRY: dict[str, type[LLMClient]] = {

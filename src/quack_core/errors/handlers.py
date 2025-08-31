@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/errors/handlers.py
 """
-Error handling utilities for QuackCore.
+Error handling utilities for quack_core.
 
 This module provides utilities for handling and formatting errors in a consistent way,
 making it easier to diagnose and fix issues in the Quack ecosystem.
@@ -14,7 +14,7 @@ from typing import TypeVar
 from rich.console import Console
 from rich.panel import Panel
 
-from quackcore.errors.base import QuackError
+from quack_core.errors.base import QuackError
 
 T = TypeVar("T")
 

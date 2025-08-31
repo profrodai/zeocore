@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import Generic, TypeVar
 
-from quackcore.integrations.core import get_integration_service
-from quackcore.integrations.core.base import BaseIntegrationService
+from quack_core.integrations.core import get_integration_service
+from quack_core.integrations.core.base import BaseIntegrationService
 
 T = TypeVar("T", bound=BaseIntegrationService)
 

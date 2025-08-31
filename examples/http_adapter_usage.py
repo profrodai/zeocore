@@ -4,9 +4,9 @@ Example of how to use the HTTP adapter with QuackCore's config system.
 """
 
 import asyncio
-from quackcore.config.tooling import load_tool_config, setup_tool_logging
-from quackcore.adapters.http.config import HttpAdapterConfig
-from quackcore.adapters.http.service import run
+from quack_core.config.tooling import load_tool_config, setup_tool_logging
+from quack_core.adapters.http.config import HttpAdapterConfig
+from quack_core.adapters.http.service import run
 
 
 def main():
@@ -266,7 +266,7 @@ def verify_signature(body: bytes, signature: str, secret: str) -> bool:
 
 @app.post("/webhook/quackcore")
 async def handle_job_callback(request: Request):
-    """Handle job completion callbacks from QuackCore."""
+    """Handle job completion callbacks from quack_core."""
 
     body = await request.body()
     signature = request.headers.get("X-Quack-Signature", "")

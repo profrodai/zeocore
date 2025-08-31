@@ -9,7 +9,7 @@ ConversionMetrics, and ConversionDetails.
 
 from datetime import datetime
 
-from quackcore.integrations.pandoc.models import (
+from quack_core.integrations.pandoc.models import (
     ConversionDetails,
     ConversionMetrics,
     ConversionTask,

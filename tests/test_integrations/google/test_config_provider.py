@@ -11,7 +11,7 @@ from unittest.mock import patch
 import pytest
 from pydantic import ValidationError
 
-from quackcore.integrations.google.config import (
+from quack_core.integrations.google.config import (
     GoogleConfigProvider,
     GoogleDriveConfig,
     GoogleMailConfig,
@@ -159,7 +159,7 @@ class TestGoogleConfigProvider:
             # Simple approach - create an actual validation error to use as a mock
             try:
                 # Create a validation error by triggering one
-                from quackcore.integrations.google.config import GoogleBaseConfig
+                from quack_core.integrations.google.config import GoogleBaseConfig
 
                 GoogleBaseConfig(client_secrets_file="", credentials_file="test")
             except ValidationError as e:
@@ -273,7 +273,7 @@ class TestGoogleConfigProvider:
         }
 
         # Test should pass with valid values
-        from quackcore.integrations.google.config import GoogleBaseConfig
+        from quack_core.integrations.google.config import GoogleBaseConfig
 
         model = GoogleBaseConfig(**config)
         assert model.client_secrets_file == "/path/to/secrets.json"

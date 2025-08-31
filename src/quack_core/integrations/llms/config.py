@@ -12,10 +12,10 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
-from quackcore.config.models import LoggingConfig
-from quackcore.integrations.core import ConfigResult
-from quackcore.integrations.core.base import BaseConfigProvider
-from quackcore.integrations.llms.fallback import FallbackConfig
+from quack_core.config.models import LoggingConfig
+from quack_core.integrations.core import ConfigResult
+from quack_core.integrations.core.base import BaseConfigProvider
+from quack_core.integrations.llms.fallback import FallbackConfig
 
 
 class OpenAIConfig(BaseModel):

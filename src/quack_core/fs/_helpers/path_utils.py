@@ -6,8 +6,8 @@ import os
 from pathlib import Path
 from typing import Any, TypeVar, cast
 
-from quackcore.fs.protocols import HasUnwrap, HasValue
-from quackcore.logging import get_logger
+from quack_core.fs.protocols import HasUnwrap, HasValue
+from quack_core.logging import get_logger
 
 logger = get_logger(__name__)
 

@@ -13,12 +13,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.pandoc import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.pandoc import (
     ConversionMetrics,
     PandocConfig,
 )
-from quackcore.integrations.pandoc.operations.utils import (
+from quack_core.integrations.pandoc.operations.utils import (
     get_file_info,
     prepare_pandoc_args,
     validate_docx_structure,

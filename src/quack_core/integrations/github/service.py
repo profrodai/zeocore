@@ -1,13 +1,13 @@
 # quack-core/src/quack-core/integrations/github/service.py
-"""GitHub core integration service for QuackCore."""
+"""GitHub core integration service for quack_core."""
 
-from quackcore.integrations.core import (
+from quack_core.integrations.core import (
     AuthProviderProtocol,
     BaseIntegrationService,
     ConfigProviderProtocol,
     IntegrationResult,
 )
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 from .auth import GitHubAuthProvider
 from .client import GitHubClient
@@ -19,7 +19,7 @@ logger = get_logger(__name__)
 
 
 class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
-    """GitHub integration for QuackCore."""
+    """GitHub integration for quack_core."""
 
     def __init__(
         self,

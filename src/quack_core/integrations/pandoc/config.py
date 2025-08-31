@@ -16,15 +16,15 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field, field_validator
 
-from quackcore.config.models import LoggingConfig
-from quackcore.integrations.core.base import BaseConfigProvider
-from quackcore.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.config.models import LoggingConfig
+from quack_core.integrations.core.base import BaseConfigProvider
+from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
 
 logger = get_logger(__name__)
 
 # Import fs module with error handling
 try:
-    from quackcore.fs.service import standalone as fs
+    from quack_core.fs.service import standalone as fs
 except ImportError:
     logger.error("Could not import quack-core.fs.service")
     from types import SimpleNamespace

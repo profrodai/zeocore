@@ -6,13 +6,13 @@ This module re-exports the complete FileSystemService to provide backward compat
 with existing code.
 """
 
-from quackcore.fs.service.base import FileSystemService as BaseFileSystemService
-from quackcore.fs.service.directory_operations import DirectoryOperationsMixin
-from quackcore.fs.service.file_operations import FileOperationsMixin
-from quackcore.fs.service.path_operations import PathOperationsMixin
-from quackcore.fs.service.path_validation import PathValidationMixin
-from quackcore.fs.service.structured_data import StructuredDataMixin
-from quackcore.fs.service.utility_operations import UtilityOperationsMixin
+from quack_core.fs.service.base import FileSystemService as BaseFileSystemService
+from quack_core.fs.service.directory_operations import DirectoryOperationsMixin
+from quack_core.fs.service.file_operations import FileOperationsMixin
+from quack_core.fs.service.path_operations import PathOperationsMixin
+from quack_core.fs.service.path_validation import PathValidationMixin
+from quack_core.fs.service.structured_data import StructuredDataMixin
+from quack_core.fs.service.utility_operations import UtilityOperationsMixin
 
 
 class FileSystemService(

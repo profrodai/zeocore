@@ -10,10 +10,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.llms.clients.base import LLMClient
-from quackcore.integrations.llms.clients.mock import MockLLMClient
-from quackcore.integrations.llms.registry import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.llms.clients.base import LLMClient
+from quack_core.integrations.llms.clients.mock import MockLLMClient
+from quack_core.integrations.llms.registry import (
     _LLM_REGISTRY,
     get_llm_client,
     register_llm_client,
@@ -108,7 +108,7 @@ class TestLLMRegistry:
             mock_registry.__contains__.return_value = True  # Make 'in' operator work
 
             # Import the real function
-            from quackcore.integrations.llms.registry import get_llm_client
+            from quack_core.integrations.llms.registry import get_llm_client
 
             # Call get_llm_client with the "anthropic" provider
             client = get_llm_client(

@@ -6,7 +6,7 @@ This package contains specialized modules for different Gmail _operations,
 such as listing emails, downloading messages, and handling attachments.
 """
 
-from quackcore.integrations.google.mail.operations import attachments, auth, email
+from quack_core.integrations.google.mail.operations import attachments, auth, email
 
 __all__ = [
     "email",

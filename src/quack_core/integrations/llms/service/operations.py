@@ -7,8 +7,8 @@ This module provides methods for interacting with LLMs, such as chat and token c
 
 from collections.abc import Callable, Sequence
 
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.llms.models import ChatMessage, LLMOptions
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.llms.models import ChatMessage, LLMOptions
 
 
 def chat(

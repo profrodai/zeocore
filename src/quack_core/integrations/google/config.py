@@ -12,7 +12,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
-from quackcore.integrations.core.base import BaseConfigProvider
+from quack_core.integrations.core.base import BaseConfigProvider
 
 
 class GoogleBaseConfig(BaseModel):
@@ -283,7 +283,7 @@ class GoogleConfigProvider(BaseConfigProvider):
         Returns:
             dict[str, Any]: Configuration with resolved paths
         """
-        from quackcore.paths import service as paths  # Direct import
+        from quack_core.paths import service as paths  # Direct import
 
         resolved_config = config.copy()
 

@@ -3,9 +3,9 @@ import time
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.pandoc import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.pandoc import (
     ConversionMetrics,
     ConversionTask,
     DocumentConverter,

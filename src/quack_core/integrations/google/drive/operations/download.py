@@ -10,12 +10,12 @@ import logging
 import os.path as ospath
 from collections.abc import Mapping
 
-from quackcore.errors import QuackApiError
-from quackcore.fs.service import standalone
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.google.drive.protocols import DriveService
-from quackcore.integrations.google.drive.utils.api import execute_api_request
-from quackcore.paths import service as paths_service
+from quack_core.errors import QuackApiError
+from quack_core.fs.service import standalone
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.drive.protocols import DriveService
+from quack_core.integrations.google.drive.utils.api import execute_api_request
+from quack_core.paths import service as paths_service
 
 
 def resolve_download_path(

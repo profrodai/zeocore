@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/paths/service.py
 """
-Path service for QuackCore.
+Path service for quack_core.
 
 This module provides a high-level service for path operations in QuackCore projects.
 """
@@ -9,20 +9,20 @@ import os
 from pathlib import Path
 from typing import Any
 
-from quackcore.fs.results import DataResult, OperationResult
-from quackcore.logging import get_logger
-from quackcore.paths._internal.resolver import PathResolver
-from quackcore.paths._internal.utils import (
+from quack_core.fs.results import DataResult, OperationResult
+from quack_core.logging import get_logger
+from quack_core.paths._internal.resolver import PathResolver
+from quack_core.paths._internal.utils import (
     _find_nearest_directory,
     _infer_module_from_path,
     _resolve_relative_to_project,
 )
-from quackcore.paths.api.public.results import ContextResult, PathResult
+from quack_core.paths.api.public.results import ContextResult, PathResult
 
 
 class PathService:
     """
-    Public service for path-related operations in QuackCore.
+    Public service for path-related operations in quack_core.
 
     This service provides methods for resolving paths, detecting project structure,
     and inferring context from file locations in QuackCore projects.
@@ -43,7 +43,7 @@ class PathService:
         Returns:
             A normalized path string
         """
-        from quackcore.paths._internal.utils import _normalize_path_param
+        from quack_core.paths._internal.utils import _normalize_path_param
 
         return _normalize_path_param(path_param)
 

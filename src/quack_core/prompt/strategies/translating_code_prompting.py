@@ -5,8 +5,8 @@ Translating Code Prompting strategy for the PromptBooster.
 This strategy instructs the LLM to translate a code snippet into another programming language.
 """
 
-from quackcore.prompt.registry import register_prompt_strategy
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.registry import register_prompt_strategy
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 def render(source_code: str, target_language: str) -> str:

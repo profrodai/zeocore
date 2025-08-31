@@ -11,8 +11,8 @@ File resolution and normalization are delegated to quack-core.fs.
 from collections.abc import Sequence
 from typing import Protocol, TypeVar, runtime_checkable
 
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.pandoc.models import ConversionTask
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.pandoc.models import ConversionTask
 
 # Generic type variables for flexible return types
 T = TypeVar("T")

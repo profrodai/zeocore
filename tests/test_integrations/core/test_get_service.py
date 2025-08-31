@@ -6,8 +6,8 @@ Tests for the get_integration_service function.
 import unittest
 from unittest.mock import patch
 
-from quackcore.integrations.core import get_integration_service
-from quackcore.integrations.core.base import BaseIntegrationService
+from quack_core.integrations.core import get_integration_service
+from quack_core.integrations.core.base import BaseIntegrationService
 
 
 class MockDriveService(BaseIntegrationService):

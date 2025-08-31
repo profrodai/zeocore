@@ -8,10 +8,10 @@ and inspect paths, primarily used for configuration validation.
 
 from pathlib import Path
 
-from quackcore.errors import wrap_io_errors
-from quackcore.fs._operations import FileSystemOperations
-from quackcore.fs.results import DataResult, OperationResult, PathResult
-from quackcore.logging import get_logger
+from quack_core.errors import wrap_io_errors
+from quack_core.fs._operations import FileSystemOperations
+from quack_core.fs.results import DataResult, OperationResult, PathResult
+from quack_core.logging import get_logger
 
 logger = get_logger(__name__)
 

@@ -5,8 +5,8 @@ Common utility functions for filesystem _operations.
 
 from pathlib import Path
 
-from quackcore.errors import wrap_io_errors
-from quackcore.logging import get_logger
+from quack_core.errors import wrap_io_errors
+from quack_core.logging import get_logger
 
 # Initialize module logger
 logger = get_logger(__name__)

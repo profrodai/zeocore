@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import pytest
 
-from quackcore.integrations.llms.clients import OpenAIClient
+from quack_core.integrations.llms.clients import OpenAIClient
 
 
 class TestClientImports:
@@ -19,7 +19,7 @@ class TestClientImports:
 
     def test_client_imports(self) -> None:
         """Test that all clients are properly exported."""
-        from quackcore.integrations.llms.clients import (
+        from quack_core.integrations.llms.clients import (
             AnthropicClient,
             LLMClient,
             MockLLMClient,

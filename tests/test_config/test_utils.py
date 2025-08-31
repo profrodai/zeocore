@@ -10,11 +10,11 @@ from unittest.mock import patch
 import pytest
 import yaml
 
-from quackcore.config.models import (
+from quack_core.config.models import (
     LoggingConfig,
     QuackConfig,
 )
-from quackcore.config.utils import (
+from quack_core.config.utils import (
     get_config_value,
     get_env,
     validate_required_config,

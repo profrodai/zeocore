@@ -3,7 +3,7 @@
 Tests for the PromptStrategy base class in strategy_base.py.
 """
 
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 def test_prompt_strategy_creation():

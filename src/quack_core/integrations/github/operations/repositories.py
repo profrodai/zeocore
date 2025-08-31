@@ -6,9 +6,9 @@ from typing import Any
 
 import requests
 
-from quackcore.errors import QuackApiError
-from quackcore.integrations.github.models import GitHubRepo, GitHubUser
-from quackcore.integrations.github.utils.api import make_request
+from quack_core.errors import QuackApiError
+from quack_core.integrations.github.models import GitHubRepo, GitHubUser
+from quack_core.integrations.github.utils.api import make_request
 
 
 def get_repo(

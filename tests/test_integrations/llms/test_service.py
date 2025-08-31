@@ -10,11 +10,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.fs import DataResult, FileInfoResult
-from quackcore.integrations.core.results import ConfigResult, IntegrationResult
-from quackcore.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from quackcore.integrations.llms.service import LLMIntegration
+from quack_core.errors import QuackIntegrationError
+from quack_core.fs import DataResult, FileInfoResult
+from quack_core.integrations.core.results import ConfigResult, IntegrationResult
+from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from quack_core.integrations.llms.service import LLMIntegration
 
 from .mocks.clients import MockClient
 

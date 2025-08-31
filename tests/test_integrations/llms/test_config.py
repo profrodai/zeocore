@@ -9,8 +9,8 @@ ensuring proper validation and default values.
 import pytest
 from pydantic import ValidationError
 
-from quackcore.config.models import LoggingConfig
-from quackcore.integrations.llms.config import (
+from quack_core.config.models import LoggingConfig
+from quack_core.integrations.llms.config import (
     AnthropicConfig,
     LLMConfig,
     OpenAIConfig,

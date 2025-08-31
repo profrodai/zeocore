@@ -6,7 +6,7 @@ This package provides reusable utility functions for Gmail _operations,
 including API wrappers and error handling.
 """
 
-from quackcore.integrations.google.mail.utils import api
+from quack_core.integrations.google.mail.utils import api
 
 __all__ = [
     "api",

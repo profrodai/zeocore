@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/plugins/protocols.py
 """
-Plugin protocols for QuackCore.
+Plugin protocols for quack_core.
 
 This module defines the Protocol interfaces for plugins in the QuackCore system,
 providing a common interface for all plugins to implement.

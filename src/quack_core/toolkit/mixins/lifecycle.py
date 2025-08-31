@@ -8,7 +8,7 @@ such as run, validate, upload, pre_run, and post_run.
 
 from typing import Any
 
-from quackcore.integrations.core import IntegrationResult
+from quack_core.integrations.core import IntegrationResult
 
 
 class QuackToolLifecycleMixin:

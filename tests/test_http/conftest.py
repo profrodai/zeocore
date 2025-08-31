@@ -6,9 +6,9 @@ Test configuration for HTTP adapter tests.
 import pytest
 from fastapi.testclient import TestClient
 
-from quackcore.adapters.http.config import HttpAdapterConfig
-from quackcore.adapters.http.app import create_app
-from quackcore.adapters.http.jobs import clear_jobs
+from quack_core.adapters.http.config import HttpAdapterConfig
+from quack_core.adapters.http.app import create_app
+from quack_core.adapters.http.jobs import clear_jobs
 
 
 @pytest.fixture(autouse=True)

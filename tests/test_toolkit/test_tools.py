@@ -9,15 +9,15 @@ the toolkit components.
 from typing import Any, TypeVar
 from unittest.mock import MagicMock, patch
 
-from quackcore.integrations.core import IntegrationResult
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.toolkit import (
+from quack_core.integrations.core import IntegrationResult
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.toolkit import (
     IntegrationEnabledMixin,
     OutputFormatMixin,
     QuackToolLifecycleMixin,
     ToolEnvInitializerMixin,
 )
-from quackcore.workflow.output import YAMLOutputWriter
+from quack_core.workflow.output import YAMLOutputWriter
 
 from .mocks import BaseMockTool, MockIntegrationService
 

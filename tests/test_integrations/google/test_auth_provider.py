@@ -10,9 +10,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.results import AuthResult
-from quackcore.integrations.google.auth import GoogleAuthProvider
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.results import AuthResult
+from quack_core.integrations.google.auth import GoogleAuthProvider
 
 from .mocks import mock_credentials
 

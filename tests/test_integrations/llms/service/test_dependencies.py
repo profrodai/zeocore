@@ -1,7 +1,7 @@
 # quack-core/tests/test_integrations/llms/service/test_dependencies.py
 from unittest.mock import MagicMock, patch
 
-from quackcore.integrations.llms.service.dependencies import check_llm_dependencies
+from quack_core.integrations.llms.service.dependencies import check_llm_dependencies
 
 
 class TestDependencies:

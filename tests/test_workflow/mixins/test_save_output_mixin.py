@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from quackcore.workflow.mixins.save_output_mixin import SaveOutputMixin
-from quackcore.workflow.output.base import OutputWriter
+from quack_core.workflow.mixins.save_output_mixin import SaveOutputMixin
+from quack_core.workflow.output.base import OutputWriter
 
 
 class StubFS:

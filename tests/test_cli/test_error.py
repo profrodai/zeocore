@@ -9,13 +9,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.cli.error import (
+from quack_core.cli.error import (
     ensure_single_instance,
     format_cli_error,
     get_cli_info,
     handle_errors,
 )
-from quackcore.errors import QuackError
+from quack_core.errors import QuackError
 
 
 class TestFormatCliError:

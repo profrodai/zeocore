@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
-import quackcore.workflow.output.writers as writers_mod
-from quackcore.workflow.output.writers import DefaultOutputWriter, YAMLOutputWriter
+import quack_core.workflow.output.writers as writers_mod
+from quack_core.workflow.output.writers import DefaultOutputWriter, YAMLOutputWriter
 
 
 class StubFS:
@@ -27,7 +27,7 @@ def patch_fs_service(monkeypatch):
     stub = StubFS()
 
     # Import the standalone module
-    from quackcore.fs.service import standalone
+    from quack_core.fs.service import standalone
 
     # Replace individual functions in the standalone module
     monkeypatch.setattr(standalone, "write_json", stub.write_json)

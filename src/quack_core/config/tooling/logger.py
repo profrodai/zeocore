@@ -10,8 +10,8 @@ import atexit
 import logging
 from typing import Any
 
-from quackcore.fs.service import standalone
-from quackcore.logging import LOG_LEVELS, LogLevel, configure_logger
+from quack_core.fs.service import standalone
+from quack_core.logging import LOG_LEVELS, LogLevel, configure_logger
 
 # Track file handlers for cleanup during exit
 _file_handlers = []
@@ -79,7 +79,7 @@ def get_logger(tool_name: str) -> logging.Logger:
     Returns:
         A Logger instance configured for the tool with quack-core enhancements
     """
-    from quackcore.logging import get_logger as core_get_logger
+    from quack_core.logging import get_logger as core_get_logger
     return core_get_logger(tool_name)
 
 
@@ -94,5 +94,5 @@ def log_teaching(logger: Any, message: str, level: str = "INFO") -> None:
         message: The message to log
         level: The log level to use (default: INFO)
     """
-    from quackcore.logging.config import log_teaching as core_log_teaching
+    from quack_core.logging.config import log_teaching as core_log_teaching
     core_log_teaching(logger, message, level)

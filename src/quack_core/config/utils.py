@@ -12,8 +12,8 @@ import os
 from collections.abc import Mapping
 from typing import Any, TypeVar
 
-from quackcore.errors import QuackConfigurationError
-from quackcore.logging import get_logger
+from quack_core.errors import QuackConfigurationError
+from quack_core.logging import get_logger
 
 T = TypeVar("T")  # Generic type for flexible typing
 
@@ -48,7 +48,7 @@ def load_env_config(config, config_dir: str | None = None):
         QuackConfigurationError: If the environment configuration file cannot be loaded.
     """
     # Import here to avoid circular import
-    from quackcore.config.models import QuackConfig
+    from quack_core.config.models import QuackConfig
 
     env: str = get_env()
 
@@ -153,7 +153,7 @@ def normalize_paths(config):
         QuackConfig: A new QuackConfig object with all paths normalized.
     """
     # Import here to avoid circular import
-    from quackcore.config.models import QuackConfig
+    from quack_core.config.models import QuackConfig
 
     # Get the configuration as a dictionary.
     config_dict: dict = config.model_dump()  # Using model_dump() is more reliable
@@ -249,7 +249,7 @@ def load_yaml_config(config_file: str) -> dict:
         dict: A dictionary containing the parsed YAML configuration.
     """
     # Import the YAML loader here to avoid circular imports.
-    from quackcore.config.loader import load_yaml_config as _load_yaml
+    from quack_core.config.loader import load_yaml_config as _load_yaml
 
     return _load_yaml(config_file)
 

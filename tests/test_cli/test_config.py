@@ -8,13 +8,13 @@ from unittest.mock import patch
 
 import pytest
 
-from quackcore.cli.config import (
+from quack_core.cli.config import (
     _merge_cli_overrides,
     find_project_root,
     load_config,
 )
-from quackcore.config.models import QuackConfig
-from quackcore.errors import QuackConfigurationError, QuackFileNotFoundError
+from quack_core.config.models import QuackConfig
+from quack_core.errors import QuackConfigurationError, QuackFileNotFoundError
 
 from .mocks import MockConfig
 

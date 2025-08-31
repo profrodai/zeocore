@@ -1,12 +1,12 @@
 # quack-core/src/quack-core/integrations/github/__init__.py
-"""GitHub integration for QuackCore."""
+"""GitHub integration for quack_core."""
 
 from __future__ import annotations
 
 import logging
 from typing import TYPE_CHECKING, Any
 
-from quackcore.integrations.core import registry
+from quack_core.integrations.core import registry
 
 from .auth import GitHubAuthProvider
 from .client import GitHubClient

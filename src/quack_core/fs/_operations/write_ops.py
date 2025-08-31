@@ -9,7 +9,7 @@ and directory creation.
 
 from pathlib import Path
 
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 # Set up logger
 logger = get_logger(__name__)
@@ -73,7 +73,7 @@ class WriteOperationsMixin:
             Used by public-facing methods in the service layer.
         """
         # Import necessary utility functions
-        from quackcore.fs._operations import (
+        from quack_core.fs._operations import (
             _atomic_write,
             _compute_checksum,
             _ensure_directory,
@@ -162,7 +162,7 @@ class WriteOperationsMixin:
             Internal helper method not meant for external consumption.
             Used by public-facing methods in the service layer.
         """
-        from quackcore.fs._operations import (
+        from quack_core.fs._operations import (
             _atomic_write,
             _compute_checksum,
             _ensure_directory,
@@ -225,7 +225,7 @@ class WriteOperationsMixin:
             Internal helper method not meant for external consumption.
             Used by public-facing methods in the service layer.
         """
-        from quackcore.fs._operations import _safe_copy
+        from quack_core.fs._operations import _safe_copy
 
         src_path = self._resolve_path(src)
         dst_path = self._resolve_path(dst)
@@ -268,7 +268,7 @@ class WriteOperationsMixin:
             Internal helper method not meant for external consumption.
             Used by public-facing methods in the service layer.
         """
-        from quackcore.fs._operations import _safe_move
+        from quack_core.fs._operations import _safe_move
 
         src_path = self._resolve_path(src)
         dst_path = self._resolve_path(dst)
@@ -310,7 +310,7 @@ class WriteOperationsMixin:
             Internal helper method not meant for external consumption.
             Used by public-facing methods in the service layer.
         """
-        from quackcore.fs._operations import _safe_delete
+        from quack_core.fs._operations import _safe_delete
 
         resolved_path = self._resolve_path(path)
         logger.debug(f"Deleting {resolved_path}, missing_ok={missing_ok}")
@@ -349,7 +349,7 @@ class WriteOperationsMixin:
             Internal helper method not meant for external consumption.
             Used by public-facing methods in the service layer.
         """
-        from quackcore.fs._operations import _ensure_directory
+        from quack_core.fs._operations import _ensure_directory
 
         resolved_path = self._resolve_path(path)
         logger.debug(f"Creating directory {resolved_path}, exist_ok={exist_ok}")

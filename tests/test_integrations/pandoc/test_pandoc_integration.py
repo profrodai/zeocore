@@ -8,13 +8,13 @@ class that provides document conversion functionality.
 
 from unittest.mock import MagicMock, patch
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.protocols import IntegrationProtocol
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.pandoc import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.protocols import IntegrationProtocol
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.pandoc import (
     create_integration,
 )
-from quackcore.integrations.pandoc.service import PandocIntegration
+from quack_core.integrations.pandoc.service import PandocIntegration
 
 # --- Tests for PandocIntegration ---
 

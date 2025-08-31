@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/integrations/google/drive/service.py
 """
-Google Drive integration service for QuackCore.
+Google Drive integration service for quack_core.
 
 This module provides the main service class for Google Drive integration,
 handling file _operations, folder management, and permissions.
@@ -11,19 +11,19 @@ import logging
 from collections.abc import Mapping
 from typing import Any, TypeVar
 
-from quackcore.errors import (
+from quack_core.errors import (
     QuackApiError,
     QuackBaseAuthError,
     QuackIntegrationError,
 )
-from quackcore.fs.service import standalone
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.integrations.core.protocols import StorageIntegrationProtocol
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.google.auth import GoogleAuthProvider
-from quackcore.integrations.google.config import GoogleConfigProvider
-from quackcore.integrations.google.drive.models import DriveFile, DriveFolder
-from quackcore.paths import service as paths_service
+from quack_core.fs.service import standalone
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.integrations.core.protocols import StorageIntegrationProtocol
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.auth import GoogleAuthProvider
+from quack_core.integrations.google.config import GoogleConfigProvider
+from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
+from quack_core.paths import service as paths_service
 
 NoneType = type(None)
 T = TypeVar("T")  # Generic type for result content
@@ -186,7 +186,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             self, file_path: str, remote_path: str | None, parent_folder_id: str | None
     ) -> tuple[Any, str, str | None, str]:
         """Resolve file details for upload."""
-        from quackcore.fs.service import standalone
+        from quack_core.fs.service import standalone
 
         # Extract clean paths using our new helper
         path_obj_result = paths_service.resolve_project_path(file_path)

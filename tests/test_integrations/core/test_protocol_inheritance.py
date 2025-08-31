@@ -9,13 +9,13 @@ ensures proper runtime protocol checking.
 from collections.abc import Mapping
 from typing import Protocol, TypeVar, runtime_checkable
 
-from quackcore.integrations.core.protocols import (
+from quack_core.integrations.core.protocols import (
     AuthProviderProtocol,
     ConfigProviderProtocol,
     IntegrationProtocol,
     StorageIntegrationProtocol,
 )
-from quackcore.integrations.core.results import (
+from quack_core.integrations.core.results import (
     AuthResult,
     ConfigResult,
     IntegrationResult,

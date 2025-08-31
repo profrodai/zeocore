@@ -5,11 +5,11 @@ Factory functions for creating FileSystemService instances.
 
 from pathlib import Path
 
-from quackcore.fs.results import DataResult, OperationResult
+from quack_core.fs.results import DataResult, OperationResult
 
 # Import the full FileSystemService with all mixins
-from quackcore.fs.service.full_class import FileSystemService
-from quackcore.logging import LOG_LEVELS, LogLevel
+from quack_core.fs.service.full_class import FileSystemService
+from quack_core.logging import LOG_LEVELS, LogLevel
 
 
 def create_service(

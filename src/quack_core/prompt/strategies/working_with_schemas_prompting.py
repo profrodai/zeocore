@@ -5,8 +5,8 @@ Working with Schemas Prompting strategy for the PromptBooster.
 This strategy provides a JSON schema and data to guide structured output generation.
 """
 
-from quackcore.prompt.registry import register_prompt_strategy
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.registry import register_prompt_strategy
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 def render(schema: str, data: str) -> str:

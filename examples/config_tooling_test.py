@@ -7,7 +7,7 @@ It is not intended to be included in the quack-core package.
 """
 
 from pydantic import Field
-from quackcore.config.tooling import (
+from quack_core.config.tooling import (
     QuackToolConfigModel,
     load_tool_config,
     update_tool_config,

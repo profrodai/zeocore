@@ -7,9 +7,9 @@ import os
 from typing import Any
 
 # Import from within package
-from quackcore.fs._helpers.common import _normalize_path
-from quackcore.fs._helpers.path_utils import _normalize_path_param
-from quackcore.logging import get_logger
+from quack_core.fs._helpers.common import _normalize_path
+from quack_core.fs._helpers.path_utils import _normalize_path_param
+from quack_core.logging import get_logger
 
 # Initialize module logger
 logger = get_logger(__name__)

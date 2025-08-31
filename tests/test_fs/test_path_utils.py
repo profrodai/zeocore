@@ -9,8 +9,8 @@ from unittest.mock import patch
 
 import pytest
 
-from quackcore.fs._helpers.path_utils import _extract_path_str, _safe_path_str
-from quackcore.fs.results import DataResult, PathResult
+from quack_core.fs._helpers.path_utils import _extract_path_str, _safe_path_str
+from quack_core.fs.results import DataResult, PathResult
 
 
 class TestPathUtils(TestCase):

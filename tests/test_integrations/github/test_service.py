@@ -6,16 +6,16 @@ from unittest.mock import MagicMock, create_autospec, patch
 
 import pytest
 
-from quackcore.integrations.core import (
+from quack_core.integrations.core import (
     AuthProviderProtocol,
     AuthResult,
     ConfigProviderProtocol,
     IntegrationResult,
 )
-from quackcore.integrations.github.auth import GitHubAuthProvider
-from quackcore.integrations.github.config import GitHubConfigProvider
-from quackcore.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
-from quackcore.integrations.github.service import GitHubIntegration
+from quack_core.integrations.github.auth import GitHubAuthProvider
+from quack_core.integrations.github.config import GitHubConfigProvider
+from quack_core.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
+from quack_core.integrations.github.service import GitHubIntegration
 
 
 @pytest.fixture
@@ -627,7 +627,7 @@ class TestGitHubIntegration:
     @staticmethod
     def setup_mock_auth_provider(auth_success=True):
         """Set up a mock auth provider for tests."""
-        from quackcore.integrations.github.auth import GitHubAuthProvider
+        from quack_core.integrations.github.auth import GitHubAuthProvider
 
         mock_auth = MagicMock(spec=GitHubAuthProvider)
         auth_result = MagicMock()
@@ -643,7 +643,7 @@ class TestGitHubIntegration:
     @staticmethod
     def setup_mock_config_provider(with_token=True):
         """Set up a mock config provider for tests."""
-        from quackcore.integrations.github.config import GitHubConfigProvider
+        from quack_core.integrations.github.config import GitHubConfigProvider
 
         mock_config = MagicMock(spec=GitHubConfigProvider)
         config_result = MagicMock()

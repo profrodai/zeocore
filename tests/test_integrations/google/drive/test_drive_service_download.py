@@ -8,10 +8,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.fs.results import FileInfoResult
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.google.drive.service import GoogleDriveService
-from quackcore.paths.api.public.results import PathResult
+from quack_core.fs.results import FileInfoResult
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.drive.service import GoogleDriveService
+from quack_core.paths.api.public.results import PathResult
 
 
 class TestGoogleDriveServiceDownload:

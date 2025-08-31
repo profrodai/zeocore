@@ -13,8 +13,8 @@ from unittest.mock import patch
 import pytest
 import yaml
 
-from quackcore.errors import QuackFileExistsError, QuackIOError
-from quackcore.fs._operations import FileSystemOperations
+from quack_core.errors import QuackFileExistsError, QuackIOError
+from quack_core.fs._operations import FileSystemOperations
 
 
 class TestFileSystemOperations:

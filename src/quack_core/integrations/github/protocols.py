@@ -3,7 +3,7 @@
 
 from typing import Protocol, runtime_checkable
 
-from quackcore.integrations.core import IntegrationProtocol, IntegrationResult
+from quack_core.integrations.core import IntegrationProtocol, IntegrationResult
 
 from .models import GitHubRepo, GitHubUser, PullRequest
 

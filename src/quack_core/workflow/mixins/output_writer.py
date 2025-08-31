@@ -4,8 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from quackcore.workflow.results import FinalResult, OutputResult
-from quackcore.workflow.runners.file_runner import WorkflowError
+from quack_core.workflow.results import FinalResult, OutputResult
+from quack_core.workflow.runners.file_runner import WorkflowError
 
 
 class DefaultOutputWriter:
@@ -30,7 +30,7 @@ class DefaultOutputWriter:
         Raises:
             WorkflowError: If writing fails.
         """
-        from quackcore.fs.service import standalone
+        from quack_core.fs.service import standalone
         fs = standalone
         out_dir = options.get("output_dir", "./output")
         fs.create_directory(out_dir, exist_ok=True)

@@ -9,11 +9,11 @@ with proper error handling and retry logic.
 from collections.abc import Callable
 from typing import Any
 
-from quackcore.errors import QuackApiError, QuackIntegrationError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.llms.clients.base import LLMClient
-from quackcore.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from quackcore.logging import LOG_LEVELS, LogLevel
+from quack_core.errors import QuackApiError, QuackIntegrationError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.llms.clients.base import LLMClient
+from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from quack_core.logging import LOG_LEVELS, LogLevel
 
 
 class OllamaClient(LLMClient):

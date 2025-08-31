@@ -1,12 +1,12 @@
 # quack-core/src/quack-core/errors/integration.py
 """
-Integration-related error classes for QuackCore.
+Integration-related error classes for quack_core.
 
 This module provides custom exception classes for integration errors,
 with specific types for authentication, configuration, and other issues.
 """
 
-from quackcore.errors.base import QuackError
+from quack_core.errors.base import QuackError
 
 
 class QuackIntegrationError(QuackError):

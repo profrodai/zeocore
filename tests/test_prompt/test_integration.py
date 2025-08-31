@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import pytest
 
-from quackcore.prompt import (
+from quack_core.prompt import (
     PromptBooster,
     PromptStrategy,
     find_strategies_by_tags,
@@ -19,7 +19,7 @@ from quackcore.prompt import (
     get_strategy_by_id,
     register_prompt_strategy,
 )
-from quackcore.prompt.registry import clear_registry
+from quack_core.prompt.registry import clear_registry
 
 
 @pytest.fixture(autouse=True)

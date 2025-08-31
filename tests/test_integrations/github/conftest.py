@@ -12,22 +12,22 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from quackcore.errors import QuackQuotaExceededError
-from quackcore.integrations.core import (
+from quack_core.errors import QuackQuotaExceededError
+from quack_core.integrations.core import (
     AuthProviderProtocol,
     AuthResult,
     ConfigProviderProtocol,
 )
-from quackcore.integrations.github.auth import GitHubAuthProvider
-from quackcore.integrations.github.client import GitHubClient
-from quackcore.integrations.github.config import GitHubConfigProvider
-from quackcore.integrations.github.models import (
+from quack_core.integrations.github.auth import GitHubAuthProvider
+from quack_core.integrations.github.client import GitHubClient
+from quack_core.integrations.github.config import GitHubConfigProvider
+from quack_core.integrations.github.models import (
     GitHubRepo,
     GitHubUser,
     PullRequest,
     PullRequestStatus,
 )
-from quackcore.integrations.github.service import GitHubIntegration
+from quack_core.integrations.github.service import GitHubIntegration
 
 # ------------------------------
 # Environment & HTTP Client Fixtures

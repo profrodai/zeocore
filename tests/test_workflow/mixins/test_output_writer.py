@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from quackcore.workflow.mixins.output_writer import DefaultOutputWriter
-from quackcore.workflow.results import FinalResult, OutputResult
-from quackcore.workflow.runners.file_runner import WorkflowError
+from quack_core.workflow.mixins.output_writer import DefaultOutputWriter
+from quack_core.workflow.results import FinalResult, OutputResult
+from quack_core.workflow.runners.file_runner import WorkflowError
 
 
 class StubFS:

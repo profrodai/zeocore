@@ -10,7 +10,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, Future
 from typing import Dict, Any, Optional, Callable
 
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 from .config import HttpAdapterConfig
 from .util import new_id, stable_hash, post_callback
 from .auth import sign_payload

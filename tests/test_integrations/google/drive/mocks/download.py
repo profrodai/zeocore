@@ -6,8 +6,8 @@ Mock classes for Google Drive download _operations.
 import logging
 from typing import Any
 
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.google.drive.protocols import DriveService
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.drive.protocols import DriveService
 
 
 def mock_download_file(

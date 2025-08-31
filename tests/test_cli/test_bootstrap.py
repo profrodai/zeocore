@@ -8,10 +8,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.cli.boostrap import from_cli_options, init_cli_env
-from quackcore.cli.context import QuackContext
-from quackcore.cli.options import CliOptions
-from quackcore.errors import QuackError
+from quack_core.cli.boostrap import from_cli_options, init_cli_env
+from quack_core.cli.context import QuackContext
+from quack_core.cli.options import CliOptions
+from quack_core.errors import QuackError
 
 from .mocks import (
     MockConfig,

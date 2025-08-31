@@ -12,16 +12,16 @@ import unittest
 from typing import Any
 from unittest.mock import MagicMock, patch
 
-from quackcore.integrations.core import IntegrationResult
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.toolkit import (
+from quack_core.integrations.core import IntegrationResult
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.toolkit import (
     BaseQuackToolPlugin,
     IntegrationEnabledMixin,
     OutputFormatMixin,
     QuackToolLifecycleMixin,
     ToolEnvInitializerMixin,
 )
-from quackcore.workflow.output import YAMLOutputWriter
+from quack_core.workflow.output import YAMLOutputWriter
 
 # Import OutputResult from the correct location
 
@@ -241,9 +241,9 @@ class TestMixinIntegration(unittest.TestCase):
 
         # Create the tool instance with proper patching
         # Import the module directly for patching
-        import quackcore.integrations.core
+        import quack_core.integrations.core
 
-        with patch.object(quackcore.integrations.core, 'get_integration_service',
+        with patch.object(quack_core.integrations.core, 'get_integration_service',
                           return_value=self.mock_service), \
                 patch('importlib.import_module') as mock_import:
             # Set up mock module

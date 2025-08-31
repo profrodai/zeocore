@@ -7,15 +7,15 @@ for using different LLM providers.
 """
 from collections.abc import Callable, Sequence
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.llms import ChatMessage, LLMOptions
-from quackcore.integrations.llms.clients import LLMClient
-from quackcore.integrations.llms.config import LLMConfigProvider
-from quackcore.integrations.llms.fallback import FallbackConfig
-from quackcore.integrations.llms.service.dependencies import check_llm_dependencies
-from quackcore.logging import LOG_LEVELS, LogLevel
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.llms import ChatMessage, LLMOptions
+from quack_core.integrations.llms.clients import LLMClient
+from quack_core.integrations.llms.config import LLMConfigProvider
+from quack_core.integrations.llms.fallback import FallbackConfig
+from quack_core.integrations.llms.service.dependencies import check_llm_dependencies
+from quack_core.logging import LOG_LEVELS, LogLevel
 
 
 class LLMIntegration(BaseIntegrationService):
@@ -104,7 +104,7 @@ class LLMIntegration(BaseIntegrationService):
 
         # Validate configuration
         try:
-            from quackcore.integrations.llms.config import LLMConfig
+            from quack_core.integrations.llms.config import LLMConfig
 
             LLMConfig(**self.config)
             return self.config
@@ -121,7 +121,7 @@ class LLMIntegration(BaseIntegrationService):
         Returns:
             IntegrationResult: Result of initialization
         """
-        from quackcore.integrations.llms.service.initialization import (
+        from quack_core.integrations.llms.service.initialization import (
             initialize_single_provider,
             initialize_with_fallback,
         )
@@ -211,7 +211,7 @@ class LLMIntegration(BaseIntegrationService):
         Returns:
             IntegrationResult[str]: Result of the chat completion request
         """
-        from quackcore.integrations.llms.service.operations import chat
+        from quack_core.integrations.llms.service.operations import chat
 
         return chat(self, messages, options, callback)
 
@@ -227,7 +227,7 @@ class LLMIntegration(BaseIntegrationService):
         Returns:
             IntegrationResult[int]: Result containing the token count
         """
-        from quackcore.integrations.llms.service.operations import count_tokens
+        from quack_core.integrations.llms.service.operations import count_tokens
 
         return count_tokens(self, messages)
 
@@ -238,7 +238,7 @@ class LLMIntegration(BaseIntegrationService):
         Returns:
             list[dict] | None: Status information for all providers or None if not using fallback
         """
-        from quackcore.integrations.llms.service.operations import get_provider_status
+        from quack_core.integrations.llms.service.operations import get_provider_status
 
         return get_provider_status(self)
 
@@ -249,6 +249,6 @@ class LLMIntegration(BaseIntegrationService):
         Returns:
             bool: True if successful, False if not using fallback
         """
-        from quackcore.integrations.llms.service.operations import reset_provider_status
+        from quack_core.integrations.llms.service.operations import reset_provider_status
 
         return reset_provider_status(self)

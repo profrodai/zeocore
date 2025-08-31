@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from quackcore.fs.results import (
+from quack_core.fs.results import (
     DataResult,
     DirectoryInfoResult,
     FileInfoResult,

@@ -8,8 +8,8 @@ configurations within the main QuackConfig object.
 
 from collections.abc import Mapping
 
-from quackcore.config import load_config
-from quackcore.config.models import QuackConfig
+from quack_core.config import load_config
+from quack_core.config.models import QuackConfig
 
 from .base import QuackToolConfigModel
 

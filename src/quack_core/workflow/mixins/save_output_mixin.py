@@ -15,7 +15,7 @@ from io import StringIO
 from pathlib import Path
 from typing import Any, ClassVar
 
-from quackcore.workflow.output import (
+from quack_core.workflow.output import (
     DefaultOutputWriter,
     OutputWriter,
     YAMLOutputWriter,
@@ -62,7 +62,7 @@ class SaveOutputMixin:
         """
 
         def write_csv(data: Any, path: Path) -> Path:
-            from quackcore.fs.service import standalone
+            from quack_core.fs.service import standalone
             if not isinstance(data, list) or not data or not isinstance(data[0], dict):
                 raise ValueError("CSV output requires a non-empty list of dictionaries")
 
@@ -96,7 +96,7 @@ class SaveOutputMixin:
         """
 
         def write_text(data: Any, path: Path) -> Path:
-            from quackcore.fs.service import standalone
+            from quack_core.fs.service import standalone
             # Convert output to string
             text_content = str(data)
             fs = standalone

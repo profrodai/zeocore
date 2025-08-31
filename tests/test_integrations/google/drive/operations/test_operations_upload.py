@@ -8,10 +8,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackApiError, QuackIntegrationError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.google.drive.operations import upload
-from quackcore.paths.api.public.results import PathResult
+from quack_core.errors import QuackApiError, QuackIntegrationError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.drive.operations import upload
+from quack_core.paths.api.public.results import PathResult
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
     MockDriveService,

@@ -10,7 +10,7 @@ and resolving functionality.
 from hypothesis import given
 from hypothesis import strategies as st
 
-from quackcore.cli.options import resolve_cli_args
+from quack_core.cli.options import resolve_cli_args
 
 
 class TestResolveCliArgs:

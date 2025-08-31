@@ -1,7 +1,7 @@
 # quack-core/src/quack-core/paths/api/public/path_utils.py
 
 """
-Path utilities for QuackCore.
+Path utilities for quack_core.
 
 This module provides utilities for handling paths, especially for
 converting various path-like objects to clean path strings.

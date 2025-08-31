@@ -8,13 +8,13 @@ This module provides safe, result-oriented wrappers around low-level path _opera
 from pathlib import Path
 from typing import Any
 
-from quackcore.fs._helpers.path_utils import (
+from quack_core.fs._helpers.path_utils import (
     _extract_path_str,
     _normalize_path_param,
     _safe_path_str,
 )
-from quackcore.fs.results import DataResult, OperationResult
-from quackcore.logging import get_logger
+from quack_core.fs.results import DataResult, OperationResult
+from quack_core.logging import get_logger
 
 logger = get_logger(__name__)
 
@@ -34,7 +34,7 @@ def extract_path_from_result(
         DataResult with the extracted path as a string
     """
     try:
-        from quackcore.fs._helpers.path_utils import (
+        from quack_core.fs._helpers.path_utils import (
             _extract_path_from_result as _extract_path_impl,
         )
 

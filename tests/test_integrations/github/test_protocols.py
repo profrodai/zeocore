@@ -3,10 +3,10 @@
 
 from unittest.mock import MagicMock
 
-from quackcore.integrations.core import IntegrationProtocol, IntegrationResult
-from quackcore.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
-from quackcore.integrations.github.protocols import GitHubIntegrationProtocol
-from quackcore.integrations.github.service import GitHubIntegration
+from quack_core.integrations.core import IntegrationProtocol, IntegrationResult
+from quack_core.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
+from quack_core.integrations.github.protocols import GitHubIntegrationProtocol
+from quack_core.integrations.github.service import GitHubIntegration
 
 
 class TestGitHubProtocols:

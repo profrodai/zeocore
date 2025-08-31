@@ -1,13 +1,13 @@
 # quack-core/src/quack-core/plugins/__init__.py
 """
-Plugin system for QuackCore.
+Plugin system for quack_core.
 
 This package provides a plugin system for QuackCore, allowing
 modules to be dynamically loaded and registered at runtime.
 """
 
-from quackcore.plugins.discovery import PluginLoader, loader
-from quackcore.plugins.protocols import (
+from quack_core.plugins.discovery import PluginLoader, loader
+from quack_core.plugins.protocols import (
     CommandPluginProtocol,
     ConfigurablePluginProtocol,
     ExtensionPluginProtocol,
@@ -17,7 +17,7 @@ from quackcore.plugins.protocols import (
     QuackPluginProtocol,
     WorkflowPluginProtocol,
 )
-from quackcore.plugins.registry import PluginRegistry, registry
+from quack_core.plugins.registry import PluginRegistry, registry
 
 # Initialize the plugin system by loading core plugins
 # This is done on import so that the registry is populated with core plugins

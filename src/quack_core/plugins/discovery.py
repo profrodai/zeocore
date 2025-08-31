@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/plugins/discovery.py
 """
-Plugin discovery for QuackCore.
+Plugin discovery for quack_core.
 
 This module provides utilities for discovering and loading plugins
 from entry points and module paths.
@@ -14,9 +14,9 @@ import inspect
 
 from pydantic import ValidationError
 
-from quackcore.errors import QuackPluginError
-from quackcore.logging import LOG_LEVELS, LogLevel, get_logger
-from quackcore.plugins.protocols import QuackPluginMetadata, QuackPluginProtocol
+from quack_core.errors import QuackPluginError
+from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.plugins.protocols import QuackPluginMetadata, QuackPluginProtocol
 
 
 class PluginInfo(QuackPluginMetadata):

@@ -10,14 +10,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.integrations.llms import (
+from quack_core.integrations.llms import (
     ChatMessage,
     LLMOptions,
     create_integration,
     get_llm_client,
     get_mock_llm,
 )
-from quackcore.integrations.llms.clients import AnthropicClient, OpenAIClient
+from quack_core.integrations.llms.clients import AnthropicClient, OpenAIClient
 
 
 class TestLLMIntegration:
@@ -120,7 +120,7 @@ class TestLLMIntegration:
     def test_module_imports(self) -> None:
         """Test all expected imports are available at module level."""
         # Import the module
-        import quackcore.integrations.llms as llms
+        import quack_core.integrations.llms as llms
 
         # Check important classes
         assert hasattr(llms, "LLMClient")

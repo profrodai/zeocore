@@ -7,7 +7,7 @@ import pytest
 from unittest.mock import AsyncMock, patch
 import json
 
-from quackcore.adapters.http.util import new_id, stable_hash, post_callback
+from quack_core.adapters.http.util import new_id, stable_hash, post_callback
 
 
 def test_new_id():

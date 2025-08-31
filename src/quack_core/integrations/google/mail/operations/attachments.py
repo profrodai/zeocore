@@ -13,10 +13,10 @@ import base64
 import logging
 import os
 
-from quackcore.fs.service import standalone
-from quackcore.integrations.google.mail.operations.email import clean_filename
-from quackcore.integrations.google.mail.protocols import GmailService
-from quackcore.integrations.google.mail.utils.api import execute_api_request
+from quack_core.fs.service import standalone
+from quack_core.integrations.google.mail.operations.email import clean_filename
+from quack_core.integrations.google.mail.protocols import GmailService
+from quack_core.integrations.google.mail.utils.api import execute_api_request
 
 
 def process_message_parts(

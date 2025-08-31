@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import Any
 
-from quackcore.workflow.runners.file_runner import FileWorkflowRunner
+from quack_core.workflow.runners.file_runner import FileWorkflowRunner
 
 
 def dummy_processor(content: Any, options: dict[str, Any]) -> tuple[

@@ -12,12 +12,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.pandoc import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.pandoc import (
     ConversionMetrics,
     PandocConfig,
 )
-from quackcore.integrations.pandoc.operations import (
+from quack_core.integrations.pandoc.operations import (
     convert_markdown_to_docx,
     validate_docx_conversion,
 )
@@ -189,7 +189,7 @@ def test_md_to_docx_validate_markdown_input_success(mock_fs):
     )
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.md_to_docx import (
+    from quack_core.integrations.pandoc.operations.md_to_docx import (
         _validate_markdown_input,
     )
 
@@ -209,7 +209,7 @@ def test_md_to_docx_validate_markdown_input_file_not_found(mock_fs):
     )
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.md_to_docx import (
+    from quack_core.integrations.pandoc.operations.md_to_docx import (
         _validate_markdown_input,
     )
 
@@ -231,7 +231,7 @@ def test_md_to_docx_validate_markdown_input_read_error(mock_fs):
     )
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.md_to_docx import (
+    from quack_core.integrations.pandoc.operations.md_to_docx import (
         _validate_markdown_input,
     )
 
@@ -253,7 +253,7 @@ def test_md_to_docx_validate_markdown_input_empty_file(mock_fs):
     )
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.md_to_docx import (
+    from quack_core.integrations.pandoc.operations.md_to_docx import (
         _validate_markdown_input,
     )
 
@@ -280,7 +280,7 @@ def test_md_to_docx_convert_once_success():
         mock_fs.create_directory.return_value = SimpleNamespace(success=True)
 
         # Import and test the function
-        from quackcore.integrations.pandoc.operations.md_to_docx import (
+        from quack_core.integrations.pandoc.operations.md_to_docx import (
             _convert_markdown_to_docx_once,
         )
 
@@ -309,7 +309,7 @@ def test_md_to_docx_convert_once_directory_error():
         )
 
         # Import and test the function
-        from quackcore.integrations.pandoc.operations.md_to_docx import (
+        from quack_core.integrations.pandoc.operations.md_to_docx import (
             _convert_markdown_to_docx_once,
         )
 
@@ -331,7 +331,7 @@ def test_md_to_docx_get_conversion_output_success(mock_time, mock_fs):
     )
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.md_to_docx import (
+    from quack_core.integrations.pandoc.operations.md_to_docx import (
         _get_conversion_output,
     )
 
@@ -351,7 +351,7 @@ def test_md_to_docx_get_conversion_output_file_info_error(mock_fs):
     )
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.md_to_docx import (
+    from quack_core.integrations.pandoc.operations.md_to_docx import (
         _get_conversion_output,
     )
 
@@ -409,7 +409,7 @@ def test_md_to_docx_validate_conversion_docx_structure(mock_check_metadata,
     mock_validate_docx.return_value = (True, [])
 
     # Import the validate_conversion function directly
-    from quackcore.integrations.pandoc.operations.md_to_docx import validate_conversion
+    from quack_core.integrations.pandoc.operations.md_to_docx import validate_conversion
 
     config = PandocConfig()
     errors = validate_conversion("output.docx", "input.md", 1000, config)
@@ -426,7 +426,7 @@ def test_md_to_docx_validate_conversion_docx_structure(mock_check_metadata,
 def test_md_to_docx_check_metadata():
     """Test checking DOCX metadata."""
     # Import _check_docx_metadata directly
-    from quackcore.integrations.pandoc.operations.md_to_docx import _check_docx_metadata
+    from quack_core.integrations.pandoc.operations.md_to_docx import _check_docx_metadata
 
     # Test with docx module available
     with patch('quack-core.fs.service.standalone') as mock_fs, \

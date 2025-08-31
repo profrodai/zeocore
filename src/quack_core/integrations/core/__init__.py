@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/integrations/core/__init__.py
 """
-Integrations package for QuackCore.
+Integrations package for quack_core.
 
 This package provides a framework for connecting QuackCore to external services
 and platforms, with a modular approach that allows for community contributions.
@@ -9,19 +9,19 @@ and platforms, with a modular approach that allows for community contributions.
 import logging
 from typing import TypeVar, cast
 
-from quackcore.integrations.core.base import (
+from quack_core.integrations.core.base import (
     BaseAuthProvider,
     BaseConfigProvider,
     BaseIntegrationService,
 )
-from quackcore.integrations.core.protocols import (
+from quack_core.integrations.core.protocols import (
     AuthProviderProtocol,
     ConfigProviderProtocol,
     IntegrationProtocol,
     StorageIntegrationProtocol,
 )
-from quackcore.integrations.core.registry import IntegrationRegistry
-from quackcore.integrations.core.results import (
+from quack_core.integrations.core.registry import IntegrationRegistry
+from quack_core.integrations.core.results import (
     AuthResult,
     ConfigResult,
     IntegrationResult,

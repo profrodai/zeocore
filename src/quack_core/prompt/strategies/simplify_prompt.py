@@ -5,8 +5,8 @@ Simplify Prompt strategy for the PromptBooster.
 This strategy rewrites a prompt to be clearer and more concise.
 """
 
-from quackcore.prompt.registry import register_prompt_strategy
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.registry import register_prompt_strategy
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 def render(prompt_text: str) -> str:

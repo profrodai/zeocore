@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.integrations.github.config import GitHubConfigProvider
+from quack_core.integrations.github.config import GitHubConfigProvider
 
 
 @pytest.fixture

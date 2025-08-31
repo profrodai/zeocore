@@ -13,7 +13,7 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Any, TypeVar
 
-from quackcore.errors import QuackError
+from quack_core.errors import QuackError
 
 T = TypeVar("T")  # Generic type for flexible typing
 
@@ -51,7 +51,7 @@ def format_cli_error(error: Exception) -> str:
 
 # Import the print_error function from our CLI formatting module.
 # (This import is left as-is because it is not related to file paths.)
-from quackcore.cli.formatting import print_error as _print_error
+from quack_core.cli.formatting import print_error as _print_error
 
 
 def handle_errors(
@@ -157,8 +157,8 @@ def get_cli_info() -> dict[str, Any]:
     """
     import platform
 
-    from quackcore.cli.terminal import get_terminal_size
-    from quackcore.config.utils import get_env
+    from quack_core.cli.terminal import get_terminal_size
+    from quack_core.config.utils import get_env
 
     info = {
         "platform": platform.platform(),

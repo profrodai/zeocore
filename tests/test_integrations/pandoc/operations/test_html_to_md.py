@@ -12,12 +12,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.pandoc import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.pandoc import (
     ConversionMetrics,
     PandocConfig,
 )
-from quackcore.integrations.pandoc.operations.html_to_md import (
+from quack_core.integrations.pandoc.operations.html_to_md import (
     convert_html_to_markdown,
     post_process_markdown,
     validate_html_conversion,
@@ -222,7 +222,7 @@ def test_html_to_md_validate_input_success(mock_fs):
         mock_validate.return_value = (True, [])
 
         # Import and test the function
-        from quackcore.integrations.pandoc.operations.html_to_md import _validate_input
+        from quack_core.integrations.pandoc.operations.html_to_md import _validate_input
 
         config = PandocConfig()
         result_size = _validate_input("test.html", config)
@@ -240,7 +240,7 @@ def test_html_to_md_validate_input_file_not_found(mock_fs):
     )
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.html_to_md import _validate_input
+    from quack_core.integrations.pandoc.operations.html_to_md import _validate_input
 
     config = PandocConfig()
     with pytest.raises(QuackIntegrationError) as excinfo:
@@ -266,7 +266,7 @@ def test_html_to_md_validate_input_invalid_structure(mock_fs):
         mock_validate.return_value = (False, ["Missing body tag"])
 
         # Import and test the function
-        from quackcore.integrations.pandoc.operations.html_to_md import _validate_input
+        from quack_core.integrations.pandoc.operations.html_to_md import _validate_input
 
         config = PandocConfig()
         config.validation.verify_structure = True
@@ -291,7 +291,7 @@ def test_html_to_md_write_and_validate_output_success(mock_validate, mock_time,
     mock_validate.return_value = []  # No validation errors
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.html_to_md import (
+    from quack_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
@@ -317,7 +317,7 @@ def test_html_to_md_write_and_validate_output_directory_error(mock_fs):
     )
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.html_to_md import (
+    from quack_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
@@ -342,7 +342,7 @@ def test_html_to_md_write_and_validate_output_write_error(mock_fs):
     )
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.html_to_md import (
+    from quack_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
@@ -371,7 +371,7 @@ def test_html_to_md_write_and_validate_output_validation_errors(mock_validate,
     mock_validate.return_value = ["Validation error 1", "Validation error 2"]
 
     # Import and test the function
-    from quackcore.integrations.pandoc.operations.html_to_md import (
+    from quack_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
@@ -397,7 +397,7 @@ def test_html_to_md_attempt_conversion_success():
 
     with patch.dict('sys.modules', {'pypandoc': mock_pypandoc}):
         # Import and test the function
-        from quackcore.integrations.pandoc.operations.html_to_md import (
+        from quack_core.integrations.pandoc.operations.html_to_md import (
             _attempt_conversion,
         )
 
@@ -416,7 +416,7 @@ def test_html_to_md_attempt_conversion_pandoc_error():
 
     with patch.dict('sys.modules', {'pypandoc': mock_pypandoc}):
         # Import and test the function
-        from quackcore.integrations.pandoc.operations.html_to_md import (
+        from quack_core.integrations.pandoc.operations.html_to_md import (
             _attempt_conversion,
         )
 

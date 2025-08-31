@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/prompt/booster.py
 """
-Main PromptBooster module for QuackCore.
+Main PromptBooster module for quack_core.
 
 This module provides the PromptBooster class, which is the main entry point
 for enhancing prompts using various strategies.
@@ -8,8 +8,8 @@ for enhancing prompts using various strategies.
 
 from typing import Any
 
-from quackcore.fs.service import standalone
-from quackcore.logging import get_logger
+from quack_core.fs.service import standalone
+from quack_core.logging import get_logger
 
 from .registry import find_strategies_by_tags, get_all_strategies, get_strategy_by_id
 from .strategy_base import PromptStrategy

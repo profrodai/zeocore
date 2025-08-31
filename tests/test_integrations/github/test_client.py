@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
-from quackcore.integrations.github.client import GitHubClient
-from quackcore.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
+from quack_core.integrations.github.client import GitHubClient
+from quack_core.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
 
 
 @pytest.fixture

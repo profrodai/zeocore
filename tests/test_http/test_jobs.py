@@ -7,10 +7,10 @@ import time
 import pytest
 from unittest.mock import patch, MagicMock
 
-from quackcore.adapters.http.jobs import (
+from quack_core.adapters.http.jobs import (
     set_cfg, enqueue, get_status, resolve_callable, _create_mock_function
 )
-from quackcore.adapters.http.config import HttpAdapterConfig
+from quack_core.adapters.http.config import HttpAdapterConfig
 
 
 @pytest.fixture
@@ -62,7 +62,7 @@ def test_create_mock_function():
 def test_enqueue_not_initialized():
     """Test enqueuing when system not initialized."""
     # Reset global state
-    from quackcore.adapters.http import jobs
+    from quack_core.adapters.http import jobs
     jobs._executor = None
     jobs._cfg = None
 

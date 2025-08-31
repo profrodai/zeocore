@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/paths/_internal/resolver.py
 """
-Path resolver service for QuackCore.
+Path resolver service for quack_core.
 
 This module provides a high-level service for resolving paths
 in a QuackCore project, using string-based path parameters internally.
@@ -10,11 +10,11 @@ It detects project structure and infers context from file locations.
 from os import getcwd
 from os import path as ospath
 
-from quackcore.errors import QuackFileNotFoundError, wrap_io_errors
-from quackcore.fs.service import standalone
-from quackcore.logging import LOG_LEVELS, LogLevel, get_logger
-from quackcore.paths._internal.context import ContentContext, ProjectContext
-from quackcore.paths._internal.utils import _find_nearest_directory, _find_project_root
+from quack_core.errors import QuackFileNotFoundError, wrap_io_errors
+from quack_core.fs.service import standalone
+from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.paths._internal.context import ContentContext, ProjectContext
+from quack_core.paths._internal.utils import _find_nearest_directory, _find_project_root
 
 
 # Helper function to determine if one path is relative to another.

@@ -11,7 +11,7 @@ from collections.abc import Mapping
 from enum import Enum
 from typing import Literal
 
-from quackcore.cli.terminal import get_terminal_size, supports_color, truncate_text
+from quack_core.cli.terminal import get_terminal_size, supports_color, truncate_text
 
 
 class Color(str, Enum):

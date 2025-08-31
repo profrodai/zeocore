@@ -13,9 +13,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.fs.results import DataResult, OperationResult
-from quackcore.toolkit.base import BaseQuackToolPlugin
-from quackcore.workflow.output import DefaultOutputWriter, YAMLOutputWriter
+from quack_core.fs.results import DataResult, OperationResult
+from quack_core.toolkit.base import BaseQuackToolPlugin
+from quack_core.workflow.output import DefaultOutputWriter, YAMLOutputWriter
 
 
 def get_path_from_result(result: Any) -> str:

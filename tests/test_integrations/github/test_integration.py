@@ -10,8 +10,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from quackcore.integrations.core import IntegrationResult
-from quackcore.integrations.github import (
+from quack_core.integrations.core import IntegrationResult
+from quack_core.integrations.github import (
     GitHubAuthProvider,
     GitHubClient,
     GitHubConfigProvider,

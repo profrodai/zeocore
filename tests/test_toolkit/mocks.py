@@ -12,10 +12,10 @@ import tempfile
 from typing import Any, TypeVar, cast
 from unittest.mock import MagicMock, patch
 
-from quackcore.fs.results import DataResult, OperationResult
-from quackcore.integrations.core import IntegrationResult
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.toolkit.base import BaseQuackToolPlugin
+from quack_core.fs.results import DataResult, OperationResult
+from quack_core.integrations.core import IntegrationResult
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.toolkit.base import BaseQuackToolPlugin
 
 
 def create_mock_fs() -> MagicMock:

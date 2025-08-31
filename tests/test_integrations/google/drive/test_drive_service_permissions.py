@@ -5,8 +5,8 @@ Tests for Google Drive service permissions _operations.
 
 from unittest.mock import MagicMock, patch
 
-from quackcore.errors import QuackApiError
-from quackcore.integrations.google.drive.service import GoogleDriveService
+from quack_core.errors import QuackApiError
+from quack_core.integrations.google.drive.service import GoogleDriveService
 
 
 class TestGoogleDriveServicePermissions:

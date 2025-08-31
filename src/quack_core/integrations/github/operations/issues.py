@@ -5,7 +5,7 @@ from typing import Any, Literal
 
 import requests
 
-from quackcore.integrations.github.utils.api import make_request
+from quack_core.integrations.github.utils.api import make_request
 
 
 def create_issue(

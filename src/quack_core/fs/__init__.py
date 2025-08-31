@@ -1,13 +1,13 @@
 # quack-core/src/quack-core/fs/__init__.py
 """
-Filesystem package for QuackCore.
+Filesystem package for quack_core.
 
 This package provides a robust filesystem abstraction with proper error handling,
 standardized result objects, and comprehensive file operation capabilities.
 """
 
 # Import utility functions directly to make them available at package level
-from quackcore.fs.api.public import (
+from quack_core.fs.api.public import (
     atomic_write,
     compute_checksum,
     copy_safely,
@@ -33,7 +33,7 @@ from quackcore.fs.api.public import (
 )
 
 # Import core result classes first since many modules depend on them
-from quackcore.fs.results import (
+from quack_core.fs.results import (
     DataResult,
     DirectoryInfoResult,
     FileInfoResult,
@@ -49,7 +49,7 @@ from quackcore.fs.results import (
 def get_path_info(path):
     """Get information about a path's validity and format."""
     # Import here to avoid circular imports
-    from quackcore.fs.service import service
+    from quack_core.fs.service import service
 
     return service.get_path_info(path)
 
@@ -57,7 +57,7 @@ def get_path_info(path):
 def is_valid_path(path):
     """Check if a path has valid syntax."""
     # Import here to avoid circular imports
-    from quackcore.fs.service import service
+    from quack_core.fs.service import service
 
     return service.is_valid_path(path)
 
@@ -65,7 +65,7 @@ def is_valid_path(path):
 def normalize_path_with_info(path):
     """Normalize a path and return detailed information."""
     # Import here to avoid circular imports
-    from quackcore.fs.service import service
+    from quack_core.fs.service import service
 
     return service._normalize_path_with_info(path)
 
@@ -74,7 +74,7 @@ def normalize_path_with_info(path):
 def _get_service():
     """Get the global filesystem service instance."""
     # Import here to avoid circular imports
-    from quackcore.fs.service import service
+    from quack_core.fs.service import service
 
     return service
 
@@ -156,8 +156,8 @@ def delete(path, missing_ok=True):
 
 
 # For explicit use when needed
-from quackcore.fs._operations import FileSystemOperations
-from quackcore.fs.service import FileSystemService, create_service, service
+from quack_core.fs._operations import FileSystemOperations
+from quack_core.fs.service import FileSystemService, create_service, service
 
 __all__ = [
     # Main service class

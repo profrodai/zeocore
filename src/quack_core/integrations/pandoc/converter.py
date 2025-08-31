@@ -13,29 +13,29 @@ import os
 from collections.abc import Sequence
 from datetime import datetime
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.pandoc import PandocConfig
-from quackcore.integrations.pandoc.models import ConversionMetrics, ConversionTask
-from quackcore.integrations.pandoc.operations import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.pandoc import PandocConfig
+from quack_core.integrations.pandoc.models import ConversionMetrics, ConversionTask
+from quack_core.integrations.pandoc.operations import (
     get_file_info,
     verify_pandoc,
 )
-from quackcore.integrations.pandoc.operations.utils import (
+from quack_core.integrations.pandoc.operations.utils import (
     safe_convert_to_int,
     validate_docx_structure,
 )
-from quackcore.integrations.pandoc.protocols import (
+from quack_core.integrations.pandoc.protocols import (
     BatchConverterProtocol,
     DocumentConverterProtocol,
 )
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 logger = get_logger(__name__)
 
 # Import fs module with error handling
 try:
-    from quackcore.fs.service import standalone as fs
+    from quack_core.fs.service import standalone as fs
 except ImportError:
     logger.error("Could not import quack-core.fs.service")
     from types import SimpleNamespace
@@ -121,7 +121,7 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
             # Perform conversion based on file format
             if input_info.format == "html" and output_format == "markdown":
                 # Convert HTML to Markdown
-                from quackcore.integrations.pandoc.operations import (
+                from quack_core.integrations.pandoc.operations import (
                     convert_html_to_markdown,
                 )
 
@@ -142,7 +142,7 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
 
             elif input_info.format == "markdown" and output_format == "docx":
                 # Convert Markdown to DOCX
-                from quackcore.integrations.pandoc.operations import (
+                from quack_core.integrations.pandoc.operations import (
                     convert_markdown_to_docx,
                 )
 

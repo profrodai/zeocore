@@ -12,16 +12,16 @@ import os
 import time
 from typing import Any
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.pandoc.config import PandocConfig
-from quackcore.integrations.pandoc.models import ConversionMetrics, FileInfo
-from quackcore.logging import get_logger
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.pandoc.config import PandocConfig
+from quack_core.integrations.pandoc.models import ConversionMetrics, FileInfo
+from quack_core.logging import get_logger
 
 logger = get_logger(__name__)
 
 # Import fs service
 try:
-    from quackcore.fs.service import standalone as fs
+    from quack_core.fs.service import standalone as fs
 except ImportError:
     # If fs service isn't available, create a minimal stub
     import types

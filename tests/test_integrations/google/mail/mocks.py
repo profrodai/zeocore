@@ -9,7 +9,7 @@ that can be used across different test modules.
 import base64
 from typing import TypeVar, cast
 
-from quackcore.integrations.google.mail.protocols import (
+from quack_core.integrations.google.mail.protocols import (
     GmailAttachmentsResource,
     GmailMessagesResource,
     GmailRequest,

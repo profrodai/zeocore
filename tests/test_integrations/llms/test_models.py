@@ -9,7 +9,7 @@ validation, conversion, and default values.
 import pytest
 from pydantic import ValidationError
 
-from quackcore.integrations.llms.models import (
+from quack_core.integrations.llms.models import (
     ChatMessage,
     FunctionCall,
     FunctionDefinition,

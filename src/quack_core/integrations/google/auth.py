@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/integrations/google/auth.py
 """
-Google authentication provider for QuackCore.
+Google authentication provider for quack_core.
 
 This module handles authentication with Google services, managing
 credentials and authorization flows for secure API access.
@@ -13,11 +13,11 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.fs.service import standalone
-from quackcore.integrations.core.base import BaseAuthProvider
-from quackcore.integrations.core.results import AuthResult
-from quackcore.integrations.google.serialization import serialize_credentials
+from quack_core.errors import QuackIntegrationError
+from quack_core.fs.service import standalone
+from quack_core.integrations.core.base import BaseAuthProvider
+from quack_core.integrations.core.results import AuthResult
+from quack_core.integrations.google.serialization import serialize_credentials
 
 
 class GoogleAuthProvider(BaseAuthProvider):

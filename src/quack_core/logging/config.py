@@ -90,7 +90,7 @@ def configure_logger(
         # File handler (if log_file provided)
         if log_file:
             # Lazy import of filesystem service to avoid circular dependency.
-            from quackcore.fs.service import standalone
+            from quack_core.fs.service import standalone
 
             # Resolve parent directory for the log file.
             parent_dir = standalone.join_path(*standalone.split_path(log_file)[:-1])

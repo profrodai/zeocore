@@ -1,7 +1,7 @@
 # quack-core/tests/test_workflow/output/test_base.py
 import pytest
 
-from quackcore.workflow.output.base import OutputWriter
+from quack_core.workflow.output.base import OutputWriter
 
 
 def test_base_is_abstract():

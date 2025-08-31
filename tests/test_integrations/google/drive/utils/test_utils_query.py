@@ -3,7 +3,7 @@
 Tests for Google Drive api query module.
 """
 
-from quackcore.integrations.google.drive.utils import query
+from quack_core.integrations.google.drive.utils import query
 
 
 class TestDriveUtilsQuery:

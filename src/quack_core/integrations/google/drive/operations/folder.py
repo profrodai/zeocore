@@ -8,13 +8,13 @@ including creating folders and deleting files or folders.
 
 import logging
 
-from quackcore.errors import QuackApiError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.google.drive.operations.permissions import (
+from quack_core.errors import QuackApiError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.drive.operations.permissions import (
     set_file_permissions,
 )
-from quackcore.integrations.google.drive.protocols import DriveService
-from quackcore.integrations.google.drive.utils.api import execute_api_request
+from quack_core.integrations.google.drive.protocols import DriveService
+from quack_core.integrations.google.drive.utils.api import execute_api_request
 
 
 def create_folder(

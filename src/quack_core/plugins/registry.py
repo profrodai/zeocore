@@ -2,9 +2,9 @@
 
 from typing import TypeVar
 
-from quackcore.errors import QuackPluginError
-from quackcore.logging import LOG_LEVELS, LogLevel, get_logger
-from quackcore.plugins.protocols import (
+from quack_core.errors import QuackPluginError
+from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.plugins.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,
     ProviderPluginProtocol,
@@ -411,7 +411,7 @@ class PluginRegistry:
         Raises:
             QuackPluginError: If the plugin is not registered or cannot be reloaded
         """
-        from quackcore.plugins.discovery import loader
+        from quack_core.plugins.discovery import loader
 
         if name not in self._plugins:
             raise QuackPluginError(

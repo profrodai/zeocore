@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/integrations/pandoc/service.py
 """
-Pandoc integration service for QuackCore.
+Pandoc integration service for quack_core.
 
 This module provides the main service class for Pandoc integration,
 handling document conversion between various formats.
@@ -13,28 +13,28 @@ from collections.abc import Sequence
 from datetime import datetime
 from typing import cast
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.pandoc.config import PandocConfig, PandocConfigProvider
-from quackcore.integrations.pandoc.converter import DocumentConverter
-from quackcore.integrations.pandoc.models import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.pandoc.config import PandocConfig, PandocConfigProvider
+from quack_core.integrations.pandoc.converter import DocumentConverter
+from quack_core.integrations.pandoc.models import (
     ConversionMetrics,
     ConversionTask,
     FileInfo,
 )
-from quackcore.integrations.pandoc.operations import (
+from quack_core.integrations.pandoc.operations import (
     get_file_info,
     verify_pandoc,
 )
-from quackcore.integrations.pandoc.protocols import PandocConversionProtocol
-from quackcore.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.integrations.pandoc.protocols import PandocConversionProtocol
+from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
 
 logger = get_logger(__name__)
 
 # Import fs module with error handling
 try:
-    from quackcore.fs.service import standalone as fs
+    from quack_core.fs.service import standalone as fs
 except ImportError:
     logger.error("Could not import quack-core.fs.service")
     from types import SimpleNamespace
@@ -50,7 +50,7 @@ except ImportError:
 
 # Import paths module with error handling
 try:
-    from quackcore.paths import service as paths
+    from quack_core.paths import service as paths
 except ImportError:
     logger.error("Could not import quack-core.paths")
     from types import SimpleNamespace

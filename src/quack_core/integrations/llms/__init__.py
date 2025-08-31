@@ -1,31 +1,31 @@
 # quack-core/src/quack-core/integrations/llms/__init__.py
 """
-LLM integration for QuackCore.
+LLM integration for quack_core.
 
 This module provides a lightweight integration with Large Language Models (LLMs),
 offering a standardized interface for making chat completions across different
 LLM providers.
 """
 
-from quackcore.integrations.core.protocols import IntegrationProtocol
-from quackcore.integrations.llms.clients import (
+from quack_core.integrations.core.protocols import IntegrationProtocol
+from quack_core.integrations.llms.clients import (
     LLMClient,
     MockLLMClient,
 )
-from quackcore.integrations.llms.clients.anthropic import AnthropicClient
-from quackcore.integrations.llms.clients.ollama import OllamaClient
-from quackcore.integrations.llms.clients.openai import OpenAIClient
-from quackcore.integrations.llms.config import LLMConfig, LLMConfigProvider
-from quackcore.integrations.llms.fallback import FallbackConfig, FallbackLLMClient
-from quackcore.integrations.llms.models import (
+from quack_core.integrations.llms.clients.anthropic import AnthropicClient
+from quack_core.integrations.llms.clients.ollama import OllamaClient
+from quack_core.integrations.llms.clients.openai import OpenAIClient
+from quack_core.integrations.llms.config import LLMConfig, LLMConfigProvider
+from quack_core.integrations.llms.fallback import FallbackConfig, FallbackLLMClient
+from quack_core.integrations.llms.models import (
     ChatMessage,
     FunctionCall,
     LLMOptions,
     RoleType,
     ToolCall,
 )
-from quackcore.integrations.llms.protocols import LLMProviderProtocol
-from quackcore.integrations.llms.registry import (
+from quack_core.integrations.llms.protocols import LLMProviderProtocol
+from quack_core.integrations.llms.registry import (
     get_llm_client,
     register_llm_client,
 )
@@ -72,7 +72,7 @@ def create_integration() -> IntegrationProtocol:
     Returns:
         IntegrationProtocol: Configured LLM integration
     """
-    from quackcore.integrations.llms.service import LLMIntegration
+    from quack_core.integrations.llms.service import LLMIntegration
 
     return LLMIntegration()
 

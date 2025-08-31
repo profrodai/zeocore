@@ -1,5 +1,5 @@
 # quack-core/src/quack-core/integrations/github/models.py
-"""GitHub integration data models for QuackCore."""
+"""GitHub integration data models for quack_core."""
 
 from datetime import datetime
 from enum import Enum

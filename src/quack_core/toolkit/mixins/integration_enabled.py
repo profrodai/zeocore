@@ -9,8 +9,8 @@ by providing a generic interface for resolving and accessing integration service
 from typing import Any, Generic, TypeVar
 
 # Import directly to ensure patching can work
-import quackcore.integrations.core
-from quackcore.integrations.core.base import BaseIntegrationService
+import quack_core.integrations.core
+from quack_core.integrations.core.base import BaseIntegrationService
 
 T = TypeVar("T", bound=BaseIntegrationService)
 
@@ -50,7 +50,7 @@ class IntegrationEnabledMixin(Generic[T]):
         Returns:
             The resolved integration service, or None if not available
         """
-        service = quackcore.integrations.core.get_integration_service(service_type)
+        service = quack_core.integrations.core.get_integration_service(service_type)
 
         # Store under the generic handle…
         self._integration_service = service

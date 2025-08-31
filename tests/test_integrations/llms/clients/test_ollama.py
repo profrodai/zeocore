@@ -11,10 +11,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.llms.clients.ollama import OllamaClient
-from quackcore.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.llms.clients.ollama import OllamaClient
+from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 
 
 class TestOllamaClient:

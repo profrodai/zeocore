@@ -9,10 +9,10 @@ allowing QuackCore to expose path resolution functionality to other modules.
 from pathlib import Path
 from typing import Protocol
 
-from quackcore.fs.results import DataResult, OperationResult
-from quackcore.paths._internal.context import ContentContext, ProjectContext
-from quackcore.paths._internal.resolver import PathResolver
-from quackcore.paths._internal.utils import _normalize_path_param
+from quack_core.fs.results import DataResult, OperationResult
+from quack_core.paths._internal.context import ContentContext, ProjectContext
+from quack_core.paths._internal.resolver import PathResolver
+from quack_core.paths._internal.utils import _normalize_path_param
 
 
 class PathsPlugin(Protocol):

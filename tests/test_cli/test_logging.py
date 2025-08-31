@@ -6,12 +6,12 @@ Tests for the CLI logging module.
 import logging
 from unittest.mock import MagicMock, patch
 
-from quackcore.cli.logging import (
+from quack_core.cli.logging import (
     _add_file_handler,
     _determine_effective_level,
     setup_logging,
 )
-from quackcore.config.models import QuackConfig
+from quack_core.config.models import QuackConfig
 
 
 class TestDetermineEffectiveLevel:

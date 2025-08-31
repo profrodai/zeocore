@@ -8,7 +8,7 @@ for common filesystem operations without requiring a service instance.
 
 from typing import TypeVar, cast
 
-from quackcore.fs.results import (
+from quack_core.fs.results import (
     DataResult,
     DirectoryInfoResult,
     FileInfoResult,
@@ -20,10 +20,10 @@ from quackcore.fs.results import (
 )
 
 # Import the factory function but defer creating the service
-from quackcore.fs.service.factory import create_service
+from quack_core.fs.service.factory import create_service
 
 # Import the complete FileSystemService with all mixins for type hints
-from quackcore.fs.service.full_class import FileSystemService
+from quack_core.fs.service.full_class import FileSystemService
 
 # Create a global instance but initialize it lazily
 _service = None
@@ -48,7 +48,7 @@ def get_service() -> FileSystemService:
 service = property(get_service)
 
 # Import all standalone functions
-from quackcore.fs.service.standalone import (
+from quack_core.fs.service.standalone import (
     # Utility operations
     atomic_write,
     compute_checksum,

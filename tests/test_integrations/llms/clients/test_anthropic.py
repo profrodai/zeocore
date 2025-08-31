@@ -11,9 +11,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackApiError, QuackIntegrationError
-from quackcore.integrations.llms.clients.anthropic import AnthropicClient
-from quackcore.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from quack_core.errors import QuackApiError, QuackIntegrationError
+from quack_core.integrations.llms.clients.anthropic import AnthropicClient
+from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 from tests.test_integrations.llms.mocks.anthropic import (
     MockAnthropicClient,
     MockAnthropicErrorResponse,

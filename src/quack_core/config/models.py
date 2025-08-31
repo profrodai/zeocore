@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/config/models.py
 """
-Configuration models for QuackCore.
+Configuration models for quack_core.
 
 This module provides Pydantic models for configuration management,
 with support for validation, defaults, and merging of configurations.
@@ -65,7 +65,7 @@ class LoggingConfig(BaseModel):
 
     def setup_logging(self) -> None:
         """Set up logging based on configuration."""
-        from quackcore.logging import LOG_LEVELS, configure_logger
+        from quack_core.logging import LOG_LEVELS, configure_logger
 
         # Determine the log level
         level_name = self.level.upper()
@@ -184,7 +184,7 @@ class PluginsConfig(BaseModel):
 
 
 class QuackConfig(BaseModel):
-    """Main configuration for QuackCore."""
+    """Main configuration for quack_core."""
 
     general: GeneralConfig = Field(
         default_factory=GeneralConfig, description="General settings"

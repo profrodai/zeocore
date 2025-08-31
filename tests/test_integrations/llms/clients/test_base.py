@@ -13,11 +13,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackApiError, QuackIntegrationError
-from quackcore.integrations.core.results import (  # Import IntegrationResult for testing
+from quack_core.errors import QuackApiError, QuackIntegrationError
+from quack_core.integrations.core.results import (  # Import IntegrationResult for testing
     IntegrationResult,
 )
-from quackcore.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 from tests.test_integrations.llms.mocks.clients import MockClient
 
 

@@ -7,12 +7,12 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from quackcore.errors import (
+from quack_core.errors import (
     QuackApiError,
     QuackAuthenticationError,
     QuackQuotaExceededError,
 )
-from quackcore.integrations.github.utils.api import make_request
+from quack_core.integrations.github.utils.api import make_request
 
 
 @pytest.fixture

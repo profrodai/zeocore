@@ -7,8 +7,8 @@ import pytest
 import time
 from fastapi.testclient import TestClient
 
-from quackcore.adapters.http.app import create_app
-from quackcore.adapters.http.config import HttpAdapterConfig
+from quack_core.adapters.http.app import create_app
+from quack_core.adapters.http.config import HttpAdapterConfig
 
 
 @pytest.fixture

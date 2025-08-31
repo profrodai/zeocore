@@ -4,11 +4,11 @@ from unittest.mock import patch
 
 import pytest
 
-from quackcore.integrations.pandoc import (
+from quack_core.integrations.pandoc import (
     PandocConfig,
     PandocConfigProvider,
 )
-from quackcore.integrations.pandoc.config import (
+from quack_core.integrations.pandoc.config import (
     LoggingConfig,
     MetricsConfig,
     PandocOptions,

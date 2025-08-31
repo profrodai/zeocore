@@ -7,12 +7,12 @@ from typing import Any
 
 import requests
 
-from quackcore.errors import (
+from quack_core.errors import (
     QuackApiError,
     QuackAuthenticationError,
     QuackQuotaExceededError,
 )
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 logger = get_logger(__name__)
 

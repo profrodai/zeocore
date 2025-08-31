@@ -13,8 +13,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from googleapiclient.errors import HttpError
 
-from quackcore.integrations.google.mail.operations import email
-from quackcore.integrations.google.mail.protocols import (
+from quack_core.integrations.google.mail.operations import email
+from quack_core.integrations.google.mail.protocols import (
     GmailAttachmentsResource,
     GmailMessagesResource,
     GmailRequest,

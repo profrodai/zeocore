@@ -11,8 +11,8 @@ from unittest.mock import patch
 
 import pytest
 
-from quackcore.integrations.core.results import ConfigResult
-from quackcore.integrations.llms.config import LLMConfigProvider
+from quack_core.integrations.core.results import ConfigResult
+from quack_core.integrations.llms.config import LLMConfigProvider
 
 
 class TestLLMConfigProvider:

@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/config/__init__.py
 """
-Configuration package for QuackCore.
+Configuration package for quack_core.
 
 This package provides configuration handling for QuackCore,
 with support for loading from files, environment variables,
@@ -10,7 +10,7 @@ and merging configurations from different sources.
 from typing import Any, Optional
 
 # Import all models directly for users of this package
-from quackcore.config.models import (
+from quack_core.config.models import (
     GeneralConfig,
     GoogleConfig,
     IntegrationsConfig,
@@ -22,7 +22,7 @@ from quackcore.config.models import (
 )
 
 # Import utility functions but not loader yet
-from quackcore.config.utils import (
+from quack_core.config.utils import (
     get_config_value,
     get_env,
     load_env_config,
@@ -46,7 +46,7 @@ def get_config() -> QuackConfig:
     global _config
     if _config is None:
         # Import here to avoid circular imports during module initialization
-        from quackcore.config.loader import load_config as _load_config
+        from quack_core.config.loader import load_config as _load_config
 
         _config = _load_config()
     return _config
@@ -95,7 +95,7 @@ def load_config(
     Returns:
         A QuackConfig instance built from the merged configuration.
     """
-    from quackcore.config.loader import load_config as _load_config
+    from quack_core.config.loader import load_config as _load_config
 
     return _load_config(config_path, merge_env, merge_defaults)
 
@@ -113,7 +113,7 @@ def merge_configs(base: QuackConfig, override: dict[str, Any]) -> QuackConfig:
     Returns:
         A merged QuackConfig instance.
     """
-    from quackcore.config.loader import merge_configs as _merge_configs
+    from quack_core.config.loader import merge_configs as _merge_configs
 
     return _merge_configs(base, override)
 

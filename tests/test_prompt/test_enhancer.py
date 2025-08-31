@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.prompt.enhancer import (
+from quack_core.prompt.enhancer import (
     _create_system_prompt,
     _create_user_prompt,
     _load_config,

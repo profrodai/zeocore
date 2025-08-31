@@ -11,7 +11,7 @@ import mimetypes
 import os
 from pathlib import Path
 
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 # Set up logger
 logger = get_logger(__name__)

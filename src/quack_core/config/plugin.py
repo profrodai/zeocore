@@ -8,9 +8,9 @@ allowing QuackCore to expose configuration functionality to other modules.
 
 from typing import Any, Protocol, TypeVar
 
-from quackcore.config.loader import load_config, merge_configs
-from quackcore.config.models import QuackConfig
-from quackcore.config.utils import get_config_value, normalize_paths
+from quack_core.config.loader import load_config, merge_configs
+from quack_core.config.models import QuackConfig
+from quack_core.config.utils import get_config_value, normalize_paths
 
 T = TypeVar("T")  # Generic type for flexible typing
 

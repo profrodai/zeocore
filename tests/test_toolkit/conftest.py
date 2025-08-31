@@ -9,11 +9,11 @@ from unittest.mock import patch
 
 import pytest
 
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.toolkit.mixins.env_init import ToolEnvInitializerMixin
-from quackcore.toolkit.mixins.integration_enabled import IntegrationEnabledMixin
-from quackcore.toolkit.mixins.lifecycle import QuackToolLifecycleMixin
-from quackcore.toolkit.mixins.output_handler import OutputFormatMixin
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.toolkit.mixins.env_init import ToolEnvInitializerMixin
+from quack_core.toolkit.mixins.integration_enabled import IntegrationEnabledMixin
+from quack_core.toolkit.mixins.lifecycle import QuackToolLifecycleMixin
+from quack_core.toolkit.mixins.output_handler import OutputFormatMixin
 
 
 class MockIntegrationService(BaseIntegrationService):

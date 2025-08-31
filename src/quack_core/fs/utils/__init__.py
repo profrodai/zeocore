@@ -9,7 +9,7 @@ Note: This is a legacy name preserved for backward compatibility.
 For new code, prefer using `quack-core.fs.api.public` instead.
 """
 
-from quackcore.fs.api import (
+from quack_core.fs.api import (
     atomic_write,
     compute_checksum,
     copy_safely,

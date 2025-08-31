@@ -9,9 +9,9 @@ module for standardized LLM interactions.
 
 from collections.abc import Sequence
 
-from quackcore.config import config as quack_config
-from quackcore.fs.service import standalone
-from quackcore.logging import get_logger
+from quack_core.config import config as quack_config
+from quack_core.fs.service import standalone
+from quack_core.logging import get_logger
 
 # Set up logger
 logger = get_logger(__name__)
@@ -94,8 +94,8 @@ def enhance_with_llm(
         ImportError: If the LLM client is not properly configured
     """
     try:
-        from quackcore.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-        from quackcore.integrations.llms.service import LLMIntegration
+        from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+        from quack_core.integrations.llms.service import LLMIntegration
     except ImportError as e:
         logger.error("Failed to import LLM integration: %s", str(e))
         raise ImportError(
@@ -237,8 +237,8 @@ def count_prompt_tokens(
         Token count if successful, None if token counting failed
     """
     try:
-        from quackcore.integrations.llms.models import ChatMessage, RoleType
-        from quackcore.integrations.llms.service import LLMIntegration
+        from quack_core.integrations.llms.models import ChatMessage, RoleType
+        from quack_core.integrations.llms.service import LLMIntegration
 
         # Load configuration
         config = _load_config()

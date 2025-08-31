@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from quackcore.workflow.output.base import OutputWriter
+from quack_core.workflow.output.base import OutputWriter
 
 # Try importing yaml, set to None if not available
 try:
@@ -89,7 +89,7 @@ class DefaultOutputWriter(OutputWriter):
             RuntimeError: If the write operation fails
         """
 
-        from quackcore.fs.service import standalone
+        from quack_core.fs.service import standalone
         # Validate the data first
         self.validate_data(data)
 
@@ -227,7 +227,7 @@ class YAMLOutputWriter(OutputWriter):
             RuntimeError: If the write operation fails
             ImportError: If PyYAML is not available
         """
-        from quackcore.fs.service import standalone
+        from quack_core.fs.service import standalone
         # Validate the data first
         self.validate_data(data)
 

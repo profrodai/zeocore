@@ -7,9 +7,9 @@ import unittest
 from typing import Any
 from unittest.mock import MagicMock
 
-from quackcore.integrations.core import IntegrationResult
-from quackcore.plugins.protocols import QuackPluginMetadata
-from quackcore.toolkit.protocol import QuackToolPluginProtocol
+from quack_core.integrations.core import IntegrationResult
+from quack_core.plugins.protocols import QuackPluginMetadata
+from quack_core.toolkit.protocol import QuackToolPluginProtocol
 
 
 class TestQuackToolPluginProtocol(unittest.TestCase):

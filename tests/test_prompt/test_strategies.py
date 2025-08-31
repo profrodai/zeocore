@@ -7,12 +7,12 @@ import importlib
 
 import pytest
 
-from quackcore.prompt.registry import (
+from quack_core.prompt.registry import (
     _STRATEGY_REGISTRY,
     clear_registry,
     get_strategy_by_id,
 )
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 @pytest.fixture(autouse=True)

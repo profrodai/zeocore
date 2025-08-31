@@ -9,7 +9,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from quackcore.errors import (
+from quack_core.errors import (
     QuackBaseAuthError,
     QuackConfigurationError,
     QuackError,

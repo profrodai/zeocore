@@ -13,7 +13,7 @@ import yaml
 from hypothesis import given
 from hypothesis import strategies as st
 
-from quackcore.fs.service import FileSystemService
+from quack_core.fs.service import FileSystemService
 
 
 class TestFileSystemService:

@@ -9,7 +9,7 @@ ensuring consistent behavior across different services and platforms.
 from collections.abc import Mapping
 from typing import Any, Protocol, TypeVar, runtime_checkable
 
-from quackcore.integrations.core.results import (
+from quack_core.integrations.core.results import (
     AuthResult,
     ConfigResult,
     IntegrationResult,

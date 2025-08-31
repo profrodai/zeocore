@@ -4,8 +4,8 @@
 import os
 from typing import Any
 
-from quackcore.integrations.core import BaseConfigProvider, ConfigResult
-from quackcore.logging import get_logger
+from quack_core.integrations.core import BaseConfigProvider, ConfigResult
+from quack_core.logging import get_logger
 
 logger = get_logger(__name__)
 

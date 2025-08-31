@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.integrations.github import (
+from quack_core.integrations.github import (
     GitHubIntegration,
     create_integration,
 )
@@ -43,13 +43,13 @@ def test_integration_registration():
 
 def test_module_implements_getattr():
     """Test that the module implements __getattr__ for lazy loading."""
-    import quackcore.integrations.github
+    import quack_core.integrations.github
 
     # Verify the module has __getattr__
-    assert hasattr(quackcore.integrations.github, "__getattr__")
+    assert hasattr(quack_core.integrations.github, "__getattr__")
 
     # Mock an import to verify it would be called
-    original_getattr = quackcore.integrations.github.__getattr__
+    original_getattr = quack_core.integrations.github.__getattr__
 
     try:
         # Replace with a test implementation
@@ -58,18 +58,18 @@ def test_module_implements_getattr():
                 return "Test Value"
             return original_getattr(name)
 
-        quackcore.integrations.github.__getattr__ = mock_getattr
+        quack_core.integrations.github.__getattr__ = mock_getattr
 
         # Test our mock implementation works
-        assert quackcore.integrations.github.TEST_ATTRIBUTE == "Test Value"
+        assert quack_core.integrations.github.TEST_ATTRIBUTE == "Test Value"
 
         # Verify proper error for invalid attributes
         with pytest.raises(AttributeError):
-            _ = quackcore.integrations.github.NON_EXISTENT_ATTR
+            _ = quack_core.integrations.github.NON_EXISTENT_ATTR
 
     finally:
         # Restore original
-        quackcore.integrations.github.__getattr__ = original_getattr
+        quack_core.integrations.github.__getattr__ = original_getattr
 
 
 def test_registry_integration():
@@ -87,9 +87,9 @@ def test_registry_integration():
         # Import the module to trigger registration
         import importlib
 
-        import quackcore.integrations.github
+        import quack_core.integrations.github
 
-        importlib.reload(quackcore.integrations.github)
+        importlib.reload(quack_core.integrations.github)
 
         # Check that we can access the integration through the registry
         integrations = mock_registry.get_integrations()
@@ -114,9 +114,9 @@ def test_module_init():
             # Re-import the module to trigger registration
             import importlib
 
-            import quackcore.integrations.github
+            import quack_core.integrations.github
 
-            importlib.reload(quackcore.integrations.github)
+            importlib.reload(quack_core.integrations.github)
 
             # Verify registration was attempted - registry should have been accessed
             assert mock_registry.register.called or hasattr(
@@ -126,10 +126,10 @@ def test_module_init():
 
 def test_lazy_loading():
     """Test lazy loading of quackster-related classes."""
-    import quackcore.integrations.github
+    import quack_core.integrations.github
 
     # Mock __getattr__ on the module
-    original_getattr = getattr(quackcore.integrations.github, "__getattr__", None)
+    original_getattr = getattr(quack_core.integrations.github, "__getattr__", None)
 
     # Add a temporary __getattr__ function for testing
     def mock_getattr(name):
@@ -143,28 +143,28 @@ def test_lazy_loading():
 
     # Apply the mock
     try:
-        quackcore.integrations.github.__getattr__ = mock_getattr
+        quack_core.integrations.github.__getattr__ = mock_getattr
 
         # Test accessing lazy-loaded attributes
-        assert quackcore.integrations.github.GitHubGrader == "MockGitHubGrader"
+        assert quack_core.integrations.github.GitHubGrader == "MockGitHubGrader"
         assert (
-            quackcore.integrations.github.GitHubTeachingAdapter
+            quack_core.integrations.github.GitHubTeachingAdapter
             == "MockGitHubTeachingAdapter"
         )
     finally:
         # Restore original if it existed
         if original_getattr:
-            quackcore.integrations.github.__getattr__ = original_getattr
+            quack_core.integrations.github.__getattr__ = original_getattr
         else:
-            delattr(quackcore.integrations.github, "__getattr__")
+            delattr(quack_core.integrations.github, "__getattr__")
 
 
 def test_getattr_unknown_attribute():
     """Test that __getattr__ raises AttributeError for unknown attributes."""
-    import quackcore.integrations.github
+    import quack_core.integrations.github
 
     # Mock __getattr__ on the module
-    original_getattr = getattr(quackcore.integrations.github, "__getattr__", None)
+    original_getattr = getattr(quack_core.integrations.github, "__getattr__", None)
 
     # Add a temporary __getattr__ function for testing
     def mock_getattr(name):
@@ -178,16 +178,16 @@ def test_getattr_unknown_attribute():
 
     # Apply the mock
     try:
-        quackcore.integrations.github.__getattr__ = mock_getattr
+        quack_core.integrations.github.__getattr__ = mock_getattr
 
         # Test accessing unknown attribute
         # We are intentionally accessing a non-existent attribute to test the error handling
         # noinspection PyUnresolvedReferences
         with pytest.raises(AttributeError):
-            _ = quackcore.integrations.github.NonExistentAttribute
+            _ = quack_core.integrations.github.NonExistentAttribute
     finally:
         # Restore original if it existed
         if original_getattr:
-            quackcore.integrations.github.__getattr__ = original_getattr
+            quack_core.integrations.github.__getattr__ = original_getattr
         else:
-            delattr(quackcore.integrations.github, "__getattr__")
+            delattr(quack_core.integrations.github, "__getattr__")

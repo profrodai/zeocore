@@ -8,9 +8,9 @@ that provides document conversion functionality.
 
 from unittest.mock import MagicMock, patch
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.pandoc.service import PandocIntegration
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.pandoc.service import PandocIntegration
 
 
 def test_pandoc_integration_name_version():

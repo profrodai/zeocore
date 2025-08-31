@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/adapters/http/__init__.py
 """
-HTTP Adapter for QuackCore.
+HTTP Adapter for quack_core.
 
 Optional FastAPI-based HTTP API that exposes QuackCore operations
 via REST endpoints. Only available when the 'http' extra is installed.

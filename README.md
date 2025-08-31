@@ -53,25 +53,25 @@ pip install "quackcore[google]"
 
 QuackCore is organized into distinct modules that provide clear functionality:
 
-### `quackcore.config`
+### `quack_core.config`
 Robust configuration system supporting YAML, environment variables, and runtime overrides.
 
-### `quackcore.paths`
+### `quack_core.paths`
 Standardized path resolution and project structure detection across environments.
 
-### `quackcore.fs`
+### `quack_core.fs`
 Safe and consistent filesystem operations with error handling and structured results.
 
-### `quackcore.plugins`
+### `quack_core.plugins`
 Extensible plugin discovery and registration framework to build modular CLI agents and tools.
 
-### `quackcore.integrations`
+### `quack_core.integrations`
 Interfaces to third-party services (Google Drive, Gmail, Notion, Pandoc) through a clean adapter layer.
 
-### `quackcore.errors`
+### `quack_core.errors`
 Structured error handling system with typed exceptions for improved developer experience.
 
-### `quackcore.cli`
+### `quack_core.cli`
 Shared CLI environment initialization and I/O utilities for user-friendly tooling.
 
 ---
@@ -81,7 +81,7 @@ Shared CLI environment initialization and I/O utilities for user-friendly toolin
 ### Basic Configuration Setup
 
 ```python
-from quackcore.config import load_config, QuackConfig
+from quack_core.config import load_config, QuackConfig
 
 # Load configuration from default locations
 config = load_config()
@@ -97,7 +97,7 @@ custom_config = load_config("path/to/custom_config.yaml")
 ### Path Resolution
 
 ```python
-from quackcore.paths import resolver
+from quack_core.paths import resolver
 
 # Find the project root directory
 project_root = resolver._get_project_root()
@@ -113,7 +113,7 @@ source_dir = context._get_source_dir()
 ### File Operations
 
 ```python
-from quackcore.fs import service as fs
+from quack_core.fs import service as fs
 
 # Read text from a file
 result = fs._read_text("path/to/file.txt")
@@ -137,7 +137,7 @@ if yaml_result.success:
 ### Using Plugins
 
 ```python
-from quackcore.plugins import registry
+from quack_core.plugins import registry
 
 # Get a list of all registered plugins
 plugin_names = registry.list_plugins()
@@ -152,7 +152,7 @@ if pandoc_plugin:
 ### Working with Google Drive Integration
 
 ```python
-from quackcore.integrations.google.drive import GoogleDriveService
+from quack_core.integrations.google.drive import GoogleDriveService
 
 # Initialize service
 drive_service = GoogleDriveService(
@@ -177,7 +177,7 @@ if list_result.success:
 ### Working with Gmail Integration
 
 ```python
-from quackcore.integrations.google.mail import GoogleMailService
+from quack_core.integrations.google.mail import GoogleMailService
 
 # Initialize service
 mail_service = GoogleMailService(
@@ -203,7 +203,7 @@ if emails_result.success:
 ### Error Handling
 
 ```python
-from quackcore.errors import QuackError, QuackFileNotFoundError, wrap_io_errors
+from quack_core.errors import QuackError, QuackFileNotFoundError, wrap_io_errors
 
 # Use decorator for automatic error handling
 @wrap_io_errors
@@ -223,7 +223,7 @@ except QuackError as e:
 ### CLI Application Setup
 
 ```python
-from quackcore.cli import init_cli_env, print_info, print_error, ask
+from quack_core.cli import init_cli_env, print_info, print_error, ask
 
 # Initialize CLI environment
 context = init_cli_env(
@@ -255,8 +255,8 @@ except Exception as e:
 ### Creating a Custom Plugin
 
 ```python
-from quackcore.plugins.protocols import QuackPluginProtocol
-from quackcore.integrations.core.results import IntegrationResult
+from quack_core.plugins.protocols import QuackPluginProtocol
+from quack_core.integrations.core.results import IntegrationResult
 
 
 class MyCustomPlugin(QuackPluginProtocol):
@@ -279,7 +279,7 @@ class MyCustomPlugin(QuackPluginProtocol):
 
 
 # Register the plugin
-from quackcore.plugins import registry
+from quack_core.plugins import registry
 
 registry.register(MyCustomPlugin())
 ```
@@ -287,7 +287,7 @@ registry.register(MyCustomPlugin())
 ### Working with Pandoc for Document Conversion
 
 ```python
-from quackcore.integrations.pandoc import PandocIntegration
+from quack_core.integrations.pandoc import PandocIntegration
 from pathlib import Path
 
 # Initialize the service
@@ -325,7 +325,7 @@ if batch_result.success:
 
 ```python
 from pydantic import BaseModel, Field
-from quackcore.config.models import QuackConfig
+from quack_core.config.models import QuackConfig
 
 # Define custom configuration model
 class MyAppConfig(BaseModel):
@@ -338,7 +338,7 @@ config = QuackConfig()
 config.custom["my_app"] = MyAppConfig(api_key="your-api-key").model_dump()
 
 # Save configuration
-from quackcore.config.loader import merge_configs
+from quack_core.config.loader import merge_configs
 merged_config = merge_configs(config, {})
 ```
 
@@ -419,7 +419,7 @@ export QUACK_GOOGLE__CREDENTIALS_FILE=/etc/quack/credentials.json
 6. Use the client secrets file path in your QuackCore configuration
 
 ```python
-from quackcore.integrations.google.auth import GoogleAuthProvider
+from quack_core.integrations.google.auth import GoogleAuthProvider
 
 auth_provider = GoogleAuthProvider(
     client_secrets_file="path/to/client_secrets.json",
@@ -451,8 +451,8 @@ Tools built with QuackCore gain immediate compatibility with:
 
 To create your own tool:
 - Follow QuackCore’s plugin or integration protocol
-- Use `quackcore.config` and `quackcore.fs` for standard behavior
-- Register your tool with `quackcore.plugins.registry`
+- Use `quack_core.config` and `quack_core.fs` for standard behavior
+- Register your tool with `quack_core.plugins.registry`
 
 This ensures your tool can be consumed by orchestrators like **QuackBuddy** and exposed via upcoming standards such as **MCP**.
 
@@ -522,10 +522,10 @@ Example of a new tool setup:
 
 ```python
 # my_quack_tool/main.py
-from quackcore.config import load_config
-from quackcore.paths import resolver
-from quackcore.fs import service as fs
-from quackcore.cli import init_cli_env
+from quack_core.config import load_config
+from quack_core.paths import resolver
+from quack_core.fs import service as fs
+from quack_core.cli import init_cli_env
 
 
 def main():
@@ -571,7 +571,7 @@ QuackConfigurationError: Configuration file not found in default locations.
 Or specify the configuration path explicitly:
 
 ```python
-from quackcore.config import load_config
+from quack_core.config import load_config
 config = load_config("path/to/config.yaml")
 ```
 
@@ -590,7 +590,7 @@ QuackAuthenticationError: Failed to authenticate with Google Drive
 #### Plugin Not Found
 
 ```
-QuackPluginError: No plugin found in module quackcore.plugins.my_plugin
+QuackPluginError: No plugin found in module quack_core.plugins.my_plugin
 ```
 
 **Solution**:
@@ -617,7 +617,7 @@ For detailed API documentation, refer to the inline documentation in the code or
 
 ## Contributing
 
-We welcome contributors interested in extending the open-source core of QuackCore.
+We welcome contributors interested in extending the open-source core of quack_core.
 
 
 If you're interested in contributing to QuackCore:

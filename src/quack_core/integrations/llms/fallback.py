@@ -12,11 +12,11 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from quackcore.errors import QuackApiError, QuackIntegrationError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.llms.clients.base import LLMClient
-from quackcore.integrations.llms.models import ChatMessage, LLMOptions
-from quackcore.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.errors import QuackApiError, QuackIntegrationError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.llms.clients.base import LLMClient
+from quack_core.integrations.llms.models import ChatMessage, LLMOptions
+from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
 
 
 class FallbackConfig(BaseModel):
@@ -185,7 +185,7 @@ class FallbackLLMClient(LLMClient):
 
         try:
             # Import registry function inside method to avoid circular imports
-            from quackcore.integrations.llms.registry import get_llm_client
+            from quack_core.integrations.llms.registry import get_llm_client
 
             # Initialize client arguments
             client_args = {

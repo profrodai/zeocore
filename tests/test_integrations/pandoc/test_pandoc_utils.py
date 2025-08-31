@@ -14,15 +14,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.pandoc.config import PandocConfig, PandocOptions
-from quackcore.integrations.pandoc.models import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.pandoc.config import PandocConfig, PandocOptions
+from quack_core.integrations.pandoc.models import (
     ConversionDetails,
     ConversionMetrics,
     ConversionTask,
     FileInfo,
 )
-from quackcore.integrations.pandoc.operations.utils import (
+from quack_core.integrations.pandoc.operations.utils import (
     check_conversion_ratio,
     check_file_size,
     get_file_info,
@@ -451,7 +451,7 @@ def test_prepare_pandoc_args_comprehensive():
 @patch('quack-core.integrations.pandoc.operations.html_to_md.re')
 def test_post_process_markdown_regex_patterns(mock_re):
     """Test regex patterns used in post_process_markdown."""
-    from quackcore.integrations.pandoc.operations.html_to_md import (
+    from quack_core.integrations.pandoc.operations.html_to_md import (
         post_process_markdown,
     )
 

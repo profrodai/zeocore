@@ -9,18 +9,18 @@ using the QuackCore toolkit.
 import json
 from typing import Any
 
-from quackcore.integrations.core import IntegrationResult
+from quack_core.integrations.core import IntegrationResult
 # Import the specific Google Drive service
 # Note: This is just for the example, in a real implementation you'd
 # use the actual import path for GoogleDriveService
-from quackcore.integrations.google.drive import GoogleDriveService
-from quackcore.toolkit import (
+from quack_core.integrations.google.drive import GoogleDriveService
+from quack_core.toolkit import (
     BaseQuackToolPlugin,
     IntegrationEnabledMixin,
     OutputFormatMixin,
     QuackToolLifecycleMixin,
 )
-from quackcore.workflow.output import YAMLOutputWriter
+from quack_core.workflow.output import YAMLOutputWriter
 
 
 class ExampleTool(

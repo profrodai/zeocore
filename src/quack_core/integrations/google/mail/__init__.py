@@ -1,13 +1,13 @@
 # quack-core/src/quack-core/integrations/google/mail/__init__.py
 """
-Google Mail integration for QuackCore.
+Google Mail integration for quack_core.
 
 This module provides integration with Gmail, allowing for email
 retrieval, listing, and management through a consistent interface.
 """
 
-from quackcore.integrations.core.protocols import IntegrationProtocol
-from quackcore.integrations.google.mail.service import GoogleMailService
+from quack_core.integrations.core.protocols import IntegrationProtocol
+from quack_core.integrations.google.mail.service import GoogleMailService
 
 __all__ = [
     "GoogleMailService",

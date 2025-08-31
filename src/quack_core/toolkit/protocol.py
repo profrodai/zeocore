@@ -10,8 +10,8 @@ to be discoverable and usable within the QuackCore ecosystem.
 from logging import Logger
 from typing import Any, Protocol
 
-from quackcore.integrations.core import IntegrationResult
-from quackcore.plugins.protocols import QuackPluginMetadata
+from quack_core.integrations.core import IntegrationResult
+from quack_core.plugins.protocols import QuackPluginMetadata
 
 
 class QuackToolPluginProtocol(Protocol):

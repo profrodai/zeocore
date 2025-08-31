@@ -9,7 +9,7 @@ across all test modules and makes tests more maintainable.
 
 from unittest.mock import MagicMock, patch
 
-from quackcore.config.models import QuackConfig
+from quack_core.config.models import QuackConfig
 
 
 class MockConfig(QuackConfig):

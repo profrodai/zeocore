@@ -18,7 +18,7 @@ from typing import Any, TypeVar
 
 # Import utility functions directly into this namespace for backward compatibility
 # This will make patching work correctly in tests
-from quackcore.fs._helpers import (
+from quack_core.fs._helpers import (
     _atomic_write,
     _compute_checksum,
     _ensure_directory,
@@ -26,7 +26,7 @@ from quackcore.fs._helpers import (
     _safe_delete,
     _safe_move,
 )
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 # Set up module-level logger
 logger = get_logger(__name__)

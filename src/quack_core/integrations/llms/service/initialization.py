@@ -5,8 +5,8 @@ Provider initialization logic for LLM integration.
 This module provides functions for initializing single providers and fallback configurations.
 """
 
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.llms.fallback import FallbackConfig
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.llms.fallback import FallbackConfig
 
 
 def initialize_single_provider(
@@ -73,7 +73,7 @@ def initialize_single_provider(
 
     try:
         # Import the registry functions for getting an LLM client
-        from quackcore.integrations.llms.registry import get_llm_client
+        from quack_core.integrations.llms.registry import get_llm_client
 
         self.client = get_llm_client(**client_args)
     except Exception as e:
@@ -82,7 +82,7 @@ def initialize_single_provider(
         self.logger.warning("Falling back to MockLLMClient")
 
         # Create a mock client with default responses
-        from quackcore.integrations.llms.clients.mock import MockLLMClient
+        from quack_core.integrations.llms.clients.mock import MockLLMClient
 
         self.client = MockLLMClient(log_level=self.log_level)
         self._using_mock = True
@@ -177,7 +177,7 @@ def initialize_with_fallback(
     # Initialize the fallback client
     try:
         # Import here to avoid circular imports
-        from quackcore.integrations.llms.fallback import FallbackLLMClient
+        from quack_core.integrations.llms.fallback import FallbackLLMClient
 
         self._fallback_client = FallbackLLMClient(
             fallback_config=fallback_config,

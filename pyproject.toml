@@ -106,11 +106,11 @@ path = "src/quackcore/__init__.py"
 [tool.hatch.build.targets.wheel]
 packages = ["src/quackcore"]
 
-[project.entry-points."quackcore.plugins"]
-paths = "quackcore.paths.plugin:create_plugin"
-fs = "quackcore.fs.plugin:create_plugin"
-config = "quackcore.config.plugin:create_plugin"
-prompt = "quackcore.prompt.plugin:create_plugin"
+[project.entry-points."quack_core.plugins"]
+paths = "quack_core.paths.plugin:create_plugin"
+fs = "quack_core.fs.plugin:create_plugin"
+config = "quack_core.config.plugin:create_plugin"
+prompt = "quack_core.prompt.plugin:create_plugin"
 
 [tool.coverage.run]
 source = ["quackcore"]

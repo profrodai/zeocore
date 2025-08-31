@@ -12,14 +12,14 @@ import sys
 from collections.abc import Mapping
 from typing import Any
 
-from quackcore.config.models import QuackConfig
+from quack_core.config.models import QuackConfig
 
 # Import config utility functions
-from quackcore.config.utils import load_env_config, normalize_paths
-from quackcore.errors import QuackConfigurationError
+from quack_core.config.utils import load_env_config, normalize_paths
+from quack_core.errors import QuackConfigurationError
 
 # Import resolver at module level for better testability
-from quackcore.paths import service as paths
+from quack_core.paths import service as paths
 
 # Detect test environment - make this a module variable so it can be patched in tests
 is_test = "pytest" in sys.modules or "unittest" in sys.modules
@@ -54,7 +54,7 @@ def _get_core_config(config_path: str | None) -> QuackConfig:
         QuackConfigurationError: If configuration loading fails.
     """
     # Import here to avoid circular imports
-    from quackcore.config import load_config as core_load_config
+    from quack_core.config import load_config as core_load_config
 
     return core_load_config(config_path)
 
@@ -72,7 +72,7 @@ def _merge_cli_overrides(
     Returns:
         The configuration with overrides merged in.
     """
-    from quackcore.config.loader import merge_configs
+    from quack_core.config.loader import merge_configs
 
     override_dict: dict[str, Any] = {}
     for key, value in cli_overrides.items():

@@ -1,7 +1,7 @@
 # quack-core/tests/test_workflow/test_results.py
 from pathlib import Path
 
-from quackcore.workflow.results import FinalResult, InputResult, OutputResult
+from quack_core.workflow.results import FinalResult, InputResult, OutputResult
 
 
 def test_input_result_defaults(tmp_path: Path):

@@ -8,7 +8,7 @@ that can be used to avoid DataResult validation issues during testing.
 import time
 from unittest.mock import patch
 
-from quackcore.integrations.pandoc.operations.utils import safe_convert_to_int
+from quack_core.integrations.pandoc.operations.utils import safe_convert_to_int
 
 
 def patched_check_file_size(file_size, min_size=50):

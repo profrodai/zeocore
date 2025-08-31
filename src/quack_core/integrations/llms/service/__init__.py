@@ -1,6 +1,6 @@
 # quack-core/src/quack-core/integrations/llms/service/__init__.py
 """
-LLM integration service for QuackCore.
+LLM integration service for quack_core.
 
 This module provides the main service class for LLM integration,
 handling configuration, client initialization, and conversation management.
@@ -9,14 +9,14 @@ handling configuration, client initialization, and conversation management.
 import importlib.util
 from collections.abc import Callable, Sequence
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.llms.clients import LLMClient, MockLLMClient
-from quackcore.integrations.llms.config import LLMConfig, LLMConfigProvider
-from quackcore.integrations.llms.fallback import FallbackConfig
-from quackcore.integrations.llms.models import ChatMessage, LLMOptions
-from quackcore.logging import LOG_LEVELS, LogLevel
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.llms.clients import LLMClient, MockLLMClient
+from quack_core.integrations.llms.config import LLMConfig, LLMConfigProvider
+from quack_core.integrations.llms.fallback import FallbackConfig
+from quack_core.integrations.llms.models import ChatMessage, LLMOptions
+from quack_core.logging import LOG_LEVELS, LogLevel
 
 
 def check_llm_dependencies() -> tuple[bool, str, list[str]]:
@@ -274,7 +274,7 @@ class LLMIntegration(BaseIntegrationService):
 
         try:
             # Import the registry functions for getting an LLM client
-            from quackcore.integrations.llms.registry import get_llm_client
+            from quack_core.integrations.llms.registry import get_llm_client
 
             self.client = get_llm_client(**client_args)
         except QuackIntegrationError as e:
@@ -377,7 +377,7 @@ class LLMIntegration(BaseIntegrationService):
         # Initialize the fallback client
         try:
             # Import here to avoid circular imports
-            from quackcore.integrations.llms.fallback import FallbackLLMClient
+            from quack_core.integrations.llms.fallback import FallbackLLMClient
 
             self._fallback_client = FallbackLLMClient(
                 fallback_config=fallback_config,

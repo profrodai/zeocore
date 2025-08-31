@@ -6,7 +6,7 @@ This module aggregates ONLY public helper functions for working with the filesys
 """
 
 # Re-export all public functions
-from quackcore.fs.api.public import (
+from quack_core.fs.api.public import (
     atomic_write,
     compute_checksum,
     copy_safely,

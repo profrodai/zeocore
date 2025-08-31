@@ -12,8 +12,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackError
-from quackcore.integrations.core.registry import (
+from quack_core.errors import QuackError
+from quack_core.integrations.core.registry import (
     IntegrationRegistry,
     PluginLoaderProtocol,
 )

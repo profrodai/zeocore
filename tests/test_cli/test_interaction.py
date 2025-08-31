@@ -6,7 +6,7 @@ Tests for the CLI interaction module.
 import time
 from unittest.mock import patch
 
-from quackcore.cli.interaction import (
+from quack_core.cli.interaction import (
     ask,
     ask_choice,
     confirm,

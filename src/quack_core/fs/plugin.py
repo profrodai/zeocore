@@ -9,13 +9,13 @@ allowing QuackCore to expose filesystem functionality to other modules.
 from pathlib import Path
 from typing import Protocol, TypeVar
 
-from quackcore.fs.results import (
+from quack_core.fs.results import (
     DataResult,
     OperationResult,
     ReadResult,
     WriteResult,
 )
-from quackcore.fs.service import FileSystemService
+from quack_core.fs.service import FileSystemService
 
 T = TypeVar("T")
 

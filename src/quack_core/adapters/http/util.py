@@ -10,7 +10,7 @@ from typing import Dict, Any, Optional
 
 import httpx
 
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 logger = get_logger(__name__)
 

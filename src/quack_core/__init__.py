@@ -10,10 +10,10 @@ and plugin architecture to enable seamless integration between specialized tools
 __version__ = "0.1.0"
 
 # Re-export commonly used components for convenience
-from quackcore.config import config
-from quackcore.config.loader import load_config
-from quackcore.config.models import QuackConfig
-from quackcore.errors import (
+from quack_core.config import config
+from quack_core.config.loader import load_config
+from quack_core.config.models import QuackConfig
+from quack_core.errors import (
     QuackApiError,
     QuackBaseAuthError,
     QuackError,
@@ -21,11 +21,11 @@ from quackcore.errors import (
     QuackQuotaExceededError,
     wrap_io_errors,
 )
-from quackcore.fs import service as fs
-from quackcore.integrations.core import IntegrationRegistry
-from quackcore.integrations.core import registry as integration_registry
-from quackcore.paths import resolver as paths
-from quackcore.plugins import QuackPluginProtocol, loader, registry
+from quack_core.fs import service as fs
+from quack_core.integrations.core import IntegrationRegistry
+from quack_core.integrations.core import registry as integration_registry
+from quack_core.paths import resolver as paths
+from quack_core.plugins import QuackPluginProtocol, loader, registry
 
 __all__ = [
     # Version

@@ -10,11 +10,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.results import ConfigResult, IntegrationResult
-from quackcore.integrations.llms.config import LLMConfigProvider
-from quackcore.integrations.llms.fallback import FallbackConfig
-from quackcore.integrations.llms.service.integration import LLMIntegration
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.results import ConfigResult, IntegrationResult
+from quack_core.integrations.llms.config import LLMConfigProvider
+from quack_core.integrations.llms.fallback import FallbackConfig
+from quack_core.integrations.llms.service.integration import LLMIntegration
 
 
 class TestLLMIntegrationComprehensive:

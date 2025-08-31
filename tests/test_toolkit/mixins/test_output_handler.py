@@ -7,7 +7,7 @@ import unittest
 
 import pytest
 
-from quackcore.toolkit.mixins.output_handler import OutputFormatMixin
+from quack_core.toolkit.mixins.output_handler import OutputFormatMixin
 
 
 class CustomOutputFormatMixin(OutputFormatMixin):

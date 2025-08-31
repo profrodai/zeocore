@@ -9,7 +9,7 @@ without having to create a service instance.
 from pathlib import Path
 from typing import TypeVar
 
-from quackcore.fs.results import (
+from quack_core.fs.results import (
     DataResult,
     DirectoryInfoResult,
     FileInfoResult,
@@ -21,7 +21,7 @@ from quackcore.fs.results import (
 )
 
 # Import the complete FileSystemService with all mixins
-from quackcore.fs.service.full_class import FileSystemService
+from quack_core.fs.service.full_class import FileSystemService
 
 T = TypeVar("T")  # Generic type for flexible typing
 
@@ -449,7 +449,7 @@ def resolve_path(path: str | Path | DataResult | OperationResult) -> PathResult:
     Resolve a path relative to the service's base_dir and return as a string.
 
     This is a public, safe wrapper around _resolve_path that conforms to
-    the DataResult structure used throughout QuackCore.
+    the DataResult structure used throughout quack_core.
 
     Args:
         path: Input path (absolute or relative) (string, Path, DataResult, or OperationResult)

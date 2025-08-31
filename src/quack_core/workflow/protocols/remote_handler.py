@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from quackcore.workflow.results import InputResult
+from quack_core.workflow.results import InputResult
 
 
 @runtime_checkable

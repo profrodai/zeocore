@@ -7,8 +7,8 @@ from typing import Any
 
 import pytest
 
-from quackcore.prompt.registry import clear_registry, register_prompt_strategy
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.registry import clear_registry, register_prompt_strategy
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 @pytest.fixture

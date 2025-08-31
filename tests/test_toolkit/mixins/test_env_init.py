@@ -8,8 +8,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.integrations.core import IntegrationResult
-from quackcore.toolkit.mixins.env_init import ToolEnvInitializerMixin
+from quack_core.integrations.core import IntegrationResult
+from quack_core.toolkit.mixins.env_init import ToolEnvInitializerMixin
 
 
 class TestToolEnvInitializerMixin(unittest.TestCase):

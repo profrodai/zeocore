@@ -7,8 +7,8 @@ This module tests the mock client implementation used for testing and educationa
 
 from unittest.mock import MagicMock, patch
 
-from quackcore.integrations.llms.clients.mock import MockLLMClient
-from quackcore.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from quack_core.integrations.llms.clients.mock import MockLLMClient
+from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 
 
 class TestMockLLMClient:

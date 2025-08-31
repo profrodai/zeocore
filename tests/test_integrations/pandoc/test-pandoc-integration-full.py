@@ -7,29 +7,29 @@ from types import SimpleNamespace
 
 import pytest
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.pandoc.config import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.pandoc.config import (
     PandocConfig,
     PandocConfigProvider,
 )
-from quackcore.integrations.pandoc.converter import DocumentConverter
-from quackcore.integrations.pandoc.models import (
+from quack_core.integrations.pandoc.converter import DocumentConverter
+from quack_core.integrations.pandoc.models import (
     ConversionTask,
     FileInfo,
 )
-from quackcore.integrations.pandoc.operations.html_to_md import (
+from quack_core.integrations.pandoc.operations.html_to_md import (
     post_process_markdown,
     validate_html_structure,
 )
-from quackcore.integrations.pandoc.operations.utils import (
+from quack_core.integrations.pandoc.operations.utils import (
     get_file_info as util_get_file_info,
 )
-from quackcore.integrations.pandoc.operations.utils import (
+from quack_core.integrations.pandoc.operations.utils import (
     prepare_pandoc_args,
     verify_pandoc,
 )
-from quackcore.integrations.pandoc.service import PandocIntegration
+from quack_core.integrations.pandoc.service import PandocIntegration
 
 
 # Fixtures for monkeypatching filesystem service
@@ -38,7 +38,7 @@ def fs_stub(monkeypatch):
     """
     Stub out the quack-core.fs.service.standalone methods for file operations.
     """
-    import quackcore.fs.service as fs_service
+    import quack_core.fs.service as fs_service
     stub = SimpleNamespace()
     # Default get_file_info returns success, exists, size, modified
     stub.get_file_info = lambda path: SimpleNamespace(
@@ -105,7 +105,7 @@ def test_util_get_file_info_success():
 
 
 def test_util_get_file_info_not_found(monkeypatch):
-    import quackcore.fs.service as fs_service
+    import quack_core.fs.service as fs_service
     fs_service.standalone.get_file_info = lambda p: SimpleNamespace(success=False, exists=False)
     with pytest.raises(QuackIntegrationError):
         util_get_file_info('missing.md')
@@ -180,7 +180,7 @@ def test_convert_file_unsupported(converter):
         return FileInfo(
             path=path, format='txt', size=0, modified=None, extra_args=[]
         )
-    import quackcore.integrations.pandoc.operations.utils as utils_mod
+    import quack_core.integrations.pandoc.operations.utils as utils_mod
     utils_mod.get_file_info = fake_get
 
     result = converter.convert_file('file.txt', 'out.md', 'markdown')
@@ -262,7 +262,7 @@ def test_convert_batch_partial_failure(converter):
 
 # Tests for PandocIntegration availability
 def test_pandoc_integration_is_available(monkeypatch):
-    import quackcore.integrations.pandoc.service as service_mod
+    import quack_core.integrations.pandoc.service as service_mod
     # inject dummy module
     monkeypatch.setattr(
         service_mod,
@@ -276,8 +276,8 @@ def test_pandoc_integration_is_available(monkeypatch):
 
 
 def test_pandoc_integration_not_available(monkeypatch):
-    import quackcore.integrations.pandoc.service as service_mod
-    from quackcore.errors import QuackIntegrationError
+    import quack_core.integrations.pandoc.service as service_mod
+    from quack_core.errors import QuackIntegrationError
     monkeypatch.setattr(
         service_mod,
         'verify_pandoc',
@@ -298,7 +298,7 @@ def test_pandoc_config_default():
 
 def test_pandoc_config_validate_output_dir(monkeypatch):
     # Invalidate path
-    import quackcore.fs.service as fs_service
+    import quack_core.fs.service as fs_service
     fs_service.standalone.get_path_info = lambda p: SimpleNamespace(success=False)
     with pytest.raises(ValueError):
         PandocConfig(output_dir='??invalid')
@@ -310,7 +310,7 @@ def test_config_provider_validate_config(monkeypatch):
     # valid schema
     assert provider.validate_config({'output_dir': '/tmp'}) is not False
     # test invalid path
-    import quackcore.fs.service as fs_service
+    import quack_core.fs.service as fs_service
     fs_service.standalone.is_valid_path = lambda p: False
     assert not provider.validate_config({'output_dir': '/tmp'})
 

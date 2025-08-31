@@ -13,7 +13,7 @@ from collections.abc import Iterable, Iterator
 from io import TextIOBase
 from typing import Protocol, TypeVar
 
-from quackcore.cli.terminal import get_terminal_size
+from quack_core.cli.terminal import get_terminal_size
 
 T = TypeVar("T")  # Generic type for flexible typing
 

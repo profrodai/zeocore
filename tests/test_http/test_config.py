@@ -6,7 +6,7 @@ Tests for HTTP adapter configuration.
 import pytest
 from pydantic import ValidationError
 
-from quackcore.adapters.http.config import HttpAdapterConfig
+from quack_core.adapters.http.config import HttpAdapterConfig
 
 
 def test_default_config():

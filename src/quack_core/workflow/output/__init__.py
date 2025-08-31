@@ -15,8 +15,8 @@ Future extensions:
 - BinaryWriter family: PDF, Excel, PNG, JPEG
 """
 
-from quackcore.workflow.output.base import OutputWriter
-from quackcore.workflow.output.writers import DefaultOutputWriter, YAMLOutputWriter
+from quack_core.workflow.output.base import OutputWriter
+from quack_core.workflow.output.writers import DefaultOutputWriter, YAMLOutputWriter
 
 __all__ = [
     "OutputWriter",

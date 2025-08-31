@@ -6,7 +6,7 @@ Tests for configuration models.
 import logging
 from unittest.mock import MagicMock, patch
 
-from quackcore.config.models import (
+from quack_core.config.models import (
     GeneralConfig,
     GoogleConfig,
     IntegrationsConfig,

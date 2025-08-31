@@ -8,12 +8,12 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from quackcore.errors import QuackIOError, wrap_io_errors
+from quack_core.errors import QuackIOError, wrap_io_errors
 
 # Import from within package
-from quackcore.fs._helpers.file_ops import _ensure_directory
-from quackcore.fs._helpers.path_utils import _normalize_path_param
-from quackcore.logging import get_logger
+from quack_core.fs._helpers.file_ops import _ensure_directory
+from quack_core.fs._helpers.path_utils import _normalize_path_param
+from quack_core.logging import get_logger
 
 # Initialize module logger
 logger = get_logger(__name__)

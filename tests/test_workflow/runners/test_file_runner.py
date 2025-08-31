@@ -9,8 +9,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from quackcore.workflow.results import FinalResult, InputResult, OutputResult
-from quackcore.workflow.runners.file_runner import FileWorkflowRunner, WorkflowError
+from quack_core.workflow.results import FinalResult, InputResult, OutputResult
+from quack_core.workflow.runners.file_runner import FileWorkflowRunner, WorkflowError
 
 
 # Simple processor function for testing

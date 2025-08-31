@@ -28,7 +28,7 @@ def setup_python_path():
     # Verify that the quack-core module can be found
     try:
         import quackcore
-        print(f"quack-core found at: {quackcore.__file__}")
+        print(f"quack-core found at: {quack_core.__file__}")
     except ImportError as e:
         print(f"Error importing quack-core: {e}")
         # Try a different approach

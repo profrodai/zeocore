@@ -12,7 +12,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from quackcore.config.models import QuackConfig
+from quack_core.config.models import QuackConfig
 
 
 class QuackContext(BaseModel):

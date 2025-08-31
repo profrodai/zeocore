@@ -13,24 +13,24 @@ import os
 import re
 import time
 
-from quackcore.errors import QuackIntegrationError
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.pandoc.config import PandocConfig
-from quackcore.integrations.pandoc.models import ConversionDetails, ConversionMetrics
-from quackcore.integrations.pandoc.operations.utils import (
+from quack_core.errors import QuackIntegrationError
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.pandoc.config import PandocConfig
+from quack_core.integrations.pandoc.models import ConversionDetails, ConversionMetrics
+from quack_core.integrations.pandoc.operations.utils import (
     check_conversion_ratio,
     check_file_size,
     prepare_pandoc_args,
     track_metrics,
     validate_html_structure,
 )
-from quackcore.logging import get_logger
+from quack_core.logging import get_logger
 
 logger = get_logger(__name__)
 
 # Import fs module with error handling
 try:
-    from quackcore.fs.service import standalone as fs
+    from quack_core.fs.service import standalone as fs
 except ImportError:
     logger.error("Could not import quack-core.fs.service")
     from types import SimpleNamespace

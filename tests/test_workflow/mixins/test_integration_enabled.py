@@ -1,8 +1,8 @@
 # quack-core/tests/test_workflow/mixins/test_integration_enabled.py
 
 
-from quackcore.integrations.core.base import BaseIntegrationService
-from quackcore.workflow.mixins.integration_enabled import IntegrationEnabledMixin
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.workflow.mixins.integration_enabled import IntegrationEnabledMixin
 
 
 class DummyService(BaseIntegrationService):

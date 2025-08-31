@@ -5,7 +5,7 @@ Tests for the prompt strategy registry functionality.
 
 import pytest
 
-from quackcore.prompt.registry import (
+from quack_core.prompt.registry import (
     _STRATEGY_REGISTRY,
     clear_registry,
     find_strategies_by_tags,
@@ -13,7 +13,7 @@ from quackcore.prompt.registry import (
     get_strategy_by_id,
     register_prompt_strategy,
 )
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 # quack-core/tests/test_integrations/core/base/test_integration_service.py
 from unittest.mock import patch
 
-from quackcore.integrations.core.results import (
+from quack_core.integrations.core.results import (
     AuthResult,
     ConfigResult,
     IntegrationResult,

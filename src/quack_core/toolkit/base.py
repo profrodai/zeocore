@@ -14,14 +14,14 @@ import tempfile
 from logging import Logger
 from typing import Any
 
-from quackcore.config.tooling import setup_tool_logging
-from quackcore.integrations.core import IntegrationResult
-from quackcore.logging import get_logger
-from quackcore.plugins.protocols import QuackPluginMetadata
-from quackcore.toolkit.protocol import (
+from quack_core.config.tooling import setup_tool_logging
+from quack_core.integrations.core import IntegrationResult
+from quack_core.logging import get_logger
+from quack_core.plugins.protocols import QuackPluginMetadata
+from quack_core.toolkit.protocol import (
     QuackToolPluginProtocol,  # Import directly from protocol module
 )
-from quackcore.workflow.output import (
+from quack_core.workflow.output import (
     DefaultOutputWriter,
     OutputWriter,
     YAMLOutputWriter,
@@ -69,7 +69,7 @@ class BaseQuackToolPlugin(QuackToolPluginProtocol, abc.ABC):
 
         # Get the filesystem service
         try:
-            from quackcore.fs.service import standalone
+            from quack_core.fs.service import standalone
             self.fs = standalone
         except Exception as e:
             self._logger.error(f"Failed to get filesystem service: {str(e)}")
@@ -237,7 +237,7 @@ class BaseQuackToolPlugin(QuackToolPluginProtocol, abc.ABC):
             # Dynamically import the runner (so that patching quack-core.workflow.runners.file_runner works)
             from unittest import mock
 
-            from quackcore.workflow.runners.file_runner import (
+            from quack_core.workflow.runners.file_runner import (
                 FileWorkflowRunner as RunnerClass,
             )
 

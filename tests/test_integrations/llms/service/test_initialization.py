@@ -9,9 +9,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.integrations.core.results import IntegrationResult
-from quackcore.integrations.llms.fallback import FallbackConfig
-from quackcore.integrations.llms.service.initialization import (
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.llms.fallback import FallbackConfig
+from quack_core.integrations.llms.service.initialization import (
     initialize_single_provider,
     initialize_with_fallback,
 )
@@ -317,7 +317,7 @@ class TestInitialization:
             ):
                 try:
                     # This will raise an exception
-                    from quackcore.integrations.llms.fallback import FallbackLLMClient
+                    from quack_core.integrations.llms.fallback import FallbackLLMClient
 
                     fallback_client = FallbackLLMClient()
                 except Exception as e:

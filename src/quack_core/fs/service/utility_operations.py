@@ -5,10 +5,10 @@ Utility operations for the FileSystemService.
 
 from pathlib import Path
 
-from quackcore.errors import wrap_io_errors
-from quackcore.fs import DataResult, OperationResult, WriteResult
-from quackcore.fs._operations import FileSystemOperations
-from quackcore.logging import get_logger
+from quack_core.errors import wrap_io_errors
+from quack_core.fs import DataResult, OperationResult, WriteResult
+from quack_core.fs._operations import FileSystemOperations
+from quack_core.logging import get_logger
 
 # Set up logger
 logger = get_logger(__name__)

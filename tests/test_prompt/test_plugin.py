@@ -7,9 +7,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quackcore.prompt.plugin import PromptBoosterPlugin, create_plugin
-from quackcore.prompt.registry import clear_registry, get_all_strategies
-from quackcore.prompt.strategy_base import PromptStrategy
+from quack_core.prompt.plugin import PromptBoosterPlugin, create_plugin
+from quack_core.prompt.registry import clear_registry, get_all_strategies
+from quack_core.prompt.strategy_base import PromptStrategy
 
 
 @pytest.fixture(autouse=True)
