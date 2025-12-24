@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/enhancer.py
+# quack-core/src/quack_core/prompt/enhancer.py
 """
 Prompt enhancer module for the PromptBooster.
 

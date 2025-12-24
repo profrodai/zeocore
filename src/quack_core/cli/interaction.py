@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/cli/interaction.py
+# quack-core/src/quack_core/cli/interaction.py
 """
 User interaction utilities for CLI applications.
 

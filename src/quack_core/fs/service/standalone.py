@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/service/standalone.py
+# quack-core/src/quack_core/fs/service/standalone.py
 """
 Standalone utility functions that are exposed at the package level.
 

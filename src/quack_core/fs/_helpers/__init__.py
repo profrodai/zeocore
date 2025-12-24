@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_helpers/__init__.py
+# quack-core/src/quack_core/fs/_helpers/__init__.py
 
 """
 🛑 INTERNAL USE ONLY — DO NOT IMPORT FROM HERE

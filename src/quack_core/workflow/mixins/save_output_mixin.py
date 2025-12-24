@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/workflow/mixins/save_output_mixin.py
+# quack-core/src/quack_core/workflow/mixins/save_output_mixin.py
 """
 Mixin providing output saving capabilities.
 

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/adapters/http/jobs.py
+# quack-core/src/quack_core/adapters/http/jobs.py
 """
 Job management for the HTTP adapter.
 """

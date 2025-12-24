@@ -1,1 +1,1 @@
-# quack-core/src/quack-core/adapters/mcp/__init__.py
+# quack-core/src/quack_core/adapters/mcp/__init__.py

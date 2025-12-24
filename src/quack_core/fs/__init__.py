@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/__init__.py
+# quack-core/src/quack_core/fs/__init__.py
 """
 Filesystem package for quack_core.
 

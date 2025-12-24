@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/llms/fallback.py
+# quack-core/src/quack_core/integrations/llms/fallback.py
 """
 Fallback mechanism for LLM clients.
 

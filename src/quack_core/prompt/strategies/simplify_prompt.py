@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/simplify_prompt.py
+# quack-core/src/quack_core/prompt/strategies/simplify_prompt.py
 """
 Simplify Prompt strategy for the PromptBooster.
 

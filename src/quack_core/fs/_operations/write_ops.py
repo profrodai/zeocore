@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_operations/write_ops.py
+# quack-core/src/quack_core/fs/_operations/write_ops.py
 """
 File writing, copying, moving and deleting _operations.
 

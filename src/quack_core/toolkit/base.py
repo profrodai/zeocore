@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/toolkit/base.py
+# quack-core/src/quack_core/toolkit/base.py
 """
 Base class implementation for QuackTool plugins.
 

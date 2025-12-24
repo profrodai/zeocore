@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_operations/directory_ops.py
+# quack-core/src/quack_core/fs/_operations/directory_ops.py
 """
 Directory _operations.
 

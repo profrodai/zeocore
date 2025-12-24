@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/toolkit/mixins/integration_enabled.py
+# quack-core/src/quack_core/toolkit/mixins/integration_enabled.py
 """
 Integration enabled mixin for QuackTool plugins.
 

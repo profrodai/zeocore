@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/plugins/discovery.py
+# quack-core/src/quack_core/plugins/discovery.py
 """
 Plugin discovery for quack_core.
 

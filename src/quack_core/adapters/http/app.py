@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/adapters/http/app.py
+# quack-core/src/quack_core/adapters/http/app.py
 """
 FastAPI application factory.
 """

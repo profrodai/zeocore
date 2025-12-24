@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/react_prompting.py
+# quack-core/src/quack_core/prompt/strategies/react_prompting.py
 """
 ReAct Prompting strategy for the PromptBooster.
 

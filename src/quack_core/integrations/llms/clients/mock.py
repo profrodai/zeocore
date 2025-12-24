@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/llms/clients/mock.py
+# quack-core/src/quack_core/integrations/llms/clients/mock.py
 """
 Mock LLM client implementation.
 

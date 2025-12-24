@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/service/structured_data.py
+# quack-core/src/quack_core/fs/service/structured_data.py
 """
 Structured data operations (JSON, YAML) for the FileSystemService.
 """

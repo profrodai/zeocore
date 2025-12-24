@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/api/public/path_ops.py
+# quack-core/src/quack_core/fs/api/public/path_ops.py
 """
 Public API for path _operations.
 

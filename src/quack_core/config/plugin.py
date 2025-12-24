@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/config/plugin.py
+# quack-core/src/quack_core/config/plugin.py
 """
 Plugin interface for the configuration module.
 

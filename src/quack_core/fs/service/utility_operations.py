@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/service/utility_operations.py
+# quack-core/src/quack_core/fs/service/utility_operations.py
 """
 Utility operations for the FileSystemService.
 """

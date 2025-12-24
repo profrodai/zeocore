@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/llms/clients/base.py
+# quack-core/src/quack_core/integrations/llms/clients/base.py
 """
 Base LLM client implementation.
 

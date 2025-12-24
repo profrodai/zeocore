@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/api/public/temp.py
+# quack-core/src/quack_core/fs/api/public/temp.py
 """
 Public API for temporary file and directory _operations.
 

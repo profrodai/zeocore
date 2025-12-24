@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/toolkit/mixins/__init__.py
+# quack-core/src/quack_core/toolkit/mixins/__init__.py
 """
 Mixins for QuackTool plugins.
 

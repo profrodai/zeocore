@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/workflow/runners/file_runner.py
+# quack-core/src/quack_core/workflow/runners/file_runner.py
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategy_base.py
+# quack-core/src/quack_core/prompt/strategy_base.py
 """
 Base strategy module for the PromptBooster.
 

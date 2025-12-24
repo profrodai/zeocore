@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/tree_of_thought_prompting.py
+# quack-core/src/quack_core/prompt/strategies/tree_of_thought_prompting.py
 """
 Tree of Thoughts Prompting strategy for the PromptBooster.
 

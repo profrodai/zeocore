@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/__init__.py
+# quack-core/src/quack_core/prompt/strategies/__init__.py
 """
 Prompt strategies package for the PromptBooster.
 

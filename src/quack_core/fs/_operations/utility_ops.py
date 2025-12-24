@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_operations/utility_ops.py
+# quack-core/src/quack_core/fs/_operations/utility_ops.py
 """
 Utility operations for filesystems.
 

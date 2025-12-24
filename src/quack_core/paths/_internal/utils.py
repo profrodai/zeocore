@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/paths/_internal/utils.py
+# quack-core/src/quack_core/paths/_internal/utils.py
 """
 Utility functions for path resolution.
 

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/github/auth.py
+# quack-core/src/quack_core/integrations/github/auth.py
 """Authentication provider for GitHub integration."""
 
 import os

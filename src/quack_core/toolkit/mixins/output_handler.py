@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/toolkit/mixins/output_handler.py
+# quack-core/src/quack_core/toolkit/mixins/output_handler.py
 """
 This mixin allows tools to specify the output file extension
 (e.g., '.json', '.yaml'), by overriding the `_get_output_extension()` method.

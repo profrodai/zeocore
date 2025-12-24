@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/plugins/__init__.py
+# quack-core/src/quack_core/plugins/__init__.py
 """
 Plugin system for quack_core.
 

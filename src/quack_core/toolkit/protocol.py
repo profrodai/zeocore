@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/toolkit/protocol.py
+# quack-core/src/quack_core/toolkit/protocol.py
 """
 Protocol definition for QuackTool plugins.
 

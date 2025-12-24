@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/toolkit/__init__.py
+# quack-core/src/quack_core/toolkit/__init__.py
 """
 Developer interface layer for creating QuackTools.
 

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/plugin.py
+# quack-core/src/quack_core/fs/plugin.py
 """
 Plugin interface for the filesystem module.
 

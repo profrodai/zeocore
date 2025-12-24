@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/config/tooling/logger.py
+# quack-core/src/quack_core/config/tooling/logger.py
 """
 Logging setup utilities for QuackTools.
 

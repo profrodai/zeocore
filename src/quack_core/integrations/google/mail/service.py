@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/mail/service.py
+# quack-core/src/quack_core/integrations/google/mail/service.py
 import logging
 from collections.abc import Iterable, Mapping, Sequence
 from types import NoneType

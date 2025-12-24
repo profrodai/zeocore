@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/api/__init__.py
+# quack-core/src/quack_core/fs/api/__init__.py
 """
 Utility functions for filesystem _operations.
 

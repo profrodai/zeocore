@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/paths/api/public/__init__.py
+# quack-core/src/quack_core/paths/api/public/__init__.py
 """
 Public API for the paths module.
 

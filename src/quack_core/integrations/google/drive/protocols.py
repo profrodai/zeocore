@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/drive/protocols.py
+# quack-core/src/quack_core/integrations/google/drive/protocols.py
 """
 Protocol definitions for Google Drive integration.
 

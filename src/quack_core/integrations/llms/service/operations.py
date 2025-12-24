@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/llms/service/operations.py
+# quack-core/src/quack_core/integrations/llms/service/operations.py
 """
 LLM _operations for the integration service.
 

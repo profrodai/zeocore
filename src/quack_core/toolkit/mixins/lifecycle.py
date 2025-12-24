@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/toolkit/mixins/lifecycle.py
+# quack-core/src/quack_core/toolkit/mixins/lifecycle.py
 """
 Lifecycle mixin for QuackTool plugins.
 

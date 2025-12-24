@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/toolkit/mixins/env_init.py
+# quack-core/src/quack_core/toolkit/mixins/env_init.py
 """
 Environment initializer mixin for QuackTool plugins.
 

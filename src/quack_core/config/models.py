@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/config/models.py
+# quack-core/src/quack_core/config/models.py
 """
 Configuration models for quack_core.
 

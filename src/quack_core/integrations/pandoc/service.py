@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/pandoc/service.py
+# quack-core/src/quack_core/integrations/pandoc/service.py
 """
 Pandoc integration service for quack_core.
 

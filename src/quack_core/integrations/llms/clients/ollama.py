@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/llms/clients/ollama.py
+# quack-core/src/quack_core/integrations/llms/clients/ollama.py
 """
 Ollama LLM client implementation.
 

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_helpers/checksums.py
+# quack-core/src/quack_core/fs/_helpers/checksums.py
 """
 Utility functions for file checksums.
 """

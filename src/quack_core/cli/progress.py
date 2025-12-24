@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/cli/progress.py
+# quack-core/src/quack_core/cli/progress.py
 """
 Progress tracking utilities for CLI applications.
 

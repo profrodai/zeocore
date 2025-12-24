@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/llms/clients/openai.py
+# quack-core/src/quack_core/integrations/llms/clients/openai.py
 """
 OpenAI LLM client implementation.
 

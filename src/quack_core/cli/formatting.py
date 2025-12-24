@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/cli/formatting.py
+# quack-core/src/quack_core/cli/formatting.py
 """
 Text formatting utilities for CLI applications.
 

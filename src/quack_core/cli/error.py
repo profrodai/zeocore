@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/cli/error.py
+# quack-core/src/quack_core/cli/error.py
 """
 Error handling utilities for CLI applications.
 

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/api/public/safe_ops.py
+# quack-core/src/quack_core/fs/api/public/safe_ops.py
 """
 Public API for safe file _operations (copy, move, delete).
 

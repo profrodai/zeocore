@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/api/public/__init__.py
+# quack-core/src/quack_core/fs/api/public/__init__.py
 """
 ✅ Public Utility Functions (Safe for QuackTools and DuckTyper)
 

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/llms/service/initialization.py
+# quack-core/src/quack_core/integrations/llms/service/initialization.py
 """
 Provider initialization logic for LLM integration.
 

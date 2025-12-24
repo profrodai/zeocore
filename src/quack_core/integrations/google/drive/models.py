@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/drive/models.py
+# quack-core/src/quack_core/integrations/google/drive/models.py
 """
 Data models for Google Drive integration.
 

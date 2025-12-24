@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/errors/base.py
+# quack-core/src/quack_core/errors/base.py
 """
 Base error classes for quack_core.
 

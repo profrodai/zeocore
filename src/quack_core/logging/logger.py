@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/logging/logger.py
+# quack-core/src/quack_core/logging/logger.py
 """
 Defines helper functions for obtaining loggers.
 """

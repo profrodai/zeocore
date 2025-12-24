@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_helpers/temp.py
+# quack-core/src/quack_core/fs/_helpers/temp.py
 """
 Utility functions for temporary files and directories.
 """

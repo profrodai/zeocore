@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/errors/integration.py
+# quack-core/src/quack_core/errors/integration.py
 """
 Integration-related error classes for quack_core.
 

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/debugging_code_prompting.py
+# quack-core/src/quack_core/prompt/strategies/debugging_code_prompting.py
 """
 Debugging Code Prompting strategy for the PromptBooster.
 

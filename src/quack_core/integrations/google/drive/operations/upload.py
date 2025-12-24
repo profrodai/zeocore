@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/drive/operations/upload.py
+# quack-core/src/quack_core/integrations/google/drive/operations/upload.py
 """
 Upload _operations for Google Drive integration.
 

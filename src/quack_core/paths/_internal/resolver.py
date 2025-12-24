@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/paths/_internal/resolver.py
+# quack-core/src/quack_core/paths/_internal/resolver.py
 """
 Path resolver service for quack_core.
 

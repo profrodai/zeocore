@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/config.py
+# quack-core/src/quack_core/integrations/google/config.py
 """
 Configuration management for Google integrations.
 

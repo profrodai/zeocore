@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/errors/__init__.py
+# quack-core/src/quack_core/errors/__init__.py
 """
 Error handling utilities for quack_core.
 

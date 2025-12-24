@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/drive/operations/list_files.py
+# quack-core/src/quack_core/integrations/google/drive/operations/list_files.py
 """
 File listing _operations for Google Drive integration.
 

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/translating_code_prompting.py
+# quack-core/src/quack_core/prompt/strategies/translating_code_prompting.py
 """
 Translating Code Prompting strategy for the PromptBooster.
 

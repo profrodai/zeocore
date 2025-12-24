@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/config/tooling/loader.py
+# quack-core/src/quack_core/config/tooling/loader.py
 """
 Configuration loading utilities for QuackTools.
 

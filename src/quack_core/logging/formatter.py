@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/logging/formatter.py
+# quack-core/src/quack_core/logging/formatter.py
 """
 Custom formatters for quack-core logging.
 

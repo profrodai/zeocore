@@ -1,3 +1,4 @@
+# quack-core/pyproject.toml
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/self_consistency_prompting.py
+# quack-core/src/quack_core/prompt/strategies/self_consistency_prompting.py
 """
 Self-consistency Prompting strategy for the PromptBooster.
 

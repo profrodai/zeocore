@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/mail/operations/attachments.py
+# quack-core/src/quack_core/integrations/google/mail/operations/attachments.py
 """
 Upload operations for Google Mail attachments.
 

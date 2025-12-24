@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_helpers/common.py
+# quack-core/src/quack_core/fs/_helpers/common.py
 """
 Common utility functions for filesystem _operations.
 """

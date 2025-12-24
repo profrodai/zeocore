@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/auth.py
+# quack-core/src/quack_core/integrations/google/auth.py
 """
 Google authentication provider for quack_core.
 

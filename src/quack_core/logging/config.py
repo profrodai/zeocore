@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/logging/config.py
+# quack-core/src/quack_core/logging/config.py
 """
 Logger configuration for quack-core.
 

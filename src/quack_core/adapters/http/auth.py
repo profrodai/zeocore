@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/adapters/http/auth.py
+# quack-core/src/quack_core/adapters/http/auth.py
 
 # File: quack-core/src/quack-core/adapters/http/auth.py
 """

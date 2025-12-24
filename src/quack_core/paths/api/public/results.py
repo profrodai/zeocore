@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/paths/api/public/results.py
+# quack-core/src/quack_core/paths/api/public/results.py
 """
 Path resolution result models.
 

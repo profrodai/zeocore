@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/react_agentic.py
+# quack-core/src/quack_core/prompt/strategies/react_agentic.py
 """
 ReAct agentic strategy for the PromptBooster.
 

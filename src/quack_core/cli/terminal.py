@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/cli/terminal.py
+# quack-core/src/quack_core/cli/terminal.py
 """
 Terminal utilities for CLI applications.
 

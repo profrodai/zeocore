@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/writing_code_prompting.py
+# quack-core/src/quack_core/prompt/strategies/writing_code_prompting.py
 """
 Writing Code Prompting strategy for the PromptBooster.
 

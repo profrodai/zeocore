@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/github/operations/users.py
+# quack-core/src/quack_core/integrations/github/operations/users.py
 """GitHub user _operations."""
 
 from typing import Any

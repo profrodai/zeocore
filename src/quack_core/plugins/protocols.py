@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/plugins/protocols.py
+# quack-core/src/quack_core/plugins/protocols.py
 """
 Plugin protocols for quack_core.
 

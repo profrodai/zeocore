@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_helpers/file_ops.py
+# quack-core/src/quack_core/fs/_helpers/file_ops.py
 """
 Utility functions for file _operations.
 """

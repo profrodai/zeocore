@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/service/path_validation.py
+# quack-core/src/quack_core/fs/service/path_validation.py
 """
 Path validation utilities for the FileSystemService.
 

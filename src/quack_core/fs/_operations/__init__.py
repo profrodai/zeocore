@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_operations/__init__.py
+# quack-core/src/quack_core/fs/_operations/__init__.py
 """
 Core filesystem _operations implementation.
 

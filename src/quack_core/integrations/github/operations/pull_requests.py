@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/github/operations/pull_requests.py
+# quack-core/src/quack_core/integrations/github/operations/pull_requests.py
 """GitHub pull request _operations."""
 
 from datetime import datetime

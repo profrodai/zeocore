@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/adapters/http/service.py
+# quack-core/src/quack_core/adapters/http/service.py
 """
 Service utilities for running the HTTP adapter.
 """

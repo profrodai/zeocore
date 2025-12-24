@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/drive/operations/download.py
+# quack-core/src/quack_core/integrations/google/drive/operations/download.py
 """
 Download _operations for Google Drive integration.
 

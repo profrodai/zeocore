@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/adapters/http/__init__.py
+# quack-core/src/quack_core/adapters/http/__init__.py
 """
 HTTP Adapter for quack_core.
 

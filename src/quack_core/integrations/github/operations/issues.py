@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/github/operations/issues.py
+# quack-core/src/quack_core/integrations/github/operations/issues.py
 """GitHub issues _operations."""
 
 from typing import Any, Literal

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/paths/api/public/path_utils.py
+# quack-core/src/quack_core/paths/api/public/path_utils.py
 
 """
 Path utilities for quack_core.

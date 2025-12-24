@@ -1,1 +1,1 @@
-# quack-core/src/quack-core/integrations/notion/__init__.py
+# quack-core/src/quack_core/integrations/notion/__init__.py

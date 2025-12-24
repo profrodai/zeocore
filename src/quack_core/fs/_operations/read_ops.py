@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_operations/read_ops.py
+# quack-core/src/quack_core/fs/_operations/read_ops.py
 """
 File reading _operations for the filesystem _operations.
 

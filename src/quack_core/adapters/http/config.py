@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/adapters/http/config.py
+# quack-core/src/quack_core/adapters/http/config.py
 """
 Configuration for the HTTP adapter.
 """

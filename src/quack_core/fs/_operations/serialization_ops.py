@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_operations/serialization_ops.py
+# quack-core/src/quack_core/fs/_operations/serialization_ops.py
 """
 Serialization _operations (JSON, YAML) for filesystem _operations.
 

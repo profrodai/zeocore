@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/__init__.py
+# quack-core/src/quack_core/integrations/__init__.py
 """
 Integrations package for quack_core.
 

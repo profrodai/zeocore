@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/workflow/results.py
+# quack-core/src/quack_core/workflow/results.py
 from __future__ import annotations
 
 from pathlib import Path

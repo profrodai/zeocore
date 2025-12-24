@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_operations/file_info.py
+# quack-core/src/quack_core/fs/_operations/file_info.py
 """
 File information _operations.
 

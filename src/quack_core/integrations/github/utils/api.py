@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/github/utils/api.py
+# quack-core/src/quack_core/integrations/github/utils/api.py
 """GitHub API request utilities."""
 
 import time

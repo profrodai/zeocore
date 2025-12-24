@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/results.py
+# quack-core/src/quack_core/fs/results.py
 """
 Result models for filesystem _operations.
 

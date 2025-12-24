@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/config/tooling/__init__.py
+# quack-core/src/quack_core/config/tooling/__init__.py
 """
 QuackTool Configuration and Logging Helpers.
 

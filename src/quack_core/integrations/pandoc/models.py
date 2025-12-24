@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/pandoc/models.py
+# quack-core/src/quack_core/integrations/pandoc/models.py
 """
 Data models for Pandoc integration.
 

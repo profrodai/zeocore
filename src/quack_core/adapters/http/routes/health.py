@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/adapters/http/routes/health.py
+# quack-core/src/quack_core/adapters/http/routes/health.py
 """
 Health check routes.
 """

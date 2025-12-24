@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/contextual_prompting.py
+# quack-core/src/quack_core/prompt/strategies/contextual_prompting.py
 """
 Contextual Prompting strategy for the PromptBooster.
 

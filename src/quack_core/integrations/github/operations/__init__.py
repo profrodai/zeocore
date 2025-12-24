@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/github/operations/__init__.py
+# quack-core/src/quack_core/integrations/github/operations/__init__.py
 """GitHub API _operations."""
 
 from .issues import add_issue_comment, create_issue, get_issue, list_issues

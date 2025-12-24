@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/cli/__init__.py
+# quack-core/src/quack_core/cli/__init__.py
 """
 CLI package for quack_core.
 

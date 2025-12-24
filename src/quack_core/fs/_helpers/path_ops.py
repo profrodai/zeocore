@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/_helpers/path_ops.py
+# quack-core/src/quack_core/fs/_helpers/path_ops.py
 """
 Utility functions for path _operations.
 """

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/adapters/http/util.py
+# quack-core/src/quack_core/adapters/http/util.py
 """
 Utility functions for the HTTP adapter.
 """

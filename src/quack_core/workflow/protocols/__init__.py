@@ -1,1 +1,1 @@
-# quack-core/src/quack-core/workflow/protocols/__init__.py
+# quack-core/src/quack_core/workflow/protocols/__init__.py

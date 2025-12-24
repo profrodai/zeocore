@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/apply_best_practices.py
+# quack-core/src/quack_core/prompt/strategies/apply_best_practices.py
 """
 Apply Best Practices strategy for the PromptBooster.
 

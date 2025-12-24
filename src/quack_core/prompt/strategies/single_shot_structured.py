@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/single_shot_structured.py
+# quack-core/src/quack_core/prompt/strategies/single_shot_structured.py
 """
 Single-shot structured strategy for the PromptBooster.
 

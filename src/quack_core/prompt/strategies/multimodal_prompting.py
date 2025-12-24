@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/multimodal_prompting.py
+# quack-core/src/quack_core/prompt/strategies/multimodal_prompting.py
 """
 Multimodal Prompting strategy for the PromptBooster.
 

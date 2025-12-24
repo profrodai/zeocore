@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/workflow/mixins/output_writer.py
+# quack-core/src/quack_core/workflow/mixins/output_writer.py
 from __future__ import annotations
 
 from pathlib import Path

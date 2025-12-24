@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/api/public/checksums.py
+# quack-core/src/quack_core/fs/api/public/checksums.py
 """
 Public API for file checksum _operations.
 

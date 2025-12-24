@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/core/protocols.py
+# quack-core/src/quack_core/integrations/core/protocols.py
 """
 Protocol definitions for QuackCore integrations.
 

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/pandoc/protocols.py
+# quack-core/src/quack_core/integrations/pandoc/protocols.py
 """
 Protocol definitions for Pandoc integration.
 

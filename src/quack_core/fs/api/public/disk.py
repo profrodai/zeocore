@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/api/public/disk.py
+# quack-core/src/quack_core/fs/api/public/disk.py
 """
 Public API for disk _operations.
 

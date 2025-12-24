@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/drive/utils/api.py
+# quack-core/src/quack_core/integrations/google/drive/utils/api.py
 """
 API utilities for Google Drive integration.
 

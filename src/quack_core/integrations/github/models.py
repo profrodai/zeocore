@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/github/models.py
+# quack-core/src/quack_core/integrations/github/models.py
 """GitHub integration data models for quack_core."""
 
 from datetime import datetime

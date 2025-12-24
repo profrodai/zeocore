@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/zero_shot_cot.py
+# quack-core/src/quack_core/prompt/strategies/zero_shot_cot.py
 """
 Zero-shot Chain of Thought (CoT) strategy for the PromptBooster.
 

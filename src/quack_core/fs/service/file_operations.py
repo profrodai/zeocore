@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/fs/service/file_operations.py
+# quack-core/src/quack_core/fs/service/file_operations.py
 
 from pathlib import Path
 

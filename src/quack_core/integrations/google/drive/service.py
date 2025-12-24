@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/integrations/google/drive/service.py
+# quack-core/src/quack_core/integrations/google/drive/service.py
 """
 Google Drive integration service for quack_core.
 

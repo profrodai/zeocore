@@ -1,1 +1,1 @@
-# quack-core/src/quack-core/paths/_internal/__init__.py
+# quack-core/src/quack_core/paths/_internal/__init__.py

@@ -1,4 +1,4 @@
-# quack-core/src/quack-core/prompt/strategies/working_with_schemas_prompting.py
+# quack-core/src/quack_core/prompt/strategies/working_with_schemas_prompting.py
 """
 Working with Schemas Prompting strategy for the PromptBooster.
 
