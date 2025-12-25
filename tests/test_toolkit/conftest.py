@@ -86,7 +86,7 @@ def integration_enabled_mixin() -> Generator[
         pass
 
     with patch(
-            "quack-core.integrations.core.get_integration_service") as mock_get_integration:
+            "quack_core.integrations.core.get_integration_service") as mock_get_integration:
         # Set up the mock to return a MockIntegrationService
         mock_service = MockIntegrationService()
         mock_get_integration.return_value = mock_service

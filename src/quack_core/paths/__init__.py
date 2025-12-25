@@ -8,7 +8,7 @@ and inferring context from file locations in QuackCore projects.
 
 """
 NOTE: This module intentionally does NOT expose low-level path functions.
-Use `quack-core.fs` for join_path, split_path, etc. to avoid API duplication.
+Use `quack_core.fs` for join_path, split_path, etc. to avoid API duplication.
 """
 
 from quack_core.paths._internal.context import (

@@ -1,6 +1,6 @@
 # quack-core/tests/test_toolkit/mocks.py
 """
-Mocks for testing the quack-core.toolkit module.
+Mocks for testing the quack_core.toolkit module.
 
 This module provides mock objects and helper functions for testing
 the toolkit components without actually using the real implementations
@@ -237,15 +237,15 @@ class BaseMockTool(BaseQuackToolPlugin):
         # We need to patch all external dependencies
         patch_targets = [
             # Filesystem
-            ("quack-core.fs.service.get_service", create_mock_fs()),
+            ("quack_core.fs.service.get_service", create_mock_fs()),
             # Logging
-            ("quack-core.config.tooling.logger.setup_tool_logging", MagicMock()),
-            ("quack-core.config.tooling.logger.get_logger",
+            ("quack_core.config.tooling.logger.setup_tool_logging", MagicMock()),
+            ("quack_core.config.tooling.logger.get_logger",
              MagicMock(return_value=MockLogger())),
             # OS
             ("os.getcwd", MagicMock(return_value=tempfile.gettempdir())),
             # FileWorkflowRunner
-            ("quack-core.workflow.runners.file_runner.FileWorkflowRunner",
+            ("quack_core.workflow.runners.file_runner.FileWorkflowRunner",
              MockWorkflowRunner),
         ]
 
@@ -291,7 +291,7 @@ class BaseMockToolWithIntegration(BaseMockTool):
         self.mock_service = service_instance or cast(T, MockIntegrationService())
 
         # Patch the integration service
-        with patch("quack-core.integrations.core.get_integration_service",
+        with patch("quack_core.integrations.core.get_integration_service",
                    return_value=self.mock_service):
             # Initialize the base class
             super().__init__(name, version)

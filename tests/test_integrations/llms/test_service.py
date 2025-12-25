@@ -29,7 +29,7 @@ class TestLLMService:
         service = LLMIntegration()
 
         # Mock the file _operations using our fs module
-        with patch("quack-core.fs.service.get_file_info") as mock_file_info:
+        with patch("quack_core.fs.service.get_file_info") as mock_file_info:
             file_info_result = FileInfoResult(
                 success=True,
                 path="./config/llm_config.yaml",
@@ -38,7 +38,7 @@ class TestLLMService:
             )
             mock_file_info.return_value = file_info_result
 
-            with patch("quack-core.fs.service.read_yaml") as mock_read_yaml:
+            with patch("quack_core.fs.service.read_yaml") as mock_read_yaml:
                 yaml_result = DataResult(
                     success=True,
                     path="./config/llm_config.yaml",
@@ -77,7 +77,7 @@ class TestLLMService:
         assert service._initialized is False
 
         # Test with custom parameters
-        with patch("quack-core.fs.service.get_file_info") as mock_file_info:
+        with patch("quack_core.fs.service.get_file_info") as mock_file_info:
             # Create a proper FileInfoResult
             file_info_result = FileInfoResult(
                 success=True,
@@ -88,13 +88,13 @@ class TestLLMService:
             mock_file_info.return_value = file_info_result
 
             # Also patch normalize_path to handle the config path
-            with patch("quack-core.fs.api.normalize_path") as mock_normalize_path:
+            with patch("quack_core.fs.api.normalize_path") as mock_normalize_path:
                 # Create a mock Path object instead of using absolute()
                 mock_path = "/Users/rodrivera/config.yaml"
                 mock_normalize_path.return_value = mock_path
 
                 # Also patch the BaseIntegrationService._set_config_path method
-                with patch("quack-core.integrations.core.base.BaseIntegrationService._set_config_path"):
+                with patch("quack_core.integrations.core.base.BaseIntegrationService._set_config_path"):
                     # Also patch os.getcwd() to avoid FileNotFoundError
                     with patch("os.getcwd", return_value="/Users/rodrivera"):
                         service = LLMIntegration(
@@ -120,7 +120,7 @@ class TestLLMService:
         """Test initializing the LLM integration."""
         # Test successful initialization
         with patch(
-            "quack-core.integrations.llms.registry.get_llm_client"
+            "quack_core.integrations.llms.registry.get_llm_client"
         ) as mock_get_client:
             mock_client = MagicMock()
             mock_get_client.return_value = mock_client
@@ -188,7 +188,7 @@ class TestLLMService:
         # The uninitialized test needs to bypass the auto-initialize behavior
         # Create a test-specific service with specific behavior
         with patch(
-            "quack-core.integrations.llms.service.LLMIntegration.initialize"
+            "quack_core.integrations.llms.service.LLMIntegration.initialize"
         ) as mock_init:
             # Make initialize return a failure without auto-retry
             mock_init.return_value = IntegrationResult(
@@ -221,7 +221,7 @@ class TestLLMService:
 
         # For uninitialized test, create a service with specific behavior
         with patch(
-            "quack-core.integrations.llms.service.LLMIntegration.initialize"
+            "quack_core.integrations.llms.service.LLMIntegration.initialize"
         ) as mock_init:
             mock_init.return_value = IntegrationResult(
                 success=False, error="LLM integration not initialized"

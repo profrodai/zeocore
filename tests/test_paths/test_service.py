@@ -258,7 +258,7 @@ def test_resolve_content_module(tmp_path, path_service):
 
         # Mock the _infer_module_from_path function
         with patch(
-            "quack-core.paths._internal.utils._infer_module_from_path",
+            "quack_core.paths._internal.utils._infer_module_from_path",
             return_value="tutorials.sample.intro",
         ):
             # Test content module resolution

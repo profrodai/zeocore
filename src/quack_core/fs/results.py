@@ -338,6 +338,6 @@ class PathResult(OperationResult):
         )
 
 
-# Aliases for backward compatibility with quack-core.fs.types
+# Aliases for backward compatibility with quack_core.fs.types
 DirectoryListResult = DirectoryInfoResult
 FileFindResult = FindResult

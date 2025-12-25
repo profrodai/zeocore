@@ -42,7 +42,7 @@ def mock_fs_standalone():
     This helps us handle path issues in tests by normalizing the
     behavior of the underlying fs module.
     """
-    with patch("quack-core.fs.service.standalone.normalize_path") as mock_normalize:
+    with patch("quack_core.fs.service.standalone.normalize_path") as mock_normalize:
         # Make normalize_path return Path objects for consistent behavior
         mock_normalize.side_effect = lambda p: Path(os.path.abspath(str(p)))
         yield

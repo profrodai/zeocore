@@ -89,7 +89,7 @@ class TestGitHubIntegration:
         mock_auth_provider.get_credentials.return_value = {"token": "test_token"}
 
         with patch(
-            "quack-core.integrations.github.service.GitHubClient"
+            "quack_core.integrations.github.service.GitHubClient"
         ) as mock_client_class:
             result = github_service.initialize()
 
@@ -108,7 +108,7 @@ class TestGitHubIntegration:
     def test_initialize_with_base_error(self, github_service):
         """Test initialization when base initialization fails."""
         with patch(
-            "quack-core.integrations.core.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.error_result(
                 error="Base initialization failed",
@@ -124,7 +124,7 @@ class TestGitHubIntegration:
     def test_initialize_no_config(self, github_service):
         """Test initialization with no configuration."""
         with patch(
-            "quack-core.integrations.core.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
             github_service.config = None
@@ -140,7 +140,7 @@ class TestGitHubIntegration:
     ):
         """Test initialization using auth provider credentials."""
         with patch(
-            "quack-core.integrations.core.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 
@@ -152,7 +152,7 @@ class TestGitHubIntegration:
             mock_auth_provider.get_credentials.return_value = {"token": "auth_token"}
 
             with patch(
-                "quack-core.integrations.github.service.GitHubClient"
+                "quack_core.integrations.github.service.GitHubClient"
             ) as mock_client_class:
                 result = github_service.initialize()
 
@@ -166,7 +166,7 @@ class TestGitHubIntegration:
     def test_initialize_with_authenticate(self, github_service, mock_auth_provider):
         """Test initialization by authenticating."""
         with patch(
-            "quack-core.integrations.core.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 
@@ -180,7 +180,7 @@ class TestGitHubIntegration:
             )
 
             with patch(
-                "quack-core.integrations.github.service.GitHubClient"
+                "quack_core.integrations.github.service.GitHubClient"
             ) as mock_client_class:
                 result = github_service.initialize()
 
@@ -195,7 +195,7 @@ class TestGitHubIntegration:
     def test_initialize_auth_failure(self, github_service, mock_auth_provider):
         """Test initialization with authentication failure."""
         with patch(
-            "quack-core.integrations.core.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 
@@ -218,7 +218,7 @@ class TestGitHubIntegration:
     def test_initialize_no_token_no_auth(self, github_service):
         """Test initialization with no token and no auth provider."""
         with patch(
-            "quack-core.integrations.core.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 
@@ -237,12 +237,12 @@ class TestGitHubIntegration:
     def test_initialize_exception(self, github_service):
         """Test initialization with unexpected exception."""
         with patch(
-            "quack-core.integrations.core.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 
             with patch(
-                "quack-core.integrations.github.service.GitHubClient"
+                "quack_core.integrations.github.service.GitHubClient"
             ) as mock_client_class:
                 mock_client_class.side_effect = Exception("Unexpected error")
 
@@ -675,7 +675,7 @@ class TestGitHubIntegration:
         service.config_provider = cast(ConfigProviderProtocol, mock_config)
 
         with patch(
-            "quack-core.integrations.core.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 

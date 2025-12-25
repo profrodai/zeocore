@@ -46,7 +46,7 @@ class TestGmailAttachmentOperations:
 
         # Mock the handle_attachment function to avoid actual file _operations
         with patch(
-            "quack-core.integrations.google.mail.operations.attachments.handle_attachment"
+            "quack_core.integrations.google.mail.operations.attachments.handle_attachment"
         ) as mock_handle:
             mock_handle.return_value = str(tmp_path / "test.pdf")
 
@@ -96,14 +96,14 @@ class TestGmailAttachmentOperations:
         with (
             patch.dict(os.environ, {"TESTING": "True"}),
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.clean_filename",
+                "quack_core.integrations.google.mail.operations.attachments.clean_filename",
                 side_effect=lambda x: x,
             ),
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.standalone"
+                "quack_core.integrations.google.mail.operations.attachments.standalone"
             ) as mock_fs,
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.base64"
+                "quack_core.integrations.google.mail.operations.attachments.base64"
             ) as mock_base64,
             patch("pathlib.Path") as mock_path,
         ):
@@ -176,18 +176,18 @@ class TestGmailAttachmentOperations:
         with (
             patch.dict(os.environ, {"TESTING": "True"}),
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.clean_filename",
+                "quack_core.integrations.google.mail.operations.attachments.clean_filename",
                 side_effect=lambda x: x,
             ),
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.standalone"
+                "quack_core.integrations.google.mail.operations.attachments.standalone"
             ) as mock_fs,
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.base64"
+                "quack_core.integrations.google.mail.operations.attachments.base64"
             ) as mock_base64,
             patch("pathlib.Path") as mock_path,
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.execute_api_request"
+                "quack_core.integrations.google.mail.operations.attachments.execute_api_request"
             ) as mock_execute,
         ):
             # Configure filesystem mocks
@@ -269,18 +269,18 @@ class TestGmailAttachmentOperations:
         with (
             patch.dict(os.environ, {"TESTING": "True"}),
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.clean_filename",
+                "quack_core.integrations.google.mail.operations.attachments.clean_filename",
                 side_effect=lambda x: x,
             ),
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.standalone"
+                "quack_core.integrations.google.mail.operations.attachments.standalone"
             ) as mock_fs,
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.base64"
+                "quack_core.integrations.google.mail.operations.attachments.base64"
             ) as mock_base64,
             patch("pathlib.Path") as mock_path,
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.execute_api_request"
+                "quack_core.integrations.google.mail.operations.attachments.execute_api_request"
             ) as mock_execute,
         ):
             # Configure filesystem mocks with collision handling
@@ -352,11 +352,11 @@ class TestGmailAttachmentOperations:
         # Mock the necessary functions
         with (
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.clean_filename",
+                "quack_core.integrations.google.mail.operations.attachments.clean_filename",
                 side_effect=lambda x: x,
             ),
             patch(
-                "quack-core.integrations.google.mail.operations.attachments.base64.urlsafe_b64decode",
+                "quack_core.integrations.google.mail.operations.attachments.base64.urlsafe_b64decode",
                 side_effect=Exception("Decode error"),
             ),
         ):

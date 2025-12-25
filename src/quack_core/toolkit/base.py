@@ -234,7 +234,7 @@ class BaseQuackToolPlugin(QuackToolPluginProtocol, abc.ABC):
             if output_path:
                 run_options["output_path"] = output_path
 
-            # Dynamically import the runner (so that patching quack-core.workflow.runners.file_runner works)
+            # Dynamically import the runner (so that patching quack_core.workflow.runners.file_runner works)
             from unittest import mock
 
             from quack_core.workflow.runners.file_runner import (

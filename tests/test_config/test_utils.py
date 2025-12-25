@@ -79,9 +79,9 @@ class TestConfigUtils:
         )
 
         # Patch so test actually calls the original function but we replace the result
-        with patch("quack-core.config.utils.load_env_config", return_value=dev_result):
+        with patch("quack_core.config.utils.load_env_config", return_value=dev_result):
             # Test Dev config
-            with patch("quack-core.config.utils.get_env", return_value="development"):
+            with patch("quack_core.config.utils.get_env", return_value="development"):
                 config = dev_result  # Directly use our mock result
                 assert config.general.debug is True
                 assert config.logging.level == "DEBUG"
@@ -104,7 +104,7 @@ class TestConfigUtils:
                 plugins=sample_config.plugins,
                 custom=sample_config.custom,
             )
-            with patch("quack-core.config.utils.get_env", return_value="production"):
+            with patch("quack_core.config.utils.get_env", return_value="production"):
                 config = prod_result  # Directly use our mock result
                 assert config.general.debug is False
                 assert config.logging.level == "INFO"
@@ -123,17 +123,17 @@ class TestConfigUtils:
                 plugins=sample_config.plugins,
                 custom=sample_config.custom,
             )
-            with patch("quack-core.config.utils.get_env", return_value="test"):
+            with patch("quack_core.config.utils.get_env", return_value="test"):
                 config = test_result  # Directly use our mock result
                 assert config.general.environment == "test"
 
             # Test non-existent environment (return original)
-            with patch("quack-core.config.utils.get_env", return_value="nonexistent"):
+            with patch("quack_core.config.utils.get_env", return_value="nonexistent"):
                 # Return the original config directly
                 assert sample_config is sample_config
 
             # Test error loading environment config (return original)
-            with patch("quack-core.config.utils.get_env", return_value="error"):
+            with patch("quack_core.config.utils.get_env", return_value="error"):
                 # Return the original config directly
                 assert sample_config is sample_config
 

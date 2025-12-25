@@ -197,7 +197,7 @@ def test_booster_render_with_llm():
     booster.strategy_id = "test-strategy"
 
     # Create a mock for enhance_with_llm
-    with patch("quack-core.prompt.enhancer.enhance_with_llm") as mock_enhance:
+    with patch("quack_core.prompt.enhancer.enhance_with_llm") as mock_enhance:
         # Configure the mock
         mock_enhance.return_value = "Enhanced: Generate a story about AI"
 
@@ -229,7 +229,7 @@ def test_booster_render_llm_failure(sample_strategy):
 
     # Mock the enhancer to raise an exception
     with patch(
-        "quack-core.prompt.enhancer.enhance_with_llm",
+        "quack_core.prompt.enhancer.enhance_with_llm",
         side_effect=ImportError("Test error"),
     ):
         # Render with LLM enhancement
@@ -275,9 +275,9 @@ def test_booster_metadata_with_token_count():
     """Test metadata with token count estimation."""
     # Create a mock token count function
     with (
-        patch("quack-core.prompt.booster.PromptBooster.select_strategy") as mock_select,
+        patch("quack_core.prompt.booster.PromptBooster.select_strategy") as mock_select,
         patch(
-            "quack-core.prompt.booster.PromptBooster.estimate_token_count"
+            "quack_core.prompt.booster.PromptBooster.estimate_token_count"
         ) as mock_count,
     ):
         # Configure the mocks
@@ -341,7 +341,7 @@ def test_booster_export(sample_strategy, tmp_path):
     text_path = str(tmp_path / "export.txt")
 
     # Mock the standalone functions to return success
-    with patch("quack-core.prompt.booster.standalone") as mock_standalone:
+    with patch("quack_core.prompt.booster.standalone") as mock_standalone:
         # Configure the split_path mock
         mock_standalone.split_path.return_value = MagicMock(
             success=True,
@@ -389,7 +389,7 @@ def test_booster_export_fallback(sample_strategy, tmp_path):
     text_path = str(tmp_path / "export.txt")
 
     # Mock the standalone functions
-    with patch("quack-core.prompt.booster.standalone") as mock_standalone:
+    with patch("quack_core.prompt.booster.standalone") as mock_standalone:
         # Configure the split_path mock
         mock_standalone.split_path.return_value = MagicMock(
             success=True,
@@ -427,7 +427,7 @@ def test_booster_export_fallback(sample_strategy, tmp_path):
 def test_booster_estimate_token_count():
     """Test token count estimation."""
     # Create a mock token count function
-    with patch("quack-core.prompt.enhancer.count_prompt_tokens") as mock_count:
+    with patch("quack_core.prompt.enhancer.count_prompt_tokens") as mock_count:
         # Configure the mock
         mock_count.return_value = 123
 
@@ -461,7 +461,7 @@ def test_booster_estimate_token_count_error():
     """Test token count estimation when an error occurs."""
     # Create a mock token count function that raises an exception
     with patch(
-        "quack-core.prompt.enhancer.count_prompt_tokens",
+        "quack_core.prompt.enhancer.count_prompt_tokens",
         side_effect=ImportError("Test error"),
     ):
         # Create a booster

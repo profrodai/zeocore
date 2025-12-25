@@ -95,7 +95,7 @@ class DummyQuackTool(BaseQuackToolPlugin):
 
     def __init__(self) -> None:
         # Patch get_service to avoid filesystem issues
-        with patch('quack-core.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.fs.service.get_service') as mock_get_service, \
                 patch('os.getcwd') as mock_getcwd:
             # Configure mocks
             mock_fs = create_mock_fs()
@@ -127,9 +127,9 @@ class CustomExtensionTool(BaseQuackToolPlugin):
 
     def __init__(self) -> None:
         # Patch get_service to avoid filesystem issues
-        with patch('quack-core.fs.service.get_service') as mock_get_service, \
-                patch('quack-core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
-                patch('quack-core.toolkit.base.get_logger') as mock_get_logger, \
+        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+                patch('quack_core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
+                patch('quack_core.toolkit.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:
             # Configure mocks
             mock_fs = create_mock_fs()
@@ -162,9 +162,9 @@ class RemoteHandlerTool(BaseQuackToolPlugin):
 
     def __init__(self) -> None:
         # Patch get_service to avoid filesystem issues
-        with patch('quack-core.fs.service.get_service') as mock_get_service, \
-                patch('quack-core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
-                patch('quack-core.toolkit.base.get_logger') as mock_get_logger, \
+        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+                patch('quack_core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
+                patch('quack_core.toolkit.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:
             # Configure mocks
             mock_fs = create_mock_fs()
@@ -197,9 +197,9 @@ class CustomWriterTool(BaseQuackToolPlugin):
 
     def __init__(self) -> None:
         # Patch get_service to avoid filesystem issues
-        with patch('quack-core.fs.service.get_service') as mock_get_service, \
-                patch('quack-core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
-                patch('quack-core.toolkit.base.get_logger') as mock_get_logger, \
+        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+                patch('quack_core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
+                patch('quack_core.toolkit.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:
             # Configure mocks
             mock_fs = create_mock_fs()
@@ -232,9 +232,9 @@ class UnavailableTool(BaseQuackToolPlugin):
 
     def __init__(self) -> None:
         # Patch get_service to avoid filesystem issues
-        with patch('quack-core.fs.service.get_service') as mock_get_service, \
-                patch('quack-core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
-                patch('quack-core.toolkit.base.get_logger') as mock_get_logger, \
+        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+                patch('quack_core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
+                patch('quack_core.toolkit.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:
             # Configure mocks
             mock_fs = create_mock_fs()
@@ -277,8 +277,8 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         """
         Set up test fixtures.
         """
-        with patch('quack-core.toolkit.base.setup_tool_logging'), \
-                patch('quack-core.toolkit.base.get_logger'):
+        with patch('quack_core.toolkit.base.setup_tool_logging'), \
+                patch('quack_core.toolkit.base.get_logger'):
             self.tool = DummyQuackTool()
 
         # Create a temp file for testing
@@ -300,9 +300,9 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         setup_tool_logging_mock = MagicMock()
 
         # Use simple patching to avoid complex nesting
-        with patch("quack-core.toolkit.base.setup_tool_logging",
+        with patch("quack_core.toolkit.base.setup_tool_logging",
                    setup_tool_logging_mock), \
-                patch('quack-core.fs.service.get_service') as mock_get_service, \
+                patch('quack_core.fs.service.get_service') as mock_get_service, \
                 patch('os.getcwd') as mock_getcwd:
             # Configure mocks
             mock_fs = create_mock_fs()
@@ -348,8 +348,8 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         """
         Test that initialize handles unavailable tools.
         """
-        with patch('quack-core.toolkit.base.setup_tool_logging'), \
-                patch('quack-core.toolkit.base.get_logger'):
+        with patch('quack_core.toolkit.base.setup_tool_logging'), \
+                patch('quack_core.toolkit.base.get_logger'):
             tool = UnavailableTool()
 
         result = tool.initialize()
@@ -370,7 +370,7 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
             self.assertEqual(result.error, "Test exception")
             self.assertIn("Failed to initialize", result.message)
 
-    @patch("quack-core.workflow.runners.file_runner.FileWorkflowRunner")
+    @patch("quack_core.workflow.runners.file_runner.FileWorkflowRunner")
     def test_process_file_success(self, mock_runner: MagicMock) -> None:
         """
         Test that process_file works correctly on success.
@@ -397,7 +397,7 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         mock_runner.assert_called_once()
         mock_runner_instance.run.assert_called_once()
 
-    @patch("quack-core.workflow.runners.file_runner.FileWorkflowRunner")
+    @patch("quack_core.workflow.runners.file_runner.FileWorkflowRunner")
     def test_process_file_failure(self, mock_runner: MagicMock) -> None:
         """
         Test that process_file handles failure correctly.
@@ -423,7 +423,7 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         self.assertIn("File processing failed", result.message)
         self.assertEqual(result.error, "Test error")
 
-    @patch("quack-core.workflow.runners.file_runner.FileWorkflowRunner")
+    @patch("quack_core.workflow.runners.file_runner.FileWorkflowRunner")
     def test_process_file_error_from_result(self, mock_runner: MagicMock) -> None:
         """
         Test that process_file handles failure with error property.
@@ -449,7 +449,7 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         self.assertIn("File processing failed", result.message)
         self.assertEqual(result.error, "Direct error property")
 
-    @patch("quack-core.workflow.runners.file_runner.FileWorkflowRunner")
+    @patch("quack_core.workflow.runners.file_runner.FileWorkflowRunner")
     def test_process_file_exception(self, mock_runner: MagicMock) -> None:
         """
         Test that process_file handles exceptions correctly.
@@ -496,8 +496,8 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         """
         Test that _get_output_extension returns custom extension when overridden.
         """
-        with patch('quack-core.toolkit.base.setup_tool_logging'), \
-                patch('quack-core.toolkit.base.get_logger'):
+        with patch('quack_core.toolkit.base.setup_tool_logging'), \
+                patch('quack_core.toolkit.base.get_logger'):
             tool = CustomExtensionTool()
 
         self.assertEqual(tool._get_output_extension(), ".yaml")
@@ -512,8 +512,8 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         """
         Test that get_remote_handler returns custom handler when overridden.
         """
-        with patch('quack-core.toolkit.base.setup_tool_logging'), \
-                patch('quack-core.toolkit.base.get_logger'):
+        with patch('quack_core.toolkit.base.setup_tool_logging'), \
+                patch('quack_core.toolkit.base.get_logger'):
             tool = RemoteHandlerTool()
 
         self.assertIsNotNone(tool.get_remote_handler())
@@ -529,8 +529,8 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         """
         Test that get_output_writer returns a YAMLOutputWriter when extension is .yaml.
         """
-        with patch('quack-core.toolkit.base.setup_tool_logging'), \
-                patch('quack-core.toolkit.base.get_logger'):
+        with patch('quack_core.toolkit.base.setup_tool_logging'), \
+                patch('quack_core.toolkit.base.get_logger'):
             tool = CustomExtensionTool()
 
         writer = tool.get_output_writer()
@@ -540,8 +540,8 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         """
         Test that get_output_writer returns custom writer when overridden.
         """
-        with patch('quack-core.toolkit.base.setup_tool_logging'), \
-                patch('quack-core.toolkit.base.get_logger'):
+        with patch('quack_core.toolkit.base.setup_tool_logging'), \
+                patch('quack_core.toolkit.base.get_logger'):
             tool = CustomWriterTool()
 
         writer = tool.get_output_writer()
@@ -551,10 +551,10 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         """
         Test that initialization handles filesystem errors gracefully.
         """
-        with patch('quack-core.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.fs.service.get_service') as mock_get_service, \
                 patch('os.getcwd', return_value=tempfile.gettempdir()), \
-                patch('quack-core.toolkit.base.setup_tool_logging'), \
-                patch('quack-core.toolkit.base.get_logger'):
+                patch('quack_core.toolkit.base.setup_tool_logging'), \
+                patch('quack_core.toolkit.base.get_logger'):
             # Setup the filesystem service to fail when creating temp directory
             mock_fs = MagicMock()
             mock_get_service.return_value = mock_fs

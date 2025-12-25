@@ -140,7 +140,7 @@ class IntegrationRegistry:
         discovered_integrations: list[IntegrationProtocol] = []
         plugin_loader: PluginLoaderProtocol | None = self._get_plugin_loader()
         entry_points_list: list[EntryPoint] = self._get_entry_points(
-            "quack-core.integrations"
+            "quack_core.integrations"
         )
 
         for entry in entry_points_list:
@@ -256,7 +256,7 @@ class IntegrationRegistry:
         Returns:
             PluginLoaderProtocol or None if not available.
         """
-        module_name = "quack-core.plugins.discovery"
+        module_name = "quack_core.plugins.discovery"
         try:
             modules_dict = sys.modules
         except AttributeError:

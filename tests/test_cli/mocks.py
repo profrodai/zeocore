@@ -87,9 +87,9 @@ def patch_common_dependencies(func):
     """
     # Apply patches in the correct order from innermost to outermost
     # This is important as the mocks will be passed to the function in reverse order
-    setup_logging_patch = patch("quack-core.cli.boostrap.setup_logging")
-    load_config_patch = patch("quack-core.cli.boostrap.load_config")
-    find_root_patch = patch("quack-core.cli.boostrap.find_project_root")
+    setup_logging_patch = patch("quack_core.interfaces.cli.legacy.boostrap.setup_logging")
+    load_config_patch = patch("quack_core.interfaces.cli.legacy.boostrap.load_config")
+    find_root_patch = patch("quack_core.interfaces.cli.legacy.boostrap.find_project_root")
 
     # Apply decorators in the correct order
     return setup_logging_patch(load_config_patch(find_root_patch(func)))

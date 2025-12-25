@@ -71,7 +71,7 @@ def __getattr__(name: str) -> Any:
         return GitHubTeachingAdapter
     else:
         raise AttributeError(
-            f"module 'quack-core.integrations.github' has no attribute '{name}'"
+            f"module 'quack_core.integrations.github' has no attribute '{name}'"
         )
 
 

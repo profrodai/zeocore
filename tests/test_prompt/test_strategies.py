@@ -23,14 +23,14 @@ def setup_teardown():
 
     # Re-import the strategies to ensure they're registered
     # First, import the strategies package
-    importlib.import_module("quack-core.prompt.strategies")
+    importlib.import_module("quack_core.prompt.strategies")
 
     # Then import each strategy module explicitly
-    importlib.import_module("quack-core.prompt.strategies.zero_shot_cot")
-    importlib.import_module("quack-core.prompt.strategies.task_decomposition")
-    importlib.import_module("quack-core.prompt.strategies.multi_shot_structured")
-    importlib.import_module("quack-core.prompt.strategies.single_shot_structured")
-    importlib.import_module("quack-core.prompt.strategies.react_agentic")
+    importlib.import_module("quack_core.prompt.strategies.zero_shot_cot")
+    importlib.import_module("quack_core.prompt.strategies.task_decomposition")
+    importlib.import_module("quack_core.prompt.strategies.multi_shot_structured")
+    importlib.import_module("quack_core.prompt.strategies.single_shot_structured")
+    importlib.import_module("quack_core.prompt.strategies.react_agentic")
 
     yield
 
@@ -335,7 +335,7 @@ def test_system_prompt_engineer():
     """Test the system prompt engineer strategy, which may be imported separately."""
     try:
         # Import the module
-        importlib.import_module("quack-core.prompt.strategies.system_prompt_engineer")
+        importlib.import_module("quack_core.prompt.strategies.system_prompt_engineer")
 
         # Check if the strategy exists
         if "system-prompt-engineer" not in _STRATEGY_REGISTRY:

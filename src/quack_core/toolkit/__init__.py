@@ -12,8 +12,8 @@ including the base class, protocol, and mixins that add optional features.
 
 # Example usage
 ```python
-from quack-core.toolkit import BaseQuackToolPlugin, IntegrationEnabledMixin
-from quack-core.integrations.google.drive import GoogleDriveService
+from quack_core.toolkit import BaseQuackToolPlugin, IntegrationEnabledMixin
+from quack_core.integrations.google.drive import GoogleDriveService
 
 class MyTool(IntegrationEnabledMixin[GoogleDriveService], BaseQuackToolPlugin):
     def _initialize_plugin(self):

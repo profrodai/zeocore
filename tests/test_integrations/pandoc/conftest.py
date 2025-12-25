@@ -20,22 +20,22 @@ import pytest
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch):
     """
-    Stub out the quack-core.fs.service.standalone methods for file operations.
+    Stub out the quack_core.fs.service.standalone methods for file operations.
     """
     # Create a module structure if it doesn't exist
-    if 'quack-core.fs.service' not in sys.modules:
+    if 'quack_core.fs.service' not in sys.modules:
         # Create the module hierarchy
         if 'quack-core' not in sys.modules:
             quackcore_mod = types.ModuleType('quack-core')
             sys.modules['quack-core'] = quackcore_mod
 
-        if 'quack-core.fs' not in sys.modules:
-            fs_mod = types.ModuleType('quack-core.fs')
-            sys.modules['quack-core.fs'] = fs_mod
+        if 'quack_core.fs' not in sys.modules:
+            fs_mod = types.ModuleType('quack_core.fs')
+            sys.modules['quack_core.fs'] = fs_mod
 
         # Create the service module
-        service_mod = types.ModuleType('quack-core.fs.service')
-        sys.modules['quack-core.fs.service'] = service_mod
+        service_mod = types.ModuleType('quack_core.fs.service')
+        sys.modules['quack_core.fs.service'] = service_mod
 
     # Create the stub with all necessary methods
     stub = SimpleNamespace()
@@ -120,7 +120,7 @@ def fs_stub(monkeypatch):
 
     # Set the standalone attribute directly in the module
     # This is the critical change - we need to directly set the attribute on the module
-    sys.modules['quack-core.fs.service'].standalone = stub
+    sys.modules['quack_core.fs.service'].standalone = stub
     return stub
 
 
@@ -148,17 +148,17 @@ def mock_paths_service(monkeypatch):
     mock.resolve_project_path = lambda path: path
 
     # Create a proper paths module structure
-    if 'quack-core.paths' not in sys.modules:
-        paths_mod = types.ModuleType('quack-core.paths')
-        sys.modules['quack-core.paths'] = paths_mod
+    if 'quack_core.paths' not in sys.modules:
+        paths_mod = types.ModuleType('quack_core.paths')
+        sys.modules['quack_core.paths'] = paths_mod
 
     # Add necessary functions directly to the module
-    sys.modules['quack-core.paths'].service = mock
-    sys.modules['quack-core.paths'].resolve_path = lambda path: os.path.abspath(
+    sys.modules['quack_core.paths'].service = mock
+    sys.modules['quack_core.paths'].resolve_path = lambda path: os.path.abspath(
         path) if path else "/dummy/path"
-    sys.modules['quack-core.paths'].expand_user_vars = lambda path: os.path.expanduser(
+    sys.modules['quack_core.paths'].expand_user_vars = lambda path: os.path.expanduser(
         path) if path and isinstance(path, str) and path.startswith('~') else path
-    sys.modules['quack-core.paths'].read_yaml = lambda path: SimpleNamespace(
+    sys.modules['quack_core.paths'].read_yaml = lambda path: SimpleNamespace(
         success=True, data={})
 
     return mock

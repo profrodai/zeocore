@@ -15,7 +15,7 @@ class TestGoogleDriveServiceUpload:
     """Tests for the GoogleDriveService upload _operations."""
 
     @patch(
-        "quack-core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_upload_file(
@@ -70,7 +70,7 @@ class TestGoogleDriveServiceUpload:
             }
 
             with patch(
-                "quack-core.integrations.google.drive.service.standalone", mock_fs_service
+                "quack_core.integrations.google.drive.service.standalone", mock_fs_service
             ):
                 with patch.object(service, "_execute_upload", mock_execute_upload):
                     with patch.object(
@@ -106,7 +106,7 @@ class TestGoogleDriveServiceUpload:
             mock_fs_service.read_binary.return_value.error = "Read error"
 
             with patch(
-                "quack-core.integrations.google.drive.service.standalone", mock_fs_service
+                "quack_core.integrations.google.drive.service.standalone", mock_fs_service
             ):
                 result = service.upload_file(str(test_file))
 
@@ -133,7 +133,7 @@ class TestGoogleDriveServiceUpload:
             )
 
             with patch(
-                "quack-core.integrations.google.drive.service.standalone", mock_fs_service
+                "quack_core.integrations.google.drive.service.standalone", mock_fs_service
             ):
                 with patch.object(service, "_execute_upload", mock_execute_upload):
                     result = service.upload_file(str(test_file))

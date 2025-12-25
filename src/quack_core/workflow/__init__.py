@@ -1,6 +1,6 @@
 # quack-core/src/quack_core/workflow/__init__.py
 """
-quack-core.workflow – Provides modular runners and mixins for tool workflows.
+quack_core.workflow – Provides modular runners and mixins for tool workflows.
 
 This module offers a flexible workflow system for file processing with support for 
 remote file handling, customizable output writing, and structured result types.
@@ -24,10 +24,10 @@ __all__ = [
 
 # Example Tool Implementation (for reference)
 """
-from quack-core.workflow.mixins.integration_enabled import IntegrationEnabledMixin
-from quack-core.integrations.google.drive import GoogleDriveService
-from quack-core.workflow.runners.file_runner import FileWorkflowRunner
-from quack-core.toolkit.base import BaseQuackToolPlugin, IntegrationResult
+from quack_core.workflow.mixins.integration_enabled import IntegrationEnabledMixin
+from quack_core.integrations.google.drive import GoogleDriveService
+from quack_core.workflow.runners.file_runner import FileWorkflowRunner
+from quack_core.toolkit.base import BaseQuackToolPlugin, IntegrationResult
 from typing import Any
 
 class QuackMetadataTool(

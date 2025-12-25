@@ -13,7 +13,7 @@ class TestGoogleDriveServiceList:
     """Tests for the GoogleDriveService listing _operations."""
 
     @patch(
-        "quack-core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_list_files(self, mock_init_config, mock_verify) -> None:

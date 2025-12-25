@@ -87,7 +87,7 @@ def test_prepare_pandoc_args():
     assert "--custom-arg" in custom_args
 
 
-@patch('quack-core.fs.service.standalone')
+@patch('quack_core.fs.service.standalone')
 def test_get_file_info(mock_fs):
     """Test getting file information for conversion."""
     # Setup mock fs
@@ -207,7 +207,7 @@ def test_check_conversion_ratio():
     assert "less than" in errors[0]
 
 
-@patch('quack-core.integrations.pandoc.operations.utils.logger')
+@patch('quack_core.integrations.pandoc.operations.utils.logger')
 def test_track_metrics(mock_logger):
     """Test tracking of conversion metrics."""
     metrics = ConversionMetrics()

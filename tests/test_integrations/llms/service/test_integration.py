@@ -59,7 +59,7 @@ class TestLLMIntegrationComprehensive:
         """Test initializing with default parameters."""
         # We need to patch where it's imported, not its original location
         with patch(
-            "quack-core.integrations.llms.service.integration.LLMConfigProvider"
+            "quack_core.integrations.llms.service.integration.LLMConfigProvider"
         ) as mock_provider_class:
             integration = LLMIntegration()
             assert integration.provider is None
@@ -76,7 +76,7 @@ class TestLLMIntegrationComprehensive:
 
     def test_init_custom(self) -> None:
         """Test initializing with custom parameters."""
-        with patch("quack-core.fs.service.get_file_info") as mock_file_info:
+        with patch("quack_core.fs.service.get_file_info") as mock_file_info:
             # Create a proper FileInfoResult
             file_info_result = MagicMock()
             file_info_result.success = True
@@ -85,7 +85,7 @@ class TestLLMIntegrationComprehensive:
             mock_file_info.return_value = file_info_result
 
             # Also patch resolve_path
-            with patch("quack-core.fs.service.standalone.resolve_path") as mock_resolve_path:
+            with patch("quack_core.fs.service.standalone.resolve_path") as mock_resolve_path:
                 # Create a mock path string directly
                 mock_path = "/Users/rodrivera/custom_config.yaml"
                 mock_result = MagicMock()
@@ -184,7 +184,7 @@ class TestLLMIntegrationComprehensive:
         integration.config = None
 
         # Mock LLMConfig using the correct import path
-        with patch("quack-core.integrations.llms.config.LLMConfig") as mock_llm_config:
+        with patch("quack_core.integrations.llms.config.LLMConfig") as mock_llm_config:
             mock_llm_config.side_effect = ValueError("Invalid config")
 
             # Should raise QuackIntegrationError
@@ -197,7 +197,7 @@ class TestLLMIntegrationComprehensive:
         """Test initialize when base class initialization fails."""
         # Mock base class initialize to fail
         with patch(
-            "quack-core.integrations.core.base.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult(
                 success=False, error="Base initialization failed"
@@ -216,7 +216,7 @@ class TestLLMIntegrationComprehensive:
         """Test complete initialization process."""
         # Mock base class initialize to succeed
         with patch(
-            "quack-core.integrations.core.base.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult(success=True)
 
@@ -228,7 +228,7 @@ class TestLLMIntegrationComprehensive:
             )
             # Patch where it's actually imported, not just the function itself
             with patch(
-                "quack-core.integrations.llms.service.integration.check_llm_dependencies",
+                "quack_core.integrations.llms.service.integration.check_llm_dependencies",
                 return_value=mock_deps_result,
             ) as mock_check_deps:
                 # Mock extract_config
@@ -242,7 +242,7 @@ class TestLLMIntegrationComprehensive:
                         success=True, message="Initialized"
                     )
                     with patch(
-                        "quack-core.integrations.llms.service.initialization.initialize_single_provider",
+                        "quack_core.integrations.llms.service.initialization.initialize_single_provider",
                         return_value=success_result,
                     ) as mock_init_single:
                         # Call initialize
@@ -265,7 +265,7 @@ class TestLLMIntegrationComprehensive:
         """Test initialization with fallback configuration."""
         # Mock base class initialize to succeed
         with patch(
-            "quack-core.integrations.core.base.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult(success=True)
 
@@ -276,7 +276,7 @@ class TestLLMIntegrationComprehensive:
                 ["openai", "anthropic", "mock"],
             )
             with patch(
-                "quack-core.integrations.llms.service.dependencies.check_llm_dependencies",
+                "quack_core.integrations.llms.service.dependencies.check_llm_dependencies",
                 return_value=mock_deps_result,
             ) as mock_check_deps:
                 # Mock extract_config with fallback configuration
@@ -289,7 +289,7 @@ class TestLLMIntegrationComprehensive:
                 ) as mock_extract:
                     # Mock FallbackConfig creation
                     with patch(
-                        "quack-core.integrations.llms.fallback.FallbackConfig"
+                        "quack_core.integrations.llms.fallback.FallbackConfig"
                     ) as mock_fallback_config:
                         mock_fallback_config.return_value = FallbackConfig(
                             providers=["openai", "anthropic", "mock"]
@@ -300,7 +300,7 @@ class TestLLMIntegrationComprehensive:
                             success=True, message="Initialized with fallback"
                         )
                         with patch(
-                            "quack-core.integrations.llms.service.initialization.initialize_with_fallback",
+                            "quack_core.integrations.llms.service.initialization.initialize_with_fallback",
                             return_value=success_result,
                         ) as mock_init_fallback:
                             # Call initialize
@@ -316,7 +316,7 @@ class TestLLMIntegrationComprehensive:
         """Test handling QuackIntegrationError during initialization."""
         # Mock base class initialize to succeed
         with patch(
-            "quack-core.integrations.core.base.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult(success=True)
 
@@ -339,7 +339,7 @@ class TestLLMIntegrationComprehensive:
         """Test handling generic exceptions during initialization."""
         # Mock base class initialize to succeed
         with patch(
-            "quack-core.integrations.core.base.BaseIntegrationService.initialize"
+            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult(success=True)
 

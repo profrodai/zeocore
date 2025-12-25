@@ -1,6 +1,6 @@
 # quack-core/tests/test_prompt/__init__.py
 """
-Tests for the quack-core.prompt module.
+Tests for the quack_core.prompt module.
 
 This package contains tests for the QuackCore prompt module, which provides
 tools and strategies for creating high-quality LLM prompts.

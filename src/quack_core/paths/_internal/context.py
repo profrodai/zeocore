@@ -21,7 +21,7 @@ def _compute_relative_path(path: str, root: str) -> str | None:
     Returns:
         The relative path as a string if `path` starts with `root`, otherwise None.
     """
-    # Assumes paths are already normalized using quack-core.fs utilities.
+    # Assumes paths are already normalized using quack_core.fs utilities.
     if path.startswith(root):
         rel = path[len(root) :]
         return rel.lstrip("/\\")

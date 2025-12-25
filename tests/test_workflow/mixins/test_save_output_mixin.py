@@ -176,7 +176,7 @@ def test_with_timestamp(monkeypatch):
 
             return D()
 
-    monkeypatch.setattr("quack-core.workflow.mixins.save_output_mixin.datetime", FakeDT)
+    monkeypatch.setattr("quack_core.workflow.mixins.save_output_mixin.datetime", FakeDT)
     ts = dummy.with_timestamp("f.txt")
     assert ts.name == f"f_{fake}.txt"
 

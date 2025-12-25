@@ -283,7 +283,7 @@ Tags: {", ".join(s.tags)}
         }
 
         try:
-            # Ensure parent directory exists using quack-core.standalone.
+            # Ensure parent directory exists using quack_core.standalone.
             # Convert path to string if it's a Path object
             path_str = str(path)
 

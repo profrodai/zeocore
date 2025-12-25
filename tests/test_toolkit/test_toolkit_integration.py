@@ -101,10 +101,10 @@ class CompleteTool(
         self._upload_service = None
 
         # Patch get_service to avoid filesystem issues
-        with patch('quack-core.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.fs.service.get_service') as mock_get_service, \
                 patch('os.getcwd') as mock_getcwd, \
-                patch('quack-core.config.tooling.logger.setup_tool_logging'), \
-                patch('quack-core.config.tooling.logger.get_logger'):
+                patch('quack_core.config.tooling.logger.setup_tool_logging'), \
+                patch('quack_core.config.tooling.logger.get_logger'):
             # Configure mocks
             mock_fs = create_mock_fs()
             mock_get_service.return_value = mock_fs
@@ -228,9 +228,9 @@ def complete_tool(mock_upload_service: MockUploadService) -> CompleteTool:
     """Create a complete tool with all mixins."""
     # Create a patch context that remains active through the whole test
     # Use patch for module paths, not patch.object
-    with patch('quack-core.config.tooling.logger.setup_tool_logging'), \
-            patch('quack-core.toolkit.base.setup_tool_logging'), \
-            patch('quack-core.integrations.core.get_integration_service',
+    with patch('quack_core.config.tooling.logger.setup_tool_logging'), \
+            patch('quack_core.toolkit.base.setup_tool_logging'), \
+            patch('quack_core.integrations.core.get_integration_service',
                   return_value=mock_upload_service):
         # Create the tool instance
         tool = CompleteTool("complete_tool", "1.0.0")
@@ -281,7 +281,7 @@ class TestToolkitIntegration:
         assert metadata.name == "complete_tool"
         assert metadata.version == "1.0.0"
 
-    @patch('quack-core.workflow.runners.file_runner.FileWorkflowRunner')
+    @patch('quack_core.workflow.runners.file_runner.FileWorkflowRunner')
     def test_complete_tool_process_file(self, mock_runner: MagicMock,
                                         complete_tool: CompleteTool,
                                         sample_file: str) -> None:
@@ -307,7 +307,7 @@ class TestToolkitIntegration:
         args, kwargs = mock_runner_instance.run.call_args
         assert args[1] == options
 
-    @patch('quack-core.workflow.runners.file_runner.FileWorkflowRunner')
+    @patch('quack_core.workflow.runners.file_runner.FileWorkflowRunner')
     def test_complete_tool_run(self, mock_runner: MagicMock,
                                complete_tool: CompleteTool,
                                mock_upload_service: MockUploadService) -> None:
@@ -351,7 +351,7 @@ class TestToolkitIntegration:
         assert service is not None
         assert isinstance(service, MockUploadService)
 
-    @patch('quack-core.integrations.core.get_integration_service')
+    @patch('quack_core.integrations.core.get_integration_service')
     def test_upload_without_service(self, mock_get_integration: MagicMock,
                                     mock_upload_service: MockUploadService) -> None:
         """Test uploading a file when integration service is not available."""
@@ -359,9 +359,9 @@ class TestToolkitIntegration:
         mock_get_integration.return_value = None
 
         # We need to initialize a new tool for this test
-        with patch('quack-core.config.tooling.logger.configure_logger'), \
-                patch('quack-core.config.tooling.logger.setup_tool_logging'), \
-                patch('quack-core.config.tooling.logger.get_logger'):
+        with patch('quack_core.config.tooling.logger.configure_logger'), \
+                patch('quack_core.config.tooling.logger.setup_tool_logging'), \
+                patch('quack_core.config.tooling.logger.get_logger'):
             tool = CompleteTool("test_tool", "1.0.0")
 
             # Check that the integration is None

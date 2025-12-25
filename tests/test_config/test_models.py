@@ -52,8 +52,8 @@ class TestConfigModels:
         }
 
         # Test setup_logging method with the new implementation
-        with patch("quack-core.logging.configure_logger") as mock_configure_logger:
-            with patch("quack-core.logging.LOG_LEVELS", mock_log_levels):
+        with patch("quack_core.logging.configure_logger") as mock_configure_logger:
+            with patch("quack_core.logging.LOG_LEVELS", mock_log_levels):
                 # Create a mock logger to be returned
                 mock_logger = MagicMock()
                 mock_configure_logger.return_value = mock_logger

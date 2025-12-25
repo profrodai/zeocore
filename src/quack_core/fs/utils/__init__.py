@@ -6,7 +6,7 @@ This module provides high-level utility functions that build upon
 the basic _operations provided by the FileSystemService.
 
 Note: This is a legacy name preserved for backward compatibility.
-For new code, prefer using `quack-core.fs.api.public` instead.
+For new code, prefer using `quack_core.fs.api.public` instead.
 """
 
 from quack_core.fs.api import (

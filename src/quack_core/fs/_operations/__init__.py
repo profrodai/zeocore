@@ -60,7 +60,7 @@ class FileSystemOperations(
     This class combines all operation mixins to provide a complete
     filesystem _operations implementation with error handling,
     logging, and return values. It serves as the internal implementation
-    layer used by the public API in quack-core.fs.service.
+    layer used by the public API in quack_core.fs.service.
 
     All methods follow this contract:
     - Internal methods accept only str or Path input

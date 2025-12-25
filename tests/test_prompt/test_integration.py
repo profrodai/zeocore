@@ -171,12 +171,12 @@ def test_llm_integration():
     """Test integration with LLM enhancer."""
     # Skip if no LLM integration is available
     try:
-        importlib.import_module("quack-core.integrations.llms.service")
+        importlib.import_module("quack_core.integrations.llms.service")
     except ImportError:
         pytest.skip("LLM integration not available")
 
     # Create a mock for the LLM service
-    with patch("quack-core.prompt.enhancer.enhance_with_llm") as mock_enhance:
+    with patch("quack_core.prompt.enhancer.enhance_with_llm") as mock_enhance:
         # Configure the mock
         mock_enhance.return_value = "LLM enhanced: Generate a creative story"
 
@@ -213,7 +213,7 @@ def test_llm_integration():
 def test_full_pipeline_with_mock_llm():
     """Test the full pipeline from strategy creation to enhanced rendering."""
     # Create a mock for the LLM service
-    with patch("quack-core.prompt.enhancer.enhance_with_llm") as mock_enhance:
+    with patch("quack_core.prompt.enhancer.enhance_with_llm") as mock_enhance:
         # Configure the mock to simulate LLM enhancement
         mock_enhance.return_value = (
             "Enhanced: Create a comprehensive guide to prompt engineering"

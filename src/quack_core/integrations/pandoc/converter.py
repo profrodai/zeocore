@@ -6,7 +6,7 @@ This module provides the main DocumentConverter class that implements
 the document conversion functionality using Pandoc. In this refactored
 version, all file paths are represented as strings. Filesystem _operations
 such as reading file info, creating directories, writing output files, etc.,
-are delegated to the quack-core.fs service functions.
+are delegated to the quack_core.fs service functions.
 """
 
 import os
@@ -37,7 +37,7 @@ logger = get_logger(__name__)
 try:
     from quack_core.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack-core.fs.service")
+    logger.error("Could not import quack_core.fs.service")
     from types import SimpleNamespace
     # Create a minimal fs stub if the module isn't available (for tests)
     fs = SimpleNamespace(

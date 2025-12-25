@@ -44,7 +44,7 @@ class TestInitCliEnv:
         mock_context = MagicMock(spec=QuackContext)
 
         # Patch the QuackContext constructor to avoid validation errors
-        with patch("quack-core.cli.boostrap.QuackContext", return_value=mock_context):
+        with patch("quack_core.interfaces.cli.legacy.boostrap.QuackContext", return_value=mock_context):
             # Set environment for test
             with patch.dict(os.environ, {"QUACK_ENV": "development"}):
                 # Call the function under test
@@ -60,9 +60,9 @@ class TestInitCliEnv:
                 # Now verify the context attributes
                 assert context is mock_context
 
-    @patch("quack-core.cli.boostrap.setup_logging")
-    @patch("quack-core.cli.boostrap.load_config")
-    @patch("quack-core.cli.boostrap.find_project_root")
+    @patch("quack_core.interfaces.cli.legacy.boostrap.setup_logging")
+    @patch("quack_core.interfaces.cli.legacy.boostrap.load_config")
+    @patch("quack_core.interfaces.cli.legacy.boostrap.find_project_root")
     def test_with_explicit_parameters(
         self, mock_find_root, mock_load_config, mock_setup_logging
     ):
@@ -83,7 +83,7 @@ class TestInitCliEnv:
         mock_context = MagicMock(spec=QuackContext)
 
         # Patch the QuackContext constructor to avoid validation errors
-        with patch("quack-core.cli.boostrap.QuackContext", return_value=mock_context):
+        with patch("quack_core.interfaces.cli.legacy.boostrap.QuackContext", return_value=mock_context):
             # Call with explicit parameters
             context = init_cli_env(
                 config_path="/path/to/config.yaml",
@@ -130,7 +130,7 @@ class TestInitCliEnv:
         mock_context = MagicMock(spec=QuackContext)
 
         # Patch the QuackContext constructor to avoid validation errors
-        with patch("quack-core.cli.boostrap.QuackContext", return_value=mock_context):
+        with patch("quack_core.interfaces.cli.legacy.boostrap.QuackContext", return_value=mock_context):
             # Call with debug=True
             init_cli_env(debug=True)
 
@@ -155,7 +155,7 @@ class TestInitCliEnv:
         mock_context = MagicMock(spec=QuackContext)
 
         # Patch the QuackContext constructor to avoid validation errors
-        with patch("quack-core.cli.boostrap.QuackContext", return_value=mock_context):
+        with patch("quack_core.interfaces.cli.legacy.boostrap.QuackContext", return_value=mock_context):
             # Call with verbose=True
             init_cli_env(verbose=True)
 
@@ -166,7 +166,7 @@ class TestInitCliEnv:
         """Test error handling during initialization."""
         # Test QuackError is re-raised
         with patch(
-            "quack-core.cli.boostrap.find_project_root",
+            "quack_core.interfaces.cli.legacy.boostrap.find_project_root",
             side_effect=QuackError("Project root error"),
         ):
             with patch("logging.error") as mock_error_logger:
@@ -179,7 +179,7 @@ class TestInitCliEnv:
 
         # Test other exceptions are wrapped in QuackError
         with patch(
-            "quack-core.cli.boostrap.find_project_root",
+            "quack_core.interfaces.cli.legacy.boostrap.find_project_root",
             side_effect=ValueError("Unexpected error"),
         ):
             with patch("logging.error") as mock_error_logger:
@@ -197,7 +197,7 @@ class TestInitCliEnv:
 class TestFromCliOptions:
     """Tests for from_cli_options function."""
 
-    @patch("quack-core.cli.boostrap.init_cli_env")
+    @patch("quack_core.interfaces.cli.legacy.boostrap.init_cli_env")
     def test_from_cli_options(self, mock_init_cli_env):
         """Test creating a context from CliOptions."""
         # Set up mocks

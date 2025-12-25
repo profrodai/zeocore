@@ -98,7 +98,7 @@ class PluginLoaderProtocol(Protocol):
     """Protocol for a plugin loader."""
 
     def load_entry_points(
-        self, group: str = "quack-core.plugins"
+        self, group: str = "quack_core.plugins"
     ) -> list[QuackPluginProtocol]:
         """
         Load plugins from entry points.

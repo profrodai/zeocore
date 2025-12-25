@@ -154,7 +154,7 @@ def test_get_file_info_edge_cases(monkeypatch):
     mock_fs.get_file_info = lambda path: SimpleNamespace(
         success=True, exists=True, size="not-a-number", modified=None
     )
-    monkeypatch.setattr('quack-core.integrations.pandoc.operations.utils.fs', mock_fs)
+    monkeypatch.setattr('quack_core.integrations.pandoc.operations.utils.fs', mock_fs)
 
     file_info = get_file_info("test.html")
     assert file_info.size == 1024  # Default when size conversion fails
@@ -166,7 +166,7 @@ def test_get_file_info_edge_cases(monkeypatch):
     mock_fs.get_extension = lambda path: SimpleNamespace(
         success=True, data=path.split('.')[-1]
     )
-    monkeypatch.setattr('quack-core.integrations.pandoc.operations.utils.fs', mock_fs)
+    monkeypatch.setattr('quack_core.integrations.pandoc.operations.utils.fs', mock_fs)
 
     # Test various extensions
     extensions_mapping = {
@@ -244,7 +244,7 @@ def test_check_conversion_ratio_edge_cases():
     assert "less than" in errors[0]
 
 
-@patch('quack-core.integrations.pandoc.operations.utils.logger')
+@patch('quack_core.integrations.pandoc.operations.utils.logger')
 def test_track_metrics_logging(mock_logger):
     """Test that track_metrics properly logs information."""
     metrics = ConversionMetrics()
@@ -448,7 +448,7 @@ def test_prepare_pandoc_args_comprehensive():
 
 
 # Specific test for the post_process_markdown function
-@patch('quack-core.integrations.pandoc.operations.html_to_md.re')
+@patch('quack_core.integrations.pandoc.operations.html_to_md.re')
 def test_post_process_markdown_regex_patterns(mock_re):
     """Test regex patterns used in post_process_markdown."""
     from quack_core.integrations.pandoc.operations.html_to_md import (

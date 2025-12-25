@@ -21,7 +21,7 @@ T = TypeVar("T")  # Generic type for flexible typing
 DEFAULT_CONFIG_VALUES: dict[str, Any] = {
     "logging": {
         "level": "INFO",
-        "file": "logs/quack-core.log",
+        "file": "logs/quack_core.log",
     },
     "paths": {
         "base_dir": os.path.join(os.path.expanduser("~"), ".quack-core"),

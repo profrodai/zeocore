@@ -1,6 +1,6 @@
 # quack-core/tests/test_toolkit/test_tools.py
 """
-Test tool implementations for testing quack-core.toolkit.
+Test tool implementations for testing quack_core.toolkit.
 
 This module provides concrete tool implementations for testing
 the toolkit components.
@@ -138,7 +138,7 @@ class IntegrationTool(IntegrationEnabledMixin[MockIntegrationService], BaseMockT
         self._service: MockIntegrationService | None = None
 
         # Patch the integration service
-        with patch("quack-core.integrations.core.get_integration_service",
+        with patch("quack_core.integrations.core.get_integration_service",
                    return_value=MockIntegrationService()):
             # Initialize the base class
             super().__init__("integration_tool", "1.0.0")
@@ -173,7 +173,7 @@ class CompleteTool(
     def __init__(self) -> None:
         """Initialize the complete tool."""
         # Patch the integration service
-        with patch("quack-core.integrations.core.get_integration_service",
+        with patch("quack_core.integrations.core.get_integration_service",
                    return_value=MockIntegrationService()):
             # Initialize the base class
             super().__init__("complete_tool", "1.0.0")

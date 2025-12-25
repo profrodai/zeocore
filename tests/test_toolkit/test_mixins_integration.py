@@ -69,9 +69,9 @@ class CompleteQuackTool(
 
     def __init__(self) -> None:
         # Patch filesystem access and logging to avoid issues
-        with patch('quack-core.fs.service.get_service') as mock_get_service, \
-                patch('quack-core.toolkit.base.setup_tool_logging'), \
-                patch('quack-core.toolkit.base.get_logger') as mock_get_logger, \
+        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+                patch('quack_core.toolkit.base.setup_tool_logging'), \
+                patch('quack_core.toolkit.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:
             # Configure mocks
             mock_fs = MagicMock()
@@ -283,7 +283,7 @@ class TestMixinIntegration(unittest.TestCase):
         self.assertEqual(self.tool._get_output_extension(), ".yaml")
         self.assertIsInstance(self.tool.get_output_writer(), YAMLOutputWriter)
 
-    @patch("quack-core.workflow.runners.file_runner.FileWorkflowRunner")
+    @patch("quack_core.workflow.runners.file_runner.FileWorkflowRunner")
     def test_run_workflow(self, mock_runner: MagicMock) -> None:
         """
         Test the complete workflow using run method.
@@ -333,7 +333,7 @@ class TestMixinIntegration(unittest.TestCase):
         self.assertEqual(self.mock_service.upload_file_path, self.temp_file.name)
         self.assertEqual(self.mock_service.upload_destination, destination)
 
-    @patch("quack-core.integrations.core.get_integration_service")
+    @patch("quack_core.integrations.core.get_integration_service")
     def test_upload_without_service(self, mock_get_integration: MagicMock) -> None:
         """
         Test uploading a file when integration service is not available.

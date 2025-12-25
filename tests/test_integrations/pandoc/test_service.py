@@ -26,7 +26,7 @@ def test_initialize_with_mocked_verify_pandoc(fs_stub, mock_paths_service):
     integration = PandocIntegration()
 
     # Mock the verify_pandoc function
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         result = integration.initialize()
 
@@ -41,7 +41,7 @@ def test_initialize_with_verify_pandoc_error(fs_stub, mock_paths_service):
     integration = PandocIntegration()
 
     # Mock verify_pandoc to raise an error
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                side_effect=QuackIntegrationError("Pandoc not found", {})):
         result = integration.initialize()
 
@@ -82,13 +82,13 @@ def test_is_pandoc_available():
     integration = PandocIntegration()
 
     # Mock verify_pandoc to succeed
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         assert integration.is_pandoc_available()
         assert integration.get_pandoc_version() == "2.11.0"
 
     # Mock verify_pandoc to fail
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                side_effect=QuackIntegrationError("Pandoc not found", {})):
         assert not integration.is_pandoc_available()
         assert integration.get_pandoc_version() is None
@@ -99,7 +99,7 @@ def test_html_to_markdown_with_initialized_service(fs_stub, mock_paths_service):
     integration = PandocIntegration()
 
     # Initialize the service
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         integration.initialize()
 
@@ -124,7 +124,7 @@ def test_markdown_to_docx_with_initialized_service(fs_stub, mock_paths_service):
     integration = PandocIntegration()
 
     # Initialize the service
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         integration.initialize()
 
@@ -149,7 +149,7 @@ def test_convert_directory_with_initialized_service(fs_stub, mock_paths_service)
     integration = PandocIntegration()
 
     # Initialize the service
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         integration.initialize()
 

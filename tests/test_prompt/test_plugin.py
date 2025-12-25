@@ -222,7 +222,7 @@ def test_plugin_list_strategies():
 
 def test_plugin_enhance_prompt():
     """Test enhancing a prompt through the plugin."""
-    with patch("quack-core.prompt.booster.PromptBooster") as MockBooster:
+    with patch("quack_core.prompt.booster.PromptBooster") as MockBooster:
         # Configure the mock
         mock_booster = MagicMock()
         mock_booster.render.return_value = "Enhanced prompt"

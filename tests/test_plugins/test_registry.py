@@ -779,7 +779,7 @@ class TestPluginRegistry:
         # Create a proper mock entry point
         mock_ep = MagicMock()
         mock_ep.name = "builtin_plugin"
-        mock_ep.value = "quack-core.builtin:create_plugin"
+        mock_ep.value = "quack_core.builtin:create_plugin"
         mock_ep.load.return_value = mock_factory
 
         # Test loading from entry points

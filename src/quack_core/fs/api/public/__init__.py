@@ -3,7 +3,7 @@
 ✅ Public Utility Functions (Safe for QuackTools and DuckTyper)
 
 These are stable, documented, and error-handled _helpers for working with the filesystem.
-If you're building with `quack-core.fs.service`, use these functions directly.
+If you're building with `quack_core.fs.service`, use these functions directly.
 """
 
 from quack_core.fs.api.public.checksums import compute_checksum

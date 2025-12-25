@@ -1,8 +1,8 @@
 # quack-core/src/quack_core/logging/__init__.py
 """
-Centralized logging module for quack-core.
+Centralized logging module for quack_core.
 
-This package provides a standardized approach to logging throughout quack-core.
+This package provides a standardized approach to logging throughout quack_core.
 It exposes the default logger, a module‐specific logger creator, and other
 configuration constants.
 """

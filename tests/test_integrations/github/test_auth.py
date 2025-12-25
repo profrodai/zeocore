@@ -83,7 +83,7 @@ def test_registry_integration():
     mock_registry.get_integrations = MagicMock(return_value=[integration])
 
     # Patch the registry module
-    with patch("quack-core.integrations.github.registry", mock_registry):
+    with patch("quack_core.integrations.github.registry", mock_registry):
         # Import the module to trigger registration
         import importlib
 
@@ -106,11 +106,11 @@ def test_module_init():
 
     # Patch create_integration to return our mock integration
     with patch(
-        "quack-core.integrations.github.create_integration",
+        "quack_core.integrations.github.create_integration",
         return_value=mock_integration,
     ):
         # Patch the registry module
-        with patch("quack-core.integrations.github.registry", mock_registry):
+        with patch("quack_core.integrations.github.registry", mock_registry):
             # Re-import the module to trigger registration
             import importlib
 
@@ -138,7 +138,7 @@ def test_lazy_loading():
         if name == "GitHubTeachingAdapter":
             return "MockGitHubTeachingAdapter"
         raise AttributeError(
-            f"module 'quack-core.integrations.github' has no attribute '{name}'"
+            f"module 'quack_core.integrations.github' has no attribute '{name}'"
         )
 
     # Apply the mock
@@ -173,7 +173,7 @@ def test_getattr_unknown_attribute():
         if name == "GitHubTeachingAdapter":
             return "MockGitHubTeachingAdapter"
         raise AttributeError(
-            f"module 'quack-core.integrations.github' has no attribute '{name}'"
+            f"module 'quack_core.integrations.github' has no attribute '{name}'"
         )
 
     # Apply the mock

@@ -53,7 +53,7 @@ class TestHandleErrors:
     def test_basic_decorator(self) -> None:
         """Test basic usage of the decorator."""
         # Mock the print_error function BEFORE defining functions with decorators
-        with patch("quack-core.cli.error._print_error") as mock_print_error:
+        with patch("quack_core.interfaces.cli.utils.error._print_error") as mock_print_error:
             # Define a function with the decorator
             @handle_errors()
             def successful_function() -> str:
@@ -79,7 +79,7 @@ class TestHandleErrors:
 
     def test_with_specific_error_types(self) -> None:
         """Test specifying error types to catch."""
-        with patch("quack-core.cli.error._print_error") as mock_print_error:
+        with patch("quack_core.interfaces.cli.utils.error._print_error") as mock_print_error:
             # Define a function that catches only ValueError
             @handle_errors(error_types=ValueError)
             def value_error_function() -> None:
@@ -108,7 +108,7 @@ class TestHandleErrors:
 
     def test_with_custom_title(self) -> None:
         """Test using a custom error title."""
-        with patch("quack-core.cli.error._print_error") as mock_print_error:
+        with patch("quack_core.interfaces.cli.utils.error._print_error") as mock_print_error:
 
             @handle_errors(title="Custom Error Title")
             def custom_title_function() -> None:
@@ -121,7 +121,7 @@ class TestHandleErrors:
 
     def test_with_traceback(self) -> None:
         """Test showing traceback."""
-        with patch("quack-core.cli.error._print_error") as mock_print_error:
+        with patch("quack_core.interfaces.cli.utils.error._print_error") as mock_print_error:
             with patch("traceback.print_exc") as mock_print_exc:
 
                 @handle_errors(show_traceback=True)
@@ -135,7 +135,7 @@ class TestHandleErrors:
 
     def test_with_exit_code(self) -> None:
         """Test exiting with specific code."""
-        with patch("quack-core.cli.error._print_error") as mock_print_error:
+        with patch("quack_core.interfaces.cli.utils.error._print_error") as mock_print_error:
             with patch("sys.exit") as mock_exit:
 
                 @handle_errors(exit_code=42)
@@ -268,16 +268,16 @@ class TestGetCliInfo:
             with patch("platform.python_version", return_value="3.13.0"):
                 # Patch our helper function instead of datetime.datetime.now
                 with patch(
-                    "quack-core.cli.error._get_current_datetime",
+                    "quack_core.interfaces.cli.utils.error._get_current_datetime",
                     return_value=fixed_datetime,
                 ):
                     with patch("os.getpid", return_value=12345):
                         with patch("os.getcwd", return_value="/current/dir"):
                             with patch(
-                                "quack-core.config.utils.get_env", return_value="test"
+                                "quack_core.config.utils.get_env", return_value="test"
                             ):
                                 with patch(
-                                    "quack-core.cli.terminal.get_terminal_size"
+                                    "quack_core.interfaces.cli.utils.terminal.get_terminal_size"
                                 ) as mock_term_size:
                                     mock_term_size.return_value = (80, 24)
 
@@ -301,14 +301,14 @@ class TestGetCliInfo:
         with patch("platform.platform"):
             with patch("platform.python_version"):
                 with patch(
-                    "quack-core.cli.error._get_current_datetime",
+                    "quack_core.interfaces.cli.utils.error._get_current_datetime",
                     return_value=datetime(2023, 1, 1, 12, 0, 0),
                 ):
                     with patch("os.getpid"):
                         with patch("os.getcwd"):
-                            with patch("quack-core.config.utils.get_env"):
+                            with patch("quack_core.config.utils.get_env"):
                                 with patch(
-                                    "quack-core.cli.terminal.get_terminal_size"
+                                    "quack_core.interfaces.cli.utils.terminal.get_terminal_size"
                                 ) as mock_term_size:
                                     # Simulate an error getting terminal size
                                     mock_term_size.side_effect = OSError(
@@ -326,15 +326,15 @@ class TestGetCliInfo:
         with patch("platform.platform"):
             with patch("platform.python_version"):
                 with patch(
-                    "quack-core.cli.error._get_current_datetime",
+                    "quack_core.interfaces.cli.utils.error._get_current_datetime",
                     return_value=datetime(2023, 1, 1, 12, 0, 0),
                 ):
                     with patch("os.getpid"):
                         with patch("os.getcwd"):
-                            with patch("quack-core.config.utils.get_env"):
+                            with patch("quack_core.config.utils.get_env"):
                                 # Make sure get_terminal_size returns a valid tuple
                                 with patch(
-                                    "quack-core.cli.terminal.get_terminal_size",
+                                    "quack_core.interfaces.cli.utils.terminal.get_terminal_size",
                                     return_value=(80, 24),
                                 ):
                                     # Test various CI environment variables

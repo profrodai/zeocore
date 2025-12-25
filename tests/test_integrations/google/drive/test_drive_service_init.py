@@ -13,7 +13,7 @@ class TestGoogleDriveServiceInit:
     """Tests for the GoogleDriveService initialization."""
 
     @patch(
-        "quack-core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     def test_init(self, mock_verify) -> None:
         """Test initializing the drive service."""
@@ -45,7 +45,7 @@ class TestGoogleDriveServiceInit:
         assert service.scopes == custom_scopes
 
     @patch(
-        "quack-core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_is_storage_integration(self, mock_init_config, mock_verify) -> None:
@@ -64,9 +64,9 @@ class TestGoogleDriveServiceInit:
         assert isinstance(service, StorageIntegrationProtocol)
 
     @patch(
-        "quack-core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
-    @patch("quack-core.integrations.google.config.GoogleConfigProvider.load_config")
+    @patch("quack_core.integrations.google.config.GoogleConfigProvider.load_config")
     def test_initialize_config(self, mock_load_config, mock_verify) -> None:
         """Test initializing the service configuration."""
         # Bypass verification
@@ -100,7 +100,7 @@ class TestGoogleDriveServiceInit:
         mock_load_config.return_value.success = False
 
         with patch(
-            "quack-core.integrations.google.config.GoogleConfigProvider.get_default_config"
+            "quack_core.integrations.google.config.GoogleConfigProvider.get_default_config"
         ) as mock_default:
             mock_default.return_value = {
                 "client_secrets_file": "/default/secrets.json",
@@ -112,10 +112,10 @@ class TestGoogleDriveServiceInit:
             assert service.config["credentials_file"] == "/default/credentials.json"
 
     @patch(
-        "quack-core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
-    @patch("quack-core.integrations.google.auth.GoogleAuthProvider.authenticate")
-    @patch("quack-core.integrations.google.auth.GoogleAuthProvider.get_credentials")
+    @patch("quack_core.integrations.google.auth.GoogleAuthProvider.authenticate")
+    @patch("quack_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
     @patch("googleapiclient.discovery.build")
     def test_initialize(
         self, mock_build, mock_get_credentials, mock_authenticate, mock_verify

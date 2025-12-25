@@ -27,7 +27,7 @@ class TestDriveOperationsPermissions:
         # Mock execute_api_request - make sure to patch the correct module
         # The key is to patch the module's function, which is what's being called in the implementation
         with patch(
-            "quack-core.integrations.google.drive.utils.api.execute_api_request"
+            "quack_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {"id": "perm123"}
 
@@ -74,7 +74,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request
         with patch(
-            "quack-core.integrations.google.drive.utils.api.execute_api_request"
+            "quack_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {"id": "perm123"}
 
@@ -117,7 +117,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request to raise an error
         with patch(
-            "quack-core.integrations.google.drive.utils.api.execute_api_request"
+            "quack_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.side_effect = QuackApiError(
                 "API error", service="Google Drive", api_method="permissions.create"
@@ -143,7 +143,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request
         with patch(
-            "quack-core.integrations.google.drive.utils.api.execute_api_request"
+            "quack_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {
                 "webViewLink": "https://drive.google.com/file/d/file123/view",
@@ -186,7 +186,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request
         with patch(
-            "quack-core.integrations.google.drive.utils.api.execute_api_request"
+            "quack_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {
                 "webContentLink": "https://drive.google.com/uc?id=file123"
@@ -207,7 +207,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request
         with patch(
-            "quack-core.integrations.google.drive.utils.api.execute_api_request"
+            "quack_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {}  # No links in response
 
@@ -228,7 +228,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request to raise an error
         with patch(
-            "quack-core.integrations.google.drive.utils.api.execute_api_request"
+            "quack_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.side_effect = QuackApiError(
                 "API error", service="Google Drive", api_method="files.get"
@@ -257,7 +257,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request
         with patch(
-            "quack-core.integrations.google.drive.utils.api.execute_api_request"
+            "quack_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {"id": "custom_perm_123"}
 

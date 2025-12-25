@@ -7,7 +7,7 @@ integration, handling settings for document conversion between various formats.
 
 In this refactored version, all file paths are handled exclusively as strings.
 Any interaction with file paths (normalization, validation, etc.) is delegated
-to the quack-core.fs layer.
+to the quack_core.fs layer.
 """
 
 import json
@@ -26,7 +26,7 @@ logger = get_logger(__name__)
 try:
     from quack_core.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack-core.fs.service")
+    logger.error("Could not import quack_core.fs.service")
     from types import SimpleNamespace
     # Create a minimal fs stub if the module isn't available (for tests)
     fs = SimpleNamespace(
@@ -134,7 +134,7 @@ class PandocConfig(BaseModel):
         """
         Validate that the output directory has a valid format.
 
-        Delegates to quack-core.fs to validate the path format.
+        Delegates to quack_core.fs to validate the path format.
         If fs service is not available, accepts any path.
         """
         try:

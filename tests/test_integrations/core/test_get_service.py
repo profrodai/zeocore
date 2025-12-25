@@ -35,7 +35,7 @@ class TestGetIntegrationService(unittest.TestCase):
     Test cases for get_integration_service.
     """
 
-    @patch("quack-core.integrations.core.registry")
+    @patch("quack_core.integrations.core.registry")
     def test_get_integration_service_found(self, mock_registry):
         """
         Test that get_integration_service returns the correct service when found.
@@ -51,7 +51,7 @@ class TestGetIntegrationService(unittest.TestCase):
         self.assertEqual(result, mock_drive_service)
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
-    @patch("quack-core.integrations.core.registry")
+    @patch("quack_core.integrations.core.registry")
     def test_get_integration_service_not_found(self, mock_registry):
         """
         Test that get_integration_service returns None when no matching service is found.
@@ -66,7 +66,7 @@ class TestGetIntegrationService(unittest.TestCase):
         self.assertIsNone(result)
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
-    @patch("quack-core.integrations.core.registry")
+    @patch("quack_core.integrations.core.registry")
     def test_get_integration_service_returns_first_match(self, mock_registry):
         """
         Test that get_integration_service returns the first matching service when multiple are found.
@@ -97,7 +97,7 @@ class TestGetIntegrationService(unittest.TestCase):
         self.assertEqual(result, mock_drive_service1)
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
-    @patch("quack-core.integrations.core.registry")
+    @patch("quack_core.integrations.core.registry")
     def test_get_integration_service_type_mismatch(self, mock_registry):
         """
         Test that get_integration_service correctly filters by type.

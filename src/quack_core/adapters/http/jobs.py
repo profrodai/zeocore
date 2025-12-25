@@ -25,9 +25,9 @@ _jobs_lock = threading.Lock()
 
 # Operation mapping table
 OP_TABLE = {
-    "quack-media.slice_video": ("quack-core.quack-media", "slice_video"),
-    "quack-media.transcribe_audio": ("quack-core.quack-media", "transcribe_audio"),
-    "quack-media.extract_frames": ("quack-core.quack-media", "extract_frames"),
+    "quack-media.slice_video": ("quack_core.quack-media", "slice_video"),
+    "quack-media.transcribe_audio": ("quack_core.quack-media", "transcribe_audio"),
+    "quack-media.extract_frames": ("quack_core.quack-media", "extract_frames"),
 }
 
 

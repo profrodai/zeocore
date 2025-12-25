@@ -3,7 +3,7 @@
 Prompt enhancer module for the PromptBooster.
 
 This module uses an LLM to rewrite and polish prompt templates
-into production-ready prompts, leveraging the quack-core.integrations.llms
+into production-ready prompts, leveraging the quack_core.integrations.llms
 module for standardized LLM interactions.
 """
 
@@ -100,7 +100,7 @@ def enhance_with_llm(
         logger.error("Failed to import LLM integration: %s", str(e))
         raise ImportError(
             "LLM integration is not properly configured. "
-            "Please ensure quack-core.integrations.llms is available."
+            "Please ensure quack_core.integrations.llms is available."
         ) from e
 
     # Load configuration

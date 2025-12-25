@@ -5,7 +5,7 @@ Utility functions for path resolution.
 This module provides utility functions for path resolution,
 including functions for finding project roots and navigating directories.
 All path values are handled as strings and filesystem operations are delegated
-to quack-core.fs or built-in os.path utilities.
+to quack_core.fs or built-in os.path utilities.
 """
 
 import os

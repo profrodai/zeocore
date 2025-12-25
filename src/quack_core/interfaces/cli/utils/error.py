@@ -157,7 +157,7 @@ def get_cli_info() -> dict[str, Any]:
     """
     import platform
 
-    from quack_core.cli.terminal import get_terminal_size
+    from quack_core.interfaces.cli.utils.terminal import get_terminal_size
     from quack_core.config.utils import get_env
 
     info = {

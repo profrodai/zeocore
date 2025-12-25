@@ -174,7 +174,7 @@ class TestFallbackLLMClient:
         mock_client = MagicMock()
 
         with patch(
-            "quack-core.integrations.llms.registry.get_llm_client",
+            "quack_core.integrations.llms.registry.get_llm_client",
             return_value=mock_client,
         ) as mock_get_client:
             client = fallback_client._get_client_for_provider("openai")
@@ -196,7 +196,7 @@ class TestFallbackLLMClient:
     ) -> None:
         """Test error handling when getting a client."""
         with patch(
-            "quack-core.integrations.llms.registry.get_llm_client",
+            "quack_core.integrations.llms.registry.get_llm_client",
             side_effect=QuackIntegrationError("Failed to initialize"),
         ):
             with pytest.raises(QuackIntegrationError) as excinfo:

@@ -111,7 +111,7 @@ class TestGitHubConfigProvider:
         """Test extract_config falling back to base implementation."""
         # Mock super()._extract_config
         with patch(
-            "quack-core.integrations.core.BaseConfigProvider._extract_config"
+            "quack_core.integrations.core.BaseConfigProvider._extract_config"
         ) as mock_super:
             mock_super.return_value = {"token": "fallback_token"}
 
@@ -127,7 +127,7 @@ class TestGitHubConfigProvider:
         """Test loading config and getting token from environment."""
         # Mock super().load_config
         with patch(
-            "quack-core.integrations.core.BaseConfigProvider.load_config"
+            "quack_core.integrations.core.BaseConfigProvider.load_config"
         ) as mock_super:
             mock_super.return_value = MagicMock(
                 success=True, content={"token": "", "api_url": "https://api.github.com"}
@@ -144,7 +144,7 @@ class TestGitHubConfigProvider:
         """Test loading config with existing token."""
         # Mock super().load_config
         with patch(
-            "quack-core.integrations.core.BaseConfigProvider.load_config"
+            "quack_core.integrations.core.BaseConfigProvider.load_config"
         ) as mock_super:
             mock_super.return_value = MagicMock(
                 success=True,

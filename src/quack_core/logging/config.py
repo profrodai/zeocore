@@ -1,6 +1,6 @@
 # quack-core/src/quack_core/logging/config.py
 """
-Logger configuration for quack-core.
+Logger configuration for quack_core.
 
 This module handles the setup and configuration of loggers,
 including environment-based configuration and file output options.
@@ -64,7 +64,7 @@ def configure_logger(
 
     This function sets up handlers only once per logger instance and supports
     multiple output destinations (console and file). Filesystem _operations are
-    performed via quack-core.fs.service, imported only inside this function.
+    performed via quack_core.fs.service, imported only inside this function.
 
     Args:
         name: The name for the logger, typically __name__.

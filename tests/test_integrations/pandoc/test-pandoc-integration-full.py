@@ -36,7 +36,7 @@ from quack_core.integrations.pandoc.service import PandocIntegration
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch):
     """
-    Stub out the quack-core.fs.service.standalone methods for file operations.
+    Stub out the quack_core.fs.service.standalone methods for file operations.
     """
     import quack_core.fs.service as fs_service
     stub = SimpleNamespace()
@@ -158,14 +158,14 @@ def converter(monkeypatch):
 def test_convert_file_html_to_md_success(converter, monkeypatch):
     # Stub file_info
     monkeypatch.setattr(
-        'quack-core.integrations.pandoc.operations.utils.get_file_info',
+        'quack_core.integrations.pandoc.operations.utils.get_file_info',
         lambda path: FileInfo(
             path=path, format='html', size=100, modified=None, extra_args=[]
         )
     )
     # Stub conversion operation
     monkeypatch.setattr(
-        'quack-core.integrations.pandoc.operations.html_to_md.convert_html_to_markdown',
+        'quack_core.integrations.pandoc.operations.html_to_md.convert_html_to_markdown',
         lambda i, o, cfg, m: IntegrationResult.success_result(['out.md'])
     )
 

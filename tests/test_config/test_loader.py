@@ -181,7 +181,7 @@ class TestConfigLoader:
                 with patch("os.path.exists", return_value=True):
                     # Mock load_yaml_config to return our test data
                     with patch(
-                            "quack-core.config.loader.load_yaml_config",
+                            "quack_core.config.loader.load_yaml_config",
                             return_value=config_data,
                     ):
                         # Load the config
@@ -210,7 +210,7 @@ class TestConfigLoader:
                 with patch("os.path.exists", return_value=True):
                     # Mock load_yaml_config to return our test data
                     with patch(
-                            "quack-core.config.loader.load_yaml_config",
+                            "quack_core.config.loader.load_yaml_config",
                             return_value=base_config,
                     ):
                         # Set environment variables for override
@@ -251,7 +251,7 @@ class TestConfigLoader:
                 with patch("os.path.exists", return_value=True):
                     # Mock load_yaml_config to return our test data
                     with patch(
-                            "quack-core.config.loader.load_yaml_config",
+                            "quack_core.config.loader.load_yaml_config",
                             return_value=partial_config,
                     ):
                         # Load with merge_defaults=True
@@ -281,13 +281,13 @@ class TestConfigLoader:
                     load_config("/nonexistent/path/config.yaml")
 
         # Test auto-discovery when no path provided
-        with patch("quack-core.config.loader.find_config_file") as mock_find:
+        with patch("quack_core.config.loader.find_config_file") as mock_find:
             # Set up mock to return a valid file
             config_file = "/discovered/config.yaml"
             mock_find.return_value = config_file
 
             # Mock the load_yaml_config function
-            with patch("quack-core.config.loader.load_yaml_config") as mock_load:
+            with patch("quack_core.config.loader.load_yaml_config") as mock_load:
                 mock_load.return_value = {
                     "general": {"project_name": "DiscoveredProject"}
                 }

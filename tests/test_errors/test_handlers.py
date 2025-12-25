@@ -126,7 +126,7 @@ class TestHandleErrorsDecorator:
         mock_console = MagicMock()
 
         with patch(
-            "quack-core.errors.handlers.ErrorHandler",
+            "quack_core.errors.handlers.ErrorHandler",
             return_value=MagicMock(console=mock_console),
         ):
 
@@ -143,7 +143,7 @@ class TestHandleErrorsDecorator:
         mock_console = MagicMock()
 
         with patch(
-            "quack-core.errors.handlers.ErrorHandler",
+            "quack_core.errors.handlers.ErrorHandler",
             return_value=MagicMock(console=mock_console),
         ):
 
@@ -159,7 +159,7 @@ class TestHandleErrorsDecorator:
         """Test using a custom title in the decorator."""
         mock_handler = MagicMock()
 
-        with patch("quack-core.errors.handlers.ErrorHandler", return_value=mock_handler):
+        with patch("quack_core.errors.handlers.ErrorHandler", return_value=mock_handler):
 
             @handle_errors(title="Custom Error Title")
             def function_with_error() -> None:
@@ -176,7 +176,7 @@ class TestHandleErrorsDecorator:
         """Test using an exit code in the decorator."""
         mock_handler = MagicMock()
 
-        with patch("quack-core.errors.handlers.ErrorHandler", return_value=mock_handler):
+        with patch("quack_core.errors.handlers.ErrorHandler", return_value=mock_handler):
 
             @handle_errors(exit_code=2)
             def function_with_error() -> None:

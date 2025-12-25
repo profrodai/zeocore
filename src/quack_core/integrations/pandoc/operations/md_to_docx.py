@@ -32,7 +32,7 @@ logger = get_logger(__name__)
 try:
     from quack_core.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack-core.fs.service")
+    logger.error("Could not import quack_core.fs.service")
     from types import SimpleNamespace
 
     # Create a safer join_path implementation

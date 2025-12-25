@@ -1,6 +1,6 @@
 # quack-core/examples/config_tooling_test.py
 """
-Test script for quack-core.config.tooling.
+Test script for quack_core.config.tooling.
 
 This is a simple script to test the functionality of the tooling module.
 It is not intended to be included in the quack-core package.

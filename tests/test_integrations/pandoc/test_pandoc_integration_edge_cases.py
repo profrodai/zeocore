@@ -25,15 +25,15 @@ def test_integration_with_custom_config_path():
     mock_config_provider.load_config.return_value = {"output_dir": "/custom/path"}
 
     # Mock the PathResolver to avoid 'no attribute service' error
-    with patch('quack-core.paths.service', MagicMock()), \
-            patch('quack-core.integrations.pandoc.config.PandocConfigProvider',
+    with patch('quack_core.paths.service', MagicMock()), \
+            patch('quack_core.integrations.pandoc.config.PandocConfigProvider',
                   return_value=mock_config_provider), \
-            patch('quack-core.fs.service.standalone.resolve_path',
+            patch('quack_core.fs.service.standalone.resolve_path',
                   return_value=SimpleNamespace(success=True, path="/resolved/path")):
         integration = PandocIntegration(config_path="/path/to/config.yaml")
 
         # Initialize to trigger config loading
-        with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+        with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                    return_value="2.11.0"):
             integration.initialize()
 
@@ -47,10 +47,10 @@ def test_integration_with_custom_output_dir():
     integration = PandocIntegration(output_dir="/custom/output")
 
     # Initialize with proper mocks
-    with patch('quack-core.paths.service', MagicMock()), \
-            patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.paths.service', MagicMock()), \
+            patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"), \
-            patch('quack-core.fs.service.standalone.create_directory',
+            patch('quack_core.fs.service.standalone.create_directory',
                   return_value=SimpleNamespace(success=True)):
         result = integration.initialize()
         assert result.success
@@ -70,7 +70,7 @@ def test_integration_initialize_with_invalid_config():
 
     # Mock the validate_config method to actually check our invalid config
     with patch(
-            'quack-core.integrations.pandoc.config.PandocConfigProvider.validate_config',
+            'quack_core.integrations.pandoc.config.PandocConfigProvider.validate_config',
             return_value=False):
         # Initialize - should fail on config validation
         result = integration.initialize()
@@ -79,16 +79,16 @@ def test_integration_initialize_with_invalid_config():
         assert "Invalid configuration" in result.error
 
 
-@patch('quack-core.fs.service.standalone')
+@patch('quack_core.fs.service.standalone')
 def test_integration_directory_conversion_edge_cases(mock_fs):
     """Test directory conversion edge cases."""
     integration = PandocIntegration()
 
     # Initialize with proper mocks
-    with patch('quack-core.paths.service', MagicMock()), \
-            patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.paths.service', MagicMock()), \
+            patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"), \
-            patch('quack-core.fs.service.standalone.create_directory',
+            patch('quack_core.fs.service.standalone.create_directory',
                   return_value=SimpleNamespace(success=True)):
         result = integration.initialize()
         assert result.success
@@ -153,8 +153,8 @@ def test_integration_determine_conversion_params():
     assert unsupported is None
 
 
-@patch('quack-core.integrations.pandoc.operations.get_file_info')
-@patch('quack-core.fs.service.standalone')
+@patch('quack_core.integrations.pandoc.operations.get_file_info')
+@patch('quack_core.fs.service.standalone')
 def test_integration_create_conversion_tasks(mock_fs, mock_get_file_info):
     """Test the _create_conversion_tasks method."""
     integration = PandocIntegration()
@@ -196,10 +196,10 @@ def test_integration_get_metrics():
     assert metrics.successful_conversions == 0
 
     # After initialization with mocks
-    with patch('quack-core.paths.service', MagicMock()), \
-            patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.paths.service', MagicMock()), \
+            patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"), \
-            patch('quack-core.fs.service.standalone.create_directory',
+            patch('quack_core.fs.service.standalone.create_directory',
                   return_value=SimpleNamespace(success=True)):
         integration.initialize()
 
@@ -212,8 +212,8 @@ def test_integration_get_metrics():
             assert metrics.failed_conversions == 2
 
 
-@patch('quack-core.fs.service.standalone')
-@patch('quack-core.paths.service')
+@patch('quack_core.fs.service.standalone')
+@patch('quack_core.paths.service')
 def test_mock_services_integration(mock_paths, mock_fs):
     """Test integration with mocked services."""
     # Setup mocks
@@ -232,12 +232,12 @@ def test_mock_services_integration(mock_paths, mock_fs):
     mock_config_provider = MagicMock()
     mock_config_provider.load_config.return_value = {}
 
-    with patch('quack-core.integrations.pandoc.config.PandocConfigProvider',
+    with patch('quack_core.integrations.pandoc.config.PandocConfigProvider',
                return_value=mock_config_provider):
         integration = PandocIntegration()
 
         # Initialize with mocked verify_pandoc
-        with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+        with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                    return_value="2.11.0"):
             init_result = integration.initialize()
             assert init_result.success

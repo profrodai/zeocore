@@ -5,7 +5,7 @@ Pandoc integration service for quack_core.
 This module provides the main service class for Pandoc integration,
 handling document conversion between various formats.
 All file path parameters and return types are represented as strings.
-Filesystem _operations such as resolution and joining are delegated to quack-core.fs.
+Filesystem _operations such as resolution and joining are delegated to quack_core.fs.
 """
 
 import os
@@ -36,7 +36,7 @@ logger = get_logger(__name__)
 try:
     from quack_core.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack-core.fs.service")
+    logger.error("Could not import quack_core.fs.service")
     from types import SimpleNamespace
     # Create a minimal fs stub if the module isn't available (for tests)
     fs = SimpleNamespace(
@@ -52,7 +52,7 @@ except ImportError:
 try:
     from quack_core.paths import service as paths
 except ImportError:
-    logger.error("Could not import quack-core.paths")
+    logger.error("Could not import quack_core.paths")
     from types import SimpleNamespace
     # Create a minimal paths stub if the module isn't available (for tests)
     paths = SimpleNamespace(

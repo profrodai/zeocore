@@ -21,7 +21,7 @@ class TestGoogleDriveServiceDownload:
     def drive_service(self) -> GoogleDriveService:
         """Set up a Google Drive service with mocked dependencies."""
         with patch(
-                "quack-core.integrations.google.drive.service.paths_service"
+                "quack_core.integrations.google.drive.service.paths_service"
         ) as mock_paths:
             # Setup mock to return predictable PathResult objects with string paths
             mock_paths.resolve_project_path.return_value = PathResult(
@@ -29,7 +29,7 @@ class TestGoogleDriveServiceDownload:
                 path="/fake/test/dir/mock_path"  # Use string path
             )
 
-            with patch("quack-core.fs.service.standalone.get_file_info") as mock_file_info:
+            with patch("quack_core.fs.service.standalone.get_file_info") as mock_file_info:
                 # All file info checks should return that files exist
                 file_info_result = FileInfoResult(
                     success=True,
@@ -51,14 +51,14 @@ class TestGoogleDriveServiceDownload:
 
                     # Patch fs module
                     with patch(
-                            "quack-core.integrations.google.drive.service.standalone") as mock_fs:
+                            "quack_core.integrations.google.drive.service.standalone") as mock_fs:
                         # Configure join_path to return a Path object directly
                         joined_path = Path("/fake/test/dir/joined_path")
                         mock_fs.join_path.return_value = joined_path
 
                         # Disable verification of the client secrets file
                         with patch(
-                                "quack-core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+                                "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
                         ):
                             service = GoogleDriveService()
                             # Mark as initialized to skip the actual initialization logic

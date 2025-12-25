@@ -240,7 +240,7 @@ def load_yaml_config(config_file: str) -> dict:
     Load a YAML configuration file.
 
     This helper wraps the low-level functionality to load YAML content from a file.
-    (Assumes the existence of a properly implemented loader in quack-core.config.loader)
+    (Assumes the existence of a properly implemented loader in quack_core.config.loader)
 
     Args:
         config_file: Path to the YAML file as a string.

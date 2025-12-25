@@ -83,7 +83,7 @@ class TestLLMConfigProvider:
 
         # Test with exception during validation
         with patch(
-            "quack-core.integrations.llms.config.LLMConfig",
+            "quack_core.integrations.llms.config.LLMConfig",
             side_effect=Exception("Validation error"),
         ):
             assert config_provider.validate_config({}) is False

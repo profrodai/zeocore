@@ -5,7 +5,7 @@ HTML to Markdown conversion operations.
 This module provides functions for converting HTML documents to Markdown
 using pandoc with optimized settings and error handling.
 All file paths are represented as strings. Filesystem interactions are delegated
-to the quack-core.fs service functions.
+to the quack_core.fs service functions.
 """
 
 import importlib
@@ -32,7 +32,7 @@ logger = get_logger(__name__)
 try:
     from quack_core.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack-core.fs.service")
+    logger.error("Could not import quack_core.fs.service")
     from types import SimpleNamespace
 
     # Create a minimal fs stub if the module isn't available (for tests)

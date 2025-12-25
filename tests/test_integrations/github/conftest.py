@@ -112,7 +112,7 @@ def patch_integration_registry() -> MagicMock:
     mock_registry.register = MagicMock()
     mock_registry.get_integration = MagicMock(return_value="mocked_github_integration")
 
-    with patch("quack-core.integrations.core.registry", mock_registry):
+    with patch("quack_core.integrations.core.registry", mock_registry):
         yield mock_registry
 
 
@@ -124,7 +124,7 @@ def patch_registry_register() -> MagicMock:
     mock_registry.register = MagicMock()
 
     # Patch the entire registry module
-    with patch("quack-core.integrations.core.registry", mock_registry):
+    with patch("quack_core.integrations.core.registry", mock_registry):
         yield mock_registry.register
 
 
@@ -437,7 +437,7 @@ def patch_requests_get():
 def patch_make_request():
     """Patch the make_request function for testing."""
     with patch(
-        "quack-core.integrations.github.api.api.make_request"
+        "quack_core.integrations.github.api.api.make_request"
     ) as mock_make_request:
         mock_response = MagicMock(spec=requests.Response)
         mock_response.status_code = 200
@@ -450,7 +450,7 @@ def patch_make_request():
 def patch_make_request_rate_limited():
     """Patch the make_request function to simulate rate limiting."""
     with patch(
-        "quack-core.integrations.github.api.api.make_request"
+        "quack_core.integrations.github.api.api.make_request"
     ) as mock_make_request:
         mock_make_request.side_effect = QuackQuotaExceededError(
             message="GitHub API rate limit exceeded", service="GitHub", resource="/test"

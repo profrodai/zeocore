@@ -5,7 +5,7 @@ Utility functions for pandoc _operations.
 This module provides helper functions for pandoc conversion _operations,
 such as validation, metrics tracking, and pandoc installation verification.
 All file path values are handled as strings. Filesystem _operations are delegated
-to the quack-core.fs service.
+to the quack_core.fs service.
 """
 
 import os

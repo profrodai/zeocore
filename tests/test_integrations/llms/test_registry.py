@@ -74,7 +74,7 @@ class TestLLMRegistry:
     def test_get_llm_client_openai(self) -> None:
         """Test getting the OpenAI client."""
         with patch(
-            "quack-core.integrations.llms.registry._LLM_REGISTRY"
+            "quack_core.integrations.llms.registry._LLM_REGISTRY"
         ) as mock_registry:
             # Create a mock client class and instance
             mock_client = MagicMock()
@@ -97,7 +97,7 @@ class TestLLMRegistry:
         """Test getting the Anthropic client."""
         # Patch where the AnthropicClient is *imported* in the registry module
         with patch(
-            "quack-core.integrations.llms.registry._LLM_REGISTRY"
+            "quack_core.integrations.llms.registry._LLM_REGISTRY"
         ) as mock_registry:
             # Create a mock client instance
             mock_instance = MagicMock()
@@ -131,11 +131,11 @@ class TestLLMRegistry:
     def test_get_llm_client_case_insensitive(self) -> None:
         """Test that provider names are case-insensitive."""
         with patch(
-            "quack-core.integrations.llms.registry.get_llm_client", wraps=get_llm_client
+            "quack_core.integrations.llms.registry.get_llm_client", wraps=get_llm_client
         ) as mock_get_client:
             # Use a real client but patch the OpenAIClient constructor
             with patch(
-                "quack-core.integrations.llms.registry._LLM_REGISTRY"
+                "quack_core.integrations.llms.registry._LLM_REGISTRY"
             ) as mock_registry:
                 mock_client = MagicMock()
                 mock_client_class = MagicMock(return_value=mock_client)

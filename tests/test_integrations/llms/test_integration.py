@@ -26,7 +26,7 @@ class TestLLMIntegration:
     def test_create_integration(self) -> None:
         """Test the create_integration factory function."""
         with patch(
-            "quack-core.integrations.llms.service.LLMIntegration"
+            "quack_core.integrations.llms.service.LLMIntegration"
         ) as mock_service:
             # Create a simple mock that matches what create_integration returns
             mock_instance = MagicMock()

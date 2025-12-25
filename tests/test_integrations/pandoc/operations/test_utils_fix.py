@@ -142,11 +142,11 @@ def apply_utils_patches():
         list: List of context managers that should be entered
     """
     patches = [
-        patch('quack-core.integrations.pandoc.operations.utils.check_file_size',
+        patch('quack_core.integrations.pandoc.operations.utils.check_file_size',
               patched_check_file_size),
-        patch('quack-core.integrations.pandoc.operations.utils.check_conversion_ratio',
+        patch('quack_core.integrations.pandoc.operations.utils.check_conversion_ratio',
               patched_check_conversion_ratio),
-        patch('quack-core.integrations.pandoc.operations.utils.track_metrics',
+        patch('quack_core.integrations.pandoc.operations.utils.track_metrics',
               patched_track_metrics)
     ]
     return patches

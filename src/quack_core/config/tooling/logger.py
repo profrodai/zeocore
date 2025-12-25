@@ -70,7 +70,7 @@ def get_logger(tool_name: str) -> logging.Logger:
     """
     Get a named logger for the given tool.
 
-    This is a thin wrapper around quack-core.logging.get_logger
+    This is a thin wrapper around quack_core.logging.get_logger
     that ensures the tool's logger is properly configured.
 
     Args:
@@ -87,7 +87,7 @@ def log_teaching(logger: Any, message: str, level: str = "INFO") -> None:
     """
     Log a Teaching Mode message for the tool.
 
-    This is a convenience wrapper around quack-core.logging.config.log_teaching.
+    This is a convenience wrapper around quack_core.logging.config.log_teaching.
 
     Args:
         logger: The logger instance

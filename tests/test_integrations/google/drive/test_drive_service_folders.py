@@ -14,7 +14,7 @@ class TestGoogleDriveServiceFolders:
     """Tests for the GoogleDriveService folder _operations."""
 
     @patch(
-        "quack-core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_create_folder(self, mock_init_config, mock_verify) -> None:
@@ -82,7 +82,7 @@ class TestGoogleDriveServiceFolders:
         assert "API error" in result.error
 
     @patch(
-        "quack-core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_delete_file(self, mock_init_config, mock_verify) -> None:

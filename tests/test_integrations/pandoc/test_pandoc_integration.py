@@ -28,7 +28,7 @@ def test_pandoc_integration_initialization():
     assert integration.converter is None
 
 
-@patch('quack-core.integrations.pandoc.service.verify_pandoc')
+@patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_initialize_success(mock_verify_pandoc, fs_stub,
                                                mock_paths_service):
     """Test successful initialization of PandocIntegration."""
@@ -45,7 +45,7 @@ def test_pandoc_integration_initialize_success(mock_verify_pandoc, fs_stub,
     assert integration.converter is not None
 
 
-@patch('quack-core.integrations.pandoc.service.verify_pandoc')
+@patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_initialize_failure(mock_verify_pandoc, mock_pypandoc):
     """Test failed initialization of PandocIntegration."""
     # Set up the mock to raise an exception
@@ -66,7 +66,7 @@ def test_pandoc_integration_html_to_markdown(mock_pypandoc, fs_stub,
     integration = PandocIntegration()
 
     # Initialize with mocked verify_pandoc
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         integration.initialize()
 
@@ -92,7 +92,7 @@ def test_pandoc_integration_markdown_to_docx(mock_pypandoc, fs_stub,
     integration = PandocIntegration()
 
     # Initialize with mocked verify_pandoc
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         integration.initialize()
 
@@ -118,7 +118,7 @@ def test_pandoc_integration_convert_directory(mock_pypandoc, fs_stub,
     integration = PandocIntegration()
 
     # Initialize with mocked verify_pandoc
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         integration.initialize()
 
@@ -158,7 +158,7 @@ def test_pandoc_integration_is_available():
     integration = PandocIntegration()
 
     # Mock verify_pandoc to succeed
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         assert integration.is_pandoc_available()
         assert integration.get_pandoc_version() == "2.11.0"
@@ -167,7 +167,7 @@ def test_pandoc_integration_is_available():
     integration._pandoc_version = None
 
     # Mock verify_pandoc to fail
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                side_effect=QuackIntegrationError("Pandoc not available", {})):
         assert not integration.is_pandoc_available()
         assert integration.get_pandoc_version() is None
@@ -175,7 +175,7 @@ def test_pandoc_integration_is_available():
 
 def test_create_integration():
     """Test the factory function for creating the integration."""
-    with patch('quack-core.integrations.pandoc.PandocIntegration') as mock_class:
+    with patch('quack_core.integrations.pandoc.PandocIntegration') as mock_class:
         mock_class.return_value = MagicMock(spec=IntegrationProtocol)
 
         # Call factory function
@@ -196,14 +196,14 @@ def test_end_to_end_html_to_markdown_conversion(mock_pypandoc, fs_stub,
     integration = PandocIntegration()
 
     # Initialize integration with mocked verify_pandoc
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         init_result = integration.initialize()
         assert init_result.success
 
     # Mock convert_html_to_markdown to return success
     with patch(
-            'quack-core.integrations.pandoc.operations.convert_html_to_markdown') as mock_convert:
+            'quack_core.integrations.pandoc.operations.convert_html_to_markdown') as mock_convert:
         mock_convert.return_value = IntegrationResult.success_result(
             ("output.md", MagicMock()),
             message="Success"
@@ -224,14 +224,14 @@ def test_end_to_end_markdown_to_docx_conversion(mock_pypandoc, fs_stub,
     integration = PandocIntegration()
 
     # Initialize integration with mocked verify_pandoc
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         init_result = integration.initialize()
         assert init_result.success
 
     # Mock convert_markdown_to_docx to return success
     with patch(
-            'quack-core.integrations.pandoc.operations.convert_markdown_to_docx') as mock_convert:
+            'quack_core.integrations.pandoc.operations.convert_markdown_to_docx') as mock_convert:
         mock_convert.return_value = IntegrationResult.success_result(
             ("output.docx", MagicMock()),
             message="Success"
@@ -251,7 +251,7 @@ def test_end_to_end_directory_conversion(mock_pypandoc, fs_stub, mock_paths_serv
     integration = PandocIntegration()
 
     # Initialize integration with mocked verify_pandoc
-    with patch('quack-core.integrations.pandoc.service.verify_pandoc',
+    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
         init_result = integration.initialize()
         assert init_result.success

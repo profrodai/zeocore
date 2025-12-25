@@ -5,7 +5,7 @@ Protocol definitions for Pandoc integration.
 This module defines protocol classes for document conversion services,
 ensuring proper typing throughout the codebase. In this refactored version,
 all file paths are represented as strings rather than pathlib.Path objects.
-File resolution and normalization are delegated to quack-core.fs.
+File resolution and normalization are delegated to quack_core.fs.
 """
 
 from collections.abc import Sequence

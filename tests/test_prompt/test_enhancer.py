@@ -39,7 +39,7 @@ def mock_llm_integration_class():
 @pytest.fixture
 def mock_config():
     """Mock the configuration loading."""
-    with patch("quack-core.prompt.enhancer._load_config") as mock_load:
+    with patch("quack_core.prompt.enhancer._load_config") as mock_load:
         mock_load.return_value = {
             "llm": {
                 "temperature": 0.3,
@@ -73,10 +73,10 @@ def test_load_config():
 
     # Direct patch without modifying internal implementation
     with (
-        patch("quack-core.prompt.enhancer.quack_config", config_mock),
-        patch("quack-core.prompt.enhancer.standalone", standalone_mock),
+        patch("quack_core.prompt.enhancer.quack_config", config_mock),
+        patch("quack_core.prompt.enhancer.standalone", standalone_mock),
         patch.dict(
-            "quack-core.prompt.enhancer.DEFAULT_CONFIG",
+            "quack_core.prompt.enhancer.DEFAULT_CONFIG",
             {
                 "llm": {
                     "temperature": 0.3,
@@ -114,11 +114,11 @@ def test_enhance_with_llm(mock_llm_integration_class, mock_config):
     original_import = __import__
 
     def mock_import(name, *args, **kwargs):
-        if name == "quack-core.integrations.llms.service":
+        if name == "quack_core.integrations.llms.service":
             module = MagicMock()
             module.LLMIntegration = mock_class
             return module
-        elif name == "quack-core.integrations.llms.models":
+        elif name == "quack_core.integrations.llms.models":
             module = MagicMock()
             module.ChatMessage = chat_message_mock
             module.LLMOptions = llm_options_mock
@@ -173,8 +173,8 @@ def test_enhance_with_llm_init_failure(mock_llm_integration_class, mock_config):
     with patch.dict(
         "sys.modules",
         {
-            "quack-core.integrations.llms.service": llm_service_module,
-            "quack-core.integrations.llms.models": llm_models_module,
+            "quack_core.integrations.llms.service": llm_service_module,
+            "quack_core.integrations.llms.models": llm_models_module,
         },
     ):
         # Call the function - it appears to return the original prompt
@@ -207,11 +207,11 @@ def test_enhance_with_llm_chat_failure(mock_llm_integration_class, mock_config):
     original_import = __import__
 
     def mock_import(name, *args, **kwargs):
-        if name == "quack-core.integrations.llms.service":
+        if name == "quack_core.integrations.llms.service":
             module = MagicMock()
             module.LLMIntegration = mock_class
             return module
-        elif name == "quack-core.integrations.llms.models":
+        elif name == "quack_core.integrations.llms.models":
             module = MagicMock()
             module.ChatMessage = chat_message_mock
             module.LLMOptions = llm_options_mock
@@ -244,11 +244,11 @@ def test_enhance_with_llm_empty_response(mock_llm_integration_class, mock_config
     original_import = __import__
 
     def mock_import(name, *args, **kwargs):
-        if name == "quack-core.integrations.llms.service":
+        if name == "quack_core.integrations.llms.service":
             module = MagicMock()
             module.LLMIntegration = mock_class
             return module
-        elif name == "quack-core.integrations.llms.models":
+        elif name == "quack_core.integrations.llms.models":
             module = MagicMock()
             module.ChatMessage = chat_message_mock
             module.LLMOptions = llm_options_mock
@@ -271,7 +271,7 @@ def test_enhance_with_llm_import_error(mock_config):
     original_import = __import__
 
     def mock_import(name, *args, **kwargs):
-        if name == "quack-core.integrations.llms.models":
+        if name == "quack_core.integrations.llms.models":
             raise ImportError("Test error")
         return original_import(name, *args, **kwargs)
 
@@ -296,11 +296,11 @@ def test_count_prompt_tokens(mock_llm_integration_class):
     original_import = __import__
 
     def mock_import(name, *args, **kwargs):
-        if name == "quack-core.integrations.llms.service":
+        if name == "quack_core.integrations.llms.service":
             module = MagicMock()
             module.LLMIntegration = mock_class
             return module
-        elif name == "quack-core.integrations.llms.models":
+        elif name == "quack_core.integrations.llms.models":
             module = MagicMock()
             module.ChatMessage = chat_message_mock
             module.RoleType = role_type_mock
@@ -310,7 +310,7 @@ def test_count_prompt_tokens(mock_llm_integration_class):
     # Patch __import__ to control imports inside the function
     with (
         patch("builtins.__import__", side_effect=mock_import),
-        patch("quack-core.prompt.enhancer._load_config") as mock_load_config,
+        patch("quack_core.prompt.enhancer._load_config") as mock_load_config,
     ):
         # Configure mocks
         mock_load_config.return_value = {
@@ -353,11 +353,11 @@ def test_count_prompt_tokens_failure(mock_llm_integration_class):
     original_import = __import__
 
     def mock_import(name, *args, **kwargs):
-        if name == "quack-core.integrations.llms.service":
+        if name == "quack_core.integrations.llms.service":
             module = MagicMock()
             module.LLMIntegration = mock_class
             return module
-        elif name == "quack-core.integrations.llms.models":
+        elif name == "quack_core.integrations.llms.models":
             module = MagicMock()
             module.ChatMessage = chat_message_mock
             module.RoleType = role_type_mock
@@ -367,7 +367,7 @@ def test_count_prompt_tokens_failure(mock_llm_integration_class):
     # Patch __import__ to control imports inside the function
     with (
         patch("builtins.__import__", side_effect=mock_import),
-        patch("quack-core.prompt.enhancer._load_config") as mock_load_config,
+        patch("quack_core.prompt.enhancer._load_config") as mock_load_config,
     ):
         # Configure mocks
         mock_load_config.return_value = {"llm": {}, "system_prompt": {}}
