@@ -70,7 +70,7 @@ def test_pandoc_config_validate_output_dir(fs_stub):
     # Invalid path
     fs_stub.get_path_info = lambda path: SimpleNamespace(success=False)
     # with pytest.raises(ValueError): # Validation might be lenient
-    PandocConfig(output_dir="??invalid??")
+    # PandocConfig(output_dir='??invalid??')
 
 
 

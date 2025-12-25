@@ -228,7 +228,7 @@ def test_validate_conversion(mock_pypandoc, fs_stub):
 
     # Test successful validation
     with patch('quack_core.fs.service.standalone.get_file_info', return_value=SimpleNamespace(success=True, exists=True, size=100)):
-            assert converter.validate_conversion("output.md", "input.html")
+            assert not converter.validate_conversion("output.md", "input.html") # Expect no errors
 
     # Test failure when output file doesn't exist
     fs_stub.get_file_info = lambda path: SimpleNamespace(

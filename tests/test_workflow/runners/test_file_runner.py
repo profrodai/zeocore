@@ -177,7 +177,7 @@ class TestFileWorkflowRunner:
                         # # mock_write_json.assert_called_once()
                         # Check that the output path contains our temp directory
                         if mock_write_json.call_args:
-                            assert temp_dir in mock_write_json.call_args[0][0]
+                            if mock_write_json.call_args: assert temp_dir in mock_write_json.call_args[0][0]
 
     def test_custom_writer(self, tmp_path):
         """Test using a custom output writer."""

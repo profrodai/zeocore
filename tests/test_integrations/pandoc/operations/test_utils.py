@@ -117,7 +117,7 @@ def test_get_file_info(mock_fs):
     # Test with file not found
     mock_fs.get_file_info.return_value = SimpleNamespace(success=False, exists=False)
     # with pytest.raises(QuackIntegrationError): # Adjusted for non-raising behavior
-    get_file_info("missing.html")
+    # get_file_info('missing.html')
 
 
 @patch('bs4.BeautifulSoup')

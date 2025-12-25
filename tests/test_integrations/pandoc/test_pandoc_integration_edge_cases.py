@@ -21,25 +21,25 @@ from quack_core.integrations.pandoc.service import PandocIntegration
 def test_integration_with_custom_config_path():
     """Test PandocIntegration with custom config path."""
     # Mock config provider
-    mock_config_provider = MagicMock()
+    mock_config_provider = MagicMock(expand_user_vars=lambda x: x)
     mock_config_provider.load_config.return_value = {"output_dir": "/custom/path"}
 
     # Mock the PathResolver to avoid 'no attribute service' error
-    with patch('quack_core.paths.service', MagicMock()), \
+    with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.config.PandocConfigProvider',
                   return_value=mock_config_provider), \
             patch('quack_core.fs.service.standalone.resolve_path',
                   return_value=SimpleNamespace(success=True, path="/resolved/path")):
-        # "/path/to/config.yaml")
+        # \"/path/to/config.yaml\"
 
         # Initialize to trigger config loading
-        with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-                   return_value="2.11.0"):
+        with patch('quack_core.integrations.pandoc.service.verify_pandoc', return_value='2.11.0'):
+
             integration.initialize()
 
             # Verify config was loaded from the custom path
             # mock_config_provider.load_config.assert_called_once_with(
-                # "/path/to/config.yaml")
+                # \"/path/to/config.yaml\"
 
 
 def test_integration_with_custom_output_dir():
@@ -47,7 +47,7 @@ def test_integration_with_custom_output_dir():
     integration = PandocIntegration(output_dir="/custom/output")
 
     # Initialize with proper mocks
-    with patch('quack_core.paths.service', MagicMock()), \
+    with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"), \
             patch('quack_core.fs.service.standalone.create_directory',
@@ -85,7 +85,7 @@ def test_integration_directory_conversion_edge_cases(mock_fs):
     integration = PandocIntegration()
 
     # Initialize with proper mocks
-    with patch('quack_core.paths.service', MagicMock()), \
+    with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"), \
             patch('quack_core.fs.service.standalone.create_directory',
@@ -196,7 +196,7 @@ def test_integration_get_metrics():
     assert metrics.successful_conversions == 0
 
     # After initialization with mocks
-    with patch('quack_core.paths.service', MagicMock()), \
+    with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"), \
             patch('quack_core.fs.service.standalone.create_directory',
@@ -229,7 +229,7 @@ def test_mock_services_integration(mock_paths, mock_fs):
     mock_paths.resolve_project_path.return_value = "/project/path"
 
     # Create integration with mocked config provider
-    mock_config_provider = MagicMock()
+    mock_config_provider = MagicMock(expand_user_vars=lambda x: x)
     mock_config_provider.load_config.return_value = {}
 
     with patch('quack_core.integrations.pandoc.config.PandocConfigProvider',

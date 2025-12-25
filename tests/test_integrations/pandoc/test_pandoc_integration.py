@@ -1,4 +1,3 @@
-# quack-core/tests/test_integrations/pandoc/test_pandoc_integration.py
 """
 Tests for the main Pandoc integration service.
 
@@ -32,6 +31,7 @@ def test_pandoc_integration_initialization():
 def test_pandoc_integration_initialize_success(mock_verify_pandoc, fs_stub,
                                                mock_paths_service):
     """Test successful initialization of PandocIntegration."""
+    mock_paths_service.expand_user_vars = lambda x: x
     # Set up the mock to return a version string
     mock_verify_pandoc.return_value = "2.11.0"
 
@@ -63,6 +63,7 @@ def test_pandoc_integration_initialize_failure(mock_verify_pandoc, mock_pypandoc
 def test_pandoc_integration_html_to_markdown(mock_pypandoc, fs_stub,
                                              mock_paths_service):
     """Test HTML to Markdown conversion in PandocIntegration."""
+    mock_paths_service.expand_user_vars = lambda x: x
     integration = PandocIntegration()
 
     integration.config_provider.load_config = MagicMock(return_value={})
@@ -73,7 +74,8 @@ def test_pandoc_integration_html_to_markdown(mock_pypandoc, fs_stub,
         integration.initialize()
 
     # Mock converter
-    mock_conv_result = IntegrationResult.success_result("output.md")
+    mock_conv_result = IntegrationResult(success=True, content='output.md')
+    # Manually attach the mock to the converter instance
     integration.converter.convert_file = MagicMock(return_value=mock_conv_result)
 
     # Run conversion
@@ -91,6 +93,7 @@ def test_pandoc_integration_html_to_markdown(mock_pypandoc, fs_stub,
 def test_pandoc_integration_markdown_to_docx(mock_pypandoc, fs_stub,
                                              mock_paths_service):
     """Test Markdown to DOCX conversion in PandocIntegration."""
+    mock_paths_service.expand_user_vars = lambda x: x
     integration = PandocIntegration()
 
     integration.config_provider.load_config = MagicMock(return_value={})
@@ -101,7 +104,7 @@ def test_pandoc_integration_markdown_to_docx(mock_pypandoc, fs_stub,
         integration.initialize()
 
     # Mock converter
-    mock_conv_result = IntegrationResult.success_result("output.docx")
+    mock_conv_result = IntegrationResult(success=True, content='output.docx')
     integration.converter.convert_file = MagicMock(return_value=mock_conv_result)
 
     # Run conversion
@@ -119,6 +122,7 @@ def test_pandoc_integration_markdown_to_docx(mock_pypandoc, fs_stub,
 def test_pandoc_integration_convert_directory(mock_pypandoc, fs_stub,
                                               mock_paths_service):
     """Test directory conversion in PandocIntegration."""
+    mock_paths_service.expand_user_vars = lambda x: x
     integration = PandocIntegration()
 
     integration.config_provider.load_config = MagicMock(return_value={})
@@ -129,7 +133,7 @@ def test_pandoc_integration_convert_directory(mock_pypandoc, fs_stub,
         integration.initialize()
 
     # Mock converter
-    mock_conv_result = IntegrationResult.success_result(["output1.md", "output2.md"])
+    mock_conv_result = IntegrationResult(success=True, content=['output1.md', 'output2.md'])
     integration.converter.convert_batch = MagicMock(return_value=mock_conv_result)
 
     # Run conversion
@@ -189,8 +193,7 @@ def test_create_integration():
 
         # Verify
         assert mock_class.called
-        assert isinstance(integration,
-                          MagicMock)  # In real code, this would be PandocIntegration
+        assert isinstance(integration, MagicMock)
 
 
 # --- Integration tests ---
@@ -198,6 +201,7 @@ def test_create_integration():
 def test_end_to_end_html_to_markdown_conversion(mock_pypandoc, fs_stub,
                                                 mock_paths_service):
     """Test complete HTML to Markdown conversion flow."""
+    mock_paths_service.expand_user_vars = lambda x: x
     # Create integration
     integration = PandocIntegration()
 
@@ -228,6 +232,7 @@ def test_end_to_end_html_to_markdown_conversion(mock_pypandoc, fs_stub,
 def test_end_to_end_markdown_to_docx_conversion(mock_pypandoc, fs_stub,
                                                 mock_paths_service):
     """Test complete Markdown to DOCX conversion flow."""
+    mock_paths_service.expand_user_vars = lambda x: x
     # Create integration
     integration = PandocIntegration()
 
@@ -257,6 +262,7 @@ def test_end_to_end_markdown_to_docx_conversion(mock_pypandoc, fs_stub,
 
 def test_end_to_end_directory_conversion(mock_pypandoc, fs_stub, mock_paths_service):
     """Test complete directory conversion flow."""
+    mock_paths_service.expand_user_vars = lambda x: x
     # Create integration
     integration = PandocIntegration()
 

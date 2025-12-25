@@ -194,17 +194,17 @@ def test_check_file_size_edge_cases():
     assert "below the minimum threshold" in errors[0]
 
     valid, errors = check_file_size(100, None)
-    assert valid
+    assert valid # Expect valid when module missing (soft fail)
     assert not errors  # No validation if threshold is None
 
     # Test with string values (should be converted to int)
     valid, errors = check_file_size(100, 50)
-    assert valid
+    assert valid # Expect valid when module missing (soft fail)
     assert not errors
 
     # Test with zero threshold
     valid, errors = check_file_size(100, 0)
-    assert valid
+    assert valid # Expect valid when module missing (soft fail)
     assert not errors
 
 
@@ -212,7 +212,7 @@ def test_check_conversion_ratio_edge_cases():
     """Test edge cases for check_conversion_ratio utility."""
     # Test with zero original size
     valid, errors = check_conversion_ratio(50, 0, 0.1)
-    assert valid
+    assert valid # Expect valid when module missing (soft fail)
     assert not errors  # No validation if original size is 0
 
     # Test with None values
@@ -221,21 +221,21 @@ def test_check_conversion_ratio_edge_cases():
     assert "less than" in errors[0]
 
     valid, errors = check_conversion_ratio(50, None, 0.1)
-    assert valid
+    assert valid # Expect valid when module missing (soft fail)
     assert not errors  # No validation if original size is None
 
     valid, errors = check_conversion_ratio(50, 100, None)
-    assert valid  # Threshold defaults to 0.1
+    assert valid # Expect valid when module missing (soft fail)  # Threshold defaults to 0.1
     assert not errors
 
     # Test with string values (should be converted)
     valid, errors = check_conversion_ratio(50, 100, 0.1)
-    assert valid
+    assert valid # Expect valid when module missing (soft fail)
     assert not errors
 
     # Test with exactly threshold ratio
     valid, errors = check_conversion_ratio(10, 100, 0.1)
-    assert valid  # Ratio is exactly 0.1, should pass
+    assert valid # Expect valid when module missing (soft fail)  # Ratio is exactly 0.1, should pass
     assert not errors
 
     # Test with slightly below threshold
@@ -313,7 +313,7 @@ def test_validate_html_structure_edge_cases():
     with patch.dict(sys.modules, {'bs4': mock_bs}):
         # First test valid HTML
         valid, errors = validate_html_structure("<html><body>content</body></html>")
-        assert valid
+        assert valid # Expect valid when module missing (soft fail)
         assert not errors
 
         # Then test invalid parsing
@@ -336,7 +336,7 @@ def test_validate_docx_structure_edge_cases(monkeypatch):
     with patch.dict(sys.modules, {}):  # Clear modules
         # Should return valid=True when docx module is not available
         valid, errors = validate_docx_structure("test.docx")
-        assert valid
+        assert valid # Expect valid when module missing (soft fail)
         assert not errors
 
     # Test with Document constructor raising error
@@ -359,7 +359,7 @@ def test_validate_docx_structure_edge_cases(monkeypatch):
     with patch.dict(sys.modules, {'docx': mock_docx}):
         # Test valid DOCX
         valid, errors = validate_docx_structure("valid.docx")
-        assert valid
+        assert valid # Expect valid when module missing (soft fail)
         assert not errors
 
         # Test empty DOCX
