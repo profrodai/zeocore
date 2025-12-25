@@ -7,7 +7,6 @@ specialized converters.
 """
 
 import logging
-from pathlib import Path
 from typing import Any, Optional
 
 from quack_core.fs.service import FileSystemService
@@ -29,22 +28,19 @@ class PandocIntegration(BaseIntegrationService):
     conversion operations to specialized converters.
 
     Attributes:
-        name: Integration name identifier
-        version: Integration version
         converter: Document converter instance (available after initialization)
         _config_loaded: Flag indicating if configuration was loaded successfully
+        _pandoc_version: Cached Pandoc version string
     """
 
-    name = "pandoc"
-    version = "1.0.0"
-
     def __init__(
-        self,
-        config_path: Optional[str] = None,
-        output_dir: Optional[str] = None,
-        config_provider: Optional[PandocConfigProvider] = None,
-        paths_service: Optional[PathService] = None,
-        fs_service: Optional[FileSystemService] = None,
+            self,
+            config_path: Optional[str] = None,
+            output_dir: Optional[str] = None,
+            config_provider: Optional[PandocConfigProvider] = None,
+            paths_service: Optional[PathService] = None,
+            fs_service: Optional[FileSystemService] = None,
+            log_level: int | str | None = None,
     ) -> None:
         """Initialize the Pandoc integration service.
 
@@ -54,34 +50,68 @@ class PandocIntegration(BaseIntegrationService):
             config_provider: Optional custom config provider
             paths_service: Optional paths service instance
             fs_service: Optional filesystem service instance
+            log_level: Logging level
         """
+        # Define a default log level for when None is provided
+        default_log_level = "INFO"
+        effective_log_level = log_level or default_log_level
+
         # Initialize config provider
         if config_provider is None:
-            config_provider = PandocConfigProvider()
+            config_provider = PandocConfigProvider(log_level=effective_log_level)
 
-        # Initialize base (don't pass name/version - they're class attributes)
+        # Initialize base with proper parameters
         super().__init__(
             config_provider=config_provider,
+            auth_provider=None,
+            config=None,
             config_path=config_path,
+            log_level=effective_log_level
         )
 
         # Store service instances
         self.paths_service = paths_service or PathService()
+
         # Use /tmp as fallback base_dir to avoid issues when cwd is deleted (common in tests)
         try:
             self.fs_service = fs_service or FileSystemService()
         except (FileNotFoundError, OSError):
             # If cwd() fails (e.g., in tests), use /tmp as base directory
             import tempfile
-            self.fs_service = fs_service or FileSystemService(base_dir=tempfile.gettempdir())
+            self.fs_service = fs_service or FileSystemService(
+                base_dir=tempfile.gettempdir())
 
         # Store initialization parameters
-        self._init_config_path = config_path
         self._init_output_dir = output_dir
 
         # Will be set during initialization
         self.converter: Optional[DocumentConverter] = None
         self._config_loaded = False
+        self._pandoc_version: Optional[str] = None
+
+    @property
+    def name(self) -> str:
+        """Name of the integration."""
+        return "Pandoc"
+
+    @property
+    def version(self) -> str:
+        """Version of the integration."""
+        return "1.0.0"
+
+    def _ensure_initialized(self) -> IntegrationResult | None:
+        """Ensure the integration is initialized.
+
+        Returns:
+            IntegrationResult error if not initialized, None if initialized
+        """
+        if not self._initialized:
+            logger.error("Pandoc integration is not initialized")
+            return IntegrationResult.error_result(
+                error="Pandoc integration is not initialized. Call initialize() first.",
+                message="Pandoc integration is not initialized. Call initialize() first.",
+            )
+        return None
 
     def initialize(self) -> IntegrationResult:
         """Initialize the Pandoc integration.
@@ -105,11 +135,15 @@ class PandocIntegration(BaseIntegrationService):
             # Verify Pandoc is available
             try:
                 pandoc_version = verify_pandoc()
+                self._pandoc_version = pandoc_version
                 logger.info(f"Pandoc version {pandoc_version} detected")
             except Exception as e:
                 error_msg = f"Pandoc not available: {str(e)}"
                 logger.error(error_msg)
-                return IntegrationResult.error_result(error_msg)
+                return IntegrationResult.error_result(
+                    error=error_msg,
+                    message=error_msg
+                )
 
             # Get configuration from parent - it's already loaded into self.config
             config_dict = self.config or {}
@@ -131,7 +165,10 @@ class PandocIntegration(BaseIntegrationService):
             except Exception as e:
                 error_msg = f"Invalid configuration: {str(e)}"
                 logger.error(error_msg)
-                return IntegrationResult.error_result(error_msg)
+                return IntegrationResult.error_result(
+                    error=error_msg,
+                    message=error_msg
+                )
 
             # Ensure output directory exists
             output_dir = conversion_config.output_dir
@@ -147,7 +184,10 @@ class PandocIntegration(BaseIntegrationService):
                 if not create_result.success:
                     error_msg = f"Failed to create output directory: {create_result.error}"
                     logger.error(error_msg)
-                    return IntegrationResult.error_result(error_msg)
+                    return IntegrationResult.error_result(
+                        error=error_msg,
+                        message=error_msg
+                    )
 
                 logger.info(f"Output directory ready: {expanded_dir}")
 
@@ -168,12 +208,32 @@ class PandocIntegration(BaseIntegrationService):
         except Exception as e:
             error_msg = f"Failed to initialize Pandoc integration: {str(e)}"
             logger.error(error_msg)
-            return IntegrationResult.error_result(error_msg)
+            self._initialized = False
+            return IntegrationResult.error_result(
+                error=error_msg,
+                message=error_msg
+            )
+
+    def is_available(self) -> bool:
+        """Check if the Pandoc integration is available.
+
+        Returns:
+            True if available, False otherwise
+        """
+        return self._initialized and self.converter is not None
+
+    def get_pandoc_version(self) -> Optional[str]:
+        """Get the version of Pandoc being used.
+
+        Returns:
+            Pandoc version string, or None if not initialized
+        """
+        return self._pandoc_version
 
     def html_to_markdown(
-        self,
-        input_path: str,
-        output_path: Optional[str] = None,
+            self,
+            input_path: str,
+            output_path: Optional[str] = None,
     ) -> IntegrationResult:
         """Convert HTML file to Markdown.
 
@@ -184,10 +244,9 @@ class PandocIntegration(BaseIntegrationService):
         Returns:
             IntegrationResult with output path or error
         """
-        if not self._initialized or not self.converter:
-            return IntegrationResult.error_result(
-                "Pandoc integration not initialized"
-            )
+        init_error = self._ensure_initialized()
+        if init_error:
+            return init_error
 
         try:
             # Resolve paths
@@ -208,12 +267,15 @@ class PandocIntegration(BaseIntegrationService):
         except Exception as e:
             error_msg = f"HTML to Markdown conversion failed: {str(e)}"
             logger.error(error_msg)
-            return IntegrationResult.error_result(error_msg)
+            return IntegrationResult.error_result(
+                error=error_msg,
+                message=error_msg
+            )
 
     def markdown_to_docx(
-        self,
-        input_path: str,
-        output_path: Optional[str] = None,
+            self,
+            input_path: str,
+            output_path: Optional[str] = None,
     ) -> IntegrationResult:
         """Convert Markdown file to DOCX.
 
@@ -224,10 +286,9 @@ class PandocIntegration(BaseIntegrationService):
         Returns:
             IntegrationResult with output path or error
         """
-        if not self._initialized or not self.converter:
-            return IntegrationResult.error_result(
-                "Pandoc integration not initialized"
-            )
+        init_error = self._ensure_initialized()
+        if init_error:
+            return init_error
 
         try:
             # Resolve paths
@@ -248,15 +309,18 @@ class PandocIntegration(BaseIntegrationService):
         except Exception as e:
             error_msg = f"Markdown to DOCX conversion failed: {str(e)}"
             logger.error(error_msg)
-            return IntegrationResult.error_result(error_msg)
+            return IntegrationResult.error_result(
+                error=error_msg,
+                message=error_msg
+            )
 
     def convert_directory(
-        self,
-        input_dir: str,
-        output_format: str,
-        output_dir: Optional[str] = None,
-        pattern: str = "*",
-        **options: Any
+            self,
+            input_dir: str,
+            output_format: str,
+            output_dir: Optional[str] = None,
+            pattern: str = "*",
+            **options: Any
     ) -> IntegrationResult:
         """Convert all matching files in a directory.
 
@@ -270,10 +334,9 @@ class PandocIntegration(BaseIntegrationService):
         Returns:
             IntegrationResult with list of output paths or error
         """
-        if not self._initialized or not self.converter:
-            return IntegrationResult.error_result(
-                "Pandoc integration not initialized"
-            )
+        init_error = self._ensure_initialized()
+        if init_error:
+            return init_error
 
         try:
             # Resolve paths
@@ -288,12 +351,14 @@ class PandocIntegration(BaseIntegrationService):
             dir_info = self.fs_service.get_file_info(input_dir)
             if not dir_info.success or not dir_info.exists:
                 return IntegrationResult.error_result(
-                    f"Input directory not found: {input_dir}"
+                    error=f"Input directory not found: {input_dir}",
+                    message=f"Input directory not found: {input_dir}"
                 )
 
             if not dir_info.is_dir:
                 return IntegrationResult.error_result(
-                    f"Path is not a directory: {input_dir}"
+                    error=f"Path is not a directory: {input_dir}",
+                    message=f"Path is not a directory: {input_dir}"
                 )
 
             # Find files matching pattern
@@ -304,7 +369,8 @@ class PandocIntegration(BaseIntegrationService):
 
             if not find_result.success:
                 return IntegrationResult.error_result(
-                    f"Failed to find files: {find_result.error}"
+                    error=f"Failed to find files: {find_result.error}",
+                    message=f"Failed to find files: {find_result.error}"
                 )
 
             input_files = find_result.files or []
@@ -316,7 +382,7 @@ class PandocIntegration(BaseIntegrationService):
                 )
 
             # Create ConversionTask objects for each file
-            from quack_core.integrations.pandoc.models import ConversionTask, FileInfo
+            from quack_core.integrations.pandoc.models import ConversionTask
             from quack_core.integrations.pandoc.operations import get_file_info
 
             tasks = []
@@ -335,7 +401,8 @@ class PandocIntegration(BaseIntegrationService):
 
             if not tasks:
                 return IntegrationResult.error_result(
-                    "No valid conversion tasks could be created"
+                    error="No valid conversion tasks could be created",
+                    message="No valid conversion tasks could be created"
                 )
 
             # Use converter for batch processing
@@ -347,7 +414,10 @@ class PandocIntegration(BaseIntegrationService):
         except Exception as e:
             error_msg = f"Directory conversion failed: {str(e)}"
             logger.error(error_msg)
-            return IntegrationResult.error_result(error_msg)
+            return IntegrationResult.error_result(
+                error=error_msg,
+                message=error_msg
+            )
 
     @staticmethod
     def is_pandoc_available() -> bool:
