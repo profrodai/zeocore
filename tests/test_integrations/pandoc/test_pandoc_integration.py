@@ -46,8 +46,9 @@ def test_pandoc_integration_initialize_success(mock_verify_pandoc, fs_stub,
     mock_verify_pandoc.return_value = "2.11.0"
 
     integration = PandocIntegration()
-    # Explicitly inject the mock to avoid SimpleNamespace issues from fixtures
     integration.paths_service = mock_paths_service
+    integration.config_provider.load_config = MagicMock(
+        return_value=IntegrationResult(success=True, content={}))
 
     result = integration.initialize()
 
@@ -86,7 +87,8 @@ def test_pandoc_integration_html_to_markdown(mock_pypandoc, fs_stub,
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.config_provider.load_config = MagicMock(return_value={})
+    integration.config_provider.load_config = MagicMock(
+        return_value=IntegrationResult(success=True, content={}))
 
     # Initialize with mocked verify_pandoc
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',
@@ -122,7 +124,8 @@ def test_pandoc_integration_markdown_to_docx(mock_pypandoc, fs_stub,
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.config_provider.load_config = MagicMock(return_value={})
+    integration.config_provider.load_config = MagicMock(
+        return_value=IntegrationResult(success=True, content={}))
 
     # Initialize with mocked verify_pandoc
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',
@@ -159,7 +162,8 @@ def test_pandoc_integration_convert_directory(mock_pypandoc, fs_stub,
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.config_provider.load_config = MagicMock(return_value={})
+    integration.config_provider.load_config = MagicMock(
+        return_value=IntegrationResult(success=True, content={}))
 
     # Initialize with mocked verify_pandoc
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',
@@ -252,7 +256,8 @@ def test_end_to_end_html_to_markdown_conversion(mock_pypandoc, fs_stub,
     # Create integration
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.config_provider.load_config = MagicMock(return_value={})
+    integration.config_provider.load_config = MagicMock(
+        return_value=IntegrationResult(success=True, content={}))
 
     # Initialize integration with mocked verify_pandoc
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',
@@ -293,7 +298,8 @@ def test_end_to_end_markdown_to_docx_conversion(mock_pypandoc, fs_stub,
     # Create integration
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.config_provider.load_config = MagicMock(return_value={})
+    integration.config_provider.load_config = MagicMock(
+        return_value=IntegrationResult(success=True, content={}))
 
     # Initialize integration with mocked verify_pandoc
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',
@@ -333,7 +339,8 @@ def test_end_to_end_directory_conversion(mock_pypandoc, fs_stub, mock_paths_serv
     # Create integration
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.config_provider.load_config = MagicMock(return_value={})
+    integration.config_provider.load_config = MagicMock(
+        return_value=IntegrationResult(success=True, content={}))
 
     # Initialize integration with mocked verify_pandoc
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',

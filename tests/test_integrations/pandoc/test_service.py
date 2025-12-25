@@ -39,7 +39,8 @@ def test_initialize_with_mocked_verify_pandoc(fs_stub, mock_paths_service):
     # Mock the verify_pandoc function
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                return_value="2.11.0"):
-        integration.config_provider.load_config = MagicMock(return_value={})
+        integration.config_provider.load_config = MagicMock(
+            return_value=IntegrationResult(success=True, content={}))
         result = integration.initialize()
         assert result.success
         assert integration._initialized
@@ -110,8 +111,6 @@ def test_is_pandoc_available():
     # Mock verify_pandoc to fail
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',
                side_effect=QuackIntegrationError("Pandoc not found", {})):
-        # assert not integration.is_pandoc_available()
-        # assert integration.get_pandoc_version() is None
         pass
 
 
@@ -129,7 +128,8 @@ def test_html_to_markdown_with_initialized_service(fs_stub, mock_paths_service):
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.config_provider.load_config = MagicMock(return_value={})
+    integration.config_provider.load_config = MagicMock(
+        return_value=IntegrationResult(success=True, content={}))
 
     # Initialize the service
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',
@@ -170,7 +170,8 @@ def test_markdown_to_docx_with_initialized_service(fs_stub, mock_paths_service):
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.config_provider.load_config = MagicMock(return_value={})
+    integration.config_provider.load_config = MagicMock(
+        return_value=IntegrationResult(success=True, content={}))
 
     # Initialize the service
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',
@@ -206,7 +207,8 @@ def test_convert_directory_with_initialized_service(fs_stub, mock_paths_service)
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.config_provider.load_config = MagicMock(return_value={})
+    integration.config_provider.load_config = MagicMock(
+        return_value=IntegrationResult(success=True, content={}))
 
     # Ensure fs_stub mocks return expected objects, not dicts
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
