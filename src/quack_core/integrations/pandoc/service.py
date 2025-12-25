@@ -1,3 +1,4 @@
+# quack-core/src/quack_core/integrations/pandoc/service.py
 """Pandoc Integration Service
 
 This module provides the main integration service for Pandoc document conversion.
@@ -82,6 +83,7 @@ class PandocIntegration(BaseIntegrationService):
 
         # Store initialization parameters
         self._init_output_dir = output_dir
+        self._config_path = config_path
 
         # Will be set during initialization
         self.converter: Optional[DocumentConverter] = None
@@ -116,22 +118,15 @@ class PandocIntegration(BaseIntegrationService):
         """Initialize the Pandoc integration.
 
         This method:
-        1. Calls parent initialization to load base configuration
-        2. Verifies Pandoc is available
-        3. Loads and validates Pandoc-specific configuration
-        4. Creates output directory if needed
-        5. Initializes the document converter
+        1. Verifies Pandoc is available
+        2. Loads and validates Pandoc-specific configuration
+        3. Creates output directory if needed
+        4. Initializes the document converter
 
         Returns:
             IntegrationResult with success status and any error messages
         """
         try:
-            # Call parent initialize to load configuration into self.config
-            result = super().initialize()
-            if not result.success:
-                self._initialized = False
-                return result
-
             # Verify Pandoc is available and cache version
             try:
                 pandoc_version = verify_pandoc()
@@ -146,15 +141,19 @@ class PandocIntegration(BaseIntegrationService):
                     message=error_msg
                 )
 
-            # Get configuration - parent class loaded it into self.config
-            config_dict = self.config or {}
+            # Load configuration using config provider
+            config_result = self.config_provider.load_config(
+                config_path=self._config_path
+            )
 
-            # If config is an IntegrationResult, extract content
-            if isinstance(config_dict, IntegrationResult):
-                if not config_dict.success:
-                    self._initialized = False
-                    return config_dict
-                config_dict = config_dict.content or {}
+            # Extract config content from result
+            config_dict = {}
+            if config_result.success:
+                config_dict = config_result.content or {}
+            else:
+                # If config loading failed, log warning but continue with defaults
+                logger.warning(f"Failed to load config: {config_result.error}")
+                config_dict = {}
 
             # Apply initialization overrides
             if self._init_output_dir:
@@ -172,6 +171,9 @@ class PandocIntegration(BaseIntegrationService):
                     error=error_msg,
                     message=error_msg
                 )
+
+            # Store config in self.config for compatibility
+            self.config = conversion_config
 
             # Ensure output directory exists
             output_dir = conversion_config.output_dir
