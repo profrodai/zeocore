@@ -1,3 +1,4 @@
+# quack-core/tests/test_paths/test_resolvers.py
 """
 Tests for the PathResolver class.
 """

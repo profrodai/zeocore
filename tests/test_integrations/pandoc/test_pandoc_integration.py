@@ -1,3 +1,4 @@
+# quack-core/tests/test_integrations/pandoc/test_pandoc_integration.py
 """
 Tests for the main Pandoc integration service.
 
