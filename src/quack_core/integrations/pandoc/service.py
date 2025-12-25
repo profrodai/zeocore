@@ -1,4 +1,3 @@
-# quack-core/src/quack_core/integrations/pandoc/service.py
 """Pandoc Integration Service
 
 This module provides the main integration service for Pandoc document conversion.
@@ -127,12 +126,13 @@ class PandocIntegration(BaseIntegrationService):
             IntegrationResult with success status and any error messages
         """
         try:
-            # Call parent initialize to load configuration
+            # Call parent initialize to load configuration into self.config
             result = super().initialize()
             if not result.success:
+                self._initialized = False
                 return result
 
-            # Verify Pandoc is available
+            # Verify Pandoc is available and cache version
             try:
                 pandoc_version = verify_pandoc()
                 self._pandoc_version = pandoc_version
@@ -140,17 +140,19 @@ class PandocIntegration(BaseIntegrationService):
             except Exception as e:
                 error_msg = f"Pandoc not available: {str(e)}"
                 logger.error(error_msg)
+                self._initialized = False
                 return IntegrationResult.error_result(
                     error=error_msg,
                     message=error_msg
                 )
 
-            # Get configuration from parent - it's already loaded into self.config
+            # Get configuration - parent class loaded it into self.config
             config_dict = self.config or {}
 
             # If config is an IntegrationResult, extract content
             if isinstance(config_dict, IntegrationResult):
                 if not config_dict.success:
+                    self._initialized = False
                     return config_dict
                 config_dict = config_dict.content or {}
 
@@ -165,6 +167,7 @@ class PandocIntegration(BaseIntegrationService):
             except Exception as e:
                 error_msg = f"Invalid configuration: {str(e)}"
                 logger.error(error_msg)
+                self._initialized = False
                 return IntegrationResult.error_result(
                     error=error_msg,
                     message=error_msg
@@ -184,6 +187,7 @@ class PandocIntegration(BaseIntegrationService):
                 if not create_result.success:
                     error_msg = f"Failed to create output directory: {create_result.error}"
                     logger.error(error_msg)
+                    self._initialized = False
                     return IntegrationResult.error_result(
                         error=error_msg,
                         message=error_msg
@@ -196,6 +200,7 @@ class PandocIntegration(BaseIntegrationService):
                 config=conversion_config
             )
 
+            # Mark as initialized BEFORE returning success
             self._initialized = True
             logger.info("Pandoc integration initialized successfully")
 
@@ -229,6 +234,20 @@ class PandocIntegration(BaseIntegrationService):
             Pandoc version string, or None if not initialized
         """
         return self._pandoc_version
+
+    def is_pandoc_available(self) -> bool:
+        """Check if Pandoc is available on the system.
+
+        Returns:
+            True if Pandoc is available, False otherwise
+        """
+        try:
+            version = verify_pandoc()
+            if not self._pandoc_version:
+                self._pandoc_version = version
+            return True
+        except Exception:
+            return False
 
     def html_to_markdown(
             self,
@@ -418,19 +437,6 @@ class PandocIntegration(BaseIntegrationService):
                 error=error_msg,
                 message=error_msg
             )
-
-    @staticmethod
-    def is_pandoc_available() -> bool:
-        """Check if Pandoc is available on the system.
-
-        Returns:
-            True if Pandoc is available, False otherwise
-        """
-        try:
-            verify_pandoc()
-            return True
-        except Exception:
-            return False
 
 
 # Factory function for creating integration instance
