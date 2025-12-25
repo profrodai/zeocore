@@ -1,4 +1,4 @@
-# quack-core/src/quack_core/cli/logging.py
+# quack-core/src/quack_core/interfaces/cli/utils/logging.py
 """
 Logging utilities for CLI applications.
 
@@ -11,8 +11,9 @@ import logging
 import os
 from typing import Protocol, TypeVar
 
-from quack_core.cli.options import LogLevel
+
 from quack_core.config.models import QuackConfig
+from quack_core.interfaces.cli.utils.options import LogLevel
 
 T = TypeVar("T")  # Generic type for flexible typing
 

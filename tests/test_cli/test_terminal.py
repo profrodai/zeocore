@@ -7,11 +7,8 @@ import os
 import sys
 from unittest.mock import MagicMock, patch
 
-from quack_core.cli.terminal import (
-    get_terminal_size,
-    supports_color,
-    truncate_text,
-)
+from quack_core.interfaces.cli.utils.terminal import get_terminal_size, supports_color, \
+    truncate_text
 
 
 class TestGetTerminalSize:

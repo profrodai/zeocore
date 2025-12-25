@@ -1,4 +1,4 @@
-# quack-core/src/quack_core/cli/formatting.py
+# quack-core/src/quack_core/interfaces/cli/utils/formatting.py
 """
 Text formatting utilities for CLI applications.
 
@@ -11,7 +11,7 @@ from collections.abc import Mapping
 from enum import Enum
 from typing import Literal
 
-from quack_core.cli.terminal import get_terminal_size, supports_color, truncate_text
+from quack_core.interfaces.cli.utils.terminal import get_terminal_size, supports_color, truncate_text
 
 
 class Color(str, Enum):

@@ -102,10 +102,10 @@ all = [
 "Bug Tracker" = "https://github.com/ducktyper-ai/quackverse/issues"
 
 [tool.hatch.version]
-path = "src/quackcore/__init__.py"
+path = "src/quack_core/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/quackcore"]
+packages = ["src/quack_core"]
 
 [project.entry-points."quack_core.plugins"]
 paths = "quack_core.paths.plugin:create_plugin"
@@ -114,7 +114,7 @@ config = "quack_core.config.plugin:create_plugin"
 prompt = "quack_core.prompt.plugin:create_plugin"
 
 [tool.coverage.run]
-source = ["quackcore"]
+source = ["quack_core"]
 omit = ["tests/*"]
 
 [tool.coverage.report]

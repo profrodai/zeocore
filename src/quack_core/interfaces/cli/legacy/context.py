@@ -1,4 +1,4 @@
-# quack-core/src/quack_core/cli/context.py
+# quack-core/src/quack_core/interfaces/cli/legacy/context.py
 """
 QuackCore CLI context management.
 

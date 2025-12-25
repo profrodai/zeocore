@@ -1,4 +1,4 @@
-# quack-core/src/quack_core/cli/boostrap.py
+# quack-core/src/quack_core/interfaces/cli/legacy/boostrap.py
 """
 CLI bootstrapper for quack_core.
 
@@ -13,11 +13,10 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
 # Import these directly from their modules to ensure mocks work
-from quack_core.cli.config import find_project_root, load_config
-from quack_core.cli.context import QuackContext
-from quack_core.cli.logging import setup_logging
+from quack_core.interfaces.cli.legacy.config import find_project_root, load_config
+from quack_core.interfaces.cli.legacy.context import QuackContext
+from quack_core.interfaces.cli.utils.logging import setup_logging
 from quack_core.errors import QuackError
-
 
 def init_cli_env(
     *,
@@ -112,7 +111,7 @@ def init_cli_env(
 
 
 if TYPE_CHECKING:
-    from quack_core.cli.options import CliOptions
+    from quack_core.interfaces.cli.utils.options import CliOptions
 
 
 def from_cli_options(

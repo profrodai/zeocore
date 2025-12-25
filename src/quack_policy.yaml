@@ -1,0 +1,13 @@
+# quack-core/src/quack_policy.yaml
+demo:
+  default_greeting: "Quack!"
+  safety_check_enabled: true
+
+# Presets
+presets:
+  demo:
+    angry_duck:
+      default_greeting: "HONK HONK!"
+      safety_check_enabled: false
+    polite_duck:
+      default_greeting: "Greetings, kind sir."

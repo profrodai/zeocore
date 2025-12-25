@@ -1,3 +1,4 @@
+# quack-core/src/quack_core/capabilities/contract.py
 """
 The canonical interface for all QuackCore capabilities.
 This module has ZERO dependencies on other QuackCore internal modules.
@@ -5,26 +6,31 @@ This module has ZERO dependencies on other QuackCore internal modules.
 from enum import Enum
 from typing import Any, Dict, Generic, List, Optional, TypeVar
 from pydantic import BaseModel, Field, ConfigDict
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 T = TypeVar("T")
 
 class CapabilityStatus(str, Enum):
-    SUCCESS = "success"
-    SKIPPED = "skipped"
-    ERROR = "error"
+    success = "success"
+    skipped = "skipped"
+    error = "error"
+
+class LogLevel(str, Enum):
+    INFO = "INFO"
+    WARN = "WARN"
+    ERROR = "ERROR"
 
 class CapabilityLogEvent(BaseModel):
     """Structured log event for debugging/audit trails in n8n."""
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-    level: str = "INFO"  # INFO, WARN, ERROR
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    level: LogLevel = LogLevel.INFO
     message: str
     context: Dict[str, Any] = Field(default_factory=dict)
 
 class CapabilityError(BaseModel):
     """Structured error info for machine handling."""
-    code: str  # e.g., QC_VAL_FILE_MISSING
+    code: str  # Must be QC_*
     message: str
     details: Dict[str, Any] = Field(default_factory=dict)
 
@@ -37,19 +43,19 @@ class CapabilityResult(BaseModel, Generic[T]):
 
     # Core Status
     status: CapabilityStatus
-    
+
     # Payload (The actual value produced)
     data: Optional[T] = None
 
-    # Telemetry & Observability
+    # Telemetry
     run_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     duration_sec: float = 0.0
-    
+
     # Messages
     human_message: str = Field(..., description="Readable summary for logs/CLI")
-    machine_message: Optional[str] = Field(None, description="Error code or status code for n8n branching")
-    
+    machine_message: Optional[str] = Field(None, description="QC_* Error code for n8n branching")
+
     # Diagnostics
     error: Optional[CapabilityError] = None
     logs: List[CapabilityLogEvent] = Field(default_factory=list)
@@ -59,7 +65,7 @@ class CapabilityResult(BaseModel, Generic[T]):
     def ok(cls, data: T, msg: str = "Success", metadata: Dict[str, Any] = None) -> "CapabilityResult[T]":
         """Helper for successful execution."""
         return cls(
-            status=CapabilityStatus.SUCCESS,
+            status=CapabilityStatus.success,
             data=data,
             human_message=msg,
             metadata=metadata or {}
@@ -69,7 +75,7 @@ class CapabilityResult(BaseModel, Generic[T]):
     def skip(cls, reason: str, code: str = "QC_SKIPPED_POLICY") -> "CapabilityResult[T]":
         """Helper for valid skips (policy/logic decisions)."""
         return cls(
-            status=CapabilityStatus.SKIPPED,
+            status=CapabilityStatus.skipped,
             human_message=reason,
             machine_message=code
         )
@@ -77,10 +83,21 @@ class CapabilityResult(BaseModel, Generic[T]):
     @classmethod
     def fail(cls, msg: str, code: str, exception: Exception = None) -> "CapabilityResult[T]":
         """Helper for failures."""
-        err_details = {"exception": str(exception)} if exception else {}
+        err_details = {}
+        if exception:
+            err_details = {
+                "type": type(exception).__name__,
+                "str": str(exception)
+            }
+
         return cls(
-            status=CapabilityStatus.ERROR,
+            status=CapabilityStatus.error,
             human_message=msg,
             machine_message=code,
             error=CapabilityError(code=code, message=msg, details=err_details)
         )
+
+    @classmethod
+    def fail_from_exc(cls, msg: str, code: str, exc: Exception) -> "CapabilityResult[T]":
+        """Helper to wrap exceptions quickly."""
+        return cls.fail(msg=msg, code=code, exception=exc)

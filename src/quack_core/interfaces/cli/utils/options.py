@@ -1,4 +1,4 @@
-# quack-core/src/quack_core/cli/options.py
+# quack-core/src/quack_core/interfaces/cli/utils/options.py
 """
 CLI options and argument processing utilities.
 

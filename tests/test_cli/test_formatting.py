@@ -6,17 +6,8 @@ Tests for the CLI formatting module.
 import sys
 from unittest.mock import patch
 
-from quack_core.cli.formatting import (
-    Color,
-    colorize,
-    dict_to_table,
-    print_debug,
-    print_error,
-    print_info,
-    print_success,
-    print_warning,
-    table,
-)
+from quack_core.interfaces.cli.utils.formatting import Color, colorize, print_error, \
+    print_warning, print_success, print_info, print_debug, table, dict_to_table
 
 
 class TestColor:

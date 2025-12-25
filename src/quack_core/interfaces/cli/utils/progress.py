@@ -1,4 +1,4 @@
-# quack-core/src/quack_core/cli/progress.py
+# quack-core/src/quack_core/interfaces/cli/utils/progress.py
 """
 Progress tracking utilities for CLI applications.
 
@@ -13,7 +13,7 @@ from collections.abc import Iterable, Iterator
 from io import TextIOBase
 from typing import Protocol, TypeVar
 
-from quack_core.cli.terminal import get_terminal_size
+from quack_core.interfaces.cli.utils.terminal import get_terminal_size
 
 T = TypeVar("T")  # Generic type for flexible typing
 

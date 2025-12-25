@@ -6,12 +6,8 @@ Tests for the CLI interaction module.
 import time
 from unittest.mock import patch
 
-from quack_core.cli.interaction import (
-    ask,
-    ask_choice,
-    confirm,
-    with_spinner,
-)
+from quack_core.interfaces.cli.utils.interaction import confirm, ask, ask_choice, \
+    with_spinner
 
 
 class TestConfirm:
