@@ -24,10 +24,13 @@ def test_pandoc_integration_name_version():
 
 def test_initialize_with_mocked_verify_pandoc(fs_stub, mock_paths_service):
     """Test initialize method with mocked verify_pandoc."""
-    mock_paths_service.expand_user_vars = MagicMock(side_effect=lambda x: x)
+    if not isinstance(mock_paths_service, MagicMock):
+        mock_paths_service = MagicMock()
+    mock_paths_service.expand_user_vars.side_effect = lambda x: x
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
 
     integration = PandocIntegration()
@@ -46,10 +49,13 @@ def test_initialize_with_mocked_verify_pandoc(fs_stub, mock_paths_service):
 
 def test_initialize_with_verify_pandoc_error(fs_stub, mock_paths_service):
     """Test initialize method when verify_pandoc raises an error."""
-    mock_paths_service.expand_user_vars = MagicMock(side_effect=lambda x: x)
+    if not isinstance(mock_paths_service, MagicMock):
+        mock_paths_service = MagicMock()
+    mock_paths_service.expand_user_vars.side_effect = lambda x: x
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
 
     integration = PandocIntegration()
@@ -111,11 +117,14 @@ def test_is_pandoc_available():
 
 def test_html_to_markdown_with_initialized_service(fs_stub, mock_paths_service):
     """Test html_to_markdown with initialized service."""
-    mock_paths_service.expand_user_vars = MagicMock(side_effect=lambda x: x)
-    mock_paths_service.resolve_project_path = MagicMock(side_effect=lambda x, *args: x)
+    if not isinstance(mock_paths_service, MagicMock):
+        mock_paths_service = MagicMock()
+    mock_paths_service.expand_user_vars.side_effect = lambda x: x
+    mock_paths_service.resolve_project_path.side_effect = lambda x: x
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
 
     integration = PandocIntegration()
@@ -149,11 +158,14 @@ def test_html_to_markdown_with_initialized_service(fs_stub, mock_paths_service):
 
 def test_markdown_to_docx_with_initialized_service(fs_stub, mock_paths_service):
     """Test markdown_to_docx with initialized service."""
-    mock_paths_service.expand_user_vars = MagicMock(side_effect=lambda x: x)
-    mock_paths_service.resolve_project_path = MagicMock(side_effect=lambda x, *args: x)
+    if not isinstance(mock_paths_service, MagicMock):
+        mock_paths_service = MagicMock()
+    mock_paths_service.expand_user_vars.side_effect = lambda x: x
+    mock_paths_service.resolve_project_path.side_effect = lambda x: x
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
 
     integration = PandocIntegration()
@@ -187,17 +199,24 @@ def test_markdown_to_docx_with_initialized_service(fs_stub, mock_paths_service):
 
 def test_convert_directory_with_initialized_service(fs_stub, mock_paths_service):
     """Test convert_directory with initialized service."""
-    mock_paths_service.expand_user_vars = MagicMock(side_effect=lambda x: x)
-    mock_paths_service.resolve_project_path = MagicMock(side_effect=lambda x, *args: x)
-
-    fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
-    fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.get_file_info = MagicMock(return_value=SimpleNamespace(success=True, exists=True, is_dir=True))
+    if not isinstance(mock_paths_service, MagicMock):
+        mock_paths_service = MagicMock()
+    mock_paths_service.expand_user_vars.side_effect = lambda x: x
+    mock_paths_service.resolve_project_path.side_effect = lambda x: x
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
     integration.config_provider.load_config = MagicMock(return_value={})
+
+    # Ensure fs_stub mocks return expected objects, not dicts
+    fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
+    fs_stub.get_file_info = MagicMock(
+        return_value=SimpleNamespace(success=True, exists=True, is_dir=True))
+    fs_stub.find_files = MagicMock(
+        return_value=SimpleNamespace(success=True, files=["file1.html", "file2.html"]))
+    fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
 
     # Initialize the service
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',

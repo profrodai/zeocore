@@ -38,7 +38,8 @@ def test_pandoc_integration_initialize_success(mock_verify_pandoc, fs_stub,
     mock_paths_service.expand_user_vars = MagicMock(side_effect=lambda x: x)
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
 
     # Set up the mock to return a version string
@@ -79,7 +80,8 @@ def test_pandoc_integration_html_to_markdown(mock_pypandoc, fs_stub,
     mock_paths_service.resolve_project_path = MagicMock(side_effect=lambda x, *args: x)
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
 
     integration = PandocIntegration()
@@ -114,7 +116,8 @@ def test_pandoc_integration_markdown_to_docx(mock_pypandoc, fs_stub,
     mock_paths_service.resolve_project_path = MagicMock(side_effect=lambda x, *args: x)
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
 
     integration = PandocIntegration()
@@ -148,9 +151,11 @@ def test_pandoc_integration_convert_directory(mock_pypandoc, fs_stub,
     mock_paths_service.resolve_project_path = MagicMock(side_effect=lambda x, *args: x)
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.get_file_info = MagicMock(return_value=SimpleNamespace(success=True, exists=True, is_dir=True))
+    fs_stub.get_file_info = MagicMock(
+        return_value=SimpleNamespace(success=True, exists=True, is_dir=True))
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
@@ -162,7 +167,8 @@ def test_pandoc_integration_convert_directory(mock_pypandoc, fs_stub,
         integration.initialize()
 
     # Mock converter
-    mock_conv_result = IntegrationResult(success=True, content=['output1.md', 'output2.md'])
+    mock_conv_result = IntegrationResult(success=True,
+                                         content=['output1.md', 'output2.md'])
     if integration.converter:
         integration.converter.convert_batch = MagicMock(return_value=mock_conv_result)
 
@@ -237,9 +243,11 @@ def test_end_to_end_html_to_markdown_conversion(mock_pypandoc, fs_stub,
     mock_paths_service.resolve_project_path = MagicMock(side_effect=lambda x, *args: x)
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.get_file_info = MagicMock(return_value=SimpleNamespace(success=True, exists=True, is_dir=False, size=100))
+    fs_stub.get_file_info = MagicMock(
+        return_value=SimpleNamespace(success=True, exists=True, is_dir=False, size=100))
 
     # Create integration
     integration = PandocIntegration()
@@ -276,9 +284,11 @@ def test_end_to_end_markdown_to_docx_conversion(mock_pypandoc, fs_stub,
     mock_paths_service.resolve_project_path = MagicMock(side_effect=lambda x, *args: x)
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.get_file_info = MagicMock(return_value=SimpleNamespace(success=True, exists=True, is_dir=False, size=100))
+    fs_stub.get_file_info = MagicMock(
+        return_value=SimpleNamespace(success=True, exists=True, is_dir=False, size=100))
 
     # Create integration
     integration = PandocIntegration()
@@ -314,9 +324,11 @@ def test_end_to_end_directory_conversion(mock_pypandoc, fs_stub, mock_paths_serv
     mock_paths_service.resolve_project_path = MagicMock(side_effect=lambda x, *args: x)
 
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.normalize_path_with_info = MagicMock(return_value=SimpleNamespace(success=True, path="output"))
+    fs_stub.normalize_path_with_info = MagicMock(
+        return_value=SimpleNamespace(success=True, path="output"))
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
-    fs_stub.get_file_info = MagicMock(return_value=SimpleNamespace(success=True, exists=True, is_dir=True))
+    fs_stub.get_file_info = MagicMock(
+        return_value=SimpleNamespace(success=True, exists=True, is_dir=True))
 
     # Create integration
     integration = PandocIntegration()

@@ -9,7 +9,6 @@ and edge cases in the pandoc integration.
 import sys
 import time
 from datetime import datetime
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
@@ -23,7 +22,7 @@ from quack_core.integrations.pandoc.models import (
     ConversionTask,
     FileInfo,
 )
-# Corrected import: post_process_markdown is in html_to_md
+# Corrected import path for post_process_markdown
 from quack_core.integrations.pandoc.operations.html_to_md import post_process_markdown
 from quack_core.integrations.pandoc.operations.utils import (
     check_conversion_ratio,
@@ -228,7 +227,7 @@ def test_check_conversion_ratio_edge_cases():
     assert not errors  # No validation if original size is None
 
     valid, errors = check_conversion_ratio(50, 100, None)
-    assert valid   # Threshold defaults to 0.1
+    assert valid  # Threshold defaults to 0.1
     assert not errors
 
     # Test with string values (should be converted)
@@ -238,7 +237,7 @@ def test_check_conversion_ratio_edge_cases():
 
     # Test with exactly threshold ratio
     valid, errors = check_conversion_ratio(10, 100, 0.1)
-    assert valid   # Ratio is exactly 0.1, should pass
+    assert valid  # Ratio is exactly 0.1, should pass
     assert not errors
 
     # Test with slightly below threshold
@@ -338,14 +337,12 @@ def test_validate_html_structure_edge_cases():
 
 def test_validate_docx_structure_edge_cases(monkeypatch):
     """Test edge cases for validate_docx_structure utility."""
-    # Test with docx not installed
-    with patch.dict(sys.modules, {}):  # Clear modules
+    # Test with docx not installed - properly simulating missing module
+    with patch.dict(sys.modules, {'docx': None}):
         # Verify valid behavior when dependency missing (should soft pass if zip check passes)
-        # Mock zipfile to simulate valid zip structure since file doesn't exist
-        with patch('zipfile.is_zipfile', return_value=True):
-             valid, errors = validate_docx_structure("test.docx")
-             assert valid
-             assert not errors
+        valid, errors = validate_docx_structure("test.docx")
+        assert valid
+        assert not errors
 
     # Test with Document constructor raising error
     mock_docx = MagicMock()
