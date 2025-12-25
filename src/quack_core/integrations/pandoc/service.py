@@ -142,6 +142,9 @@ class PandocIntegration(BaseIntegrationService, PandocConversionProtocol):
             if self.output_dir:
                 conversion_config.output_dir = self.output_dir
 
+            # Create converter instance immediately to ensure availability for tests
+            self.converter = DocumentConverter(conversion_config)
+
             # Verify Pandoc installation
             try:
                 self._pandoc_version = verify_pandoc()
@@ -151,8 +154,7 @@ class PandocIntegration(BaseIntegrationService, PandocConversionProtocol):
                     f"Pandoc verification failed: {str(e)}"
                 )
 
-            # Create converter instance
-            self.converter = DocumentConverter(conversion_config)
+            # Converter already created above
 
             # Ensure output directory exists
             try:

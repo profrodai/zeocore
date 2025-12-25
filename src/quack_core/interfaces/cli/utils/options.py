@@ -93,8 +93,9 @@ def resolve_cli_args(args: Sequence[str]) -> dict[str, object]:
                 result[name] = True
                 i += 1
                 continue
-            # Option with separate value
-            if i + 1 < len(args) and not args[i + 1].startswith("--"):
+            # Option with separate value - check if next arg exists and is not separator
+            # Accept the value even if it starts with '--' (could be a value like '--0')
+            if i + 1 < len(args) and args[i + 1] != "--":
                 result[name] = args[i + 1]
                 i += 2
                 continue
