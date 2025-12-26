@@ -445,22 +445,36 @@ def test_validate_html_structure_edge_cases():
 
 def test_validate_docx_structure_edge_cases():
     """Test edge cases for validate_docx_structure utility."""
-    # Test with docx module unavailable - should pass with soft validation
-    with patch('importlib.import_module', side_effect=ImportError("No module named 'docx'")):
-        with patch('zipfile.is_zipfile', return_value=True):
-            valid, errors = validate_docx_structure("test.docx")
-            assert valid
-            assert not errors
 
-    # Test with Document constructor raising error
+    # Test with docx module unavailable - when docx can't be imported,
+    # the validation should pass with soft validation (no strict checking)
+
+    # Mock the importlib.import_module to raise ImportError only for 'docx'
+    def mock_import(name):
+        if name == 'docx':
+            raise ImportError("No module named 'docx'")
+        # For other modules like zipfile, use the real import
+        import importlib
+        return importlib.import_module(name)
+
+    with patch('importlib.import_module', side_effect=mock_import):
+        # When docx module is unavailable, validation should be lenient
+        valid, errors = validate_docx_structure("test.docx")
+        # Should pass since we can't do strict validation without docx module
+        assert valid
+        assert not errors
+
+    # Test with Document constructor raising error (when docx IS available)
     mock_docx = MagicMock()
     mock_docx.Document.side_effect = Exception("Failed to open document")
-    with patch.dict(sys.modules, {'docx': mock_docx}):
-        valid, errors = validate_docx_structure("test.docx")
-        assert not valid
-        assert "validation error" in errors[0].lower()
 
-    # Test with docx module available
+    with patch.dict(sys.modules, {'docx': mock_docx}):
+        with patch('importlib.import_module', return_value=mock_docx):
+            valid, errors = validate_docx_structure("test.docx")
+            assert not valid
+            assert "validation error" in errors[0].lower()
+
+    # Test with docx module available and valid document
     mock_docx = MagicMock()
     mock_para = MagicMock()
     mock_para.style.name = "Heading 1"
@@ -470,17 +484,17 @@ def test_validate_docx_structure_edge_cases():
     mock_docx.Document.side_effect = None
 
     with patch.dict(sys.modules, {'docx': mock_docx}):
-        # Test valid DOCX
-        valid, errors = validate_docx_structure("valid.docx")
-        assert valid
-        assert not errors
+        with patch('importlib.import_module', return_value=mock_docx):
+            # Test valid DOCX
+            valid, errors = validate_docx_structure("valid.docx")
+            assert valid
+            assert not errors
 
-        # Test empty DOCX
-        mock_doc.paragraphs = []
-        valid, errors = validate_docx_structure("empty.docx")
-        assert not valid
-        assert "no paragraphs" in errors[0].lower()
-
+            # Test empty DOCX
+            mock_doc.paragraphs = []
+            valid, errors = validate_docx_structure("empty.docx")
+            assert not valid
+            assert "no paragraphs" in errors[0].lower()
 
 def test_prepare_pandoc_args_comprehensive():
     """Test comprehensive options for prepare_pandoc_args utility."""

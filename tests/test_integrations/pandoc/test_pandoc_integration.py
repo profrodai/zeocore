@@ -32,7 +32,7 @@ def setup_integration_mocks(fs_stub, mock_paths_service):
         side_effect=lambda x: SimpleNamespace(success=True, path=x)
     )
 
-    # Filesystem mocks
+    # Filesystem mocks - fs_stub needs to be a MagicMock with proper methods
     fs_stub.get_path_info = MagicMock(
         return_value=SimpleNamespace(success=True)
     )
@@ -61,17 +61,21 @@ def test_pandoc_integration_initialization():
     assert integration.converter is None
 
 
+@patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_initialize_success(mock_verify_pandoc,
+                                               mock_expand_user_vars,
                                                setup_integration_mocks):
     """Test successful initialization of PandocIntegration."""
     fs_stub, mock_paths_service = setup_integration_mocks
 
-    # Set up the mock to return a version string
+    # Set up the mocks
     mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
@@ -99,20 +103,26 @@ def test_pandoc_integration_initialize_failure(mock_verify_pandoc):
     assert integration._initialized is False
 
 
-def test_pandoc_integration_html_to_markdown(setup_integration_mocks):
+@patch('quack_core.fs.service.standalone.expand_user_vars')
+@patch('quack_core.integrations.pandoc.service.verify_pandoc')
+def test_pandoc_integration_html_to_markdown(mock_verify_pandoc,
+                                             mock_expand_user_vars,
+                                             setup_integration_mocks):
     """Test HTML to Markdown conversion in PandocIntegration."""
     fs_stub, mock_paths_service = setup_integration_mocks
 
+    mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
+
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
 
-    # Initialize with mocked verify_pandoc
-    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-               return_value="2.11.0"):
-        integration.initialize()
+    # Initialize
+    integration.initialize()
 
     # Mock converter
     mock_conv_result = IntegrationResult(success=True, content='output.md')
@@ -129,20 +139,26 @@ def test_pandoc_integration_html_to_markdown(setup_integration_mocks):
     mock_convert_file.assert_called()
 
 
-def test_pandoc_integration_markdown_to_docx(setup_integration_mocks):
+@patch('quack_core.fs.service.standalone.expand_user_vars')
+@patch('quack_core.integrations.pandoc.service.verify_pandoc')
+def test_pandoc_integration_markdown_to_docx(mock_verify_pandoc,
+                                              mock_expand_user_vars,
+                                              setup_integration_mocks):
     """Test Markdown to DOCX conversion in PandocIntegration."""
     fs_stub, mock_paths_service = setup_integration_mocks
 
+    mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
+
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
 
-    # Initialize with mocked verify_pandoc
-    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-               return_value="2.11.0"):
-        integration.initialize()
+    # Initialize
+    integration.initialize()
 
     # Mock converter
     mock_conv_result = IntegrationResult(success=True, content='output.docx')
@@ -159,9 +175,16 @@ def test_pandoc_integration_markdown_to_docx(setup_integration_mocks):
     mock_convert_file.assert_called()
 
 
-def test_pandoc_integration_convert_directory(setup_integration_mocks):
+@patch('quack_core.fs.service.standalone.expand_user_vars')
+@patch('quack_core.integrations.pandoc.service.verify_pandoc')
+def test_pandoc_integration_convert_directory(mock_verify_pandoc,
+                                               mock_expand_user_vars,
+                                               setup_integration_mocks):
     """Test directory conversion in PandocIntegration."""
     fs_stub, mock_paths_service = setup_integration_mocks
+
+    mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
 
     # Add directory-specific mocks
     fs_stub.get_file_info = MagicMock(
@@ -173,14 +196,13 @@ def test_pandoc_integration_convert_directory(setup_integration_mocks):
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
 
-    # Initialize with mocked verify_pandoc
-    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-               return_value="2.11.0"):
-        integration.initialize()
+    # Initialize
+    integration.initialize()
 
     # Mock converter
     mock_conv_result = IntegrationResult(
@@ -254,22 +276,28 @@ def test_create_integration():
 
 # --- Integration tests ---
 
-def test_end_to_end_html_to_markdown_conversion(setup_integration_mocks):
+@patch('quack_core.fs.service.standalone.expand_user_vars')
+@patch('quack_core.integrations.pandoc.service.verify_pandoc')
+def test_end_to_end_html_to_markdown_conversion(mock_verify_pandoc,
+                                                 mock_expand_user_vars,
+                                                 setup_integration_mocks):
     """Test complete HTML to Markdown conversion flow."""
     fs_stub, mock_paths_service = setup_integration_mocks
+
+    mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
 
     # Create integration
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
 
-    # Initialize integration with mocked verify_pandoc
-    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-               return_value="2.11.0"):
-        init_result = integration.initialize()
-        assert init_result.success
+    # Initialize integration
+    init_result = integration.initialize()
+    assert init_result.success
 
     # Mock convert_html_to_markdown to return success
     with patch(
@@ -288,22 +316,28 @@ def test_end_to_end_html_to_markdown_conversion(setup_integration_mocks):
         mock_convert.assert_called()
 
 
-def test_end_to_end_markdown_to_docx_conversion(setup_integration_mocks):
+@patch('quack_core.fs.service.standalone.expand_user_vars')
+@patch('quack_core.integrations.pandoc.service.verify_pandoc')
+def test_end_to_end_markdown_to_docx_conversion(mock_verify_pandoc,
+                                                 mock_expand_user_vars,
+                                                 setup_integration_mocks):
     """Test complete Markdown to DOCX conversion flow."""
     fs_stub, mock_paths_service = setup_integration_mocks
+
+    mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
 
     # Create integration
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
 
-    # Initialize integration with mocked verify_pandoc
-    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-               return_value="2.11.0"):
-        init_result = integration.initialize()
-        assert init_result.success
+    # Initialize integration
+    init_result = integration.initialize()
+    assert init_result.success
 
     # Mock convert_markdown_to_docx to return success
     with patch(
@@ -322,9 +356,16 @@ def test_end_to_end_markdown_to_docx_conversion(setup_integration_mocks):
         mock_convert.assert_called()
 
 
-def test_end_to_end_directory_conversion(setup_integration_mocks):
+@patch('quack_core.fs.service.standalone.expand_user_vars')
+@patch('quack_core.integrations.pandoc.service.verify_pandoc')
+def test_end_to_end_directory_conversion(mock_verify_pandoc,
+                                          mock_expand_user_vars,
+                                          setup_integration_mocks):
     """Test complete directory conversion flow."""
     fs_stub, mock_paths_service = setup_integration_mocks
+
+    mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
 
     # Override with directory-specific mocks
     fs_stub.get_file_info = MagicMock(
@@ -337,15 +378,14 @@ def test_end_to_end_directory_conversion(setup_integration_mocks):
     # Create integration
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
 
-    # Initialize integration with mocked verify_pandoc
-    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-               return_value="2.11.0"):
-        init_result = integration.initialize()
-        assert init_result.success
+    # Initialize integration
+    init_result = integration.initialize()
+    assert init_result.success
 
     # Mock converter batch operation
     mock_convert_batch = MagicMock(

@@ -44,15 +44,18 @@ def test_pandoc_integration_name_version():
     assert not integration._initialized
 
 
+@patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
-def test_initialize_with_mocked_verify_pandoc(mock_verify_pandoc, setup_mocks):
+def test_initialize_with_mocked_verify_pandoc(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
     """Test initialize method with mocked verify_pandoc."""
     fs_stub, mock_paths_service = setup_mocks
 
     mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
@@ -125,15 +128,18 @@ def test_is_pandoc_available():
         assert not integration.is_pandoc_available()
 
 
+@patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
-def test_html_to_markdown_with_initialized_service(mock_verify_pandoc, setup_mocks):
+def test_html_to_markdown_with_initialized_service(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
     """Test HTML to Markdown conversion with initialized service."""
     fs_stub, mock_paths_service = setup_mocks
 
     mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
@@ -159,15 +165,18 @@ def test_html_to_markdown_with_initialized_service(mock_verify_pandoc, setup_moc
     assert mock_convert_file.call_count == 2
 
 
+@patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
-def test_markdown_to_docx_with_initialized_service(mock_verify_pandoc, setup_mocks):
+def test_markdown_to_docx_with_initialized_service(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
     """Test Markdown to DOCX conversion with initialized service."""
     fs_stub, mock_paths_service = setup_mocks
 
     mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
@@ -193,29 +202,28 @@ def test_markdown_to_docx_with_initialized_service(mock_verify_pandoc, setup_moc
     assert mock_convert_file.call_count == 2
 
 
+@patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
-def test_convert_directory_with_initialized_service(mock_verify_pandoc, setup_mocks):
+def test_convert_directory_with_initialized_service(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
     """Test directory conversion with initialized service."""
     fs_stub, mock_paths_service = setup_mocks
 
     mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
 
-    # Add directory-specific mocks
-    integration.fs_service = MagicMock()
-    integration.fs_service.get_file_info = MagicMock(
+    # Add directory-specific mocks to fs_service
+    fs_stub.get_file_info = MagicMock(
         return_value=SimpleNamespace(success=True, exists=True, is_dir=True)
     )
-    integration.fs_service.find_files = MagicMock(
+    fs_stub.find_files = MagicMock(
         return_value=SimpleNamespace(success=True, files=["file1.html", "file2.html"])
-    )
-    integration.fs_service.create_directory = MagicMock(
-        return_value=SimpleNamespace(success=True)
     )
 
     # Initialize the service
