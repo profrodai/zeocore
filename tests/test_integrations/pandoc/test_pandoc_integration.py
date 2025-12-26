@@ -16,6 +16,7 @@ from quack_core.integrations.core.protocols import IntegrationProtocol
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc import create_integration
 from quack_core.integrations.pandoc.service import PandocIntegration
+from quack_core.integrations.pandoc.models import FileInfo
 
 
 # --- Shared Test Fixtures ---
@@ -148,8 +149,8 @@ def test_pandoc_integration_html_to_markdown(mock_verify_pandoc,
 @patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_markdown_to_docx(mock_verify_pandoc,
-                                              mock_expand_user_vars,
-                                              setup_integration_mocks):
+                                             mock_expand_user_vars,
+                                             setup_integration_mocks):
     """Test Markdown to DOCX conversion in PandocIntegration."""
     fs_stub, mock_paths_service = setup_integration_mocks
 
@@ -184,8 +185,8 @@ def test_pandoc_integration_markdown_to_docx(mock_verify_pandoc,
 @patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_convert_directory(mock_verify_pandoc,
-                                               mock_expand_user_vars,
-                                               setup_integration_mocks):
+                                              mock_expand_user_vars,
+                                              setup_integration_mocks):
     """Test directory conversion in PandocIntegration."""
     fs_stub, mock_paths_service = setup_integration_mocks
 
@@ -282,18 +283,28 @@ def test_create_integration():
 
 # --- Integration tests ---
 
-@patch('os.path.exists', return_value=True)
+# We need to mock get_file_info from operations.utils because that's what the Converter uses
+# to validate input files. It bypasses the fs_service we inject into the Integration.
+@patch('quack_core.integrations.pandoc.operations.utils.get_file_info')
 @patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_html_to_markdown_conversion(mock_verify_pandoc,
-                                                 mock_expand_user_vars,
-                                                 mock_path_exists,
-                                                 setup_integration_mocks):
+                                                mock_expand_user_vars,
+                                                mock_get_file_info,
+                                                setup_integration_mocks):
     """Test complete HTML to Markdown conversion flow."""
     fs_stub, mock_paths_service = setup_integration_mocks
 
     mock_verify_pandoc.return_value = "2.11.0"
     mock_expand_user_vars.side_effect = lambda x: x
+
+    # Mock get_file_info to return a valid FileInfo object
+    mock_get_file_info.return_value = FileInfo(
+        path="input.html",
+        format="html",
+        size=1024,
+        modified=123456789.0
+    )
 
     # Create integration
     integration = PandocIntegration()
@@ -324,18 +335,26 @@ def test_end_to_end_html_to_markdown_conversion(mock_verify_pandoc,
         mock_convert.assert_called()
 
 
-@patch('os.path.exists', return_value=True)
+@patch('quack_core.integrations.pandoc.operations.utils.get_file_info')
 @patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_markdown_to_docx_conversion(mock_verify_pandoc,
-                                                 mock_expand_user_vars,
-                                                 mock_path_exists,
-                                                 setup_integration_mocks):
+                                                mock_expand_user_vars,
+                                                mock_get_file_info,
+                                                setup_integration_mocks):
     """Test complete Markdown to DOCX conversion flow."""
     fs_stub, mock_paths_service = setup_integration_mocks
 
     mock_verify_pandoc.return_value = "2.11.0"
     mock_expand_user_vars.side_effect = lambda x: x
+
+    # Mock get_file_info to return a valid FileInfo object
+    mock_get_file_info.return_value = FileInfo(
+        path="input.md",
+        format="markdown",
+        size=1024,
+        modified=123456789.0
+    )
 
     # Create integration
     integration = PandocIntegration()
@@ -366,23 +385,30 @@ def test_end_to_end_markdown_to_docx_conversion(mock_verify_pandoc,
         mock_convert.assert_called()
 
 
+@patch('quack_core.integrations.pandoc.operations.utils.get_file_info')
 @patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_directory_conversion(mock_verify_pandoc,
-                                          mock_expand_user_vars,
-                                          setup_integration_mocks):
+                                         mock_expand_user_vars,
+                                         mock_get_file_info,
+                                         setup_integration_mocks):
     """Test complete directory conversion flow."""
     fs_stub, mock_paths_service = setup_integration_mocks
 
     mock_verify_pandoc.return_value = "2.11.0"
     mock_expand_user_vars.side_effect = lambda x: x
 
-    # Override with directory-specific mocks
+    # Override with directory-specific mocks for the integration FS service
     fs_stub.get_file_info = MagicMock(
         return_value=SimpleNamespace(success=True, exists=True, is_dir=True)
     )
     fs_stub.find_files = MagicMock(
         return_value=SimpleNamespace(success=True, files=["file1.html", "file2.html"])
+    )
+
+    # Mock operations.utils.get_file_info used by the Converter
+    mock_get_file_info.side_effect = lambda path: FileInfo(
+        path=path, format="html", size=100
     )
 
     # Create integration

@@ -46,7 +46,7 @@ def test_integration_with_custom_config_path():
         success=True, content={"output_dir": "/custom/path"}
     )
 
-    # Mock FS service with ALL required methods
+    # Mock FS service
     mock_fs = MagicMock()
     mock_fs.expand_user_vars = MagicMock(
         side_effect=lambda x: SimpleNamespace(success=True, data=x)
@@ -54,13 +54,10 @@ def test_integration_with_custom_config_path():
     mock_fs.create_directory = MagicMock(
         return_value=SimpleNamespace(success=True)
     )
-    # Add read_yaml to ensure config loading works if it tries to fallback to fs
-    mock_fs.read_yaml = MagicMock(
-        return_value=SimpleNamespace(success=True, data={})
-    )
 
+    # Patch where PandocConfigProvider is used in service.py
     with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
-            patch('quack_core.integrations.pandoc.config.PandocConfigProvider',
+            patch('quack_core.integrations.pandoc.service.PandocConfigProvider',
                   return_value=mock_config_provider), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value='2.11.0'):
@@ -80,9 +77,6 @@ def test_integration_with_custom_output_dir():
     integration = PandocIntegration(output_dir="/custom/output")
     integration.paths_service = MagicMock()
     integration.paths_service.expand_user_vars.side_effect = lambda x: x
-    integration.config_provider.load_config = MagicMock(
-        return_value=IntegrationResult(success=True, content={})
-    )
 
     # Mock FS service
     mock_fs = MagicMock()
@@ -94,7 +88,13 @@ def test_integration_with_custom_output_dir():
     )
     integration.fs_service = mock_fs
 
+    # Mock provider instance
+    mock_provider = MagicMock()
+    mock_provider.load_config.return_value = IntegrationResult(success=True, content={})
+
     with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
+            patch('quack_core.integrations.pandoc.service.PandocConfigProvider',
+                  return_value=mock_provider), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"):
         result = integration.initialize()
@@ -478,11 +478,12 @@ def test_validate_html_structure_edge_cases():
         assert "missing body tag" in errors[0].lower()
 
 
-def test_validate_docx_structure_edge_cases():
+def test_validate_docx_structure_edge_cases(monkeypatch):
     """Test edge cases for validate_docx_structure utility."""
 
-    # We need to simulate ImportError when importing 'docx'
-    # but let other imports proceed normally
+    # Test with docx module properly mocked as unavailable
+    # using builtins.__import__ patching
+
     original_import = __import__
 
     def mock_import(name, globals=None, locals=None, fromlist=(), level=0):
@@ -491,26 +492,29 @@ def test_validate_docx_structure_edge_cases():
         return original_import(name, globals, locals, fromlist, level)
 
     with patch('builtins.__import__', side_effect=mock_import):
-        # When docx module is unavailable, validation should be lenient
-        # Note: We don't need to patch zipfile here because validate_docx_structure
-        # doesn't call is_zipfile when docx is missing (it returns True, [])
-        valid, errors = validate_docx_structure("test.docx")
-        # Should pass since we can't do strict validation without docx module
-        assert valid
-        assert not errors
+        # We need to ensure 'docx' is not in sys.modules to trigger the import logic
+        with patch.dict(sys.modules):
+            if 'docx' in sys.modules:
+                del sys.modules['docx']
 
-    # Test with Document constructor raising error (when docx IS available)
+            # When docx is not available, validation should pass (soft validation)
+            # Note: We don't need to patch zipfile here because validate_docx_structure
+            # doesn't call is_zipfile when docx is missing (it returns True, [])
+            valid, errors = validate_docx_structure("test.docx")
+            assert valid
+            assert not errors
+
+    # Test with Document constructor raising error
     mock_docx = MagicMock()
     mock_docx.Document.side_effect = Exception("Failed to open document")
-
     with patch.dict(sys.modules, {'docx': mock_docx}):
-        # We need to ensure importlib.import_module returns our mock
-        with patch('importlib.import_module', return_value=mock_docx):
-            valid, errors = validate_docx_structure("test.docx")
-            assert not valid
-            assert "validation error" in errors[0].lower()
+        # We don't need importlib patch here as we're injecting into sys.modules
+        # but we need to ensure the mocked module is used
+        valid, errors = validate_docx_structure("test.docx")
+        assert not valid
+        assert "validation error" in errors[0].lower()
 
-    # Test with docx module available and valid document
+    # Test with docx module available
     mock_docx = MagicMock()
     mock_para = MagicMock()
     mock_para.style.name = "Heading 1"
@@ -520,17 +524,16 @@ def test_validate_docx_structure_edge_cases():
     mock_docx.Document.side_effect = None
 
     with patch.dict(sys.modules, {'docx': mock_docx}):
-        with patch('importlib.import_module', return_value=mock_docx):
-            # Test valid DOCX
-            valid, errors = validate_docx_structure("valid.docx")
-            assert valid
-            assert not errors
+        # Test valid DOCX
+        valid, errors = validate_docx_structure("valid.docx")
+        assert valid
+        assert not errors
 
-            # Test empty DOCX
-            mock_doc.paragraphs = []
-            valid, errors = validate_docx_structure("empty.docx")
-            assert not valid
-            assert "no paragraphs" in errors[0].lower()
+        # Test empty DOCX
+        mock_doc.paragraphs = []
+        valid, errors = validate_docx_structure("empty.docx")
+        assert not valid
+        assert "no paragraphs" in errors[0].lower()
 
 
 def test_prepare_pandoc_args_comprehensive():
