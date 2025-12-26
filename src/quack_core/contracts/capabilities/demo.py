@@ -1,7 +1,7 @@
-# quack-core/src/quack_core/capabilities/demo.py
+# quack-core/src/quack_core/contracts/capabilities/demo.py
 from typing import Optional
 from pydantic import BaseModel
-from quack_core.capabilities.contract import CapabilityResult
+from quack_core.contracts.capabilities.contract import CapabilityResult
 from quack_core.config_base import BasePolicy, ConfigResolver
 
 

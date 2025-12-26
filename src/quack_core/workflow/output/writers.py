@@ -89,7 +89,7 @@ class DefaultOutputWriter(OutputWriter):
             RuntimeError: If the write operation fails
         """
 
-        from quack_core.fs.service import standalone
+        from quack_core.lib.fs.service import standalone
         # Validate the data first
         self.validate_data(data)
 
@@ -227,7 +227,7 @@ class YAMLOutputWriter(OutputWriter):
             RuntimeError: If the write operation fails
             ImportError: If PyYAML is not available
         """
-        from quack_core.fs.service import standalone
+        from quack_core.lib.fs.service import standalone
         # Validate the data first
         self.validate_data(data)
 

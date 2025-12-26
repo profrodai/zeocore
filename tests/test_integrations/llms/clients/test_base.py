@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.errors import QuackApiError, QuackIntegrationError
+from quack_core.lib.errors import QuackApiError, QuackIntegrationError
 from quack_core.integrations.core.results import (  # Import IntegrationResult for testing
     IntegrationResult,
 )

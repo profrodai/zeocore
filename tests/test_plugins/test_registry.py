@@ -7,7 +7,7 @@ from collections.abc import Callable
 
 import pytest
 
-from quack_core.errors import QuackPluginError
+from quack_core.lib.errors import QuackPluginError
 from quack_core.plugins.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,

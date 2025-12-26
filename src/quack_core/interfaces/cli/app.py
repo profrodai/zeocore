@@ -1,7 +1,6 @@
 # quack-core/src/quack_core/interfaces/cli/app.py
 import typer
-import json
-from quack_core.capabilities.demo import echo_text, EchoRequest, validate_video_ref, VideoRefRequest
+from quack_core.contracts.capabilities.demo import echo_text, EchoRequest, validate_video_ref, VideoRefRequest
 
 app = typer.Typer()
 

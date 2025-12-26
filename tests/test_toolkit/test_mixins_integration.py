@@ -69,7 +69,7 @@ class CompleteQuackTool(
 
     def __init__(self) -> None:
         # Patch filesystem access and logging to avoid issues
-        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
                 patch('quack_core.toolkit.base.setup_tool_logging'), \
                 patch('quack_core.toolkit.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:

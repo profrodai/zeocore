@@ -9,7 +9,7 @@ import os
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from quack_core.capabilities.demo import echo_text, EchoRequest
+from quack_core.contracts.capabilities.demo import echo_text, EchoRequest
 
 
 def run_flow():

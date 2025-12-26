@@ -85,7 +85,7 @@ def _add_file_handler(
         console_formatter: Optional formatter to use for consistency with console output
     """
     # Import create_directory from the filesystem service to handle directory creation.
-    from quack_core.fs.service import create_directory
+    from quack_core.lib.fs.service import create_directory
 
     try:
         # Expect the logging file setting to be provided as a string.

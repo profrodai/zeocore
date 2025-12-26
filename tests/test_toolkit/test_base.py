@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.fs.results import DataResult, OperationResult
+from quack_core.lib.fs import DataResult, OperationResult
 from quack_core.toolkit.base import BaseQuackToolPlugin
 from quack_core.workflow.output import DefaultOutputWriter, YAMLOutputWriter
 
@@ -95,7 +95,7 @@ class DummyQuackTool(BaseQuackToolPlugin):
 
     def __init__(self) -> None:
         # Patch get_service to avoid filesystem issues
-        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
                 patch('os.getcwd') as mock_getcwd:
             # Configure mocks
             mock_fs = create_mock_fs()
@@ -127,7 +127,7 @@ class CustomExtensionTool(BaseQuackToolPlugin):
 
     def __init__(self) -> None:
         # Patch get_service to avoid filesystem issues
-        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
                 patch('quack_core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
                 patch('quack_core.toolkit.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:
@@ -162,7 +162,7 @@ class RemoteHandlerTool(BaseQuackToolPlugin):
 
     def __init__(self) -> None:
         # Patch get_service to avoid filesystem issues
-        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
                 patch('quack_core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
                 patch('quack_core.toolkit.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:
@@ -197,7 +197,7 @@ class CustomWriterTool(BaseQuackToolPlugin):
 
     def __init__(self) -> None:
         # Patch get_service to avoid filesystem issues
-        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
                 patch('quack_core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
                 patch('quack_core.toolkit.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:
@@ -232,7 +232,7 @@ class UnavailableTool(BaseQuackToolPlugin):
 
     def __init__(self) -> None:
         # Patch get_service to avoid filesystem issues
-        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
                 patch('quack_core.toolkit.base.setup_tool_logging') as mock_setup_logging, \
                 patch('quack_core.toolkit.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:
@@ -302,7 +302,7 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         # Use simple patching to avoid complex nesting
         with patch("quack_core.toolkit.base.setup_tool_logging",
                    setup_tool_logging_mock), \
-                patch('quack_core.fs.service.get_service') as mock_get_service, \
+                patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
                 patch('os.getcwd') as mock_getcwd:
             # Configure mocks
             mock_fs = create_mock_fs()
@@ -551,7 +551,7 @@ class TestBaseQuackToolPlugin(unittest.TestCase):
         """
         Test that initialization handles filesystem errors gracefully.
         """
-        with patch('quack_core.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
                 patch('os.getcwd', return_value=tempfile.gettempdir()), \
                 patch('quack_core.toolkit.base.setup_tool_logging'), \
                 patch('quack_core.toolkit.base.get_logger'):

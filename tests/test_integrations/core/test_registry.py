@@ -5,7 +5,7 @@ Tests for the integration registry module.
 
 import pytest
 
-from quack_core.errors import QuackError
+from quack_core.lib.errors import QuackError
 from quack_core.integrations.core.registry import IntegrationRegistry
 from quack_core.integrations.core.results import IntegrationResult
 

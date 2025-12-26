@@ -11,24 +11,24 @@ import pytest
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch):
     """
-    Stub out the quack_core.fs.service.standalone methods for file operations.
+    Stub out the quack_core.lib.fs.service.standalone methods for file operations.
     """
     import sys
     import types
 
     # Create a module structure if it doesn't exist
-    if 'quack_core.fs.service' not in sys.modules:
+    if 'quack_core.lib.fs.service' not in sys.modules:
         # Create the module hierarchy
         if 'quack-core' not in sys.modules:
             quackcore_mod = types.ModuleType('quack-core')
             sys.modules['quack-core'] = quackcore_mod
 
-        if 'quack_core.fs' not in sys.modules:
-            fs_mod = types.ModuleType('quack_core.fs')
-            sys.modules['quack_core.fs'] = fs_mod
+        if 'quack_core.lib.fs' not in sys.modules:
+            fs_mod = types.ModuleType('quack_core.lib.fs')
+            sys.modules['quack_core.lib.fs'] = fs_mod
 
-        service_mod = types.ModuleType('quack_core.fs.service')
-        sys.modules['quack_core.fs.service'] = service_mod
+        service_mod = types.ModuleType('quack_core.lib.fs.service')
+        sys.modules['quack_core.lib.fs.service'] = service_mod
 
     # Create the stub with all necessary methods
     stub = SimpleNamespace()
@@ -59,7 +59,7 @@ def fs_stub(monkeypatch):
     )
 
     # Set the standalone attribute directly in the sys.modules
-    sys.modules['quack_core.fs.service'].standalone = stub
+    sys.modules['quack_core.lib.fs.service'].standalone = stub
 
     return stub
 
@@ -87,13 +87,13 @@ def mock_paths_service(monkeypatch):
     mock.resolve_project_path = lambda path: path  # Just return the path unchanged
 
     # Create a temp module if it doesn't exist
-    if 'quack_core.paths' not in pytest.importorskip("sys").modules:
+    if 'quack_core.lib.paths' not in pytest.importorskip("sys").modules:
         import types
-        temp_module = types.ModuleType('quack_core.paths')
-        pytest.importorskip("sys").modules['quack_core.paths'] = temp_module
+        temp_module = types.ModuleType('quack_core.lib.paths')
+        pytest.importorskip("sys").modules['quack_core.lib.paths'] = temp_module
         temp_module.service = mock
     else:
-        monkeypatch.setattr('quack_core.paths.service', mock)
+        monkeypatch.setattr('quack_core.lib.paths.service', mock)
 
     return mock
 

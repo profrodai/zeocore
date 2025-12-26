@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.errors import QuackIntegrationError
+from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.llms.clients.base import LLMClient
 from quack_core.integrations.llms.clients.mock import MockLLMClient
 from quack_core.integrations.llms.registry import (

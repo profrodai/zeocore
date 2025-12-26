@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Any
 from quack_core.interfaces.cli.legacy.config import find_project_root, load_config
 from quack_core.interfaces.cli.legacy.context import QuackContext
 from quack_core.interfaces.cli.utils.logging import setup_logging
-from quack_core.errors import QuackError
+from quack_core.lib.errors import QuackError
 
 def init_cli_env(
     *,

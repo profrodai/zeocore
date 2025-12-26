@@ -11,10 +11,10 @@ import yaml
 
 from quack_core.config.loader import load_config
 from quack_core.config.models import QuackConfig
-from quack_core.errors import QuackError
-from quack_core.fs.service import FileSystemService
-from quack_core.paths import PathResolver
-from quack_core.paths import service as paths
+from quack_core.lib.errors import QuackError
+from quack_core.lib.fs.service import FileSystemService
+from quack_core.lib.paths import PathResolver
+from quack_core.lib.paths import service as paths
 from quack_core.plugins.protocols import (
     CommandPluginProtocol,
     ProviderPluginProtocol,

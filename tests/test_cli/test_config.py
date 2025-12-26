@@ -10,7 +10,7 @@ import pytest
 
 
 from quack_core.config.models import QuackConfig
-from quack_core.errors import QuackConfigurationError, QuackFileNotFoundError
+from quack_core.lib.errors import QuackConfigurationError, QuackFileNotFoundError
 from quack_core.interfaces.cli.legacy.config import find_project_root, load_config, \
     _merge_cli_overrides
 

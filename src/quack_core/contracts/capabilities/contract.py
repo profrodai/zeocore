@@ -1,4 +1,4 @@
-# quack-core/src/quack_core/capabilities/contract.py
+# quack-core/src/quack_core/contracts/capabilities/contract.py
 """
 The canonical interface for all QuackCore capabilities.
 This module has ZERO dependencies on other QuackCore internal modules.

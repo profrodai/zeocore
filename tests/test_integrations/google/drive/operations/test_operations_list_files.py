@@ -5,7 +5,7 @@ Tests for Google Drive _operations list_files module.
 
 from unittest.mock import patch
 
-from quack_core.errors import QuackApiError
+from quack_core.lib.errors import QuackApiError
 from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
 from quack_core.integrations.google.drive.operations import list_files
 from tests.test_integrations.google.drive.mocks import (

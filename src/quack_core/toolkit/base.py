@@ -16,7 +16,7 @@ from typing import Any
 
 from quack_core.config.tooling import setup_tool_logging
 from quack_core.integrations.core import IntegrationResult
-from quack_core.logging import get_logger
+from quack_core.lib.logging import get_logger
 from quack_core.plugins.protocols import QuackPluginMetadata
 from quack_core.toolkit.protocol import (
     QuackToolPluginProtocol,  # Import directly from protocol module
@@ -69,7 +69,7 @@ class BaseQuackToolPlugin(QuackToolPluginProtocol, abc.ABC):
 
         # Get the filesystem service
         try:
-            from quack_core.fs.service import standalone
+            from quack_core.lib.fs.service import standalone
             self.fs = standalone
         except Exception as e:
             self._logger.error(f"Failed to get filesystem service: {str(e)}")

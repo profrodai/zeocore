@@ -5,23 +5,23 @@ Utility functions for pandoc _operations.
 This module provides helper functions for pandoc conversion _operations,
 such as validation, metrics tracking, and pandoc installation verification.
 All file path values are handled as strings. Filesystem _operations are delegated
-to the quack_core.fs service.
+to the quack_core.lib.fs service.
 """
 
 import os
 import time
 from typing import Any
 
-from quack_core.errors import QuackIntegrationError
+from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.pandoc.config import PandocConfig
 from quack_core.integrations.pandoc.models import ConversionMetrics, FileInfo
-from quack_core.logging import get_logger
+from quack_core.lib.logging import get_logger
 
 logger = get_logger(__name__)
 
 # Import fs service
 try:
-    from quack_core.fs.service import standalone as fs
+    from quack_core.lib.fs.service import standalone as fs
 except ImportError:
     # If fs service isn't available, create a minimal stub
     import types

@@ -10,8 +10,8 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from quack_core.errors import QuackFileNotFoundError
-from quack_core.paths import PathResolver
+from quack_core.lib.errors import QuackFileNotFoundError
+from quack_core.lib.paths import PathResolver
 
 
 class TestPathResolver:
@@ -25,7 +25,7 @@ class TestPathResolver:
 
     def test_get_project_root(self, mock_project_structure: Path) -> None:
         """Test finding a project root based on marker files."""
-        from quack_core.paths import service as paths
+        from quack_core.lib.paths import service as paths
 
         # Test finding from project root
         root_result = paths.get_project_root(str(mock_project_structure))
@@ -140,7 +140,7 @@ class TestPathResolver:
 
     def test_service_resolve_project_path(self, mock_project_structure: Path) -> None:
         """Test the public service.resolve_project_path method with error handling."""
-        from quack_core.paths import service as paths
+        from quack_core.lib.paths import service as paths
 
         # IMPORTANT: We need to handle the case where 'paths' is mocked (lambda)
         # vs when it is the real module.

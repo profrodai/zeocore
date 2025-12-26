@@ -17,9 +17,9 @@ from importlib.metadata import EntryPoint  # type: ignore
 from types import ModuleType
 from typing import Protocol, TypeVar, cast
 
-from quack_core.errors import QuackError
+from quack_core.lib.errors import QuackError
 from quack_core.integrations.core.protocols import IntegrationProtocol
-from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
 
 T = TypeVar("T", bound=IntegrationProtocol)
 

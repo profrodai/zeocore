@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.errors import QuackError
+from quack_core.lib.errors import QuackError
 from quack_core.interfaces.cli.utils.error import format_cli_error, handle_errors, \
     ensure_single_instance, get_cli_info
 

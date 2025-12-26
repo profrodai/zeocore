@@ -16,10 +16,10 @@ from quack_core.config.models import QuackConfig
 
 # Import config utility functions
 from quack_core.config.utils import load_env_config, normalize_paths
-from quack_core.errors import QuackConfigurationError
+from quack_core.lib.errors import QuackConfigurationError
 
 # Import resolver at module level for better testability
-from quack_core.paths import service as paths
+from quack_core.lib.paths import service as paths
 
 # Detect test environment - make this a module variable so it can be patched in tests
 is_test = "pytest" in sys.modules or "unittest" in sys.modules

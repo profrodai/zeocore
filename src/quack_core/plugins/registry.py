@@ -2,8 +2,8 @@
 
 from typing import TypeVar
 
-from quack_core.errors import QuackPluginError
-from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.lib.errors import QuackPluginError
+from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.plugins.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,

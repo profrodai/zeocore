@@ -83,7 +83,7 @@ class TestAddFileHandler:
         config = QuackConfig(logging={"file": "/path/to/logfile.log"})
 
         # Mock the fs service by patching the import where it's used
-        with patch("quack_core.fs.service.create_directory") as mock_create_dir:
+        with patch("quack_core.lib.fs.service.create_directory") as mock_create_dir:
             # Set up the success attribute on the result object
             result = MagicMock()
             result.success = True
@@ -115,7 +115,7 @@ class TestAddFileHandler:
         config = QuackConfig(logging={"file": "/path/to/logfile.log"})
 
         # Mock directory creation failure
-        with patch("quack_core.fs.service.create_directory") as mock_create_dir:
+        with patch("quack_core.lib.fs.service.create_directory") as mock_create_dir:
             # Set up a failed result
             result = MagicMock()
             result.success = False
@@ -145,7 +145,7 @@ class TestAddFileHandler:
         root_logger = logging.getLogger("test_file_handler_exception")
         config = QuackConfig(logging={"file": "/path/to/logfile.log"})
 
-        with patch("quack_core.fs.service.create_directory") as mock_create_dir:
+        with patch("quack_core.lib.fs.service.create_directory") as mock_create_dir:
             # Set up a successful result
             result = MagicMock()
             result.success = True

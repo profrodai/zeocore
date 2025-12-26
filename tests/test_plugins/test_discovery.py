@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.errors import QuackPluginError
+from quack_core.lib.errors import QuackPluginError
 from quack_core.plugins.discovery import PluginLoader
 from quack_core.plugins.protocols import QuackPluginMetadata, QuackPluginProtocol
 

@@ -6,7 +6,7 @@ This module provides functions for authenticating with the Gmail API
 and initializing the service.
 """
 
-from quack_core.errors import QuackApiError
+from quack_core.lib.errors import QuackApiError
 from quack_core.integrations.google.mail.protocols import GmailService, GoogleCredentials
 
 

@@ -8,7 +8,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, TypeVar
 
-from quack_core.logging import get_logger
+from quack_core.lib.logging import get_logger
 from quack_core.workflow.protocols.remote_handler import RemoteFileHandler
 from quack_core.workflow.results import FinalResult, InputResult, OutputResult
 
@@ -83,7 +83,7 @@ class FileWorkflowRunner:
         Raises:
             WorkflowError: If file doesn't exist or can't be read
         """
-        from quack_core.fs.service import standalone as fs
+        from quack_core.lib.fs.service import standalone as fs
 
         path_str = str(input_result.path)
 
@@ -177,7 +177,7 @@ class FileWorkflowRunner:
                     raise WorkflowError(f"Output writer failed: {e}")
 
             # ==== Default JSON-writer branch ====
-            from quack_core.fs.service import standalone as fs
+            from quack_core.lib.fs.service import standalone as fs
 
             # 1) Figure out output directory
             if options.get("use_temp_dir"):

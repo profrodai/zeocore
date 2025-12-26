@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.errors import QuackApiError, QuackIntegrationError
+from quack_core.lib.errors import QuackApiError, QuackIntegrationError
 from quack_core.integrations.llms.fallback import (
     FallbackConfig,
     FallbackLLMClient,

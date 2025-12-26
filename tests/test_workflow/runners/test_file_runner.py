@@ -166,7 +166,7 @@ class TestFileWorkflowRunner:
             temp_dir = str(tmp_path / "temp_dir")
             with patch('tempfile.mkdtemp', return_value=temp_dir):
                 # Mock lower-level fs functions to avoid actual filesystem operations
-                with patch('quack_core.fs.service.standalone.write_json') as mock_write_json:
+                with patch('quack_core.lib.fs.service.standalone.write_json') as mock_write_json:
                     mock_write_json.return_value = SimpleNamespace(success=True, path=str(f.with_suffix(".json")))
 
                     with patch('os.makedirs'):
@@ -220,9 +220,9 @@ class TestFileWorkflowRunner:
         binary_read_result = SimpleNamespace(success=True, content=b"\x00\x01\x02\x03")
 
         # Patch specific fs calls to avoid dependency on the whole fs service
-        with patch('quack_core.fs.service.standalone.get_extension', return_value=extension_result):
-            with patch('quack_core.fs.service.standalone.get_file_info', return_value=file_info_result):
-                with patch('quack_core.fs.service.standalone.read_binary', return_value=binary_read_result):
+        with patch('quack_core.lib.fs.service.standalone.get_extension', return_value=extension_result):
+            with patch('quack_core.lib.fs.service.standalone.get_file_info', return_value=file_info_result):
+                with patch('quack_core.lib.fs.service.standalone.read_binary', return_value=binary_read_result):
                     # Also patch the write_output to avoid filesystem operations
                     with patch.object(FileWorkflowRunner, 'write_output') as mock_write:
                         mock_write.return_value = FinalResult(

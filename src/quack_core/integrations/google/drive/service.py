@@ -11,19 +11,19 @@ import logging
 from collections.abc import Mapping
 from typing import Any, TypeVar
 
-from quack_core.errors import (
+from quack_core.lib.errors import (
     QuackApiError,
     QuackBaseAuthError,
     QuackIntegrationError,
 )
-from quack_core.fs.service import standalone
+from quack_core.lib.fs.service import standalone
 from quack_core.integrations.core.base import BaseIntegrationService
 from quack_core.integrations.core.protocols import StorageIntegrationProtocol
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.auth import GoogleAuthProvider
 from quack_core.integrations.google.config import GoogleConfigProvider
 from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
-from quack_core.paths import service as paths_service
+from quack_core.lib.paths import service as paths_service
 
 NoneType = type(None)
 T = TypeVar("T")  # Generic type for result content
@@ -186,7 +186,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             self, file_path: str, remote_path: str | None, parent_folder_id: str | None
     ) -> tuple[Any, str, str | None, str]:
         """Resolve file details for upload."""
-        from quack_core.fs.service import standalone
+        from quack_core.lib.fs.service import standalone
 
         # Extract clean paths using our new helper
         path_obj_result = paths_service.resolve_project_path(file_path)

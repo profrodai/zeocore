@@ -6,14 +6,14 @@ from typing import Any, Literal
 
 import requests
 
-from quack_core.errors import QuackError
+from quack_core.lib.errors import QuackError
 from quack_core.integrations.github.models import (
     GitHubUser,
     PullRequest,
     PullRequestStatus,
 )
 from quack_core.integrations.github.utils.api import make_request
-from quack_core.logging import get_logger
+from quack_core.lib.logging import get_logger
 
 logger = get_logger(__name__)
 

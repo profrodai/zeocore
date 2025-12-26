@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.errors import QuackConfigurationError, QuackFileNotFoundError
+from quack_core.lib.errors import QuackConfigurationError, QuackFileNotFoundError
 
 from .config_provider_impl import (
     MockConfigProvider,
@@ -29,12 +29,12 @@ class TestBaseConfigProviderDiscovery:
                 mock_find.return_value = "/env/config.yaml"
 
                 with patch(
-                        "quack_core.fs.service.standalone.get_file_info") as mock_info:
+                        "quack_core.lib.fs.service.standalone.get_file_info") as mock_info:
                     mock_info.return_value.success = True
                     mock_info.return_value.exists = True
 
                     with patch(
-                            "quack_core.fs.service.standalone.read_yaml") as mock_read:
+                            "quack_core.lib.fs.service.standalone.read_yaml") as mock_read:
                         mock_read.return_value.success = True
                         mock_read.return_value.data = {
                             "test_section": {"test_key": "env_value"}
@@ -49,11 +49,11 @@ class TestBaseConfigProviderDiscovery:
         with patch.object(provider, "_find_config_file") as mock_find:
             mock_find.return_value = "/default/config.yaml"
 
-            with patch("quack_core.fs.service.standalone.get_file_info") as mock_info:
+            with patch("quack_core.lib.fs.service.standalone.get_file_info") as mock_info:
                 mock_info.return_value.success = True
                 mock_info.return_value.exists = True
 
-                with patch("quack_core.fs.service.standalone.read_yaml") as mock_read:
+                with patch("quack_core.lib.fs.service.standalone.read_yaml") as mock_read:
                     mock_read.return_value.success = True
                     mock_read.return_value.data = {
                         "test_section": {"test_key": "default_value"}
@@ -77,17 +77,17 @@ class TestBaseConfigProviderDiscovery:
 
         # Test with environment variable
         with patch.dict(os.environ, {"QUACK_TEST_CONFIG_CONFIG": "/env/config.yaml"}):
-            with patch("quack_core.fs.service.standalone.expand_user_vars") as mock_expand:
+            with patch("quack_core.lib.fs.service.standalone.expand_user_vars") as mock_expand:
                 mock_expand.return_value = Path("/env/config.yaml")
 
                 with patch(
-                        "quack_core.fs.service.standalone.get_file_info") as mock_file_info:
+                        "quack_core.lib.fs.service.standalone.get_file_info") as mock_file_info:
                     mock_file_info.return_value.success = True
                     mock_file_info.return_value.exists = True
 
                     # Patch paths.service to avoid using get_project_root which is missing
                     with patch(
-                            "quack_core.paths.service.get_project_root",
+                            "quack_core.lib.paths.service.get_project_root",
                             create=True) as mock_get_root:
                         # Just ensure it doesn't get called here
                         result = provider._find_config_file()
@@ -97,12 +97,12 @@ class TestBaseConfigProviderDiscovery:
                         mock_get_root.assert_not_called()
 
         # Test with default locations
-        with patch("quack_core.paths.service.get_project_root",
+        with patch("quack_core.lib.paths.service.get_project_root",
                    create=True) as mock_get_root:
             mock_get_root.side_effect = QuackFileNotFoundError("mock error")
 
             with patch(
-                    "quack_core.fs.service.standalone.get_file_info") as mock_file_info:
+                    "quack_core.lib.fs.service.standalone.get_file_info") as mock_file_info:
                 def side_effect(path):
                     mock_result = MagicMock()
                     mock_result.success = True
@@ -111,7 +111,7 @@ class TestBaseConfigProviderDiscovery:
 
                 mock_file_info.side_effect = side_effect
 
-                with patch("quack_core.fs.service.standalone.expand_user_vars") as mock_expand:
+                with patch("quack_core.lib.fs.service.standalone.expand_user_vars") as mock_expand:
                     mock_expand.side_effect = (
                         lambda path: Path("/default") / Path(path).name
                     )
@@ -125,35 +125,35 @@ class TestBaseConfigProviderDiscovery:
                         assert result == "/default/config.yaml"
 
         # Test with project root detection
-        with patch("quack_core.paths.service.get_project_root",
+        with patch("quack_core.lib.paths.service.get_project_root",
                    create=True) as mock_get_root:
             mock_get_root.return_value = Path("/project")
 
-            with patch("quack_core.fs.service.standalone.join_path") as mock_join:
+            with patch("quack_core.lib.fs.service.standalone.join_path") as mock_join:
                 mock_join.return_value = Path("/project/quack_config.yaml")
 
                 with patch(
-                        "quack_core.fs.service.standalone.get_file_info") as mock_file_info:
+                        "quack_core.lib.fs.service.standalone.get_file_info") as mock_file_info:
                     mock_file_info.return_value.success = True
                     mock_file_info.return_value.exists = True
 
-                    with patch("quack_core.fs.service.standalone.expand_user_vars") as mock_expand:
+                    with patch("quack_core.lib.fs.service.standalone.expand_user_vars") as mock_expand:
                         mock_expand.return_value = Path("/project/quack_config.yaml")
 
                         result = provider._find_config_file()
                         assert result == "/project/quack_config.yaml"
 
         # Test when no config file can be found
-        with patch("quack_core.paths.service.get_project_root",
+        with patch("quack_core.lib.paths.service.get_project_root",
                    create=True) as mock_get_root:
             mock_get_root.side_effect = QuackFileNotFoundError("/nonexistent")
 
             with patch(
-                    "quack_core.fs.service.standalone.get_file_info") as mock_file_info:
+                    "quack_core.lib.fs.service.standalone.get_file_info") as mock_file_info:
                 mock_file_info.return_value.success = True
                 mock_file_info.return_value.exists = False
 
-                with patch("quack_core.fs.service.standalone.expand_user_vars") as mock_expand:
+                with patch("quack_core.lib.fs.service.standalone.expand_user_vars") as mock_expand:
                     mock_expand.side_effect = lambda x: x
 
                     result = provider._find_config_file()
@@ -179,7 +179,7 @@ class TestBaseConfigProviderDiscovery:
 
         # Test with fs service standalone resolver
         with patch(
-                "quack_core.fs.service.standalone.resolve_path"
+                "quack_core.lib.fs.service.standalone.resolve_path"
         ) as mock_resolve:
             mock_resolve.return_value = "/resolved/path"
 
@@ -189,7 +189,7 @@ class TestBaseConfigProviderDiscovery:
 
         # Test with resolver exception
         with patch(
-                "quack_core.fs.service.standalone.resolve_path"
+                "quack_core.lib.fs.service.standalone.resolve_path"
         ) as mock_resolve:
             mock_resolve.side_effect = Exception("Test error")
 

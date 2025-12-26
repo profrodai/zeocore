@@ -7,7 +7,7 @@ integration, handling settings for document conversion between various formats.
 
 In this refactored version, all file paths are handled exclusively as strings.
 Any interaction with file paths (normalization, validation, etc.) is delegated
-to the quack_core.fs layer.
+to the quack_core.lib.fs layer.
 """
 
 import json
@@ -18,15 +18,15 @@ from pydantic import BaseModel, Field, field_validator
 
 from quack_core.config.models import LoggingConfig
 from quack_core.integrations.core.base import BaseConfigProvider
-from quack_core.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
 
 logger = get_logger(__name__)
 
 # Import fs module with error handling
 try:
-    from quack_core.fs.service import standalone as fs
+    from quack_core.lib.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack_core.fs.service")
+    logger.error("Could not import quack_core.lib.fs.service")
     from types import SimpleNamespace
     # Create a minimal fs stub if the module isn't available (for tests)
     fs = SimpleNamespace(
@@ -134,7 +134,7 @@ class PandocConfig(BaseModel):
         """
         Validate that the output directory has a valid format.
 
-        Delegates to quack_core.fs to validate the path format.
+        Delegates to quack_core.lib.fs to validate the path format.
         If fs service is not available, accepts any path.
         """
         try:

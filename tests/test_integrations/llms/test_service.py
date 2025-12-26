@@ -10,8 +10,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.errors import QuackIntegrationError
-from quack_core.fs import DataResult, FileInfoResult
+from quack_core.lib.errors import QuackIntegrationError
+from quack_core.lib.fs import DataResult, FileInfoResult
 from quack_core.integrations.core.results import ConfigResult, IntegrationResult
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 from quack_core.integrations.llms.service import LLMIntegration
@@ -29,7 +29,7 @@ class TestLLMService:
         service = LLMIntegration()
 
         # Mock the file _operations using our fs module
-        with patch("quack_core.fs.service.get_file_info") as mock_file_info:
+        with patch("quack_core.lib.fs.service.get_file_info") as mock_file_info:
             file_info_result = FileInfoResult(
                 success=True,
                 path="./config/llm_config.yaml",
@@ -38,7 +38,7 @@ class TestLLMService:
             )
             mock_file_info.return_value = file_info_result
 
-            with patch("quack_core.fs.service.read_yaml") as mock_read_yaml:
+            with patch("quack_core.lib.fs.service.read_yaml") as mock_read_yaml:
                 yaml_result = DataResult(
                     success=True,
                     path="./config/llm_config.yaml",
@@ -77,7 +77,7 @@ class TestLLMService:
         assert service._initialized is False
 
         # Test with custom parameters
-        with patch("quack_core.fs.service.get_file_info") as mock_file_info:
+        with patch("quack_core.lib.fs.service.get_file_info") as mock_file_info:
             # Create a proper FileInfoResult
             file_info_result = FileInfoResult(
                 success=True,
@@ -88,7 +88,7 @@ class TestLLMService:
             mock_file_info.return_value = file_info_result
 
             # Also patch normalize_path to handle the config path
-            with patch("quack_core.fs.api.normalize_path") as mock_normalize_path:
+            with patch("quack_core.lib.fs.api.normalize_path") as mock_normalize_path:
                 # Create a mock Path object instead of using absolute()
                 mock_path = "/Users/rodrivera/config.yaml"
                 mock_normalize_path.return_value = mock_path

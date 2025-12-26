@@ -13,7 +13,7 @@ __version__ = "0.1.0"
 from quack_core.config import config
 from quack_core.config.loader import load_config
 from quack_core.config.models import QuackConfig
-from quack_core.errors import (
+from quack_core.lib.errors import (
     QuackApiError,
     QuackBaseAuthError,
     QuackError,
@@ -21,10 +21,10 @@ from quack_core.errors import (
     QuackQuotaExceededError,
     wrap_io_errors,
 )
-from quack_core.fs import service as fs
+from quack_core.lib.fs import service as fs
 from quack_core.integrations.core import IntegrationRegistry
 from quack_core.integrations.core import registry as integration_registry
-from quack_core.paths import resolver as paths
+from quack_core.lib.paths import resolver as paths
 from quack_core.plugins import QuackPluginProtocol, loader, registry
 
 __all__ = [

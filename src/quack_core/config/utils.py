@@ -12,8 +12,8 @@ import os
 from collections.abc import Mapping
 from typing import Any, TypeVar
 
-from quack_core.errors import QuackConfigurationError
-from quack_core.logging import get_logger
+from quack_core.lib.errors import QuackConfigurationError
+from quack_core.lib.logging import get_logger
 
 T = TypeVar("T")  # Generic type for flexible typing
 

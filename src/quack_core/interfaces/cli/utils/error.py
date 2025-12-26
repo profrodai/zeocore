@@ -13,7 +13,7 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Any, TypeVar
 
-from quack_core.errors import QuackError
+from quack_core.lib.errors import QuackError
 
 T = TypeVar("T")  # Generic type for flexible typing
 

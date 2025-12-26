@@ -12,8 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from quack_core.fs.results import WriteResult
-from quack_core.fs.service import FileSystemService
+from quack_core.lib.fs import WriteResult
+from quack_core.lib.fs.service import FileSystemService
 
 
 # A helper function to create a temporary directory for testing.

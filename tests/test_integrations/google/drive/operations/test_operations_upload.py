@@ -8,10 +8,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.errors import QuackApiError, QuackIntegrationError
+from quack_core.lib.errors import QuackApiError, QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.operations import upload
-from quack_core.paths.api.public.results import PathResult
+from quack_core.lib.paths.api.public.results import PathResult
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
     MockDriveService,
@@ -81,12 +81,12 @@ class TestDriveOperationsUpload:
             )
 
             # Mock file info
-            with patch("quack_core.fs.service.standalone.get_file_info") as mock_info:
+            with patch("quack_core.lib.fs.service.standalone.get_file_info") as mock_info:
                 mock_info.return_value.success = True
                 mock_info.return_value.exists = True
 
                 # Mock get_mime_type
-                with patch("quack_core.fs.service.standalone.get_mime_type") as mock_mime:
+                with patch("quack_core.lib.fs.service.standalone.get_mime_type") as mock_mime:
                     mock_mime.return_value = "text/plain"
 
                     # Test with default parameters
@@ -124,7 +124,7 @@ class TestDriveOperationsUpload:
             )
 
             # Mock file info to show file doesn't exist
-            with patch("quack_core.fs.service.standalone.get_file_info") as mock_info:
+            with patch("quack_core.lib.fs.service.standalone.get_file_info") as mock_info:
                 mock_info.return_value.success = True
                 mock_info.return_value.exists = False
 

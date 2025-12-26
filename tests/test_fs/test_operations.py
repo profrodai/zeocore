@@ -13,8 +13,8 @@ from unittest.mock import patch
 import pytest
 import yaml
 
-from quack_core.errors import QuackFileExistsError, QuackIOError
-from quack_core.fs._operations import FileSystemOperations
+from quack_core.lib.errors import QuackFileExistsError, QuackIOError
+from quack_core.lib.fs._operations import FileSystemOperations
 
 
 class TestFileSystemOperations:
@@ -244,7 +244,7 @@ class TestFileSystemOperations:
 
         # Test creating existing directory with exist_ok=False
         with patch(
-                "quack_core.fs._operations._ensure_directory"
+                "quack_core.lib.fs._operations._ensure_directory"
         ) as mock_ensure_directory:
             mock_ensure_directory.side_effect = QuackFileExistsError(
                 str(temp_dir / "new_dir")
@@ -491,7 +491,7 @@ class TestFileSystemOperations:
             assert "permission denied" in str(excinfo.value).lower()
 
         # Test IO error
-        with patch("quack_core.fs._operations._atomic_write") as mock_atomic_write:
+        with patch("quack_core.lib.fs._operations._atomic_write") as mock_atomic_write:
             mock_atomic_write.side_effect = QuackIOError("IO error")
             with pytest.raises(QuackIOError) as excinfo:
                 operations._write_text("io_error.txt", "content")

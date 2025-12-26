@@ -14,24 +14,22 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from quack_core.errors import (
+from quack_core.lib.errors import (
     QuackFileExistsError,
     QuackFileNotFoundError,
     QuackIOError,
     QuackPermissionError,
 )
-from quack_core.fs._helpers import (
+from quack_core.lib.fs._helpers import (
     _compute_checksum,
     _create_temp_directory,
     _create_temp_file,
-    _find_files_by_content,
     _get_disk_usage,
     _get_extension,
     _get_file_size_str,
     _get_file_timestamp,
     _get_file_type,
     _get_mime_type,
-    _get_unique_filename,
     _is_file_locked,
     _is_path_writeable,
     _is_same_file,
@@ -41,13 +39,13 @@ from quack_core.fs._helpers import (
     _safe_delete,
     _safe_move,
 )
-from quack_core.fs._helpers.file_ops import (
+from quack_core.lib.fs._helpers.file_ops import (
     _atomic_write,
     _ensure_directory,
     _find_files_by_content,
     _get_unique_filename,
 )
-from quack_core.fs._helpers.path_ops import _expand_user_vars, _join_path, _split_path
+from quack_core.lib.fs._helpers.path_ops import _expand_user_vars, _join_path, _split_path
 
 
 class TestPathUtilities:

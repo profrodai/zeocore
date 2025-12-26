@@ -30,7 +30,7 @@ class DefaultOutputWriter:
         Raises:
             WorkflowError: If writing fails.
         """
-        from quack_core.fs.service import standalone
+        from quack_core.lib.fs.service import standalone
         fs = standalone
         out_dir = options.get("output_dir", "./output")
         fs.create_directory(out_dir, exist_ok=True)

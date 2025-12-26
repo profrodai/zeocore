@@ -5,7 +5,7 @@ Tests for project context models.
 
 from pathlib import Path
 
-from quack_core.paths._internal.context import (
+from quack_core.lib.paths._internal.context import (
     ContentContext,
     ProjectContext,
     ProjectDirectory,

@@ -108,8 +108,8 @@ path = "src/quack_core/__init__.py"
 packages = ["src/quack_core"]
 
 [project.entry-points."quack_core.plugins"]
-paths = "quack_core.paths.plugin:create_plugin"
-fs = "quack_core.fs.plugin:create_plugin"
+paths = "quack_core.lib.paths.plugin:create_plugin"
+fs = "quack_core.lib.fs.plugin:create_plugin"
 config = "quack_core.config.plugin:create_plugin"
 prompt = "quack_core.prompt.plugin:create_plugin"
 

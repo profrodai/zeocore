@@ -12,8 +12,8 @@ from typing import Any, TypeVar
 import yaml
 
 from quack_core.config.models import QuackConfig
-from quack_core.errors import QuackConfigurationError, wrap_io_errors
-from quack_core.logging import get_logger
+from quack_core.lib.errors import QuackConfigurationError, wrap_io_errors
+from quack_core.lib.logging import get_logger
 
 T = TypeVar("T")  # Generic type for flexible typing
 
@@ -178,7 +178,7 @@ def find_config_file() -> str | None:
     # Try to find project root and check for config there.
     try:
         # Import locally to avoid circular imports
-        from quack_core.paths import service as paths
+        from quack_core.lib.paths import service as paths
 
         root = paths.get_project_root()
         for name in ["quack_config.yaml", "config/quack_config.yaml"]:

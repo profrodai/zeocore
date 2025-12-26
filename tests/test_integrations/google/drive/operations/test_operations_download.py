@@ -7,10 +7,10 @@ import logging
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from quack_core.errors import QuackApiError
-from quack_core.fs.results import FileInfoResult, OperationResult, WriteResult
+from quack_core.lib.errors import QuackApiError
+from quack_core.lib.fs import FileInfoResult, OperationResult, WriteResult
 from quack_core.integrations.google.drive.operations import download
-from quack_core.paths.api.public.results import PathResult
+from quack_core.lib.paths.api.public.results import PathResult
 from tests.test_integrations.google.drive.mocks import (
     create_error_drive_service,
     create_mock_drive_service,

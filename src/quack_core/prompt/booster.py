@@ -8,8 +8,8 @@ for enhancing prompts using various strategies.
 
 from typing import Any
 
-from quack_core.fs.service import standalone
-from quack_core.logging import get_logger
+from quack_core.lib.fs.service import standalone
+from quack_core.lib.logging import get_logger
 
 from .registry import find_strategies_by_tags, get_all_strategies, get_strategy_by_id
 from .strategy_base import PromptStrategy

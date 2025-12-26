@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.errors import QuackIntegrationError
+from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.pandoc import (
     ConversionMetrics,
     PandocConfig,
@@ -87,7 +87,7 @@ def test_prepare_pandoc_args():
     assert "--custom-arg" in custom_args
 
 
-@patch('quack_core.fs.service.standalone')
+@patch('quack_core.lib.fs.service.standalone')
 def test_get_file_info(mock_fs):
     """Test getting file information for conversion."""
     # Setup mock fs

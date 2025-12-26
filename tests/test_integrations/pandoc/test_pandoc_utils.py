@@ -14,7 +14,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.errors import QuackIntegrationError
+from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.pandoc.config import PandocConfig, PandocOptions
 from quack_core.integrations.pandoc.models import (
     ConversionDetails,

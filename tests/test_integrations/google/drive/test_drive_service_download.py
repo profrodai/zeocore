@@ -8,10 +8,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from quack_core.fs.results import FileInfoResult
+from quack_core.lib.fs import FileInfoResult
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.service import GoogleDriveService
-from quack_core.paths.api.public.results import PathResult
+from quack_core.lib.paths.api.public.results import PathResult
 
 
 class TestGoogleDriveServiceDownload:
@@ -29,7 +29,7 @@ class TestGoogleDriveServiceDownload:
                 path="/fake/test/dir/mock_path"  # Use string path
             )
 
-            with patch("quack_core.fs.service.standalone.get_file_info") as mock_file_info:
+            with patch("quack_core.lib.fs.service.standalone.get_file_info") as mock_file_info:
                 # All file info checks should return that files exist
                 file_info_result = FileInfoResult(
                     success=True,

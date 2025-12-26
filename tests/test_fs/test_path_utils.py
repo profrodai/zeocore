@@ -9,8 +9,8 @@ from unittest.mock import patch
 
 import pytest
 
-from quack_core.fs._helpers.path_utils import _extract_path_str, _safe_path_str
-from quack_core.fs.results import DataResult, PathResult
+from quack_core.lib.fs._helpers.path_utils import _extract_path_str, _safe_path_str
+from quack_core.lib.fs import DataResult, PathResult
 
 
 class TestPathUtils(TestCase):
@@ -122,19 +122,19 @@ class TestPathUtils(TestCase):
 
     def test_safe_path_with_invalid_object(self):
         """Test safe_path with an invalid object."""
-        with patch('quack_core.fs._helpers.path_utils.logger') as mock_logger:
+        with patch('quack_core.lib.fs._helpers.path_utils.logger') as mock_logger:
             assert _safe_path_str(object()) is None
             mock_logger.warning.assert_called_once()
 
     def test_safe_path_with_custom_default(self):
         """Test safe_path with a custom default value."""
-        with patch('quack_core.fs._helpers.path_utils.logger') as mock_logger:
+        with patch('quack_core.lib.fs._helpers.path_utils.logger') as mock_logger:
             assert _safe_path_str(object(), default="/fallback") == "/fallback"
             mock_logger.warning.assert_called_once()
 
     def test_safe_path_with_failed_result(self):
         """Test safe_path with a failed result."""
-        with patch('quack_core.fs._helpers.path_utils.logger') as mock_logger:
+        with patch('quack_core.lib.fs._helpers.path_utils.logger') as mock_logger:
             result = PathResult(
                 success=False,
                 path=Path("a.txt"),

@@ -10,9 +10,9 @@ from unittest.mock import patch
 
 import pytest
 
-from quack_core.errors import QuackFileNotFoundError
-from quack_core.fs.service import standalone as fs_standalone
-from quack_core.paths import service as paths
+from quack_core.lib.errors import QuackFileNotFoundError
+from quack_core.lib.fs.service import standalone as fs_standalone
+from quack_core.lib.paths import service as paths
 
 
 # Create mock DataResult for fs operations
@@ -133,7 +133,7 @@ class TestPathUtils:
 
         # Test resolving without explicit project root
         with patch(
-                "quack_core.paths._internal.utils._find_project_root",
+                "quack_core.lib.paths._internal.utils._find_project_root",
                 return_value=str(mock_project_structure),
         ):
             resolved_result = paths.resolve_relative_to_project("src/file.txt")
@@ -143,7 +143,7 @@ class TestPathUtils:
 
         # Test when project root cannot be found
         with patch(
-                "quack_core.paths._internal.utils._find_project_root",
+                "quack_core.lib.paths._internal.utils._find_project_root",
                 side_effect=QuackFileNotFoundError(""),
         ):
             # Should default to current directory
@@ -155,7 +155,7 @@ class TestPathUtils:
     def test_normalize_path(self) -> None:
         """Test normalizing paths."""
         # Mock the normalize_path method to avoid filesystem access
-        with patch("quack_core.fs.service.standalone.normalize_path") as mock_normalize:
+        with patch("quack_core.lib.fs.service.standalone.normalize_path") as mock_normalize:
             # Set up the mock to return a Path object with an absolute path
             mock_normalize.return_value = Path("/absolute/path/file.txt")
 
@@ -165,7 +165,7 @@ class TestPathUtils:
             mock_normalize.assert_called_once_with("./test/../file.txt")
 
         # Test with empty path
-        with patch("quack_core.fs.service.standalone.normalize_path") as mock_normalize:
+        with patch("quack_core.lib.fs.service.standalone.normalize_path") as mock_normalize:
             mock_normalize.return_value = Path("/current/working/directory")
 
             normalized = fs_standalone.normalize_path("")
@@ -173,7 +173,7 @@ class TestPathUtils:
             mock_normalize.assert_called_once_with("")
 
         # Test with absolute path
-        with patch("quack_core.fs.service.standalone.normalize_path") as mock_normalize:
+        with patch("quack_core.lib.fs.service.standalone.normalize_path") as mock_normalize:
             mock_normalize.return_value = Path("/some/absolute/path")
 
             normalized = fs_standalone.normalize_path("/some/absolute/path")
@@ -253,7 +253,7 @@ class TestPathUtils:
 
         # Test inferring from a file with a relative path
         with patch(
-                "quack_core.paths._internal.utils._find_project_root",
+                "quack_core.lib.paths._internal.utils._find_project_root",
                 return_value=str(mock_project_structure),
         ):
             module_name_result = paths.infer_module_from_path(
@@ -264,7 +264,7 @@ class TestPathUtils:
 
         # Test inferring when src directory cannot be found
         with patch(
-                "quack_core.paths._internal.utils._find_nearest_directory",
+                "quack_core.lib.paths._internal.utils._find_nearest_directory",
                 side_effect=QuackFileNotFoundError(""),
         ):
             # Should use file's directory as fallback
@@ -275,7 +275,7 @@ class TestPathUtils:
 
         # Test inferring when file is not in project
         with patch(
-                "quack_core.paths._internal.utils._find_project_root",
+                "quack_core.lib.paths._internal.utils._find_project_root",
                 side_effect=QuackFileNotFoundError(""),
         ):
             module_name_result = paths.infer_module_from_path(

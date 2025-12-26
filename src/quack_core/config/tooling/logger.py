@@ -10,8 +10,8 @@ import atexit
 import logging
 from typing import Any
 
-from quack_core.fs.service import standalone
-from quack_core.logging import LOG_LEVELS, LogLevel, configure_logger
+from quack_core.lib.fs.service import standalone
+from quack_core.lib.logging import LOG_LEVELS, LogLevel, configure_logger
 
 # Track file handlers for cleanup during exit
 _file_handlers = []
@@ -70,7 +70,7 @@ def get_logger(tool_name: str) -> logging.Logger:
     """
     Get a named logger for the given tool.
 
-    This is a thin wrapper around quack_core.logging.get_logger
+    This is a thin wrapper around quack_core.lib.logging.get_logger
     that ensures the tool's logger is properly configured.
 
     Args:
@@ -79,7 +79,7 @@ def get_logger(tool_name: str) -> logging.Logger:
     Returns:
         A Logger instance configured for the tool with quack-core enhancements
     """
-    from quack_core.logging import get_logger as core_get_logger
+    from quack_core.lib.logging import get_logger as core_get_logger
     return core_get_logger(tool_name)
 
 
@@ -87,12 +87,12 @@ def log_teaching(logger: Any, message: str, level: str = "INFO") -> None:
     """
     Log a Teaching Mode message for the tool.
 
-    This is a convenience wrapper around quack_core.logging.config.log_teaching.
+    This is a convenience wrapper around quack_core.lib.logging.config.log_teaching.
 
     Args:
         logger: The logger instance
         message: The message to log
         level: The log level to use (default: INFO)
     """
-    from quack_core.logging.config import log_teaching as core_log_teaching
+    from quack_core.lib.logging import log_teaching as core_log_teaching
     core_log_teaching(logger, message, level)

@@ -27,7 +27,7 @@ def patch_fs_service(monkeypatch):
     stub = StubFS()
 
     # Import the standalone module
-    from quack_core.fs.service import standalone
+    from quack_core.lib.fs.service import standalone
 
     # Replace individual functions in the standalone module
     monkeypatch.setattr(standalone, "write_json", stub.write_json)

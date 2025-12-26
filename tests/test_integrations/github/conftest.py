@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from quack_core.errors import QuackQuotaExceededError
+from quack_core.lib.errors import QuackQuotaExceededError
 from quack_core.integrations.core import (
     AuthProviderProtocol,
     AuthResult,

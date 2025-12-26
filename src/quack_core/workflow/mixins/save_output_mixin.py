@@ -62,7 +62,7 @@ class SaveOutputMixin:
         """
 
         def write_csv(data: Any, path: Path) -> Path:
-            from quack_core.fs.service import standalone
+            from quack_core.lib.fs.service import standalone
             if not isinstance(data, list) or not data or not isinstance(data[0], dict):
                 raise ValueError("CSV output requires a non-empty list of dictionaries")
 
@@ -96,7 +96,7 @@ class SaveOutputMixin:
         """
 
         def write_text(data: Any, path: Path) -> Path:
-            from quack_core.fs.service import standalone
+            from quack_core.lib.fs.service import standalone
             # Convert output to string
             text_content = str(data)
             fs = standalone

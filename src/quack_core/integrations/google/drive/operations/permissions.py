@@ -9,7 +9,7 @@ including setting permissions and retrieving sharing links.
 import logging
 from typing import Any
 
-from quack_core.errors import QuackApiError
+from quack_core.lib.errors import QuackApiError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.protocols import DriveService
 
