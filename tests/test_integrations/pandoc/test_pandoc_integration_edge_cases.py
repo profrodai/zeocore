@@ -46,18 +46,28 @@ def test_integration_with_custom_config_path():
         success=True, content={"output_dir": "/custom/path"}
     )
 
+    # Mock FS service with ALL required methods
+    mock_fs = MagicMock()
+    mock_fs.expand_user_vars = MagicMock(
+        side_effect=lambda x: SimpleNamespace(success=True, data=x)
+    )
+    mock_fs.create_directory = MagicMock(
+        return_value=SimpleNamespace(success=True)
+    )
+    # Add read_yaml to ensure config loading works if it tries to fallback to fs
+    mock_fs.read_yaml = MagicMock(
+        return_value=SimpleNamespace(success=True, data={})
+    )
+
     with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.config.PandocConfigProvider',
                   return_value=mock_config_provider), \
-            patch('quack_core.fs.service.standalone.resolve_path',
-                  return_value=SimpleNamespace(success=True, path="/resolved/path")), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
-                  return_value='2.11.0'), \
-            patch('quack_core.fs.service.standalone.create_directory',
-                  return_value=SimpleNamespace(success=True)):
+                  return_value='2.11.0'):
         integration = PandocIntegration(config_path="/path/to/config.yaml")
         integration.paths_service = MagicMock()
         integration.paths_service.expand_user_vars.side_effect = lambda x: x
+        integration.fs_service = mock_fs
 
         result = integration.initialize()
 
@@ -74,13 +84,22 @@ def test_integration_with_custom_output_dir():
         return_value=IntegrationResult(success=True, content={})
     )
 
+    # Mock FS service
+    mock_fs = MagicMock()
+    mock_fs.expand_user_vars = MagicMock(
+        side_effect=lambda x: SimpleNamespace(success=True, data=x)
+    )
+    mock_fs.create_directory = MagicMock(
+        return_value=SimpleNamespace(success=True)
+    )
+    integration.fs_service = mock_fs
+
     with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
-                  return_value="2.11.0"), \
-            patch('quack_core.fs.service.standalone.create_directory',
-                  return_value=SimpleNamespace(success=True)):
+                  return_value="2.11.0"):
         result = integration.initialize()
         assert result.success
+        mock_fs.create_directory.assert_called_with("/custom/output")
 
 
 def test_integration_initialize_with_invalid_config():
@@ -94,10 +113,18 @@ def test_integration_initialize_with_invalid_config():
         return_value=IntegrationResult(success=False, error="Invalid config")
     )
 
+    # Mock FS service
+    mock_fs = MagicMock()
+    mock_fs.expand_user_vars = MagicMock(
+        side_effect=lambda x: SimpleNamespace(success=True, data=x)
+    )
+    mock_fs.create_directory = MagicMock(
+        return_value=SimpleNamespace(success=True)
+    )
+    integration.fs_service = mock_fs
+
     with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-               return_value='2.11.0'), \
-            patch('quack_core.fs.service.standalone.create_directory',
-                  return_value=SimpleNamespace(success=True)):
+               return_value='2.11.0'):
         result = integration.initialize()
         # Should succeed with warnings, using default config
         assert result.success
@@ -117,11 +144,19 @@ def test_integration_directory_conversion_edge_cases(mock_fs):
         return_value=IntegrationResult(success=True, content={})
     )
 
+    # Mock FS service for integration
+    mock_fs_service = MagicMock()
+    mock_fs_service.expand_user_vars = MagicMock(
+        side_effect=lambda x: SimpleNamespace(success=True, data=x)
+    )
+    mock_fs_service.create_directory = MagicMock(
+        return_value=SimpleNamespace(success=True)
+    )
+    integration.fs_service = mock_fs_service
+
     with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
-                  return_value="2.11.0"), \
-            patch('quack_core.fs.service.standalone.create_directory',
-                  return_value=SimpleNamespace(success=True)):
+                  return_value="2.11.0"):
         result = integration.initialize()
         assert result.success
 
@@ -446,19 +481,19 @@ def test_validate_html_structure_edge_cases():
 def test_validate_docx_structure_edge_cases():
     """Test edge cases for validate_docx_structure utility."""
 
-    # Test with docx module unavailable - when docx can't be imported,
-    # the validation should pass with soft validation (no strict checking)
+    # We need to simulate ImportError when importing 'docx'
+    # but let other imports proceed normally
+    original_import = __import__
 
-    # Mock the importlib.import_module to raise ImportError only for 'docx'
-    def mock_import(name):
+    def mock_import(name, globals=None, locals=None, fromlist=(), level=0):
         if name == 'docx':
             raise ImportError("No module named 'docx'")
-        # For other modules like zipfile, use the real import
-        import importlib
-        return importlib.import_module(name)
+        return original_import(name, globals, locals, fromlist, level)
 
-    with patch('importlib.import_module', side_effect=mock_import):
+    with patch('builtins.__import__', side_effect=mock_import):
         # When docx module is unavailable, validation should be lenient
+        # Note: We don't need to patch zipfile here because validate_docx_structure
+        # doesn't call is_zipfile when docx is missing (it returns True, [])
         valid, errors = validate_docx_structure("test.docx")
         # Should pass since we can't do strict validation without docx module
         assert valid
@@ -469,6 +504,7 @@ def test_validate_docx_structure_edge_cases():
     mock_docx.Document.side_effect = Exception("Failed to open document")
 
     with patch.dict(sys.modules, {'docx': mock_docx}):
+        # We need to ensure importlib.import_module returns our mock
         with patch('importlib.import_module', return_value=mock_docx):
             valid, errors = validate_docx_structure("test.docx")
             assert not valid
@@ -495,6 +531,7 @@ def test_validate_docx_structure_edge_cases():
             valid, errors = validate_docx_structure("empty.docx")
             assert not valid
             assert "no paragraphs" in errors[0].lower()
+
 
 def test_prepare_pandoc_args_comprehensive():
     """Test comprehensive options for prepare_pandoc_args utility."""

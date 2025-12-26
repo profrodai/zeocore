@@ -126,63 +126,61 @@ class PandocIntegration(BaseIntegrationService):
         Returns:
             IntegrationResult with success status and any error messages
         """
+        # 1. Verify Pandoc Availability
         try:
-            # Verify Pandoc is available and cache version
-            try:
-                pandoc_version = verify_pandoc()
-                self._pandoc_version = pandoc_version
-                logger.info(f"Pandoc version {pandoc_version} detected")
-            except Exception as e:
-                error_msg = f"Pandoc not available: {str(e)}"
-                logger.error(error_msg)
-                self._initialized = False
-                return IntegrationResult.error_result(
-                    error=error_msg,
-                    message=error_msg
-                )
+            pandoc_version = verify_pandoc()
+            self._pandoc_version = pandoc_version
+            logger.info(f"Pandoc version {pandoc_version} detected")
+        except Exception as e:
+            # Catch ALL exceptions here (ImportError, OSError, QuackIntegrationError)
+            # to ensure we return a result object rather than crashing
+            error_msg = f"Pandoc not available: {str(e)}"
+            logger.error(error_msg)
+            self._initialized = False
+            return IntegrationResult.error_result(error=error_msg, message=error_msg)
 
-            # Load configuration using config provider
+        # 2. Load Configuration
+        try:
             config_result = self.config_provider.load_config(
                 config_path=self._config_path
             )
 
-            # Extract config content from result
-            config_dict = {}
-            if config_result.success:
-                config_dict = config_result.content or {}
-            else:
-                # If config loading failed, log warning but continue with defaults
+            if not config_result.success:
                 logger.warning(f"Failed to load config: {config_result.error}")
-                config_dict = {}
+
+            # Assign directly to avoid unused variable warning
+            config_dict = config_result.content or {}
 
             # Apply initialization overrides
             if self._init_output_dir:
                 config_dict['output_dir'] = self._init_output_dir
 
             # Validate and create PandocConfig
-            try:
-                conversion_config = PandocConfig(**config_dict)
-                self._config_loaded = True
-            except Exception as e:
-                error_msg = f"Invalid configuration: {str(e)}"
-                logger.error(error_msg)
-                self._initialized = False
-                return IntegrationResult.error_result(
-                    error=error_msg,
-                    message=error_msg
-                )
+            conversion_config = PandocConfig(**config_dict)
+            self._config_loaded = True
 
             # Store config in self.config for compatibility
             self.config = conversion_config
 
-            # Ensure output directory exists
+        except Exception as e:
+            error_msg = f"Invalid configuration: {str(e)}"
+            logger.error(error_msg)
+            self._initialized = False
+            return IntegrationResult.error_result(error=error_msg, message=error_msg)
+
+        # 3. Setup File System (Output Directory)
+        try:
             output_dir = conversion_config.output_dir
             if output_dir:
-                # Expand user vars - returns a string directly, not a result
-                from quack_core.fs.service import standalone
-                expanded_dir = standalone.expand_user_vars(output_dir)
-                if hasattr(expanded_dir, 'data'):
-                    expanded_dir = expanded_dir.data
+                # Use fs_service for expand_user_vars
+                expanded_dir_result = self.fs_service.expand_user_vars(output_dir)
+
+                # Extract path string from DataResult
+                if expanded_dir_result.success and expanded_dir_result.data:
+                    expanded_dir = expanded_dir_result.data
+                else:
+                    # Fallback to original if expansion fails
+                    expanded_dir = output_dir
 
                 # Create directory
                 create_result = self.fs_service.create_directory(expanded_dir)
@@ -190,17 +188,20 @@ class PandocIntegration(BaseIntegrationService):
                     error_msg = f"Failed to create output directory: {create_result.error}"
                     logger.error(error_msg)
                     self._initialized = False
-                    return IntegrationResult.error_result(
-                        error=error_msg,
-                        message=error_msg
-                    )
+                    return IntegrationResult.error_result(error=error_msg,
+                                                          message=error_msg)
 
                 logger.info(f"Output directory ready: {expanded_dir}")
 
-            # Initialize converter
-            self.converter = DocumentConverter(
-                config=conversion_config
-            )
+        except Exception as e:
+            error_msg = f"File system initialization failed: {str(e)}"
+            logger.error(error_msg)
+            self._initialized = False
+            return IntegrationResult.error_result(error=error_msg, message=error_msg)
+
+        # 4. Initialize Converter
+        try:
+            self.converter = DocumentConverter(config=conversion_config)
 
             # Mark as initialized BEFORE returning success
             self._initialized = True
@@ -211,15 +212,12 @@ class PandocIntegration(BaseIntegrationService):
                 message="Pandoc integration initialized successfully",
                 content={"version": pandoc_version}
             )
-
         except Exception as e:
-            error_msg = f"Failed to initialize Pandoc integration: {str(e)}"
+            # Catch-all for unexpected errors during final converter setup
+            error_msg = f"Failed to initialize converter: {str(e)}"
             logger.error(error_msg)
             self._initialized = False
-            return IntegrationResult.error_result(
-                error=error_msg,
-                message=error_msg
-            )
+            return IntegrationResult.error_result(error=error_msg, message=error_msg)
 
     def is_available(self) -> bool:
         """Check if the Pandoc integration is available.
@@ -350,7 +348,7 @@ class PandocIntegration(BaseIntegrationService):
             output_format: Target format (e.g., 'markdown', 'docx')
             output_dir: Optional output directory (uses config default if not provided)
             pattern: File pattern to match (default: "*")
-            **options: Additional conversion options
+            **options: Additional conversion options passed to the conversion task
 
         Returns:
             IntegrationResult with list of output paths or error
@@ -410,10 +408,12 @@ class PandocIntegration(BaseIntegrationService):
             for file_path in input_files:
                 try:
                     file_info = get_file_info(file_path)
+                    # Pass **options into the task
                     task = ConversionTask(
                         source=file_info,
                         target_format=output_format,
-                        output_path=None  # Let converter determine output path
+                        output_path=None,  # Let converter determine output path
+                        options=options  # Pass user provided options
                     )
                     tasks.append(task)
                 except Exception as e:

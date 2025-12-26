@@ -27,11 +27,23 @@ def setup_mocks(fs_stub, mock_paths_service):
         side_effect=lambda x: SimpleNamespace(success=True, path=x)
     )
 
+    # Setup fs_stub methods
     fs_stub.get_path_info = MagicMock(return_value=SimpleNamespace(success=True))
     fs_stub.normalize_path_with_info = MagicMock(
         return_value=SimpleNamespace(success=True, path="output")
     )
     fs_stub.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
+    # Fix for expand_user_vars missing
+    fs_stub.expand_user_vars = MagicMock(
+        side_effect=lambda x: SimpleNamespace(success=True, data=x)
+    )
+    # Ensure find_files exists
+    fs_stub.find_files = MagicMock(
+        return_value=SimpleNamespace(success=True, files=[])
+    )
+    fs_stub.get_file_info = MagicMock(
+        return_value=SimpleNamespace(success=True, exists=True, is_dir=False, size=100)
+    )
 
     return fs_stub, mock_paths_service
 
@@ -75,6 +87,8 @@ def test_initialize_with_verify_pandoc_error(mock_verify_pandoc, setup_mocks):
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
+    # We must assign fs_service for initialization cleanup/logic even if it fails early
+    integration.fs_service = fs_stub
 
     # Mock verify_pandoc to raise an error
     mock_verify_pandoc.side_effect = QuackIntegrationError("Pandoc not found", {})

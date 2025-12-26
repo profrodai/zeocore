@@ -32,7 +32,7 @@ def setup_integration_mocks(fs_stub, mock_paths_service):
         side_effect=lambda x: SimpleNamespace(success=True, path=x)
     )
 
-    # Filesystem mocks - fs_stub needs to be a MagicMock with proper methods
+    # Define return values for methods used in initialize() and operations
     fs_stub.get_path_info = MagicMock(
         return_value=SimpleNamespace(success=True)
     )
@@ -44,6 +44,12 @@ def setup_integration_mocks(fs_stub, mock_paths_service):
     )
     fs_stub.get_file_info = MagicMock(
         return_value=SimpleNamespace(success=True, exists=True, is_dir=False, size=100)
+    )
+    fs_stub.expand_user_vars = MagicMock(
+        side_effect=lambda x: SimpleNamespace(success=True, data=x)
+    )
+    fs_stub.find_files = MagicMock(
+        return_value=SimpleNamespace(success=True, files=[])
     )
 
     return fs_stub, mock_paths_service
@@ -276,10 +282,12 @@ def test_create_integration():
 
 # --- Integration tests ---
 
+@patch('os.path.exists', return_value=True)
 @patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_html_to_markdown_conversion(mock_verify_pandoc,
                                                  mock_expand_user_vars,
+                                                 mock_path_exists,
                                                  setup_integration_mocks):
     """Test complete HTML to Markdown conversion flow."""
     fs_stub, mock_paths_service = setup_integration_mocks
@@ -316,10 +324,12 @@ def test_end_to_end_html_to_markdown_conversion(mock_verify_pandoc,
         mock_convert.assert_called()
 
 
+@patch('os.path.exists', return_value=True)
 @patch('quack_core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_markdown_to_docx_conversion(mock_verify_pandoc,
                                                  mock_expand_user_vars,
+                                                 mock_path_exists,
                                                  setup_integration_mocks):
     """Test complete Markdown to DOCX conversion flow."""
     fs_stub, mock_paths_service = setup_integration_mocks
