@@ -55,13 +55,14 @@ def test_integration_with_custom_config_path():
         return_value=SimpleNamespace(success=True)
     )
 
-    # Patch where PandocConfigProvider is used in service.py
     with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.PandocConfigProvider',
                   return_value=mock_config_provider), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value='2.11.0'):
         integration = PandocIntegration(config_path="/path/to/config.yaml")
+        integration.config_provider = mock_config_provider
+
         integration.paths_service = MagicMock()
         integration.paths_service.expand_user_vars.side_effect = lambda x: x
         integration.fs_service = mock_fs
@@ -74,10 +75,6 @@ def test_integration_with_custom_config_path():
 
 def test_integration_with_custom_output_dir():
     """Test PandocIntegration with custom output directory."""
-    integration = PandocIntegration(output_dir="/custom/output")
-    integration.paths_service = MagicMock()
-    integration.paths_service.expand_user_vars.side_effect = lambda x: x
-
     # Mock FS service
     mock_fs = MagicMock()
     mock_fs.expand_user_vars = MagicMock(
@@ -86,17 +83,26 @@ def test_integration_with_custom_output_dir():
     mock_fs.create_directory = MagicMock(
         return_value=SimpleNamespace(success=True)
     )
-    integration.fs_service = mock_fs
 
     # Mock provider instance
     mock_provider = MagicMock()
     mock_provider.load_config.return_value = IntegrationResult(success=True, content={})
+    # Ensure provider has expand_user_vars logic if it needs it
+    mock_provider.expand_user_vars.side_effect = lambda x: x
 
     with patch('quack_core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
-            patch('quack_core.integrations.pandoc.service.PandocConfigProvider',
-                  return_value=mock_provider), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"):
+        integration = PandocIntegration(output_dir="/custom/output")
+        integration.fs_service = mock_fs
+        # Manually inject the mock provider
+        integration.config_provider = mock_provider
+
+        # Ensure paths_service is mocked correctly
+        mock_paths = MagicMock()
+        mock_paths.expand_user_vars.side_effect = lambda x: x
+        integration.paths_service = mock_paths
+
         result = integration.initialize()
         assert result.success
         mock_fs.create_directory.assert_called_with("/custom/output")
@@ -109,9 +115,9 @@ def test_integration_initialize_with_invalid_config():
     integration.paths_service.expand_user_vars.side_effect = lambda x: x
 
     # Mock load_config to return failed result
-    integration.config_provider.load_config = MagicMock(
-        return_value=IntegrationResult(success=False, error="Invalid config")
-    )
+    integration.config_provider = MagicMock()
+    integration.config_provider.load_config.return_value = IntegrationResult(
+        success=False, error="Invalid config")
 
     # Mock FS service
     mock_fs = MagicMock()
@@ -140,9 +146,9 @@ def test_integration_directory_conversion_edge_cases(mock_fs):
         side_effect=lambda x: SimpleNamespace(success=True, path=x)
     )
 
-    integration.config_provider.load_config = MagicMock(
-        return_value=IntegrationResult(success=True, content={})
-    )
+    mock_provider = MagicMock()
+    mock_provider.load_config.return_value = IntegrationResult(success=True, content={})
+    integration.config_provider = mock_provider
 
     # Mock FS service for integration
     mock_fs_service = MagicMock()
