@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/github/auth.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/auth.py
+# module: quack_core.integrations.github.auth
+# role: module
+# neighbors: __init__.py, service.py, models.py, protocols.py, config.py, client.py
+# exports: GitHubAuthProvider
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """Authentication provider for GitHub integration."""
 
 import os

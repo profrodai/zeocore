@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/contracts/capabilities/demo.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/contracts/capabilities/demo.py
+# module: quack_core.contracts.capabilities.demo
+# role: module
+# neighbors: __init__.py, contract.py
+# exports: EchoRequest, EchoPolicy, VideoRefRequest, echo_text, validate_video_ref
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 from typing import Optional
 from pydantic import BaseModel
 from quack_core.contracts.capabilities.contract import CapabilityResult

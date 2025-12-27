@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/llms/test_config.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/llms/test_config.py
+# role: tests
+# neighbors: __init__.py, test_config_provider.py, test_fallback.py, test_integration.py, test_llms.py, test_models.py (+3 more)
+# exports: TestLLMConfig
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for LLM configuration models.
 

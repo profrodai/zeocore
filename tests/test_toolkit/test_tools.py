@@ -1,4 +1,12 @@
-# quack-core/tests/test_toolkit/test_tools.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_toolkit/test_tools.py
+# role: tests
+# neighbors: __init__.py, conftest.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py (+2 more)
+# exports: DummyQuackTool, YamlOutputTool, RemoteHandlerTool, UnavailableTool, IntegrationTool, CompleteTool
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Test tool implementations for testing quack_core.toolkit.
 

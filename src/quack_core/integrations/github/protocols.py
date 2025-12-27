@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/github/protocols.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/protocols.py
+# module: quack_core.integrations.github.protocols
+# role: protocols
+# neighbors: __init__.py, service.py, models.py, config.py, auth.py, client.py
+# exports: GitHubIntegrationProtocol
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """Protocols for GitHub integration."""
 
 from typing import Protocol, runtime_checkable

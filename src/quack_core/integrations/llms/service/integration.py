@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/llms/service/integration.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/llms/service/integration.py
+# module: quack_core.integrations.llms.service.integration
+# role: service
+# neighbors: __init__.py, operations.py, dependencies.py, initialization.py
+# exports: LLMIntegration
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Core LLM integration class.
 

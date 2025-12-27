@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/adapters/http/util.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/adapters/http/util.py
+# module: quack_core.adapters.http.util
+# role: adapters
+# neighbors: __init__.py, app.py, service.py, models.py, config.py, auth.py (+1 more)
+# exports: new_id, stable_hash
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Utility functions for the HTTP adapter.
 """

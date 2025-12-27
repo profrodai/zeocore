@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/llms/models.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/llms/models.py
+# module: quack_core.integrations.llms.models
+# role: models
+# neighbors: __init__.py, protocols.py, config.py, registry.py, fallback.py
+# exports: RoleType, ChatMessage, FunctionParameter, FunctionDefinition, ToolDefinition, FunctionCall, ToolCall, LLMOptions (+1 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Data models for LLM integration.
 

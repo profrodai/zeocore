@@ -1,1 +1,8 @@
-# quack-core/tests/test_plugins/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_plugins/__init__.py
+# role: tests
+# neighbors: test_discovery.py, test_protocols.py, test_registry.py
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+

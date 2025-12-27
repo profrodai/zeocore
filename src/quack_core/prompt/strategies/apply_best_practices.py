@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/prompt/strategies/apply_best_practices.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/prompt/strategies/apply_best_practices.py
+# module: quack_core.prompt.strategies.apply_best_practices
+# role: module
+# neighbors: __init__.py, automatic_prompt_engineering.py, chain_of_thought_prompting.py, code_prompting.py, contextual_prompting.py, debugging_code_prompting.py (+22 more)
+# exports: render
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Apply Best Practices strategy for the PromptBooster.
 

@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/utils/formatting.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/utils/formatting.py
+# module: quack_core.interfaces.cli.utils.formatting
+# role: utils
+# neighbors: __init__.py, error.py, interaction.py, logging.py, options.py, progress.py (+1 more)
+# exports: Color, colorize, print_error, print_warning, print_success, print_info, print_debug, table (+1 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Text formatting utilities for CLI applications.
 

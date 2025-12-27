@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/utils/progress.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/utils/progress.py
+# module: quack_core.interfaces.cli.utils.progress
+# role: utils
+# neighbors: __init__.py, error.py, formatting.py, interaction.py, logging.py, options.py (+1 more)
+# exports: ProgressCallback, ProgressReporter, SimpleProgress, show_progress
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Progress tracking utilities for CLI applications.
 

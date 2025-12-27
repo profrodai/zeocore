@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/drive/mocks/credentials.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/drive/mocks/credentials.py
+# role: tests
+# neighbors: __init__.py, base.py, download.py, media.py, requests.py, resources.py (+1 more)
+# exports: MockGoogleCredentials, create_credentials
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Mock credential objects for Google Drive testing.
 """

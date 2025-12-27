@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/drive/mocks/services.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/drive/mocks/services.py
+# role: tests
+# neighbors: __init__.py, base.py, credentials.py, download.py, media.py, requests.py (+1 more)
+# exports: MockDriveService, create_mock_drive_service, create_error_drive_service
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Mock service objects for Google Drive testing.
 """

@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/workflow/mixins/save_output_mixin.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/workflow/mixins/save_output_mixin.py
+# module: quack_core.workflow.mixins.save_output_mixin
+# role: module
+# neighbors: __init__.py, integration_enabled.py, output_writer.py
+# exports: SaveOutputMixin
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Mixin providing output saving capabilities.
 

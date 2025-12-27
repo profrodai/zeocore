@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/workflow/runners/file_runner.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/workflow/runners/file_runner.py
+# module: quack_core.workflow.runners.file_runner
+# role: module
+# neighbors: __init__.py
+# exports: WorkflowError, FileWorkflowRunner
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 
 from __future__ import annotations
 

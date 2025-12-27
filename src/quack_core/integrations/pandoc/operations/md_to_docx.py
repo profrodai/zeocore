@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/pandoc/operations/md_to_docx.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/pandoc/operations/md_to_docx.py
+# module: quack_core.integrations.pandoc.operations.md_to_docx
+# role: operations
+# neighbors: __init__.py, utils.py, html_to_md.py
+# exports: convert_markdown_to_docx, validate_conversion
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Markdown to DOCX conversion operations.
 

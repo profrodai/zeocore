@@ -1,4 +1,12 @@
-# quack-core/tests/test_paths/test_utils.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_paths/test_utils.py
+# role: tests
+# neighbors: __init__.py, conftest.py, test_context.py, test_resolvers.py, test_service.py
+# exports: MockDataResult, TestPathUtils, mock_fs_methods
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for path utility functions.
 """

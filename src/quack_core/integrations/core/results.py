@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/core/results.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/core/results.py
+# module: quack_core.integrations.core.results
+# role: module
+# neighbors: __init__.py, protocols.py, registry.py, base.py
+# exports: IntegrationResult, AuthResult, ConfigResult
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Result models for integration _operations.
 

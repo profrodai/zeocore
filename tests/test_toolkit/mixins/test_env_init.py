@@ -1,4 +1,12 @@
-# quack-core/tests/test_toolkit/mixins/test_env_init.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_toolkit/mixins/test_env_init.py
+# role: tests
+# neighbors: __init__.py, test_integration_enabled.py, test_lifecycle.py, test_output_handler.py
+# exports: TestToolEnvInitializerMixin, TestToolEnvInitializerMixinWithPytest, tool_env_initializer_mixin
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the ToolEnvInitializerMixin.
 """

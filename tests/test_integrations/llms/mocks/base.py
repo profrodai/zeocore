@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/llms/mocks/base.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/llms/mocks/base.py
+# role: tests
+# neighbors: __init__.py, anthropic.py, clients.py, openai.py
+# exports: MockLLMResponse, MockTokenResponse, MockStreamingGenerator
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Base mock classes for LLM testing.
 """

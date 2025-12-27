@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/github/config.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/config.py
+# module: quack_core.integrations.github.config
+# role: module
+# neighbors: __init__.py, service.py, models.py, protocols.py, auth.py, client.py
+# exports: GitHubConfigProvider
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """Configuration provider for GitHub integration."""
 
 import os

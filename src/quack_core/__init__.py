@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/__init__.py
+# module: quack_core.__init__
+# role: module
+# neighbors: config_base.py
+# exports: __version__, config, load_config, QuackConfig, paths, fs, registry, loader (+9 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 QuackCore: Core infrastructure for the Quack ecosystem of media production tools.
 

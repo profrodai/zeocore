@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/toolkit/protocol.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/toolkit/protocol.py
+# module: quack_core.toolkit.protocol
+# role: module
+# neighbors: __init__.py, base.py
+# exports: QuackToolPluginProtocol
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Protocol definition for QuackTool plugins.
 

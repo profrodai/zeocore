@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/drive/protocols.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/drive/protocols.py
+# module: quack_core.integrations.google.drive.protocols
+# role: protocols
+# neighbors: __init__.py, service.py, models.py
+# exports: DrivePermissionsResource, DriveRequest, DriveFilesResource, DriveService, GoogleCredentials
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Protocol definitions for Google Drive integration.
 

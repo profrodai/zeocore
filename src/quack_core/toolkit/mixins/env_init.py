@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/toolkit/mixins/env_init.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/toolkit/mixins/env_init.py
+# module: quack_core.toolkit.mixins.env_init
+# role: module
+# neighbors: __init__.py, integration_enabled.py, lifecycle.py, output_handler.py
+# exports: ToolEnvInitializerMixin
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Environment initializer mixin for QuackTool plugins.
 

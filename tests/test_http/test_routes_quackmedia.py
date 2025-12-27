@@ -1,4 +1,12 @@
-# quack-core/tests/test_http/test_routes_quackmedia.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_http/test_routes_quackmedia.py
+# role: tests
+# neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py (+2 more)
+# exports: test_slice_video_no_auth, test_slice_video_success, test_transcribe_audio_success, test_extract_frames_success, test_invalid_operation_params, test_all_quackmedia_endpoints
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for QuackMedia routes.
 """

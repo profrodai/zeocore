@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/pandoc/test_converter.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/pandoc/test_converter.py
+# role: tests
+# neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_models.py (+4 more)
+# exports: test_document_converter_initialization, test_convert_file_html_to_markdown_success, test_convert_file_markdown_to_docx_success, test_convert_file_unsupported_format, test_convert_file_integration_error, test_convert_batch_all_success, test_convert_batch_partial_failure, test_convert_batch_all_failure (+1 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 import time
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch

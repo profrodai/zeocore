@@ -1,4 +1,12 @@
-# quack-core/tests/test_errors/test_handlers.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_errors/test_handlers.py
+# role: tests
+# neighbors: __init__.py, test_base.py
+# exports: TestErrorHandler, TestHandleErrorsDecorator, TestGlobalErrorHandler
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for error handling utilities.
 """

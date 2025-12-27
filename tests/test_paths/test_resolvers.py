@@ -1,4 +1,12 @@
-# quack-core/tests/test_paths/test_resolvers.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_paths/test_resolvers.py
+# role: tests
+# neighbors: __init__.py, conftest.py, test_context.py, test_service.py, test_utils.py
+# exports: TestPathResolver
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the PathResolver class.
 """

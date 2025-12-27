@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/workflow/results.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/workflow/results.py
+# module: quack_core.workflow.results
+# role: module
+# neighbors: __init__.py
+# exports: InputResult, OutputResult, FinalResult
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 from __future__ import annotations
 
 from pathlib import Path

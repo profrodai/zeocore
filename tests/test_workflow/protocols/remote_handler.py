@@ -1,4 +1,12 @@
-# quack-core/tests/test_workflow/protocols/remote_handler.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_workflow/protocols/remote_handler.py
+# role: protocols
+# neighbors: __init__.py
+# exports: Good, Bad, test_protocol_runtime_checkable
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 from pathlib import Path
 
 from quack_core.workflow.protocols.remote_handler import RemoteFileHandler

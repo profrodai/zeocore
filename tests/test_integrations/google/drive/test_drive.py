@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/drive/test_drive.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/drive/test_drive.py
+# role: tests
+# neighbors: __init__.py, mocks.py, test_drive_models.py, test_drive_service_delete.py, test_drive_service_download.py, test_drive_service_files.py (+6 more)
+# exports: TestDriveModels, TestGoogleDriveServiceDelete, TestGoogleDriveServiceDownload, TestGoogleDriveServiceFiles, TestGoogleDriveServiceFolders, TestGoogleDriveServiceInit, TestGoogleDriveServiceList, TestGoogleDriveServicePermissions (+9 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Main entry point for Google Drive integration tests.
 

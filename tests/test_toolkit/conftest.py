@@ -1,4 +1,12 @@
-# quack-core/tests/test_toolkit/conftest.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_toolkit/conftest.py
+# role: tests
+# neighbors: __init__.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py, test_protocol.py (+2 more)
+# exports: MockIntegrationService, AnotherMockService, CustomOutputFormatMixin, output_format_mixin, custom_output_format_mixin, tool_env_initializer_mixin, lifecycle_mixin, integration_enabled_mixin
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Shared fixtures for QuackTool mixin tests.
 """

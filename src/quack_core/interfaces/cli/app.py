@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/app.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/app.py
+# module: quack_core.interfaces.cli.app
+# role: cli
+# neighbors: __init__.py, main.py
+# exports: echo, validate
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 import typer
 from quack_core.contracts.capabilities.demo import echo_text, EchoRequest, validate_video_ref, VideoRefRequest
 

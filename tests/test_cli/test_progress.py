@@ -1,4 +1,12 @@
-# quack-core/tests/test_cli/test_progress.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_cli/test_progress.py
+# role: tests
+# neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_error.py (+5 more)
+# exports: TestProgressReporter, TestSimpleProgress, TestShowProgress, TestProgressCallback
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the CLI progress module.
 """

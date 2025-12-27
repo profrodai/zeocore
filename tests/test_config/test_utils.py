@@ -1,4 +1,12 @@
-# quack-core/tests/test_config/test_utils.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_config/test_utils.py
+# role: tests
+# neighbors: __init__.py, test_loader.py, test_models.py
+# exports: TestConfigUtils
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for configuration utility functions.
 """

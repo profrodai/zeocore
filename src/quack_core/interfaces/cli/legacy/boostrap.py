@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/legacy/boostrap.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/legacy/boostrap.py
+# module: quack_core.interfaces.cli.legacy.boostrap
+# role: cli
+# neighbors: __init__.py, config.py, context.py
+# exports: init_cli_env, from_cli_options
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 CLI bootstrapper for quack_core.
 

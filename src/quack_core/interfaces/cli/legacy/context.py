@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/legacy/context.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/legacy/context.py
+# module: quack_core.interfaces.cli.legacy.context
+# role: cli
+# neighbors: __init__.py, config.py, boostrap.py
+# exports: QuackContext
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 QuackCore CLI context management.
 

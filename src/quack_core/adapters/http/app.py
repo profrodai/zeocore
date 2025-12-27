@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/adapters/http/app.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/adapters/http/app.py
+# module: quack_core.adapters.http.app
+# role: adapters
+# neighbors: __init__.py, service.py, models.py, config.py, auth.py, jobs.py (+1 more)
+# exports: create_app
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 FastAPI application factory.
 """

@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/contracts/capabilities/contract.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/contracts/capabilities/contract.py
+# module: quack_core.contracts.capabilities.contract
+# role: module
+# neighbors: __init__.py, demo.py
+# exports: CapabilityStatus, LogLevel, CapabilityLogEvent, CapabilityError, CapabilityResult
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 The canonical interface for all QuackCore capabilities.
 This module has ZERO dependencies on other QuackCore internal modules.

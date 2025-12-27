@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/auth.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/auth.py
+# module: quack_core.integrations.google.auth
+# role: module
+# neighbors: __init__.py, config.py, serialization.py
+# exports: GoogleAuthProvider
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Google authentication provider for quack_core.
 

@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/llms/service/test_initialization.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/llms/service/test_initialization.py
+# role: service
+# neighbors: __init__.py, test_dependencies.py, test_integration.py, test_operations.py
+# exports: TestInitialization
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for LLM integration initialization.
 

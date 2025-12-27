@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/toolkit/mixins/output_handler.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/toolkit/mixins/output_handler.py
+# module: quack_core.toolkit.mixins.output_handler
+# role: module
+# neighbors: __init__.py, env_init.py, integration_enabled.py, lifecycle.py
+# exports: OutputFormatMixin
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 This mixin allows tools to specify the output file extension
 (e.g., '.json', '.yaml'), by overriding the `_get_output_extension()` method.

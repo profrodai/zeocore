@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/workflow/output/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/workflow/output/__init__.py
+# module: quack_core.workflow.output.__init__
+# role: module
+# neighbors: base.py, writers.py
+# exports: OutputWriter, DefaultOutputWriter, YAMLOutputWriter
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Output writing functionality for QuackCore workflows.
 

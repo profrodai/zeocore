@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/adapters/http/routes/jobs.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/adapters/http/routes/jobs.py
+# module: quack_core.adapters.http.routes.jobs
+# role: adapters
+# neighbors: __init__.py, health.py, quackmedia.py
+# exports: set_config, get_cfg, start_job, job_status
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Job management routes.
 """

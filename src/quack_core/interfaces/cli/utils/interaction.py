@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/utils/interaction.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/utils/interaction.py
+# module: quack_core.interfaces.cli.utils.interaction
+# role: utils
+# neighbors: __init__.py, error.py, formatting.py, logging.py, options.py, progress.py (+1 more)
+# exports: confirm, ask, ask, ask, ask_choice, with_spinner
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 User interaction utilities for CLI applications.
 

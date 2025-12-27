@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/toolkit/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/toolkit/__init__.py
+# module: quack_core.toolkit.__init__
+# role: module
+# neighbors: base.py, protocol.py
+# exports: BaseQuackToolPlugin, QuackToolPluginProtocol, IntegrationEnabledMixin, OutputFormatMixin, ToolEnvInitializerMixin, QuackToolLifecycleMixin
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Developer interface layer for creating QuackTools.
 

@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/workflow/output/writers.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/workflow/output/writers.py
+# module: quack_core.workflow.output.writers
+# role: module
+# neighbors: __init__.py, base.py
+# exports: DefaultOutputWriter, YAMLOutputWriter
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Implementation of OutputWriter classes for various file formats.
 

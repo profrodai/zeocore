@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/llms/service/test_integration.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/llms/service/test_integration.py
+# role: service
+# neighbors: __init__.py, test_dependencies.py, test_initialization.py, test_operations.py
+# exports: TestLLMIntegrationComprehensive
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Comprehensive tests for the LLM integration service class.
 

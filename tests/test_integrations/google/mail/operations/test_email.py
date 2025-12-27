@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/mail/operations/test_email.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/mail/operations/test_email.py
+# role: operations
+# neighbors: __init__.py, test_attachments.py, test_auth.py
+# exports: TestGmailEmailOperations
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for Gmail email _operations.
 

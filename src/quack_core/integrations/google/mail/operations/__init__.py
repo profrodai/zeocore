@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/mail/operations/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/mail/operations/__init__.py
+# module: quack_core.integrations.google.mail.operations.__init__
+# role: operations
+# neighbors: attachments.py, auth.py, email.py
+# exports: email, auth, attachments
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Operations package for Google Mail integration.
 

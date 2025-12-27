@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/drive/operations/upload.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/drive/operations/upload.py
+# module: quack_core.integrations.google.drive.operations.upload
+# role: operations
+# neighbors: __init__.py, download.py, folder.py, list_files.py, permissions.py
+# exports: initialize_drive_service, resolve_file_details, upload_file
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Upload _operations for Google Drive integration.
 

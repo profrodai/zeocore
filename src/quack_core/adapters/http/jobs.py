@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/adapters/http/jobs.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/adapters/http/jobs.py
+# module: quack_core.adapters.http.jobs
+# role: adapters
+# neighbors: __init__.py, app.py, service.py, models.py, config.py, auth.py (+1 more)
+# exports: set_cfg, clear_jobs, resolve_callable, enqueue, get_status
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Job management for the HTTP adapter.
 """

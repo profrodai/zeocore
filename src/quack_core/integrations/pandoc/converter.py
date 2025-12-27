@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/pandoc/converter.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/pandoc/converter.py
+# module: quack_core.integrations.pandoc.converter
+# role: module
+# neighbors: __init__.py, service.py, models.py, protocols.py, config.py
+# exports: DocumentConverter
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Core converter implementation for Pandoc integration.
 

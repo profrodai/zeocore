@@ -1,4 +1,12 @@
-# quack-core/tests/test_http/test_jobs.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_http/test_jobs.py
+# role: tests
+# neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_routes_jobs.py (+2 more)
+# exports: job_config, test_set_cfg, test_resolve_callable_unknown_op, test_resolve_callable_mock, test_create_mock_function, test_enqueue_not_initialized, test_enqueue_and_get_status, test_enqueue_with_idempotency (+1 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for job management functionality.
 """

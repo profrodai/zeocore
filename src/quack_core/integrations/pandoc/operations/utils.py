@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/pandoc/operations/utils.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/pandoc/operations/utils.py
+# module: quack_core.integrations.pandoc.operations.utils
+# role: operations
+# neighbors: __init__.py, html_to_md.py, md_to_docx.py
+# exports: verify_pandoc, prepare_pandoc_args, validate_html_structure, validate_docx_structure, safe_convert_to_int, get_size_str_wrapper, check_file_size, check_conversion_ratio (+2 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Utility functions for pandoc _operations.
 

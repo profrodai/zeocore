@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/toolkit/base.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/toolkit/base.py
+# module: quack_core.toolkit.base
+# role: module
+# neighbors: __init__.py, protocol.py
+# exports: BaseQuackToolPlugin
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Base class implementation for QuackTool plugins.
 

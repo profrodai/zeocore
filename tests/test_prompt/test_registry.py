@@ -1,4 +1,12 @@
-# quack-core/tests/test_prompt/test_registry.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_prompt/test_registry.py
+# role: tests
+# neighbors: __init__.py, conftest.py, test_booster.py, test_enhancer.py, test_integration.py, test_plugin.py (+2 more)
+# exports: sample_strategies, clear_registry_before_after, test_register_prompt_strategy, test_register_duplicate_strategy, test_get_strategy_by_id, test_find_strategies_by_tags, test_get_all_strategies, test_clear_registry
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the prompt strategy registry functionality.
 """

@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/adapters/http/routes/quackmedia.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/adapters/http/routes/quackmedia.py
+# module: quack_core.adapters.http.routes.quackmedia
+# role: adapters
+# neighbors: __init__.py, health.py, jobs.py
+# exports: set_config, get_cfg, slice_video, transcribe_audio, extract_frames
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 QuackMedia convenience routes (synchronous).
 """

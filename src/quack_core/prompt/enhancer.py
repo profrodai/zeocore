@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/prompt/enhancer.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/prompt/enhancer.py
+# module: quack_core.prompt.enhancer
+# role: module
+# neighbors: __init__.py, plugin.py, registry.py, booster.py, strategy_base.py
+# exports: enhance_with_llm, count_prompt_tokens
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Prompt enhancer module for the PromptBooster.
 

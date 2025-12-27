@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/drive/mocks/base.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/drive/mocks/base.py
+# role: tests
+# neighbors: __init__.py, credentials.py, download.py, media.py, requests.py, resources.py (+1 more)
+# exports: GenericApiRequestMock
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Base mock classes and utilities for Google Drive testing.
 """

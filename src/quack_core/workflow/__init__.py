@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/workflow/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/workflow/__init__.py
+# module: quack_core.workflow.__init__
+# role: module
+# neighbors: results.py
+# exports: FileWorkflowRunner, IntegrationEnabledMixin, DefaultOutputWriter, RemoteFileHandler, InputResult, OutputResult, FinalResult
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 quack_core.workflow – Provides modular runners and mixins for tool workflows.
 

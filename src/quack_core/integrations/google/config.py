@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/config.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/config.py
+# module: quack_core.integrations.google.config
+# role: module
+# neighbors: __init__.py, auth.py, serialization.py
+# exports: GoogleBaseConfig, GoogleDriveConfig, GoogleMailConfig, GoogleConfigProvider
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Configuration management for Google integrations.
 

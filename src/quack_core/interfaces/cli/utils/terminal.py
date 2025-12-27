@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/utils/terminal.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/utils/terminal.py
+# module: quack_core.interfaces.cli.utils.terminal
+# role: utils
+# neighbors: __init__.py, error.py, formatting.py, interaction.py, logging.py, options.py (+1 more)
+# exports: get_terminal_size, supports_color, truncate_text
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Terminal utilities for CLI applications.
 

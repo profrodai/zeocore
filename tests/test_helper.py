@@ -1,4 +1,12 @@
-# quack-core/tests/test_helper.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_helper.py
+# role: tests
+# neighbors: __init__.py, conftest.py
+# exports: setup_python_path
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Helper module to set up the Python path for quack-core tests.
 This should be imported at the beginning of conftest.py.

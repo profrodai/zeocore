@@ -1,4 +1,12 @@
-# quack-core/tests/test_paths/test_service.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_paths/test_service.py
+# role: tests
+# neighbors: __init__.py, conftest.py, test_context.py, test_resolvers.py, test_utils.py
+# exports: path_service, test_get_project_root, test_get_project_root_failure, test_resolve_project_path, test_detect_project_context, test_detect_content_context, test_get_known_directory, test_get_module_path (+9 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the QuackCore path service.
 """

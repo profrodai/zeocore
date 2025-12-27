@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/mail/utils/test_api.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/mail/utils/test_api.py
+# role: utils
+# neighbors: __init__.py
+# exports: TestGmailApiUtils
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for Gmail API utility functions.
 

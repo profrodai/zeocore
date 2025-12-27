@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/github/operations/repositories.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/operations/repositories.py
+# module: quack_core.integrations.github.operations.repositories
+# role: operations
+# neighbors: __init__.py, issues.py, pull_requests.py, users.py
+# exports: get_repo, star_repo, unstar_repo, is_repo_starred, fork_repo, check_repository_exists, get_repository_file_content, update_repository_file
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """GitHub repository _operations."""
 
 import base64

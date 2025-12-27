@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/mail/test_mail_service.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/mail/test_mail_service.py
+# role: tests
+# neighbors: __init__.py, mocks.py, test_mail.py
+# exports: TestGoogleMailService
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for Google Mail service.
 

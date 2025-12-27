@@ -1,1 +1,8 @@
-# quack-core/src/quack_core/adapters/mcp/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/adapters/mcp/__init__.py
+# module: quack_core.adapters.mcp.__init__
+# role: adapters
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+

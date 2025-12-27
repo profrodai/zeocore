@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/config/tooling/base.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/config/tooling/base.py
+# module: quack_core.config.tooling.base
+# role: module
+# neighbors: __init__.py, loader.py, logger.py
+# exports: QuackToolConfigModel
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Base class for QuackTool-specific config models.
 

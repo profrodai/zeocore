@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/pandoc/operations/test_utils_fix.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/pandoc/operations/test_utils_fix.py
+# role: operations
+# neighbors: __init__.py, test_html_to_md.py, test_md_to_docx.py, test_utils.py
+# exports: patched_check_file_size, patched_check_conversion_ratio, patched_track_metrics, apply_utils_patches
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Helper functions to fix validation issues in utils operations.
 

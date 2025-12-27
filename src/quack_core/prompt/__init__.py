@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/prompt/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/prompt/__init__.py
+# module: quack_core.prompt.__init__
+# role: module
+# neighbors: plugin.py, registry.py, booster.py, enhancer.py, strategy_base.py
+# exports: PromptBooster, PromptStrategy, register_prompt_strategy, get_strategy_by_id, find_strategies_by_tags, get_all_strategies
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 QuackCore Prompt module.
 

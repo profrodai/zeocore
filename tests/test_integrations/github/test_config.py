@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/github/test_config.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/github/test_config.py
+# role: tests
+# neighbors: __init__.py, conftest.py, test_api.py, test_auth.py, test_client.py, test_github_init.py (+5 more)
+# exports: TestGitHubConfigProvider, config_provider
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """Tests for GitHub configuration provider."""
 
 import os

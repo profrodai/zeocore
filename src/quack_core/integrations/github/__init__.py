@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/github/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/__init__.py
+# module: quack_core.integrations.github.__init__
+# role: module
+# neighbors: service.py, models.py, protocols.py, config.py, auth.py, client.py
+# exports: GitHubIntegration, GitHubClient, GitHubAuthProvider, GitHubConfigProvider, GitHubTeachingAdapter, GitHubGrader, GitHubIntegrationProtocol, GitHubRepo (+4 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """GitHub integration for quack_core."""
 
 from __future__ import annotations

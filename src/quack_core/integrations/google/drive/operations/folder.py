@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/drive/operations/folder.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/drive/operations/folder.py
+# module: quack_core.integrations.google.drive.operations.folder
+# role: operations
+# neighbors: __init__.py, download.py, list_files.py, permissions.py, upload.py
+# exports: create_folder, delete_file
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Folder _operations for Google Drive integration.
 

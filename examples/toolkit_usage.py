@@ -1,4 +1,12 @@
-# quack-core/examples/toolkit_usage.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/examples/toolkit_usage.py
+# role: module
+# neighbors: config_tooling_test.py, http_adapter_usage.py
+# exports: ExampleTool, main
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Example usage of the QuackCore toolkit.
 

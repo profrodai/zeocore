@@ -1,4 +1,11 @@
-# quack-core/examples/http_adapter_usage.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/examples/http_adapter_usage.py
+# role: module
+# neighbors: config_tooling_test.py, toolkit_usage.py
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Example of how to use the HTTP adapter with QuackCore's config system.
 """

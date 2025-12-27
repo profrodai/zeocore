@@ -1,4 +1,12 @@
-# quack-core/tests/test_toolkit/test_protocol.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_toolkit/test_protocol.py
+# role: tests
+# neighbors: __init__.py, conftest.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py (+2 more)
+# exports: TestQuackToolPluginProtocol
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the QuackToolPluginProtocol.
 """

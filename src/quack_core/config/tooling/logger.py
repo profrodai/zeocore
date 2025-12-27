@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/config/tooling/logger.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/config/tooling/logger.py
+# module: quack_core.config.tooling.logger
+# role: module
+# neighbors: __init__.py, base.py, loader.py
+# exports: setup_tool_logging, get_logger, log_teaching
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Logging setup utilities for QuackTools.
 

@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/github/service.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/service.py
+# module: quack_core.integrations.github.service
+# role: service
+# neighbors: __init__.py, models.py, protocols.py, config.py, auth.py, client.py
+# exports: GitHubIntegration
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """GitHub core integration service for quack_core."""
 
 from quack_core.integrations.core import (

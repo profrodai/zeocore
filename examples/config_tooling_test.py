@@ -1,4 +1,12 @@
-# quack-core/examples/config_tooling_test.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/examples/config_tooling_test.py
+# role: module
+# neighbors: http_adapter_usage.py, toolkit_usage.py
+# exports: MyConfig, main
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Test script for quack_core.config.tooling.
 

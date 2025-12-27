@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/llms/mocks/openai.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/llms/mocks/openai.py
+# role: tests
+# neighbors: __init__.py, anthropic.py, base.py, clients.py
+# exports: MockOpenAIResponse, MockOpenAIStreamingResponse, MockOpenAIErrorResponse, MockOpenAIClient
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Mock OpenAI classes for LLM testing.
 """

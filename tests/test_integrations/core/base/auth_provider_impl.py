@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/core/base/auth_provider_impl.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/core/base/auth_provider_impl.py
+# role: tests
+# neighbors: __init__.py, config_provider_impl.py, integration_service_impl.py, test_auth_provider.py, test_base.py, test_config_provider.py (+3 more)
+# exports: MockAuthProvider
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Implementation classes for testing auth providers.
 """

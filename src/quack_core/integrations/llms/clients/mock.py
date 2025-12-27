@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/llms/clients/mock.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/llms/clients/mock.py
+# module: quack_core.integrations.llms.clients.mock
+# role: module
+# neighbors: __init__.py, anthropic.py, base.py, ollama.py, openai.py
+# exports: MockLLMClient
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Mock LLM client implementation.
 

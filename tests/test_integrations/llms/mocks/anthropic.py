@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/llms/mocks/anthropic.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/llms/mocks/anthropic.py
+# role: tests
+# neighbors: __init__.py, base.py, clients.py, openai.py
+# exports: MockAnthropicResponse, MockAnthropicStreamingResponse, MockAnthropicErrorResponse, MockAnthropicClient
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Mock Anthropic classes for LLM testing.
 """

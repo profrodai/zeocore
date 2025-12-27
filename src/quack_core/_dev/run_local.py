@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/_dev/run_local.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/_dev/run_local.py
+# module: quack_core._dev.run_local
+# role: module
+# neighbors: __init__.py
+# exports: run_flow
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 LOCAL ORCHESTRATOR (DEV ONLY)
 Use this to test chains of capabilities without spinning up n8n.

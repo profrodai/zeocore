@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/toolkit/mixins/lifecycle.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/toolkit/mixins/lifecycle.py
+# module: quack_core.toolkit.mixins.lifecycle
+# role: module
+# neighbors: __init__.py, env_init.py, integration_enabled.py, output_handler.py
+# exports: QuackToolLifecycleMixin
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Lifecycle mixin for QuackTool plugins.
 

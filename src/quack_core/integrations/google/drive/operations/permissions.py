@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/drive/operations/permissions.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/drive/operations/permissions.py
+# module: quack_core.integrations.google.drive.operations.permissions
+# role: operations
+# neighbors: __init__.py, download.py, folder.py, list_files.py, upload.py
+# exports: set_file_permissions, get_sharing_link
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Permission _operations for Google Drive integration.
 

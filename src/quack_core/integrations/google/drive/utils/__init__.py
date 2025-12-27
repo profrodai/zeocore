@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/drive/utils/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/drive/utils/__init__.py
+# module: quack_core.integrations.google.drive.utils.__init__
+# role: utils
+# neighbors: api.py, query.py
+# exports: api, query
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Utilities package for Google Drive integration.
 

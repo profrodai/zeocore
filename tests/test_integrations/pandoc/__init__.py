@@ -1,4 +1,11 @@
-# quack-core/tests/test_integrations/pandoc/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/pandoc/__init__.py
+# role: tests
+# neighbors: conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py, test_models.py (+4 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Test package for the pandoc integration.
 

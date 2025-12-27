@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/plugins/discovery.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/plugins/discovery.py
+# module: quack_core.plugins.discovery
+# role: module
+# neighbors: __init__.py, protocols.py, registry.py
+# exports: PluginInfo, PluginLoader
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Plugin discovery for quack_core.
 

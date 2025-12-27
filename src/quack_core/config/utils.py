@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/config/utils.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/config/utils.py
+# module: quack_core.config.utils
+# role: utils
+# neighbors: __init__.py, models.py, plugin.py, loader.py
+# exports: get_env, load_env_config, get_config_value, validate_required_config, normalize_paths, load_yaml_config, find_project_root
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Utility functions for configuration management.
 

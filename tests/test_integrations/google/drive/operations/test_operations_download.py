@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/drive/operations/test_operations_download.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/drive/operations/test_operations_download.py
+# role: operations
+# neighbors: __init__.py, test_operations_folder.py, test_operations_list_files.py, test_operations_permissions.py, test_operations_upload.py
+# exports: TestDriveOperationsDownload
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for Google Drive _operations download module.
 """

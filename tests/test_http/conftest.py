@@ -1,4 +1,12 @@
-# quack-core/tests/test_http/conftest.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_http/conftest.py
+# role: tests
+# neighbors: __init__.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py, test_routes_jobs.py (+2 more)
+# exports: clear_job_state, test_config, test_app, test_client, auth_headers, no_auth_config, no_auth_client
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Test configuration for HTTP adapter tests.
 """

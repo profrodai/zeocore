@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/llms/mocks/clients.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/llms/mocks/clients.py
+# role: tests
+# neighbors: __init__.py, anthropic.py, base.py, openai.py
+# exports: MockClient, create_mock_client
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Mock client implementations for LLM testing.
 """

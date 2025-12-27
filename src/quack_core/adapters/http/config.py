@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/adapters/http/config.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/adapters/http/config.py
+# module: quack_core.adapters.http.config
+# role: adapters
+# neighbors: __init__.py, app.py, service.py, models.py, auth.py, jobs.py (+1 more)
+# exports: HttpAdapterConfig
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Configuration for the HTTP adapter.
 """

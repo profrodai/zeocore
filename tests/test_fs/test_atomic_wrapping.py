@@ -1,4 +1,12 @@
-# quack-core/tests/test_fs/test_atomic_wrapping.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_fs/test_atomic_wrapping.py
+# role: tests
+# neighbors: __init__.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py, test_utils.py
+# exports: TestAtomicWrapping, temp_test_dir
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests to ensure that the write_text and write_binary operations wrap
 their return values correctly in a WriteResult object—even when using atomic writes.

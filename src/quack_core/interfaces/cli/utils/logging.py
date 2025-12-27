@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/utils/logging.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/utils/logging.py
+# module: quack_core.interfaces.cli.utils.logging
+# role: utils
+# neighbors: __init__.py, error.py, formatting.py, interaction.py, options.py, progress.py (+1 more)
+# exports: LoggerFactory, setup_logging
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Logging utilities for CLI applications.
 

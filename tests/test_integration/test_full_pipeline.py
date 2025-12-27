@@ -1,4 +1,12 @@
-# quack-core/tests/test_integration/test_full_pipeline.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integration/test_full_pipeline.py
+# role: tests
+# neighbors: __init__.py
+# exports: SampleFilePlugin, SamplePathPlugin, SampleConfigProvider, TestIntegration
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Integration tests for QuackCore components working together.
 """

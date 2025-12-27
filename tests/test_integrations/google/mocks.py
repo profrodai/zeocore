@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/mocks.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/mocks.py
+# role: tests
+# neighbors: __init__.py, test_auth_provider.py, test_config_provider.py, test_serialization.py
+# exports: mock_credentials
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 import json
 from unittest.mock import MagicMock
 

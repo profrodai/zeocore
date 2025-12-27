@@ -1,4 +1,12 @@
-# quack-core/tests/test_cli/test_context.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_cli/test_context.py
+# role: tests
+# neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_error.py, test_formatting.py (+5 more)
+# exports: TestQuackContext
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the CLI context module.
 """

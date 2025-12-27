@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/prompt/strategies/system_prompt_engineer.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/prompt/strategies/system_prompt_engineer.py
+# module: quack_core.prompt.strategies.system_prompt_engineer
+# role: module
+# neighbors: __init__.py, apply_best_practices.py, automatic_prompt_engineering.py, chain_of_thought_prompting.py, code_prompting.py, contextual_prompting.py (+22 more)
+# exports: render
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 System Prompt Engineer strategy for the PromptBooster.
 

@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/core/base/test_base.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/core/base/test_base.py
+# role: tests
+# neighbors: __init__.py, auth_provider_impl.py, config_provider_impl.py, integration_service_impl.py, test_auth_provider.py, test_config_provider.py (+3 more)
+# exports: TestBaseAuthProvider, TestBaseConfigProvider, TestBaseConfigProviderDiscovery, TestBaseIntegrationService
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Main entry point for base integration tests.
 

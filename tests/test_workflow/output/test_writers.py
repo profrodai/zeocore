@@ -1,4 +1,12 @@
-# quack-core/tests/test_workflow/output/test_writers.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_workflow/output/test_writers.py
+# role: tests
+# neighbors: __init__.py, test_base.py
+# exports: StubFS, patch_fs_service, test_default_writer_basics, test_default_writer_write_wrapper, test_yaml_writer
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 from pathlib import Path
 from types import SimpleNamespace
 

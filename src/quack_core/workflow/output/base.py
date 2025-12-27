@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/workflow/output/base.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/workflow/output/base.py
+# module: quack_core.workflow.output.base
+# role: module
+# neighbors: __init__.py, writers.py
+# exports: OutputWriter
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Abstract base class for output writers.
 

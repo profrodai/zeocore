@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/test_config_provider.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/test_config_provider.py
+# role: tests
+# neighbors: __init__.py, mocks.py, test_auth_provider.py, test_serialization.py
+# exports: TestGoogleConfigProvider
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for Google configuration provider.
 

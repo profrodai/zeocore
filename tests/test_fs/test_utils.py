@@ -1,4 +1,12 @@
-# quack-core/tests/test_fs/test_utils.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_fs/test_utils.py
+# role: tests
+# neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py
+# exports: TestPathUtilities, TestFileUtilities
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for filesystem utility functions.
 """

@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/github/operations/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/operations/__init__.py
+# module: quack_core.integrations.github.operations.__init__
+# role: operations
+# neighbors: issues.py, pull_requests.py, repositories.py, users.py
+# exports: get_repo, star_repo, unstar_repo, is_repo_starred, fork_repo, check_repository_exists, get_repository_file_content, update_repository_file (+9 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """GitHub API _operations."""
 
 from .issues import add_issue_comment, create_issue, get_issue, list_issues

@@ -1,4 +1,12 @@
-# quack-core/tests/test_toolkit/test_toolkit_integration.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_toolkit/test_toolkit_integration.py
+# role: tests
+# neighbors: __init__.py, conftest.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py (+2 more)
+# exports: MockUploadService, CompleteTool, TestToolkitIntegration, create_mock_fs, mock_upload_service, complete_tool, sample_file
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Integration tests for the toolkit package as a whole.
 

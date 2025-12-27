@@ -1,4 +1,12 @@
-# quack-core/tests/test_plugins/test_discovery.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_plugins/test_discovery.py
+# role: tests
+# neighbors: __init__.py, test_protocols.py, test_registry.py
+# exports: MockPlugin, TestPluginLoader
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for plugin discovery functionality.
 """

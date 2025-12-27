@@ -1,4 +1,12 @@
-# quack-core/tests/test_workflow/runners/test_file_runner.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_workflow/runners/test_file_runner.py
+# role: tests
+# neighbors: __init__.py
+# exports: TestFileWorkflowRunner, dummy_processor
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for FileWorkflowRunner.
 

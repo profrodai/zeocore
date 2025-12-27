@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/drive/utils/test_utils_api.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/drive/utils/test_utils_api.py
+# role: utils
+# neighbors: __init__.py, test_utils_query.py
+# exports: TestDriveUtilsApi
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for Google Drive api api module.
 """

@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/drive/mocks/download.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/drive/mocks/download.py
+# role: tests
+# neighbors: __init__.py, base.py, credentials.py, media.py, requests.py, resources.py (+1 more)
+# exports: MockDownloadOperations, mock_download_file
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Mock classes for Google Drive download _operations.
 """

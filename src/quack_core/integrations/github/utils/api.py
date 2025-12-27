@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/github/utils/api.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/utils/api.py
+# module: quack_core.integrations.github.utils.api
+# role: utils
+# neighbors: __init__.py
+# exports: make_request
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """GitHub API request utilities."""
 
 import time

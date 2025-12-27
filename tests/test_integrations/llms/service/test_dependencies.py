@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/llms/service/test_dependencies.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/llms/service/test_dependencies.py
+# role: service
+# neighbors: __init__.py, test_initialization.py, test_integration.py, test_operations.py
+# exports: TestDependencies
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 from unittest.mock import MagicMock, patch
 
 from quack_core.integrations.llms.service.dependencies import check_llm_dependencies

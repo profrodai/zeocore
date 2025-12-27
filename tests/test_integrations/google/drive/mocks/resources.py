@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/drive/mocks/resources.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/drive/mocks/resources.py
+# role: tests
+# neighbors: __init__.py, base.py, credentials.py, download.py, media.py, requests.py (+1 more)
+# exports: MockDrivePermissionsResource, MockDriveFilesResource
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Mock resource objects for Google Drive testing.
 """

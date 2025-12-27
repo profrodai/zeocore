@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/legacy/config.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/legacy/config.py
+# module: quack_core.interfaces.cli.legacy.config
+# role: cli
+# neighbors: __init__.py, boostrap.py, context.py
+# exports: load_config, find_project_root
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Configuration utilities for CLI applications.
 

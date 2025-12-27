@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/config/plugin.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/config/plugin.py
+# module: quack_core.config.plugin
+# role: plugin
+# neighbors: __init__.py, models.py, utils.py, loader.py
+# exports: ConfigPlugin, QuackConfigPlugin, create_plugin
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Plugin interface for the configuration module.
 

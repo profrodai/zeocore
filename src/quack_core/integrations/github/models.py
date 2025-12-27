@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/github/models.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/models.py
+# module: quack_core.integrations.github.models
+# role: models
+# neighbors: __init__.py, service.py, protocols.py, config.py, auth.py, client.py
+# exports: PullRequestStatus, GitHubUser, GitHubRepo, PullRequest
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """GitHub integration data models for quack_core."""
 
 from datetime import datetime

@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/google/drive/test_drive_models.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/google/drive/test_drive_models.py
+# role: tests
+# neighbors: __init__.py, mocks.py, test_drive.py, test_drive_service_delete.py, test_drive_service_download.py, test_drive_service_files.py (+6 more)
+# exports: TestDriveModels
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for Google Drive models.
 """

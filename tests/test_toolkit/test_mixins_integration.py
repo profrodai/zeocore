@@ -1,4 +1,12 @@
-# quack-core/tests/test_toolkit/test_mixins_integration.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_toolkit/test_mixins_integration.py
+# role: tests
+# neighbors: __init__.py, conftest.py, mocks.py, test_base.py, test_imports.py, test_protocol.py (+2 more)
+# exports: MockIntegrationService, CompleteQuackTool, TestMixinIntegration
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Integration tests for QuackTool mixins.
 

@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/github/test_integration.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/github/test_integration.py
+# role: tests
+# neighbors: __init__.py, conftest.py, test_api.py, test_auth.py, test_client.py, test_config.py (+5 more)
+# exports: TestGitHubFullIntegration, TestGitHubMockedIntegration
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """Integration tests for GitHub integration."""
 
 import json

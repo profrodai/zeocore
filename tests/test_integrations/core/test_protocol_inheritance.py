@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/core/test_protocol_inheritance.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/core/test_protocol_inheritance.py
+# role: tests
+# neighbors: __init__.py, test_get_service.py, test_protocols.py, test_registry.py, test_registry_discovery.py, test_results.py
+# exports: MinimalIntegration, MinimalAuthProvider, MinimalConfigProvider, MinimalStorageIntegration, CustomStorageIntegrationProtocol, ExtendedIntegrationProtocol, TestProtocolInheritance
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for protocol inheritance and runtime protocol checking.
 

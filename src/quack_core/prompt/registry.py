@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/prompt/registry.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/prompt/registry.py
+# module: quack_core.prompt.registry
+# role: module
+# neighbors: __init__.py, plugin.py, booster.py, enhancer.py, strategy_base.py
+# exports: register_prompt_strategy, get_strategy_by_id, find_strategies_by_tags, get_all_strategies, clear_registry
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Registry module for the PromptBooster.
 

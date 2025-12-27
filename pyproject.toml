@@ -1,3 +1,10 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/pyproject.toml
+# role: module
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 # quack-core/pyproject.toml
 [build-system]
 requires = ["hatchling"]

@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/mail/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/mail/__init__.py
+# module: quack_core.integrations.google.mail.__init__
+# role: module
+# neighbors: service.py, protocols.py, config.py
+# exports: GoogleMailService, create_integration
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Google Mail integration for quack_core.
 

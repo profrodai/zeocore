@@ -1,4 +1,12 @@
-# quack-core/tests/test_workflow/test_results.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_workflow/test_results.py
+# role: tests
+# neighbors: __init__.py, example_test.py
+# exports: test_input_result_defaults, test_output_result_fields, test_final_result_fields
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 from pathlib import Path
 
 from quack_core.workflow.results import FinalResult, InputResult, OutputResult

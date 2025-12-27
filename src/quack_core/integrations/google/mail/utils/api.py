@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/mail/utils/api.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/mail/utils/api.py
+# module: quack_core.integrations.google.mail.utils.api
+# role: utils
+# neighbors: __init__.py
+# exports: APIRequest, execute_api_request, with_exponential_backoff
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 API utilities for Google Mail integration.
 

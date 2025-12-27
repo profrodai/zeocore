@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/llms/service/dependencies.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/llms/service/dependencies.py
+# module: quack_core.integrations.llms.service.dependencies
+# role: service
+# neighbors: __init__.py, operations.py, initialization.py, integration.py
+# exports: check_llm_dependencies
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Dependency checking for LLM integration.
 

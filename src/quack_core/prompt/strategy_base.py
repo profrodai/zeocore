@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/prompt/strategy_base.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/prompt/strategy_base.py
+# module: quack_core.prompt.strategy_base
+# role: module
+# neighbors: __init__.py, plugin.py, registry.py, booster.py, enhancer.py
+# exports: PromptStrategy
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Base strategy module for the PromptBooster.
 

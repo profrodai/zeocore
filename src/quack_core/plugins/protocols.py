@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/plugins/protocols.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/plugins/protocols.py
+# module: quack_core.plugins.protocols
+# role: protocols
+# neighbors: __init__.py, registry.py, discovery.py
+# exports: QuackPluginMetadata, QuackPluginProtocol, PluginRegistryProtocol, PluginLoaderProtocol, CommandPluginProtocol, WorkflowPluginProtocol, ExtensionPluginProtocol, ProviderPluginProtocol (+1 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Plugin protocols for quack_core.
 

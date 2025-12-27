@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/github/operations/issues.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/operations/issues.py
+# module: quack_core.integrations.github.operations.issues
+# role: operations
+# neighbors: __init__.py, pull_requests.py, repositories.py, users.py
+# exports: create_issue, list_issues, get_issue, add_issue_comment
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """GitHub issues _operations."""
 
 from typing import Any, Literal

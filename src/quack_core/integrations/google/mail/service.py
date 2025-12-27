@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/mail/service.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/mail/service.py
+# module: quack_core.integrations.google.mail.service
+# role: service
+# neighbors: __init__.py, protocols.py, config.py
+# exports: GoogleMailService
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 import logging
 from collections.abc import Iterable, Mapping, Sequence
 from types import NoneType

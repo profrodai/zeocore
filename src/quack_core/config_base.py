@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/config_base.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/config_base.py
+# module: quack_core.config_base
+# role: module
+# neighbors: __init__.py
+# exports: BasePolicy, ConfigError, ConfigResolver, deep_merge
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Configuration resolution engine with Deep Merge.
 Handles the merge logic: Request > Preset > Policy > Defaults.

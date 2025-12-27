@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/utils/error.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/utils/error.py
+# module: quack_core.interfaces.cli.utils.error
+# role: utils
+# neighbors: __init__.py, formatting.py, interaction.py, logging.py, options.py, progress.py (+1 more)
+# exports: format_cli_error, handle_errors, ensure_single_instance, get_cli_info
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Error handling utilities for CLI applications.
 

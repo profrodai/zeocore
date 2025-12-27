@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/google/serialization.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/google/serialization.py
+# module: quack_core.integrations.google.serialization
+# role: module
+# neighbors: __init__.py, config.py, auth.py
+# exports: serialize_credentials
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 
 from typing import Any
 

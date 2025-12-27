@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/integrations/llms/clients/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/llms/clients/__init__.py
+# module: quack_core.integrations.llms.clients.__init__
+# role: module
+# neighbors: anthropic.py, base.py, mock.py, ollama.py, openai.py
+# exports: AnthropicClient, LLMClient, MockLLMClient, OpenAIClient
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 LLM client implementations.
 

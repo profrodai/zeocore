@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/llms/clients/test_base.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/llms/clients/test_base.py
+# role: tests
+# neighbors: __init__.py, test_anthropic.py, test_clients.py, test_mock.py, test_ollama.py, test_openai.py
+# exports: TestLLMClient
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the base LLM client.
 

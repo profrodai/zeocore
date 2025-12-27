@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/interfaces/cli/utils/options.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/interfaces/cli/utils/options.py
+# module: quack_core.interfaces.cli.utils.options
+# role: utils
+# neighbors: __init__.py, error.py, formatting.py, interaction.py, logging.py, progress.py (+1 more)
+# exports: CliOptions, resolve_cli_args
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 CLI options and argument processing utilities.
 

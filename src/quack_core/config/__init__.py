@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/config/__init__.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/config/__init__.py
+# module: quack_core.config.__init__
+# role: module
+# neighbors: models.py, plugin.py, utils.py, loader.py
+# exports: QuackConfig, GeneralConfig, LoggingConfig, PathsConfig, IntegrationsConfig, GoogleConfig, NotionConfig, PluginsConfig (+9 more)
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Configuration package for quack_core.
 

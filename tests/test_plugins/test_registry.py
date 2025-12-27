@@ -1,4 +1,12 @@
-# quack-core/tests/test_plugins/test_registry.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_plugins/test_registry.py
+# role: tests
+# neighbors: __init__.py, test_discovery.py, test_protocols.py
+# exports: BasicPlugin, CommandPlugin, WorkflowPlugin, ExtensionPlugin, ProviderPlugin, TestPluginRegistry
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the plugin registry.
 """

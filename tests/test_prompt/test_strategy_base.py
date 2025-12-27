@@ -1,4 +1,12 @@
-# quack-core/tests/test_prompt/test_strategy_base.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_prompt/test_strategy_base.py
+# role: tests
+# neighbors: __init__.py, conftest.py, test_booster.py, test_enhancer.py, test_integration.py, test_plugin.py (+2 more)
+# exports: test_prompt_strategy_creation, test_prompt_strategy_rendering, test_prompt_strategy_arbitrary_types, test_prompt_strategy_without_optional_fields
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the PromptStrategy base class in strategy_base.py.
 """

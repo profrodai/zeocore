@@ -1,4 +1,13 @@
-# quack-core/src/quack_core/adapters/http/models.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/adapters/http/models.py
+# module: quack_core.adapters.http.models
+# role: models
+# neighbors: __init__.py, app.py, service.py, config.py, auth.py, jobs.py (+1 more)
+# exports: JobRequest, JobResponse, JobStatus
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Request/Response models for the HTTP adapter.
 """

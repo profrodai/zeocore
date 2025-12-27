@@ -1,4 +1,12 @@
-# quack-core/tests/test_integrations/llms/test_registry.py
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_integrations/llms/test_registry.py
+# role: tests
+# neighbors: __init__.py, test_config.py, test_config_provider.py, test_fallback.py, test_integration.py, test_llms.py (+3 more)
+# exports: TestLLMRegistry
+# git_branch: refactor/newHeaders
+# git_commit: 0600815
+# === QV-LLM:END ===
+
 """
 Tests for the LLM client registry.
 
