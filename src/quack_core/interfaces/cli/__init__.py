@@ -1,9 +1,0 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/interfaces/cli/__init__.py
-# module: quack_core.interfaces.cli.__init__
-# role: cli
-# neighbors: main.py, app.py
-# git_branch: refactor/newHeaders
-# git_commit: 0600815
-# === QV-LLM:END ===
-

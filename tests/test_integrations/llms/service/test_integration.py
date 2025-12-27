@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_dependencies.py, test_initialization.py, test_operations.py
 # exports: TestLLMIntegrationComprehensive
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

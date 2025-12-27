@@ -5,7 +5,7 @@
 # neighbors: attachments.py, auth.py, email.py
 # exports: email, auth, attachments
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_auth.py, test_client.py, test_config.py, test_github_init.py (+5 more)
 # exports: TestApiUtils, mock_session
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """Tests for GitHub API request utilities."""

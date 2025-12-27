@@ -5,7 +5,7 @@
 # neighbors: models.py, protocols.py, config.py, registry.py, fallback.py
 # exports: LLMClient, OpenAIClient, AnthropicClient, OllamaClient, MockLLMClient, FallbackLLMClient, LLMConfig, LLMConfigProvider (+11 more)
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

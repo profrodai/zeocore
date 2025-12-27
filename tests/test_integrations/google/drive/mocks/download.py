@@ -4,7 +4,7 @@
 # neighbors: __init__.py, base.py, credentials.py, media.py, requests.py, resources.py (+1 more)
 # exports: MockDownloadOperations, mock_download_file
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

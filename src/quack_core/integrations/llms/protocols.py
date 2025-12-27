@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, config.py, registry.py, fallback.py
 # exports: LLMProviderProtocol
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

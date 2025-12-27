@@ -5,7 +5,7 @@
 # neighbors: __init__.py, utils.py, md_to_docx.py
 # exports: convert_html_to_markdown, post_process_markdown, validate_conversion
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

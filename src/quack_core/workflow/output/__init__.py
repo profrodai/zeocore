@@ -5,7 +5,7 @@
 # neighbors: base.py, writers.py
 # exports: OutputWriter, DefaultOutputWriter, YAMLOutputWriter
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

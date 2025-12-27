@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, discovery.py
 # exports: QuackPluginMetadata, QuackPluginProtocol, PluginRegistryProtocol, PluginLoaderProtocol, CommandPluginProtocol, WorkflowPluginProtocol, ExtensionPluginProtocol, ProviderPluginProtocol (+1 more)
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

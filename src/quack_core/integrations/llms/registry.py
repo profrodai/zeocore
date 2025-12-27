@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, config.py, fallback.py
 # exports: register_llm_client, get_llm_client
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/adapters/http/models.py
 # module: quack_core.adapters.http.models
 # role: models
-# neighbors: __init__.py, app.py, service.py, config.py, auth.py, jobs.py (+1 more)
+# neighbors: __init__.py, app.py, service.py, config.py, auth.py, dependencies.py (+1 more)
 # exports: JobRequest, JobResponse, JobStatus
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

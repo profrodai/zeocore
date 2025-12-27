@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, config.py, converter.py
 # exports: DocumentConverterProtocol, BatchConverterProtocol, PandocConversionProtocol
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

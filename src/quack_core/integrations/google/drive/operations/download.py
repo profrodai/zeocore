@@ -5,7 +5,7 @@
 # neighbors: __init__.py, folder.py, list_files.py, permissions.py, upload.py
 # exports: resolve_download_path, download_file
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

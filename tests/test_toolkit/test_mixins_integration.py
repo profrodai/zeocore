@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test_base.py, test_imports.py, test_protocol.py (+2 more)
 # exports: MockIntegrationService, CompleteQuackTool, TestMixinIntegration
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

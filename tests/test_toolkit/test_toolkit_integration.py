@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py (+2 more)
 # exports: MockUploadService, CompleteTool, TestToolkitIntegration, create_mock_fs, mock_upload_service, complete_tool, sample_file
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

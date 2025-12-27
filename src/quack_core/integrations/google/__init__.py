@@ -5,7 +5,7 @@
 # neighbors: config.py, auth.py, serialization.py
 # exports: GoogleAuthProvider, GoogleConfigProvider
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

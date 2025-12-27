@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_env_init.py, test_integration_enabled.py, test_output_handler.py
 # exports: TestQuackToolLifecycleMixin, TestQuackToolLifecycleMixinWithPytest, lifecycle_mixin
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

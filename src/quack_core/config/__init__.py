@@ -5,7 +5,7 @@
 # neighbors: models.py, plugin.py, utils.py, loader.py
 # exports: QuackConfig, GeneralConfig, LoggingConfig, PathsConfig, IntegrationsConfig, GoogleConfig, NotionConfig, PluginsConfig (+9 more)
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

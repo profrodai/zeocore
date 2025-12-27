@@ -5,7 +5,7 @@
 # neighbors: __init__.py, operations.py, initialization.py, integration.py
 # exports: check_llm_dependencies
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

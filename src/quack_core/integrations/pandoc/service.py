@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, config.py, converter.py
 # exports: PandocIntegration, create_integration
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """Pandoc Integration Service

@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/adapters/http/routes/health.py
 # module: quack_core.adapters.http.routes.health
 # role: adapters
-# neighbors: __init__.py, jobs.py, quackmedia.py
+# neighbors: __init__.py, operations.py, jobs.py
 # exports: health_live, health_ready
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """

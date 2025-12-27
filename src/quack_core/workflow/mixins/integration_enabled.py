@@ -5,7 +5,7 @@
 # neighbors: __init__.py, output_writer.py, save_output_mixin.py
 # exports: IntegrationEnabledMixin
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 from __future__ import annotations

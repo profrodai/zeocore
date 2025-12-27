@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, protocols.py, config.py, auth.py, client.py
 # exports: PullRequestStatus, GitHubUser, GitHubRepo, PullRequest
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 """GitHub integration data models for quack_core."""

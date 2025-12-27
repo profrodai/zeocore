@@ -5,7 +5,7 @@
 # neighbors: __init__.py, contract.py
 # exports: EchoRequest, EchoPolicy, VideoRefRequest, echo_text, validate_video_ref
 # git_branch: refactor/newHeaders
-# git_commit: 0600815
+# git_commit: bd13631
 # === QV-LLM:END ===
 
 from typing import Optional
