@@ -5,7 +5,7 @@
 # neighbors: service.py, protocols.py, config.py
 # exports: GoogleMailService, create_integration
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

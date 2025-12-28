@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, protocols.py, converter.py
 # exports: PandocOptions, ValidationConfig, RetryConfig, MetricsConfig, PandocConfig, PandocConfigProvider
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

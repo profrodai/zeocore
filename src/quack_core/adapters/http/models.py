@@ -5,7 +5,7 @@
 # neighbors: __init__.py, app.py, service.py, config.py, auth.py, dependencies.py (+1 more)
 # exports: JobRequest, JobResponse, JobStatus
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

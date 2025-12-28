@@ -4,7 +4,7 @@
 # neighbors: __init__.py
 # exports: Good, Bad, test_protocol_runtime_checkable
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 from pathlib import Path

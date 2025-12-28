@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, protocols.py, config.py, converter.py
 # exports: ConversionMetrics, FileInfo, ConversionTask, ConversionDetails
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, base.py, download.py, media.py, requests.py, resources.py (+1 more)
 # exports: MockGoogleCredentials, create_credentials
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

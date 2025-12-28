@@ -3,7 +3,7 @@
 # role: operations
 # neighbors: test_attachments.py, test_auth.py, test_email.py
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.google.mail._operations module."""

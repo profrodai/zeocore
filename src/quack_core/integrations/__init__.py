@@ -3,7 +3,7 @@
 # module: quack_core.integrations.__init__
 # role: module
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

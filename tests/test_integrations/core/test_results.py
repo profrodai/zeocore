@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_get_service.py, test_protocol_inheritance.py, test_protocols.py, test_registry.py, test_registry_discovery.py
 # exports: TestIntegrationResult, TestAuthResult, TestConfigResult
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

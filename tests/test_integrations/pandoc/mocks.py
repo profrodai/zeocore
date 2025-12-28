@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test-pandoc-integration-full.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # exports: fs_stub, mock_pypandoc, mock_paths_service, mock_bs4, mock_docx
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 import os

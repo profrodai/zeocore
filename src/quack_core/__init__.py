@@ -5,7 +5,7 @@
 # neighbors: config_base.py
 # exports: __version__, config, load_config, QuackConfig, paths, fs, registry, loader (+9 more)
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

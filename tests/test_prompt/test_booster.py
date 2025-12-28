@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_enhancer.py, test_integration.py, test_plugin.py, test_registry.py (+2 more)
 # exports: sample_strategy, setup_teardown, test_booster_initialization, test_booster_select_strategy, test_booster_select_strategy_by_tags, test_booster_select_strategy_with_schema_examples, test_booster_render, test_booster_render_with_llm (+9 more)
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_service.py, test_utils.py
 # exports: TestOperationResult, TestReadResult, TestWriteResult, TestFileInfoResult, TestDirectoryInfoResult, TestFindResult, TestDataResult
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_writers.py
 # exports: test_base_is_abstract
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 import pytest

@@ -1,10 +1,10 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_plugins/test_registry.py
 # role: tests
-# neighbors: __init__.py, test_discovery.py, test_protocols.py
+# neighbors: __init__.py, test_discovery.py, test_explicit_loading.py, test_protocols.py
 # exports: BasicPlugin, CommandPlugin, WorkflowPlugin, ExtensionPlugin, ProviderPlugin, TestPluginRegistry
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

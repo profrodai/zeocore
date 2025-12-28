@@ -5,9 +5,23 @@
 # neighbors: __init__.py, protocols.py, discovery.py
 # exports: PluginRegistry
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
+
+
+"""
+Plugin registry for quack_core.
+
+This module provides a registry for managing QuackCore plugins, using
+stable plugin_id values as keys for deterministic behavior.
+
+Following Python 3.13 best practices:
+- Clear separation of concerns
+- Type hints for all public APIs
+- Structured error handling
+- Thread-safe operations where needed
+"""
 
 from typing import TypeVar
 
@@ -25,284 +39,441 @@ T = TypeVar("T")  # Generic for return types
 
 
 class PluginRegistry:
-    """Registry for QuackCore plugins."""
+    """
+    Registry for QuackCore plugins.
+
+    The registry maintains a collection of loaded plugins, indexed by their
+    stable plugin_id. This ensures deterministic behavior and prevents
+    conflicts from name collisions.
+
+    Key design principles:
+    - plugin_id is the primary key (stable, matches entry point name)
+    - name is for display purposes only
+    - Registration is explicit, never automatic
+    - Clear state management for testing
+    """
 
     def __init__(self, log_level: int = LOG_LEVELS[LogLevel.INFO]) -> None:
-        """Initialize the plugin registry."""
+        """
+        Initialize the plugin registry.
+
+        Args:
+            log_level: Logging level for registry operations
+        """
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
 
-        # Main plugin registry
+        # Main plugin registry (keyed by plugin_id)
         self._plugins: dict[str, QuackPluginProtocol] = {}
 
-        # Type-specific registries
+        # Type-specific registries (keyed by plugin_id)
         self._command_plugins: dict[str, CommandPluginProtocol] = {}
         self._workflow_plugins: dict[str, WorkflowPluginProtocol] = {}
         self._extension_plugins: dict[str, ExtensionPluginProtocol] = {}
         self._provider_plugins: dict[str, ProviderPluginProtocol] = {}
 
-        # Lookup registries
-        self._extensions: dict[str, list[ExtensionPluginProtocol]] = {}
+        # Lookup registries for fast access
+        # Commands and workflows map from their name to the providing plugin
         self._commands: dict[str, CommandPluginProtocol] = {}
         self._workflows: dict[str, WorkflowPluginProtocol] = {}
+        # Extensions map from target plugin_id to list of extension plugins
+        self._extensions: dict[str, list[ExtensionPluginProtocol]] = {}
+
+    def _get_plugin_id(self, plugin: QuackPluginProtocol) -> str:
+        """
+        Get the stable plugin_id from a plugin.
+
+        Handles backward compatibility for plugins that don't yet implement
+        plugin_id by falling back to name with a warning.
+
+        Args:
+            plugin: Plugin to get ID from
+
+        Returns:
+            The plugin_id (or name as fallback)
+        """
+        # Try to get plugin_id first
+        if hasattr(plugin, "plugin_id"):
+            plugin_id = plugin.plugin_id
+            if plugin_id:
+                return plugin_id
+
+        # Fallback to name with warning
+        self.logger.warning(
+            f"Plugin {plugin.name} does not implement plugin_id, "
+            f"using name as fallback. This may cause instability."
+        )
+        return plugin.name
 
     def register(self, plugin: QuackPluginProtocol) -> None:
-        """Register a plugin."""
-        plugin_name = plugin.name
+        """
+        Register a plugin with the registry.
 
-        if plugin_name in self._plugins:
+        Args:
+            plugin: Plugin to register
+
+        Raises:
+            QuackPluginError: If plugin is already registered
+        """
+        plugin_id = self._get_plugin_id(plugin)
+
+        if plugin_id in self._plugins:
             raise QuackPluginError(
-                f"Plugin '{plugin_name}' is already registered", plugin_name=plugin_name
+                f"Plugin '{plugin_id}' is already registered",
+                plugin_name=plugin_id,
             )
 
         # Register in main registry
-        self._plugins[plugin_name] = plugin
-        self.logger.debug(f"Registered plugin: {plugin_name}")
+        self._plugins[plugin_id] = plugin
+        self.logger.debug(f"Registered plugin: {plugin_id} (name: {plugin.name})")
 
         # Register in type-specific registries
-        self._register_by_type(plugin)
+        self._register_by_type(plugin, plugin_id)
 
-    def _register_by_type(self, plugin: QuackPluginProtocol) -> None:
-        """Registers the plugin in the appropriate category registry."""
+    def _register_by_type(
+            self, plugin: QuackPluginProtocol, plugin_id: str
+    ) -> None:
+        """
+        Register the plugin in appropriate type-specific registries.
+
+        Args:
+            plugin: Plugin to register
+            plugin_id: Stable plugin identifier
+        """
         if isinstance(plugin, CommandPluginProtocol):
-            self._command_plugins[plugin.name] = plugin
-            self._register_commands(plugin)
-        if isinstance(plugin, WorkflowPluginProtocol):
-            self._workflow_plugins[plugin.name] = plugin
-            self._register_workflows(plugin)
-        if isinstance(plugin, ExtensionPluginProtocol):
-            self._extension_plugins[plugin.name] = plugin
-            self._register_extension(plugin)
-        if isinstance(plugin, ProviderPluginProtocol):
-            self._provider_plugins[plugin.name] = plugin
+            self._command_plugins[plugin_id] = plugin
+            self._register_commands(plugin, plugin_id)
 
-    def _register_commands(self, plugin: CommandPluginProtocol) -> None:
-        """Registers commands provided by a command plugin."""
-        for command in plugin.list_commands():
+        if isinstance(plugin, WorkflowPluginProtocol):
+            self._workflow_plugins[plugin_id] = plugin
+            self._register_workflows(plugin, plugin_id)
+
+        if isinstance(plugin, ExtensionPluginProtocol):
+            self._extension_plugins[plugin_id] = plugin
+            self._register_extension(plugin, plugin_id)
+
+        if isinstance(plugin, ProviderPluginProtocol):
+            self._provider_plugins[plugin_id] = plugin
+
+    def _register_commands(
+            self, plugin: CommandPluginProtocol, plugin_id: str
+    ) -> None:
+        """
+        Register commands provided by a command plugin.
+
+        Args:
+            plugin: Command plugin to register
+            plugin_id: Stable plugin identifier
+        """
+        commands = plugin.list_commands()
+        for command in commands:
             if command in self._commands:
+                existing_plugin_id = self._get_plugin_id(self._commands[command])
                 self.logger.warning(
-                    f"Command '{command}' from plugin '{plugin.name}' "
-                    f"overrides existing "
-                    f"implementation from '{self._commands[command].name}'."
+                    f"Command '{command}' from plugin '{plugin_id}' "
+                    f"overrides existing implementation from '{existing_plugin_id}'"
                 )
             self._commands[command] = plugin
+
         self.logger.debug(
-            f"Registered command plugin: {plugin.name} "
-            f"with commands: {plugin.list_commands()}"
+            f"Registered command plugin '{plugin_id}' with commands: {commands}"
         )
 
-    def _register_workflows(self, plugin: WorkflowPluginProtocol) -> None:
-        """Registers workflows provided by a workflow plugin."""
-        for workflow in plugin.list_workflows():
+    def _register_workflows(
+            self, plugin: WorkflowPluginProtocol, plugin_id: str
+    ) -> None:
+        """
+        Register workflows provided by a workflow plugin.
+
+        Args:
+            plugin: Workflow plugin to register
+            plugin_id: Stable plugin identifier
+        """
+        workflows = plugin.list_workflows()
+        for workflow in workflows:
             if workflow in self._workflows:
+                existing_plugin_id = self._get_plugin_id(self._workflows[workflow])
                 self.logger.warning(
-                    f"Workflow '{workflow}' from plugin '{plugin.name}' "
-                    f"overrides existing implementation "
-                    f"from '{self._workflows[workflow].name}'."
+                    f"Workflow '{workflow}' from plugin '{plugin_id}' "
+                    f"overrides existing implementation from '{existing_plugin_id}'"
                 )
             self._workflows[workflow] = plugin
+
         self.logger.debug(
-            f"Registered workflow plugin: {plugin.name} "
-            f"with workflows: {plugin.list_workflows()}"
+            f"Registered workflow plugin '{plugin_id}' with workflows: {workflows}"
         )
 
-    def _register_extension(self, plugin: ExtensionPluginProtocol) -> None:
-        """Registers an extension plugin for a target plugin."""
+    def _register_extension(
+            self, plugin: ExtensionPluginProtocol, plugin_id: str
+    ) -> None:
+        """
+        Register an extension plugin for a target plugin.
+
+        Args:
+            plugin: Extension plugin to register
+            plugin_id: Stable plugin identifier
+        """
         target = plugin.get_target_plugin()
         self._extensions.setdefault(target, []).append(plugin)
         self.logger.debug(
-            f"Registered extension plugin: {plugin.name} targeting: {target}"
+            f"Registered extension plugin '{plugin_id}' targeting '{target}'"
         )
 
-    def unregister(self, name: str) -> None:
-        """Unregister a plugin."""
-        if name not in self._plugins:
-            raise QuackPluginError(
-                f"Plugin '{name}' is not registered", plugin_name=name
-            )
-
-        plugin = self._plugins.pop(name)
-        self._unregister_by_type(plugin)
-
-        self.logger.debug(f"Unregistered plugin: {name}")
-
-    def _unregister_by_type(self, plugin: QuackPluginProtocol) -> None:
-        """Handles removing the plugin from the appropriate category registry."""
-        if isinstance(plugin, CommandPluginProtocol):
-            self._command_plugins.pop(plugin.name, None)
-            for command in plugin.list_commands():
-                self._commands.pop(command, None)
-        if isinstance(plugin, WorkflowPluginProtocol):
-            self._workflow_plugins.pop(plugin.name, None)
-            for workflow in plugin.list_workflows():
-                self._workflows.pop(workflow, None)
-        if isinstance(plugin, ExtensionPluginProtocol):
-            self._extension_plugins.pop(plugin.name, None)
-            target = plugin.get_target_plugin()
-            self._extensions[target] = [
-                p for p in self._extensions.get(target, []) if p.name != plugin.name
-            ]
-            if not self._extensions[target]:
-                self._extensions.pop(target, None)
-        if isinstance(plugin, ProviderPluginProtocol):
-            self._provider_plugins.pop(plugin.name, None)
-
-    def execute_command(self, command: str, *args: object, **kwargs: object) -> object:
+    def unregister(self, plugin_id: str) -> None:
         """
-        Execute a command.
+        Unregister a plugin by its ID.
 
         Args:
-            command: Name of the command.
-            *args: Positional arguments.
-            **kwargs: Keyword arguments.
-
-        Returns:
-            The result of the command execution.
+            plugin_id: Stable plugin identifier
 
         Raises:
-            QuackPluginError: If the command is not found.
+            QuackPluginError: If plugin is not registered
+        """
+        if plugin_id not in self._plugins:
+            raise QuackPluginError(
+                f"Plugin '{plugin_id}' is not registered",
+                plugin_name=plugin_id,
+            )
+
+        plugin = self._plugins.pop(plugin_id)
+        self._unregister_by_type(plugin, plugin_id)
+
+        self.logger.debug(f"Unregistered plugin: {plugin_id}")
+
+    def _unregister_by_type(
+            self, plugin: QuackPluginProtocol, plugin_id: str
+    ) -> None:
+        """
+        Remove the plugin from type-specific registries.
+
+        Args:
+            plugin: Plugin to unregister
+            plugin_id: Stable plugin identifier
+        """
+        if isinstance(plugin, CommandPluginProtocol):
+            self._command_plugins.pop(plugin_id, None)
+            for command in plugin.list_commands():
+                # Only remove if this plugin still owns the command
+                if command in self._commands:
+                    owner_id = self._get_plugin_id(self._commands[command])
+                    if owner_id == plugin_id:
+                        self._commands.pop(command, None)
+
+        if isinstance(plugin, WorkflowPluginProtocol):
+            self._workflow_plugins.pop(plugin_id, None)
+            for workflow in plugin.list_workflows():
+                # Only remove if this plugin still owns the workflow
+                if workflow in self._workflows:
+                    owner_id = self._get_plugin_id(self._workflows[workflow])
+                    if owner_id == plugin_id:
+                        self._workflows.pop(workflow, None)
+
+        if isinstance(plugin, ExtensionPluginProtocol):
+            self._extension_plugins.pop(plugin_id, None)
+            target = plugin.get_target_plugin()
+            if target in self._extensions:
+                self._extensions[target] = [
+                    p for p in self._extensions[target]
+                    if self._get_plugin_id(p) != plugin_id
+                ]
+                if not self._extensions[target]:
+                    self._extensions.pop(target, None)
+
+        if isinstance(plugin, ProviderPluginProtocol):
+            self._provider_plugins.pop(plugin_id, None)
+
+    def clear(self) -> None:
+        """
+        Clear all registered plugins.
+
+        This removes all plugins from the registry and resets all internal
+        state. Primarily useful for testing to ensure a clean slate.
+        """
+        self._plugins.clear()
+        self._command_plugins.clear()
+        self._workflow_plugins.clear()
+        self._extension_plugins.clear()
+        self._provider_plugins.clear()
+        self._commands.clear()
+        self._workflows.clear()
+        self._extensions.clear()
+        self.logger.debug("Cleared all registered plugins")
+
+    def execute_command(
+            self, command: str, *args: object, **kwargs: object
+    ) -> object:
+        """
+        Execute a command by name.
+
+        Args:
+            command: Name of the command
+            *args: Positional arguments
+            **kwargs: Keyword arguments
+
+        Returns:
+            The result of the command execution
+
+        Raises:
+            QuackPluginError: If the command is not found
         """
         plugin = self._commands.get(command)
         if not plugin:
-            raise QuackPluginError(f"Command '{command}' not found", plugin_name=None)
+            raise QuackPluginError(
+                f"Command '{command}' not found",
+                plugin_name=None,
+            )
         return plugin.execute_command(command, *args, **kwargs)
 
     def execute_workflow(
-        self, workflow: str, *args: object, **kwargs: object
+            self, workflow: str, *args: object, **kwargs: object
     ) -> object:
         """
-        Execute a workflow.
+        Execute a workflow by name.
 
         Args:
-            workflow: Name of the workflow.
-            *args: Positional arguments.
-            **kwargs: Keyword arguments.
+            workflow: Name of the workflow
+            *args: Positional arguments
+            **kwargs: Keyword arguments
 
         Returns:
-            The result of the workflow execution.
+            The result of the workflow execution
 
         Raises:
-            QuackPluginError: If the workflow is not found.
+            QuackPluginError: If the workflow is not found
         """
         plugin = self._workflows.get(workflow)
         if not plugin:
-            raise QuackPluginError(f"Workflow '{workflow}' not found", plugin_name=None)
+            raise QuackPluginError(
+                f"Workflow '{workflow}' not found",
+                plugin_name=None,
+            )
         return plugin.execute_workflow(workflow, *args, **kwargs)
 
-    def get_plugin(self, name: str) -> QuackPluginProtocol | None:
+    def get_plugin(self, plugin_id: str) -> QuackPluginProtocol | None:
         """
-        Get a plugin by name.
+        Get a plugin by its stable identifier.
 
         Args:
-            name: Name of the plugin
+            plugin_id: Stable plugin identifier
 
         Returns:
-            QuackPluginProtocol: The plugin or None if not found
+            The plugin or None if not found
         """
-        return self._plugins.get(name)
+        return self._plugins.get(plugin_id)
 
-    def list_plugins(self) -> list[str]:
+    def list_ids(self) -> list[str]:
         """
-        Get a list of all registered plugin names.
+        Get a list of all registered plugin IDs.
 
         Returns:
-            List of plugin names
+            List of plugin IDs (stable identifiers)
         """
         return list(self._plugins.keys())
 
-    def is_registered(self, name: str) -> bool:
+    def list_plugins(self) -> list[str]:
+        """
+        Get a list of all registered plugin IDs.
+
+        Alias for list_ids() for backward compatibility.
+
+        Returns:
+            List of plugin IDs
+        """
+        return self.list_ids()
+
+    def is_registered(self, plugin_id: str) -> bool:
         """
         Check if a plugin is registered.
 
         Args:
-            name: Name of the plugin
+            plugin_id: Stable plugin identifier
 
         Returns:
             True if the plugin is registered
         """
-        return name in self._plugins
+        return plugin_id in self._plugins
 
-    def get_command_plugin(self, name: str) -> CommandPluginProtocol | None:
+    def get_command_plugin(self, plugin_id: str) -> CommandPluginProtocol | None:
         """
-        Get a command plugin by name.
+        Get a command plugin by its ID.
 
         Args:
-            name: Name of the plugin
+            plugin_id: Stable plugin identifier
 
         Returns:
-            CommandPluginProtocol: The plugin or None if not found
+            The command plugin or None if not found
         """
-        return self._command_plugins.get(name)
+        return self._command_plugins.get(plugin_id)
 
-    def get_workflow_plugin(self, name: str) -> WorkflowPluginProtocol | None:
+    def get_workflow_plugin(self, plugin_id: str) -> WorkflowPluginProtocol | None:
         """
-        Get a workflow plugin by name.
+        Get a workflow plugin by its ID.
 
         Args:
-            name: Name of the plugin
+            plugin_id: Stable plugin identifier
 
         Returns:
-            WorkflowPluginProtocol: The plugin or None if not found
+            The workflow plugin or None if not found
         """
-        return self._workflow_plugins.get(name)
+        return self._workflow_plugins.get(plugin_id)
 
-    def get_extension_plugin(self, name: str) -> ExtensionPluginProtocol | None:
+    def get_extension_plugin(self, plugin_id: str) -> ExtensionPluginProtocol | None:
         """
-        Get an extension plugin by name.
+        Get an extension plugin by its ID.
 
         Args:
-            name: Name of the plugin
+            plugin_id: Stable plugin identifier
 
         Returns:
-            ExtensionPluginProtocol: The plugin or None if not found
+            The extension plugin or None if not found
         """
-        return self._extension_plugins.get(name)
+        return self._extension_plugins.get(plugin_id)
 
-    def get_provider_plugin(self, name: str) -> ProviderPluginProtocol | None:
+    def get_provider_plugin(self, plugin_id: str) -> ProviderPluginProtocol | None:
         """
-        Get a provider plugin by name.
+        Get a provider plugin by its ID.
 
         Args:
-            name: Name of the plugin
+            plugin_id: Stable plugin identifier
 
         Returns:
-            ProviderPluginProtocol: The plugin or None if not found
+            The provider plugin or None if not found
         """
-        return self._provider_plugins.get(name)
+        return self._provider_plugins.get(plugin_id)
 
     def list_command_plugins(self) -> list[str]:
         """
-        Get a list of all registered command plugin names.
+        Get a list of all registered command plugin IDs.
 
         Returns:
-            List of command plugin names
+            List of command plugin IDs
         """
         return list(self._command_plugins.keys())
 
     def list_workflow_plugins(self) -> list[str]:
         """
-        Get a list of all registered workflow plugin names.
+        Get a list of all registered workflow plugin IDs.
 
         Returns:
-            List of workflow plugin names
+            List of workflow plugin IDs
         """
         return list(self._workflow_plugins.keys())
 
     def list_extension_plugins(self) -> list[str]:
         """
-        Get a list of all registered extension plugin names.
+        Get a list of all registered extension plugin IDs.
 
         Returns:
-            List of extension plugin names
+            List of extension plugin IDs
         """
         return list(self._extension_plugins.keys())
 
     def list_provider_plugins(self) -> list[str]:
         """
-        Get a list of all registered provider plugin names.
+        Get a list of all registered provider plugin IDs.
 
         Returns:
-            List of provider plugin names
+            List of provider plugin IDs
         """
         return list(self._provider_plugins.keys())
 
@@ -325,46 +496,50 @@ class PluginRegistry:
         return list(self._workflows.keys())
 
     def get_command_plugin_for_command(
-        self, command: str
+            self, command: str
     ) -> CommandPluginProtocol | None:
         """
-        Get the plugin that provides a command.
+        Get the plugin that provides a specific command.
 
         Args:
             command: Name of the command
 
         Returns:
-            CommandPluginProtocol: The plugin or None if not found
+            The command plugin or None if not found
         """
         return self._commands.get(command)
 
     def get_workflow_plugin_for_workflow(
-        self, workflow: str
+            self, workflow: str
     ) -> WorkflowPluginProtocol | None:
         """
-        Get the plugin that provides a workflow.
+        Get the plugin that provides a specific workflow.
 
         Args:
             workflow: Name of the workflow
 
         Returns:
-            WorkflowPluginProtocol: The plugin or None if not found
+            The workflow plugin or None if not found
         """
         return self._workflows.get(workflow)
 
-    def get_extensions_for_plugin(self, target: str) -> list[ExtensionPluginProtocol]:
+    def get_extensions_for_plugin(
+            self, target: str
+    ) -> list[ExtensionPluginProtocol]:
         """
-        Get all extensions for a plugin.
+        Get all extensions targeting a specific plugin.
 
         Args:
-            target: Name of the target plugin
+            target: Plugin ID of the target plugin
 
         Returns:
-            List of extension plugins
+            List of extension plugins targeting the specified plugin
         """
         return self._extensions.get(target, [])
 
-    def find_plugins_by_capability(self, capability: str) -> list[QuackPluginProtocol]:
+    def find_plugins_by_capability(
+            self, capability: str
+    ) -> list[QuackPluginProtocol]:
         """
         Find plugins that advertise a specific capability.
 
@@ -377,17 +552,15 @@ class PluginRegistry:
         result: list[QuackPluginProtocol] = []
 
         for plugin in self._plugins.values():
-            if hasattr(plugin, "get_metadata") and callable(
-                plugin.get_metadata
-            ):
-                try:
-                    metadata = plugin.get_metadata()
-                    if capability in metadata.capabilities:
-                        result.append(plugin)
-                except Exception as e:
-                    self.logger.warning(
-                        f"Error getting metadata from plugin {plugin.name}: {e}"
-                    )
+            try:
+                metadata = plugin.get_metadata()
+                if capability in metadata.capabilities:
+                    result.append(plugin)
+            except Exception as e:
+                plugin_id = self._get_plugin_id(plugin)
+                self.logger.warning(
+                    f"Error getting metadata from plugin '{plugin_id}': {e}"
+                )
 
         return result
 
@@ -405,14 +578,15 @@ class PluginRegistry:
             return plugin.__module__
         return None
 
-    def reload_plugin(self, name: str) -> QuackPluginProtocol:
+    def reload_plugin(self, plugin_id: str) -> QuackPluginProtocol:
         """
-        Reload a plugin by name.
+        Reload a plugin by its ID.
 
-        This unregisters the plugin, reloads its module, and registers the new instance.
+        This unregisters the plugin, reloads its module, and registers
+        the new instance.
 
         Args:
-            name: Name of the plugin to reload
+            plugin_id: Stable plugin identifier
 
         Returns:
             The newly loaded plugin
@@ -422,21 +596,23 @@ class PluginRegistry:
         """
         from quack_core.plugins.discovery import loader
 
-        if name not in self._plugins:
+        if plugin_id not in self._plugins:
             raise QuackPluginError(
-                f"Plugin '{name}' is not registered", plugin_name=name
+                f"Plugin '{plugin_id}' is not registered",
+                plugin_name=plugin_id,
             )
 
-        plugin = self._plugins[name]
+        plugin = self._plugins[plugin_id]
         module_path = self.get_plugin_module_path(plugin)
 
         if not module_path:
             raise QuackPluginError(
-                f"Cannot determine module path for plugin '{name}'", plugin_name=name
+                f"Cannot determine module path for plugin '{plugin_id}'",
+                plugin_name=plugin_id,
             )
 
         # Unregister the current plugin
-        self.unregister(name)
+        self.unregister(plugin_id)
 
         # Reload the module and load the new plugin
         try:
@@ -448,12 +624,13 @@ class PluginRegistry:
             # Register the new plugin
             self.register(new_plugin)
 
-            self.logger.info(f"Successfully reloaded plugin '{name}'")
+            self.logger.info(f"Successfully reloaded plugin '{plugin_id}'")
             return new_plugin
         except Exception as e:
-            self.logger.error(f"Error reloading plugin '{name}': {e}")
+            self.logger.error(f"Error reloading plugin '{plugin_id}': {e}")
             raise QuackPluginError(
-                f"Failed to reload plugin '{name}': {e}", plugin_name=name
+                f"Failed to reload plugin '{plugin_id}': {e}",
+                plugin_name=plugin_id,
             ) from e
 
 

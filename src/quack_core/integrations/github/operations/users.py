@@ -5,7 +5,7 @@
 # neighbors: __init__.py, issues.py, pull_requests.py, repositories.py
 # exports: get_user
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """GitHub user _operations."""

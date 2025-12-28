@@ -4,7 +4,7 @@
 # neighbors: __init__.py, auth_provider_impl.py, integration_service_impl.py, test_auth_provider.py, test_base.py, test_config_provider.py (+3 more)
 # exports: MockConfigProvider
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_formatting.py (+5 more)
 # exports: TestFormatCliError, TestHandleErrors, TestEnsureSingleInstance, TestGetCliInfo
 # git_branch: refactor/newHeaders
-# git_commit: 175956c
+# git_commit: 7d82586
 # === QV-LLM:END ===
 
 """
