@@ -4,7 +4,7 @@
 # neighbors: config_tooling_test.py, http_adapter_usage.py, toolkit_usage.py
 # exports: example_1_discovery, example_2_explicit_loading, example_3_error_handling, example_4_configuration_driven, example_5_plugin_metadata, example_6_lifecycle_management, example_7_testing_pattern, main
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 

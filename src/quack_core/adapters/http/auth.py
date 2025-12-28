@@ -5,7 +5,7 @@
 # neighbors: __init__.py, app.py, service.py, models.py, config.py, dependencies.py (+1 more)
 # exports: require_bearer, sign_payload
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 

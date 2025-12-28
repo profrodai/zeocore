@@ -5,7 +5,7 @@
 # neighbors: env_init.py, integration_enabled.py, lifecycle.py, output_handler.py
 # exports: ToolEnvInitializerMixin, IntegrationEnabledMixin, QuackToolLifecycleMixin, OutputFormatMixin
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 """

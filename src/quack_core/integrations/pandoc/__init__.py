@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, protocols.py, config.py, converter.py
 # exports: PandocIntegration, PandocConfig, PandocConfigProvider, DocumentConverter, ConversionMetrics, ConversionTask, FileInfo, create_integration
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py (+2 more)
 # exports: test_new_id, test_stable_hash, test_post_callback_mock
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 """

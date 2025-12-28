@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, config.py, auth.py, client.py
 # exports: GitHubIntegrationProtocol
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 """Protocols for GitHub integration."""

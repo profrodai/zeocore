@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocol.py
 # exports: BaseQuackToolPlugin
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 """

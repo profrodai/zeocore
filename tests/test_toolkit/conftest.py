@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py, test_protocol.py (+2 more)
 # exports: MockIntegrationService, AnotherMockService, CustomOutputFormatMixin, output_format_mixin, custom_output_format_mixin, tool_env_initializer_mixin, lifecycle_mixin, integration_enabled_mixin
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 """

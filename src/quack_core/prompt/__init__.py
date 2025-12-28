@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, plugin.py
 # exports: PromptService, PromptStrategy, StrategyInfo, create_default_prompt_service, PromptRenderResult, StrategyListResult, GetStrategyResult, RegisterStrategyResult (+1 more)
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 """

@@ -3,7 +3,7 @@
 # role: module
 # neighbors: config_tooling_test.py, explicit_plugin_loading_example.py, toolkit_usage.py
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 """

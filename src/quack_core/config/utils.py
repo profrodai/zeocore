@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, plugin.py, loader.py
 # exports: get_env, load_env_config, get_config_value, validate_required_config, normalize_paths, load_yaml_config, find_project_root
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
 """

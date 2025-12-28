@@ -3,6 +3,6 @@
 # module: quack_core.adapters.mcp.__init__
 # role: adapters
 # git_branch: refactor/newHeaders
-# git_commit: 7d82586
+# git_commit: 98b2a5c
 # === QV-LLM:END ===
 
