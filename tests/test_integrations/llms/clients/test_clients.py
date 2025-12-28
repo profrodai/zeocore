@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_anthropic.py, test_base.py, test_mock.py, test_ollama.py, test_openai.py
 # exports: TestClientImports, TestOpenAIClientDuplicate
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """

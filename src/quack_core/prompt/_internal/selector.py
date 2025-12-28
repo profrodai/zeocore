@@ -5,25 +5,27 @@
 # neighbors: __init__.py, registry.py, enhancer.py
 # exports: select_best_strategy
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
+from typing import Any
 from quack_core.prompt.models import PromptStrategy
 from .registry import StrategyRegistry
 
 
-# ... [Same logic as before] ...
 def select_best_strategy(
         registry: StrategyRegistry,
         tags: list[str] | None = None,
         schema: str | None = None,
         examples: list[str] | str | None = None,
+        extra_inputs: dict[str, Any] | None = None,
 ) -> PromptStrategy | None:
     """
     Heuristic logic to select the best strategy based on inputs.
     Selection is deterministic based on (priority, id).
     """
     matches: list[PromptStrategy] = []
+    inputs = extra_inputs or {}
 
     # 1. Try tags (Exact match by default via registry)
     if tags:
@@ -43,8 +45,8 @@ def select_best_strategy(
             if strat:
                 matches.append(strat)
 
-        # Fallback for schema
-        if not matches:
+        # Fallback for schema ONLY if we have data to process
+        if not matches and inputs.get("data") is not None:
             strat = registry.get("working-with-schemas-prompting")
             if strat:
                 matches.append(strat)

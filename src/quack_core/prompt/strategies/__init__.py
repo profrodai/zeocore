@@ -4,12 +4,11 @@
 # role: module
 # neighbors: core.py
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
-
 """
-Prompt strategies package for the PromptBooster.
+Prompt strategies package for the PromptService.
 
 This package contains various prompt enhancement strategies.
 """

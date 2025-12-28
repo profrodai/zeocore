@@ -3,9 +3,9 @@
 # module: quack_core.prompt.models
 # role: models
 # neighbors: __init__.py, service.py, plugin.py
-# exports: PromptStrategy
+# exports: PromptStrategy, StrategyInfo
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 from typing import Callable
@@ -34,3 +34,30 @@ class PromptStrategy(BaseModel):
                           description="Selection priority. Lower value = higher preference.")
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+class StrategyInfo(BaseModel):
+    """
+    Public DTO for listing strategies safely without internal implementation details.
+    """
+    id: str
+    label: str
+    description: str
+    input_vars: list[str]
+    tags: list[str]
+    origin: str | None = None
+    priority: int
+    example: str | None = None
+
+    @classmethod
+    def from_strategy(cls, strategy: PromptStrategy) -> "StrategyInfo":
+        return cls(
+            id=strategy.id,
+            label=strategy.label,
+            description=strategy.description,
+            input_vars=strategy.input_vars,
+            tags=strategy.tags,
+            origin=strategy.origin,
+            priority=strategy.priority,
+            example=strategy.example
+        )

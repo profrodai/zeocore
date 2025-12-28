@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, config.py
 # exports: GoogleCredentials, GmailRequest, GmailAttachmentsResource, GmailMessagesResource, GmailUsersResource, GmailService
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """

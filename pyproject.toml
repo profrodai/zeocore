@@ -2,7 +2,7 @@
 # path: quack-core/pyproject.toml
 # role: module
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 # quack-core/pyproject.toml
@@ -119,6 +119,14 @@ paths = "quack_core.lib.paths.plugin:create_plugin"
 fs = "quack_core.lib.fs.plugin:create_plugin"
 config = "quack_core.config.plugin:create_plugin"
 prompt = "quack_core.prompt.plugin:create_plugin"
+
+[project.entry-points."quack_core.integrations"]
+github = "quack_core.integrations.github:create_integration"
+google.mail = "quack_core.integrations.google.mail:create_integration"
+google.drive = "quack_core.integrations.google.drive:create_integration"
+pandoc = "quack_core.integrations.pandoc:create_integration"
+llms = "quack_core.integrations.llms:create_integration"
+
 
 [tool.coverage.run]
 source = ["quack_core"]

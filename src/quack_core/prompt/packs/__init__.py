@@ -3,5 +3,5 @@
 # module: quack_core.prompt.packs.__init__
 # role: module
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===

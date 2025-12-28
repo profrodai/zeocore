@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, config.py, registry.py
 # exports: FallbackConfig, ProviderStatus, FallbackLLMClient
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """

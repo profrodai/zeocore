@@ -5,7 +5,7 @@
 # neighbors: __init__.py, query.py
 # exports: execute_api_request, with_exponential_backoff
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """

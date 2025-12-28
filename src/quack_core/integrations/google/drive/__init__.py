@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, protocols.py
 # exports: GoogleDriveService, DriveFile, DriveFolder, create_integration
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """

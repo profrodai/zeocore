@@ -4,7 +4,7 @@
 # neighbors: http_adapter_usage.py, toolkit_usage.py
 # exports: MyConfig, main
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """

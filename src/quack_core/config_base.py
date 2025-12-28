@@ -5,7 +5,7 @@
 # neighbors: __init__.py
 # exports: BasePolicy, ConfigError, ConfigResolver, deep_merge
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """

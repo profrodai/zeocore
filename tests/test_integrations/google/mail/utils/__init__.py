@@ -3,7 +3,7 @@
 # role: utils
 # neighbors: test_api.py
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.google.mail.api module."""

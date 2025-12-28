@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, discovery.py
 # exports: PluginRegistry
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 

@@ -3,9 +3,9 @@
 # module: quack_core.prompt.__init__
 # role: module
 # neighbors: service.py, models.py, plugin.py
-# exports: PromptService, PromptStrategy, create_default_prompt_service, PromptRenderResult, StrategyListResult, GetStrategyResult, RegisterStrategyResult, LoadPackResult
+# exports: PromptService, PromptStrategy, StrategyInfo, create_default_prompt_service, PromptRenderResult, StrategyListResult, GetStrategyResult, RegisterStrategyResult (+1 more)
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """
@@ -16,7 +16,7 @@ using codified strategies.
 """
 
 from quack_core.prompt.service import PromptService
-from quack_core.prompt.models import PromptStrategy
+from quack_core.prompt.models import PromptStrategy, StrategyInfo
 from quack_core.prompt.api.public.results import (
     PromptRenderResult,
     StrategyListResult,
@@ -32,6 +32,7 @@ def create_default_prompt_service() -> PromptService:
 __all__ = [
     "PromptService",
     "PromptStrategy",
+    "StrategyInfo",
     "create_default_prompt_service",
     "PromptRenderResult",
     "StrategyListResult",

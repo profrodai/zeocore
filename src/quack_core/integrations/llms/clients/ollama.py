@@ -5,7 +5,7 @@
 # neighbors: __init__.py, anthropic.py, base.py, mock.py, openai.py
 # exports: OllamaClient
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, plugin.py
 # exports: PromptService
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 from typing import Any
@@ -19,7 +19,7 @@ from quack_core.prompt.api.public.results import (
     LoadPackResult
 )
 from quack_core.prompt._internal.registry import StrategyRegistry
-from quack_core.prompt.models import PromptStrategy
+from quack_core.prompt.models import PromptStrategy, StrategyInfo
 from quack_core.prompt._internal.selector import select_best_strategy
 from quack_core.prompt._internal.enhancer import enhance_with_llm_safe
 
@@ -47,7 +47,6 @@ class PromptService:
                 count = load_internal(self._registry)
                 return LoadPackResult(success=True, loaded_count=count)
 
-            # Future packs can be added here or via dynamic import if needed
             return LoadPackResult(success=False, error=f"Unknown pack: {pack_name}")
 
         except Exception as e:
@@ -74,8 +73,9 @@ class PromptService:
         return GetStrategyResult(success=True, strategy=strat)
 
     def list_strategies(self) -> StrategyListResult:
-        """List all available strategies."""
-        return StrategyListResult(success=True, strategies=self._registry.list_all())
+        """List all available strategies as safe Info objects."""
+        safe_list = [StrategyInfo.from_strategy(s) for s in self._registry.list_all()]
+        return StrategyListResult(success=True, strategies=safe_list)
 
     def render(
             self,
@@ -88,7 +88,7 @@ class PromptService:
             use_llm: bool = False,
             llm_model: str | None = None,
             llm_provider: str | None = None,
-            **kwargs  # Capture explicit extra args (e.g. tools, role)
+            **kwargs
     ) -> PromptRenderResult:
         """
         Render a prompt using a selected strategy.
@@ -104,7 +104,9 @@ class PromptService:
                         error=f"Strategy '{strategy_id}' not found"
                     )
             else:
-                strategy = select_best_strategy(self._registry, tags, schema, examples)
+                # Pass kwargs so selector knows if 'data' or other keys exist
+                strategy = select_best_strategy(self._registry, tags, schema, examples,
+                                                extra_inputs=kwargs)
 
             if not strategy:
                 return PromptRenderResult(
@@ -113,8 +115,7 @@ class PromptService:
                 )
 
             # 2. Prepare Inputs
-            # We strictly map only aliases that are semantically identical to the raw prompt.
-            # Contextual/Meta inputs (tools, role, background) must be passed via **kwargs.
+            # Strict aliases only for "Task Description" synonyms.
             inputs = {
                 # Standard args
                 "task_description": raw_prompt,
@@ -125,23 +126,17 @@ class PromptService:
                 "example": examples[0] if isinstance(examples,
                                                      list) and examples else examples,
 
-                # Strict Aliases (These ARE the prompt)
+                # Strict Aliases (ONLY semantically equivalent to "Task Description")
                 "prompt_text": raw_prompt,
                 "task_goal": raw_prompt,
                 "main_task": raw_prompt,
-                "code_task_description": raw_prompt,
-                "broken_code": raw_prompt,
-                "code_snippet": raw_prompt,
-                "incomplete_json": raw_prompt,
-                "source_code": raw_prompt,
                 "strategy": raw_prompt,  # Input for System Prompt Engineer
             }
 
-            # Merge explicit kwargs (allows passing 'tools', 'role', 'context', etc.)
+            # Merge explicit kwargs (allows passing 'data', 'tools', 'source_code', etc.)
             inputs.update(kwargs)
 
             # 3. Validation
-            # Check what the strategy requires vs what we have
             render_kwargs = {}
             missing_fields = []
 

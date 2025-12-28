@@ -5,7 +5,7 @@
 # neighbors: __init__.py, env_init.py, lifecycle.py, output_handler.py
 # exports: IntegrationEnabledMixin
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """

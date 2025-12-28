@@ -5,12 +5,12 @@
 # neighbors: __init__.py
 # exports: PromptRenderResult, RegisterStrategyResult, GetStrategyResult, StrategyListResult, LoadPackResult
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 from typing import Any
 from pydantic import BaseModel, Field
-from quack_core.prompt.models import PromptStrategy
+from quack_core.prompt.models import PromptStrategy, StrategyInfo
 
 class PromptRenderResult(BaseModel):
     """Result of a prompt rendering operation."""
@@ -37,7 +37,7 @@ class GetStrategyResult(BaseModel):
 class StrategyListResult(BaseModel):
     """Result of listing strategies."""
     success: bool
-    strategies: list[PromptStrategy] = Field(default_factory=list)
+    strategies: list[StrategyInfo] = Field(default_factory=list)
     error: str | None = None
 
 class LoadPackResult(BaseModel):

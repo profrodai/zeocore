@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_resolvers.py, test_service.py, test_utils.py
 # exports: TestProjectDirectory, TestProjectContext, TestContentContext
 # git_branch: refactor/newHeaders
-# git_commit: bd13631
+# git_commit: 175956c
 # === QV-LLM:END ===
 
 """
