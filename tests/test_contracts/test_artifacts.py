@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_capabilities.py, test_dependency_boundaries.py, test_envelopes.py
 # exports: TestStorageRef, TestChecksum, TestArtifactRef, TestRunManifest, TestManifestFixtures
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

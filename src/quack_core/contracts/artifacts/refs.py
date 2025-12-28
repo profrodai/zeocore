@@ -5,7 +5,7 @@
 # neighbors: __init__.py, manifest.py
 # exports: StorageRef, Checksum, ArtifactRef
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -20,7 +20,7 @@ the actual storage operations.
 
 from typing import Optional, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
 
 from quack_core.contracts.common.enums import StorageScheme, ArtifactKind, \
     ChecksumAlgorithm
@@ -112,9 +112,8 @@ class StorageRef(BaseModel):
             )
         return self
 
-    class Config:
-        """Pydantic configuration."""
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "examples": [
                 {
                     "scheme": "local",
@@ -136,6 +135,7 @@ class StorageRef(BaseModel):
                 }
             ]
         }
+    )
 
 
 class Checksum(BaseModel):
@@ -303,9 +303,8 @@ class ArtifactRef(BaseModel):
             raise ValueError("role must not be empty")
         return v.strip()
 
-    class Config:
-        """Pydantic configuration."""
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "examples": [
                 {
                     "artifact_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -327,3 +326,4 @@ class ArtifactRef(BaseModel):
                 }
             ]
         }
+    )

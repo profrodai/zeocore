@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, selector.py
 # exports: enhance_with_llm_safe
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 from quack_core.lib.logging import get_logger

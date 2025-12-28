@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/contracts/capabilities/contract.py
 # module: quack_core.contracts.capabilities.contract
 # role: module
-# neighbors: __init__.py, demo.py
+# neighbors: __init__.py
 # exports: CapabilityStatus, LogLevel, CapabilityLogEvent, CapabilityError, CapabilityResult
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_api.py, test_auth.py, test_client.py, test_config.py (+5 more)
 # exports: TestGitHubIntegration, mock_auth_provider, mock_config_provider, github_service
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 from __future__ import annotations

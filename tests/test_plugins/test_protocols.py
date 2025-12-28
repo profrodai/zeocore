@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_discovery.py, test_explicit_loading.py, test_registry.py
 # exports: SamplePlugin, SampleCommandPlugin, SampleWorkflowPlugin, SampleExtensionPlugin, SampleProviderPlugin, SampleConfigurablePlugin, SampleMixedPlugin, SampleProtocols
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

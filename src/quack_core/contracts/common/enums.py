@@ -5,7 +5,7 @@
 # neighbors: __init__.py, ids.py, time.py, typing.py, versions.py
 # exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -66,8 +66,8 @@ class StorageScheme(str, Enum):
     """
     # Core schemes (always supported)
     local = "local"  # Local filesystem
-    http = "http"  # HTTP URL (read-only)
-    https = "https"  # HTTPS URL (read-only)
+    http = "http"  # HTTP URL (commonly used for read-only access)
+    https = "https"  # HTTPS URL (commonly used for read-only access)
     s3 = "s3"  # AWS S3
     gcs = "gcs"  # Google Cloud Storage
     azure = "azure"  # Azure Blob Storage

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, error.py, result.py
 # exports: CapabilityLogEvent
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -17,7 +17,7 @@ Must NOT contain: Logging implementation, log shipping logic
 
 from typing import Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from quack_core.contracts.common.enums import LogLevel
 from quack_core.contracts.common.time import utcnow
@@ -73,9 +73,8 @@ class CapabilityLogEvent(BaseModel):
         description="Structured context for debugging (tool, step, metrics, etc.)"
     )
 
-    class Config:
-        """Pydantic configuration."""
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "examples": [
                 {
                     "timestamp": "2025-01-15T10:30:00Z",
@@ -100,3 +99,4 @@ class CapabilityLogEvent(BaseModel):
                 }
             ]
         }
+    )

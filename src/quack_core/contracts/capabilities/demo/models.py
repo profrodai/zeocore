@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/contracts/capabilities/demo/models.py
 # module: quack_core.contracts.capabilities.demo.models
 # role: models
-# neighbors: __init__.py, impl.py
+# neighbors: __init__.py, _impl.py
 # exports: EchoRequest, VideoRefRequest
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

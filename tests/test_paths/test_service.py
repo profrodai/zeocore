@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_context.py, test_resolvers.py, test_utils.py
 # exports: path_service, test_get_project_root, test_get_project_root_failure, test_resolve_project_path, test_detect_project_context, test_detect_content_context, test_get_known_directory, test_get_module_path (+9 more)
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

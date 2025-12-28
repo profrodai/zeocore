@@ -5,7 +5,7 @@
 # neighbors: __init__.py, error.py, log.py
 # exports: CapabilityResult
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/contracts/capabilities/__init__.py
 # module: quack_core.contracts.capabilities.__init__
 # role: module
-# neighbors: contract.py, demo.py
-# exports: TimeRange, SliceVideoRequest, SlicedClipData, SliceVideoResponse, TranscribeRequest, TranscriptionSegment, TranscribeResponse, EchoRequest (+3 more)
+# neighbors: contract.py
+# exports: TimeRange, SliceVideoRequest, SlicedClipData, SliceVideoResponse, TranscribeRequest, TranscriptionSegment, TranscribeResponse, EchoRequest (+1 more)
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -26,12 +26,10 @@ from quack_core.contracts.capabilities.media import (
     TranscribeResponse,
 )
 
-# Demo capabilities
-from quack_core.contracts.capabilities.demo import (
+# Demo capabilities (models only - implementations are examples, not exported)
+from quack_core.contracts.capabilities.demo.models import (
     EchoRequest,
     VideoRefRequest,
-    echo_text,
-    validate_video_ref,
 )
 
 __all__ = [
@@ -43,9 +41,7 @@ __all__ = [
     "TranscribeRequest",
     "TranscriptionSegment",
     "TranscribeResponse",
-    # Demo
+    # Demo (models only)
     "EchoRequest",
     "VideoRefRequest",
-    "echo_text",
-    "validate_video_ref",
 ]

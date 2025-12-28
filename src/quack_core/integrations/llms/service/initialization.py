@@ -5,7 +5,7 @@
 # neighbors: __init__.py, operations.py, dependencies.py, integration.py
 # exports: initialize_single_provider, initialize_with_fallback
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

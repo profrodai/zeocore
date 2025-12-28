@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_mail_service.py
 # exports: TestGoogleMailService, TestGmailEmailOperations, TestGmailAttachmentOperations, TestGmailAuthOperations, TestGmailApiUtils
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

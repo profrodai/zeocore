@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, results.py, base.py
 # exports: AuthProviderProtocol, ConfigProviderProtocol, IntegrationProtocol, StorageIntegrationProtocol
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -25,7 +25,6 @@ from quack_core.integrations.core.results import (
 )
 
 T = TypeVar("T")  # Generic type for results
-F = TypeVar("F")  # Generic type for file content
 
 
 @runtime_checkable
@@ -38,39 +37,15 @@ class AuthProviderProtocol(Protocol):
         ...
 
     def authenticate(self) -> AuthResult:
-        """
-        Authenticate with the external service.
-
-        Returns:
-            AuthResult: Result of authentication
-        """
         ...
 
     def refresh_credentials(self) -> AuthResult:
-        """
-        Refresh authentication credentials if expired.
-
-        Returns:
-            AuthResult: Result of refresh operation
-        """
         ...
 
     def get_credentials(self) -> object:
-        """
-        Get the current authentication credentials.
-
-        Returns:
-            object: The authentication credentials
-        """
         ...
 
     def save_credentials(self) -> bool:
-        """
-        Save the current authentication credentials.
-
-        Returns:
-            bool: True if saving was successful
-        """
         ...
 
 
@@ -84,36 +59,12 @@ class ConfigProviderProtocol(Protocol):
         ...
 
     def load_config(self, config_path: str | None = None) -> ConfigResult:
-        """
-        Load configuration from a file.
-
-        Args:
-            config_path: Path to configuration file
-
-        Returns:
-            ConfigResult: Result containing configuration data
-        """
         ...
 
     def validate_config(self, config: dict[str, Any]) -> bool:
-        """
-        Validate configuration data.
-
-        Args:
-            config: Configuration data to validate
-
-        Returns:
-            bool: True if configuration is valid
-        """
         ...
 
     def get_default_config(self) -> dict[str, Any]:
-        """
-        Get default configuration values.
-
-        Returns:
-            dict[str, Any]: Default configuration values
-        """
         ...
 
 
@@ -122,8 +73,16 @@ class IntegrationProtocol(Protocol):
     """Base protocol for all integrations."""
 
     @property
+    def integration_id(self) -> str:
+        """
+        Unique, stable identifier for the integration (e.g., 'github', 'google.mail').
+        Used for configuration and registry lookups.
+        """
+        ...
+
+    @property
     def name(self) -> str:
-        """Name of the integration."""
+        """Human-readable name of the integration."""
         ...
 
     @property
@@ -135,18 +94,13 @@ class IntegrationProtocol(Protocol):
         """
         Initialize the integration.
 
-        Returns:
-            IntegrationResult: Result of initialization
+        This method should perform any necessary setup, internal registration,
+        or connection checks. It is called explicitly by the loader.
         """
         ...
 
     def is_available(self) -> bool:
-        """
-        Check if the integration is available.
-
-        Returns:
-            bool: True if integration is available
-        """
+        """Check if the integration is available/healthy."""
         ...
 
 
@@ -155,61 +109,21 @@ class StorageIntegrationProtocol(IntegrationProtocol, Protocol):
     """Protocol for storage integrations."""
 
     def upload_file(
-        self, file_path: str, remote_path: str | None = None
+            self, file_path: str, remote_path: str | None = None
     ) -> IntegrationResult[str]:
-        """
-        Upload a file to the storage service.
-
-        Args:
-            file_path: Path to the file to upload
-            remote_path: Optional remote path or identifier
-
-        Returns:
-            IntegrationResult[str]: Result with the remote file URL or ID
-        """
         ...
 
     def download_file(
-        self, remote_id: str, local_path: str | None = None
+            self, remote_id: str, local_path: str | None = None
     ) -> IntegrationResult[str]:
-        """
-        Download a file from the storage service.
-
-        Args:
-            remote_id: ID or path of the remote file
-            local_path: Optional local path to save the file
-
-        Returns:
-            IntegrationResult[str]: Result with the local file path
-        """
         ...
 
     def list_files(
-        self, remote_path: str | None = None, pattern: str | None = None
+            self, remote_path: str | None = None, pattern: str | None = None
     ) -> IntegrationResult[list[Mapping]]:
-        """
-        List files in the storage service.
-
-        Args:
-            remote_path: Optional remote path or folder ID
-            pattern: Optional pattern to match filenames
-
-        Returns:
-            IntegrationResult[list[Mapping]]: Result with the list of files
-        """
         ...
 
     def create_folder(
-        self, folder_name: str, parent_path: str | None = None
+            self, folder_name: str, parent_path: str | None = None
     ) -> IntegrationResult[str]:
-        """
-        Create a folder in the storage service.
-
-        Args:
-            folder_name: Name of the folder to create
-            parent_path: Optional parent folder path or ID
-
-        Returns:
-            IntegrationResult[str]: Result with the folder ID or path
-        """
         ...

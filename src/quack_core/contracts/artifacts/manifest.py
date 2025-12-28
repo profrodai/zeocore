@@ -5,7 +5,7 @@
 # neighbors: __init__.py, refs.py
 # exports: ToolInfo, Provenance, ManifestInput, RunManifest
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -20,7 +20,7 @@ inputs, outputs, logs, errors, timing, and provenance.
 
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field, model_validator, field_validator
+from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 
 from quack_core.contracts.common.enums import CapabilityStatus
 from quack_core.contracts.common.ids import generate_run_id, is_valid_uuid
@@ -307,9 +307,8 @@ class RunManifest(BaseModel):
 
         return self
 
-    class Config:
-        """Pydantic configuration."""
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "examples": [
                 {
                     "manifest_version": "1.0",
@@ -358,3 +357,4 @@ class RunManifest(BaseModel):
                 }
             ]
         }
+    )

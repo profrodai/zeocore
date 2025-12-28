@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, enhancer.py
 # exports: select_best_strategy
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 from typing import Any

@@ -3,9 +3,9 @@
 # module: quack_core.integrations.github.__init__
 # role: module
 # neighbors: service.py, models.py, protocols.py, config.py, auth.py, client.py
-# exports: GitHubIntegration, GitHubClient, GitHubAuthProvider, GitHubConfigProvider, GitHubTeachingAdapter, GitHubGrader, GitHubIntegrationProtocol, GitHubRepo (+4 more)
+# exports: GitHubIntegration, GitHubClient, GitHubAuthProvider, GitHubConfigProvider, GitHubIntegrationProtocol, GitHubRepo, GitHubUser, PullRequest (+2 more)
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """GitHub integration for quack_core."""
@@ -24,19 +24,12 @@ from .models import GitHubRepo, GitHubUser, PullRequest, PullRequestStatus
 from .protocols import GitHubIntegrationProtocol
 from .service import GitHubIntegration
 
-# For type checkers only, import the quackster-related classes so they appear defined.
-if TYPE_CHECKING:
-    from quackster.github.grading import GitHubGrader
-    from quackster.github.teaching_adapter import GitHubTeachingAdapter
-
 __all__ = [
     # Main classes
     "GitHubIntegration",
     "GitHubClient",
     "GitHubAuthProvider",
     "GitHubConfigProvider",
-    "GitHubTeachingAdapter",  # Provided lazily below
-    "GitHubGrader",  # Provided lazily below
     # Protocols
     "GitHubIntegrationProtocol",
     # Models
@@ -56,33 +49,6 @@ def create_integration() -> GitHubIntegration:
         GitHubIntegration instance
     """
     return GitHubIntegration()
-
-
-def __getattr__(name: str) -> Any:
-    """Lazily load quackster-related classes to avoid circular imports.
-
-    Args:
-        name: Attribute name to load
-
-    Returns:
-        The requested module or class
-
-    Raises:
-        AttributeError: If the requested attribute doesn't exist
-    """
-    if name == "GitHubGrader":
-        from quackster.github.grading import GitHubGrader
-
-        return GitHubGrader
-    elif name == "GitHubTeachingAdapter":
-        from quackster.github.teaching_adapter import GitHubTeachingAdapter
-
-        return GitHubTeachingAdapter
-    else:
-        raise AttributeError(
-            f"module 'quack_core.integrations.github' has no attribute '{name}'"
-        )
-
 
 # Automatically register the integration
 try:

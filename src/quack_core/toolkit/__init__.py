@@ -5,7 +5,7 @@
 # neighbors: base.py, protocol.py
 # exports: BaseQuackToolPlugin, QuackToolPluginProtocol, IntegrationEnabledMixin, OutputFormatMixin, ToolEnvInitializerMixin, QuackToolLifecycleMixin
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

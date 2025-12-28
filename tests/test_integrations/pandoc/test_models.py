@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
 # exports: test_file_info_initialization, test_conversion_task_initialization, test_conversion_metrics_initialization, test_conversion_details_initialization
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

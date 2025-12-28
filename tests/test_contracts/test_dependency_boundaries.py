@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_capabilities.py, test_envelopes.py
 # exports: DependencyChecker, TestDependencyBoundaries, TestImportPatterns
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -64,7 +64,7 @@ class DependencyChecker:
             filepath: Path to Python file
 
         Returns:
-            Set of module names being imported
+            Set of FULL module paths being imported (not just root package)
         """
         with open(filepath, 'r') as f:
             try:
@@ -78,10 +78,12 @@ class DependencyChecker:
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    imports.add(alias.name.split('.')[0])
+                    # Store full module path, not just root
+                    imports.add(alias.name)
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
-                    imports.add(node.module.split('.')[0])
+                    # Store full module path
+                    imports.add(node.module)
 
         return imports
 
@@ -99,7 +101,7 @@ class DependencyChecker:
         violations = []
 
         for imported_module in imports:
-            # Check for forbidden QuackCore modules
+            # Check for forbidden QuackCore modules (Ring B/C/D)
             for forbidden in self.FORBIDDEN_MODULES:
                 if imported_module == forbidden or imported_module.startswith(
                         f"{forbidden}."):
@@ -107,15 +109,23 @@ class DependencyChecker:
                         f"{filepath.relative_to(self.contracts_root)}: "
                         f"Forbidden import '{imported_module}' (Ring A must not import Ring B/C/D)"
                     )
+                    continue  # Already found violation for this import
 
-            # Check for unknown third-party modules (not in allowed lists)
-            if imported_module not in self.ALLOWED_STDLIB:
-                if imported_module not in self.ALLOWED_THIRD_PARTY:
-                    # Allow quack_core.contracts internal imports
-                    if not imported_module.startswith("quack_core.contracts"):
-                        # This is a potential violation (unknown third-party)
-                        # We'll be lenient here but log it
-                        pass
+            # Check for unknown third-party modules (strict stdlib+pydantic enforcement)
+            # Extract root package name for stdlib/third-party check
+            root_package = imported_module.split('.')[0]
+
+            # Allow quack_core.contracts internal imports
+            if imported_module.startswith("quack_core.contracts"):
+                continue
+
+            # Check if it's allowed
+            if root_package not in self.ALLOWED_STDLIB and root_package not in self.ALLOWED_THIRD_PARTY:
+                violations.append(
+                    f"{filepath.relative_to(self.contracts_root)}: "
+                    f"Unknown third-party import '{imported_module}' "
+                    f"(Ring A only allows: stdlib + pydantic)"
+                )
 
         return violations
 
@@ -129,8 +139,8 @@ class DependencyChecker:
         all_violations = []
 
         for pyfile in self.get_python_files():
-            # Skip __pycache__ and test files
-            if "__pycache__" in str(pyfile) or "test_" in pyfile.name:
+            # Skip __pycache__ but include __init__.py files
+            if "__pycache__" in str(pyfile):
                 continue
 
             violations = self.check_file(pyfile)
@@ -145,10 +155,11 @@ class TestDependencyBoundaries:
     @pytest.fixture
     def contracts_root(self) -> Path:
         """Get path to contracts module root."""
-        # Assumes tests are in /home/claude/tests/contracts
-        # and contracts are in /home/claude/quack_core/contracts
-        test_dir = Path(__file__).parent
-        return test_dir.parent.parent / "quack_core" / "contracts"
+        # Tests are in: quack-core/tests/test_contracts/
+        # Contracts are in: quack-core/src/quack_core/contracts/
+        test_dir = Path(__file__).parent  # tests/test_contracts/
+        repo_root = test_dir.parent.parent  # quack-core/
+        return repo_root / "src" / "quack_core" / "contracts"
 
     def test_no_forbidden_imports(self, contracts_root: Path):
         """
@@ -192,7 +203,8 @@ class TestImportPatterns:
     def contracts_root(self) -> Path:
         """Get path to contracts module root."""
         test_dir = Path(__file__).parent
-        return test_dir.parent.parent / "quack_core" / "contracts"
+        repo_root = test_dir.parent.parent
+        return repo_root / "src" / "quack_core" / "contracts"
 
     def test_can_import_contracts_module(self):
         """Test that we can import the contracts module successfully."""

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, log.py, result.py
 # exports: CapabilityError
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -62,13 +62,15 @@ class CapabilityError(BaseModel):
     @classmethod
     def validate_error_code_format(cls, v: str) -> str:
         """
-        Ensure error codes follow QC_* convention.
+        Enforce QC_* error code convention.
 
-        This is a soft validation - we warn but don't fail on non-conforming codes
-        to maintain flexibility during development.
+        Error codes must start with 'QC_' for machine routing consistency.
+        This is strictly enforced to ensure all orchestrators can rely on
+        the format for branching logic.
         """
         if not v.startswith("QC_"):
-            # Note: In production, you might want to raise ValueError here
-            # For now, we allow it but document the convention
-            pass
+            raise ValueError(
+                f"Error code must start with 'QC_', got: {v}. "
+                "Use format: QC_<AREA>_<DETAIL> (e.g., QC_IO_NOT_FOUND)"
+            )
         return v

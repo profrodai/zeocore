@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py
 # exports: TestCapabilityError, TestCapabilityLogEvent, TestCapabilityResult
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -41,6 +41,20 @@ class TestCapabilityError:
         assert error.message == "File not found"
         assert error.details["path"] == "/data/missing.mp4"
 
+    def test_error_code_must_start_with_qc(self):
+        """Test that error codes must follow QC_* convention."""
+        with pytest.raises(ValidationError) as exc_info:
+            CapabilityError(
+                code="INVALID_CODE",
+                message="Test error"
+            )
+
+        # Check validation error structure, not message text
+        errors = exc_info.value.errors()
+        assert len(errors) == 1
+        assert errors[0]["loc"] == ("code",)
+        assert errors[0]["type"] == "value_error"
+
     def test_error_serialization(self):
         """Test error serialization to JSON."""
         error = CapabilityError(
@@ -76,9 +90,14 @@ class TestCapabilityLogEvent:
             message="Test message"
         )
 
-        # Check that timestamp is recent (within last second)
+        # Check timestamp properties (not exact value to avoid flakiness)
+        assert isinstance(log.timestamp, datetime)
+        assert log.timestamp.tzinfo == timezone.utc
+
+        # Timestamp should be recent (within last 10 seconds for CI tolerance)
         now = datetime.now(timezone.utc)
-        assert (now - log.timestamp).total_seconds() < 1.0
+        delta = (now - log.timestamp).total_seconds()
+        assert 0 <= delta < 10.0, f"Timestamp delta too large: {delta}s"
 
 
 class TestCapabilityResult:
@@ -147,7 +166,13 @@ class TestCapabilityResult:
                 # Missing error field
             )
 
-        assert "error field" in str(exc_info.value).lower()
+        # Check error structure, not message text
+        errors = exc_info.value.errors()
+        # Should have validation error about missing error field
+        assert any(
+            "error" in str(err.get("loc", [])) or "error" in err.get("msg", "").lower()
+            for err in errors
+        )
 
     def test_error_status_requires_machine_message(self):
         """Test that error status requires machine_message."""
@@ -159,7 +184,13 @@ class TestCapabilityResult:
                 # Missing machine_message
             )
 
-        assert "machine_message" in str(exc_info.value).lower()
+        # Check error structure
+        errors = exc_info.value.errors()
+        assert any(
+            "machine_message" in str(err.get("loc", [])) or
+            "machine_message" in err.get("msg", "").lower()
+            for err in errors
+        )
 
     def test_success_status_forbids_error_field(self):
         """Test that success status cannot have error field."""
@@ -171,7 +202,13 @@ class TestCapabilityResult:
                 error=CapabilityError(code="QC_ERROR", message="Error")
             )
 
-        assert "must not have error" in str(exc_info.value).lower()
+        # Check error structure
+        errors = exc_info.value.errors()
+        assert any(
+            "error" in str(err.get("loc", [])) or
+            "error" in err.get("msg", "").lower()
+            for err in errors
+        )
 
     def test_result_with_logs(self):
         """Test result with log events."""

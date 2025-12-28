@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py
 # exports: PromptPlugin, create_plugin
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 from quack_core.prompt.service import PromptService

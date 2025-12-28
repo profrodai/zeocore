@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, config.py, registry.py, fallback.py
 # exports: RoleType, ChatMessage, FunctionParameter, FunctionDefinition, ToolDefinition, FunctionCall, ToolCall, LLMOptions (+1 more)
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

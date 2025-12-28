@@ -5,7 +5,7 @@
 # neighbors: base.py, loader.py, logger.py
 # exports: QuackToolConfigModel, load_tool_config, update_tool_config, setup_tool_logging, get_logger
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

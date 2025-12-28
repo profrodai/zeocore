@@ -1,20 +1,26 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/capabilities/demo/impl.py
-# module: quack_core.contracts.capabilities.demo.impl
+# path: quack-core/src/quack_core/contracts/capabilities/demo/_impl.py
+# module: quack_core.contracts.capabilities.demo._impl
 # role: module
 # neighbors: __init__.py, models.py
 # exports: echo_text, validate_video_ref
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
-Demo capability implementations.
+Demo capability implementations (INTERNAL EXAMPLES ONLY).
 
-OPTIONAL: These implementations are only included as examples.
-In production, implementations belong in Ring B (quack_core.toolkit).
+⚠️ NOT FOR PRODUCTION USE ⚠️
 
-These demos show how to use CapabilityResult without external dependencies.
+These implementations are kept in Ring A only as minimal reference examples
+to demonstrate contract usage patterns. They have no external dependencies
+beyond contracts themselves.
+
+In a real system, capability implementations belong in Ring B (quack_core.toolkit).
+
+The underscore prefix (_impl.py) marks this module as internal/private.
+Do not import these functions in production code.
 """
 
 from quack_core.contracts.envelopes import CapabilityResult
@@ -24,6 +30,8 @@ from quack_core.contracts.capabilities.demo.models import EchoRequest, VideoRefR
 def echo_text(req: EchoRequest) -> CapabilityResult[str]:
     """
     Simple echo capability that returns formatted text.
+
+    ⚠️ EXAMPLE ONLY - NOT FOR PRODUCTION USE
 
     Demonstrates:
     - Basic CapabilityResult.ok() usage
@@ -59,6 +67,8 @@ def echo_text(req: EchoRequest) -> CapabilityResult[str]:
 def validate_video_ref(req: VideoRefRequest) -> CapabilityResult[bool]:
     """
     Validate video URL against supported providers.
+
+    ⚠️ EXAMPLE ONLY - NOT FOR PRODUCTION USE
 
     Demonstrates:
     - CapabilityResult.skip() for policy decisions

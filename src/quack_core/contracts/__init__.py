@@ -2,9 +2,9 @@
 # path: quack-core/src/quack_core/contracts/__init__.py
 # module: quack_core.contracts.__init__
 # role: module
-# exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm, generate_run_id, generate_artifact_id, is_valid_uuid (+27 more)
+# exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm, generate_run_id, generate_artifact_id, is_valid_uuid (+25 more)
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -89,11 +89,9 @@ from quack_core.contracts.capabilities import (
     TranscribeRequest,
     TranscriptionSegment,
     TranscribeResponse,
-    # Demo
+    # Demo (models only)
     EchoRequest,
     VideoRefRequest,
-    echo_text,
-    validate_video_ref,
 )
 
 __version__ = CONTRACTS_VERSION
@@ -142,9 +140,7 @@ __all__ = [
     "TranscribeRequest",
     "TranscriptionSegment",
     "TranscribeResponse",
-    # Demo
+    # Demo (models only, not implementations)
     "EchoRequest",
     "VideoRefRequest",
-    "echo_text",
-    "validate_video_ref",
 ]

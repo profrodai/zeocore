@@ -4,7 +4,7 @@
 # neighbors: anthropic.py, base.py, clients.py, openai.py
 # exports: MockLLMResponse, MockTokenResponse, MockStreamingGenerator, MockClient, create_mock_client, MockOpenAIResponse, MockOpenAIStreamingResponse, MockOpenAIErrorResponse (+5 more)
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

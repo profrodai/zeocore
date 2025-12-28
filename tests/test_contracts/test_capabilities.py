@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_dependency_boundaries.py, test_envelopes.py
 # exports: TestTimeRange, TestSliceVideoModels, TestTranscribeModels, TestDemoCapabilities
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
@@ -25,17 +25,21 @@ from quack_core.contracts import (
     TranscribeRequest,
     TranscriptionSegment,
     TranscribeResponse,
-    # Demo
+    # Demo (models only)
     EchoRequest,
     VideoRefRequest,
-    echo_text,
-    validate_video_ref,
     # Supporting types
     ArtifactRef,
     StorageRef,
     StorageScheme,
     ArtifactKind,
     CapabilityStatus,
+)
+# Import demo implementations directly from their INTERNAL module
+# NOTE: Using underscore-prefixed module to access internal examples
+from quack_core.contracts.capabilities.demo._impl import (
+    echo_text,
+    validate_video_ref,
 )
 
 
@@ -215,7 +219,12 @@ class TestTranscribeModels:
 
 
 class TestDemoCapabilities:
-    """Tests for demo capability implementations."""
+    """
+    Tests for demo capability implementations.
+
+    NOTE: These test internal example implementations that are not part
+    of the public API. They demonstrate contract usage patterns only.
+    """
 
     def test_echo_text_basic(self):
         """Test basic echo functionality."""

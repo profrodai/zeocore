@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py, test_envelopes.py
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

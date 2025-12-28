@@ -5,7 +5,7 @@
 # neighbors: protocols.py, registry.py, results.py, base.py
 # exports: BaseAuthProvider, BaseConfigProvider, BaseIntegrationService, AuthProviderProtocol, ConfigProviderProtocol, IntegrationProtocol, StorageIntegrationProtocol, AuthResult (+5 more)
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """

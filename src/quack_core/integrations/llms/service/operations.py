@@ -5,7 +5,7 @@
 # neighbors: __init__.py, dependencies.py, initialization.py, integration.py
 # exports: chat, count_tokens, get_provider_status, reset_provider_status
 # git_branch: refactor/newHeaders
-# git_commit: 98b2a5c
+# git_commit: 72778e2
 # === QV-LLM:END ===
 
 """
