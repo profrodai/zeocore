@@ -4,8 +4,8 @@
 # role: module
 # neighbors: env_init.py, integration_enabled.py, lifecycle.py, output_handler.py
 # exports: ToolEnvInitializerMixin, IntegrationEnabledMixin, QuackToolLifecycleMixin, OutputFormatMixin
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """

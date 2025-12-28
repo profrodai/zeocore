@@ -2,8 +2,8 @@
 # path: quack-core/tests/test_integrations/google/__init__.py
 # role: tests
 # neighbors: mocks.py, test_auth_provider.py, test_config_provider.py, test_serialization.py
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.google module."""

@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
 # exports: setup_integration_mocks, test_pandoc_integration_initialization, test_pandoc_integration_initialize_success, test_pandoc_integration_initialize_failure, test_pandoc_integration_html_to_markdown, test_pandoc_integration_markdown_to_docx, test_pandoc_integration_convert_directory, test_pandoc_integration_not_initialized (+5 more)
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """

@@ -2,8 +2,8 @@
 # path: quack-core/tests/test_integrations/core/base/__init__.py
 # role: tests
 # neighbors: auth_provider_impl.py, config_provider_impl.py, integration_service_impl.py, test_auth_provider.py, test_base.py, test_config_provider.py (+3 more)
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.base module."""

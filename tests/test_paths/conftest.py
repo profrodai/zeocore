@@ -2,7 +2,7 @@
 # path: quack-core/tests/test_paths/conftest.py
 # role: tests
 # neighbors: __init__.py, test_context.py, test_resolvers.py, test_service.py, test_utils.py
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 

@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, error.py, log.py
 # exports: CapabilityResult
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """
@@ -20,7 +20,7 @@ a CapabilityResult to enable machine branching and audit trails.
 
 from typing import Generic, TypeVar, Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field, model_validator, ConfigDict
+from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 
 from quack_core.contracts.common.enums import CapabilityStatus
 from quack_core.contracts.common.ids import generate_run_id
@@ -42,10 +42,12 @@ class CapabilityResult(BaseModel, Generic[T]):
     - Debugging (structured errors with context)
 
     Invariants:
-        - If status == error, then error must be present
-        - If status == error, then machine_message must be present
-        - If status == success, then error must be None
-        - If status == skipped, data may be None (skips produce no output)
+        - If status == error, then error must be present AND machine_message must be present
+        - If status == error, then machine_message must start with QC_
+        - If status == success, then error must be None AND machine_message should be None
+        - If status == skipped, then error must be None AND machine_message must be present
+        - If status == skipped, then machine_message must start with QC_
+        - If machine_message is present, it must start with QC_
 
     Usage Pattern:
         Tools should use the helper methods (.ok(), .skip(), .fail()) rather
@@ -74,7 +76,9 @@ class CapabilityResult(BaseModel, Generic[T]):
         ...     )
     """
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(
+        extra="forbid",  # Strict schema - no unexpected fields
+    )
 
     # Core status
     status: CapabilityStatus = Field(
@@ -91,7 +95,7 @@ class CapabilityResult(BaseModel, Generic[T]):
     # Telemetry
     run_id: str = Field(
         default_factory=generate_run_id,
-        description="Unique identifier for this execution"
+        description="Unique identifier for this execution (should match RunManifest.run_id)"
     )
 
     timestamp: datetime = Field(
@@ -99,10 +103,10 @@ class CapabilityResult(BaseModel, Generic[T]):
         description="UTC timestamp when result was created"
     )
 
-    duration_sec: float = Field(
-        default=0.0,
+    duration_sec: Optional[float] = Field(
+        None,
         ge=0.0,
-        description="Execution duration in seconds"
+        description="Execution duration in seconds (None if not measured)"
     )
 
     # Messages
@@ -113,7 +117,7 @@ class CapabilityResult(BaseModel, Generic[T]):
 
     machine_message: Optional[str] = Field(
         None,
-        description="Machine-readable code for orchestrator branching (QC_* format)"
+        description="Machine-readable code for orchestrator branching (must start with QC_)"
     )
 
     # Diagnostics
@@ -132,6 +136,17 @@ class CapabilityResult(BaseModel, Generic[T]):
         description="Additional context (tool, version, config, etc.)"
     )
 
+    @field_validator("machine_message")
+    @classmethod
+    def validate_machine_message_format(cls, v: Optional[str]) -> Optional[str]:
+        """Ensure machine_message follows QC_* convention when present."""
+        if v is not None and not v.startswith("QC_"):
+            raise ValueError(
+                f"machine_message must start with 'QC_', got: {v}. "
+                "Use format: QC_<AREA>_<DETAIL> (e.g., QC_VAL_TOO_SHORT)"
+            )
+        return v
+
     @model_validator(mode='after')
     def validate_status_invariants(self) -> 'CapabilityResult[T]':
         """
@@ -139,7 +154,8 @@ class CapabilityResult(BaseModel, Generic[T]):
 
         This ensures orchestrators can rely on the structure:
         - Errors always have error objects and machine codes
-        - Successes never have error objects
+        - Successes never have error objects or machine codes
+        - Skips never have error objects but always have machine codes
         """
         if self.status == CapabilityStatus.error:
             if self.error is None:
@@ -156,6 +172,22 @@ class CapabilityResult(BaseModel, Generic[T]):
                 raise ValueError(
                     "status=success must not have error field"
                 )
+            if self.machine_message is not None:
+                raise ValueError(
+                    "status=success should not have machine_message "
+                    "(success is the default path, no special routing needed)"
+                )
+
+        if self.status == CapabilityStatus.skipped:
+            if self.error is not None:
+                raise ValueError(
+                    "status=skipped must not have error field "
+                    "(skips are policy decisions, not errors)"
+                )
+            if self.machine_message is None:
+                raise ValueError(
+                    "status=skipped requires machine_message for branching"
+                )
 
         return self
 
@@ -168,7 +200,8 @@ class CapabilityResult(BaseModel, Generic[T]):
             msg: str = "Success",
             metadata: Optional[Dict[str, Any]] = None,
             logs: Optional[List[CapabilityLogEvent]] = None,
-            duration_sec: float = 0.0
+            duration_sec: Optional[float] = None,
+            run_id: Optional[str] = None
     ) -> "CapabilityResult[T]":
         """
         Create a successful result.
@@ -178,7 +211,8 @@ class CapabilityResult(BaseModel, Generic[T]):
             msg: Human-readable success message
             metadata: Optional metadata dict
             logs: Optional log events from execution
-            duration_sec: Execution time in seconds
+            duration_sec: Execution time in seconds (None if not measured)
+            run_id: Optional run_id to reuse (should match manifest run_id)
 
         Returns:
             CapabilityResult with status=success
@@ -190,21 +224,25 @@ class CapabilityResult(BaseModel, Generic[T]):
             ...     metadata={"tool": "slice_video", "preset": "fast"}
             ... )
         """
-        return cls(
-            status=CapabilityStatus.success,
-            data=data,
-            human_message=msg,
-            metadata=metadata or {},
-            logs=logs or [],
-            duration_sec=duration_sec
-        )
+        kwargs = {
+            "status": CapabilityStatus.success,
+            "data": data,
+            "human_message": msg,
+            "metadata": metadata or {},
+            "logs": logs or [],
+            "duration_sec": duration_sec
+        }
+        if run_id is not None:
+            kwargs["run_id"] = run_id
+        return cls(**kwargs)
 
     @classmethod
     def skip(
             cls,
             reason: str,
-            code: str = "QC_SKIPPED_POLICY",
-            metadata: Optional[Dict[str, Any]] = None
+            code: str,
+            metadata: Optional[Dict[str, Any]] = None,
+            run_id: Optional[str] = None
     ) -> "CapabilityResult[T]":
         """
         Create a skip result (valid policy decision).
@@ -214,8 +252,9 @@ class CapabilityResult(BaseModel, Generic[T]):
 
         Args:
             reason: Human-readable explanation for the skip
-            code: Machine-readable skip code
+            code: Machine-readable skip code (must start with QC_)
             metadata: Optional metadata dict
+            run_id: Optional run_id to reuse (should match manifest run_id)
 
         Returns:
             CapabilityResult with status=skipped
@@ -226,12 +265,15 @@ class CapabilityResult(BaseModel, Generic[T]):
             ...     code="QC_VAL_TOO_SHORT"
             ... )
         """
-        return cls(
-            status=CapabilityStatus.skipped,
-            human_message=reason,
-            machine_message=code,
-            metadata=metadata or {}
-        )
+        kwargs = {
+            "status": CapabilityStatus.skipped,
+            "human_message": reason,
+            "machine_message": code,
+            "metadata": metadata or {}
+        }
+        if run_id is not None:
+            kwargs["run_id"] = run_id
+        return cls(**kwargs)
 
     @classmethod
     def fail(
@@ -240,17 +282,19 @@ class CapabilityResult(BaseModel, Generic[T]):
             code: str,
             exception: Optional[Exception] = None,
             metadata: Optional[Dict[str, Any]] = None,
-            logs: Optional[List[CapabilityLogEvent]] = None
+            logs: Optional[List[CapabilityLogEvent]] = None,
+            run_id: Optional[str] = None
     ) -> "CapabilityResult[T]":
         """
         Create an error result.
 
         Args:
             msg: Human-readable error message
-            code: Machine-readable error code (QC_* format)
+            code: Machine-readable error code (must start with QC_)
             exception: Optional exception that caused the error
             metadata: Optional metadata dict
             logs: Optional log events from execution
+            run_id: Optional run_id to reuse (should match manifest run_id)
 
         Returns:
             CapabilityResult with status=error
@@ -269,14 +313,17 @@ class CapabilityResult(BaseModel, Generic[T]):
                 "str": str(exception),
             }
 
-        return cls(
-            status=CapabilityStatus.error,
-            human_message=msg,
-            machine_message=code,
-            error=CapabilityError(code=code, message=msg, details=err_details),
-            metadata=metadata or {},
-            logs=logs or []
-        )
+        kwargs = {
+            "status": CapabilityStatus.error,
+            "human_message": msg,
+            "machine_message": code,
+            "error": CapabilityError(code=code, message=msg, details=err_details),
+            "metadata": metadata or {},
+            "logs": logs or []
+        }
+        if run_id is not None:
+            kwargs["run_id"] = run_id
+        return cls(**kwargs)
 
     @classmethod
     def fail_from_exc(
@@ -284,16 +331,18 @@ class CapabilityResult(BaseModel, Generic[T]):
             msg: str,
             code: str,
             exc: Exception,
-            metadata: Optional[Dict[str, Any]] = None
+            metadata: Optional[Dict[str, Any]] = None,
+            run_id: Optional[str] = None
     ) -> "CapabilityResult[T]":
         """
         Convenience wrapper for fail() that always includes exception.
 
         Args:
             msg: Human-readable error message
-            code: Machine-readable error code
+            code: Machine-readable error code (must start with QC_)
             exc: Exception that caused the error
             metadata: Optional metadata dict
+            run_id: Optional run_id to reuse (should match manifest run_id)
 
         Returns:
             CapabilityResult with status=error
@@ -308,4 +357,4 @@ class CapabilityResult(BaseModel, Generic[T]):
             ...         exc=e
             ...     )
         """
-        return cls.fail(msg=msg, code=code, exception=exc, metadata=metadata)
+        return cls.fail(msg=msg, code=code, exception=exc, metadata=metadata, run_id=run_id)

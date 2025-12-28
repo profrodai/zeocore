@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, enums.py, ids.py, typing.py, versions.py
 # exports: utcnow, utcnow_iso
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """
@@ -35,14 +35,15 @@ def utcnow() -> datetime:
 
 def utcnow_iso() -> str:
     """
-    Get current time as ISO 8601 formatted string.
+    Get current time as ISO 8601 formatted string with Z suffix.
 
     Returns:
-        ISO 8601 timestamp string with UTC timezone
+        ISO 8601 timestamp string with Z timezone indicator (normalized format)
 
     Example:
         >>> ts = utcnow_iso()
-        >>> 'T' in ts and 'Z' in ts or '+00:00' in ts
+        >>> ts.endswith('Z')
         True
     """
-    return utcnow().isoformat()
+    # Use replace to normalize +00:00 to Z for consistency
+    return utcnow().isoformat().replace('+00:00', 'Z')

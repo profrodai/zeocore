@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, test_booster.py, test_enhancer.py, test_plugin.py, test_registry.py (+2 more)
 # exports: setup_teardown, create_and_register_test_strategies, test_strategy_registry_integration, test_booster_with_registry_integration, test_booster_auto_strategy_selection, test_llm_integration, test_full_pipeline_with_mock_llm, test_registry_import_integration
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """

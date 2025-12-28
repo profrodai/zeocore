@@ -1,9 +1,9 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_contracts/__init__.py
 # role: tests
-# neighbors: test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py, test_envelopes.py
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# neighbors: test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py, test_envelopes.py, test_schema_examples.py
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """

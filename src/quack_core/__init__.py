@@ -4,8 +4,8 @@
 # role: module
 # neighbors: config_base.py
 # exports: __version__, config, load_config, QuackConfig, paths, fs, registry, loader (+9 more)
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """

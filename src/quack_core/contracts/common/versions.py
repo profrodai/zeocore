@@ -3,8 +3,8 @@
 # module: quack_core.contracts.common.versions
 # role: module
 # neighbors: __init__.py, enums.py, ids.py, time.py, typing.py
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """

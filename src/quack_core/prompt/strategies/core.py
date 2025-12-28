@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py
 # exports: render_zero_shot, render_multi_shot_structured, render_single_shot_structured, render_react_agentic, render_zero_shot_cot, render_task_decomposition, render_apply_best_practices, render_automatic_prompt_engineering (+21 more)
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """

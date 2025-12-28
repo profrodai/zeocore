@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, refs.py
 # exports: ToolInfo, Provenance, ManifestInput, RunManifest
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """
@@ -36,11 +36,23 @@ class ToolInfo(BaseModel):
     Information about the tool that executed.
 
     Used for debugging and version tracking.
+
+    Tool Naming Convention:
+        Use namespaced tool names for clarity across capability domains:
+        - media.slice_video
+        - media.transcribe
+        - text.summarize
+        - text.extract_entities
+        - crm.sync_contacts
+        - fs.copy_files
     """
+
+    model_config = ConfigDict(extra="forbid")
 
     name: str = Field(
         ...,
-        description="Tool identifier (e.g., 'slice_video', 'transcribe_audio')"
+        description="Tool identifier with namespace (e.g., 'media.slice_video', 'text.summarize')",
+        examples=["media.slice_video", "text.summarize", "crm.sync_contacts"]
     )
 
     version: str = Field(
@@ -61,6 +73,8 @@ class Provenance(BaseModel):
     Tracks where, when, and how the execution occurred.
     All fields are optional to support different execution environments.
     """
+
+    model_config = ConfigDict(extra="forbid")
 
     git_commit: Optional[str] = Field(
         None,
@@ -112,6 +126,8 @@ class ManifestInput(BaseModel):
     Provides more context than a bare ArtifactRef when needed.
     """
 
+    model_config = ConfigDict(extra="forbid")
+
     name: str = Field(
         ...,
         description="Input parameter name"
@@ -145,7 +161,9 @@ class RunManifest(BaseModel):
     Invariants:
         - finished_at >= started_at (if both present)
         - duration_sec consistent with timestamps (if all present)
-        - outputs empty if status == skipped (convention, not enforced)
+        - If status == skipped → outputs AND intermediates must be empty
+        - If status == error → outputs AND intermediates must be empty (no partial outputs)
+        - error field required if status == error
 
     Routing Convention:
         Orchestrators should NOT inspect file contents. Instead, route by:
@@ -154,31 +172,162 @@ class RunManifest(BaseModel):
         - outputs[*].content_type (format)
         - outputs[*].tags (additional hints)
 
-    Example:
-        >>> manifest = RunManifest(
-        ...     tool=ToolInfo(name="slice_video", version="1.0.0"),
-        ...     status=CapabilityStatus.success,
-        ...     inputs=[
-        ...         ManifestInput(
-        ...             name="source_video",
-        ...             artifact=ArtifactRef(
-        ...                 role="video_source",
-        ...                 kind=ArtifactKind.intermediate,
-        ...                 content_type="video/mp4",
-        ...                 storage=StorageRef(...)
-        ...             )
-        ...         )
-        ...     ],
-        ...     outputs=[
-        ...         ArtifactRef(
-        ...             role="video_slice_1",
-        ...             kind=ArtifactKind.final,
-        ...             content_type="video/mp4",
-        ...             storage=StorageRef(...)
-        ...         )
-        ...     ]
-        ... )
+    Run ID Relationship:
+        The run_id should be generated once and shared between:
+        - CapabilityResult.run_id (immediate return)
+        - RunManifest.run_id (persistent record)
+        Tools should pass the same run_id to both.
     """
+
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "examples": [
+                # Media capability example
+                {
+                    "manifest_version": "1.0",
+                    "run_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "tool": {
+                        "name": "media.slice_video",
+                        "version": "1.0.0"
+                    },
+                    "started_at": "2025-01-15T10:30:00Z",
+                    "finished_at": "2025-01-15T10:30:45Z",
+                    "duration_sec": 45.0,
+                    "status": "success",
+                    "inputs": [
+                        {
+                            "name": "source_video",
+                            "artifact": {
+                                "artifact_id": "a1b2c3d4-e5f6-4789-abcd-ef0123456789",
+                                "role": "media.video_source",
+                                "kind": "intermediate",
+                                "content_type": "video/mp4",
+                                "storage": {
+                                    "scheme": "local",
+                                    "uri": "file:///data/input.mp4"
+                                }
+                            },
+                            "required": True
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "artifact_id": "b2c3d4e5-f678-49ab-cdef-0123456789ab",
+                            "role": "media.video_slice_1",
+                            "kind": "final",
+                            "content_type": "video/mp4",
+                            "storage": {
+                                "scheme": "local",
+                                "uri": "file:///data/output/clip1.mp4"
+                            }
+                        }
+                    ],
+                    "intermediates": [],
+                    "logs": [],
+                    "metadata": {
+                        "preset": "fast",
+                        "clip_count": 1
+                    }
+                },
+                # Text capability example
+                {
+                    "manifest_version": "1.0",
+                    "run_id": "c3d4e5f6-7890-4abc-def0-123456789abc",
+                    "tool": {
+                        "name": "text.summarize",
+                        "version": "2.1.0"
+                    },
+                    "started_at": "2025-01-15T11:00:00Z",
+                    "finished_at": "2025-01-15T11:00:12Z",
+                    "duration_sec": 12.0,
+                    "status": "success",
+                    "inputs": [
+                        {
+                            "name": "source_document",
+                            "artifact": {
+                                "artifact_id": "d4e5f678-90ab-4cde-f012-3456789abcde",
+                                "role": "text.document_md",
+                                "kind": "intermediate",
+                                "content_type": "text/markdown",
+                                "storage": {
+                                    "scheme": "local",
+                                    "uri": "file:///data/document.md"
+                                }
+                            },
+                            "required": True
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "artifact_id": "e5f67890-abcd-4ef0-1234-56789abcdef0",
+                            "role": "text.summary_md",
+                            "kind": "final",
+                            "content_type": "text/markdown",
+                            "storage": {
+                                "scheme": "local",
+                                "uri": "file:///data/output/summary.md"
+                            }
+                        }
+                    ],
+                    "intermediates": [],
+                    "logs": [],
+                    "metadata": {
+                        "model": "llm:anthropic:claude-sonnet",
+                        "max_tokens": 500
+                    }
+                },
+                # CRM integration example
+                {
+                    "manifest_version": "1.0",
+                    "run_id": "f6789abc-def0-4123-4567-89abcdef0123",
+                    "tool": {
+                        "name": "crm.sync_contacts",
+                        "version": "1.2.3"
+                    },
+                    "started_at": "2025-01-15T12:00:00Z",
+                    "finished_at": "2025-01-15T12:01:30Z",
+                    "duration_sec": 90.0,
+                    "status": "success",
+                    "inputs": [
+                        {
+                            "name": "contacts_csv",
+                            "artifact": {
+                                "artifact_id": "789abcde-f012-4345-6789-abcdef012345",
+                                "role": "crm.contacts_csv",
+                                "kind": "intermediate",
+                                "content_type": "text/csv",
+                                "storage": {
+                                    "scheme": "local",
+                                    "uri": "file:///data/contacts.csv"
+                                }
+                            },
+                            "required": True
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "artifact_id": "890abcde-f012-4567-89ab-cdef01234567",
+                            "role": "crm.sync_report_json",
+                            "kind": "report",
+                            "content_type": "application/json",
+                            "storage": {
+                                "scheme": "local",
+                                "uri": "file:///data/output/sync_report.json"
+                            }
+                        }
+                    ],
+                    "intermediates": [],
+                    "logs": [],
+                    "metadata": {
+                        "synced_count": 150,
+                        "failed_count": 2,
+                        "crm_system": "salesforce"
+                    }
+                }
+            ]
+        }
+    )
 
     # Schema version
     manifest_version: str = Field(
@@ -189,7 +338,7 @@ class RunManifest(BaseModel):
     # Execution identity
     run_id: str = Field(
         default_factory=generate_run_id,
-        description="Unique identifier for this execution"
+        description="Unique identifier for this execution (should match CapabilityResult.run_id)"
     )
 
     tool: ToolInfo = Field(
@@ -211,7 +360,7 @@ class RunManifest(BaseModel):
     duration_sec: Optional[float] = Field(
         None,
         ge=0.0,
-        description="Execution duration in seconds"
+        description="Execution duration in seconds (None if not measured)"
     )
 
     # Status
@@ -250,7 +399,7 @@ class RunManifest(BaseModel):
     # Metadata
     metadata: Dict[str, Any] = Field(
         default_factory=dict,
-        description="Free-form metadata (config, environment, etc.)"
+        description="Free-form metadata (config, environment, capability-specific data)"
     )
 
     provenance: Optional[Provenance] = Field(
@@ -295,66 +444,37 @@ class RunManifest(BaseModel):
     @model_validator(mode='after')
     def validate_status_invariants(self) -> 'RunManifest':
         """
-        Enforce invariants between status and other fields.
+        Enforce invariants between status and artifact lists.
 
         - If status == error, error field must be present
+        - If status == skipped or error, outputs AND intermediates must be empty
+
+        Rationale: skipped/error statuses indicate the tool did not complete
+        successfully, so no artifacts should be produced. This keeps orchestrator
+        routing logic simple: only success statuses produce artifacts to route.
         """
         if self.status == CapabilityStatus.error:
             if self.error is None:
                 raise ValueError(
                     "status=error requires error field to be present"
                 )
+            if self.outputs:
+                raise ValueError(
+                    "status=error must have empty outputs (no partial outputs allowed)"
+                )
+            if self.intermediates:
+                raise ValueError(
+                    "status=error must have empty intermediates (no partial artifacts allowed)"
+                )
+
+        if self.status == CapabilityStatus.skipped:
+            if self.outputs:
+                raise ValueError(
+                    "status=skipped must have empty outputs (skipped processing produces no outputs)"
+                )
+            if self.intermediates:
+                raise ValueError(
+                    "status=skipped must have empty intermediates (skipped processing produces no artifacts)"
+                )
 
         return self
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "examples": [
-                {
-                    "manifest_version": "1.0",
-                    "run_id": "550e8400-e29b-41d4-a716-446655440000",
-                    "tool": {
-                        "name": "slice_video",
-                        "version": "1.0.0"
-                    },
-                    "started_at": "2025-01-15T10:30:00Z",
-                    "finished_at": "2025-01-15T10:30:45Z",
-                    "duration_sec": 45.0,
-                    "status": "success",
-                    "inputs": [
-                        {
-                            "name": "source_video",
-                            "artifact": {
-                                "artifact_id": "abc-123",
-                                "role": "video_source",
-                                "kind": "intermediate",
-                                "content_type": "video/mp4",
-                                "storage": {
-                                    "scheme": "local",
-                                    "uri": "file:///data/input.mp4"
-                                }
-                            },
-                            "required": True
-                        }
-                    ],
-                    "outputs": [
-                        {
-                            "artifact_id": "def-456",
-                            "role": "video_slice_1",
-                            "kind": "final",
-                            "content_type": "video/mp4",
-                            "storage": {
-                                "scheme": "local",
-                                "uri": "file:///data/output/clip1.mp4"
-                            }
-                        }
-                    ],
-                    "logs": [],
-                    "metadata": {
-                        "preset": "fast",
-                        "clip_count": 1
-                    }
-                }
-            ]
-        }
-    )

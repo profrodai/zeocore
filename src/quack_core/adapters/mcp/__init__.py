@@ -2,7 +2,7 @@
 # path: quack-core/src/quack_core/adapters/mcp/__init__.py
 # module: quack_core.adapters.mcp.__init__
 # role: adapters
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 

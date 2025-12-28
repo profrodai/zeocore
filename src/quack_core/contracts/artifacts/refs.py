@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, manifest.py
 # exports: StorageRef, Checksum, ArtifactRef
-# git_branch: refactor/newHeaders
-# git_commit: 72778e2
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
 # === QV-LLM:END ===
 
 """
@@ -26,6 +26,7 @@ from quack_core.contracts.common.enums import StorageScheme, ArtifactKind, \
     ChecksumAlgorithm
 from quack_core.contracts.common.ids import generate_artifact_id, is_valid_uuid
 from quack_core.contracts.common.time import utcnow
+from quack_core.contracts.common.typing import ArtifactRole
 
 
 class StorageRef(BaseModel):
@@ -66,6 +67,32 @@ class StorageRef(BaseModel):
         ...     uri="minio://my-bucket/file.mp4"
         ... )
     """
+
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "examples": [
+                {
+                    "scheme": "local",
+                    "uri": "file:///data/transcript.txt",
+                    "metadata": {}
+                },
+                {
+                    "scheme": "s3",
+                    "uri": "s3://my-bucket/outputs/video.mp4",
+                    "bucket": "my-bucket",
+                    "key": "outputs/video.mp4",
+                    "metadata": {"region": "us-east-1"}
+                },
+                {
+                    "scheme": "custom",
+                    "scheme_custom": "minio",
+                    "uri": "minio://my-bucket/file.mp4",
+                    "metadata": {"endpoint": "minio.example.com:9000"}
+                }
+            ]
+        }
+    )
 
     scheme: StorageScheme = Field(
         ...,
@@ -112,30 +139,29 @@ class StorageRef(BaseModel):
             )
         return self
 
-    model_config = ConfigDict(
-        json_schema_extra={
-            "examples": [
-                {
-                    "scheme": "local",
-                    "uri": "file:///data/transcript.txt",
-                    "metadata": {}
-                },
-                {
-                    "scheme": "s3",
-                    "uri": "s3://my-bucket/outputs/video.mp4",
-                    "bucket": "my-bucket",
-                    "key": "outputs/video.mp4",
-                    "metadata": {"region": "us-east-1"}
-                },
-                {
-                    "scheme": "custom",
-                    "scheme_custom": "minio",
-                    "uri": "minio://my-bucket/file.mp4",
-                    "metadata": {"endpoint": "minio.example.com:9000"}
-                }
-            ]
+    @model_validator(mode='after')
+    def validate_uri_matches_scheme(self) -> 'StorageRef':
+        """Basic validation that URI prefix matches declared scheme."""
+        scheme_prefixes = {
+            StorageScheme.local: ("file://",),
+            StorageScheme.s3: ("s3://",),
+            StorageScheme.gcs: ("gs://",),
+            StorageScheme.azure: ("https://", "azure://"),
+            StorageScheme.http: ("http://",),
+            StorageScheme.https: ("https://",),
+            StorageScheme.drive: ("drive://",),
+            StorageScheme.ftp: ("ftp://",),
         }
-    )
+
+        if self.scheme in scheme_prefixes:
+            expected = scheme_prefixes[self.scheme]
+            if not any(self.uri.startswith(prefix) for prefix in expected):
+                raise ValueError(
+                    f"URI '{self.uri}' does not match scheme '{self.scheme.value}'. "
+                    f"Expected URI to start with one of: {expected}"
+                )
+
+        return self
 
 
 class Checksum(BaseModel):
@@ -149,6 +175,8 @@ class Checksum(BaseModel):
     Stores the checksum value (pre-computed) - this model does NOT
     compute checksums, it only validates and stores them.
     """
+
+    model_config = ConfigDict(extra="forbid")
 
     algorithm: ChecksumAlgorithm = Field(
         default=ChecksumAlgorithm.sha256,
@@ -210,18 +238,20 @@ class ArtifactRef(BaseModel):
         - content_type: MIME type for format detection
         - tags: Additional routing hints
 
-    Common Roles:
-        - video_source: Original input video
-        - video_slice_{n}: Nth extracted clip
-        - transcript_txt: Plain text transcription
-        - transcript_srt: SRT subtitle file
-        - thumbnail_jpg: Preview thumbnail
-        - analysis_json: Analysis report
-        - debug_log: Debug output
+    Common Role Naming Convention:
+        Use namespaced roles to avoid collisions across capability domains:
+        - media.video_source: Original input video
+        - media.video_slice_{n}: Nth extracted clip
+        - media.transcript_txt: Plain text transcription
+        - media.transcript_srt: SRT subtitle file
+        - media.thumbnail_jpg: Preview thumbnail
+        - text.summary_md: Markdown summary
+        - text.entities_json: Extracted entities
+        - crm.contacts_csv: Contact export
 
     Example:
         >>> artifact = ArtifactRef(
-        ...     role="transcript_txt",
+        ...     role="media.transcript_txt",
         ...     kind=ArtifactKind.final,
         ...     content_type="text/plain",
         ...     storage=StorageRef(
@@ -233,15 +263,41 @@ class ArtifactRef(BaseModel):
         ... )
     """
 
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "examples": [
+                {
+                    "artifact_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "role": "media.transcript_txt",
+                    "kind": "final",
+                    "content_type": "text/plain",
+                    "storage": {
+                        "scheme": "local",
+                        "uri": "file:///data/transcript.txt"
+                    },
+                    "size_bytes": 2048,
+                    "checksum": {
+                        "algorithm": "sha256",
+                        "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                    },
+                    "created_at": "2025-01-15T10:30:00Z",
+                    "tags": {"language": "en"},
+                    "metadata": {"word_count": 150}
+                }
+            ]
+        }
+    )
+
     artifact_id: str = Field(
         default_factory=generate_artifact_id,
         description="Unique identifier for this artifact"
     )
 
-    role: str = Field(
+    role: ArtifactRole = Field(
         ...,
-        description="Semantic role in workflow (e.g., transcript_txt, video_slice_1)",
-        examples=["video_source", "transcript_txt", "video_slice_1", "thumbnail_jpg"]
+        description="Semantic role in workflow (e.g., media.transcript_txt, text.summary_md)",
+        examples=["media.video_source", "media.transcript_txt", "text.summary_md", "crm.contacts_csv"]
     )
 
     kind: ArtifactKind = Field(
@@ -302,28 +358,3 @@ class ArtifactRef(BaseModel):
         if not v or not v.strip():
             raise ValueError("role must not be empty")
         return v.strip()
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "examples": [
-                {
-                    "artifact_id": "550e8400-e29b-41d4-a716-446655440000",
-                    "role": "transcript_txt",
-                    "kind": "final",
-                    "content_type": "text/plain",
-                    "storage": {
-                        "scheme": "local",
-                        "uri": "file:///data/transcript.txt"
-                    },
-                    "size_bytes": 2048,
-                    "checksum": {
-                        "algorithm": "sha256",
-                        "value": "a1b2c3d4e5f6..."
-                    },
-                    "created_at": "2025-01-15T10:30:00Z",
-                    "tags": {"language": "en"},
-                    "metadata": {"word_count": 150}
-                }
-            ]
-        }
-    )
