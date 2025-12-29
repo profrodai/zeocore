@@ -4,7 +4,7 @@
 # neighbors: config_tooling_test.py, http_adapter_usage.py, toolkit_usage.py
 # exports: example_1_discovery, example_2_explicit_loading, example_3_error_handling, example_4_configuration_driven, example_5_plugin_metadata, example_6_lifecycle_management, example_7_testing_pattern, main
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 
@@ -207,8 +207,8 @@ def example_4_configuration_driven():
     if result.success:
         print(f"✓ Application ready with {len(result.loaded)} modules")
 
-        # Verify specific capability_models
-        print("\nVerifying capability_models:")
+        # Verify specific capabilities
+        print("\nVerifying capabilities:")
 
         # Check if we have filesystem support
         if registry.is_registered("fs"):
@@ -230,7 +230,7 @@ def example_4_configuration_driven():
 
 def example_5_plugin_metadata():
     """
-    Example 5: Working with plugin metadata and capability_models.
+    Example 5: Working with plugin metadata and capabilities.
 
     Shows how to query plugin information and find modules by capability.
     """

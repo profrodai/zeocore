@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, config.py, registry.py
 # exports: FallbackConfig, ProviderStatus, FallbackLLMClient
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 """
@@ -66,7 +66,7 @@ class ProviderStatus(BaseModel):
 
 class FallbackLLMClient(LLMClient):
     """
-    LLM client with fallback capability_models.
+    LLM client with fallback capabilities.
 
     This client tries multiple LLM providers in sequence, falling back to the next
     provider if the current one fails.

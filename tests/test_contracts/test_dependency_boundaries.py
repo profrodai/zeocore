@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_capabilities.py, test_envelopes.py, test_schema_examples.py
 # exports: DependencyChecker, TestDependencyBoundaries, TestImportPatterns
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 """
@@ -37,7 +37,7 @@ class DependencyChecker:
     # Forbidden modules (from other QuackCore rings)
     FORBIDDEN_MODULES = {
         "quack_core.lib",
-        "quack_core.capabilities",
+        "quack_core.tools",
         "quack_core.integrations",
         "quack_core.workflow",
         "quack_core.runners",

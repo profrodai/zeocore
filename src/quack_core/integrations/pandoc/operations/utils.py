@@ -5,7 +5,7 @@
 # neighbors: __init__.py, html_to_md.py, md_to_docx.py
 # exports: verify_pandoc, prepare_pandoc_args, validate_html_structure, validate_docx_structure, safe_convert_to_int, get_size_str_wrapper, check_file_size, check_conversion_ratio (+2 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 """

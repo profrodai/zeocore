@@ -4,7 +4,7 @@
 # role: module
 # exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm, generate_run_id, generate_artifact_id, is_valid_uuid (+25 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 """
@@ -80,7 +80,7 @@ from quack_core.contracts.artifacts import (
 )
 
 # Capability models
-from quack_core.contracts.capability_models import (
+from quack_core.contracts.capabilities import (
     # Media
     TimeRange,
     SliceVideoRequest,

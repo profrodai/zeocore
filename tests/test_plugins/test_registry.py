@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_discovery.py, test_explicit_loading.py, test_protocols.py
 # exports: BasicPlugin, CommandPlugin, WorkflowPlugin, ExtensionPlugin, ProviderPlugin, TestPluginRegistry
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 """
@@ -580,7 +580,7 @@ class TestPluginRegistry:
         from quack_core.modules.protocols import QuackPluginMetadata
 
         class CapabilityPlugin(QuackPluginProtocol):
-            """Plugin with capability_models for testing."""
+            """Plugin with capabilities for testing."""
 
             def __init__(self, name: str, capabilities: list[str]) -> None:
                 self._name = name
@@ -600,7 +600,7 @@ class TestPluginRegistry:
 
         registry = PluginRegistry()
 
-        # Register modules with different capability_models
+        # Register modules with different capabilities
         plugin1 = CapabilityPlugin("plugin1", ["command", "workflow"])
         plugin2 = CapabilityPlugin("plugin2", ["command"])
         plugin3 = CapabilityPlugin("plugin3", ["provider"])
@@ -677,7 +677,7 @@ class TestPluginRegistry:
             assert reloaded_plugin is updated_plugin
             mock_reload.assert_called_once_with("test_reload_plugin")
 
-        # Manual test of the capability_models logic
+        # Manual test of the capabilities logic
         # Since we mocked reload_plugin, we need to manually register
         # the updated plugin to test capability filtering
         registry.unregister("test_reload_plugin")

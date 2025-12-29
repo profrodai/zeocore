@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, discovery.py
 # exports: QuackPluginMetadata, QuackPluginProtocol, PluginRegistryProtocol, PluginLoaderProtocol, CommandPluginProtocol, WorkflowPluginProtocol, ExtensionPluginProtocol, ProviderPluginProtocol (+1 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 
@@ -48,7 +48,7 @@ class QuackPluginMetadata(BaseModel):
     author: str | None = Field(default=None, description="Plugin author")
     capabilities: list[str] = Field(
         default_factory=list,
-        description="List of capability_models this plugin provides",
+        description="List of capabilities this plugin provides",
     )
 
 
@@ -93,7 +93,7 @@ class QuackPluginProtocol(Protocol):
         Get structured metadata for the plugin.
 
         Returns:
-            QuackPluginMetadata: Plugin metadata including id, version, capability_models
+            QuackPluginMetadata: Plugin metadata including id, version, capabilities
         """
         ...
 

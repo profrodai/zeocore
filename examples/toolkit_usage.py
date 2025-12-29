@@ -4,14 +4,14 @@
 # neighbors: config_tooling_test.py, explicit_plugin_loading_example.py, http_adapter_usage.py
 # exports: ExampleTool, main
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 """
-Example usage of the QuackCore capabilities.
+Example usage of the QuackCore tools.
 
 This example demonstrates how to create a custom QuackTool plugin
-using the QuackCore capabilities.
+using the QuackCore tools.
 """
 
 import json
@@ -22,7 +22,7 @@ from quack_core.integrations.core import IntegrationResult
 # Note: This is just for the example, in a real implementation you'd
 # use the actual import path for GoogleDriveService
 from quack_core.integrations.google.drive import GoogleDriveService
-from quack_core.capabilities import (
+from quack_core.tools import (
     BaseQuackToolPlugin,
     IntegrationEnabledMixin,
     OutputFormatMixin,
@@ -38,7 +38,7 @@ class ExampleTool(
     BaseQuackToolPlugin,
 ):
     """
-    Example QuackTool plugin that demonstrates the QuackCore capabilities.
+    Example QuackTool plugin that demonstrates the QuackCore tools.
 
     This tool:
     1. Reads a JSON file

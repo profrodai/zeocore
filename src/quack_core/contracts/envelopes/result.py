@@ -5,11 +5,11 @@
 # neighbors: __init__.py, error.py, log.py
 # exports: CapabilityResult
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 """
-The canonical result envelope for all capability_models.
+The canonical result envelope for all capabilities.
 
 Consumed by: ALL Ring B tools, Ring C orchestrators (n8n, Temporal, runners)
 Must NOT contain: Business logic, orchestration, side effects
@@ -33,7 +33,7 @@ T = TypeVar("T")
 
 class CapabilityResult(BaseModel, Generic[T]):
     """
-    Standard return envelope for ALL capability_models.
+    Standard return envelope for ALL capabilities.
 
     Orchestrators (n8n, Temporal) parse this JSON to decide the next step
     in the workflow. This enables:

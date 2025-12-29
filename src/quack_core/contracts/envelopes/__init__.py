@@ -5,13 +5,13 @@
 # neighbors: error.py, log.py, result.py
 # exports: CapabilityResult, CapabilityError, CapabilityLogEvent
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 """
 Envelope models for capability results, errors, and logs.
 
-These models define the standard wrapper structure that ALL capability_models
+These models define the standard wrapper structure that ALL capabilities
 use to return results. This enables machine branching and audit trails.
 """
 

@@ -5,7 +5,7 @@
 # neighbors: __init__.py
 # exports: BasePolicy, ConfigError, ConfigResolver, deep_merge
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 """

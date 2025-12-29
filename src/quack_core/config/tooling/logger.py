@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, loader.py
 # exports: setup_tool_logging, get_logger, log_teaching
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 66ff061
+# git_commit: 0f9247b
 # === QV-LLM:END ===
 
 """
@@ -31,7 +31,7 @@ def setup_tool_logging(tool_name: str, log_level: str = "INFO") -> None:
     Set up logging for a QuackTool.
 
     This sets up a tool-specific logger with console and file output,
-    leveraging quack-core's enhanced logging capability_models including
+    leveraging quack-core's enhanced logging capabilities including
     Teaching Mode support. It also ensures log files are properly
     cleaned up during tests.
 
