@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/tools/mixins/env_init.py
+# module: quack_core.tools.mixins.env_init
+# role: module
+# neighbors: __init__.py, integration_enabled.py, lifecycle.py, output_handler.py
+# exports: ToolEnvInitializerMixin
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 
 
 """

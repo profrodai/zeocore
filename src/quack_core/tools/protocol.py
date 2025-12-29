@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/tools/protocol.py
+# module: quack_core.tools.protocol
+# role: module
+# neighbors: __init__.py, base.py, context.py
+# exports: QuackToolProtocol
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 
 """
 Protocol definition for QuackTool modules.

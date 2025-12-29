@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/examples/tools/echo_tool.py
+# role: module
+# neighbors: minimal_runner.py, run_echo_on_file.py
+# exports: EchoTool
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 
 """
 Echo tool example - demonstrates doctrine-compliant tool implementation.

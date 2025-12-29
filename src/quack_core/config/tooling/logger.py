@@ -5,42 +5,40 @@
 # neighbors: __init__.py, base.py, loader.py
 # exports: setup_tool_logging, get_logger, log_teaching
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
+
 
 """
 Logging setup utilities for QuackTools.
 
-This module provides utilities for setting up consistent logging
-across different QuackTools, leveraging quack-core's enhanced logging functionality.
+This module helps tools configure logging.
+It does NOT auto-create directories unless explicitly told to do so via setup.
 """
 
 import atexit
 import logging
+import os
 from typing import Any
 
-from quack_core.lib.fs.service import standalone
 from quack_core.lib.logging import LOG_LEVELS, LogLevel, configure_logger
 
-# Track file handlers for cleanup during exit
-_file_handlers = []
+_file_handlers: list[logging.FileHandler] = []
 
 
-def setup_tool_logging(tool_name: str, log_level: str = "INFO") -> None:
+def setup_tool_logging(
+        tool_name: str,
+        log_dir: str,
+        log_level: str = "INFO"
+) -> None:
     """
-    Set up logging for a QuackTool.
-
-    This sets up a tool-specific logger with console and file output,
-    leveraging quack-core's enhanced logging capabilities including
-    Teaching Mode support. It also ensures log files are properly
-    cleaned up during tests.
+    Set up logging for a QuackTool with explicit paths.
 
     Args:
-        tool_name: The tool name, e.g. 'quackmetadata'
-        log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+        tool_name: The tool name, e.g. 'quackmetadata'.
+        log_dir: The directory where logs should be stored.
+        log_level: Logging level (DEBUG, INFO, WARNING, ERROR).
     """
-    fs = standalone
-
     # Normalize log level
     level_name = log_level.upper()
     try:
@@ -48,12 +46,12 @@ def setup_tool_logging(tool_name: str, log_level: str = "INFO") -> None:
     except (ValueError, KeyError):
         level = logging.INFO
 
-    # Prepare log directory and file path
-    logs_dir = fs.normalize_path("./logs")
-    fs.create_directory(logs_dir, exist_ok=True)
-    log_file = fs.join_path(logs_dir, f"{tool_name}.log")
+    # Create directory if it doesn't exist
+    os.makedirs(log_dir, exist_ok=True)
 
-    # Configure the tool's logger using quack-core's configure_logger
+    log_file = os.path.join(log_dir, f"{tool_name}.log")
+
+    # Configure the tool's logger
     logger = configure_logger(
         name=tool_name,
         level=level,
@@ -61,7 +59,7 @@ def setup_tool_logging(tool_name: str, log_level: str = "INFO") -> None:
         teaching_to_stdout=True,
     )
 
-    # Keep track of file handlers for cleanup
+    # Track handlers for clean exit
     for handler in logger.handlers:
         if isinstance(handler, logging.FileHandler):
             _file_handlers.append(handler)
@@ -70,38 +68,24 @@ def setup_tool_logging(tool_name: str, log_level: str = "INFO") -> None:
     def _cleanup_handlers() -> None:
         """Remove and close file handlers at exit time."""
         for h in _file_handlers:
-            h.close()
-            if h in logger.handlers:
-                logger.removeHandler(h)
+            try:
+                h.close()
+                if h in logger.handlers:
+                    logger.removeHandler(h)
+            except Exception:
+                pass
 
 
 def get_logger(tool_name: str) -> logging.Logger:
     """
     Get a named logger for the given tool.
-
-    This is a thin wrapper around quack_core.lib.logging.get_logger
-    that ensures the tool's logger is properly configured.
-
-    Args:
-        tool_name: The tool name, e.g. 'quackmetadata'
-
-    Returns:
-        A Logger instance configured for the tool with quack-core enhancements
+    Wrapper around core logging.
     """
     from quack_core.lib.logging import get_logger as core_get_logger
     return core_get_logger(tool_name)
 
 
 def log_teaching(logger: Any, message: str, level: str = "INFO") -> None:
-    """
-    Log a Teaching Mode message for the tool.
-
-    This is a convenience wrapper around quack_core.lib.logging.config.log_teaching.
-
-    Args:
-        logger: The logger instance
-        message: The message to log
-        level: The log level to use (default: INFO)
-    """
-    from quack_core.lib.logging import log_teaching as core_log_teaching
+    """Log a Teaching Mode message for the tool."""
+    from quack_core.lib.logging.config import log_teaching as core_log_teaching
     core_log_teaching(logger, message, level)

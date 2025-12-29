@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/tools/__init__.py
+# module: quack_core.tools.__init__
+# role: module
+# neighbors: base.py, context.py, protocol.py
+# exports: BaseQuackTool, BaseQuackToolPlugin, QuackToolProtocol, ToolContext, IntegrationEnabledMixin, QuackToolLifecycleMixin, ToolEnvInitializerMixin
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 
 
 """

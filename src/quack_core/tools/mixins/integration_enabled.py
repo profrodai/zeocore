@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/tools/mixins/integration_enabled.py
+# module: quack_core.tools.mixins.integration_enabled
+# role: module
+# neighbors: __init__.py, env_init.py, lifecycle.py, output_handler.py
+# exports: IntegrationEnabledMixin
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 
 """
 Integration enabled mixin for QuackTool modules.

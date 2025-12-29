@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_env_init.py, test_integration_enabled.py, test_output_handler.py
 # exports: TestQuackToolLifecycleMixin, TestQuackToolLifecycleMixinWithPytest, lifecycle_mixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
 
 """

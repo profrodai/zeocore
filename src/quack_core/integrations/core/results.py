@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/core/results.py
+# module: quack_core.integrations.core.results
+# role: module
+# neighbors: __init__.py, protocols.py, config.py, registry.py, base.py
+# exports: IntegrationResult, AuthResult, ConfigResult, IntegrationLoadReport
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 """
 Result models for integration operations.
 

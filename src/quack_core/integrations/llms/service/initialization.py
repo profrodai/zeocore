@@ -5,7 +5,7 @@
 # neighbors: __init__.py, operations.py, dependencies.py, integration.py
 # exports: initialize_single_provider, initialize_with_fallback
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
 
 """

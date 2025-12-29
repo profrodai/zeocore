@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_discovery.py, test_protocols.py, test_registry.py
 # exports: TestImportSideEffects, MockTestPlugin, TestExplicitLoading, TestPluginIdStability, TestRegistryClear, TestLoadEnabledModules, TestListAvailableEntryPoints
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
 
 

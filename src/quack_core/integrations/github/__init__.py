@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/github/__init__.py
+# module: quack_core.integrations.github.__init__
+# role: module
+# neighbors: service.py, models.py, protocols.py, config.py, auth.py, client.py
+# exports: GitHubIntegration, GitHubClient, GitHubAuthProvider, GitHubConfigProvider, GitHubIntegrationProtocol, GitHubRepo, GitHubUser, PullRequest (+2 more)
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 """GitHub integration for quack_core."""
 
 from __future__ import annotations

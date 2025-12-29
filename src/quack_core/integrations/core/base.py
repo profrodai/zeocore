@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/core/base.py
+# module: quack_core.integrations.core.base
+# role: module
+# neighbors: __init__.py, protocols.py, config.py, registry.py, results.py
+# exports: BaseAuthProvider, BaseConfigProvider, BaseIntegrationService
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 """
 Base classes for QuackCore integrations.
 

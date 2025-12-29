@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/loader.py
+# module: quack_core.integrations.loader
+# role: module
+# neighbors: __init__.py, boot.py
+# exports: list_available_entry_points, load_enabled_entry_points
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 """
 Explicit loader for QuackCore integrations.
 

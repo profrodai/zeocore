@@ -5,14 +5,22 @@
 # neighbors: __init__.py, models.py, plugin.py, utils.py
 # exports: load_yaml_config, find_config_file, load_config, merge_configs
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
 
-"""
-Configuration loading utilities for quack_core.
 
-This module provides utilities for loading and merging configurations
-from various sources, with support for environment-specific overrides.
+
+"""
+Configuration loading authority for quack_core.
+
+This module is the SINGLE source of truth for:
+1. Loading configuration from YAML.
+2. Merging Environment variables.
+3. Merging Defaults.
+4. Normalizing paths.
+5. Validating the final model.
+
+It contains NO side effects (logging, file creation) other than reading the config file.
 """
 
 import os
@@ -21,22 +29,34 @@ from typing import Any, TypeVar
 import yaml
 
 from quack_core.config.models import QuackConfig
+from quack_core.config.utils import find_project_root
 from quack_core.lib.errors import QuackConfigurationError, wrap_io_errors
-from quack_core.lib.logging import get_logger
 
-T = TypeVar("T")  # Generic type for flexible typing
+T = TypeVar("T")
 
-# Default configuration values to be merged when merge_defaults is True.
+# Default configuration values
 DEFAULT_CONFIG_VALUES: dict[str, Any] = {
     "logging": {
         "level": "INFO",
         "file": "logs/quack_core.log",
+        "console": True,
     },
     "paths": {
-        "base_dir": os.path.join(os.path.expanduser("~"), ".quack-core"),
+        # base_dir is calculated dynamically if not provided
+        "output_dir": "output",
+        "assets_dir": "assets",
+        "data_dir": "data",
+        "temp_dir": "temp",
     },
     "general": {
         "project_name": "QuackCore",
+        "environment": "development",
+        "debug": False,
+    },
+    "plugins": {
+        "enabled": [],
+        "disabled": [],
+        "paths": [],
     },
 }
 
@@ -48,8 +68,6 @@ DEFAULT_CONFIG_LOCATIONS = [
 ]
 
 ENV_PREFIX = "QUACK_"
-
-logger = get_logger(__name__)
 
 
 @wrap_io_errors
@@ -64,10 +82,10 @@ def load_yaml_config(path: str) -> dict[str, Any]:
         Dictionary with configuration values.
 
     Raises:
-        QuackConfigurationError: If the file cannot be loaded.
+        QuackConfigurationError: If the file cannot be loaded/parsed.
     """
     try:
-        # Use direct file operations to avoid circular imports with fs module
+        # Use direct file operations to avoid circular imports
         with open(os.path.expanduser(path), encoding="utf-8") as f:
             content = f.read()
 
@@ -97,64 +115,80 @@ def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any
     return result
 
 
-def _is_float(value: str) -> bool:
+def _normalize_path(value: str, base_dir: str = "./") -> str:
+    """Normalize a path relative to a base directory."""
+    if os.path.isabs(value):
+        return os.path.normpath(value)
+    return os.path.normpath(os.path.join(base_dir, value))
+
+
+def _normalize_config_paths(config_dict: dict[str, Any]) -> dict[str, Any]:
     """
-    Check if the string represents a float number.
-
-    Args:
-        value: The string to check.
-
-    Returns:
-        True if the string can be interpreted as a float, False otherwise.
+    Normalize all paths in the configuration dictionary.
+    This creates absolute paths based on 'paths.base_dir'.
     """
-    try:
-        float(value)
-        return "." in value and not value.endswith(".")
-    except ValueError:
-        return False
+    # 1. Determine Base Dir
+    paths_section = config_dict.get("paths", {})
+    base_dir = paths_section.get("base_dir")
 
+    if not base_dir:
+        base_dir = find_project_root()
 
-def _convert_env_value(value: str) -> bool | int | float | str:
-    """
-    Convert an environment variable string value to an appropriate type.
+    # Ensure base_dir is absolute
+    base_dir = os.path.abspath(os.path.expanduser(base_dir))
+    paths_section["base_dir"] = base_dir
 
-    Args:
-        value: The environment variable value as string.
+    # 2. Normalize standard path keys
+    for key in ["output_dir", "assets_dir", "data_dir", "temp_dir"]:
+        if key in paths_section and isinstance(paths_section[key], str):
+            paths_section[key] = _normalize_path(paths_section[key], base_dir)
 
-    Returns:
-        The value converted to bool, int, float, or left as string.
-    """
-    v_lower = value.lower()
-    if v_lower == "true":
-        return True
-    if v_lower == "false":
-        return False
-    if value.startswith("-") and value[1:].isdigit():
-        return int(value)
-    if value.isdigit():
-        return int(value)
-    if _is_float(value):
-        return float(value)
-    return value
+    # 3. Normalize logging file
+    logging_section = config_dict.get("logging", {})
+    if "file" in logging_section and logging_section["file"]:
+        logging_section["file"] = _normalize_path(logging_section["file"], base_dir)
+
+    # 4. Normalize plugin paths
+    plugins_section = config_dict.get("plugins", {})
+    if "paths" in plugins_section and isinstance(plugins_section["paths"], list):
+        plugins_section["paths"] = [
+            _normalize_path(p, base_dir) for p in plugins_section["paths"]
+        ]
+
+    # 5. Normalize Google integrations (Example of domain-specific normalization)
+    integrations = config_dict.get("integrations", {})
+    if "google" in integrations and isinstance(integrations["google"], dict):
+        google = integrations["google"]
+        for key in ["client_secrets_file", "credentials_file"]:
+            if key in google and google[key]:
+                google[key] = _normalize_path(google[key], base_dir)
+
+    return config_dict
 
 
 def _get_env_config() -> dict[str, Any]:
     """
     Get configuration from environment variables.
-
-    Environment variables should be in the format:
-    QUACK_SECTION__KEY=value
-
-    Returns:
-        Dictionary with configuration values.
+    Format: QUACK_SECTION__KEY=value
     """
     config: dict[str, Any] = {}
     for key, value in os.environ.items():
         if key.startswith(ENV_PREFIX):
-            key_parts = key[len(ENV_PREFIX) :].lower().split("__")
+            key_parts = key[len(ENV_PREFIX):].lower().split("__")
             if len(key_parts) < 2:
                 continue
-            typed_value = _convert_env_value(value)
+
+            # Basic type inference for Env vars
+            typed_value: bool | int | float | str = value
+            v_lower = value.lower()
+            if v_lower == "true":
+                typed_value = True
+            elif v_lower == "false":
+                typed_value = False
+            elif value.isdigit():
+                typed_value = int(value)
+            # (Float check omitted for brevity, string fallback is safe)
+
             current = config
             for i, part in enumerate(key_parts):
                 if i == len(key_parts) - 1:
@@ -166,94 +200,87 @@ def _get_env_config() -> dict[str, Any]:
 
 
 def find_config_file() -> str | None:
-    """
-    Find a configuration file in standard locations.
-
-    Returns:
-        The path to the configuration file if found, or None.
-    """
-    # Check environment variable first.
+    """Find a configuration file in standard locations."""
+    # Check environment variable
     if config_path := os.environ.get("QUACK_CONFIG"):
         expanded = os.path.expanduser(config_path)
         if os.path.exists(expanded):
             return expanded
 
-    # Check default locations.
+    # Check default locations
     for location in DEFAULT_CONFIG_LOCATIONS:
         expanded = os.path.expanduser(location)
         if os.path.exists(expanded):
             return expanded
 
-    # Try to find project root and check for config there.
-    try:
-        # Import locally to avoid circular imports
-        from quack_core.lib.paths import service as paths
-
-        root = paths.get_project_root()
-        for name in ["quack_config.yaml", "config/quack_config.yaml"]:
-            candidate = os.path.join(root, name)
-            if os.path.exists(candidate):
-                return candidate
-    except Exception as e:
-        logger.debug("Failed to find project root: %s", e)
+    # Check project root
+    root = find_project_root()
+    for name in ["quack_config.yaml", "config/quack_config.yaml"]:
+        candidate = os.path.join(root, name)
+        if os.path.exists(candidate):
+            return candidate
 
     return None
 
 
 def load_config(
-    config_path: str | None = None,
-    merge_env: bool = True,
-    merge_defaults: bool = True,
+        config_path: str | None = None,
+        merge_env: bool = True,
+        merge_defaults: bool = True,
 ) -> QuackConfig:
     """
     Load configuration from a file and merge with environment variables and defaults.
 
     Args:
         config_path: Optional path to a configuration file.
-        merge_env: Whether to merge environment variables into the configuration.
-        merge_defaults: Whether to merge default configuration values.
+        merge_env: Whether to merge environment variables.
+        merge_defaults: Whether to merge default values.
 
     Returns:
-        A QuackConfig instance built from the merged configuration.
+        A QuackConfig instance.
 
     Raises:
-        QuackConfigurationError: If no configuration could be loaded.
+        QuackConfigurationError: If explicit config path is invalid.
     """
-    config_dict: dict[str, Any] = {}
+    # 1. Start with empty or defaults
+    config_dict: dict[str, Any] = (
+        _deep_merge({}, DEFAULT_CONFIG_VALUES) if merge_defaults else {}
+    )
 
+    # 2. Load YAML (if found/provided)
+    loaded_yaml: dict[str, Any] = {}
     if config_path:
         expanded = os.path.expanduser(config_path)
         if not os.path.exists(expanded):
             raise QuackConfigurationError(
                 f"Configuration file not found: {expanded}", expanded
             )
-        config_dict = load_yaml_config(expanded)
+        loaded_yaml = load_yaml_config(expanded)
     else:
         found = find_config_file()
         if found:
-            config_dict = load_yaml_config(found)
+            loaded_yaml = load_yaml_config(found)
 
+    config_dict = _deep_merge(config_dict, loaded_yaml)
+
+    # 3. Merge Env
     if merge_env:
         env_config = _get_env_config()
         config_dict = _deep_merge(config_dict, env_config)
 
-    if merge_defaults:
-        config_dict = _deep_merge(DEFAULT_CONFIG_VALUES, config_dict)
+    # 4. Normalize Paths (The single source of path truth)
+    config_dict = _normalize_config_paths(config_dict)
 
+    # 5. Validate and Return
     return QuackConfig.model_validate(config_dict)
 
 
 def merge_configs(base: QuackConfig, override: dict[str, Any]) -> QuackConfig:
-    """
-    Merge a base configuration with override values.
-
-    Args:
-        base: Base configuration.
-        override: Override values.
-
-    Returns:
-        A merged QuackConfig instance.
-    """
+    """Merge a base QuackConfig object with an override dictionary."""
     base_dict = base.model_dump()
     merged = _deep_merge(base_dict, override)
+
+    # Re-normalize just in case overrides introduced relative paths
+    merged = _normalize_config_paths(merged)
+
     return QuackConfig.model_validate(merged)

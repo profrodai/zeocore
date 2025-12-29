@@ -5,111 +5,58 @@
 # neighbors: __init__.py, models.py, utils.py, loader.py
 # exports: ConfigPlugin, QuackConfigPlugin, create_plugin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
+
 
 """
 Plugin interface for the configuration module.
 
-This module defines the plugin interface for the configuration module,
-allowing QuackCore to expose configuration functionality to other modules.
+This module provides a LAZY configuration plugin.
+Instantiation is cheap; loading is explicit.
 """
 
 from typing import Any, Protocol, TypeVar
 
 from quack_core.config.loader import load_config, merge_configs
 from quack_core.config.models import QuackConfig
-from quack_core.config.utils import get_config_value, normalize_paths
+from quack_core.config.utils import get_config_value
 
-T = TypeVar("T")  # Generic type for flexible typing
+T = TypeVar("T")
 
 
 class ConfigPlugin(Protocol):
     """Protocol for configuration modules."""
 
     @property
-    def name(self) -> str:
-        """Name of the plugin."""
-        ...
+    def name(self) -> str: ...
 
     def load_config(
         self,
         config_path: str | None = None,
         merge_env: bool = True,
         merge_defaults: bool = True,
-    ) -> QuackConfig:
-        """
-        Load configuration from a file and merge with environment and defaults.
+    ) -> QuackConfig: ...
 
-        Args:
-            config_path: Path to configuration file (optional)
-            merge_env: Whether to merge with environment variables
-            merge_defaults: Whether to merge default configuration values
+    def merge_configs(self, base: QuackConfig, override: dict[str, Any]) -> QuackConfig: ...
 
-        Returns:
-            QuackConfig: Loaded configuration
-        """
-        ...
+    def get_value(self, path: str, default: T | None = None) -> T | None: ...
 
-    def merge_configs(self, base: QuackConfig, override: dict[str, Any]) -> QuackConfig:
-        """
-        Merge a base configuration with override values.
-
-        Args:
-            base: Base configuration.
-            override: Override values.
-
-        Returns:
-            A merged QuackConfig instance.
-        """
-        ...
-
-    def get_value(self, path: str, default: T | None = None) -> T | None:
-        """
-        Get a configuration value by path.
-
-        The path is a dot-separated string of keys, e.g. 'logging.level'
-
-        Args:
-            path: Path to the configuration value
-            default: Default value if the path is not found
-
-        Returns:
-            Configuration value
-        """
-        ...
-
-    def get_base_dir(self) -> str:
-        """
-        Get the base directory from the configuration.
-
-        Returns:
-            str: The base directory as a normalized string.
-        """
-        ...
-
-    def get_output_dir(self) -> str:
-        """
-        Get the output directory from the configuration.
-
-        Returns:
-            str: The output directory as a normalized string.
-        """
-        ...
+    def get_base_dir(self) -> str: ...
 
 
 class QuackConfigPlugin:
     """Implementation of the configuration plugin protocol."""
 
     def __init__(self) -> None:
-        """Initialize the plugin."""
-        # load_config and normalize_paths work entirely in the string space.
-        self._config = load_config()
-        self._config = normalize_paths(self._config)
+        """
+        Initialize the plugin.
+        NOTE: Does NOT load config automatically.
+        """
+        self._config: QuackConfig | None = None
 
     @property
     def name(self) -> str:
-        """Name of the plugin."""
         return "config"
 
     def load_config(
@@ -119,76 +66,39 @@ class QuackConfigPlugin:
         merge_defaults: bool = True,
     ) -> QuackConfig:
         """
-        Load configuration from a file and merge with environment and defaults.
-
-        Args:
-            config_path: Path to configuration file (optional)
-            merge_env: Whether to merge with environment variables
-            merge_defaults: Whether to merge default configuration values
-
-        Returns:
-            QuackConfig: Loaded configuration
+        Explicitly load the configuration.
         """
-        # When a config_path is provided, ensure it is a string
         self._config = load_config(
-            config_path=str(config_path) if config_path else None,
+            config_path=config_path,
             merge_env=merge_env,
             merge_defaults=merge_defaults,
         )
-        self._config = normalize_paths(self._config)
         return self._config
 
     def merge_configs(self, base: QuackConfig, override: dict[str, Any]) -> QuackConfig:
-        """
-        Merge a base configuration with override values.
-
-        Args:
-            base: Base configuration.
-            override: Override values.
-
-        Returns:
-            A merged QuackConfig instance.
-        """
         return merge_configs(base, override)
 
     def get_value(self, path: str, default: T | None = None) -> T | None:
-        """
-        Get a configuration value by path.
-
-        Args:
-            path: Dot-separated path to the configuration value (e.g. 'logging.level')
-            default: Default value if the key is not found
-
-        Returns:
-            The configuration value.
-        """
+        if self._config is None:
+            # We could auto-load here, but strict kernel philosophy suggests
+            # we should raise or return default if not initialized.
+            # For developer experience, we'll raise to indicate setup order issues.
+            raise RuntimeError(
+                "ConfigPlugin: Config has not been loaded yet. Call load_config() first."
+            )
         return get_config_value(self._config, path, default)
 
     def get_base_dir(self) -> str:
-        """
-        Get the base directory from the configuration.
-
-        Returns:
-            str: The base directory as a normalized string.
-        """
-        # Here, the _config.paths.base_dir is stored as a string.
+        if self._config is None:
+            raise RuntimeError("ConfigPlugin: Config not loaded.")
         return self._config.paths.base_dir
 
     def get_output_dir(self) -> str:
-        """
-        Get the output directory from the configuration.
-
-        Returns:
-            str: The output directory as a normalized string.
-        """
+        if self._config is None:
+            raise RuntimeError("ConfigPlugin: Config not loaded.")
         return self._config.paths.output_dir
 
 
 def create_plugin() -> ConfigPlugin:
-    """
-    Create a new instance of the configuration plugin.
-
-    Returns:
-        A new ConfigPlugin instance.
-    """
+    """Create a new instance of the configuration plugin."""
     return QuackConfigPlugin()

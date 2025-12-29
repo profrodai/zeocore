@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/core/registry.py
+# module: quack_core.integrations.core.registry
+# role: module
+# neighbors: __init__.py, protocols.py, config.py, results.py, base.py
+# exports: IntegrationRegistry
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 """
 Registry for QuackCore integrations.
 

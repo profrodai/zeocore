@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/integrations/boot.py
+# module: quack_core.integrations.boot
+# role: module
+# neighbors: __init__.py, loader.py
+# exports: get_global_registry, load_integrations
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 """
 Boot API for QuackCore integrations.
 

@@ -5,66 +5,71 @@
 # neighbors: __init__.py, base.py, logger.py
 # exports: load_tool_config, update_tool_config
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
+
+
 
 """
 Configuration loading utilities for QuackTools.
 
-This module provides utilities for loading and updating QuackTool-specific
-configurations within the main QuackConfig object.
+This module provides helpers to extract tool-specific config from
+an EXISTING QuackConfig object.
 """
 
 from collections.abc import Mapping
+from typing import TypeVar
 
-from quack_core.config import load_config
 from quack_core.config.models import QuackConfig
-
 from .base import QuackToolConfigModel
+
+T = TypeVar("T", bound=QuackToolConfigModel)
 
 
 def load_tool_config(
-    tool_name: str,
-    config_model: type[QuackToolConfigModel],
-    config_path: str | None = None
-) -> tuple[QuackConfig, QuackToolConfigModel]:
+        config: QuackConfig,
+        tool_name: str,
+        config_model: type[T]
+) -> T:
     """
-    Load and inject tool-specific config into QuackConfig.
-
-    If the tool doesn't already have config stored in quack_config.custom,
-    this function will add the default values from config_model.
+    Extract and validate tool-specific config from the main QuackConfig.
 
     Args:
-        tool_name: The tool name, e.g. 'quackmetadata'
-        config_model: The pydantic model class for the tool's config
-        config_path: Optional path to a QuackConfig file
+        config: The fully loaded QuackConfig object.
+        tool_name: The tool name, e.g. 'quackmetadata'.
+        config_model: The pydantic model class for the tool's config.
 
     Returns:
-        Tuple of (QuackConfig object, tool-specific config model)
+        An instance of the tool's config model.
     """
-    config = load_config(config_path)
-
+    # Ensure the tool entry exists in custom, if not, use empty dict to trigger defaults
     if tool_name not in config.custom:
-        config.custom[tool_name] = config_model().model_dump()
+        config.custom[tool_name] = {}
 
     tool_data = config.custom.get(tool_name, {})
+
+    # Validate against the specific tool model
+    # If tool_data is empty, this uses the model's defaults
     tool_config = config_model(**tool_data)
 
-    return config, tool_config
+    # Write back the defaults to the main config so they are visible
+    config.custom[tool_name] = tool_config.model_dump()
+
+    return tool_config
 
 
 def update_tool_config(
-    config: QuackConfig,
-    tool_name: str,
-    new_data: Mapping
+        config: QuackConfig,
+        tool_name: str,
+        new_data: Mapping
 ) -> None:
     """
     Update a tool's config section in the QuackConfig.
 
     Args:
-        config: The QuackConfig object
-        tool_name: e.g. "quackmetadata"
-        new_data: New dictionary to merge into config.custom[tool_name]
+        config: The QuackConfig object.
+        tool_name: e.g. "quackmetadata".
+        new_data: New dictionary to merge into config.custom[tool_name].
     """
     old_data = config.custom.get(tool_name, {})
     if isinstance(old_data, Mapping):

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_dependency_boundaries.py, test_envelopes.py, test_schema_examples.py
 # exports: TestTimeRange, TestSliceVideoModels, TestTranscribeModels, TestDemoCapabilities
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
 
 """

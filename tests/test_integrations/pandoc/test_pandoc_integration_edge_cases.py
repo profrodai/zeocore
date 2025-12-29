@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
 # exports: test_integration_with_custom_config_path, test_integration_with_custom_output_dir, test_integration_initialize_with_invalid_config, test_integration_directory_conversion_edge_cases, test_conversion_metrics_initialization, test_file_info_initialization, test_conversion_task_initialization, test_conversion_details_initialization (+9 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
 
 """

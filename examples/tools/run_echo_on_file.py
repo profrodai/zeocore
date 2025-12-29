@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/examples/tools/run_echo_on_file.py
+# role: module
+# neighbors: echo_tool.py, minimal_runner.py
+# exports: main
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 82e6d2b
+# === QV-LLM:END ===
+
 
 
 """

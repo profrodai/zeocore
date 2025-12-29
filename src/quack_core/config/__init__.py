@@ -3,20 +3,23 @@
 # module: quack_core.config.__init__
 # role: module
 # neighbors: models.py, plugin.py, utils.py, loader.py
-# exports: QuackConfig, GeneralConfig, LoggingConfig, PathsConfig, PluginsConfig, load_config, merge_configs, get_env (+6 more)
+# exports: QuackConfig, GeneralConfig, LoggingConfig, PathsConfig, PluginsConfig, load_config, merge_configs, get_env (+4 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
+
 
 """
 Configuration package for quack_core.
 
-This package provides configuration handling for QuackCore,
-with support for loading from files, environment variables,
-and merging configurations from different sources.
+This package provides configuration handling for QuackCore.
+It adheres to a strict "Kernel" philosophy:
+1. No implicit I/O on import.
+2. Configuration is loaded only when explicitly requested.
+3. Deterministic behavior.
 """
 
-from typing import Any, Optional
+from typing import Any
 
 # Import all models directly for users of this package
 from quack_core.config.models import (
@@ -30,24 +33,24 @@ from quack_core.integrations.core.config import IntegrationsConfig
 from quack_core.integrations.notion.config import NotionConfig
 from quack_core.integrations.google.config import GoogleConfig
 
-# Import utility functions but not loader yet
+# Import stateless utility functions
 from quack_core.config.utils import (
     get_config_value,
     get_env,
-    load_env_config,
-    normalize_paths,
     validate_required_config,
 )
 
-# Initialize _config as None to enable lazy loading
+# Initialize _config as None to ensure no implicit loading
 _config: QuackConfig | None = None
 
 
 def get_config() -> QuackConfig:
     """
-    Get the global configuration instance.
+    Get the global configuration instance (Legacy/Convenience).
 
-    This function initializes the configuration on first access to avoid circular imports.
+    NOTE: Global state is discouraged in the Core Kernel.
+    Prefer instantiating a ConfigService or using the Plugin architecture
+    explicitly in new code.
 
     Returns:
         QuackConfig: The global configuration object
@@ -61,12 +64,9 @@ def get_config() -> QuackConfig:
     return _config
 
 
-# Dynamically generated functions for both attribute and function access
-
-
 class ConfigProxy:
     """
-    Proxy class for the global configuration.
+    Proxy class for the global configuration (Legacy).
 
     This allows both attribute access (config.paths.base_dir)
     and function call access (config().paths.base_dir).
@@ -85,7 +85,6 @@ class ConfigProxy:
 config = ConfigProxy()
 
 
-# Functions to be imported from loader
 def load_config(
     config_path: str | None = None,
     merge_env: bool = True,
@@ -94,7 +93,7 @@ def load_config(
     """
     Load configuration from a file and merge with environment variables and defaults.
 
-    This is a forward declaration that imports the real function on first use.
+    This is the canonical entry point for configuration loading.
 
     Args:
         config_path: Optional path to a configuration file.
@@ -112,8 +111,6 @@ def load_config(
 def merge_configs(base: QuackConfig, override: dict[str, Any]) -> QuackConfig:
     """
     Merge a base configuration with override values.
-
-    This is a forward declaration that imports the real function on first use.
 
     Args:
         base: Base configuration.
@@ -138,10 +135,8 @@ __all__ = [
     "load_config",
     "merge_configs",
     "get_env",
-    "load_env_config",
     "get_config_value",
     "validate_required_config",
-    "normalize_paths",
     "get_config",
     # Global instance accessor
     "config",

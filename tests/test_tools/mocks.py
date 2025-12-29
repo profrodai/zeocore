@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_base.py, test_imports.py, test_mixins_integration.py, test_protocol.py (+2 more)
 # exports: MockIntegrationService, MockLogger, MockWorkflowRunner, BaseMockTool, BaseMockToolWithIntegration, create_mock_fs, mock_data_result, mock_operation_result (+2 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21a4e25
+# git_commit: 82e6d2b
 # === QV-LLM:END ===
 
 """
