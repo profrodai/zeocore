@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_loader.py, test_utils.py
 # exports: TestConfigModels
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
+# git_commit: 21a4e25
 # === QV-LLM:END ===
 
 """
@@ -16,14 +16,14 @@ from unittest.mock import MagicMock, patch
 
 from quack_core.config.models import (
     GeneralConfig,
-    GoogleConfig,
-    IntegrationsConfig,
     LoggingConfig,
-    NotionConfig,
     PathsConfig,
     PluginsConfig,
     QuackConfig,
 )
+from quack_core.integrations.core.config import IntegrationsConfig
+from quack_core.integrations.notion.config import NotionConfig
+from quack_core.integrations.google.config import GoogleConfig
 
 
 class TestConfigModels:

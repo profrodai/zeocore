@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_dependencies.py, test_initialization.py, test_operations.py
 # exports: TestLLMIntegrationComprehensive
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
+# git_commit: 21a4e25
 # === QV-LLM:END ===
 
 """

@@ -4,14 +4,14 @@
 # role: module
 # exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm, generate_run_id, generate_artifact_id, is_valid_uuid (+25 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
+# git_commit: 21a4e25
 # === QV-LLM:END ===
 
 """
 QuackCore Contracts - Canonical Data Contracts (Ring A / Kernel)
 
 This module defines the stable, versionable contracts for the QuackCore system.
-See README.md for architecture details and contribution guidelines.
+See GET-STARTED.md for architecture details and contribution guidelines.
 
 Quick Start:
     >>> from quack_core.contracts import (

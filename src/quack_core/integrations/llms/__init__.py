@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/__init__.py
-# module: quack_core.integrations.llms.__init__
-# role: module
-# neighbors: models.py, protocols.py, config.py, registry.py, fallback.py
-# exports: LLMClient, OpenAIClient, AnthropicClient, OllamaClient, MockLLMClient, FallbackLLMClient, LLMConfig, LLMConfigProvider (+11 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
-# === QV-LLM:END ===
-
 """
 LLM integration for quack_core.
 
@@ -38,9 +28,6 @@ from quack_core.integrations.llms.registry import (
     get_llm_client,
     register_llm_client,
 )
-
-# Register the FallbackLLMClient after importing both modules
-register_llm_client("fallback", FallbackLLMClient)
 
 __all__ = [
     # Main client classes

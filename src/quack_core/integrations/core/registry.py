@@ -1,18 +1,9 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/core/registry.py
-# module: quack_core.integrations.core.registry
-# role: module
-# neighbors: __init__.py, protocols.py, results.py, base.py
-# exports: IntegrationRegistry
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
-# === QV-LLM:END ===
-
 """
 Registry for QuackCore integrations.
 
-This module provides a pure registry for managing loaded integrations.
-It is a simple container and does not perform discovery or side effects.
+This module provides a registry for managing loaded integrations.
+It acts as a simple container for active integrations and avoids any
+auto-discovery logic or side effects.
 """
 
 from typing import Iterable, TypeVar
@@ -32,6 +23,12 @@ class IntegrationRegistry:
     """
 
     def __init__(self, log_level: int = LOG_LEVELS[LogLevel.INFO]) -> None:
+        """
+        Initialize the integration registry.
+
+        Args:
+            log_level: Logging level.
+        """
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
         self._integrations: dict[str, IntegrationProtocol] = {}
@@ -44,9 +41,9 @@ class IntegrationRegistry:
             integration: Integration to register.
 
         Raises:
-            QuackError: If the integration_id is already registered.
+            QuackError: If the integration is already registered.
         """
-        # Fallback for integrations that might not have updated to the new base class yet
+        # Prefer integration_id, fallback to name if missing (for legacy support)
         if hasattr(integration, "integration_id"):
             key = integration.integration_id
         else:
@@ -120,10 +117,22 @@ class IntegrationRegistry:
         return list(self._integrations.keys())
 
     def is_registered(self, integration_id: str) -> bool:
-        """Check if an integration is registered."""
+        """
+        Check if an integration is registered.
+
+        Args:
+            integration_id: ID of the integration.
+
+        Returns:
+            bool: True if the integration is registered.
+        """
         return integration_id in self._integrations
 
     def clear(self) -> None:
-        """Clear all registrations. Useful for testing."""
+        """
+        Clear all registrations.
+
+        Useful for testing to ensure a clean state between tests.
+        """
         self._integrations.clear()
         self.logger.debug("Registry cleared")

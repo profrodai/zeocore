@@ -36,7 +36,7 @@ and more, for an overview, here is the full structure:
 └── tests
     ├── __init__.py
     ├── conftest.py
-    ├── README.md
+    ├── GET-STARTED.md
     ├── test_cli
     │   ├── __init__.py
     │   ├── mocks.py

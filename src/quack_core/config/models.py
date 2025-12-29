@@ -3,9 +3,9 @@
 # module: quack_core.config.models
 # role: models
 # neighbors: __init__.py, plugin.py, utils.py, loader.py
-# exports: LoggingConfig, PathsConfig, GoogleConfig, NotionConfig, IntegrationsConfig, GeneralConfig, PluginsConfig, QuackConfig
+# exports: LoggingConfig, PathsConfig, GeneralConfig, PluginsConfig, QuackConfig
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
+# git_commit: 21a4e25
 # === QV-LLM:END ===
 
 """
@@ -111,53 +111,6 @@ class PathsConfig(BaseModel):
         return _normalize_path(v)
 
 
-class GoogleConfig(BaseModel):
-    """Configuration for Google integrations."""
-
-    client_secrets_file: str | None = Field(
-        default=None, description="Path to client secrets file for OAuth"
-    )
-    credentials_file: str | None = Field(
-        default=None, description="Path to credentials file for OAuth"
-    )
-    shared_folder_id: str | None = Field(
-        default=None, description="Google Drive shared folder ID"
-    )
-    gmail_labels: list[str] = Field(
-        default_factory=list, description="Gmail labels to filter"
-    )
-    gmail_days_back: int = Field(
-        default=1, description="Number of days back for Gmail queries"
-    )
-
-    @field_validator("client_secrets_file", "credentials_file", mode="before")
-    @classmethod
-    def normalize_google_paths(cls, v: str | None) -> str | None:
-        if v is None:
-            return None
-        return _normalize_path(v)
-
-
-class NotionConfig(BaseModel):
-    """Configuration for Notion integration."""
-
-    api_key: str | None = Field(default=None, description="Notion API key")
-    database_ids: dict[str, str] = Field(
-        default_factory=dict, description="Mapping of database names to IDs"
-    )
-
-
-class IntegrationsConfig(BaseModel):
-    """Configuration for third-party integrations."""
-
-    google: GoogleConfig = Field(
-        default_factory=GoogleConfig, description="Google integration settings"
-    )
-    notion: NotionConfig = Field(
-        default_factory=NotionConfig, description="Notion integration settings"
-    )
-
-
 class GeneralConfig(BaseModel):
     """General configuration settings."""
 
@@ -202,9 +155,8 @@ class QuackConfig(BaseModel):
     logging: LoggingConfig = Field(
         default_factory=LoggingConfig, description="Logging settings"
     )
-    integrations: IntegrationsConfig = Field(
-        default_factory=IntegrationsConfig, description="Integration settings"
-    )
+    integrations: dict[str, Any] = Field(default_factory=dict, description="Integration settings")
+
     plugins: PluginsConfig = Field(
         default_factory=PluginsConfig, description="Plugin settings"
     )
@@ -216,18 +168,7 @@ class QuackConfig(BaseModel):
         """Set up logging based on configuration."""
         self.logging.setup_logging()
 
-    def model_dump(self) -> dict[str, Any]:
-        """
-        Convert the configuration to a dictionary.
-
-        This is an alias for to_dict() to support both Pydantic v1 and v2 APIs.
-
-        Returns:
-            dict[str, Any]: Dictionary representation of the configuration
-        """
-        return super().model_dump()
-
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self, **kwargs: Any) -> dict[str, Any]:
         """
         Convert the configuration to a dictionary.
 

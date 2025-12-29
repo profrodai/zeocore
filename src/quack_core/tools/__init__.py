@@ -1,55 +1,111 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/__init__.py
-# module: quack_core.tools.__init__
-# role: module
-# neighbors: base.py, protocol.py
-# exports: BaseQuackToolPlugin, QuackToolPluginProtocol, IntegrationEnabledMixin, OutputFormatMixin, ToolEnvInitializerMixin, QuackToolLifecycleMixin
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
-# === QV-LLM:END ===
+
 
 """
 Developer interface layer for creating QuackTools.
 
 This package provides the foundation for building QuackTool modules,
-including the base class, protocol, and mixins that add optional features.
+following Doctrine v3 architecture principles.
 
-# Core components
-- BaseQuackToolPlugin: Base class that tools can inherit from
-- QuackToolPluginProtocol: Protocol that defines the required interface
-- Various mixins that add optional features
+What tool authors import:
+- quack_core.contracts (for CapabilityResult, request/response models)
+- quack_core.tools (this package - for BaseQuackTool, ToolContext, mixins)
+- quack_core.integrations.* (optional - for service integrations)
 
-# Example usage
-```python
-from quack_core.tools import BaseQuackToolPlugin, IntegrationEnabledMixin
-from quack_core.integrations.google.drive import GoogleDriveService
+What tool authors do NOT import:
+- quack_runner.* (orchestration is separate)
+- quack_core.workflow.* (runners handle I/O)
+- Output writers, file runners, manifest builders (runner responsibilities)
 
-class MyTool(IntegrationEnabledMixin[GoogleDriveService], BaseQuackToolPlugin):
-    def _initialize_plugin(self):
-        self._drive = self.resolve_integration(GoogleDriveService)
+Core components:
+- BaseQuackTool: Base class that tools inherit from
+- ToolContext: Execution context provided by runners
+- QuackToolProtocol: Protocol that defines the required interface
+- Mixins: Optional features (integrations, lifecycle hooks)
 
-    def process_content(self, content, options):
-        # Process content here
-        return {"result": "processed content"}
-```
+Example usage:
+    ```python
+    from quack_core.contracts import (
+        CapabilityResult,
+        EchoRequest,
+    )
+    from quack_core.tools import BaseQuackTool, ToolContext
+
+    class EchoTool(BaseQuackTool):
+        def __init__(self):
+            super().__init__(
+                name="demo.echo",
+                version="1.0.0"
+            )
+
+        def run(
+            self,
+            request: EchoRequest,
+            ctx: ToolContext
+        ) -> CapabilityResult[str]:
+            greeting = request.override_greeting or "Hello"
+            result = f"{greeting} {request.text}"
+
+            return CapabilityResult.ok(
+                data=result,
+                msg="Echo completed",
+                metadata={"preset": request.preset}
+            )
+    ```
+
+With integrations:
+    ```python
+    from quack_core.tools import BaseQuackTool, ToolContext
+    from quack_core.tools.mixins import IntegrationEnabledMixin
+    from quack_core.integrations.google.drive import GoogleDriveService
+    from quack_core.contracts import CapabilityResult
+
+    class MyTool(
+        IntegrationEnabledMixin[GoogleDriveService],
+        BaseQuackTool
+    ):
+        def initialize(self, ctx: ToolContext) -> CapabilityResult[None]:
+            self._drive = self.resolve_integration(GoogleDriveService)
+
+            if not self._drive:
+                return CapabilityResult.fail(
+                    msg="Google Drive integration not available",
+                    code="QC_INT_UNAVAILABLE"
+                )
+
+            return CapabilityResult.ok(
+                data=None,
+                msg="Integration initialized"
+            )
+
+        def run(self, request, ctx: ToolContext) -> CapabilityResult:
+            # Use self._drive here
+            ...
+    ```
 """
 
-# First import the protocol
-# Then import base which depends on the protocol
-from .base import BaseQuackToolPlugin
+# Core classes
+from quack_core.tools.base import BaseQuackTool, BaseQuackToolPlugin
+from quack_core.tools.protocol import QuackToolProtocol
+from quack_core.tools.context import ToolContext
 
-# Import the mixins which don't have circular dependencies
-from .mixins.env_init import ToolEnvInitializerMixin
-from .mixins.integration_enabled import IntegrationEnabledMixin
-from .mixins.lifecycle import QuackToolLifecycleMixin
-from .mixins.output_handler import OutputFormatMixin
-from .protocol import QuackToolPluginProtocol
+# Mixins
+from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
+from quack_core.tools.mixins.lifecycle import QuackToolLifecycleMixin
+from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
+
+# Note: OutputFormatMixin has been removed - output handling is runner responsibility
 
 __all__ = [
-    "BaseQuackToolPlugin",
-    "QuackToolPluginProtocol",
+    # Core classes
+    "BaseQuackTool",
+    "BaseQuackToolPlugin",  # Backwards compatibility alias
+    "QuackToolProtocol",
+    "ToolContext",
+
+    # Mixins
     "IntegrationEnabledMixin",
-    "OutputFormatMixin",
-    "ToolEnvInitializerMixin",
     "QuackToolLifecycleMixin",
+    "ToolEnvInitializerMixin",
 ]
+
+__version__ = "2.0.0"  # Major version bump - breaking changes

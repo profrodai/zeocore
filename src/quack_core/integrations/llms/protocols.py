@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, config.py, registry.py, fallback.py
 # exports: LLMProviderProtocol
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
+# git_commit: 21a4e25
 # === QV-LLM:END ===
 
 """

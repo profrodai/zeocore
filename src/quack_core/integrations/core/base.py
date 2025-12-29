@@ -1,14 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/core/base.py
-# module: quack_core.integrations.core.base
-# role: module
-# neighbors: __init__.py, protocols.py, registry.py, results.py
-# exports: BaseAuthProvider, BaseConfigProvider, BaseIntegrationService
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
-# === QV-LLM:END ===
-
-
 """
 Base classes for QuackCore integrations.
 
@@ -39,9 +28,9 @@ class BaseAuthProvider(ABC, AuthProviderProtocol):
     """Base class for authentication providers."""
 
     def __init__(
-        self,
-        credentials_file: str | None = None,
-        log_level: int = LOG_LEVELS[LogLevel.INFO],
+            self,
+            credentials_file: str | None = None,
+            log_level: int = LOG_LEVELS[LogLevel.INFO],
     ) -> None:
         """
         Initialize the base authentication provider.
@@ -203,7 +192,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
 
         Raises:
             QuackConfigurationError: If the configuration file cannot be found or
-                                      if reading the YAML fails.
+                                    if reading the YAML fails.
         """
         if not config_path:
             config_path = self._find_config_file()
@@ -372,12 +361,12 @@ class BaseIntegrationService(ABC, IntegrationProtocol):
     """Base class for integration services."""
 
     def __init__(
-        self,
-        config_provider: ConfigProviderProtocol | None = None,
-        auth_provider: AuthProviderProtocol | None = None,
-        config: dict[str, Any] | None = None,
-        config_path: str | None = None,
-        log_level: int = LOG_LEVELS[LogLevel.INFO],
+            self,
+            config_provider: ConfigProviderProtocol | None = None,
+            auth_provider: AuthProviderProtocol | None = None,
+            config: dict[str, Any] | None = None,
+            config_path: str | None = None,
+            log_level: int = LOG_LEVELS[LogLevel.INFO],
     ) -> None:
         """
         Initialize the base integration service.
@@ -431,6 +420,16 @@ class BaseIntegrationService(ABC, IntegrationProtocol):
         ...
 
     @property
+    def integration_id(self) -> str:
+        """
+        Unique, stable identifier for the integration.
+
+        Subclasses should override this with a constant string (e.g., 'github').
+        Default implementation converts name to lower.dot case.
+        """
+        return self.name.lower().replace(" ", ".")
+
+    @property
     def version(self) -> str:
         """Version of the integration."""
         return "1.0.0"
@@ -443,7 +442,7 @@ class BaseIntegrationService(ABC, IntegrationProtocol):
             IntegrationResult: Result of initialization
         """
         if self._initialized:
-            self.logger.debug(f"{self.name} integration already initialized")
+            self.logger.debug(f"{self.integration_id} integration already initialized")
             return IntegrationResult.success_result(
                 message=f"{self.name} integration already initialized"
             )
@@ -461,7 +460,7 @@ class BaseIntegrationService(ABC, IntegrationProtocol):
                     self._set_config_path(config_result.config_path)
 
             if self.auth_provider and not getattr(
-                self.auth_provider, "authenticated", False
+                    self.auth_provider, "authenticated", False
             ):
                 auth_result = self.auth_provider.authenticate()
                 if not auth_result.success:
@@ -492,7 +491,7 @@ class BaseIntegrationService(ABC, IntegrationProtocol):
 
         Returns:
             IntegrationResult | None: Error result if initialization fails,
-                                        None if initialized
+                                      None if initialized
         """
         if not self._initialized:
             self.logger.info(f"Auto-initializing {self.name} integration")

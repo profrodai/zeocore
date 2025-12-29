@@ -3,7 +3,7 @@
 # role: module
 # neighbors: config_tooling_test.py, explicit_plugin_loading_example.py, toolkit_usage.py
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
+# git_commit: 21a4e25
 # === QV-LLM:END ===
 
 """

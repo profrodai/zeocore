@@ -1,18 +1,8 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/core/results.py
-# module: quack_core.integrations.core.results
-# role: module
-# neighbors: __init__.py, protocols.py, registry.py, base.py
-# exports: IntegrationResult, AuthResult, ConfigResult
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
-# === QV-LLM:END ===
-
 """
-Result models for integration _operations.
+Result models for integration operations.
 
 This module provides standardized result classes for various integration
-_operations, enhancing error handling and return values.
+operations, enhancing error handling and return values.
 """
 
 from typing import Generic, TypeVar
@@ -24,7 +14,7 @@ R = TypeVar("R")  # Generic type for result content
 
 
 class IntegrationResult(BaseModel, Generic[T]):
-    """Base result for integration _operations."""
+    """Base result for integration operations."""
 
     success: bool = Field(
         default=True,
@@ -48,7 +38,7 @@ class IntegrationResult(BaseModel, Generic[T]):
 
     @classmethod
     def success_result(
-        cls, content: T | None = None, message: str | None = None
+            cls, content: T | None = None, message: str | None = None
     ) -> "IntegrationResult[T]":
         """
         Create a successful result.
@@ -69,7 +59,7 @@ class IntegrationResult(BaseModel, Generic[T]):
 
     @classmethod
     def error_result(
-        cls, error: str, message: str | None = None
+            cls, error: str, message: str | None = None
     ) -> "IntegrationResult[T]":
         """
         Create an error result.
@@ -90,7 +80,7 @@ class IntegrationResult(BaseModel, Generic[T]):
 
 
 class AuthResult(BaseModel):
-    """Result for authentication _operations."""
+    """Result for authentication operations."""
 
     success: bool = Field(
         default=True,
@@ -134,7 +124,6 @@ class AuthResult(BaseModel):
         Validate that token is a string if provided.
 
         This prevents MagicMock objects or other non-string
-
         types from being used as tokens.
         """
         if v is not None:
@@ -143,12 +132,12 @@ class AuthResult(BaseModel):
 
     @classmethod
     def success_result(
-        cls,
-        message: str | None = None,
-        token: str | None = None,
-        expiry: int | None = None,
-        credentials_path: str | None = None,
-        content: dict | None = None,
+            cls,
+            message: str | None = None,
+            token: str | None = None,
+            expiry: int | None = None,
+            credentials_path: str | None = None,
+            content: dict | None = None,
     ) -> "AuthResult":
         """
         Create a successful authentication result.
@@ -175,9 +164,9 @@ class AuthResult(BaseModel):
 
     @classmethod
     def error_result(
-        cls,
-        error: str,
-        message: str | None = None,
+            cls,
+            error: str,
+            message: str | None = None,
     ) -> "AuthResult":
         """
         Create an error authentication result.
@@ -201,7 +190,7 @@ class AuthResult(BaseModel):
 
 
 class ConfigResult(IntegrationResult[dict]):
-    """Result for configuration _operations."""
+    """Result for configuration operations."""
 
     config_path: str | None = Field(
         default=None,
@@ -215,10 +204,10 @@ class ConfigResult(IntegrationResult[dict]):
 
     @classmethod
     def success_result(
-        cls,
-        content: dict | None = None,
-        message: str | None = None,
-        config_path: str | None = None,
+            cls,
+            content: dict | None = None,
+            message: str | None = None,
+            config_path: str | None = None,
     ) -> "ConfigResult":
         """
         Create a successful configuration result.
@@ -241,10 +230,10 @@ class ConfigResult(IntegrationResult[dict]):
 
     @classmethod
     def error_result(
-        cls,
-        error: str,
-        message: str | None = None,
-        validation_errors: list[str] | None = None,
+            cls,
+            error: str,
+            message: str | None = None,
+            validation_errors: list[str] | None = None,
     ) -> "ConfigResult":
         """
         Create an error configuration result.
@@ -264,3 +253,37 @@ class ConfigResult(IntegrationResult[dict]):
             error=error,
             validation_errors=validation_errors,
         )
+
+
+class IntegrationLoadReport(BaseModel):
+    """
+    Report detailing the results of an explicit integration load operation.
+
+    This provides visibility into what was loaded, what was skipped,
+    and what failed during the boot process.
+    """
+
+    success: bool = Field(
+        ...,
+        description="Overall success status of the load operation"
+    )
+
+    loaded: list[str] = Field(
+        default_factory=list,
+        description="IDs of successfully loaded integrations"
+    )
+
+    skipped: list[str] = Field(
+        default_factory=list,
+        description="IDs of requested but not found/loaded integrations"
+    )
+
+    warnings: list[str] = Field(
+        default_factory=list,
+        description="Warning messages encountered during loading"
+    )
+
+    errors: list[str] = Field(
+        default_factory=list,
+        description="Error messages encountered during loading"
+    )

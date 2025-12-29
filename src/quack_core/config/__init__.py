@@ -3,9 +3,9 @@
 # module: quack_core.config.__init__
 # role: module
 # neighbors: models.py, plugin.py, utils.py, loader.py
-# exports: QuackConfig, GeneralConfig, LoggingConfig, PathsConfig, IntegrationsConfig, GoogleConfig, NotionConfig, PluginsConfig (+9 more)
+# exports: QuackConfig, GeneralConfig, LoggingConfig, PathsConfig, PluginsConfig, load_config, merge_configs, get_env (+6 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
+# git_commit: 21a4e25
 # === QV-LLM:END ===
 
 """
@@ -21,14 +21,14 @@ from typing import Any, Optional
 # Import all models directly for users of this package
 from quack_core.config.models import (
     GeneralConfig,
-    GoogleConfig,
-    IntegrationsConfig,
     LoggingConfig,
-    NotionConfig,
     PathsConfig,
     PluginsConfig,
     QuackConfig,
 )
+from quack_core.integrations.core.config import IntegrationsConfig
+from quack_core.integrations.notion.config import NotionConfig
+from quack_core.integrations.google.config import GoogleConfig
 
 # Import utility functions but not loader yet
 from quack_core.config.utils import (
@@ -133,9 +133,6 @@ __all__ = [
     "GeneralConfig",
     "LoggingConfig",
     "PathsConfig",
-    "IntegrationsConfig",
-    "GoogleConfig",
-    "NotionConfig",
     "PluginsConfig",
     # Functions
     "load_config",

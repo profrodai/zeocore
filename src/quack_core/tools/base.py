@@ -1,148 +1,111 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/base.py
-# module: quack_core.tools.base
-# role: module
-# neighbors: __init__.py, protocol.py
-# exports: BaseQuackToolPlugin
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
-# === QV-LLM:END ===
 
 """
 Base class implementation for QuackTool modules.
 
 This module provides the foundational class that all QuackTool modules
 should inherit from, implementing common functionality and enforcing
-the QuackToolPluginProtocol.
+the QuackToolProtocol.
+
+Design principles (Doctrine v3):
+- Tools are pure capabilities (request → CapabilityResult)
+- Tools receive ToolContext explicitly (no DI magic)
+- Tools do NOT handle file I/O, output writing, or manifest creation
+- Tools are agnostic to runner implementation (CLI, n8n, Temporal)
+
+What was REMOVED from BaseQuackToolPlugin:
+- process_file() - Now in runner
+- Filesystem initialization - Now in ToolContext
+- Output directory creation - Now in runner
+- Temp directory creation - Now in runner/context
+- Output writer handling - Now in runner
+- FileWorkflowRunner import - Now in runner
+- IntegrationResult - Now using CapabilityResult from contracts
 """
 
 import abc
-import logging
-import os
-import tempfile
 from logging import Logger
 from typing import Any
 
-from quack_core.config.tooling import setup_tool_logging
-from quack_core.integrations.core import IntegrationResult
-from quack_core.lib.logging import get_logger
+from quack_core.contracts import CapabilityResult
 from quack_core.modules.protocols import QuackPluginMetadata
-from quack_core.tools.protocol import (
-    QuackToolPluginProtocol,  # Import directly from protocol module
-)
-from quack_core.workflow.output import (
-    DefaultOutputWriter,
-    OutputWriter,
-    YAMLOutputWriter,
-)
+from quack_core.tools.protocol import QuackToolProtocol
+from quack_core.tools.context import ToolContext
 
 
-class BaseQuackToolPlugin(QuackToolPluginProtocol, abc.ABC):
+class BaseQuackTool(QuackToolProtocol, abc.ABC):
     """
     Base class for all QuackTool modules.
 
-    Provides common functionality and enforces the required interface
+    Provides minimal common functionality and enforces the required interface
     for all QuackTool modules. Concrete tool implementations should
     inherit from this class and implement the abstract methods.
+
+    What tools inherit:
+    - name, version properties (set in __init__)
+    - logger property (for backwards compat)
+    - get_metadata() implementation
+    - Default initialize() implementation
+    - Default is_available() implementation
+
+    What tools MUST implement:
+    - run(request, ctx) -> CapabilityResult
+
+    Example tool implementation:
+        ```python
+        from quack_core.contracts import (
+            CapabilityResult,
+            TranscribeRequest,
+            TranscribeResponse
+        )
+        from quack_core.tools import BaseQuackTool, ToolContext
+
+        class TranscribeTool(BaseQuackTool):
+            def __init__(self):
+                super().__init__(
+                    name="media.transcribe",
+                    version="1.0.0"
+                )
+
+            def run(
+                self,
+                request: TranscribeRequest,
+                ctx: ToolContext
+            ) -> CapabilityResult[TranscribeResponse]:
+                # Validate
+                if not request.source:
+                    return CapabilityResult.skip(
+                        reason="No source provided",
+                        code="QC_VAL_NO_INPUT"
+                    )
+
+                # Process
+                try:
+                    result = self._transcribe(request, ctx)
+                    return CapabilityResult.ok(
+                        data=result,
+                        msg="Transcription completed"
+                    )
+                except Exception as e:
+                    return CapabilityResult.fail_from_exc(
+                        msg="Transcription failed",
+                        code="QC_PROC_ERROR",
+                        exc=e
+                    )
+        ```
     """
 
     def __init__(self, name: str, version: str):
         """
-        Initialize the base QuackTool plugin.
+        Initialize the base QuackTool.
 
         Args:
-            name: The name of the tool
-            version: The version of the tool
+            name: The name of the tool (use namespaced format like "media.transcribe")
+            version: The semantic version of the tool (e.g., "1.0.0")
         """
-        # Set name and version immediately as they may be needed for error reporting
         self._name = name
         self._version = version
+        self._logger: Logger | None = None
 
-        # Set up default paths in case filesystem operations fail
-        self._temp_dir = os.path.join(tempfile.gettempdir(), f"quack_{name}_temp")
-        self._output_dir = os.path.join(tempfile.gettempdir(), f"quack_{name}_output")
-
-        # Setup logging first since it doesn't depend on filesystem
-        try:
-            # Call the setup function directly (needed for tests to detect the call)
-            setup_tool_logging(name)
-            self._logger = get_logger(name)
-        except Exception as e:
-            # If logging setup fails, create a basic logger
-            self._logger = logging.getLogger(name)
-            self._logger.setLevel(logging.INFO)
-            if not self._logger.handlers:
-                handler = logging.StreamHandler()
-                self._logger.addHandler(handler)
-            self._logger.warning(f"Failed to set up proper logging: {str(e)}")
-
-        # Get the filesystem service
-        try:
-            from quack_core.lib.fs.service import standalone
-            self.fs = standalone
-        except Exception as e:
-            self._logger.error(f"Failed to get filesystem service: {str(e)}")
-            raise RuntimeError(f"Failed to initialize filesystem service: {str(e)}")
-
-        # Create a temporary directory for this tool
-        try:
-            temp_result = self.fs.create_temp_directory(prefix=f"quack_{name}_")
-            if hasattr(temp_result, 'success') and temp_result.success:
-                # Use path attribute if available, otherwise use data
-                if hasattr(temp_result, 'path') and temp_result.path:
-                    self._temp_dir = str(temp_result.path)
-                elif hasattr(temp_result, 'data') and temp_result.data:
-                    self._temp_dir = str(temp_result.data)
-            else:
-                self._temp_dir = tempfile.mkdtemp(prefix=f"quack_{name}_")
-                self._logger.info(f"Created temp directory: {self._temp_dir}")
-        except Exception as e:
-            self._logger.warning(f"Error creating temp directory: {str(e)}")
-            self._temp_dir = tempfile.mkdtemp(prefix=f"quack_{name}_")
-            self._logger.info(f"Created temp directory: {self._temp_dir}")
-
-        # Get output directory safely
-        try:
-            cwd_result = self.fs.normalize_path(".")
-            if hasattr(cwd_result, 'success') and cwd_result.success:
-                cwd_path = None
-                if hasattr(cwd_result, 'path') and cwd_result.path:
-                    cwd_path = str(cwd_result.path)
-                elif hasattr(cwd_result, 'data') and cwd_result.data:
-                    cwd_path = str(cwd_result.data)
-
-                if cwd_path:
-                    output_path_result = self.fs.join_path(cwd_path, "output")
-                    if hasattr(output_path_result, 'success') and output_path_result.success:
-                        if hasattr(output_path_result, 'path') and output_path_result.path:
-                            self._output_dir = str(output_path_result.path)
-                        elif hasattr(output_path_result, 'data') and output_path_result.data:
-                            self._output_dir = str(output_path_result.data)
-        except Exception as e:
-            self._logger.warning(f"Error determining output directory: {str(e)}")
-            # Keep the default output directory
-
-        # Ensure output directory exists safely
-        try:
-            dir_result = self.fs.ensure_directory(self._output_dir)
-            if hasattr(dir_result, 'success') and not dir_result.success:
-                fallback_dir = tempfile.mkdtemp(prefix=f"quack_{name}_output_")
-                self._logger.warning(
-                    f"Failed to create output directory at {self._output_dir}, falling back to {fallback_dir}")
-                self._output_dir = fallback_dir
-        except Exception as e:
-            self._logger.warning(f"Error creating output directory: {str(e)}")
-            fallback_dir = tempfile.mkdtemp(prefix=f"quack_{name}_output_")
-            self._logger.warning(
-                f"Exception during directory creation: {str(e)}, falling back to {fallback_dir}")
-            self._output_dir = fallback_dir
-
-        # Initialize the plugin
-        try:
-            self.initialize_plugin()
-        except Exception as e:
-            self._logger.error(f"Error initializing plugin: {str(e)}")
-            raise
     @property
     def name(self) -> str:
         """
@@ -168,9 +131,15 @@ class BaseQuackToolPlugin(QuackToolPluginProtocol, abc.ABC):
         """
         Returns the logger instance for the tool.
 
+        Note: This is for backwards compatibility. New code should
+        use ctx.logger from ToolContext instead.
+
         Returns:
             Logger: Logger instance for the tool.
         """
+        if self._logger is None:
+            import logging
+            self._logger = logging.getLogger(self._name)
         return self._logger
 
     def get_metadata(self) -> QuackPluginMetadata:
@@ -186,208 +155,79 @@ class BaseQuackToolPlugin(QuackToolPluginProtocol, abc.ABC):
             description=self.__doc__ or "",
         )
 
-    def initialize(self) -> IntegrationResult:
+    def initialize(self, ctx: ToolContext) -> CapabilityResult[None]:
         """
-        Initialize the plugin and verify it's ready to use.
+        Initialize the tool with the given context.
+
+        Default implementation checks basic availability and returns success.
+        Override this method to perform custom initialization.
+
+        Args:
+            ctx: Execution context provided by the runner
 
         Returns:
-            IntegrationResult: Result of the initialization process.
+            CapabilityResult[None]: Success if ready, error if not available
         """
-        try:
-            if not self.is_available():
-                return IntegrationResult.error_result(
-                    error="Tool is not available",
-                    message=f"The tool {self.name} is not available"
-                )
-
-            return IntegrationResult.success_result(
-                message=f"Successfully initialized {self.name} v{self.version}"
-            )
-        except Exception as e:
-            self.logger.exception(f"Failed to initialize {self.name}")
-            return IntegrationResult.error_result(
-                error=str(e),
-                message=f"Failed to initialize {self.name}"
+        if not self.is_available(ctx):
+            return CapabilityResult.fail(
+                msg=f"Tool {self.name} is not available",
+                code="QC_TOOL_UNAVAILABLE"
             )
 
-    def is_available(self) -> bool:
+        return CapabilityResult.ok(
+            data=None,
+            msg=f"Successfully initialized {self.name} v{self.version}"
+        )
+
+    def is_available(self, ctx: ToolContext) -> bool:
         """
-        Check if the plugin is available and ready to use.
+        Check if the tool is available and ready to use.
+
+        Default implementation always returns True.
+        Override this method to perform custom availability checks.
+
+        Args:
+            ctx: Execution context
 
         Returns:
-            bool: True if the plugin is available, False otherwise.
+            bool: True if the tool can execute, False otherwise
         """
         return True
 
-    def process_file(
-        self,
-        file_path: str,
-        output_path: str | None = None,
-        options: dict[str, Any] | None = None
-    ) -> IntegrationResult:
-        """
-        Process a file with the plugin using FileWorkflowRunner.
-        Dynamically imports the runner so that test‐time patches take effect.
-        """
-        try:
-            # Validate file exists
-            file_info = self.fs.get_file_info(file_path)
-            if not file_info.exists:
-                return IntegrationResult.error_result(
-                    error=f"File not found: {file_path}",
-                    message="File processing failed: input file not found"
-                )
-
-            # Prepare options
-            run_options = options or {}
-            if output_path:
-                run_options["output_path"] = output_path
-
-            # Dynamically import the runner (so that patching quack_core.workflow.runners.file_runner works)
-            from unittest import mock
-
-            from quack_core.workflow.runners.file_runner import (
-                FileWorkflowRunner as RunnerClass,
-            )
-
-            runner = RunnerClass(
-                processor=self.process_content,
-                remote_handler=self.get_remote_handler(),
-                output_writer=self.get_output_writer(),
-            )
-
-            # Detect if this is a mock runner
-            is_mock = isinstance(runner, mock.Mock) or (
-                hasattr(runner, "run") and isinstance(runner.run, mock.Mock)
-            )
-
-            if is_mock:
-                # Extract mock metadata
-                mock_error = None
-                mock_success = True
-                if hasattr(runner, "run") and hasattr(runner.run, "return_value"):
-                    mr = runner.run.return_value
-                    if hasattr(mr, "error"):
-                        mock_error = mr.error
-                    if hasattr(mr, "success"):
-                        mock_success = mr.success
-
-                try:
-                    mock_result = runner.run(file_path, run_options)
-                    if mock_success:
-                        return IntegrationResult.success_result(
-                            content=mock_result,
-                            message="File processed successfully"
-                        )
-                    else:
-                        return IntegrationResult.error_result(
-                            error=mock_error or "Unknown processing error",
-                            message="File processing failed"
-                        )
-                except Exception:
-                    # If the mock runner itself raises, attribute error from mr or exception
-                    return IntegrationResult.error_result(
-                        error=mock_error or "Unknown processing error",
-                        message="File processing failed"
-                    )
-
-            # Real runner branch
-            run_result = runner.run(file_path, run_options)  # type: ignore
-            if run_result.success:
-                return IntegrationResult.success_result(
-                    content=run_result,
-                    message="File processed successfully"
-                )
-            # Extract error from real run result
-            err = None
-            if hasattr(run_result, "error") and run_result.error:
-                err = run_result.error
-            elif hasattr(run_result, "metadata") and getattr(run_result.metadata, "get", None):
-                err = run_result.metadata.get("error_message")
-            if not err:
-                err = "Unknown processing error"
-
-            return IntegrationResult.error_result(
-                error=err,
-                message="File processing failed"
-            )
-
-        except Exception as e:
-            self.logger.exception(f"Failed to process file: {e}")
-            return IntegrationResult.error_result(
-                error=str(e),
-                message="File processing failed"
-            )
-
-    def get_output_writer(self) -> OutputWriter | None:
-        """
-        Get the output writer for this tool.
-
-        Override this method to return a custom OutputWriter if the tool wants.
-        By default, returns a DefaultOutputWriter which outputs JSON.
-
-        Note: To change the output extension, override the _get_output_extension() method.
-        For non-JSON formats, return a different writer like YAMLOutputWriter.
-
-        Returns:
-            OutputWriter | None: The output writer to use, or None for default behavior
-        """
-        # Return the default JSON writer
-        # Note: The extension from _get_output_extension() is not used directly,
-        # but tools should override this entire method to return appropriate writer
-        # if they want a different format
-        extension = self._get_output_extension()
-        if extension in (".yaml", ".yml"):
-            return YAMLOutputWriter()
-
-        return DefaultOutputWriter()
-
-    def get_remote_handler(self) -> Any | None:
-        """
-        Get the remote handler for this tool.
-
-        Override this method to return a custom remote handler if the tool wants.
-        By default, returns None.
-
-        Returns:
-            Any | None: The remote handler to use, or None for default
-        """
-        return None
-
-    def _get_output_extension(self) -> str:
-        """
-        Get the file extension for output files.
-
-        Override this method to return a different extension if needed.
-
-        Returns:
-            str: File extension (with leading dot) for output files
-        """
-        return ".json"
-
     @abc.abstractmethod
-    def initialize_plugin(self) -> None:
+    def run(
+            self,
+            request: Any,
+            ctx: ToolContext
+    ) -> CapabilityResult[Any]:
         """
-        Initialize plugin-specific resources and dependencies.
+        Execute the tool's capability.
 
-        This method should be implemented by concrete plugin classes
-        to set up any required resources, dependencies, or state.
-        """
-        pass
-
-    @abc.abstractmethod
-    def process_content(self, content: Any, options: dict[str, Any]) -> Any:
-        """
-        Process content with this tool.
-
-        This is the core processing logic that concrete modules must implement.
-        It receives the loaded content and must return the processed result.
+        This is the main entrypoint that concrete tools must implement.
 
         Args:
-            content: The loaded content to process
-            options: Dictionary of processing options
+            request: Typed request model (Pydantic BaseModel)
+            ctx: Execution context with services and configuration
 
         Returns:
-            Any: The processed content
+            CapabilityResult containing typed response data
+
+        Example:
+            >>> def run(
+            ...     self,
+            ...     request: EchoRequest,
+            ...     ctx: ToolContext
+            ... ) -> CapabilityResult[str]:
+            ...     greeting = request.override_greeting or "Hello"
+            ...     result = f"{greeting} {request.text}"
+            ...     return CapabilityResult.ok(
+            ...         data=result,
+            ...         msg="Echo completed"
+            ...     )
         """
         pass
+
+
+# Backwards compatibility alias
+# TODO: Remove in next major version
+BaseQuackToolPlugin = BaseQuackTool

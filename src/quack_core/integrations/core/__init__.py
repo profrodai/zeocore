@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/core/__init__.py
-# module: quack_core.integrations.core.__init__
-# role: module
-# neighbors: protocols.py, registry.py, results.py, base.py
-# exports: BaseAuthProvider, BaseConfigProvider, BaseIntegrationService, AuthProviderProtocol, ConfigProviderProtocol, IntegrationProtocol, StorageIntegrationProtocol, AuthResult (+5 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 0f9247b
-# === QV-LLM:END ===
-
 """
 Integrations package for quack_core.
 
@@ -15,7 +5,6 @@ This package provides a framework for connecting QuackCore to external services
 and platforms, with a modular approach that allows for community contributions.
 """
 
-import logging
 from typing import TypeVar, cast
 
 from quack_core.integrations.core.base import (
@@ -35,26 +24,16 @@ from quack_core.integrations.core.results import (
     ConfigResult,
     IntegrationResult,
 )
+from quack_core.integrations.boot import get_global_registry
 
-# Create a global registry instance
-registry = IntegrationRegistry()
-
-# Initialize by discovering integrations
-try:
-    registry.discover_integrations()
-except Exception as e:
-    logging.getLogger(__name__).warning(f"Error discovering integrations: {e}")
-
-
-# Generic type for service
 T = TypeVar("T", bound=BaseIntegrationService)
 
 
 def get_integration_service(service_type: type[T]) -> T | None:
     """
-    Get an integration service of the specified type.
+    Get an integration service of the specified type from the GLOBAL registry.
 
-    This function searches the registry for an integration service that matches
+    This function searches the global registry for an integration service that matches
     the specified type and returns the first one found.
 
     Args:
@@ -63,17 +42,10 @@ def get_integration_service(service_type: type[T]) -> T | None:
     Returns:
         T | None: An instance of the requested service type, or None if not found
     """
-    logger = logging.getLogger(__name__)
-
-    # Search for services matching the requested type
+    registry = get_global_registry()
     for service in registry.get_integration_by_type(service_type):
-        # Return the first one found, cast to the requested type
         if isinstance(service, service_type):
-            logger.debug(f"Found integration service: {service.name}")
             return cast(T, service)
-
-    # Log the failure to find a matching service
-    logger.debug(f"No integration service found for type: {service_type.__name__}")
     return None
 
 
@@ -93,7 +65,7 @@ __all__ = [
     "IntegrationResult",
     # Registry
     "IntegrationRegistry",
-    "registry",
+    "get_global_registry",
     # Utility functions
     "get_integration_service",
 ]
