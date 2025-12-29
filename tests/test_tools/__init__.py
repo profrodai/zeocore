@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: conftest.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py, test_protocol.py (+2 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21647d6
+# git_commit: 7e3e554
 # === QV-LLM:END ===
 
 """

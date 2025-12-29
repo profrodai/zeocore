@@ -3,6 +3,6 @@
 # role: tests
 # neighbors: test_discovery.py, test_explicit_loading.py, test_protocols.py, test_registry.py
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21647d6
+# git_commit: 7e3e554
 # === QV-LLM:END ===
 

@@ -5,7 +5,7 @@
 # neighbors: error.py, log.py, result.py
 # exports: CapabilityResult, CapabilityError, CapabilityLogEvent
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21647d6
+# git_commit: 7e3e554
 # === QV-LLM:END ===
 
 """

@@ -3,6 +3,6 @@
 # role: utils
 # neighbors: test_utils_api.py, test_utils_query.py
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21647d6
+# git_commit: 7e3e554
 # === QV-LLM:END ===
 

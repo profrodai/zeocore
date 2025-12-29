@@ -2,7 +2,7 @@
 # path: quack-core/tests/test_integrations/github/utils/__init__.py
 # role: utils
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21647d6
+# git_commit: 7e3e554
 # === QV-LLM:END ===
 
 """Tests for GitHub integration utilities."""

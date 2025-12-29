@@ -5,7 +5,7 @@
 # neighbors: anthropic.py, base.py, mock.py, ollama.py, openai.py
 # exports: AnthropicClient, LLMClient, MockLLMClient, OpenAIClient
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 21647d6
+# git_commit: 7e3e554
 # === QV-LLM:END ===
 
 """
