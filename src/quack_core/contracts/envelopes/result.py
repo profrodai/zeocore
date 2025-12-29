@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-The canonical result envelope for all capabilities.
+The canonical result envelope for all capability_models.
 
 Consumed by: ALL Ring B tools, Ring C orchestrators (n8n, Temporal, runners)
 Must NOT contain: Business logic, orchestration, side effects
@@ -33,7 +33,7 @@ T = TypeVar("T")
 
 class CapabilityResult(BaseModel, Generic[T]):
     """
-    Standard return envelope for ALL capabilities.
+    Standard return envelope for ALL capability_models.
 
     Orchestrators (n8n, Temporal) parse this JSON to decide the next step
     in the workflow. This enables:

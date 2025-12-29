@@ -186,15 +186,15 @@ def normalize_paths(config):
     if "temp_dir" not in config_dict["paths"]:
         config_dict["paths"]["temp_dir"] = _normalize_path("temp", base_dir)
 
-    # Normalize plugins paths.
+    # Normalize modules paths.
     if (
-        "plugins" in config_dict
-        and isinstance(config_dict["plugins"], dict)
-        and "paths" in config_dict["plugins"]
+        "modules" in config_dict
+        and isinstance(config_dict["modules"], dict)
+        and "paths" in config_dict["modules"]
     ):
-        plugin_paths = config_dict["plugins"]["paths"]
+        plugin_paths = config_dict["modules"]["paths"]
         if plugin_paths and isinstance(plugin_paths, list):
-            config_dict["plugins"]["paths"] = [
+            config_dict["modules"]["paths"] = [
                 _normalize_path(p, base_dir) for p in plugin_paths
             ]
 

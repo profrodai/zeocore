@@ -17,8 +17,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from quack_core.lib.errors import QuackPluginError
-from quack_core.plugins.discovery import PluginLoader
-from quack_core.plugins.protocols import QuackPluginMetadata, QuackPluginProtocol
+from quack_core.modules.discovery import PluginLoader
+from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol
 
 
 # Mock plugin implementation for testing
@@ -48,7 +48,7 @@ class TestPluginLoader:
         assert loader.logger is not None
 
     def test_load_entry_points(self) -> None:
-        """Test loading plugins from entry points."""
+        """Test loading modules from entry points."""
         loader = PluginLoader()
         mock_plugin = MockPlugin()
         mock_factory = MagicMock(return_value=mock_plugin)
@@ -60,22 +60,22 @@ class TestPluginLoader:
         with patch(
             "importlib.metadata.entry_points", return_value=[mock_ep1]
         ) as mock_entry_points:
-            plugins = loader.load_entry_points("test.plugins")
+            plugins = loader.load_entry_points("test.modules")
             assert len(plugins) == 1
             assert plugins[0] is mock_plugin
-            mock_entry_points.assert_called_once_with(group="test.plugins")
+            mock_entry_points.assert_called_once_with(group="test.modules")
             mock_ep1.load.assert_called_once()
             mock_factory.assert_called_once()
 
         with patch("importlib.metadata.entry_points", return_value=[mock_ep1]):
             mock_ep1.load.side_effect = Exception("Test error")
-            plugins = loader.load_entry_points("test.plugins")
+            plugins = loader.load_entry_points("test.modules")
             assert len(plugins) == 0
 
         with patch(
             "importlib.metadata.entry_points", side_effect=Exception("Test error")
         ):
-            plugins = loader.load_entry_points("test.plugins")
+            plugins = loader.load_entry_points("test.modules")
             assert len(plugins) == 0
 
     def test_load_plugin(self) -> None:
@@ -138,7 +138,7 @@ class TestPluginLoader:
                     loader.load_plugin("test.module")
 
     def test_load_plugins(self) -> None:
-        """Test loading multiple plugins from module paths."""
+        """Test loading multiple modules from module paths."""
         loader = PluginLoader()
         mock_module1 = MagicMock()
         mock_plugin1 = MockPlugin()
@@ -162,7 +162,7 @@ class TestPluginLoader:
             assert mock_load.call_count == 2
 
     def test_discover_plugins(self) -> None:
-        """Test discovering plugins from entry points and modules."""
+        """Test discovering modules from entry points and modules."""
         loader = PluginLoader()
         mock_plugin1 = MockPlugin()
         mock_plugin2 = MockPlugin()
@@ -170,16 +170,16 @@ class TestPluginLoader:
             with patch.object(loader, "load_plugins") as mock_load_plugins:
                 mock_load_eps.return_value = [mock_plugin1]
                 mock_load_plugins.return_value = [mock_plugin2]
-                plugins = loader.discover_plugins("test.plugins", ["test.module"])
+                plugins = loader.discover_plugins("test.modules", ["test.module"])
                 assert len(plugins) == 2
                 assert plugins[0] is mock_plugin1
                 assert plugins[1] is mock_plugin2
-                mock_load_eps.assert_called_once_with("test.plugins")
+                mock_load_eps.assert_called_once_with("test.modules")
                 mock_load_plugins.assert_called_once_with(["test.module"])
 
         with patch.object(loader, "load_entry_points") as mock_load_eps:
             mock_load_eps.return_value = [mock_plugin1]
-            plugins = loader.discover_plugins("test.plugins")
+            plugins = loader.discover_plugins("test.modules")
             assert len(plugins) == 1
             assert plugins[0] is mock_plugin1
-            mock_load_eps.assert_called_once_with("test.plugins")
+            mock_load_eps.assert_called_once_with("test.modules")

@@ -171,13 +171,13 @@ class GeneralConfig(BaseModel):
 
 
 class PluginsConfig(BaseModel):
-    """Configuration for plugins."""
+    """Configuration for modules."""
 
     enabled: list[str] = Field(
-        default_factory=list, description="List of enabled plugins"
+        default_factory=list, description="List of enabled modules"
     )
     disabled: list[str] = Field(
-        default_factory=list, description="List of disabled plugins"
+        default_factory=list, description="List of disabled modules"
     )
     paths: list[str] = Field(
         default_factory=list, description="Additional plugin search paths"

@@ -16,7 +16,7 @@ from collections.abc import Callable
 import pytest
 
 from quack_core.lib.errors import QuackPluginError
-from quack_core.plugins.protocols import (
+from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,
     ProviderPluginProtocol,
@@ -24,7 +24,7 @@ from quack_core.plugins.protocols import (
     QuackPluginProtocol,
     WorkflowPluginProtocol,
 )
-from quack_core.plugins.registry import PluginRegistry
+from quack_core.modules.registry import PluginRegistry
 
 
 # Mock plugin implementations for testing
@@ -240,10 +240,10 @@ class TestPluginRegistry:
             assert registry._workflows[wf] is plugin
 
     def test_command_override(self) -> None:
-        """Test that newer command plugins override older ones for the same command."""
+        """Test that newer command modules override older ones for the same command."""
         registry = PluginRegistry()
 
-        # Create two command plugins with overlapping commands
+        # Create two command modules with overlapping commands
         class Plugin1(CommandPluginProtocol):
             @property
             def name(self) -> str:
@@ -291,11 +291,11 @@ class TestPluginRegistry:
         assert registry._commands["cmd2"] is plugin2
 
     def test_workflow_override(self) -> None:
-        """Test that newer workflow plugins override
+        """Test that newer workflow modules override
         older ones for the same workflow."""
         registry = PluginRegistry()
 
-        # Create two workflow plugins with overlapping workflows
+        # Create two workflow modules with overlapping workflows
         class Plugin1(WorkflowPluginProtocol):
             @property
             def name(self) -> str:
@@ -346,7 +346,7 @@ class TestPluginRegistry:
         """Test unregistering a plugin."""
         registry = PluginRegistry()
 
-        # Register different types of plugins
+        # Register different types of modules
         basic = BasicPlugin()
         command = CommandPlugin()
         workflow = WorkflowPlugin()
@@ -430,10 +430,10 @@ class TestPluginRegistry:
             registry.execute_workflow("nonexistent")
 
     def test_plugin_getters(self) -> None:
-        """Test getting plugins from the registry."""
+        """Test getting modules from the registry."""
         registry = PluginRegistry()
 
-        # Register different types of plugins
+        # Register different types of modules
         basic = BasicPlugin()
         command = CommandPlugin()
         workflow = WorkflowPlugin()
@@ -467,10 +467,10 @@ class TestPluginRegistry:
         assert registry.get_provider_plugin(basic.name) is None
 
     def test_list_plugins(self) -> None:
-        """Test listing plugins."""
+        """Test listing modules."""
         registry = PluginRegistry()
 
-        # Register different types of plugins
+        # Register different types of modules
         basic = BasicPlugin()
         command = CommandPlugin()
         workflow = WorkflowPlugin()
@@ -576,11 +576,11 @@ class TestPluginRegistry:
             registry.unregister(plugin.name)
 
     def test_plugin_capabilities_filtering(self) -> None:
-        """Test filtering plugins by capability."""
-        from quack_core.plugins.protocols import QuackPluginMetadata
+        """Test filtering modules by capability."""
+        from quack_core.modules.protocols import QuackPluginMetadata
 
         class CapabilityPlugin(QuackPluginProtocol):
-            """Plugin with capabilities for testing."""
+            """Plugin with capability_models for testing."""
 
             def __init__(self, name: str, capabilities: list[str]) -> None:
                 self._name = name
@@ -600,7 +600,7 @@ class TestPluginRegistry:
 
         registry = PluginRegistry()
 
-        # Register plugins with different capabilities
+        # Register modules with different capability_models
         plugin1 = CapabilityPlugin("plugin1", ["command", "workflow"])
         plugin2 = CapabilityPlugin("plugin2", ["command"])
         plugin3 = CapabilityPlugin("plugin3", ["provider"])
@@ -609,7 +609,7 @@ class TestPluginRegistry:
         registry.register(plugin2)
         registry.register(plugin3)
 
-        # Test finding plugins by capability
+        # Test finding modules by capability
         command_plugins = registry.find_plugins_by_capability("command")
         assert len(command_plugins) == 2
         assert plugin1 in command_plugins
@@ -635,7 +635,7 @@ class TestPluginRegistry:
 
         registry = PluginRegistry()
 
-        # Create our plugins for testing
+        # Create our modules for testing
         class TestPlugin(QuackPluginProtocol):
             @property
             def name(self) -> str:
@@ -677,7 +677,7 @@ class TestPluginRegistry:
             assert reloaded_plugin is updated_plugin
             mock_reload.assert_called_once_with("test_reload_plugin")
 
-        # Manual test of the capabilities logic
+        # Manual test of the capability_models logic
         # Since we mocked reload_plugin, we need to manually register
         # the updated plugin to test capability filtering
         registry.unregister("test_reload_plugin")
@@ -692,7 +692,7 @@ class TestPluginRegistry:
         from typing import cast
         from unittest.mock import patch
 
-        from quack_core.plugins.discovery import PluginLoader
+        from quack_core.modules.discovery import PluginLoader
 
         loader = PluginLoader()
 
@@ -776,7 +776,7 @@ class TestPluginRegistry:
         """Test loading a built-in plugin."""
         from unittest.mock import MagicMock, patch
 
-        from quack_core.plugins.discovery import PluginLoader
+        from quack_core.modules.discovery import PluginLoader
 
         loader = PluginLoader()
 
@@ -802,7 +802,7 @@ class TestPluginRegistry:
         """Test discovering an external plugin."""
         from unittest.mock import MagicMock, patch
 
-        from quack_core.plugins.discovery import PluginLoader
+        from quack_core.modules.discovery import PluginLoader
 
         loader = PluginLoader()
 

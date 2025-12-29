@@ -37,7 +37,7 @@ from quack_core.contracts import (
 )
 # Import demo implementations directly from their INTERNAL module
 # NOTE: Using underscore-prefixed module to access internal examples
-from quack_core.contracts.capabilities.demo._impl import (
+from quack_core.contracts.capability_models.demo._impl import (
     echo_text,
     validate_video_ref,
 )

@@ -8,10 +8,10 @@
 # === QV-LLM:END ===
 
 """
-Example usage of the QuackCore toolkit.
+Example usage of the QuackCore capabilities.
 
 This example demonstrates how to create a custom QuackTool plugin
-using the QuackCore toolkit.
+using the QuackCore capabilities.
 """
 
 import json
@@ -22,7 +22,7 @@ from quack_core.integrations.core import IntegrationResult
 # Note: This is just for the example, in a real implementation you'd
 # use the actual import path for GoogleDriveService
 from quack_core.integrations.google.drive import GoogleDriveService
-from quack_core.toolkit import (
+from quack_core.capabilities import (
     BaseQuackToolPlugin,
     IntegrationEnabledMixin,
     OutputFormatMixin,
@@ -38,7 +38,7 @@ class ExampleTool(
     BaseQuackToolPlugin,
 ):
     """
-    Example QuackTool plugin that demonstrates the QuackCore toolkit.
+    Example QuackTool plugin that demonstrates the QuackCore capabilities.
 
     This tool:
     1. Reads a JSON file

@@ -34,7 +34,7 @@ from quack_core.lib.fs import service as fs
 from quack_core.integrations.core import IntegrationRegistry
 from quack_core.integrations.core import registry as integration_registry
 from quack_core.lib.paths import resolver as paths
-from quack_core.plugins import QuackPluginProtocol, loader, registry
+from quack_core.modules import QuackPluginProtocol, loader, registry
 
 __all__ = [
     # Version

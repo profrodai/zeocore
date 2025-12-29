@@ -66,7 +66,7 @@ class ProviderStatus(BaseModel):
 
 class FallbackLLMClient(LLMClient):
     """
-    LLM client with fallback capabilities.
+    LLM client with fallback capability_models.
 
     This client tries multiple LLM providers in sequence, falling back to the next
     provider if the current one fails.

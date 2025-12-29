@@ -31,7 +31,7 @@ def setup_tool_logging(tool_name: str, log_level: str = "INFO") -> None:
     Set up logging for a QuackTool.
 
     This sets up a tool-specific logger with console and file output,
-    leveraging quack-core's enhanced logging capabilities including
+    leveraging quack-core's enhanced logging capability_models including
     Teaching Mode support. It also ensures log files are properly
     cleaned up during tests.
 

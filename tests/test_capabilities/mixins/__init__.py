@@ -1,0 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_capabilities/mixins/__init__.py
+# role: tests
+# neighbors: test_env_init.py, test_integration_enabled.py, test_lifecycle.py, test_output_handler.py
+# git_branch: refactor/toolkitWorkflow
+# git_commit: 66ff061
+# === QV-LLM:END ===
+
+"""
+Tests for the QuackTool mixins.
+
+This package contains tests for individual mixin classes in the QuackTool capabilities.
+"""

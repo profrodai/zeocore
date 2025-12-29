@@ -25,7 +25,7 @@ T = TypeVar("T")  # Generic type for flexible typing
 
 
 class ConfigPlugin(Protocol):
-    """Protocol for configuration plugins."""
+    """Protocol for configuration modules."""
 
     @property
     def name(self) -> str:

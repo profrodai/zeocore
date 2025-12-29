@@ -216,7 +216,7 @@ class TestIntegrationRegistryDiscovery:
         mock_discovery.loader = mock_loader
 
         # Patch sys.modules to include our mock
-        with patch.dict(sys.modules, {"quack_core.plugins.discovery": mock_discovery}):
+        with patch.dict(sys.modules, {"quack_core.modules.discovery": mock_discovery}):
             loader = registry._get_plugin_loader()
             assert loader is mock_loader
 

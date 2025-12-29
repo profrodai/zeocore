@@ -62,7 +62,7 @@ Standardized path resolution and project structure detection across environments
 ### `quack_core.lib.fs`
 Safe and consistent filesystem operations with error handling and structured results.
 
-### `quack_core.plugins`
+### `quack_core.modules`
 Extensible plugin discovery and registration framework to build modular CLI agents and tools.
 
 ### `quack_core.integrations`
@@ -137,16 +137,16 @@ if yaml_result.success:
 ### Using Plugins
 
 ```python
-from quack_core.plugins import registry
+from quack_core.modules import registry
 
-# Get a list of all registered plugins
+# Get a list of all registered modules
 plugin_names = registry.list_plugins()
 
 # Get a specific plugin
 pandoc_plugin = registry.get_plugin("Pandoc")
 if pandoc_plugin:
-    pandoc_plugin.initialize()
-    # Use the plugin's functionality
+  pandoc_plugin.initialize()
+  # Use the plugin's functionality
 ```
 
 ### Working with Google Drive Integration
@@ -257,31 +257,31 @@ except Exception as e:
 ### Creating a Custom Plugin
 
 ```python
-from quack_core.plugins.protocols import QuackPluginProtocol
+from quack_core.modules.protocols import QuackPluginProtocol
 from quack_core.integrations.core.results import IntegrationResult
 
 
 class MyCustomPlugin(QuackPluginProtocol):
-    @property
-    def name(self) -> str:
-        return "MyCustomPlugin"
+  @property
+  def name(self) -> str:
+    return "MyCustomPlugin"
 
-    @property
-    def version(self) -> str:
-        return "1.0.0"
+  @property
+  def version(self) -> str:
+    return "1.0.0"
 
-    def initialize(self) -> IntegrationResult:
-        # Initialization logic here
-        return IntegrationResult.success_result(message="Plugin initialized successfully")
+  def initialize(self) -> IntegrationResult:
+    # Initialization logic here
+    return IntegrationResult.success_result(message="Plugin initialized successfully")
 
-    def is_available(self) -> bool:
-        return True
+  def is_available(self) -> bool:
+    return True
 
-    # Add custom methods for your plugin
+  # Add custom methods for your plugin
 
 
 # Register the plugin
-from quack_core.plugins import registry
+from quack_core.modules import registry
 
 registry.register(MyCustomPlugin())
 ```
@@ -383,7 +383,7 @@ plugins:
     - "GoogleDrive"
     - "GoogleMail"
   paths:
-    - "./plugins"
+    - "./modules"
 
 # Custom application-specific configuration
 custom:
@@ -454,7 +454,7 @@ Tools built with QuackCore gain immediate compatibility with:
 To create your own tool:
 - Follow QuackCore’s plugin or integration protocol
 - Use `quack_core.config` and `quack_core.lib.fs` for standard behavior
-- Register your tool with `quack_core.plugins.registry`
+- Register your tool with `quack_core.modules.registry`
 
 This ensures your tool can be consumed by orchestrators like **QuackBuddy** and exposed via upcoming standards such as **MCP**.
 
@@ -592,7 +592,7 @@ QuackAuthenticationError: Failed to authenticate with Google Drive
 #### Plugin Not Found
 
 ```
-QuackPluginError: No plugin found in module quack_core.plugins.my_plugin
+QuackPluginError: No plugin found in module quack_core.modules.my_plugin
 ```
 
 **Solution**:

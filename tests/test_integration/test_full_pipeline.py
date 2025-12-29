@@ -23,14 +23,14 @@ from quack_core.lib.errors import QuackError
 from quack_core.lib.fs.service import FileSystemService
 from quack_core.lib.paths import PathResolver
 from quack_core.lib.paths import service as paths
-from quack_core.plugins.protocols import (
+from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ProviderPluginProtocol,
 )
-from quack_core.plugins.registry import PluginRegistry
+from quack_core.modules.registry import PluginRegistry
 
 
-# Test plugins to register in the registry
+# Test modules to register in the registry
 class SampleFilePlugin(CommandPluginProtocol):
     """A test plugin for file _operations."""
 
@@ -209,12 +209,12 @@ class TestIntegration:
         fs_service = FileSystemService(base_dir=temp_dir)
         path_resolver = PathResolver()
 
-        # Initialize plugins
+        # Initialize modules
         file_plugin = SampleFilePlugin(fs_service)
         path_plugin = SamplePathPlugin(path_resolver)
         config_provider = SampleConfigProvider(config)
 
-        # Register plugins in the registry
+        # Register modules in the registry
         registry = PluginRegistry()
         registry.register(file_plugin)
         registry.register(path_plugin)

@@ -30,18 +30,18 @@ import unittest
 from unittest.mock import Mock, patch
 
 from quack_core.lib.errors import QuackPluginError
-from quack_core.plugins.protocols import QuackPluginMetadata
+from quack_core.modules.protocols import QuackPluginMetadata
 
 
 class TestImportSideEffects(unittest.TestCase):
-    """Test that importing quack_core.plugins has no side effects."""
+    """Test that importing quack_core.modules has no side effects."""
 
     def setUp(self):
         """Clean up any existing plugin state before each test."""
-        # Remove plugins module from sys.modules to force fresh import
+        # Remove modules module from sys.modules to force fresh import
         modules_to_remove = [
             key for key in sys.modules.keys()
-            if key.startswith("quack_core.plugins")
+            if key.startswith("quack_core.modules")
         ]
         for module in modules_to_remove:
             del sys.modules[module]
@@ -50,46 +50,46 @@ class TestImportSideEffects(unittest.TestCase):
         """
         Test A: Import has no side effects.
 
-        Importing quack_core.plugins must not register any plugins.
+        Importing quack_core.modules must not register any modules.
         The registry should be completely empty after import.
         """
         # Import the module
-        import quack_core.plugins
+        import quack_core.modules
 
         # Verify registry is empty
         self.assertEqual(
-            len(quack_core.plugins.registry.list_ids()),
+            len(quack_core.modules.registry.list_ids()),
             0,
             "Registry should be empty after import, but contains: "
-            f"{quack_core.plugins.registry.list_ids()}",
+            f"{quack_core.modules.registry.list_ids()}",
         )
 
-        # Verify no plugins of any type
-        self.assertEqual(len(quack_core.plugins.registry.list_command_plugins()), 0)
-        self.assertEqual(len(quack_core.plugins.registry.list_workflow_plugins()), 0)
-        self.assertEqual(len(quack_core.plugins.registry.list_extension_plugins()), 0)
-        self.assertEqual(len(quack_core.plugins.registry.list_provider_plugins()), 0)
+        # Verify no modules of any type
+        self.assertEqual(len(quack_core.modules.registry.list_command_plugins()), 0)
+        self.assertEqual(len(quack_core.modules.registry.list_workflow_plugins()), 0)
+        self.assertEqual(len(quack_core.modules.registry.list_extension_plugins()), 0)
+        self.assertEqual(len(quack_core.modules.registry.list_provider_plugins()), 0)
 
         # Verify no commands or workflows registered
-        self.assertEqual(len(quack_core.plugins.registry.list_commands()), 0)
-        self.assertEqual(len(quack_core.plugins.registry.list_workflows()), 0)
+        self.assertEqual(len(quack_core.modules.registry.list_commands()), 0)
+        self.assertEqual(len(quack_core.modules.registry.list_workflows()), 0)
 
     def test_import_exports_expected_api(self):
         """Verify the module exports the expected public API."""
-        import quack_core.plugins
+        import quack_core.modules
 
         # Check that explicit loading functions are available
-        self.assertTrue(hasattr(quack_core.plugins, "list_available_entry_points"))
-        self.assertTrue(hasattr(quack_core.plugins, "load_enabled_entry_points"))
-        self.assertTrue(hasattr(quack_core.plugins, "load_enabled_modules"))
+        self.assertTrue(hasattr(quack_core.modules, "list_available_entry_points"))
+        self.assertTrue(hasattr(quack_core.modules, "load_enabled_entry_points"))
+        self.assertTrue(hasattr(quack_core.modules, "load_enabled_modules"))
 
         # Check that global instances are available
-        self.assertTrue(hasattr(quack_core.plugins, "registry"))
-        self.assertTrue(hasattr(quack_core.plugins, "loader"))
+        self.assertTrue(hasattr(quack_core.modules, "registry"))
+        self.assertTrue(hasattr(quack_core.modules, "loader"))
 
         # Check that classes are available
-        self.assertTrue(hasattr(quack_core.plugins, "PluginRegistry"))
-        self.assertTrue(hasattr(quack_core.plugins, "PluginLoader"))
+        self.assertTrue(hasattr(quack_core.modules, "PluginRegistry"))
+        self.assertTrue(hasattr(quack_core.modules, "PluginLoader"))
 
 
 class MockTestPlugin:
@@ -122,23 +122,23 @@ class TestExplicitLoading(unittest.TestCase):
 
     def setUp(self):
         """Clean registry before each test."""
-        from quack_core.plugins import registry
+        from quack_core.modules import registry
         registry.clear()
 
     def tearDown(self):
         """Clean registry after each test."""
-        from quack_core.plugins import registry
+        from quack_core.modules import registry
         registry.clear()
 
-    @patch("quack_core.plugins.discovery.entry_points")
+    @patch("quack_core.modules.discovery.entry_points")
     def test_explicit_load_loads_only_requested_plugins(self, mock_entry_points):
         """
-        Test B: Explicit load loads only requested plugins.
+        Test B: Explicit load loads only requested modules.
 
         When we call load_enabled_entry_points with specific plugin IDs,
-        only those plugins should be loaded and registered.
+        only those modules should be loaded and registered.
         """
-        from quack_core.plugins import load_enabled_entry_points, registry
+        from quack_core.modules import load_enabled_entry_points, registry
 
         # Create mock entry points
         fs_plugin = MockTestPlugin(plugin_id="fs", name="FileSystem")
@@ -184,16 +184,16 @@ class TestExplicitLoading(unittest.TestCase):
         self.assertIsNotNone(fs)
         self.assertEqual(fs.plugin_id, "fs")
 
-    @patch("quack_core.plugins.discovery.entry_points")
+    @patch("quack_core.modules.discovery.entry_points")
     def test_strict_missing_plugin_fails_and_loads_nothing(self, mock_entry_points):
         """
         Test C: Strict missing plugin fails and loads nothing.
 
         In strict mode, if a requested plugin doesn't exist, the entire
-        operation should fail and NO plugins should be registered.
+        operation should fail and NO modules should be registered.
         This now includes pre-validation, so nothing is attempted.
         """
-        from quack_core.plugins import load_enabled_entry_points, registry
+        from quack_core.modules import load_enabled_entry_points, registry
 
         # Create mock entry points (only fs exists)
         fs_plugin = MockTestPlugin(plugin_id="fs", name="FileSystem")
@@ -225,15 +225,15 @@ class TestExplicitLoading(unittest.TestCase):
         # Verify fs.load() was NEVER called (pre-validation prevents loading)
         fs_ep.load.assert_not_called()
 
-    @patch("quack_core.plugins.discovery.entry_points")
+    @patch("quack_core.modules.discovery.entry_points")
     def test_non_strict_missing_plugin_continues(self, mock_entry_points):
         """
         Test D: Non-strict missing plugin continues.
 
         In non-strict mode, if a requested plugin doesn't exist, a warning
-        should be generated but loading should continue with available plugins.
+        should be generated but loading should continue with available modules.
         """
-        from quack_core.plugins import load_enabled_entry_points, registry
+        from quack_core.modules import load_enabled_entry_points, registry
 
         # Create mock entry points (only fs exists)
         fs_plugin = MockTestPlugin(plugin_id="fs", name="FileSystem")
@@ -263,12 +263,12 @@ class TestExplicitLoading(unittest.TestCase):
         self.assertEqual(len(registered_ids), 1)
         self.assertIn("fs", registered_ids)
 
-    @patch("quack_core.plugins.discovery.entry_points")
+    @patch("quack_core.modules.discovery.entry_points")
     def test_load_preserves_order(self, mock_entry_points):
-        """Verify that plugins are loaded in the order specified."""
-        from quack_core.plugins import load_enabled_entry_points
+        """Verify that modules are loaded in the order specified."""
+        from quack_core.modules import load_enabled_entry_points
 
-        # Create plugins
+        # Create modules
         plugins = [
             MockTestPlugin(plugin_id="alpha", name="Alpha"),
             MockTestPlugin(plugin_id="beta", name="Beta"),
@@ -294,10 +294,10 @@ class TestExplicitLoading(unittest.TestCase):
         # Verify order is preserved
         self.assertEqual(result.loaded, ["gamma", "alpha", "beta"])
 
-    @patch("quack_core.plugins.discovery.entry_points")
+    @patch("quack_core.modules.discovery.entry_points")
     def test_auto_register_false_does_not_register(self, mock_entry_points):
         """Test that auto_register=False prevents automatic registration."""
-        from quack_core.plugins import load_enabled_entry_points, registry
+        from quack_core.modules import load_enabled_entry_points, registry
 
         # Create mock plugin
         plugin = MockTestPlugin(plugin_id="test", name="Test")
@@ -322,10 +322,10 @@ class TestExplicitLoading(unittest.TestCase):
         # Verify plugin is NOT in registry
         self.assertEqual(len(registry.list_ids()), 0)
 
-    @patch("quack_core.plugins.discovery.entry_points")
+    @patch("quack_core.modules.discovery.entry_points")
     def test_plugin_id_must_match_entry_point_name(self, mock_entry_points):
         """Test that plugin_id must match entry point name for deterministic behavior."""
-        from quack_core.plugins import load_enabled_entry_points, registry
+        from quack_core.modules import load_enabled_entry_points, registry
 
         # Create mock plugin with DIFFERENT plugin_id than entry point name
         plugin = MockTestPlugin(plugin_id="different_id", name="Test")
@@ -359,17 +359,17 @@ class TestPluginIdStability(unittest.TestCase):
 
     def setUp(self):
         """Clean registry before each test."""
-        from quack_core.plugins import registry
+        from quack_core.modules import registry
         registry.clear()
 
     def tearDown(self):
         """Clean registry after each test."""
-        from quack_core.plugins import registry
+        from quack_core.modules import registry
         registry.clear()
 
     def test_registry_uses_plugin_id_not_name(self):
         """Verify that registry keys on plugin_id, not name."""
-        from quack_core.plugins import registry
+        from quack_core.modules import registry
 
         # Create plugin where plugin_id differs from name
         plugin = MockTestPlugin(plugin_id="my_plugin_id", name="Different Display Name")
@@ -389,9 +389,9 @@ class TestPluginIdStability(unittest.TestCase):
 
     def test_registry_list_ids_returns_plugin_ids(self):
         """Verify that list_ids returns plugin_id values, not names."""
-        from quack_core.plugins import registry
+        from quack_core.modules import registry
 
-        # Register plugins with different IDs and names
+        # Register modules with different IDs and names
         registry.register(MockTestPlugin(plugin_id="id_one", name="Name One"))
         registry.register(MockTestPlugin(plugin_id="id_two", name="Name Two"))
 
@@ -407,7 +407,7 @@ class TestPluginIdStability(unittest.TestCase):
 
     def test_duplicate_plugin_id_raises_error(self):
         """Verify that registering duplicate plugin_id raises error."""
-        from quack_core.plugins import registry
+        from quack_core.modules import registry
 
         # Register first plugin
         registry.register(MockTestPlugin(plugin_id="duplicate", name="First"))
@@ -424,10 +424,10 @@ class TestRegistryClear(unittest.TestCase):
     """Test the registry clear() method."""
 
     def test_clear_removes_all_plugins(self):
-        """Verify that clear() removes all plugins from registry."""
-        from quack_core.plugins import registry
+        """Verify that clear() removes all modules from registry."""
+        from quack_core.modules import registry
 
-        # Register multiple plugins
+        # Register multiple modules
         registry.register(MockTestPlugin(plugin_id="one", name="One"))
         registry.register(MockTestPlugin(plugin_id="two", name="Two"))
         registry.register(MockTestPlugin(plugin_id="three", name="Three"))
@@ -446,8 +446,8 @@ class TestRegistryClear(unittest.TestCase):
         self.assertEqual(len(registry.list_provider_plugins()), 0)
 
     def test_clear_allows_re_registration(self):
-        """Verify that clear() allows re-registering previously registered plugins."""
-        from quack_core.plugins import registry
+        """Verify that clear() allows re-registering previously registered modules."""
+        from quack_core.modules import registry
 
         plugin = MockTestPlugin(plugin_id="test", name="Test")
 
@@ -469,18 +469,18 @@ class TestLoadEnabledModules(unittest.TestCase):
 
     def setUp(self):
         """Clean registry before each test."""
-        from quack_core.plugins import registry
+        from quack_core.modules import registry
         registry.clear()
 
     def tearDown(self):
         """Clean registry after each test."""
-        from quack_core.plugins import registry
+        from quack_core.modules import registry
         registry.clear()
 
-    @patch("quack_core.plugins.discovery.importlib.import_module")
+    @patch("quack_core.modules.discovery.importlib.import_module")
     def test_load_enabled_modules_succeeds(self, mock_import):
-        """Test successful loading of plugins from module paths."""
-        from quack_core.plugins import load_enabled_modules, registry
+        """Test successful loading of modules from module paths."""
+        from quack_core.modules import load_enabled_modules, registry
 
         # Create a mock module with a create_plugin factory
         mock_module = Mock()
@@ -504,10 +504,10 @@ class TestLoadEnabledModules(unittest.TestCase):
         # Verify registration
         self.assertIn("test_module", registry.list_ids())
 
-    @patch("quack_core.plugins.discovery.importlib.import_module")
+    @patch("quack_core.modules.discovery.importlib.import_module")
     def test_load_enabled_modules_strict_failure(self, mock_import):
         """Test that strict mode fails on first error."""
-        from quack_core.plugins import load_enabled_modules, registry
+        from quack_core.modules import load_enabled_modules, registry
 
         # First module fails to import
         mock_import.side_effect = ImportError("Module not found")
@@ -531,10 +531,10 @@ class TestLoadEnabledModules(unittest.TestCase):
 class TestListAvailableEntryPoints(unittest.TestCase):
     """Test list_available_entry_points function."""
 
-    @patch("quack_core.plugins.discovery.entry_points")
+    @patch("quack_core.modules.discovery.entry_points")
     def test_list_available_does_not_instantiate(self, mock_entry_points):
-        """Verify that listing entry points does not instantiate plugins."""
-        from quack_core.plugins import list_available_entry_points
+        """Verify that listing entry points does not instantiate modules."""
+        from quack_core.modules import list_available_entry_points
 
         # Create mock entry points
         ep1 = Mock()

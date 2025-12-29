@@ -28,7 +28,7 @@ try:
     from quack_core.config.models import QuackConfig
     from quack_core.lib.fs import DataResult, OperationResult
     from quack_core.lib.fs.service import standalone as fs_standalone
-    from quack_core.plugins.protocols import QuackPluginProtocol
+    from quack_core.modules.protocols import QuackPluginProtocol
 except ImportError as e:
     print(f"Error importing quack-core modules: {e}")
     # Emergency fallbacks if needed
@@ -38,7 +38,7 @@ except ImportError as e:
     from quack_core.config.models import QuackConfig
     from quack_core.lib.fs import DataResult, OperationResult
     from quack_core.lib.fs.service import standalone as fs_standalone
-    from quack_core.plugins.protocols import QuackPluginProtocol
+    from quack_core.modules.protocols import QuackPluginProtocol
 
 
 @pytest.fixture(autouse=True)

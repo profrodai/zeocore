@@ -37,7 +37,7 @@ class DependencyChecker:
     # Forbidden modules (from other QuackCore rings)
     FORBIDDEN_MODULES = {
         "quack_core.lib",
-        "quack_core.toolkit",
+        "quack_core.capabilities",
         "quack_core.integrations",
         "quack_core.workflow",
         "quack_core.runners",

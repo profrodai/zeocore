@@ -224,7 +224,7 @@ class TestConfigModels:
         assert config.paths == []
 
         # Test with custom values
-        plugins_path = "/test/plugins"
+        plugins_path = "/test/modules"
         more_plugins_path = "/test/more_plugins"
         config = PluginsConfig(
             enabled=["plugin1", "plugin2"],
@@ -284,7 +284,7 @@ class TestConfigModels:
         assert "paths" in config_dict
         assert "logging" in config_dict
         assert "integrations" in config_dict
-        assert "plugins" in config_dict
+        assert "modules" in config_dict
         assert "custom" in config_dict
 
         # Test get_plugin_enabled method

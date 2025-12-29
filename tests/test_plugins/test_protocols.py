@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 
-from quack_core.plugins.protocols import (
+from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ConfigurablePluginProtocol,
     ExtensionPluginProtocol,

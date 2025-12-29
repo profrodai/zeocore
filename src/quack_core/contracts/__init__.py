@@ -80,7 +80,7 @@ from quack_core.contracts.artifacts import (
 )
 
 # Capability models
-from quack_core.contracts.capabilities import (
+from quack_core.contracts.capability_models import (
     # Media
     TimeRange,
     SliceVideoRequest,

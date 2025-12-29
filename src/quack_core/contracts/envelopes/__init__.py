@@ -11,7 +11,7 @@
 """
 Envelope models for capability results, errors, and logs.
 
-These models define the standard wrapper structure that ALL capabilities
+These models define the standard wrapper structure that ALL capability_models
 use to return results. This enables machine branching and audit trails.
 """
 
