@@ -3,30 +3,26 @@
 # module: quack_core.tools.mixins.__init__
 # role: module
 # neighbors: env_init.py, integration_enabled.py, lifecycle.py, output_handler.py
-# exports: ToolEnvInitializerMixin, IntegrationEnabledMixin, QuackToolLifecycleMixin
+# exports: IntegrationEnabledMixin, LifecycleMixin, ToolEnvInitializerMixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
+# git_commit: 234aec0
 # === QV-LLM:END ===
 
 
+
 """
-Mixins for QuackTool modules.
+Mixins for tools (doctrine-compliant).
 
-This package provides mixins that can be used to add optional functionality
-to QuackTool modules.
-
-Changes in refactor:
-- OutputFormatMixin removed (output handling is runner responsibility)
-- All mixins updated to use CapabilityResult
-- All mixins support ToolContext
+All mixins work with ToolContext and return CapabilityResult.
+Tool authors should import from quack_core.tools (not this submodule).
 """
 
-from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
-from quack_core.tools.mixins.lifecycle import QuackToolLifecycleMixin
+from quack_core.tools.mixins.lifecycle import LifecycleMixin
+from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 
 __all__ = [
-    "ToolEnvInitializerMixin",
-    "IntegrationEnabledMixin",
-    "QuackToolLifecycleMixin",
+    'IntegrationEnabledMixin',
+    'LifecycleMixin',
+    'ToolEnvInitializerMixin',
 ]

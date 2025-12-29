@@ -4,7 +4,7 @@
 # neighbors: __init__.py, auth_provider_impl.py, config_provider_impl.py, test_auth_provider.py, test_base.py, test_config_provider.py (+3 more)
 # exports: MockIntegrationService
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
+# git_commit: 234aec0
 # === QV-LLM:END ===
 
 """

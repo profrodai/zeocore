@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_env_init.py, test_lifecycle.py, test_output_handler.py
 # exports: MockIntegrationService, AnotherMockService, TestIntegrationEnabledMixin, TestIntegrationEnabledMixinWithPytest, integration_enabled_mixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
+# git_commit: 234aec0
 # === QV-LLM:END ===
 
 """

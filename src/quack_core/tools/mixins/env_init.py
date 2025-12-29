@@ -1,114 +1,98 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/mixins/env_init.py
-# module: quack_core.tools.mixins.env_init
-# role: module
-# neighbors: __init__.py, integration_enabled.py, lifecycle.py, output_handler.py
-# exports: ToolEnvInitializerMixin
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
-# === QV-LLM:END ===
-
-
 
 """
-Environment initializer mixin for QuackTool modules.
+Environment validation mixin for tools.
 
-This module provides a mixin that allows tools to dynamically initialize
-their environment by importing and initializing the tool's module.
+DOCTRINE STRICT MODE (fix #3):
+This mixin VALIDATES existence only. It does NOT create directories.
+Runner creates all directories. Tools fail if they don't exist.
 
-Changes from original:
-- Returns CapabilityResult instead of IntegrationResult
-- No runner logic imports
+This enforces clear responsibility:
+- Runner: creates ctx.work_dir and ctx.output_dir
+- Tools: validate they exist (fail fast if runner didn't set up correctly)
+
+Tools writing artifacts still go through runner's output mechanisms.
 """
 
-import importlib
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from quack_core.contracts import CapabilityResult
+
+if TYPE_CHECKING:
+    from quack_core.tools.context import ToolContext
 
 
 class ToolEnvInitializerMixin:
     """
-    Mixin that provides dynamic environment initialization for tools.
+    Mixin for tools that need environment validation.
 
-    This mixin allows tools to dynamically import and initialize
-    their environment by importing the tool's module.
+    IMPORTANT: This VALIDATES only. It does NOT create directories.
+    Runner creates directories; tools verify they exist.
 
-    Use case: Tools that need to lazy-load heavy dependencies or
-    initialize environment-specific configuration.
-
-    Example:
-        ```python
-        from quack_core.tools import BaseQuackTool
-        from quack_core.tools.mixins import ToolEnvInitializerMixin
-
-        class MyTool(ToolEnvInitializerMixin, BaseQuackTool):
-            def initialize(self, ctx):
-                # Initialize environment (e.g., import heavy module)
-                result = self._initialize_environment("my_heavy_module")
-                if not result.status == "success":
-                    return result
-
-                return CapabilityResult.ok(
-                    data=None,
-                    msg="Tool initialized"
-                )
-        ```
+    This is strict doctrine compliance:
+    - Ring C (runner) creates workspace
+    - Ring B (tools) validates assumptions
     """
 
-    def _initialize_environment(self, tool_name: str) -> CapabilityResult[None]:
+    def initialize_environment(
+            self,
+            ctx: ToolContext
+    ) -> CapabilityResult[None]:
         """
-        Dynamically import and initialize the environment for a tool.
+        Validate environment for tool execution (strict validation).
 
-        This method attempts to import a module with the given tool name
-        and call its initialize() function if available.
+        The runner MUST create work_dir and output_dir.
+        This method validates they exist. Fails if missing.
+
+        Override this method to add custom validation logic.
 
         Args:
-            tool_name: The name of the tool module to import
+            ctx: Tool context
 
         Returns:
-            CapabilityResult[None]: Success if initialized, error otherwise
-
-        Example:
-            >>> result = self._initialize_environment("my_tool.setup")
-            >>> if result.status == "success":
-            ...     print("Environment ready")
+            CapabilityResult indicating success or failure
         """
         try:
-            # Attempt to import the tool module
-            module = importlib.import_module(tool_name)
+            fs = ctx.require_fs()
 
-            # Check if the module has an initialize function
-            if hasattr(module, "initialize") and callable(module.initialize):
-                # Call the initialize function
-                result = module.initialize()
+            # Validate work_dir exists (runner must have created it)
+            if ctx.work_dir:
+                work_info = fs.get_file_info(ctx.work_dir)
+                if not work_info.success:
+                    return CapabilityResult.fail_from_exc(
+                        msg=f"Failed to check work directory: {work_info.error}",
+                        code="QC_ENV_WORK_DIR_CHECK_ERROR",
+                        exc=Exception(work_info.error)
+                    )
+                if not work_info.exists:
+                    return CapabilityResult.fail_from_exc(
+                        msg=f"Work directory does not exist: {ctx.work_dir}. Runner must create it.",
+                        code="QC_ENV_WORK_DIR_MISSING",
+                        exc=Exception("Work directory missing")
+                    )
 
-                # If the function returns a CapabilityResult, return it
-                if isinstance(result, CapabilityResult):
-                    return result
+            # Validate output_dir exists (runner must have created it)
+            if ctx.output_dir:
+                output_info = fs.get_file_info(ctx.output_dir)
+                if not output_info.success:
+                    return CapabilityResult.fail_from_exc(
+                        msg=f"Failed to check output directory: {output_info.error}",
+                        code="QC_ENV_OUTPUT_DIR_CHECK_ERROR",
+                        exc=Exception(output_info.error)
+                    )
+                if not output_info.exists:
+                    return CapabilityResult.fail_from_exc(
+                        msg=f"Output directory does not exist: {ctx.output_dir}. Runner must create it.",
+                        code="QC_ENV_OUTPUT_DIR_MISSING",
+                        exc=Exception("Output directory missing")
+                    )
 
-                # Otherwise, return a success result
-                return CapabilityResult.ok(
-                    data=None,
-                    msg=f"Successfully initialized {tool_name} environment"
-                )
+            return CapabilityResult.ok(msg="Environment validated")
 
-            # If no initialize function is found, return a success result
-            return CapabilityResult.ok(
-                data=None,
-                msg=f"Imported {tool_name} module (no initialize function found)"
-            )
-
-        except ImportError as e:
-            # If the module cannot be imported, return an error result
-            return CapabilityResult.fail(
-                msg=f"Failed to import {tool_name} module",
-                code="QC_CFG_IMPORT_ERROR",
-                exception=e
-            )
         except Exception as e:
-            # If any other error occurs, return an error result
-            return CapabilityResult.fail(
-                msg=f"Error initializing {tool_name} environment",
-                code="QC_CFG_INIT_ERROR",
-                exception=e
+            return CapabilityResult.fail_from_exc(
+                msg="Environment validation failed",
+                code="QC_ENV_INIT_ERROR",
+                exc=e
             )

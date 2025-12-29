@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, results.py, base.py
 # exports: AuthProviderProtocol, ConfigProviderProtocol, IntegrationProtocol, StorageIntegrationProtocol
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
+# git_commit: 234aec0
 # === QV-LLM:END ===
 
 """

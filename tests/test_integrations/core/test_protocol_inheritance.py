@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_get_service.py, test_protocols.py, test_registry.py, test_registry_discovery.py, test_results.py
 # exports: MinimalIntegration, MinimalAuthProvider, MinimalConfigProvider, MinimalStorageIntegration, CustomStorageIntegrationProtocol, ExtendedIntegrationProtocol, TestProtocolInheritance
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
+# git_commit: 234aec0
 # === QV-LLM:END ===
 
 """

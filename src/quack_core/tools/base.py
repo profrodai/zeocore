@@ -1,243 +1,128 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/base.py
-# module: quack_core.tools.base
-# role: module
-# neighbors: __init__.py, context.py, protocol.py
-# exports: BaseQuackTool
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
-# === QV-LLM:END ===
 
 
 """
-Base class implementation for QuackTool modules.
+Base class for all QuackCore tools (doctrine-compliant).
 
-This module provides the foundational class that all QuackTool modules
-should inherit from, implementing common functionality and enforcing
-the QuackToolProtocol.
+This is the foundation for Ring B (capability authoring).
+Tools inherit from this class and implement run().
 
-Design principles (Doctrine v3):
+Key principles:
 - Tools are pure capabilities (request → CapabilityResult)
-- Tools receive ToolContext explicitly (no DI magic)
-- Tools do NOT handle file I/O, output writing, or manifest creation
-- Tools are agnostic to runner implementation (CLI, n8n, Temporal)
-
-What was REMOVED from BaseQuackToolPlugin:
-- process_file() - Now in runner
-- Filesystem initialization - Now in ToolContext
-- Output directory creation - Now in runner
-- Temp directory creation - Now in runner/context
-- Output writer handling - Now in runner
-- FileWorkflowRunner import - Now in runner
-- IntegrationResult - Now using CapabilityResult from contracts
+- No file I/O (runner handles)
+- No manifest creation (runner translates)
+- Receive explicit ToolContext (no DI magic)
 """
 
-import abc
-from logging import Logger
-from typing import Any
+from abc import ABC, abstractmethod
+from typing import Any, TYPE_CHECKING
 
-from quack_core.contracts import CapabilityResult
-from quack_core.modules.protocols import QuackPluginMetadata
-from quack_core.tools.protocol import QuackToolProtocol
-from quack_core.tools.context import ToolContext
+from quack_core.contracts import CapabilityResult, CapabilityStatus
+
+if TYPE_CHECKING:
+    from quack_core.tools.context import ToolContext
 
 
-class BaseQuackTool(QuackToolProtocol, abc.ABC):
+class BaseQuackTool(ABC):
     """
-    Base class for all QuackTool modules.
+    Base class for all doctrine-compliant tools.
 
-    Provides minimal common functionality and enforces the required interface
-    for all QuackTool modules. Concrete tool implementations should
-    inherit from this class and implement the abstract methods.
+    Tools must implement run() which:
+    - Receives typed request (Pydantic model from contracts)
+    - Receives ToolContext (immutable, runner-provided)
+    - Returns CapabilityResult (machine-readable outcome)
 
-    What tools inherit:
-    - name, version properties (set in __init__)
-    - logger property (for backwards compat)
-    - get_metadata() implementation
-    - Default initialize() implementation
-    - Default is_available() implementation
+    Tools must NOT:
+    - Write files directly
+    - Create RunManifest
+    - Import from quack_runner.*
+    - Mutate ToolContext
 
-    What tools MUST implement:
-    - run(request, ctx) -> CapabilityResult
-
-    Example tool implementation:
-        ```python
-        from quack_core.contracts import (
-            CapabilityResult,
-            TranscribeRequest,
-            TranscribeResponse
-        )
-        from quack_core.tools import BaseQuackTool, ToolContext
-
-        class TranscribeTool(BaseQuackTool):
-            def __init__(self):
-                super().__init__(
-                    name="media.transcribe",
-                    version="1.0.0"
-                )
-
-            def run(
-                self,
-                request: TranscribeRequest,
-                ctx: ToolContext
-            ) -> CapabilityResult[TranscribeResponse]:
-                # Validate
-                if not request.source:
-                    return CapabilityResult.skip(
-                        reason="No source provided",
-                        code="QC_VAL_NO_INPUT"
-                    )
-
-                # Process
-                try:
-                    result = self._transcribe(request, ctx)
-                    return CapabilityResult.ok(
-                        data=result,
-                        msg="Transcription completed"
-                    )
-                except Exception as e:
-                    return CapabilityResult.fail_from_exc(
-                        msg="Transcription failed",
-                        code="QC_PROC_ERROR",
-                        exc=e
-                    )
-        ```
+    Example:
+        >>> from quack_core.tools import BaseQuackTool, ToolContext
+        >>> from quack_core.contracts import CapabilityResult
+        >>>
+        >>> class MyTool(BaseQuackTool):
+        ...     def __init__(self):
+        ...         super().__init__(name="my_tool", version="1.0.0")
+        ...
+        ...     def run(self, request, ctx: ToolContext) -> CapabilityResult:
+        ...         result = self._process(request, ctx)
+        ...         return CapabilityResult.ok(data=result, msg="Success")
     """
 
     def __init__(self, name: str, version: str):
         """
-        Initialize the base QuackTool.
+        Initialize the tool.
 
         Args:
-            name: The name of the tool (use namespaced format like "media.transcribe")
-            version: The semantic version of the tool (e.g., "1.0.0")
+            name: Tool name (e.g. "echo", "markdown_converter")
+            version: Tool version (e.g. "1.0.0")
         """
-        self._name = name
-        self._version = version
-        self._logger: Logger | None = None
+        self.name = name
+        self.version = version
 
-    @property
-    def name(self) -> str:
+    def initialize(self, ctx: "ToolContext") -> CapabilityResult[None]:
         """
-        Returns the name of the tool.
+        Initialize tool with context (optional hook).
 
-        Returns:
-            str: The tool's name identifier.
-        """
-        return self._name
-
-    @property
-    def version(self) -> str:
-        """
-        Returns the version of the tool.
-
-        Returns:
-            str: Semantic version of the tool.
-        """
-        return self._version
-
-    @property
-    def logger(self) -> Logger:
-        """
-        Returns the logger instance for the tool.
-
-        Note: This is for backwards compatibility. New code should
-        use ctx.logger from ToolContext instead.
-
-        Returns:
-            Logger: Logger instance for the tool.
-        """
-        if self._logger is None:
-            import logging
-            self._logger = logging.getLogger(self._name)
-        return self._logger
-
-    def get_metadata(self) -> QuackPluginMetadata:
-        """
-        Returns metadata about the plugin.
-
-        Returns:
-            QuackPluginMetadata: Structured metadata for the plugin.
-        """
-        return QuackPluginMetadata(
-            name=self.name,
-            version=self.version,
-            description=self.__doc__ or "",
-        )
-
-    def initialize(self, ctx: ToolContext) -> CapabilityResult[None]:
-        """
-        Initialize the tool with the given context.
-
-        Default implementation checks basic availability and returns success.
-        Override this method to perform custom initialization.
+        Override this to perform setup that requires context.
+        Default: success.
 
         Args:
-            ctx: Execution context provided by the runner
+            ctx: Tool context
 
         Returns:
-            CapabilityResult[None]: Success if ready, error if not available
+            CapabilityResult indicating success or failure
         """
-        if not self.is_available(ctx):
-            return CapabilityResult.fail(
-                msg=f"Tool {self.name} is not available",
-                code="QC_TOOL_UNAVAILABLE"
-            )
+        return CapabilityResult.ok(msg=f"{self.name} initialized")
 
-        return CapabilityResult.ok(
-            data=None,
-            msg=f"Successfully initialized {self.name} v{self.version}"
-        )
-
-    def is_available(self, ctx: ToolContext) -> bool:
+    def is_available(self, ctx: "ToolContext") -> bool:
         """
-        Check if the tool is available and ready to use.
+        Check if tool is available (optional hook).
 
-        Default implementation always returns True.
-        Override this method to perform custom availability checks.
+        Override this to check dependencies, permissions, etc.
+        Default: true.
 
         Args:
-            ctx: Execution context
+            ctx: Tool context
 
         Returns:
-            bool: True if the tool can execute, False otherwise
+            True if tool can run, False otherwise
         """
         return True
 
-    @abc.abstractmethod
-    def run(
-            self,
-            request: Any,
-            ctx: ToolContext
-    ) -> CapabilityResult[Any]:
+    @abstractmethod
+    def run(self, request: Any, ctx: "ToolContext") -> CapabilityResult[Any]:
         """
-        Execute the tool's capability.
+        Execute the tool capability.
 
-        This is the main entrypoint that concrete tools must implement.
+        This is the core method every tool must implement.
 
         Args:
-            request: Typed request model (Pydantic BaseModel)
-            ctx: Execution context with services and configuration
+            request: Typed request (Pydantic model from contracts)
+            ctx: Tool context (immutable, runner-provided)
 
         Returns:
-            CapabilityResult containing typed response data
+            CapabilityResult with:
+            - status: success/skip/error
+            - data: Typed response (if success)
+            - error: Error details (if error)
+            - logs: Execution logs
+            - metadata: Additional metadata
 
         Example:
-            >>> def run(
-            ...     self,
-            ...     request: EchoRequest,
-            ...     ctx: ToolContext
-            ... ) -> CapabilityResult[str]:
-            ...     greeting = request.override_greeting or "Hello"
-            ...     result = f"{greeting} {request.text}"
+            >>> def run(self, request: MyRequest, ctx: ToolContext) -> CapabilityResult[MyResponse]:
+            ...     logger = ctx.require_logger()
+            ...     logger.info(f"Processing: {request.input}")
+            ...
+            ...     result = self._do_work(request, ctx)
+            ...
             ...     return CapabilityResult.ok(
-            ...         data=result,
-            ...         msg="Echo completed"
+            ...         data=MyResponse(output=result),
+            ...         msg="Processing complete"
             ...     )
         """
         pass
 
-
-# Backwards compatibility alias
-# TODO: Remove in next major version
-BaseQuackToolPlugin = BaseQuackTool
+# Note: Backward compatibility alias removed from this file (fix #5)
+# Alias is defined in __init__.py only to avoid duplication

@@ -5,18 +5,19 @@
 # neighbors: __init__.py, env_init.py, lifecycle.py, output_handler.py
 # exports: IntegrationEnabledMixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
+# git_commit: 234aec0
 # === QV-LLM:END ===
+
 
 
 """
 Integration support for tools (doctrine-compliant).
 
-Services come from ToolContext (runner-provided), NOT from global registry.
+Services come from ToolContext.services (runner-provided), NOT from global registry.
 No service discovery. No hidden initialization.
 
 Changes from legacy:
-- Services must be in ctx.metadata['services'] dict
+- Services must be in ctx.services dict (keyed by name string)
 - Runner populates services, not mixin
 - No global get_integration_service() calls
 - No automatic initialization
@@ -24,7 +25,7 @@ Changes from legacy:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, TypeVar, Any
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 if TYPE_CHECKING:
     from quack_core.tools.context import ToolContext
@@ -36,41 +37,45 @@ class IntegrationEnabledMixin(Generic[T]):
     """
     Mixin for tools that need integration services.
 
-    Services must be provided by runner in ToolContext.
-    This mixin just provides convenient access.
+    Services must be provided by runner in ToolContext.services.
+    This mixin just provides convenient typed access.
 
     Example:
         >>> class MyTool(BaseQuackTool, IntegrationEnabledMixin):
         ...     def run(self, request, ctx):
-        ...         service = self.get_service(MyServiceType, ctx)
-        ...         if service:
-        ...             service.do_something()
+        ...         # Get service by name (string key)
+        ...         slack = ctx.get_service("slack")
+        ...         if slack:
+        ...             slack.send_message("Hello")
+        ...
+        ...         # Or require it (raises if missing)
+        ...         github = ctx.require_service("github")
+        ...         github.create_issue("Bug report")
     """
 
-    def get_service(self, service_type: type[T], ctx: ToolContext) -> T | None:
+    def get_service(self, name: str, ctx: ToolContext) -> T | None:
         """
         Get a service from the context (if runner provided it).
 
         Args:
-            service_type: The type of service to retrieve
+            name: Service name (e.g. "slack", "github")
             ctx: Tool context with services
 
         Returns:
             Service instance or None if not available
 
         Note:
-            Services come from ctx.metadata['services'].
+            Services come from ctx.services (dict keyed by name).
             Runner is responsible for populating this dict.
         """
-        services = ctx.metadata.get('services', {})
-        return services.get(service_type)
+        return ctx.get_service(name)
 
-    def require_service(self, service_type: type[T], ctx: ToolContext) -> T:
+    def require_service(self, name: str, ctx: ToolContext) -> T:
         """
         Get a service from context (raises if missing).
 
         Args:
-            service_type: The type of service to retrieve
+            name: Service name (e.g. "slack", "github")
             ctx: Tool context with services
 
         Returns:
@@ -79,10 +84,4 @@ class IntegrationEnabledMixin(Generic[T]):
         Raises:
             ValueError: If service not available in context
         """
-        service = self.get_service(service_type, ctx)
-        if service is None:
-            raise ValueError(
-                f"Service {service_type.__name__} not available in context. "
-                f"Runner must provide it in ctx.metadata['services']."
-            )
-        return service
+        return ctx.require_service(name)

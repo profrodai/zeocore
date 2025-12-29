@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_formatting.py (+5 more)
 # exports: TestFormatCliError, TestHandleErrors, TestEnsureSingleInstance, TestGetCliInfo
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
+# git_commit: 234aec0
 # === QV-LLM:END ===
 
 """

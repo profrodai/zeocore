@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, registry.py
 # exports: PluginInfo, PluginEntryPoint, LoadResult, PluginLoader, list_available_entry_points, load_enabled_entry_points, load_enabled_modules
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
+# git_commit: 234aec0
 # === QV-LLM:END ===
 
 

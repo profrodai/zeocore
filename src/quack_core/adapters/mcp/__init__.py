@@ -3,6 +3,6 @@
 # module: quack_core.adapters.mcp.__init__
 # role: adapters
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
+# git_commit: 234aec0
 # === QV-LLM:END ===
 

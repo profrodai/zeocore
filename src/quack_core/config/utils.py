@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, plugin.py, loader.py
 # exports: get_env, get_config_value, validate_required_config, find_project_root
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 07a259e
+# git_commit: 234aec0
 # === QV-LLM:END ===
 
 
