@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py, test_envelopes.py, test_schema_examples.py
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """

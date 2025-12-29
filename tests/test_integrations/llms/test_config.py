@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_config_provider.py, test_fallback.py, test_integration.py, test_llms.py, test_models.py (+3 more)
 # exports: TestLLMConfig
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,7 +16,6 @@ ensuring proper validation and default values.
 
 import pytest
 from pydantic import ValidationError
-
 from quack_core.config.models import LoggingConfig
 from quack_core.integrations.llms.config import (
     AnthropicConfig,

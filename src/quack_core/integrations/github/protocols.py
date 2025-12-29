@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, config.py, auth.py, client.py
 # exports: GitHubIntegrationProtocol
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """Protocols for GitHub integration."""

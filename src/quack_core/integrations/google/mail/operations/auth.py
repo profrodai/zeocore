@@ -5,7 +5,7 @@
 # neighbors: __init__.py, attachments.py, email.py
 # exports: initialize_gmail_service
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,8 +15,11 @@ This module provides functions for authenticating with the Gmail API
 and initializing the service.
 """
 
+from quack_core.integrations.google.mail.protocols import (
+    GmailService,
+    GoogleCredentials,
+)
 from quack_core.lib.errors import QuackApiError
-from quack_core.integrations.google.mail.protocols import GmailService, GoogleCredentials
 
 
 def initialize_gmail_service(credentials: GoogleCredentials) -> GmailService:

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py, test_schema_examples.py
 # exports: TestCapabilityError, TestCapabilityLogEvent, TestCapabilityResult
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -13,14 +13,14 @@ Tests for envelope models (CapabilityResult, CapabilityError, CapabilityLogEvent
 Validates invariants, convenience methods, and JSON serialization.
 """
 
-import pytest
 from datetime import datetime, timezone
-from pydantic import ValidationError
 
+import pytest
+from pydantic import ValidationError
 from quack_core.contracts import (
-    CapabilityResult,
     CapabilityError,
     CapabilityLogEvent,
+    CapabilityResult,
     CapabilityStatus,
     LogLevel,
 )

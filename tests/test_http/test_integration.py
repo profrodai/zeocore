@@ -4,17 +4,17 @@
 # neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_jobs.py, test_routes_jobs.py (+2 more)
 # exports: integration_client, integration_headers, test_full_job_workflow, test_sync_vs_async_consistency, test_health_endpoints, test_cors_headers, test_openapi_docs
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
 Integration tests for the HTTP adapter.
 """
 
-import pytest
 import time
-from fastapi.testclient import TestClient
 
+import pytest
+from fastapi.testclient import TestClient
 from quack_core.adapters.http.app import create_app
 from quack_core.adapters.http.config import HttpAdapterConfig
 

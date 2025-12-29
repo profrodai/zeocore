@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
 # exports: test_integration_with_custom_config_path, test_integration_with_custom_output_dir, test_integration_initialize_with_invalid_config, test_integration_directory_conversion_edge_cases, test_conversion_metrics_initialization, test_file_info_initialization, test_conversion_task_initialization, test_conversion_details_initialization (+9 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -21,8 +21,6 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import PandocConfig, PandocOptions
 from quack_core.integrations.pandoc.models import (
@@ -43,6 +41,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     verify_pandoc,
 )
 from quack_core.integrations.pandoc.service import PandocIntegration
+from quack_core.lib.errors import QuackIntegrationError
 
 
 def test_integration_with_custom_config_path():

@@ -4,14 +4,13 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_models.py (+4 more)
 # exports: test_document_converter_initialization, test_convert_file_html_to_markdown_success, test_convert_file_markdown_to_docx_success, test_convert_file_unsupported_format, test_convert_file_integration_error, test_convert_batch_all_success, test_convert_batch_partial_failure, test_convert_batch_all_failure (+1 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 import time
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc import (
     ConversionMetrics,
@@ -20,6 +19,7 @@ from quack_core.integrations.pandoc import (
     FileInfo,
     PandocConfig,
 )
+from quack_core.lib.errors import QuackIntegrationError
 
 # --- Tests for DocumentConverter ---
 

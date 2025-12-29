@@ -5,7 +5,7 @@
 # neighbors: __init__.py, config.py, boot.py
 # exports: list_available_entry_points, load_enabled_entry_points
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -18,7 +18,6 @@ into a registry. It ensures no side effects occur unless explicitly requested.
 
 import logging
 from importlib.metadata import entry_points
-from typing import Any
 
 from quack_core.integrations.core.protocols import IntegrationProtocol
 from quack_core.integrations.core.registry import IntegrationRegistry

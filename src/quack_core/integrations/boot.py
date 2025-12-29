@@ -5,7 +5,7 @@
 # neighbors: __init__.py, config.py, loader.py
 # exports: get_global_registry, load_integrations
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,7 +16,6 @@ to explicitly load runtime dependencies. It manages a global registry instance
 for convenience but allows for dependency injection.
 """
 
-from typing import Optional
 
 from quack_core.integrations.core.registry import IntegrationRegistry
 from quack_core.integrations.core.results import IntegrationLoadReport
@@ -38,7 +37,7 @@ def get_global_registry() -> IntegrationRegistry:
 
 def load_integrations(
         enabled: list[str],
-        registry: Optional[IntegrationRegistry] = None,
+        registry: IntegrationRegistry | None = None,
         strict: bool = True,
         initialize: bool = True
 ) -> IntegrationLoadReport:

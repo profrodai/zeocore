@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, config.py, converter.py
 # exports: PandocIntegration, create_integration
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """Pandoc Integration Service
@@ -16,14 +16,14 @@ specialized converters.
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
-from quack_core.lib.fs.service import FileSystemService
 from quack_core.integrations.core.base import BaseIntegrationService
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import PandocConfig, PandocConfigProvider
 from quack_core.integrations.pandoc.converter import DocumentConverter
 from quack_core.integrations.pandoc.operations.utils import verify_pandoc
+from quack_core.lib.fs.service import FileSystemService
 from quack_core.lib.paths.service import PathService
 
 logger = logging.getLogger(__name__)
@@ -44,11 +44,11 @@ class PandocIntegration(BaseIntegrationService):
 
     def __init__(
             self,
-            config_path: Optional[str] = None,
-            output_dir: Optional[str] = None,
-            config_provider: Optional[PandocConfigProvider] = None,
-            paths_service: Optional[PathService] = None,
-            fs_service: Optional[FileSystemService] = None,
+            config_path: str | None = None,
+            output_dir: str | None = None,
+            config_provider: PandocConfigProvider | None = None,
+            paths_service: PathService | None = None,
+            fs_service: FileSystemService | None = None,
             log_level: int | str | None = None,
     ) -> None:
         """Initialize the Pandoc integration service.
@@ -95,9 +95,9 @@ class PandocIntegration(BaseIntegrationService):
         self._config_path = config_path
 
         # Will be set during initialization
-        self.converter: Optional[DocumentConverter] = None
+        self.converter: DocumentConverter | None = None
         self._config_loaded = False
-        self._pandoc_version: Optional[str] = None
+        self._pandoc_version: str | None = None
 
     @property
     def name(self) -> str:
@@ -236,7 +236,7 @@ class PandocIntegration(BaseIntegrationService):
         """
         return self._initialized and self.converter is not None
 
-    def get_pandoc_version(self) -> Optional[str]:
+    def get_pandoc_version(self) -> str | None:
         """Get the version of Pandoc being used.
 
         Returns:
@@ -261,7 +261,7 @@ class PandocIntegration(BaseIntegrationService):
     def html_to_markdown(
             self,
             input_path: str,
-            output_path: Optional[str] = None,
+            output_path: str | None = None,
     ) -> IntegrationResult:
         """Convert HTML file to Markdown.
 
@@ -303,7 +303,7 @@ class PandocIntegration(BaseIntegrationService):
     def markdown_to_docx(
             self,
             input_path: str,
-            output_path: Optional[str] = None,
+            output_path: str | None = None,
     ) -> IntegrationResult:
         """Convert Markdown file to DOCX.
 
@@ -346,7 +346,7 @@ class PandocIntegration(BaseIntegrationService):
             self,
             input_dir: str,
             output_format: str,
-            output_dir: Optional[str] = None,
+            output_dir: str | None = None,
             pattern: str = "*",
             **options: Any
     ) -> IntegrationResult:

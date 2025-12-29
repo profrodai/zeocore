@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_api.py, test_auth.py, test_client.py, test_config.py (+5 more)
 # exports: TestGitHubFullIntegration, TestGitHubMockedIntegration
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """Integration tests for GitHub integration."""
@@ -17,7 +17,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-
 from quack_core.integrations.core import IntegrationResult
 from quack_core.integrations.github import (
     GitHubAuthProvider,

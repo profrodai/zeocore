@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, config.py, auth.py, dependencies.py (+1 more)
 # exports: create_app
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 
@@ -15,17 +15,16 @@ FastAPI application factory with dependency injection.
 """
 
 import asyncio
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from quack_core.adapters.http.config import HttpAdapterConfig
 from quack_core.adapters.http.routes import health, jobs, operations
 from quack_core.lib.jobs import InMemoryJobStore, JobStore, ThreadPoolJobRunner
-from quack_core.lib.registry import get_registry, OperationRegistry
 from quack_core.lib.logging import get_logger
+from quack_core.lib.registry import OperationRegistry, get_registry
 
 logger = get_logger(__name__)
 

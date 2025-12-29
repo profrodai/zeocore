@@ -4,7 +4,7 @@
 # neighbors: __init__.py, auth_provider_impl.py, config_provider_impl.py, integration_service_impl.py, test_auth_provider.py, test_base.py (+3 more)
 # exports: TestBaseConfigProviderDiscovery
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,7 +16,6 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from quack_core.lib.errors import QuackConfigurationError, QuackFileNotFoundError
 
 from .config_provider_impl import (

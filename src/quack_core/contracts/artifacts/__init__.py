@@ -5,7 +5,7 @@
 # neighbors: manifest.py, refs.py
 # exports: StorageRef, Checksum, ArtifactRef, ToolInfo, Provenance, ManifestInput, RunManifest
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,16 +15,16 @@ These models define how artifacts are referenced, stored, and tracked
 throughout the QuackCore system.
 """
 
-from quack_core.contracts.artifacts.refs import (
-    StorageRef,
-    Checksum,
-    ArtifactRef,
-)
 from quack_core.contracts.artifacts.manifest import (
-    ToolInfo,
-    Provenance,
     ManifestInput,
+    Provenance,
     RunManifest,
+    ToolInfo,
+)
+from quack_core.contracts.artifacts.refs import (
+    ArtifactRef,
+    Checksum,
+    StorageRef,
 )
 
 __all__ = [

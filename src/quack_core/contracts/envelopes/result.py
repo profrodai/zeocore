@@ -5,7 +5,7 @@
 # neighbors: __init__.py, error.py, log.py
 # exports: CapabilityResult
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -18,10 +18,10 @@ This is the heart of the contracts system - every capability must return
 a CapabilityResult to enable machine branching and audit trails.
 """
 
-from typing import Generic, TypeVar, Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
+from typing import Any, Generic, TypeVar
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from quack_core.contracts.common.enums import CapabilityStatus
 from quack_core.contracts.common.ids import generate_run_id
 from quack_core.contracts.common.time import utcnow
@@ -87,7 +87,7 @@ class CapabilityResult(BaseModel, Generic[T]):
     )
 
     # Payload (the actual value produced by the capability)
-    data: Optional[T] = Field(
+    data: T | None = Field(
         None,
         description="The actual result data (type varies by capability)"
     )
@@ -103,7 +103,7 @@ class CapabilityResult(BaseModel, Generic[T]):
         description="UTC timestamp when result was created"
     )
 
-    duration_sec: Optional[float] = Field(
+    duration_sec: float | None = Field(
         None,
         ge=0.0,
         description="Execution duration in seconds (None if not measured)"
@@ -115,30 +115,30 @@ class CapabilityResult(BaseModel, Generic[T]):
         description="Readable summary for logs/CLI/UI"
     )
 
-    machine_message: Optional[str] = Field(
+    machine_message: str | None = Field(
         None,
         description="Machine-readable code for orchestrator branching (must start with QC_)"
     )
 
     # Diagnostics
-    error: Optional[CapabilityError] = Field(
+    error: CapabilityError | None = Field(
         None,
         description="Structured error info if status == error"
     )
 
-    logs: List[CapabilityLogEvent] = Field(
+    logs: list[CapabilityLogEvent] = Field(
         default_factory=list,
         description="Structured log events from execution"
     )
 
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Additional context (tool, version, config, etc.)"
     )
 
     @field_validator("machine_message")
     @classmethod
-    def validate_machine_message_format(cls, v: Optional[str]) -> Optional[str]:
+    def validate_machine_message_format(cls, v: str | None) -> str | None:
         """Ensure machine_message follows QC_* convention when present."""
         if v is not None and not v.startswith("QC_"):
             raise ValueError(
@@ -198,10 +198,10 @@ class CapabilityResult(BaseModel, Generic[T]):
             cls,
             data: T,
             msg: str = "Success",
-            metadata: Optional[Dict[str, Any]] = None,
-            logs: Optional[List[CapabilityLogEvent]] = None,
-            duration_sec: Optional[float] = None,
-            run_id: Optional[str] = None
+            metadata: dict[str, Any] | None = None,
+            logs: list[CapabilityLogEvent] | None = None,
+            duration_sec: float | None = None,
+            run_id: str | None = None
     ) -> "CapabilityResult[T]":
         """
         Create a successful result.
@@ -241,8 +241,8 @@ class CapabilityResult(BaseModel, Generic[T]):
             cls,
             reason: str,
             code: str,
-            metadata: Optional[Dict[str, Any]] = None,
-            run_id: Optional[str] = None
+            metadata: dict[str, Any] | None = None,
+            run_id: str | None = None
     ) -> "CapabilityResult[T]":
         """
         Create a skip result (valid policy decision).
@@ -280,10 +280,10 @@ class CapabilityResult(BaseModel, Generic[T]):
             cls,
             msg: str,
             code: str,
-            exception: Optional[Exception] = None,
-            metadata: Optional[Dict[str, Any]] = None,
-            logs: Optional[List[CapabilityLogEvent]] = None,
-            run_id: Optional[str] = None
+            exception: Exception | None = None,
+            metadata: dict[str, Any] | None = None,
+            logs: list[CapabilityLogEvent] | None = None,
+            run_id: str | None = None
     ) -> "CapabilityResult[T]":
         """
         Create an error result.
@@ -306,7 +306,7 @@ class CapabilityResult(BaseModel, Generic[T]):
             ...     exception=FileNotFoundError("/data/video.mp4")
             ... )
         """
-        err_details: Dict[str, Any] = {}
+        err_details: dict[str, Any] = {}
         if exception:
             err_details = {
                 "type": type(exception).__name__,
@@ -331,8 +331,8 @@ class CapabilityResult(BaseModel, Generic[T]):
             msg: str,
             code: str,
             exc: Exception,
-            metadata: Optional[Dict[str, Any]] = None,
-            run_id: Optional[str] = None
+            metadata: dict[str, Any] | None = None,
+            run_id: str | None = None
     ) -> "CapabilityResult[T]":
         """
         Convenience wrapper for fail() that always includes exception.

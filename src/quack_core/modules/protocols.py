@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, discovery.py
 # exports: QuackPluginMetadata, QuackPluginProtocol, PluginRegistryProtocol, PluginLoaderProtocol, CommandPluginProtocol, WorkflowPluginProtocol, ExtensionPluginProtocol, ProviderPluginProtocol (+1 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 

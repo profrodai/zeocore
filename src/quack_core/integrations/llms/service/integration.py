@@ -5,7 +5,7 @@
 # neighbors: __init__.py, operations.py, dependencies.py, initialization.py
 # exports: LLMIntegration
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,7 +16,6 @@ for using different LLM providers.
 """
 from collections.abc import Callable, Sequence
 
-from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.core.base import BaseIntegrationService
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms import ChatMessage, LLMOptions
@@ -24,6 +23,7 @@ from quack_core.integrations.llms.clients import LLMClient
 from quack_core.integrations.llms.config import LLMConfigProvider
 from quack_core.integrations.llms.fallback import FallbackConfig
 from quack_core.integrations.llms.service.dependencies import check_llm_dependencies
+from quack_core.lib.errors import QuackIntegrationError
 from quack_core.lib.logging import LOG_LEVELS, LogLevel
 
 
@@ -258,6 +258,8 @@ class LLMIntegration(BaseIntegrationService):
         Returns:
             bool: True if successful, False if not using fallback
         """
-        from quack_core.integrations.llms.service.operations import reset_provider_status
+        from quack_core.integrations.llms.service.operations import (
+            reset_provider_status,
+        )
 
         return reset_provider_status(self)

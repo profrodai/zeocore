@@ -5,7 +5,7 @@
 # neighbors: protocols.py, registry.py, discovery.py
 # exports: PluginRegistry, PluginLoader, PluginRegistryProtocol, PluginLoaderProtocol, QuackPluginProtocol, CommandPluginProtocol, WorkflowPluginProtocol, ExtensionPluginProtocol (+10 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 
@@ -74,6 +74,16 @@ Following Python 3.13 best practices:
 """
 
 # Import protocols (these are just type definitions, no side effects)
+# Import core classes (instantiation only, no execution)
+from quack_core.modules.discovery import (
+    LoadResult,
+    PluginEntryPoint,
+    PluginLoader,
+    list_available_entry_points,
+    load_enabled_entry_points,
+    load_enabled_modules,
+    loader,
+)
 from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ConfigurablePluginProtocol,
@@ -84,17 +94,6 @@ from quack_core.modules.protocols import (
     QuackPluginMetadata,
     QuackPluginProtocol,
     WorkflowPluginProtocol,
-)
-
-# Import core classes (instantiation only, no execution)
-from quack_core.modules.discovery import (
-    LoadResult,
-    PluginEntryPoint,
-    PluginLoader,
-    load_enabled_entry_points,
-    load_enabled_modules,
-    loader,
-    list_available_entry_points,
 )
 from quack_core.modules.registry import PluginRegistry, registry
 

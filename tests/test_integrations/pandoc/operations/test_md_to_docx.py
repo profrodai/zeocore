@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_html_to_md.py, test_utils.py, test_utils_fix.py
 # exports: test_convert_markdown_to_docx_success, test_convert_markdown_to_docx_validation_error, test_convert_markdown_to_docx_conversion_failure, test_convert_markdown_to_docx_validation_failure, test_validate_conversion_md_to_docx, test_md_to_docx_validate_markdown_input_success, test_md_to_docx_validate_markdown_input_file_not_found, test_md_to_docx_validate_markdown_input_read_error (+8 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -20,8 +20,6 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.pandoc import (
     ConversionMetrics,
     PandocConfig,
@@ -30,6 +28,7 @@ from quack_core.integrations.pandoc.operations import (
     convert_markdown_to_docx,
     validate_docx_conversion,
 )
+from quack_core.lib.errors import QuackIntegrationError
 
 # Import patched utilities to avoid DataResult validation issues
 from .test_utils_fix import (
@@ -425,8 +424,9 @@ def test_md_to_docx_validate_conversion_docx_structure(mock_validate_docx,
         )
 
         # Import the validate_conversion function
-        from quack_core.integrations.pandoc.operations.md_to_docx import \
-            validate_conversion
+        from quack_core.integrations.pandoc.operations.md_to_docx import (
+            validate_conversion,
+        )
 
         config = PandocConfig()
 
@@ -441,7 +441,9 @@ def test_md_to_docx_validate_conversion_docx_structure(mock_validate_docx,
 def test_md_to_docx_check_metadata():
     """Test checking DOCX metadata."""
     # Import _check_docx_metadata directly
-    from quack_core.integrations.pandoc.operations.md_to_docx import _check_docx_metadata
+    from quack_core.integrations.pandoc.operations.md_to_docx import (
+        _check_docx_metadata,
+    )
 
     # Test with docx module available
     with patch('quack_core.lib.fs.service.standalone') as mock_fs, \

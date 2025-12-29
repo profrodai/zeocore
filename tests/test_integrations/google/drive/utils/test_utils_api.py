@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_utils_query.py
 # exports: TestDriveUtilsApi
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,9 +15,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from googleapiclient.errors import HttpError
-
-from quack_core.lib.errors import QuackApiError
 from quack_core.integrations.google.drive.utils import api
+from quack_core.lib.errors import QuackApiError
+
 from tests.test_integrations.google.drive.mocks import (
     MockDriveRequest,
     create_mock_drive_service,

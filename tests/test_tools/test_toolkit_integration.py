@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py (+2 more)
 # exports: MockUploadService, CompleteTool, TestToolkitIntegration, create_mock_fs, mock_upload_service, complete_tool, sample_file
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -21,7 +21,6 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from quack_core.integrations.core import IntegrationResult
 from quack_core.integrations.core.base import BaseIntegrationService
 from quack_core.modules.protocols import QuackPluginMetadata

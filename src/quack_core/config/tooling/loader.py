@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, logger.py
 # exports: load_tool_config, update_tool_config
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 
@@ -21,6 +21,7 @@ from collections.abc import Mapping
 from typing import TypeVar
 
 from quack_core.config.models import QuackConfig
+
 from .base import QuackToolConfigModel
 
 T = TypeVar("T", bound=QuackToolConfigModel)

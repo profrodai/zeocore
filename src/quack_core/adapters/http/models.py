@@ -5,14 +5,15 @@
 # neighbors: __init__.py, app.py, service.py, config.py, auth.py, dependencies.py (+1 more)
 # exports: JobRequest, JobResponse, JobStatus
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
 Request/Response models for the HTTP adapter.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any
+
 from pydantic import BaseModel, HttpUrl
 
 
@@ -20,9 +21,9 @@ class JobRequest(BaseModel):
     """Request to create a new job."""
 
     op: str
-    params: Dict[str, Any]
-    callback_url: Optional[HttpUrl] = None
-    idempotency_key: Optional[str] = None
+    params: dict[str, Any]
+    callback_url: HttpUrl | None = None
+    idempotency_key: str | None = None
 
 
 class JobResponse(BaseModel):
@@ -37,5 +38,5 @@ class JobStatus(BaseModel):
 
     job_id: str
     status: str  # queued|running|done|error
-    result: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
+    result: dict[str, Any] | None = None
+    error: str | None = None

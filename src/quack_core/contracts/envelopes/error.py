@@ -5,7 +5,7 @@
 # neighbors: __init__.py, log.py, result.py
 # exports: CapabilityError
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,7 +15,8 @@ Consumed by: Ring B (tools), Ring C (orchestrators)
 Must NOT contain: Error handling logic, retry logic
 """
 
-from typing import Dict, Any
+from typing import Any
+
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -53,7 +54,7 @@ class CapabilityError(BaseModel):
         description="Human-readable error description"
     )
 
-    details: Dict[str, Any] = Field(
+    details: dict[str, Any] = Field(
         default_factory=dict,
         description="Additional context for debugging (exception type, stack traces, etc.)"
     )

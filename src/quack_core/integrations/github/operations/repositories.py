@@ -5,7 +5,7 @@
 # neighbors: __init__.py, issues.py, pull_requests.py, users.py
 # exports: get_repo, star_repo, unstar_repo, is_repo_starred, fork_repo, check_repository_exists, get_repository_file_content, update_repository_file
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """GitHub repository _operations."""
@@ -14,10 +14,9 @@ import base64
 from typing import Any
 
 import requests
-
-from quack_core.lib.errors import QuackApiError
 from quack_core.integrations.github.models import GitHubRepo, GitHubUser
 from quack_core.integrations.github.utils.api import make_request
+from quack_core.lib.errors import QuackApiError
 
 
 def get_repo(

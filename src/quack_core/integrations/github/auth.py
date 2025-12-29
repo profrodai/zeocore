@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, protocols.py, config.py, client.py
 # exports: GitHubAuthProvider
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """Authentication provider for GitHub integration."""
@@ -15,9 +15,8 @@ import time
 from typing import Any
 
 import requests
-
-from quack_core.lib.fs import service as fs
 from quack_core.integrations.core import AuthResult, BaseAuthProvider
+from quack_core.lib.fs import service as fs
 from quack_core.lib.logging import get_logger
 
 logger = get_logger(__name__)

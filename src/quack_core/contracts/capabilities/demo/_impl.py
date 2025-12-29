@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py
 # exports: echo_text, validate_video_ref
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -23,8 +23,8 @@ The underscore prefix (_impl.py) marks this module as internal/private.
 Do not import these functions in production code.
 """
 
-from quack_core.contracts.envelopes import CapabilityResult
 from quack_core.contracts.capabilities.demo.models import EchoRequest, VideoRefRequest
+from quack_core.contracts.envelopes import CapabilityResult
 
 
 def echo_text(req: EchoRequest) -> CapabilityResult[str]:

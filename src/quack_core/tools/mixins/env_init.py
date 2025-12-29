@@ -5,7 +5,7 @@
 # neighbors: __init__.py, integration_enabled.py, lifecycle.py, output_handler.py
 # exports: ToolEnvInitializerMixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 
@@ -16,7 +16,7 @@ DOCTRINE STRICT MODE:
 This mixin VALIDATES existence only. It does NOT create directories.
 Runner creates all directories. Tools fail if they don't exist.
 
-USAGE PATTERN (fix #3 - must be explicitly called):
+USAGE PATTERN:
 Tools that inherit this mixin should call initialize_environment() from their
 initialize() or validate() hook:
 
@@ -39,10 +39,9 @@ Tools writing artifacts still go through runner's output mechanisms.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any  # Fix #1 - import Any
+from typing import TYPE_CHECKING, Any
 
-from quack_core.contracts import CapabilityResult, \
-    CapabilityStatus  # Fix #2 - import status enum
+from quack_core.contracts import CapabilityResult, CapabilityStatus
 
 if TYPE_CHECKING:
     from quack_core.tools.context import ToolContext
@@ -61,13 +60,22 @@ class ToolEnvInitializerMixin:
     This is strict doctrine compliance:
     - Ring C (runner) creates workspace
     - Ring B (tools) validates assumptions
+
+    FS CONTRACT (fix blocker #2):
+    Expects fs.get_file_info(path) to return Result with:
+        - result.success: bool
+        - result.data.exists: bool
+        - result.data.is_dir: bool
+        - result.error: str (if not success)
+
+    No hasattr fallbacks - contract must be satisfied.
     """
 
     def _validate_directory(
             self,
             path: str,
             name: str,
-            fs: Any  # Fix #1 - Any is now imported
+            fs: Any
     ) -> CapabilityResult[None]:
         """
         Strictly validate a directory exists and is actually a directory.
@@ -80,15 +88,27 @@ class ToolEnvInitializerMixin:
         Returns:
             CapabilityResult indicating success or failure
         """
-        # Check exists
-        info = fs.get_file_info(path)
-        if not info.success:
+        # Check exists (fix blocker #2 - proper Result pattern)
+        info_result = fs.get_file_info(path)
+
+        # Check result success
+        if not info_result.success:
             return CapabilityResult.fail_from_exc(
-                msg=f"Failed to check {name} directory: {info.error}",
+                msg=f"Failed to check {name} directory: {info_result.error}",
                 code=f"QC_ENV_{name.upper()}_DIR_CHECK_ERROR",
-                exc=Exception(info.error)
+                exc=Exception(info_result.error)
             )
 
+        # Get data from result (fix blocker #2 - no flat attributes)
+        info = info_result.data
+        if info is None:
+            return CapabilityResult.fail_from_exc(
+                msg=f"FS returned no info for {name} directory: {path}",
+                code=f"QC_ENV_{name.upper()}_DIR_NO_INFO",
+                exc=Exception("FileInfo data is None")
+            )
+
+        # Check exists (fix blocker #2 - from data, not result)
         if not info.exists:
             return CapabilityResult.fail_from_exc(
                 msg=f"{name.capitalize()} directory does not exist: {path}. Runner must create it.",
@@ -96,33 +116,20 @@ class ToolEnvInitializerMixin:
                 exc=Exception(f"{name.capitalize()} directory missing")
             )
 
-        # Strict is_dir validation
-        # Try to get is_dir from info result
-        if hasattr(info, 'is_dir'):
-            if not info.is_dir:
-                return CapabilityResult.fail_from_exc(
-                    msg=f"{name.capitalize()} path exists but is not a directory: {path}",
-                    code=f"QC_ENV_{name.upper()}_DIR_NOT_DIR",
-                    exc=Exception(f"{name.capitalize()} path is not a directory")
-                )
-        else:
-            # Fallback: try explicit is_dir check if available
-            if hasattr(fs, 'is_dir'):
-                is_dir_result = fs.is_dir(path)
-                if is_dir_result.success and not is_dir_result.data:
-                    return CapabilityResult.fail_from_exc(
-                        msg=f"{name.capitalize()} path exists but is not a directory: {path}",
-                        code=f"QC_ENV_{name.upper()}_DIR_NOT_DIR",
-                        exc=Exception(f"{name.capitalize()} path is not a directory")
-                    )
-            else:
-                # FS contract incomplete - this is an error in strict mode
-                return CapabilityResult.fail_from_exc(
-                    msg=f"Cannot validate {name} directory type: FS service missing is_dir support",
-                    code="QC_ENV_FS_CONTRACT_INCOMPLETE",
-                    exc=Exception(
-                        "FS info missing is_dir and fs.is_dir() not available")
-                )
+        # Check is_dir (fix blocker #2 - from data, no fallbacks)
+        if not hasattr(info, 'is_dir'):
+            return CapabilityResult.fail_from_exc(
+                msg="FS contract incomplete: FileInfo missing is_dir attribute",
+                code="QC_ENV_FS_CONTRACT_INCOMPLETE",
+                exc=Exception("FileInfo.is_dir not available")
+            )
+
+        if not info.is_dir:
+            return CapabilityResult.fail_from_exc(
+                msg=f"{name.capitalize()} path exists but is not a directory: {path}",
+                code=f"QC_ENV_{name.upper()}_DIR_NOT_DIR",
+                exc=Exception(f"{name.capitalize()} path is not a directory")
+            )
 
         return CapabilityResult.ok(data=None,
                                    msg=f"{name.capitalize()} directory validated")
@@ -151,13 +158,13 @@ class ToolEnvInitializerMixin:
         try:
             fs = ctx.require_fs()
 
-            # Validate work_dir (fix #2 - correct status comparison)
+            # Validate work_dir
             if ctx.work_dir:
                 result = self._validate_directory(ctx.work_dir, "work", fs)
                 if result.status != CapabilityStatus.success:
                     return result
 
-            # Validate output_dir (fix #2 - correct status comparison)
+            # Validate output_dir
             if ctx.output_dir:
                 result = self._validate_directory(ctx.output_dir, "output", fs)
                 if result.status != CapabilityStatus.success:

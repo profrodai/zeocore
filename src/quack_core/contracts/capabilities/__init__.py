@@ -5,7 +5,7 @@
 # neighbors: contract.py
 # exports: TimeRange, SliceVideoRequest, SlicedClipData, SliceVideoResponse, TranscribeRequest, TranscriptionSegment, TranscribeResponse, EchoRequest (+1 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,20 +16,19 @@ Implementations live in Ring B (quack_core.tools), not here.
 """
 
 # Media capabilities
-from quack_core.contracts.capabilities.media import (
-    TimeRange,
-    SliceVideoRequest,
-    SlicedClipData,
-    SliceVideoResponse,
-    TranscribeRequest,
-    TranscriptionSegment,
-    TranscribeResponse,
-)
-
 # Demo capabilities (models only - implementations are examples, not exported)
 from quack_core.contracts.capabilities.demo.models import (
     EchoRequest,
     VideoRefRequest,
+)
+from quack_core.contracts.capabilities.media import (
+    SlicedClipData,
+    SliceVideoRequest,
+    SliceVideoResponse,
+    TimeRange,
+    TranscribeRequest,
+    TranscribeResponse,
+    TranscriptionSegment,
 )
 
 __all__ = [

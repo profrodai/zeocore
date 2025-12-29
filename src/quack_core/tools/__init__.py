@@ -5,7 +5,7 @@
 # neighbors: base.py, context.py, protocol.py
 # exports: BaseQuackTool, ToolContext, QuackToolProtocol, IntegrationEnabledMixin, LifecycleMixin, ToolEnvInitializerMixin, BaseQuackToolPlugin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 
@@ -54,12 +54,12 @@ Example:
 # Core classes
 from quack_core.tools.base import BaseQuackTool
 from quack_core.tools.context import ToolContext
-from quack_core.tools.protocol import QuackToolProtocol
+from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 
 # Mixins (all exported at top level for single import path)
 from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 from quack_core.tools.mixins.lifecycle import LifecycleMixin
-from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
+from quack_core.tools.protocol import QuackToolProtocol
 
 # Backward compatibility alias
 BaseQuackToolPlugin = BaseQuackTool

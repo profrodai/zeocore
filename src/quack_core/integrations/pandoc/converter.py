@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, protocols.py, config.py
 # exports: DocumentConverter
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -22,7 +22,6 @@ import os
 from collections.abc import Sequence
 from datetime import datetime
 
-from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc import PandocConfig
 from quack_core.integrations.pandoc.models import ConversionMetrics, ConversionTask
@@ -38,6 +37,7 @@ from quack_core.integrations.pandoc.protocols import (
     BatchConverterProtocol,
     DocumentConverterProtocol,
 )
+from quack_core.lib.errors import QuackIntegrationError
 from quack_core.lib.logging import get_logger
 
 logger = get_logger(__name__)

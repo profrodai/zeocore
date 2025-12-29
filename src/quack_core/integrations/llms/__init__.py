@@ -5,7 +5,7 @@
 # neighbors: models.py, protocols.py, config.py, registry.py, fallback.py
 # exports: LLMClient, OpenAIClient, AnthropicClient, OllamaClient, MockLLMClient, FallbackLLMClient, LLMConfig, LLMConfigProvider (+11 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """

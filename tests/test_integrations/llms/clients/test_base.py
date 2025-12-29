@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_anthropic.py, test_clients.py, test_mock.py, test_ollama.py, test_openai.py
 # exports: TestLLMClient
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -20,12 +20,12 @@ from typing import cast
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
 from quack_core.integrations.core.results import (  # Import IntegrationResult for testing
     IntegrationResult,
 )
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from quack_core.lib.errors import QuackApiError, QuackIntegrationError
+
 from tests.test_integrations.llms.mocks.clients import MockClient
 
 

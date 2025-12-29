@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test_imports.py, test_mixins_integration.py, test_protocol.py (+2 more)
 # exports: DummyQuackTool, CustomExtensionTool, RemoteHandlerTool, CustomWriterTool, UnavailableTool, TestBaseQuackToolPlugin, TestBaseQuackToolPluginWithPytest, get_path_from_result (+2 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -20,7 +20,6 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from quack_core.lib.fs import DataResult, OperationResult
 from quack_core.tools.base import BaseQuackToolPlugin
 from quack_core.workflow.output import DefaultOutputWriter, YAMLOutputWriter

@@ -5,7 +5,7 @@
 # neighbors: __init__.py
 # exports: make_request
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """GitHub API request utilities."""
@@ -15,7 +15,6 @@ from datetime import datetime
 from typing import Any
 
 import requests
-
 from quack_core.lib.errors import (
     QuackApiError,
     QuackAuthenticationError,

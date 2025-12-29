@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_discovery.py, test_explicit_loading.py, test_registry.py
 # exports: SamplePlugin, SampleCommandPlugin, SampleWorkflowPlugin, SampleExtensionPlugin, SampleProviderPlugin, SampleConfigurablePlugin, SampleMixedPlugin, SampleProtocols
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,7 +15,6 @@ from collections.abc import Callable
 from typing import Any
 
 import pytest
-
 from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ConfigurablePluginProtocol,

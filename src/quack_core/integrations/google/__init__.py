@@ -5,7 +5,7 @@
 # neighbors: config.py, auth.py, serialization.py
 # exports: GoogleAuthProvider, GoogleConfigProvider
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """

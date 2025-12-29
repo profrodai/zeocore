@@ -5,7 +5,7 @@
 # neighbors: __init__.py, utils.py, md_to_docx.py
 # exports: convert_html_to_markdown, post_process_markdown, validate_conversion
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -22,7 +22,6 @@ import os
 import re
 import time
 
-from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import PandocConfig
 from quack_core.integrations.pandoc.models import ConversionDetails, ConversionMetrics
@@ -33,6 +32,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     track_metrics,
     validate_html_structure,
 )
+from quack_core.lib.errors import QuackIntegrationError
 from quack_core.lib.logging import get_logger
 
 logger = get_logger(__name__)

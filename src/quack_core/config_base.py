@@ -5,7 +5,7 @@
 # neighbors: __init__.py
 # exports: BasePolicy, ConfigError, ConfigResolver, deep_merge
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -13,8 +13,9 @@ Configuration resolution engine with Deep Merge.
 Handles the merge logic: Request > Preset > Policy > Defaults.
 """
 import os
+from typing import Any, TypeVar
+
 import yaml
-from typing import TypeVar, Type, Dict, Any
 from pydantic import BaseModel
 
 T_Policy = TypeVar("T_Policy", bound=BaseModel)
@@ -28,7 +29,7 @@ class ConfigError(Exception):
     """Raised when config resolution fails (e.g. missing preset)."""
     pass
 
-def deep_merge(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, Any]:
+def deep_merge(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
     """Recursively merge two dictionaries."""
     out = dict(base)
     for k, v in overlay.items():
@@ -44,12 +45,12 @@ class ConfigResolver:
     """
 
     @staticmethod
-    def load_policy_file(path: str) -> Dict[str, Any]:
+    def load_policy_file(path: str) -> dict[str, Any]:
         """Safe loader for YAML policy file."""
         if not os.path.exists(path):
             return {}
         try:
-            with open(path, 'r') as f:
+            with open(path) as f:
                 return yaml.safe_load(f) or {}
         except Exception:
             return {}
@@ -58,7 +59,7 @@ class ConfigResolver:
     def resolve(
         cls,
         request: T_Request,
-        policy_class: Type[T_Policy],
+        policy_class: type[T_Policy],
         tool_name: str,
         policy_path: str = "quack_policy.yaml"
     ) -> T_Policy:
@@ -87,7 +88,7 @@ class ConfigResolver:
             if preset_name not in all_presets:
                 # We raise here to let the Interface layer handle the error mapping
                 raise ConfigError(f"Preset '{preset_name}' not found for tool '{tool_name}'")
-            
+
             preset_dict = all_presets[preset_name]
             merged = deep_merge(merged, preset_dict)
 

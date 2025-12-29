@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_html_to_md.py, test_md_to_docx.py, test_utils_fix.py
 # exports: test_verify_pandoc_success, test_verify_pandoc_import_error, test_verify_pandoc_os_error, test_prepare_pandoc_args, test_get_file_info, test_validate_html_structure, test_validate_docx_structure, test_check_file_size (+2 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -20,8 +20,6 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.pandoc import (
     ConversionMetrics,
     PandocConfig,
@@ -33,6 +31,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     validate_html_structure,
     verify_pandoc,
 )
+from quack_core.lib.errors import QuackIntegrationError
 
 # Import patched utilities to avoid validation errors
 from .test_utils_fix import (

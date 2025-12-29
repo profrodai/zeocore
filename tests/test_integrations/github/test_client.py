@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_api.py, test_auth.py, test_config.py, test_github_init.py (+5 more)
 # exports: TestGitHubClient, github_client
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """Tests for GitHub client."""
@@ -12,7 +12,6 @@
 from unittest.mock import patch
 
 import pytest
-
 from quack_core.integrations.github.client import GitHubClient
 from quack_core.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
 

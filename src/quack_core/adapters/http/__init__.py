@@ -4,7 +4,7 @@
 # role: adapters
 # neighbors: app.py, service.py, models.py, config.py, auth.py, dependencies.py (+1 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """

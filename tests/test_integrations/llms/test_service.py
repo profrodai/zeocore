@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_config.py, test_config_provider.py, test_fallback.py, test_integration.py, test_llms.py (+3 more)
 # exports: TestLLMService
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -17,12 +17,11 @@ initialization, configuration, and client communication.
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.fs import DataResult, FileInfoResult
 from quack_core.integrations.core.results import ConfigResult, IntegrationResult
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 from quack_core.integrations.llms.service import LLMIntegration
+from quack_core.lib.errors import QuackIntegrationError
+from quack_core.lib.fs import DataResult, FileInfoResult
 
 from .mocks.clients import MockClient
 

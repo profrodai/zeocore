@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # exports: fs_stub, test_verify_pandoc_success, test_verify_pandoc_import_error, test_prepare_pandoc_args_defaults, test_util_get_file_info_success, test_util_get_file_info_not_found, test_post_process_markdown, test_validate_html_structure_valid (+13 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 import os
@@ -14,8 +14,6 @@ import types
 from types import SimpleNamespace
 
 import pytest
-
-from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import (
     PandocConfig,
@@ -38,6 +36,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     verify_pandoc,
 )
 from quack_core.integrations.pandoc.service import PandocIntegration
+from quack_core.lib.errors import QuackIntegrationError
 
 
 # Fixtures for monkeypatching filesystem service

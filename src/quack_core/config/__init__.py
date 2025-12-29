@@ -5,7 +5,7 @@
 # neighbors: models.py, plugin.py, utils.py, loader.py
 # exports: QuackConfig, GeneralConfig, LoggingConfig, PathsConfig, PluginsConfig, load_config, merge_configs, get_env (+4 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 

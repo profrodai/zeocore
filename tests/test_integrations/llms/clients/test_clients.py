@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_anthropic.py, test_base.py, test_mock.py, test_ollama.py, test_openai.py
 # exports: TestClientImports, TestOpenAIClientDuplicate
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -18,7 +18,6 @@ import os
 from unittest.mock import patch
 
 import pytest
-
 from quack_core.integrations.llms.clients import OpenAIClient
 
 

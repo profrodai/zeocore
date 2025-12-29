@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_env_init.py, test_integration_enabled.py, test_output_handler.py
 # exports: TestQuackToolLifecycleMixin, TestQuackToolLifecycleMixinWithPytest, lifecycle_mixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -14,7 +14,6 @@ Tests for the QuackToolLifecycleMixin.
 import unittest
 
 import pytest
-
 from quack_core.tools.mixins.lifecycle import QuackToolLifecycleMixin
 
 

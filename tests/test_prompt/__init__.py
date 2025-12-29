@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: conftest.py, test_booster.py, test_enhancer.py, test_integration.py, test_plugin.py, test_registry.py (+2 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """

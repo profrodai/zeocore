@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_capabilities.py, test_dependency_boundaries.py, test_envelopes.py, test_schema_examples.py
 # exports: TestStorageRef, TestChecksum, TestArtifactRef, TestRunManifest, TestManifestFixtures
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -13,27 +13,25 @@ Tests for artifact models (ArtifactRef, StorageRef, RunManifest).
 Validates invariants, time ordering, and JSON fixtures.
 """
 
-import pytest
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from datetime import datetime, timezone, timedelta
-from pydantic import ValidationError
 
+import pytest
+from pydantic import ValidationError
 from quack_core.contracts import (
-    StorageRef,
-    Checksum,
-    ArtifactRef,
-    ToolInfo,
-    Provenance,
-    ManifestInput,
-    RunManifest,
-    StorageScheme,
     ArtifactKind,
-    ChecksumAlgorithm,
-    CapabilityStatus,
+    ArtifactRef,
     CapabilityError,
-    CapabilityLogEvent,
-    LogLevel,
+    CapabilityStatus,
+    Checksum,
+    ChecksumAlgorithm,
+    ManifestInput,
+    Provenance,
+    RunManifest,
+    StorageRef,
+    StorageScheme,
+    ToolInfo,
 )
 
 

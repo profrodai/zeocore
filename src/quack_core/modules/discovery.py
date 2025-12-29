@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, registry.py
 # exports: PluginInfo, PluginEntryPoint, LoadResult, PluginLoader, list_available_entry_points, load_enabled_entry_points, load_enabled_modules
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 
@@ -33,7 +33,6 @@ import inspect
 from importlib.metadata import entry_points
 
 from pydantic import BaseModel, Field, ValidationError
-
 from quack_core.lib.errors import QuackPluginError
 from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol

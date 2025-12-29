@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py, test_envelopes.py
 # exports: TestSchemaExamples
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,14 +15,14 @@ Uses model_json_schema() rather than accessing model_config directly
 for forward compatibility across Pydantic versions.
 """
 
-import pytest
 from datetime import datetime
-from pydantic import ValidationError
 
+import pytest
+from pydantic import ValidationError
 from quack_core.contracts import (
-    StorageRef,
     ArtifactRef,
     RunManifest,
+    StorageRef,
 )
 from quack_core.contracts.common.ids import is_valid_uuid
 

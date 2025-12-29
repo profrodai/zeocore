@@ -5,7 +5,7 @@
 # neighbors: __init__.py, attachments.py, auth.py
 # exports: MessagesRequest, MessagesResource, UsersResource, GmailResponse, build_query, list_emails, download_email, clean_filename (+2 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -29,11 +29,10 @@ from datetime import datetime, timedelta
 from typing import Protocol, TypeVar, cast
 
 from googleapiclient.errors import HttpError
-
-from quack_core.lib.fs.service import standalone
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.mail.protocols import GmailRequest, GmailService
 from quack_core.integrations.google.mail.utils.api import execute_api_request
+from quack_core.lib.fs.service import standalone
 
 T = TypeVar("T")  # Generic type for result content
 

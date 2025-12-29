@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, registry.py, results.py
 # exports: BaseAuthProvider, BaseConfigProvider, BaseIntegrationService
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -20,7 +20,6 @@ import os
 from abc import ABC, abstractmethod
 from typing import Any
 
-from quack_core.lib.errors import QuackConfigurationError
 from quack_core.integrations.core.protocols import (
     AuthProviderProtocol,
     ConfigProviderProtocol,
@@ -31,6 +30,7 @@ from quack_core.integrations.core.results import (
     ConfigResult,
     IntegrationResult,
 )
+from quack_core.lib.errors import QuackConfigurationError
 from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
 
 

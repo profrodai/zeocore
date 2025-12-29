@@ -5,7 +5,7 @@
 # neighbors: __init__.py, auth.py, email.py
 # exports: process_message_parts, handle_attachment
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -22,10 +22,10 @@ import base64
 import logging
 import os
 
-from quack_core.lib.fs.service import standalone
 from quack_core.integrations.google.mail.operations.email import clean_filename
 from quack_core.integrations.google.mail.protocols import GmailService
 from quack_core.integrations.google.mail.utils.api import execute_api_request
+from quack_core.lib.fs.service import standalone
 
 
 def process_message_parts(

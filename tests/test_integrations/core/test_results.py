@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_get_service.py, test_protocol_inheritance.py, test_protocols.py, test_registry.py, test_registry_discovery.py
 # exports: TestIntegrationResult, TestAuthResult, TestConfigResult
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -17,7 +17,6 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
-
 from quack_core.integrations.core.results import (
     AuthResult,
     ConfigResult,

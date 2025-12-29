@@ -5,7 +5,7 @@
 # neighbors: __init__.py
 # exports: render_zero_shot, render_multi_shot_structured, render_single_shot_structured, render_react_agentic, render_zero_shot_cot, render_task_decomposition, render_apply_best_practices, render_automatic_prompt_engineering (+21 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,6 +15,7 @@ This module contains all the built-in prompt enhancement strategies.
 """
 
 from quack_core.prompt.models import PromptStrategy
+
 
 # --- Zero Shot ---
 def render_zero_shot(task_description: str) -> str:

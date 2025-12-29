@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_dependency_boundaries.py, test_envelopes.py, test_schema_examples.py
 # exports: TestTimeRange, TestSliceVideoModels, TestTranscribeModels, TestDemoCapabilities
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,26 +15,26 @@ Validates request/response schemas and demo implementations.
 
 import pytest
 from pydantic import ValidationError
-
 from quack_core.contracts import (
-    # Media
-    TimeRange,
-    SliceVideoRequest,
-    SlicedClipData,
-    SliceVideoResponse,
-    TranscribeRequest,
-    TranscriptionSegment,
-    TranscribeResponse,
-    # Demo (models only)
-    EchoRequest,
-    VideoRefRequest,
+    ArtifactKind,
     # Supporting types
     ArtifactRef,
+    CapabilityStatus,
+    # Demo (models only)
+    EchoRequest,
+    SlicedClipData,
+    SliceVideoRequest,
+    SliceVideoResponse,
     StorageRef,
     StorageScheme,
-    ArtifactKind,
-    CapabilityStatus,
+    # Media
+    TimeRange,
+    TranscribeRequest,
+    TranscribeResponse,
+    TranscriptionSegment,
+    VideoRefRequest,
 )
+
 # Import demo implementations directly from their INTERNAL module
 # NOTE: Using underscore-prefixed module to access internal examples
 from quack_core.contracts.capabilities.demo._impl import (

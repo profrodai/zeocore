@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_env_init.py, test_integration_enabled.py, test_lifecycle.py
 # exports: CustomOutputFormatMixin, TestOutputFormatMixin, TestOutputFormatMixinWithPytest, output_format_mixin, custom_output_format_mixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -14,7 +14,6 @@ Tests for the OutputFormatMixin.
 import unittest
 
 import pytest
-
 from quack_core.tools.mixins.output_handler import OutputFormatMixin
 
 

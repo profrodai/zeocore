@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_auth.py, test_email.py
 # exports: TestGmailAttachmentOperations
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,8 +16,9 @@ import logging
 import os
 from unittest.mock import MagicMock, patch
 
-from quack_core.lib.fs import FileInfoResult, OperationResult, WriteResult
 from quack_core.integrations.google.mail.operations import attachments
+from quack_core.lib.fs import FileInfoResult, OperationResult, WriteResult
+
 from tests.test_integrations.google.mail.mocks import (
     create_mock_gmail_service,
 )

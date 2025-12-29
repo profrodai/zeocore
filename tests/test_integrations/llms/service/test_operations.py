@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_dependencies.py, test_initialization.py, test_integration.py
 # exports: TestLLMOperationsComplete
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -17,7 +17,6 @@ which contains the chat and token counting _operations.
 from unittest.mock import MagicMock
 
 import pytest
-
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 from quack_core.integrations.llms.service.operations import (

@@ -5,20 +5,20 @@
 # neighbors: __init__.py
 # exports: run_flow
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
 LOCAL ORCHESTRATOR (DEV ONLY)
 Use this to test chains of capabilities without spinning up n8n.
 """
-import sys
 import os
+import sys
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from quack_core.contracts.capabilities.demo import echo_text, EchoRequest
+from quack_core.contracts.capabilities.demo import EchoRequest, echo_text
 
 
 def run_flow():

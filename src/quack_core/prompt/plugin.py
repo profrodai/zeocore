@@ -5,11 +5,12 @@
 # neighbors: __init__.py, service.py, models.py
 # exports: PromptPlugin, create_plugin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
-from quack_core.prompt.service import PromptService
 from quack_core.prompt.api.public.results import PromptRenderResult
+from quack_core.prompt.service import PromptService
+
 
 class PromptPlugin:
     """

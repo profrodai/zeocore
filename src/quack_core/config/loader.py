@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, plugin.py, utils.py
 # exports: load_yaml_config, find_config_file, load_config, merge_configs
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 
@@ -26,7 +26,6 @@ import os
 from typing import Any, TypeVar
 
 import yaml
-
 from quack_core.config.models import QuackConfig
 from quack_core.config.utils import find_project_root
 from quack_core.lib.errors import QuackConfigurationError, wrap_io_errors

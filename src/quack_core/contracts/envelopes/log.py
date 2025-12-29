@@ -5,7 +5,7 @@
 # neighbors: __init__.py, error.py, result.py
 # exports: CapabilityLogEvent
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,10 +15,10 @@ Consumed by: Ring B (tools), Ring C (orchestrators), monitoring systems
 Must NOT contain: Logging implementation, log shipping logic
 """
 
-from typing import Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field, ConfigDict
+from typing import Any
 
+from pydantic import BaseModel, ConfigDict, Field
 from quack_core.contracts.common.enums import LogLevel
 from quack_core.contracts.common.time import utcnow
 
@@ -68,7 +68,7 @@ class CapabilityLogEvent(BaseModel):
         description="Human-readable log message"
     )
 
-    context: Dict[str, Any] = Field(
+    context: dict[str, Any] = Field(
         default_factory=dict,
         description="Structured context for debugging (tool, step, metrics, etc.)"
     )

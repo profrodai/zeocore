@@ -5,12 +5,14 @@
 # neighbors: __init__.py
 # exports: PromptRenderResult, RegisterStrategyResult, GetStrategyResult, StrategyListResult, LoadPackResult
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 from typing import Any
+
 from pydantic import BaseModel, Field
 from quack_core.prompt.models import PromptStrategy, StrategyInfo
+
 
 class PromptRenderResult(BaseModel):
     """Result of a prompt rendering operation."""

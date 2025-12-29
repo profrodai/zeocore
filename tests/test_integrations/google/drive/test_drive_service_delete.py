@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_drive.py, test_drive_models.py, test_drive_service_download.py, test_drive_service_files.py (+6 more)
 # exports: TestGoogleDriveServiceDelete
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -13,8 +13,8 @@ Tests for Google Drive service deletion _operations.
 
 from unittest.mock import MagicMock
 
-from quack_core.lib.errors import QuackApiError
 from quack_core.integrations.google.drive.service import GoogleDriveService
+from quack_core.lib.errors import QuackApiError
 
 
 class TestGoogleDriveServiceDelete:

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py, test_utils.py
 # exports: TestAtomicWrapping, temp_test_dir
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -19,7 +19,6 @@ WriteResult. These tests will detect such scenarios.
 from pathlib import Path
 
 import pytest
-
 from quack_core.lib.fs import WriteResult
 from quack_core.lib.fs.service import FileSystemService
 

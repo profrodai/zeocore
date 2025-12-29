@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_dependencies.py, test_integration.py, test_operations.py
 # exports: TestInitialization
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,7 +16,6 @@ This module tests the initialization functions for LLM integration.
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms.fallback import FallbackConfig
 from quack_core.integrations.llms.service.initialization import (

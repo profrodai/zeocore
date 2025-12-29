@@ -5,7 +5,7 @@
 # neighbors: __init__.py, pull_requests.py, repositories.py, users.py
 # exports: create_issue, list_issues, get_issue, add_issue_comment
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """GitHub issues _operations."""
@@ -13,7 +13,6 @@
 from typing import Any, Literal
 
 import requests
-
 from quack_core.integrations.github.utils.api import make_request
 
 

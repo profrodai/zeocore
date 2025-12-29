@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_explicit_loading.py, test_protocols.py, test_registry.py
 # exports: MockPlugin, TestPluginLoader
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,7 +15,6 @@ import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from quack_core.lib.errors import QuackPluginError
 from quack_core.modules.discovery import PluginLoader
 from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol

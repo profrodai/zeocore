@@ -4,18 +4,15 @@
 # neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py (+2 more)
 # exports: test_new_id, test_stable_hash, test_post_callback_mock
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
 Tests for utility functions.
 """
 
-import pytest
-from unittest.mock import AsyncMock, patch
-import json
 
-from quack_core.adapters.http.util import new_id, stable_hash, post_callback
+from quack_core.adapters.http.util import new_id, post_callback, stable_hash
 
 
 def test_new_id():

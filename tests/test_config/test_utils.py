@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_loader.py, test_models.py
 # exports: TestConfigUtils
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -17,7 +17,6 @@ from unittest.mock import patch
 
 import pytest
 import yaml
-
 from quack_core.config.models import (
     LoggingConfig,
     QuackConfig,

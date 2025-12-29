@@ -4,7 +4,7 @@
 # role: module
 # neighbors: __init__.py, enums.py, ids.py, time.py, versions.py
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -13,10 +13,10 @@ Type aliases and typing utilities for contracts.
 Provides semantic type hints without runtime overhead.
 """
 
-from typing import Dict, Any, NewType
+from typing import Any, NewType
 
 # Metadata dictionaries (free-form key-value pairs)
-Metadata = Dict[str, Any]
+Metadata = dict[str, Any]
 
 # Error code type (should follow QC_* convention)
 ErrorCode = NewType("ErrorCode", str)

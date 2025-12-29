@@ -5,7 +5,7 @@
 # neighbors: __init__.py, refs.py
 # exports: ToolInfo, Provenance, ManifestInput, RunManifest
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -18,17 +18,17 @@ The RunManifest is the complete record of a tool execution:
 inputs, outputs, logs, errors, timing, and provenance.
 """
 
-from typing import List, Optional, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
+from typing import Any
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from quack_core.contracts.artifacts.refs import ArtifactRef
 from quack_core.contracts.common.enums import CapabilityStatus
 from quack_core.contracts.common.ids import generate_run_id, is_valid_uuid
 from quack_core.contracts.common.time import utcnow
 from quack_core.contracts.common.versions import MANIFEST_VERSION
-from quack_core.contracts.envelopes.log import CapabilityLogEvent
 from quack_core.contracts.envelopes.error import CapabilityError
-from quack_core.contracts.artifacts.refs import ArtifactRef
+from quack_core.contracts.envelopes.log import CapabilityLogEvent
 
 
 class ToolInfo(BaseModel):
@@ -60,7 +60,7 @@ class ToolInfo(BaseModel):
         description="Tool version (semver recommended)"
     )
 
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Additional tool info (runtime, config, etc.)"
     )
@@ -76,44 +76,44 @@ class Provenance(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    git_commit: Optional[str] = Field(
+    git_commit: str | None = Field(
         None,
         description="Git commit SHA of the code"
     )
 
-    git_branch: Optional[str] = Field(
+    git_branch: str | None = Field(
         None,
         description="Git branch name"
     )
 
-    git_repo: Optional[str] = Field(
+    git_repo: str | None = Field(
         None,
         description="Git repository URL"
     )
 
-    host: Optional[str] = Field(
+    host: str | None = Field(
         None,
         description="Hostname where execution occurred"
     )
 
-    user: Optional[str] = Field(
+    user: str | None = Field(
         None,
         description="User who triggered execution"
     )
 
-    environment: Optional[str] = Field(
+    environment: str | None = Field(
         None,
         description="Execution environment (local, dev, staging, prod)",
         examples=["local", "dev", "staging", "prod"]
     )
 
-    runner: Optional[str] = Field(
+    runner: str | None = Field(
         None,
         description="Runner that executed the tool (cli, n8n, temporal)",
         examples=["cli", "n8n", "temporal", "lambda"]
     )
 
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Additional provenance data"
     )
@@ -143,7 +143,7 @@ class ManifestInput(BaseModel):
         description="Whether this input is required for the tool"
     )
 
-    description: Optional[str] = Field(
+    description: str | None = Field(
         None,
         description="Human-readable description of this input"
     )
@@ -352,12 +352,12 @@ class RunManifest(BaseModel):
         description="UTC timestamp when execution started"
     )
 
-    finished_at: Optional[datetime] = Field(
+    finished_at: datetime | None = Field(
         None,
         description="UTC timestamp when execution finished"
     )
 
-    duration_sec: Optional[float] = Field(
+    duration_sec: float | None = Field(
         None,
         ge=0.0,
         description="Execution duration in seconds (None if not measured)"
@@ -370,39 +370,39 @@ class RunManifest(BaseModel):
     )
 
     # Artifacts
-    inputs: List[ManifestInput] = Field(
+    inputs: list[ManifestInput] = Field(
         default_factory=list,
         description="Input artifacts consumed by the tool"
     )
 
-    outputs: List[ArtifactRef] = Field(
+    outputs: list[ArtifactRef] = Field(
         default_factory=list,
         description="Output artifacts produced by the tool"
     )
 
-    intermediates: List[ArtifactRef] = Field(
+    intermediates: list[ArtifactRef] = Field(
         default_factory=list,
         description="Intermediate artifacts (may be cleaned up)"
     )
 
     # Diagnostics (reuse envelope models)
-    logs: List[CapabilityLogEvent] = Field(
+    logs: list[CapabilityLogEvent] = Field(
         default_factory=list,
         description="Structured log events from execution"
     )
 
-    error: Optional[CapabilityError] = Field(
+    error: CapabilityError | None = Field(
         None,
         description="Structured error if status == error"
     )
 
     # Metadata
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Free-form metadata (config, environment, capability-specific data)"
     )
 
-    provenance: Optional[Provenance] = Field(
+    provenance: Provenance | None = Field(
         None,
         description="Provenance info for reproducibility"
     )

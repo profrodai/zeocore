@@ -5,7 +5,7 @@
 # neighbors: __init__.py, manifest.py
 # exports: StorageRef, Checksum, ArtifactRef
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -18,12 +18,15 @@ These models define HOW to reference artifacts without implementing
 the actual storage operations.
 """
 
-from typing import Optional, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
+from typing import Any
 
-from quack_core.contracts.common.enums import StorageScheme, ArtifactKind, \
-    ChecksumAlgorithm
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from quack_core.contracts.common.enums import (
+    ArtifactKind,
+    ChecksumAlgorithm,
+    StorageScheme,
+)
 from quack_core.contracts.common.ids import generate_artifact_id, is_valid_uuid
 from quack_core.contracts.common.time import utcnow
 from quack_core.contracts.common.typing import ArtifactRole
@@ -99,7 +102,7 @@ class StorageRef(BaseModel):
         description="Storage backend type"
     )
 
-    scheme_custom: Optional[str] = Field(
+    scheme_custom: str | None = Field(
         None,
         description="Custom scheme name when scheme=custom (e.g., 'minio', 'ceph')"
     )
@@ -115,17 +118,17 @@ class StorageRef(BaseModel):
         ]
     )
 
-    bucket: Optional[str] = Field(
+    bucket: str | None = Field(
         None,
         description="Bucket name (for object storage schemes like s3, gcs, azure)"
     )
 
-    key: Optional[str] = Field(
+    key: str | None = Field(
         None,
         description="Object key/path within bucket"
     )
 
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Storage-specific metadata (region, credentials ref, etc.)"
     )
@@ -183,7 +186,7 @@ class Checksum(BaseModel):
         description="Hashing algorithm used (sha256 is blessed)"
     )
 
-    algorithm_custom: Optional[str] = Field(
+    algorithm_custom: str | None = Field(
         None,
         description="Custom algorithm name when algorithm=custom (e.g., 'blake2b', 'md5')"
     )
@@ -316,13 +319,13 @@ class ArtifactRef(BaseModel):
         description="Where the artifact is stored"
     )
 
-    size_bytes: Optional[int] = Field(
+    size_bytes: int | None = Field(
         None,
         ge=0,
         description="Size of the artifact in bytes"
     )
 
-    checksum: Optional[Checksum] = Field(
+    checksum: Checksum | None = Field(
         None,
         description="Checksum for integrity verification"
     )
@@ -332,13 +335,13 @@ class ArtifactRef(BaseModel):
         description="UTC timestamp when artifact was created"
     )
 
-    tags: Dict[str, str] = Field(
+    tags: dict[str, str] = Field(
         default_factory=dict,
         description="Additional routing/filtering metadata",
         examples=[{"language": "en"}, {"speaker": "Alice"}, {"quality": "high"}]
     )
 
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Free-form metadata (duration, resolution, etc.)"
     )

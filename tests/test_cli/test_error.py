@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_formatting.py (+5 more)
 # exports: TestFormatCliError, TestHandleErrors, TestEnsureSingleInstance, TestGetCliInfo
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,10 +16,13 @@ from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
-
+from quack_core.interfaces.cli.utils.error import (
+    ensure_single_instance,
+    format_cli_error,
+    get_cli_info,
+    handle_errors,
+)
 from quack_core.lib.errors import QuackError
-from quack_core.interfaces.cli.utils.error import format_cli_error, handle_errors, \
-    ensure_single_instance, get_cli_info
 
 
 class TestFormatCliError:

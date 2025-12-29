@@ -5,7 +5,7 @@
 # neighbors: __init__.py, app.py, models.py, config.py, auth.py, dependencies.py (+1 more)
 # exports: run
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -13,8 +13,9 @@ Service utilities for running the HTTP adapter.
 """
 
 import uvicorn
-from .config import HttpAdapterConfig
+
 from .app import create_app
+from .config import HttpAdapterConfig
 
 
 def run(cfg: HttpAdapterConfig) -> None:

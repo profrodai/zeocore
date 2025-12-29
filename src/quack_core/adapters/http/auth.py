@@ -5,7 +5,7 @@
 # neighbors: __init__.py, app.py, service.py, models.py, config.py, dependencies.py (+1 more)
 # exports: require_bearer, sign_payload
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 
@@ -17,10 +17,8 @@ Authentication utilities for the HTTP adapter.
 import hashlib
 import hmac
 import json
-from typing import Optional
 
 from fastapi import HTTPException, Request
-
 from quack_core.adapters.http.config import HttpAdapterConfig
 
 

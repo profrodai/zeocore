@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, context.py
 # exports: QuackToolProtocol
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 
@@ -20,7 +20,7 @@ Note: This is for Ring B tools only. Plugin-layer concerns (metadata, discovery)
 are handled separately in the plugin system.
 """
 
-from typing import Any, Protocol, runtime_checkable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 from quack_core.contracts import CapabilityResult
 

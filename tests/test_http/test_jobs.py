@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_routes_jobs.py (+2 more)
 # exports: job_config, test_set_cfg, test_resolve_callable_unknown_op, test_resolve_callable_mock, test_create_mock_function, test_enqueue_not_initialized, test_enqueue_and_get_status, test_enqueue_with_idempotency (+1 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -12,13 +12,16 @@ Tests for job management functionality.
 """
 
 import time
-import pytest
-from unittest.mock import patch, MagicMock
 
-from quack_core.adapters.http.jobs import (
-    set_cfg, enqueue, get_status, resolve_callable, _create_mock_function
-)
+import pytest
 from quack_core.adapters.http.config import HttpAdapterConfig
+from quack_core.adapters.http.jobs import (
+    _create_mock_function,
+    enqueue,
+    get_status,
+    resolve_callable,
+    set_cfg,
+)
 
 
 @pytest.fixture

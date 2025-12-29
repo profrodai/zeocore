@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, protocols.py, config.py, auth.py
 # exports: GitHubClient
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """GitHub API client for quack_core."""
@@ -13,7 +13,6 @@
 from typing import Any, Literal
 
 import requests
-
 from quack_core.lib.logging import get_logger
 
 from .models import GitHubRepo, GitHubUser, PullRequest

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_get_service.py, test_protocol_inheritance.py, test_protocols.py, test_registry.py, test_results.py
 # exports: MockIntegration, MockPluginLoader, MockEntryPoint, TestIntegrationRegistryDiscovery
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -19,12 +19,11 @@ from importlib.metadata import EntryPoint
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from quack_core.lib.errors import QuackError
 from quack_core.integrations.core.registry import (
     IntegrationRegistry,
     PluginLoaderProtocol,
 )
+from quack_core.lib.errors import QuackError
 
 
 class MockIntegration:

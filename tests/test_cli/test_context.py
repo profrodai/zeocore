@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_error.py, test_formatting.py (+5 more)
 # exports: TestQuackContext
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -17,7 +17,6 @@ from unittest.mock import MagicMock
 
 import pytest
 from pydantic import ValidationError
-
 from quack_core.config.models import QuackConfig
 from quack_core.interfaces.cli.legacy.context import QuackContext
 

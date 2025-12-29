@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_config.py, test_config_provider.py, test_fallback.py, test_integration.py, test_llms.py (+3 more)
 # exports: TestLLMRegistry
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -17,8 +17,6 @@ and management of LLM client implementations.
 from unittest.mock import MagicMock, patch
 
 import pytest
-
-from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.llms.clients.base import LLMClient
 from quack_core.integrations.llms.clients.mock import MockLLMClient
 from quack_core.integrations.llms.registry import (
@@ -26,6 +24,7 @@ from quack_core.integrations.llms.registry import (
     get_llm_client,
     register_llm_client,
 )
+from quack_core.lib.errors import QuackIntegrationError
 
 
 class TestLLMRegistry:

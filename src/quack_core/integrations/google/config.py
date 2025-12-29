@@ -5,7 +5,7 @@
 # neighbors: __init__.py, auth.py, serialization.py
 # exports: GoogleBaseConfig, GoogleDriveConfig, GoogleMailConfig, GoogleConfigProvider, GoogleConfig
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -20,11 +20,8 @@ import logging
 from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
-
 from quack_core.config.models import _normalize_path
 from quack_core.integrations.core.base import BaseConfigProvider
-
-
 
 
 class GoogleBaseConfig(BaseModel):

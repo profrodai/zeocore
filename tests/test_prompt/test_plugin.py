@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_booster.py, test_enhancer.py, test_integration.py, test_registry.py (+2 more)
 # exports: clear_registry_before_after, test_plugin_initialization, test_create_plugin, test_plugin_create_booster, test_plugin_register_strategy, test_plugin_get_strategy, test_plugin_find_strategies, test_plugin_list_strategies (+2 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -14,7 +14,6 @@ Tests for the prompt plugin functionality.
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from quack_core.prompt.plugin import PromptBoosterPlugin, create_plugin
 from quack_core.prompt.registry import clear_registry, get_all_strategies
 from quack_core.prompt.strategy_base import PromptStrategy

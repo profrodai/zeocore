@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, config.py
 # exports: GoogleMailService
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 import logging
@@ -13,15 +13,18 @@ from collections.abc import Iterable, Mapping, Sequence
 from types import NoneType
 from typing import cast
 
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.fs import service as fs
 from quack_core.integrations.core.base import BaseIntegrationService
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.auth import GoogleAuthProvider
 from quack_core.integrations.google.config import GoogleConfigProvider
 from quack_core.integrations.google.mail.config import GmailServiceConfig
 from quack_core.integrations.google.mail.operations import auth, email
-from quack_core.integrations.google.mail.protocols import GmailService, GoogleCredentials
+from quack_core.integrations.google.mail.protocols import (
+    GmailService,
+    GoogleCredentials,
+)
+from quack_core.lib.errors import QuackIntegrationError
+from quack_core.lib.fs import service as fs
 from quack_core.lib.paths import service as paths
 
 

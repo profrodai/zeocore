@@ -5,7 +5,7 @@
 # neighbors: __init__.py, download.py, folder.py, list_files.py, permissions.py
 # exports: initialize_drive_service, resolve_file_details, upload_file
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -21,9 +21,6 @@ import logging
 
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaInMemoryUpload
-
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
-from quack_core.lib.fs.service import standalone
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.operations import permissions
 from quack_core.integrations.google.drive.protocols import (
@@ -31,6 +28,8 @@ from quack_core.integrations.google.drive.protocols import (
     GoogleCredentials,
 )
 from quack_core.integrations.google.drive.utils.api import execute_api_request
+from quack_core.lib.errors import QuackApiError, QuackIntegrationError
+from quack_core.lib.fs.service import standalone
 from quack_core.lib.paths import service as paths_service
 
 

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_error.py (+5 more)
 # exports: TestGetTerminalSize, TestSupportsColor, TestTruncateText
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -15,8 +15,11 @@ import os
 import sys
 from unittest.mock import MagicMock, patch
 
-from quack_core.interfaces.cli.utils.terminal import get_terminal_size, supports_color, \
-    truncate_text
+from quack_core.interfaces.cli.utils.terminal import (
+    get_terminal_size,
+    supports_color,
+    truncate_text,
+)
 
 
 class TestGetTerminalSize:

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py, test_protocol.py (+2 more)
 # exports: MockIntegrationService, AnotherMockService, CustomOutputFormatMixin, output_format_mixin, custom_output_format_mixin, tool_env_initializer_mixin, lifecycle_mixin, integration_enabled_mixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,7 +16,6 @@ from typing import TypeVar
 from unittest.mock import patch
 
 import pytest
-
 from quack_core.integrations.core.base import BaseIntegrationService
 from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin

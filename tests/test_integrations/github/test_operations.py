@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_api.py, test_auth.py, test_client.py, test_config.py (+5 more)
 # exports: TestUserOperations, TestRepositoryOperations, TestPullRequestOperations, TestIssueOperations, mock_session, mock_response
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """Tests for GitHub API _operations."""
@@ -14,8 +14,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-
-from quack_core.lib.errors import QuackApiError
 from quack_core.integrations.github.models import (
     GitHubRepo,
     GitHubUser,
@@ -41,6 +39,7 @@ from quack_core.integrations.github.operations import (
     unstar_repo,
     update_repository_file,
 )
+from quack_core.lib.errors import QuackApiError
 
 
 @pytest.fixture

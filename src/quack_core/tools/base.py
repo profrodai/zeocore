@@ -5,9 +5,8 @@
 # neighbors: __init__.py, context.py, protocol.py
 # exports: BaseQuackTool
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
-
 
 
 """
@@ -24,7 +23,7 @@ Key principles:
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from quack_core.contracts import CapabilityResult
 

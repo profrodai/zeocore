@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_capabilities.py, test_envelopes.py, test_schema_examples.py
 # exports: DependencyChecker, TestDependencyBoundaries, TestImportPatterns
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -14,11 +14,10 @@ Ensures contracts module only imports from stdlib and Pydantic.
 This maintains Ring A isolation as per Doctrine v3.
 """
 
-import pytest
 import ast
-import sys
 from pathlib import Path
-from typing import Set, List
+
+import pytest
 
 
 class DependencyChecker:
@@ -52,11 +51,11 @@ class DependencyChecker:
         """
         self.contracts_root = contracts_root
 
-    def get_python_files(self) -> List[Path]:
+    def get_python_files(self) -> list[Path]:
         """Get all Python files in contracts module."""
         return list(self.contracts_root.rglob("*.py"))
 
-    def extract_imports(self, filepath: Path) -> Set[str]:
+    def extract_imports(self, filepath: Path) -> set[str]:
         """
         Extract all import statements from a Python file.
 
@@ -66,7 +65,7 @@ class DependencyChecker:
         Returns:
             Set of FULL module paths being imported (not just root package)
         """
-        with open(filepath, 'r') as f:
+        with open(filepath) as f:
             try:
                 tree = ast.parse(f.read(), filename=str(filepath))
             except SyntaxError:
@@ -87,7 +86,7 @@ class DependencyChecker:
 
         return imports
 
-    def check_file(self, filepath: Path) -> List[str]:
+    def check_file(self, filepath: Path) -> list[str]:
         """
         Check a single file for forbidden imports.
 
@@ -129,7 +128,7 @@ class DependencyChecker:
 
         return violations
 
-    def check_all(self) -> List[str]:
+    def check_all(self) -> list[str]:
         """
         Check all Python files in contracts module.
 

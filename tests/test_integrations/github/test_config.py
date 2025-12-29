@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_api.py, test_auth.py, test_client.py, test_github_init.py (+5 more)
 # exports: TestGitHubConfigProvider, config_provider
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """Tests for GitHub configuration provider."""
@@ -13,7 +13,6 @@ import os
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from quack_core.integrations.github.config import GitHubConfigProvider
 
 

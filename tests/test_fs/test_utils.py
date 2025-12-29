@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py
 # exports: TestPathUtilities, TestFileUtilities
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -21,7 +21,6 @@ from unittest.mock import patch
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-
 from quack_core.lib.errors import (
     QuackFileExistsError,
     QuackFileNotFoundError,
@@ -53,7 +52,11 @@ from quack_core.lib.fs._helpers.file_ops import (
     _find_files_by_content,
     _get_unique_filename,
 )
-from quack_core.lib.fs._helpers.path_ops import _expand_user_vars, _join_path, _split_path
+from quack_core.lib.fs._helpers.path_ops import (
+    _expand_user_vars,
+    _join_path,
+    _split_path,
+)
 
 
 class TestPathUtilities:

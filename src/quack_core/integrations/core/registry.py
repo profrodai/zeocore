@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, results.py, base.py
 # exports: IntegrationRegistry
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,10 +16,11 @@ It acts as a simple container for active integrations and avoids any
 auto-discovery logic or side effects.
 """
 
-from typing import Iterable, TypeVar
+from collections.abc import Iterable
+from typing import TypeVar
 
-from quack_core.lib.errors import QuackError
 from quack_core.integrations.core.protocols import IntegrationProtocol
+from quack_core.lib.errors import QuackError
 from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
 
 T = TypeVar("T", bound=IntegrationProtocol)

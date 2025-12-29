@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_discovery.py, test_explicit_loading.py, test_protocols.py
 # exports: BasicPlugin, CommandPlugin, WorkflowPlugin, ExtensionPlugin, ProviderPlugin, TestPluginRegistry
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -14,7 +14,6 @@ Tests for the plugin registry.
 from collections.abc import Callable
 
 import pytest
-
 from quack_core.lib.errors import QuackPluginError
 from quack_core.modules.protocols import (
     CommandPluginProtocol,

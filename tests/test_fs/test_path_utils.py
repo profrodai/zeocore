@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_results.py, test_service.py, test_utils.py
 # exports: TestPathUtils
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -16,9 +16,8 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import pytest
-
-from quack_core.lib.fs._helpers.path_utils import _extract_path_str, _safe_path_str
 from quack_core.lib.fs import DataResult, PathResult
+from quack_core.lib.fs._helpers.path_utils import _extract_path_str, _safe_path_str
 
 
 class TestPathUtils(TestCase):

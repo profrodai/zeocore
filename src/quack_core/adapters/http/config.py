@@ -5,7 +5,7 @@
 # neighbors: __init__.py, app.py, service.py, models.py, auth.py, dependencies.py (+1 more)
 # exports: HttpAdapterConfig
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 
@@ -13,9 +13,8 @@
 Configuration for the HTTP adapter.
 """
 
-from typing import Optional
-from pydantic import BaseModel, AnyHttpUrl, Field
 
+from pydantic import AnyHttpUrl, Field
 from quack_core.config.tooling.base import QuackToolConfigModel
 
 
@@ -25,9 +24,9 @@ class HttpAdapterConfig(QuackToolConfigModel):
     host: str = "0.0.0.0"
     port: int = 8080
     cors_origins: list[str] = Field(default_factory=list)
-    auth_token: Optional[str] = None
-    hmac_secret: Optional[str] = None
-    public_base_url: Optional[AnyHttpUrl] = None
+    auth_token: str | None = None
+    hmac_secret: str | None = None
+    public_base_url: AnyHttpUrl | None = None
     job_ttl_seconds: int = 3600
     max_workers: int = 4
     request_timeout_seconds: int = 900

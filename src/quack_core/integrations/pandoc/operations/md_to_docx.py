@@ -5,7 +5,7 @@
 # neighbors: __init__.py, utils.py, html_to_md.py
 # exports: convert_markdown_to_docx, validate_conversion
 # git_branch: refactor/toolkitWorkflow
-# git_commit: e4fa88d
+# git_commit: 21647d6
 # === QV-LLM:END ===
 
 """
@@ -20,7 +20,6 @@ import inspect
 import os
 import time
 
-from quack_core.lib.errors import QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import PandocConfig
 from quack_core.integrations.pandoc.models import ConversionDetails, ConversionMetrics
@@ -31,6 +30,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     safe_convert_to_int,
     track_metrics,
 )
+from quack_core.lib.errors import QuackIntegrationError
 from quack_core.lib.logging import get_logger
 
 logger = get_logger(__name__)
@@ -544,7 +544,7 @@ def _check_docx_metadata(docx_path: str, source_path: str, check_links: bool) ->
                         isinstance(mock_import.side_effect, ImportError)):
                     # Just log the error and return to let the test catch the exception
                     mock_logger.debug(
-                        f"Could not check document metadata: docx module not found")
+                        "Could not check document metadata: docx module not found")
                     return
 
                 # For the first test case - normal operation
