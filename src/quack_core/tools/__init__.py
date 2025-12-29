@@ -3,119 +3,106 @@
 # module: quack_core.tools.__init__
 # role: module
 # neighbors: base.py, context.py, protocol.py
-# exports: BaseQuackTool, BaseQuackToolPlugin, QuackToolProtocol, ToolContext, IntegrationEnabledMixin, QuackToolLifecycleMixin, ToolEnvInitializerMixin
+# exports: BaseQuackTool, ToolContext, QuackToolProtocol, IntegrationEnabledMixin, LifecycleMixin, ToolEnvInitializerMixin, BaseQuackToolPlugin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 
 
 """
-Developer interface layer for creating QuackTools.
+quack_core.tools - Capability authoring framework (Ring B, Doctrine v3).
 
-This package provides the foundation for building QuackTool modules,
-following Doctrine v3 architecture principles.
+This package provides the base classes and protocols for creating
+doctrine-compliant tools that work across all QuackCore orchestrators.
 
-What tool authors import:
-- quack_core.contracts (for CapabilityResult, request/response models)
-- quack_core.tools (this package - for BaseQuackTool, ToolContext, mixins)
-- quack_core.integrations.* (optional - for service integrations)
+CANONICAL IMPORT PATH:
+    from quack_core.tools import BaseQuackTool, ToolContext, ...
 
-What tool authors do NOT import:
-- quack_runner.* (orchestration is separate)
-- quack_core.workflow.* (runners handle I/O)
-- Output writers, file runners, manifest builders (runner responsibilities)
+DO NOT import from submodules:
+    ❌ from quack_core.tools.mixins import IntegrationEnabledMixin
+    ✅ from quack_core.tools import IntegrationEnabledMixin
 
-Core components:
-- BaseQuackTool: Base class that tools inherit from
-- ToolContext: Execution context provided by runners
-- QuackToolProtocol: Protocol that defines the required interface
-- Mixins: Optional features (integrations, lifecycle hooks)
+Tool authors should ONLY import from:
+- quack_core.tools (this module)
+- quack_core.contracts (request/response models, CapabilityResult)
 
-Example usage:
-    ```python
-    from quack_core.contracts import (
-        CapabilityResult,
-        EchoRequest,
-    )
+NEVER import from:
+- quack_runner.* (Ring C - orchestration)
+- quack_core.workflow.* (doesn't exist anymore)
+
+Key classes:
+- BaseQuackTool: Base class for all tools
+- ToolContext: Immutable dependency container
+- QuackToolProtocol: Protocol for tool detection
+
+Mixins (optional):
+- IntegrationEnabledMixin: Access services from context
+- LifecycleMixin: Pre/post run hooks
+- ToolEnvInitializerMixin: Environment setup
+
+Example:
     from quack_core.tools import BaseQuackTool, ToolContext
-
-    class EchoTool(BaseQuackTool):
-        def __init__(self):
-            super().__init__(
-                name="demo.echo",
-                version="1.0.0"
-            )
-
-        def run(
-            self,
-            request: EchoRequest,
-            ctx: ToolContext
-        ) -> CapabilityResult[str]:
-            greeting = request.override_greeting or "Hello"
-            result = f"{greeting} {request.text}"
-
-            return CapabilityResult.ok(
-                data=result,
-                msg="Echo completed",
-                metadata={"preset": request.preset}
-            )
-    ```
-
-With integrations:
-    ```python
-    from quack_core.tools import BaseQuackTool, ToolContext
-    from quack_core.tools.mixins import IntegrationEnabledMixin
-    from quack_core.integrations.google.drive import GoogleDriveService
     from quack_core.contracts import CapabilityResult
 
-    class MyTool(
-        IntegrationEnabledMixin[GoogleDriveService],
-        BaseQuackTool
-    ):
-        def initialize(self, ctx: ToolContext) -> CapabilityResult[None]:
-            self._drive = self.resolve_integration(GoogleDriveService)
-
-            if not self._drive:
-                return CapabilityResult.fail(
-                    msg="Google Drive integration not available",
-                    code="QC_INT_UNAVAILABLE"
-                )
-
-            return CapabilityResult.ok(
-                data=None,
-                msg="Integration initialized"
-            )
-
+    class MyTool(BaseQuackTool):
         def run(self, request, ctx: ToolContext) -> CapabilityResult:
-            # Use self._drive here
-            ...
-    ```
+            result = self._process(request, ctx)
+            return CapabilityResult.ok(data=result, msg="Success")
 """
 
 # Core classes
-from quack_core.tools.base import BaseQuackTool, BaseQuackToolPlugin
-from quack_core.tools.protocol import QuackToolProtocol
+from quack_core.tools.base import BaseQuackTool
 from quack_core.tools.context import ToolContext
+from quack_core.tools.protocol import QuackToolProtocol
 
-# Mixins
+# Mixins (all exported at top level for single import path)
 from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
-from quack_core.tools.mixins.lifecycle import QuackToolLifecycleMixin
+from quack_core.tools.mixins.lifecycle import LifecycleMixin
 from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 
-# Note: OutputFormatMixin has been removed - output handling is runner responsibility
+# Backward compatibility alias
+BaseQuackToolPlugin = BaseQuackTool
 
 __all__ = [
-    # Core classes
-    "BaseQuackTool",
-    "BaseQuackToolPlugin",  # Backwards compatibility alias
-    "QuackToolProtocol",
-    "ToolContext",
+    # Core
+    'BaseQuackTool',
+    'ToolContext',
+    'QuackToolProtocol',
 
     # Mixins
-    "IntegrationEnabledMixin",
-    "QuackToolLifecycleMixin",
-    "ToolEnvInitializerMixin",
+    'IntegrationEnabledMixin',
+    'LifecycleMixin',
+    'ToolEnvInitializerMixin',
+
+    # Backward compatibility
+    'BaseQuackToolPlugin',
 ]
 
-__version__ = "2.0.0"  # Major version bump - breaking changes
+# Tool Author Guidelines
+"""
+DOCTRINE COMPLIANCE CHECKLIST:
+
+✅ DO:
+- Inherit from BaseQuackTool
+- Import from quack_core.tools (this module)
+- Import contracts from quack_core.contracts
+- Return CapabilityResult
+- Receive ToolContext
+- Treat context as immutable
+
+❌ DON'T:
+- Import from quack_runner.*
+- Import from quack_core.workflow.*
+- Import from quack_core.tools.mixins.* (use quack_core.tools instead)
+- Write files directly (use runner)
+- Create RunManifest (runner creates)
+- Mutate ToolContext
+- Auto-create services
+
+Example imports:
+    ✅ from quack_core.tools import BaseQuackTool, ToolContext
+    ✅ from quack_core.contracts import CapabilityResult, MyRequest
+    ❌ from quack_core.tools.mixins import IntegrationEnabledMixin
+    ❌ from quack_runner.workflow import ToolRunner
+"""

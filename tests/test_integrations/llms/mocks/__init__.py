@@ -4,7 +4,7 @@
 # neighbors: anthropic.py, base.py, clients.py, openai.py
 # exports: MockLLMResponse, MockTokenResponse, MockStreamingGenerator, MockClient, create_mock_client, MockOpenAIResponse, MockOpenAIStreamingResponse, MockOpenAIErrorResponse (+5 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 """

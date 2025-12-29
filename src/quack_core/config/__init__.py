@@ -5,7 +5,7 @@
 # neighbors: models.py, plugin.py, utils.py, loader.py
 # exports: QuackConfig, GeneralConfig, LoggingConfig, PathsConfig, PluginsConfig, load_config, merge_configs, get_env (+4 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 
@@ -29,9 +29,6 @@ from quack_core.config.models import (
     PluginsConfig,
     QuackConfig,
 )
-from quack_core.integrations.core.config import IntegrationsConfig
-from quack_core.integrations.notion.config import NotionConfig
-from quack_core.integrations.google.config import GoogleConfig
 
 # Import stateless utility functions
 from quack_core.config.utils import (

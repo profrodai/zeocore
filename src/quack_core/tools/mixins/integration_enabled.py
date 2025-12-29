@@ -5,144 +5,84 @@
 # neighbors: __init__.py, env_init.py, lifecycle.py, output_handler.py
 # exports: IntegrationEnabledMixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 
 """
-Integration enabled mixin for QuackTool modules.
+Integration support for tools (doctrine-compliant).
 
-This module provides a mixin that enables integration with various services
-by providing a generic interface for resolving and accessing integration services.
+Services come from ToolContext (runner-provided), NOT from global registry.
+No service discovery. No hidden initialization.
 
-Changes from original:
-- No longer imports from quack_runner
-- Uses ToolContext for initialization
-- No automatic initialization in __init__ (runner provides services)
+Changes from legacy:
+- Services must be in ctx.metadata['services'] dict
+- Runner populates services, not mixin
+- No global get_integration_service() calls
+- No automatic initialization
 """
 
-from typing import Any, Generic, TypeVar
+from __future__ import annotations
 
-# Import directly to ensure patching can work
-import quack_core.integrations.core
-from quack_core.integrations.core.base import BaseIntegrationService
+from typing import TYPE_CHECKING, Generic, TypeVar, Any
 
-T = TypeVar("T", bound=BaseIntegrationService)
+if TYPE_CHECKING:
+    from quack_core.tools.context import ToolContext
+
+T = TypeVar("T")
 
 
 class IntegrationEnabledMixin(Generic[T]):
     """
-    Mixin that enables integration with a specified service type.
+    Mixin for tools that need integration services.
 
-    This mixin provides a generic way to resolve and access integration
-    services, such as GoogleDriveService, GitHubService, etc.
-
-    The service is resolved lazily via resolve_integration() and cached
-    for subsequent access.
+    Services must be provided by runner in ToolContext.
+    This mixin just provides convenient access.
 
     Example:
-        ```python
-        from quack_core.tools import BaseQuackTool, ToolContext
-        from quack_core.tools.mixins import IntegrationEnabledMixin
-        from quack_core.integrations.google.drive import GoogleDriveService
-        from quack_core.contracts import CapabilityResult
-
-        class MyTool(
-            IntegrationEnabledMixin[GoogleDriveService],
-            BaseQuackTool
-        ):
-            def __init__(self):
-                super().__init__(name="my_tool", version="1.0.0")
-                self._drive: GoogleDriveService | None = None
-
-            def initialize(self, ctx: ToolContext) -> CapabilityResult[None]:
-                # Resolve integration service
-                self._drive = self.resolve_integration(GoogleDriveService)
-
-                if self._drive is None:
-                    return CapabilityResult.fail(
-                        msg="Google Drive integration not available",
-                        code="QC_INT_UNAVAILABLE"
-                    )
-
-                return CapabilityResult.ok(
-                    data=None,
-                    msg="Integration initialized"
-                )
-
-            def run(self, request, ctx: ToolContext) -> CapabilityResult:
-                # Use self._drive here
-                ...
-        ```
+        >>> class MyTool(BaseQuackTool, IntegrationEnabledMixin):
+        ...     def run(self, request, ctx):
+        ...         service = self.get_service(MyServiceType, ctx)
+        ...         if service:
+        ...             service.do_something()
     """
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def get_service(self, service_type: type[T], ctx: ToolContext) -> T | None:
         """
-        Initialize the mixin.
-
-        Prepares storage for integration service instances.
-        Note: Services are NOT resolved here - they are resolved
-        lazily in resolve_integration().
-        """
-        # Prepare both generic and upload-specific attributes
-        self._integration_service: T | None = None
-        self._upload_service: T | None = None
-        super().__init__(*args, **kwargs)
-
-    def resolve_integration(self, service_type: type[T]) -> T | None:
-        """
-        Lazily load the integration service of the given type.
-
-        Stores the result for reuse on subsequent calls, and also exposes it
-        as `_upload_service` for tools that call `.upload_file(...)` directly.
+        Get a service from the context (if runner provided it).
 
         Args:
-            service_type: The type of integration service to resolve
+            service_type: The type of service to retrieve
+            ctx: Tool context with services
 
         Returns:
-            The resolved integration service, or None if not available
+            Service instance or None if not available
 
-        Example:
-            >>> from quack_core.integrations.google.drive import GoogleDriveService
-            >>> drive = self.resolve_integration(GoogleDriveService)
-            >>> if drive:
-            ...     drive.upload_file(...)
+        Note:
+            Services come from ctx.metadata['services'].
+            Runner is responsible for populating this dict.
         """
-        # Get service from integration registry
-        service = quack_core.integrations.core.get_integration_service(service_type)
+        services = ctx.metadata.get('services', {})
+        return services.get(service_type)
 
-        # Store under the generic handle
-        self._integration_service = service
-        # ...and also under the upload-convenience handle
-        self._upload_service = service
+    def require_service(self, service_type: type[T], ctx: ToolContext) -> T:
+        """
+        Get a service from context (raises if missing).
 
-        # If the service wants initialization, do so
-        if service is not None and hasattr(service, "initialize") and callable(
-                service.initialize):
-            try:
-                service.initialize()
-            except Exception as e:
-                # Log error if logger available
-                if hasattr(self, "logger"):
-                    self.logger.error(f"Failed to initialize integration service: {e}")
+        Args:
+            service_type: The type of service to retrieve
+            ctx: Tool context with services
 
+        Returns:
+            Service instance
+
+        Raises:
+            ValueError: If service not available in context
+        """
+        service = self.get_service(service_type, ctx)
+        if service is None:
+            raise ValueError(
+                f"Service {service_type.__name__} not available in context. "
+                f"Runner must provide it in ctx.metadata['services']."
+            )
         return service
-
-    def get_integration_service(self) -> T | None:
-        """
-        Get the resolved integration service.
-
-        Returns:
-            The previously resolved integration service, or None
-        """
-        return self._integration_service
-
-    @property
-    def integration(self) -> T | None:
-        """
-        Shortcut to get the resolved integration service.
-
-        Returns:
-            The previously resolved integration service, or None
-        """
-        return self.get_integration_service()

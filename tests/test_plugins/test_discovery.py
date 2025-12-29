@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_explicit_loading.py, test_protocols.py, test_registry.py
 # exports: MockPlugin, TestPluginLoader
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 """

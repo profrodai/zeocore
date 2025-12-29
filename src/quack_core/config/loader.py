@@ -5,9 +5,8 @@
 # neighbors: __init__.py, models.py, plugin.py, utils.py
 # exports: load_yaml_config, find_config_file, load_config, merge_configs
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
-
 
 
 """
@@ -35,10 +34,11 @@ from quack_core.lib.errors import QuackConfigurationError, wrap_io_errors
 T = TypeVar("T")
 
 # Default configuration values
+# NOTE: logging.file is None by default to avoid polluting project roots.
 DEFAULT_CONFIG_VALUES: dict[str, Any] = {
     "logging": {
         "level": "INFO",
-        "file": "logs/quack_core.log",
+        "file": None,
         "console": True,
     },
     "paths": {
@@ -126,6 +126,9 @@ def _normalize_config_paths(config_dict: dict[str, Any]) -> dict[str, Any]:
     """
     Normalize all paths in the configuration dictionary.
     This creates absolute paths based on 'paths.base_dir'.
+
+    CRITICAL: Only normalizes Kernel-known paths.
+    Domain/Vendor paths must be normalized by their respective integrations.
     """
     # 1. Determine Base Dir
     paths_section = config_dict.get("paths", {})
@@ -155,15 +158,34 @@ def _normalize_config_paths(config_dict: dict[str, Any]) -> dict[str, Any]:
             _normalize_path(p, base_dir) for p in plugins_section["paths"]
         ]
 
-    # 5. Normalize Google integrations (Example of domain-specific normalization)
-    integrations = config_dict.get("integrations", {})
-    if "google" in integrations and isinstance(integrations["google"], dict):
-        google = integrations["google"]
-        for key in ["client_secrets_file", "credentials_file"]:
-            if key in google and google[key]:
-                google[key] = _normalize_path(google[key], base_dir)
-
     return config_dict
+
+
+def _is_float(value: str) -> bool:
+    """Check if string represents a float."""
+    try:
+        float(value)
+        return "." in value and not value.endswith(".")
+    except ValueError:
+        return False
+
+
+def _convert_env_value(value: str) -> bool | int | float | str:
+    """
+    Convert an environment variable string value to an appropriate type.
+    """
+    v_lower = value.lower()
+    if v_lower == "true":
+        return True
+    if v_lower == "false":
+        return False
+    if value.startswith("-") and value[1:].isdigit():
+        return int(value)
+    if value.isdigit():
+        return int(value)
+    if _is_float(value):
+        return float(value)
+    return value
 
 
 def _get_env_config() -> dict[str, Any]:
@@ -178,16 +200,7 @@ def _get_env_config() -> dict[str, Any]:
             if len(key_parts) < 2:
                 continue
 
-            # Basic type inference for Env vars
-            typed_value: bool | int | float | str = value
-            v_lower = value.lower()
-            if v_lower == "true":
-                typed_value = True
-            elif v_lower == "false":
-                typed_value = False
-            elif value.isdigit():
-                typed_value = int(value)
-            # (Float check omitted for brevity, string fallback is safe)
+            typed_value = _convert_env_value(value)
 
             current = config
             for i, part in enumerate(key_parts):

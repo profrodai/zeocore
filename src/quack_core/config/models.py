@@ -5,39 +5,22 @@
 # neighbors: __init__.py, plugin.py, utils.py, loader.py
 # exports: LoggingConfig, PathsConfig, GeneralConfig, PluginsConfig, QuackConfig
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
+
 
 """
 Configuration models for quack_core.
 
-This module provides Pydantic models for configuration management,
-with support for validation, defaults, and merging of configurations.
+This module provides Pydantic models for configuration management.
 """
 
-import os
+import sys
 from typing import Any, ClassVar, TypeVar
 
 from pydantic import BaseModel, Field, field_validator
 
 T = TypeVar("T")  # Generic type for flexible typing
-
-
-# Implement normalize_path directly in the models module to avoid circular dependencies
-def _normalize_path(value: str) -> str:
-    """
-    Normalize a path.
-
-    Args:
-        value: Path to normalize.
-
-    Returns:
-        str: Normalized path as a string.
-    """
-    # Basic normalization without base_dir dependency
-    if os.path.isabs(value):
-        return os.path.normpath(value)
-    return os.path.normpath(value)
 
 
 class LoggingConfig(BaseModel):
@@ -64,51 +47,36 @@ class LoggingConfig(BaseModel):
             return "INFO"
         return level_name
 
-    @field_validator("file", mode="before")
-    @classmethod
-    def normalize_file(cls, v: str | None) -> str | None:
-        """Normalize the log file path (if provided)."""
-        if v is None:
-            return None
-        return _normalize_path(v)
-
     def setup_logging(self) -> None:
         """Set up logging based on configuration."""
         from quack_core.lib.logging import LOG_LEVELS, configure_logger
 
-        # Determine the log level
         level_name = self.level.upper()
         level = LOG_LEVELS.get(level_name, LOG_LEVELS["INFO"])
 
-        # Configure the logger
         logger = configure_logger("quack-core", level=level, log_file=self.file)
 
-        # If console logging is disabled, remove console handlers
         if not self.console:
             for handler in logger.handlers[:]:
                 import logging
-
-                if (
-                    isinstance(handler, logging.StreamHandler)
-                    and handler.stream.name == "<stderr>"
-                ):
+                # Check identity of stream to safely target stderr
+                if isinstance(handler,
+                              logging.StreamHandler) and handler.stream is sys.stderr:
                     logger.removeHandler(handler)
 
 
 class PathsConfig(BaseModel):
-    """Configuration for file paths."""
+    """
+    Configuration for file paths.
+
+    NOTE: Paths are normalized in config.loader; models do not normalize.
+    """
 
     base_dir: str = Field(default="./", description="Base directory")
     output_dir: str = Field(default="./output", description="Output directory")
     assets_dir: str = Field(default="./assets", description="Assets directory")
     data_dir: str = Field(default="./data", description="Data directory")
     temp_dir: str = Field(default="./temp", description="Temporary directory")
-
-    # Normalize all path fields using a field validator.
-    @field_validator("*", mode="before")
-    @classmethod
-    def normalize_paths(cls, v: str) -> str:
-        return _normalize_path(v)
 
 
 class GeneralConfig(BaseModel):
@@ -136,14 +104,6 @@ class PluginsConfig(BaseModel):
         default_factory=list, description="Additional plugin search paths"
     )
 
-    @field_validator("paths", mode="before")
-    @classmethod
-    def normalize_plugin_paths(cls, v: list[str] | str) -> list[str]:
-        # If a single string is provided, wrap it in a list
-        if isinstance(v, str):
-            v = [v]
-        return [_normalize_path(path_str) for path_str in v]
-
 
 class QuackConfig(BaseModel):
     """Main configuration for quack_core."""
@@ -155,7 +115,8 @@ class QuackConfig(BaseModel):
     logging: LoggingConfig = Field(
         default_factory=LoggingConfig, description="Logging settings"
     )
-    integrations: dict[str, Any] = Field(default_factory=dict, description="Integration settings")
+    integrations: dict[str, Any] = Field(default_factory=dict,
+                                         description="Integration settings")
 
     plugins: PluginsConfig = Field(
         default_factory=PluginsConfig, description="Plugin settings"
@@ -172,28 +133,23 @@ class QuackConfig(BaseModel):
         """
         Convert the configuration to a dictionary.
 
+        Args:
+            **kwargs: Arguments passed to model_dump() (e.g. exclude_none=True)
+
         Returns:
             dict[str, Any]: Dictionary representation of the configuration
         """
-        return self.model_dump()
+        return self.model_dump(**kwargs)
 
     def get_plugin_enabled(self, plugin_name: str) -> bool:
-        """
-        Check if a plugin is enabled.
-
-        Args:
-            plugin_name: Name of the plugin
-
-        Returns:
-            bool: True if the plugin is enabled
-        """
+        """Check if a plugin is enabled."""
         if plugin_name in self.plugins.disabled:
             return False
         if self.plugins.enabled and plugin_name not in self.plugins.enabled:
             return False
         return True
 
-    def get_custom(self, key: str, default: T = None) -> T:
+    def get_custom(self, key: str, default: T | None = None) -> T | None:
         """
         Get a custom configuration value.
 

@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/integrations/loader.py
 # module: quack_core.integrations.loader
 # role: module
-# neighbors: __init__.py, boot.py
+# neighbors: __init__.py, config.py, boot.py
 # exports: list_available_entry_points, load_enabled_entry_points
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 """
@@ -38,12 +38,11 @@ def list_available_entry_points(group: str = DEFAULT_ENTRY_GROUP) -> list[
         group: The entry point group to search.
 
     Returns:
-        list[dict]: Metadata about available integrations containing
-                    'integration_id', 'value', and 'module'.
+        list[dict]: Metadata about available integrations.
     """
     results = []
-    # Python 3.10+ style entry_points selection
-    eps = entry_points(group=group)
+    # Use robust .select() method for Python 3.10+
+    eps = entry_points().select(group=group)
     for ep in eps:
         results.append({
             "integration_id": ep.name,
@@ -67,7 +66,7 @@ def load_enabled_entry_points(
         registry: The registry to populate.
         enabled: List of integration_ids to load. Order is preserved.
         group: Entry point group.
-        strict: If True, fails if a requested integration is missing.
+        strict: If True, fails if a requested integration is missing OR fails initialization.
         initialize: If True, calls .initialize() on the integration instance.
 
     Returns:
@@ -76,7 +75,7 @@ def load_enabled_entry_points(
     report = IntegrationLoadReport(success=True)
 
     # Get all available entry points map: name -> EntryPoint
-    eps = entry_points(group=group)
+    eps = entry_points().select(group=group)
     ep_map = {ep.name: ep for ep in eps}
 
     for integration_id in enabled:
@@ -86,7 +85,6 @@ def load_enabled_entry_points(
                 report.errors.append(msg)
                 report.success = False
                 logger.error(msg)
-                # In strict mode, fail immediately on missing requirements
                 return report
             else:
                 report.warnings.append(msg)
@@ -122,8 +120,13 @@ def load_enabled_entry_points(
                 if not init_result.success:
                     error_msg = f"Failed to initialize {integration_id}: {init_result.error}"
                     report.errors.append(error_msg)
-                    # If initialization fails, we generally consider the load failed
                     report.success = False
+
+                    if strict:
+                        logger.error(
+                            f"Strict mode enabled: Aborting after initialization failure of {integration_id}")
+                        return report
+
                     continue
 
             # Register
@@ -135,5 +138,8 @@ def load_enabled_entry_points(
             report.errors.append(error_msg)
             report.success = False
             logger.exception(error_msg)
+
+            if strict:
+                return report
 
     return report

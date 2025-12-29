@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_base.py, test_clients.py, test_mock.py, test_ollama.py, test_openai.py
 # exports: TestAnthropicClient
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 """

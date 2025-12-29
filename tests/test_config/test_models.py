@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_loader.py, test_utils.py
 # exports: TestConfigModels
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 """
@@ -21,7 +21,7 @@ from quack_core.config.models import (
     PluginsConfig,
     QuackConfig,
 )
-from quack_core.integrations.core.config import IntegrationsConfig
+from quack_core.integrations.config import IntegrationsConfig
 from quack_core.integrations.notion.config import NotionConfig
 from quack_core.integrations.google.config import GoogleConfig
 

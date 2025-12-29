@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/integrations/core/protocols.py
 # module: quack_core.integrations.core.protocols
 # role: protocols
-# neighbors: __init__.py, config.py, registry.py, results.py, base.py
+# neighbors: __init__.py, registry.py, results.py, base.py
 # exports: AuthProviderProtocol, ConfigProviderProtocol, IntegrationProtocol, StorageIntegrationProtocol
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 """

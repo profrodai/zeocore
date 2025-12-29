@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, loader.py
 # exports: setup_tool_logging, get_logger, log_teaching
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 
@@ -29,7 +29,8 @@ _file_handlers: list[logging.FileHandler] = []
 def setup_tool_logging(
         tool_name: str,
         log_dir: str,
-        log_level: str = "INFO"
+        log_level: str = "INFO",
+        teaching_to_stdout: bool = False
 ) -> None:
     """
     Set up logging for a QuackTool with explicit paths.
@@ -38,6 +39,7 @@ def setup_tool_logging(
         tool_name: The tool name, e.g. 'quackmetadata'.
         log_dir: The directory where logs should be stored.
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR).
+        teaching_to_stdout: Whether to output Teaching Mode logs to stdout (opt-in).
     """
     # Normalize log level
     level_name = log_level.upper()
@@ -56,7 +58,7 @@ def setup_tool_logging(
         name=tool_name,
         level=level,
         log_file=str(log_file),
-        teaching_to_stdout=True,
+        teaching_to_stdout=teaching_to_stdout,
     )
 
     # Track handlers for clean exit
@@ -87,5 +89,5 @@ def get_logger(tool_name: str) -> logging.Logger:
 
 def log_teaching(logger: Any, message: str, level: str = "INFO") -> None:
     """Log a Teaching Mode message for the tool."""
-    from quack_core.lib.logging.config import log_teaching as core_log_teaching
+    from quack_core.lib.logging import log_teaching as core_log_teaching
     core_log_teaching(logger, message, level)

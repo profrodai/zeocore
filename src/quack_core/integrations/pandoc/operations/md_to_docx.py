@@ -5,7 +5,7 @@
 # neighbors: __init__.py, utils.py, html_to_md.py
 # exports: convert_markdown_to_docx, validate_conversion
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 """

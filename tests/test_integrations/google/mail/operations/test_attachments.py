@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_auth.py, test_email.py
 # exports: TestGmailAttachmentOperations
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 """

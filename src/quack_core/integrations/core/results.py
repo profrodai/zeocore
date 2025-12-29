@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/integrations/core/results.py
 # module: quack_core.integrations.core.results
 # role: module
-# neighbors: __init__.py, protocols.py, config.py, registry.py, base.py
+# neighbors: __init__.py, protocols.py, registry.py, base.py
 # exports: IntegrationResult, AuthResult, ConfigResult, IntegrationLoadReport
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 """
@@ -15,12 +15,11 @@ This module provides standardized result classes for various integration
 operations, enhancing error handling and return values.
 """
 
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, Field, field_validator
 
 T = TypeVar("T")  # Generic type for result content
-R = TypeVar("R")  # Generic type for result content
 
 
 class IntegrationResult(BaseModel, Generic[T]):
@@ -48,18 +47,8 @@ class IntegrationResult(BaseModel, Generic[T]):
 
     @classmethod
     def success_result(
-            cls, content: T | None = None, message: str | None = None
+        cls, content: T | None = None, message: str | None = None
     ) -> "IntegrationResult[T]":
-        """
-        Create a successful result.
-
-        Args:
-            content: Result content
-            message: Optional success message
-
-        Returns:
-            IntegrationResult: Successful result
-        """
         return cls(
             success=True,
             content=content,
@@ -69,18 +58,8 @@ class IntegrationResult(BaseModel, Generic[T]):
 
     @classmethod
     def error_result(
-            cls, error: str, message: str | None = None
+        cls, error: str, message: str | None = None
     ) -> "IntegrationResult[T]":
-        """
-        Create an error result.
-
-        Args:
-            error: Error message
-            message: Optional additional message
-
-        Returns:
-            IntegrationResult: Error result
-        """
         return cls(
             success=False,
             content=None,
@@ -127,14 +106,12 @@ class AuthResult(BaseModel):
         description="Additional authentication content or metadata",
     )
 
-    @classmethod
     @field_validator("token")
-    def validate_token(cls, v: T) -> str | None:
+    @classmethod
+    def _validate_token(cls, v: Any) -> str | None:
         """
         Validate that token is a string if provided.
-
-        This prevents MagicMock objects or other non-string
-        types from being used as tokens.
+        Ensures strict serialization and prevents object leakage (e.g. Mocks).
         """
         if v is not None:
             return str(v)
@@ -142,26 +119,13 @@ class AuthResult(BaseModel):
 
     @classmethod
     def success_result(
-            cls,
-            message: str | None = None,
-            token: str | None = None,
-            expiry: int | None = None,
-            credentials_path: str | None = None,
-            content: dict | None = None,
+        cls,
+        message: str | None = None,
+        token: str | None = None,
+        expiry: int | None = None,
+        credentials_path: str | None = None,
+        content: dict | None = None,
     ) -> "AuthResult":
-        """
-        Create a successful authentication result.
-
-        Args:
-            message: Optional success message
-            token: Authentication token
-            expiry: Token expiry timestamp
-            credentials_path: Path where credentials are stored
-            content: Additional authentication content or metadata
-
-        Returns:
-            AuthResult: Successful authentication result
-        """
         return cls(
             success=True,
             message=message,
@@ -174,20 +138,10 @@ class AuthResult(BaseModel):
 
     @classmethod
     def error_result(
-            cls,
-            error: str,
-            message: str | None = None,
+        cls,
+        error: str,
+        message: str | None = None,
     ) -> "AuthResult":
-        """
-        Create an error authentication result.
-
-        Args:
-            error: Error message
-            message: Optional additional message
-
-        Returns:
-            AuthResult: Error authentication result
-        """
         return cls(
             success=False,
             message=message,
@@ -214,22 +168,11 @@ class ConfigResult(IntegrationResult[dict]):
 
     @classmethod
     def success_result(
-            cls,
-            content: dict | None = None,
-            message: str | None = None,
-            config_path: str | None = None,
+        cls,
+        content: dict | None = None,
+        message: str | None = None,
+        config_path: str | None = None,
     ) -> "ConfigResult":
-        """
-        Create a successful configuration result.
-
-        Args:
-            content: Configuration data
-            message: Optional success message
-            config_path: Path to the configuration file
-
-        Returns:
-            ConfigResult: Successful configuration result
-        """
         return cls(
             success=True,
             content=content,
@@ -240,22 +183,11 @@ class ConfigResult(IntegrationResult[dict]):
 
     @classmethod
     def error_result(
-            cls,
-            error: str,
-            message: str | None = None,
-            validation_errors: list[str] | None = None,
+        cls,
+        error: str,
+        message: str | None = None,
+        validation_errors: list[str] | None = None,
     ) -> "ConfigResult":
-        """
-        Create an error configuration result.
-
-        Args:
-            error: Error message
-            message: Optional additional message
-            validation_errors: Validation errors if any
-
-        Returns:
-            ConfigResult: Error configuration result
-        """
         return cls(
             success=False,
             content=None,
@@ -268,32 +200,25 @@ class ConfigResult(IntegrationResult[dict]):
 class IntegrationLoadReport(BaseModel):
     """
     Report detailing the results of an explicit integration load operation.
-
-    This provides visibility into what was loaded, what was skipped,
-    and what failed during the boot process.
     """
 
     success: bool = Field(
-        ...,
-        description="Overall success status of the load operation"
+        ..., description="Overall success status of the load operation"
     )
 
     loaded: list[str] = Field(
-        default_factory=list,
-        description="IDs of successfully loaded integrations"
+        default_factory=list, description="IDs of successfully loaded integrations"
     )
 
     skipped: list[str] = Field(
         default_factory=list,
-        description="IDs of requested but not found/loaded integrations"
+        description="IDs of requested but not found/loaded integrations",
     )
 
     warnings: list[str] = Field(
-        default_factory=list,
-        description="Warning messages encountered during loading"
+        default_factory=list, description="Warning messages encountered during loading"
     )
 
     errors: list[str] = Field(
-        default_factory=list,
-        description="Error messages encountered during loading"
+        default_factory=list, description="Error messages encountered during loading"
     )

@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/integrations/core/registry.py
 # module: quack_core.integrations.core.registry
 # role: module
-# neighbors: __init__.py, protocols.py, config.py, results.py, base.py
+# neighbors: __init__.py, protocols.py, results.py, base.py
 # exports: IntegrationRegistry
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 82e6d2b
+# git_commit: 07a259e
 # === QV-LLM:END ===
 
 """
@@ -51,7 +51,7 @@ class IntegrationRegistry:
             integration: Integration to register.
 
         Raises:
-            QuackError: If the integration is already registered.
+            QuackError: If the integration is already registered or ID is invalid.
         """
         # Prefer integration_id, fallback to name if missing (for legacy support)
         if hasattr(integration, "integration_id"):
@@ -62,6 +62,19 @@ class IntegrationRegistry:
                 "Falling back to name, but this is deprecated."
             )
             key = integration.name
+
+        # Sanity check for ID format
+        if not key or not key.strip():
+            raise QuackError(
+                f"Invalid integration ID: '{key}'. ID cannot be empty.",
+                {"integration_id": key}
+            )
+
+        if " " in key:
+            raise QuackError(
+                f"Invalid integration ID: '{key}'. ID cannot contain whitespace.",
+                {"integration_id": key}
+            )
 
         if key in self._integrations:
             raise QuackError(
