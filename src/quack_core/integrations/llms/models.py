@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, config.py, registry.py, fallback.py
 # exports: RoleType, ChatMessage, FunctionParameter, FunctionDefinition, ToolDefinition, FunctionCall, ToolCall, LLMOptions (+1 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: de0fa70
+# git_commit: e4fa88d
 # === QV-LLM:END ===
 
 """

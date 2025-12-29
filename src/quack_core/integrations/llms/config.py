@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, registry.py, fallback.py
 # exports: OpenAIConfig, AnthropicConfig, OllamaConfig, LLMConfig, LLMConfigProvider
 # git_branch: refactor/toolkitWorkflow
-# git_commit: de0fa70
+# git_commit: e4fa88d
 # === QV-LLM:END ===
 
 """

@@ -5,7 +5,7 @@
 # neighbors: __init__.py
 # exports: make_request
 # git_branch: refactor/toolkitWorkflow
-# git_commit: de0fa70
+# git_commit: e4fa88d
 # === QV-LLM:END ===
 
 """GitHub API request utilities."""

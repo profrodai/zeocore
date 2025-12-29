@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, plugin.py
 # exports: PromptStrategy, StrategyInfo
 # git_branch: refactor/toolkitWorkflow
-# git_commit: de0fa70
+# git_commit: e4fa88d
 # === QV-LLM:END ===
 
 from typing import Callable

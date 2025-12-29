@@ -5,9 +5,8 @@
 # neighbors: __init__.py, integration_enabled.py, lifecycle.py, output_handler.py
 # exports: ToolEnvInitializerMixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: de0fa70
+# git_commit: e4fa88d
 # === QV-LLM:END ===
-
 
 
 """
@@ -16,6 +15,20 @@ Environment validation mixin for tools.
 DOCTRINE STRICT MODE:
 This mixin VALIDATES existence only. It does NOT create directories.
 Runner creates all directories. Tools fail if they don't exist.
+
+USAGE PATTERN (fix #3 - must be explicitly called):
+Tools that inherit this mixin should call initialize_environment() from their
+initialize() or validate() hook:
+
+    class MyTool(BaseQuackTool, ToolEnvInitializerMixin):
+        def initialize(self, ctx: ToolContext) -> CapabilityResult[None]:
+            # Validate environment
+            env_result = self.initialize_environment(ctx)
+            if env_result.status != CapabilityStatus.success:
+                return env_result
+
+            # Continue with tool-specific initialization
+            return CapabilityResult.ok(data=None, msg="Initialized")
 
 This enforces clear responsibility:
 - Runner: creates ctx.work_dir and ctx.output_dir
@@ -26,9 +39,10 @@ Tools writing artifacts still go through runner's output mechanisms.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any  # Fix #1 - import Any
 
-from quack_core.contracts import CapabilityResult
+from quack_core.contracts import CapabilityResult, \
+    CapabilityStatus  # Fix #2 - import status enum
 
 if TYPE_CHECKING:
     from quack_core.tools.context import ToolContext
@@ -41,6 +55,9 @@ class ToolEnvInitializerMixin:
     IMPORTANT: This VALIDATES only. It does NOT create directories.
     Runner creates directories; tools verify they exist and are actually directories.
 
+    USAGE: Tools must explicitly call initialize_environment() from initialize() or validate().
+    See module docstring for example.
+
     This is strict doctrine compliance:
     - Ring C (runner) creates workspace
     - Ring B (tools) validates assumptions
@@ -50,7 +67,7 @@ class ToolEnvInitializerMixin:
             self,
             path: str,
             name: str,
-            fs: Any
+            fs: Any  # Fix #1 - Any is now imported
     ) -> CapabilityResult[None]:
         """
         Strictly validate a directory exists and is actually a directory.
@@ -79,7 +96,7 @@ class ToolEnvInitializerMixin:
                 exc=Exception(f"{name.capitalize()} directory missing")
             )
 
-        # Strict is_dir validation (fix #2)
+        # Strict is_dir validation
         # Try to get is_dir from info result
         if hasattr(info, 'is_dir'):
             if not info.is_dir:
@@ -120,6 +137,9 @@ class ToolEnvInitializerMixin:
         The runner MUST create work_dir and output_dir.
         This method validates they exist AND are directories. Fails if missing or wrong type.
 
+        IMPORTANT: Tools must call this explicitly from initialize() or validate().
+        See module docstring for usage pattern.
+
         Override this method to add custom validation logic.
 
         Args:
@@ -131,16 +151,16 @@ class ToolEnvInitializerMixin:
         try:
             fs = ctx.require_fs()
 
-            # Validate work_dir (strict - fix #2)
+            # Validate work_dir (fix #2 - correct status comparison)
             if ctx.work_dir:
                 result = self._validate_directory(ctx.work_dir, "work", fs)
-                if result.status != CapabilityResult.ok().status:
+                if result.status != CapabilityStatus.success:
                     return result
 
-            # Validate output_dir (strict - fix #2)
+            # Validate output_dir (fix #2 - correct status comparison)
             if ctx.output_dir:
                 result = self._validate_directory(ctx.output_dir, "output", fs)
-                if result.status != CapabilityResult.ok().status:
+                if result.status != CapabilityStatus.success:
                     return result
 
             return CapabilityResult.ok(data=None, msg="Environment validated")

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, protocols.py, converter.py
 # exports: PandocOptions, ValidationConfig, RetryConfig, MetricsConfig, PandocConfig, PandocConfigProvider
 # git_branch: refactor/toolkitWorkflow
-# git_commit: de0fa70
+# git_commit: e4fa88d
 # === QV-LLM:END ===
 
 """

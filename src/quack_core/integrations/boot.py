@@ -5,7 +5,7 @@
 # neighbors: __init__.py, config.py, loader.py
 # exports: get_global_registry, load_integrations
 # git_branch: refactor/toolkitWorkflow
-# git_commit: de0fa70
+# git_commit: e4fa88d
 # === QV-LLM:END ===
 
 """
