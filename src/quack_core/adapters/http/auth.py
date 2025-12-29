@@ -5,7 +5,7 @@
 # neighbors: __init__.py, app.py, service.py, models.py, config.py, dependencies.py (+1 more)
 # exports: require_bearer, sign_payload
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 234aec0
+# git_commit: de0fa70
 # === QV-LLM:END ===
 
 

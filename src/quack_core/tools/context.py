@@ -1,3 +1,14 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/tools/context.py
+# module: quack_core.tools.context
+# role: module
+# neighbors: __init__.py, base.py, protocol.py
+# exports: ToolContext
+# git_branch: refactor/toolkitWorkflow
+# git_commit: de0fa70
+# === QV-LLM:END ===
+
+
 
 """
 ToolContext: Immutable dependency container for tool execution.
@@ -55,35 +66,51 @@ class ToolContext(BaseModel):
         arbitrary_types_allowed=True
     )
 
-    # Convenience properties for Path usage (fix #4)
+    # Convenience properties for Path usage
 
     @property
     def work_path(self) -> Path:
         """
-        Get work directory as Path for convenient manipulation.
+        Get work directory as Path for path computation.
 
         Returns:
             Path object for work_dir
 
-        Example:
-            >>> temp_file = ctx.work_path / "temp.txt"
-            >>> with open(temp_file, 'w') as f:
-            ...     f.write("data")
+        Note:
+            This is for PATH COMPUTATION only (e.g., building file paths).
+            Tools should NOT perform I/O directly. Use fs service for I/O.
+
+        Example (path computation only - fix #3):
+            >>> # ✅ Compute paths (no I/O)
+            >>> temp_file_path = ctx.work_path / "temp.txt"
+            >>> log_file_path = ctx.work_path / "processing.log"
+            >>>
+            >>> # ❌ DON'T do I/O directly
+            >>> # temp_file_path.write_text("data")  # Wrong! Use fs service
         """
         return Path(self.work_dir)
 
     @property
     def output_path(self) -> Path:
         """
-        Get output directory as Path for convenient manipulation.
+        Get output directory as Path.
 
         Returns:
             Path object for output_dir
 
-        Example:
-            >>> report_file = ctx.output_path / "report.json"
-            >>> # Note: tools should not write directly to output_path
-            >>> # This is for reference only - runner writes outputs
+        Note:
+            This is for REFERENCE/DEBUG only.
+            Tools should NOT write to output_path directly.
+            Return data via CapabilityResult; runner writes outputs.
+
+        Example (what NOT to do):
+            >>> # ❌ DON'T write to output_path
+            >>> # output_file = ctx.output_path / "result.json"
+            >>> # output_file.write_text(json.dumps(data))  # Wrong!
+            >>>
+            >>> # ✅ DO return via CapabilityResult
+            >>> return CapabilityResult.ok(data=result)
+            >>> # Runner handles writing to output_path
         """
         return Path(self.output_dir)
 

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_api.py, test_auth.py, test_client.py, test_config.py (+5 more)
 # exports: TestUserOperations, TestRepositoryOperations, TestPullRequestOperations, TestIssueOperations, mock_session, mock_response
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 234aec0
+# git_commit: de0fa70
 # === QV-LLM:END ===
 
 """Tests for GitHub API _operations."""

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, selector.py
 # exports: enhance_with_llm_safe
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 234aec0
+# git_commit: de0fa70
 # === QV-LLM:END ===
 
 from quack_core.lib.logging import get_logger

@@ -5,7 +5,7 @@
 # neighbors: config_base.py
 # exports: __version__, config, load_config, QuackConfig, paths, fs, registry, loader (+9 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 234aec0
+# git_commit: de0fa70
 # === QV-LLM:END ===
 
 """

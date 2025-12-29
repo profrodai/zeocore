@@ -5,205 +5,98 @@
 # neighbors: __init__.py, base.py, context.py
 # exports: QuackToolProtocol
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 234aec0
+# git_commit: de0fa70
 # === QV-LLM:END ===
 
 
+
 """
-Protocol definition for QuackTool modules.
+Protocol for QuackCore tools (Ring B only).
 
-This module defines the interface that all QuackTool modules must implement
-to be discoverable and usable within the QuackCore ecosystem.
+This protocol defines the structural interface for doctrine-compliant tools.
+It matches BaseQuackTool exactly (fix #1 - no extra methods).
 
-Design principles:
-- Tools return CapabilityResult (from contracts), not IntegrationResult
-- Tools receive ToolContext explicitly, not via DI
-- Tools do NOT handle file I/O, output writing, or manifest creation
-- Tools are pure capabilities: request → CapabilityResult
+Note: This is for Ring B tools only. Plugin-layer concerns (metadata, discovery)
+are handled separately in the plugin system.
 """
 
-from typing import Protocol, Any
-from logging import Logger
+from typing import Any, Protocol, runtime_checkable, TYPE_CHECKING
 
 from quack_core.contracts import CapabilityResult
-from quack_core.modules.protocols import QuackPluginMetadata
-
-# Import ToolContext via TYPE_CHECKING to avoid circular imports
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from quack_core.tools.context import ToolContext
 
 
+@runtime_checkable
 class QuackToolProtocol(Protocol):
     """
-    Protocol defining the required interface for QuackTool modules.
+    Protocol for doctrine-compliant tools (Ring B).
 
-    All QuackTool modules must implement this interface to be discoverable
-    and usable within the QuackCore ecosystem.
+    This protocol defines the minimal interface that all tools must implement.
+    It matches BaseQuackTool exactly.
 
-    Key methods:
-    - initialize(ctx): Set up tool with given context
-    - is_available(ctx): Check if tool can run
-    - run(request, ctx): Execute the tool's capability
+    Use this for:
+    - Type hints when you want structural typing
+    - Duck-typing checks (isinstance with @runtime_checkable)
+    - Tool discovery (check if object satisfies protocol)
 
-    Tools should NOT implement:
-    - process_file() - File handling is runner responsibility
-    - File I/O operations - Use ctx.fs if needed, but runners orchestrate
-    - Output writing - Runners handle artifact persistence
-    - Manifest creation - Runners build manifests from CapabilityResult
+    Note: This does NOT include plugin-layer methods like get_metadata().
+    Those belong in a separate plugin protocol if needed.
     """
 
-    @property
-    def name(self) -> str:
-        """
-        Returns the name of the tool.
+    # Identity
+    name: str
+    version: str
 
-        Convention: Use namespaced names for clarity.
-        Examples: "media.transcribe", "text.summarize", "crm.sync_contacts"
-
-        Returns:
-            str: The tool's name identifier.
-        """
-        ...
-
-    @property
-    def version(self) -> str:
-        """
-        Returns the version of the tool.
-
-        Returns:
-            str: Semantic version of the tool (e.g., "1.0.0")
-        """
-        ...
-
-    @property
-    def logger(self) -> Logger:
-        """
-        Returns the logger instance for the tool.
-
-        Note: This is for backwards compatibility. New code should
-        use ctx.logger instead.
-
-        Returns:
-            Logger: Logger instance for the tool.
-        """
-        ...
-
-    def get_metadata(self) -> QuackPluginMetadata:
-        """
-        Returns metadata about the plugin.
-
-        Returns:
-            QuackPluginMetadata: Structured metadata for the plugin.
-        """
-        ...
+    # Core methods (match BaseQuackTool exactly)
 
     def initialize(self, ctx: "ToolContext") -> CapabilityResult[None]:
         """
-        Initialize the tool with the given context.
-
-        This method is called once by the runner before executing the tool.
-        Tools should use this to:
-        - Validate required services are available
-        - Set up any cached state
-        - Verify configuration
-
-        Tools should NOT:
-        - Create output directories (runner's job)
-        - Write files (runner's job)
-        - Make network requests (unless checking availability)
+        Initialize tool with context (optional hook).
 
         Args:
-            ctx: Execution context provided by the runner
+            ctx: Tool context
 
         Returns:
-            CapabilityResult[None]: Success if ready, error if not available
-
-        Example:
-            >>> def initialize(self, ctx: ToolContext) -> CapabilityResult[None]:
-            ...     if not ctx.fs:
-            ...         return CapabilityResult.fail(
-            ...             msg="Filesystem service required",
-            ...             code="QC_CFG_MISSING"
-            ...         )
-            ...     return CapabilityResult.ok(data=None, msg="Tool ready")
+            CapabilityResult indicating success or failure
         """
         ...
 
     def is_available(self, ctx: "ToolContext") -> bool:
         """
-        Check if the tool is available and ready to use.
-
-        This is a lightweight check that can be called frequently.
-        For heavy initialization, use initialize() instead.
+        Check if tool is available (optional hook).
 
         Args:
-            ctx: Execution context
+            ctx: Tool context
 
         Returns:
-            bool: True if the tool can execute, False otherwise
-
-        Example:
-            >>> def is_available(self, ctx: ToolContext) -> bool:
-            ...     return ctx.fs is not None
+            True if tool can run, False otherwise
         """
         ...
 
-    def run(
-            self,
-            request: Any,  # Should be a Pydantic BaseModel in practice
-            ctx: "ToolContext"
-    ) -> CapabilityResult[Any]:
+    def run(self, request: Any, ctx: "ToolContext") -> CapabilityResult[Any]:
         """
-        Execute the tool's capability.
+        Execute the tool capability.
 
-        This is the main entrypoint for tool execution. The tool receives:
-        - request: A Pydantic model with typed inputs (from contracts)
-        - ctx: Execution context with services and configuration
-
-        The tool returns a CapabilityResult containing:
-        - Typed response data (from contracts)
-        - Status (success/skip/error)
-        - Logs and metadata
-
-        The tool should NOT:
-        - Write output files (return data, runner persists)
-        - Create RunManifest (runner builds from result)
-        - Handle retries (runner's responsibility)
+        This is the core method every tool must implement.
 
         Args:
-            request: Typed request model (e.g., TranscribeRequest)
-            ctx: Execution context
+            request: Typed request (Pydantic model from contracts)
+            ctx: Tool context (immutable, runner-provided)
 
         Returns:
-            CapabilityResult containing typed response
-
-        Example:
-            >>> def run(
-            ...     self,
-            ...     request: TranscribeRequest,
-            ...     ctx: ToolContext
-            ... ) -> CapabilityResult[TranscribeResponse]:
-            ...     # Validate input
-            ...     if not request.source:
-            ...         return CapabilityResult.skip(
-            ...             reason="No source provided",
-            ...             code="QC_VAL_NO_INPUT"
-            ...         )
-            ...
-            ...     # Process (implementation details)
-            ...     try:
-            ...         result = self._transcribe_internal(request, ctx)
-            ...         return CapabilityResult.ok(
-            ...             data=result,
-            ...             msg="Transcription completed"
-            ...         )
-            ...     except Exception as e:
-            ...         return CapabilityResult.fail_from_exc(
-            ...             msg="Transcription failed",
-            ...             code="QC_PROC_ERROR",
-            ...             exc=e
-            ...         )
+            CapabilityResult with status, data, error, logs, metadata
         """
         ...
+
+# Note on removed methods (fix #1):
+#
+# REMOVED: logger property
+# Reason: Tools don't have logger property. They get logger from ctx.
+#
+# REMOVED: get_metadata() -> QuackPluginMetadata
+# Reason: That's plugin-layer concern, not Ring B tool interface.
+#
+# This protocol now matches BaseQuackTool exactly, so any BaseQuackTool
+# instance will satisfy QuackToolProtocol structurally.

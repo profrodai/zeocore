@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/tools/base.py
+# module: quack_core.tools.base
+# role: module
+# neighbors: __init__.py, context.py, protocol.py
+# exports: BaseQuackTool
+# git_branch: refactor/toolkitWorkflow
+# git_commit: de0fa70
+# === QV-LLM:END ===
+
 
 
 """
@@ -16,7 +26,7 @@ Key principles:
 from abc import ABC, abstractmethod
 from typing import Any, TYPE_CHECKING
 
-from quack_core.contracts import CapabilityResult, CapabilityStatus
+from quack_core.contracts import CapabilityResult
 
 if TYPE_CHECKING:
     from quack_core.tools.context import ToolContext
@@ -74,7 +84,7 @@ class BaseQuackTool(ABC):
         Returns:
             CapabilityResult indicating success or failure
         """
-        return CapabilityResult.ok(msg=f"{self.name} initialized")
+        return CapabilityResult.ok(data=None, msg=f"{self.name} initialized")
 
     def is_available(self, ctx: "ToolContext") -> bool:
         """
@@ -123,6 +133,3 @@ class BaseQuackTool(ABC):
             ...     )
         """
         pass
-
-# Note: Backward compatibility alias removed from this file (fix #5)
-# Alias is defined in __init__.py only to avoid duplication

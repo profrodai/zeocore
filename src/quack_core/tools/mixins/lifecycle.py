@@ -5,7 +5,7 @@
 # neighbors: __init__.py, env_init.py, integration_enabled.py, output_handler.py
 # exports: LifecycleMixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 234aec0
+# git_commit: de0fa70
 # === QV-LLM:END ===
 
 
@@ -38,7 +38,7 @@ class LifecycleMixin:
         >>> class MyTool(BaseQuackTool, LifecycleMixin):
         ...     def pre_run(self, request, ctx):
         ...         # Validation logic
-        ...         return CapabilityResult.ok()
+        ...         return CapabilityResult.ok(data=None, msg="Pre-run passed")
         ...
         ...     def run(self, request, ctx):
         ...         return CapabilityResult.ok(data=result)
@@ -61,7 +61,8 @@ class LifecycleMixin:
         Returns:
             CapabilityResult (success to continue, error to abort)
         """
-        return CapabilityResult.ok(msg="Pre-run checks passed")
+        # Fix #5: explicit data=None for honest typing
+        return CapabilityResult.ok(data=None, msg="Pre-run checks passed")
 
     def post_run(
             self,
@@ -99,7 +100,8 @@ class LifecycleMixin:
         Returns:
             CapabilityResult (success if valid, error otherwise)
         """
-        return CapabilityResult.ok(msg="Validation passed")
+        # Fix #5: explicit data=None for honest typing
+        return CapabilityResult.ok(data=None, msg="Validation passed")
 
     def cleanup(
             self,
@@ -114,4 +116,5 @@ class LifecycleMixin:
         Returns:
             CapabilityResult
         """
-        return CapabilityResult.ok(msg="Cleanup completed")
+        # Fix #5: explicit data=None for honest typing
+        return CapabilityResult.ok(data=None, msg="Cleanup completed")

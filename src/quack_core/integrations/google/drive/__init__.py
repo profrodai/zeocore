@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, protocols.py
 # exports: GoogleDriveService, DriveFile, DriveFolder, create_integration
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 234aec0
+# git_commit: de0fa70
 # === QV-LLM:END ===
 
 """

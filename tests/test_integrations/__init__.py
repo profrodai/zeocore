@@ -2,6 +2,6 @@
 # path: quack-core/tests/test_integrations/__init__.py
 # role: tests
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 234aec0
+# git_commit: de0fa70
 # === QV-LLM:END ===
 
