@@ -5,25 +5,18 @@
 # neighbors: __init__.py, context.py, protocol.py
 # exports: BaseQuackTool
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 7e3e554
+# git_commit: 223dfb0
 # === QV-LLM:END ===
 
 
 """
 Base class for all QuackCore tools (doctrine-compliant).
 
-This is the foundation for Ring B (capability authoring).
-Tools inherit from this class and implement run().
-
-Key principles:
-- Tools are pure capabilities (request → CapabilityResult)
-- No file I/O (runner handles)
-- No manifest creation (runner translates)
-- Receive explicit ToolContext (no DI magic)
+FIXED: Constructor accepts class attributes as defaults (blocker #1).
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
 from quack_core.contracts import CapabilityResult
 
@@ -35,40 +28,68 @@ class BaseQuackTool(ABC):
     """
     Base class for all doctrine-compliant tools.
 
-    Tools must implement run() which:
-    - Receives typed request (Pydantic model from contracts)
-    - Receives ToolContext (immutable, runner-provided)
-    - Returns CapabilityResult (machine-readable outcome)
+    Tools can define name/version as class attributes (recommended):
+        class EchoTool(BaseQuackTool):
+            name = "echo"
+            version = "1.0.0"
+
+            def run(self, request, ctx):
+                return CapabilityResult.ok(data=response)
+
+    Or pass them to __init__ (if dynamic):
+        tool = EchoTool(name="echo", version="2.0.0")
 
     Tools must NOT:
     - Write files directly
     - Create RunManifest
     - Import from quack_runner.*
     - Mutate ToolContext
-
-    Example:
-        >>> from quack_core.tools import BaseQuackTool, ToolContext
-        >>> from quack_core.contracts import CapabilityResult
-        >>>
-        >>> class MyTool(BaseQuackTool):
-        ...     def __init__(self):
-        ...         super().__init__(name="my_tool", version="1.0.0")
-        ...
-        ...     def run(self, request, ctx: ToolContext) -> CapabilityResult:
-        ...         result = self._process(request, ctx)
-        ...         return CapabilityResult.ok(data=result, msg="Success")
     """
 
-    def __init__(self, name: str, version: str):
+    # Class attributes (optional - can be overridden in __init__)
+    # Use str | None to avoid type: ignore (fix #2)
+    name: str | None = None
+    version: str = "1.0.0"  # Default version
+
+    def __init__(self, name: str | None = None, version: str | None = None):
         """
         Initialize the tool.
 
         Args:
-            name: Tool name (e.g. "echo", "markdown_converter")
-            version: Tool version (e.g. "1.0.0")
+            name: Tool name (uses class attribute if not provided)
+            version: Tool version (uses class attribute if not provided)
+
+        Raises:
+            TypeError: If name not provided and no class attribute
+
+        Example:
+            >>> # Option A: Class attributes (recommended)
+            >>> class MyTool(BaseQuackTool):
+            ...     name = "my_tool"
+            ...     version = "1.0.0"
+            >>> tool = MyTool()  # Uses class attributes
+
+            >>> # Option B: Constructor args (dynamic)
+            >>> tool = MyTool(name="custom_name", version="2.0.0")
         """
-        self.name = name
-        self.version = version
+        # Use provided args, fall back to class attributes
+        if name is not None:
+            self.name = name
+        elif self.name is None:
+            raise TypeError(
+                f"{self.__class__.__name__} must either:\n"
+                f"  1. Define 'name' as a class attribute, or\n"
+                f"  2. Pass 'name' to __init__()\n"
+                f"Example: class {self.__class__.__name__}(BaseQuackTool):\n"
+                f"    name = 'my_tool'"
+            )
+
+        # After validation, name is guaranteed non-None (fix #4 - cleaner)
+        assert self.name is not None, "name must be set by this point"
+
+        if version is not None:
+            self.version = version
+        # else: use class attribute (default "1.0.0" or overridden)
 
     def initialize(self, ctx: "ToolContext") -> CapabilityResult[None]:
         """
@@ -76,12 +97,6 @@ class BaseQuackTool(ABC):
 
         Override this to perform setup that requires context.
         Default: success.
-
-        Args:
-            ctx: Tool context
-
-        Returns:
-            CapabilityResult indicating success or failure
         """
         return CapabilityResult.ok(data=None, msg=f"{self.name} initialized")
 
@@ -91,12 +106,6 @@ class BaseQuackTool(ABC):
 
         Override this to check dependencies, permissions, etc.
         Default: true.
-
-        Args:
-            ctx: Tool context
-
-        Returns:
-            True if tool can run, False otherwise
         """
         return True
 
@@ -112,12 +121,7 @@ class BaseQuackTool(ABC):
             ctx: Tool context (immutable, runner-provided)
 
         Returns:
-            CapabilityResult with:
-            - status: success/skip/error
-            - data: Typed response (if success)
-            - error: Error details (if error)
-            - logs: Execution logs
-            - metadata: Additional metadata
+            CapabilityResult with status, data, error, logs, metadata
 
         Example:
             >>> def run(self, request: MyRequest, ctx: ToolContext) -> CapabilityResult[MyResponse]:

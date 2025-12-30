@@ -5,21 +5,40 @@
 # neighbors: env_init.py, integration_enabled.py, lifecycle.py, output_handler.py
 # exports: IntegrationEnabledMixin, LifecycleMixin, ToolEnvInitializerMixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 7e3e554
+# git_commit: 223dfb0
 # === QV-LLM:END ===
 
 
-
 """
-Mixins for tools (doctrine-compliant).
+Internal mixin exports.
 
-All mixins work with ToolContext and return CapabilityResult.
-Tool authors should import from quack_core.tools (not this submodule).
+⚠️ IMPORT FROM quack_core.tools, NOT THIS MODULE ⚠️
+
+Tool authors should import from the canonical path:
+    ✅ from quack_core.tools import LifecycleMixin
+    ❌ from quack_core.tools.mixins import LifecycleMixin
+
+This module exists for internal organization only.
+Direct submodule imports may break in future versions.
 """
 
-from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
+import os
+import warnings
+
+# Optional warning for non-canonical imports (fix #2 - gated by env var)
+# Set QUACK_WARN_NONCANONICAL_IMPORTS=1 to enable in dev/CI
+if os.environ.get("QUACK_WARN_NONCANONICAL_IMPORTS"):
+    warnings.warn(
+        "Importing from quack_core.tools.mixins is discouraged. "
+        "Use canonical path: from quack_core.tools import LifecycleMixin, etc. "
+        "Direct submodule imports may break in future versions.",
+        FutureWarning,
+        stacklevel=2
+    )
+
 from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 from quack_core.tools.mixins.lifecycle import LifecycleMixin
+from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 
 __all__ = [
     'IntegrationEnabledMixin',

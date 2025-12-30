@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, config.py, registry.py
 # exports: FallbackConfig, ProviderStatus, FallbackLLMClient
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 7e3e554
+# git_commit: 223dfb0
 # === QV-LLM:END ===
 
 """
