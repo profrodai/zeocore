@@ -5,7 +5,7 @@
 # neighbors: base.py, context.py, protocol.py
 # exports: BaseQuackTool, ToolContext, QuackToolProtocol, IntegrationEnabledMixin, LifecycleMixin, ToolEnvInitializerMixin, BaseQuackToolPlugin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 7e3e554
+# git_commit: 223dfb0
 # === QV-LLM:END ===
 
 
@@ -49,17 +49,24 @@ Example:
         def run(self, request, ctx: ToolContext) -> CapabilityResult:
             result = self._process(request, ctx)
             return CapabilityResult.ok(data=result, msg="Success")
+TERMINOLOGY:
+- Tool: A concrete implementation of a capability (inherits BaseQuackTool)
+- Capability: The abstract function/transformation a tool provides
+- CapabilityResult: The machine-readable outcome of executing a capability
+
+Example: EchoTool is a tool that provides the "echo" capability,
+         returning a CapabilityResult when executed.
 """
 
 # Core classes
 from quack_core.tools.base import BaseQuackTool
 from quack_core.tools.context import ToolContext
-from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
+from quack_core.tools.protocol import QuackToolProtocol
 
 # Mixins (all exported at top level for single import path)
 from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 from quack_core.tools.mixins.lifecycle import LifecycleMixin
-from quack_core.tools.protocol import QuackToolProtocol
+from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 
 # Backward compatibility alias
 BaseQuackToolPlugin = BaseQuackTool

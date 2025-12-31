@@ -5,8 +5,9 @@
 # neighbors: __init__.py, integration_enabled.py, lifecycle.py, output_handler.py
 # exports: ToolEnvInitializerMixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 7e3e554
+# git_commit: 223dfb0
 # === QV-LLM:END ===
+
 
 
 """
@@ -33,8 +34,6 @@ initialize() or validate() hook:
 This enforces clear responsibility:
 - Runner: creates ctx.work_dir and ctx.output_dir
 - Tools: validate they exist (fail fast if runner didn't set up correctly)
-
-Tools writing artifacts still go through runner's output mechanisms.
 """
 
 from __future__ import annotations
@@ -52,24 +51,54 @@ class ToolEnvInitializerMixin:
     Mixin for tools that need environment validation.
 
     IMPORTANT: This VALIDATES only. It does NOT create directories.
-    Runner creates directories; tools verify they exist and are actually directories.
 
     USAGE: Tools must explicitly call initialize_environment() from initialize() or validate().
-    See module docstring for example.
 
-    This is strict doctrine compliance:
-    - Ring C (runner) creates workspace
-    - Ring B (tools) validates assumptions
+    FS CONTRACT (Recommendation #3 - MIGRATION COMPAT MODE):
 
-    FS CONTRACT (fix blocker #2):
-    Expects fs.get_file_info(path) to return Result with:
-        - result.success: bool
-        - result.data.exists: bool
-        - result.data.is_dir: bool
-        - result.error: str (if not success)
+    STRICT DOCTRINE: FS should return Result objects with .success, .data, .error
+                     where .data is FileInfo with .exists and .is_dir attributes.
 
-    No hasattr fallbacks - contract must be satisfied.
+    MIGRATION COMPAT: This mixin normalizes common variations (.ok vs .success,
+                      .value vs .data) to support FS implementations during migration.
+
+    TODO(v3.0): Remove normalization and require strict contract only.
+                Once all FS implementations use .success/.data/.error consistently,
+                _normalize_fs_result() should be removed.
+
+    CURRENT CONTRACT REQUIREMENTS:
+    - Result object MUST have success indicator (.success or .ok)
+    - Result object MUST have data payload (.data or .value)
+    - FileInfo MUST have .exists: bool attribute
+    - FileInfo MUST have .is_dir: bool attribute
+    - Missing .exists or .is_dir triggers QC_ENV_FS_CONTRACT_INCOMPLETE error
     """
+
+    @staticmethod
+    def _normalize_fs_result(result: Any) -> tuple[bool, Any, str | None]:
+        """
+        Normalize FS result to common pattern (MIGRATION COMPAT MODE).
+
+        Recommendation #3: This is a migration shim to handle FS contract drift.
+        TODO(v3.0): Remove this method once all FS implementations use standard contract.
+
+        Returns:
+            (success, data, error) tuple
+        """
+        # Try .success first, fall back to .ok (MIGRATION COMPAT)
+        success = getattr(result, 'success', None)
+        if success is None:
+            success = getattr(result, 'ok', False)
+
+        # Try .data first, fall back to .value (MIGRATION COMPAT)
+        data = getattr(result, 'data', None)
+        if data is None:
+            data = getattr(result, 'value', None)
+
+        # Try .error
+        error = getattr(result, 'error', None)
+
+        return bool(success), data, error
 
     def _validate_directory(
             self,
@@ -88,19 +117,17 @@ class ToolEnvInitializerMixin:
         Returns:
             CapabilityResult indicating success or failure
         """
-        # Check exists (fix blocker #2 - proper Result pattern)
+        # Check file info exists (uses migration compat normalization)
         info_result = fs.get_file_info(path)
+        success, info, error = self._normalize_fs_result(info_result)
 
-        # Check result success
-        if not info_result.success:
+        if not success:
             return CapabilityResult.fail_from_exc(
-                msg=f"Failed to check {name} directory: {info_result.error}",
+                msg=f"Failed to check {name} directory: {error}",
                 code=f"QC_ENV_{name.upper()}_DIR_CHECK_ERROR",
-                exc=Exception(info_result.error)
+                exc=Exception(error or "Unknown error")
             )
 
-        # Get data from result (fix blocker #2 - no flat attributes)
-        info = info_result.data
         if info is None:
             return CapabilityResult.fail_from_exc(
                 msg=f"FS returned no info for {name} directory: {path}",
@@ -108,7 +135,17 @@ class ToolEnvInitializerMixin:
                 exc=Exception("FileInfo data is None")
             )
 
-        # Check exists (fix blocker #2 - from data, not result)
+        # STRICT CONTRACT: FileInfo MUST have .exists (Recommendation #3)
+        if not hasattr(info, 'exists'):
+            return CapabilityResult.fail_from_exc(
+                msg=f"FS contract breach: FileInfo missing 'exists' attribute. "
+                    f"Cannot validate {name} directory. "
+                    f"FileInfo contract requires .exists: bool attribute.",
+                code="QC_ENV_FS_CONTRACT_INCOMPLETE",
+                exc=Exception("FileInfo.exists not available - FS contract breach")
+            )
+
+        # Check exists
         if not info.exists:
             return CapabilityResult.fail_from_exc(
                 msg=f"{name.capitalize()} directory does not exist: {path}. Runner must create it.",
@@ -116,12 +153,14 @@ class ToolEnvInitializerMixin:
                 exc=Exception(f"{name.capitalize()} directory missing")
             )
 
-        # Check is_dir (fix blocker #2 - from data, no fallbacks)
+        # STRICT CONTRACT: FileInfo MUST have .is_dir (Recommendation #3)
         if not hasattr(info, 'is_dir'):
             return CapabilityResult.fail_from_exc(
-                msg="FS contract incomplete: FileInfo missing is_dir attribute",
+                msg=f"FS contract breach: FileInfo missing 'is_dir' attribute. "
+                    f"Cannot validate {name} directory type. "
+                    f"FileInfo contract requires .is_dir: bool attribute.",
                 code="QC_ENV_FS_CONTRACT_INCOMPLETE",
-                exc=Exception("FileInfo.is_dir not available")
+                exc=Exception("FileInfo.is_dir not available - FS contract breach")
             )
 
         if not info.is_dir:
@@ -142,7 +181,7 @@ class ToolEnvInitializerMixin:
         Validate environment for tool execution (strict validation).
 
         The runner MUST create work_dir and output_dir.
-        This method validates they exist AND are directories. Fails if missing or wrong type.
+        This method validates they exist AND are directories.
 
         IMPORTANT: Tools must call this explicitly from initialize() or validate().
         See module docstring for usage pattern.

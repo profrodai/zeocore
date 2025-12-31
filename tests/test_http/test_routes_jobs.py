@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py (+2 more)
 # exports: test_post_jobs_no_auth, test_post_jobs_success, test_post_jobs_with_callback, test_post_jobs_with_idempotency_header, test_get_job_status_not_found, test_get_job_status_success, test_job_lifecycle
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 7e3e554
+# git_commit: 223dfb0
 # === QV-LLM:END ===
 
 """

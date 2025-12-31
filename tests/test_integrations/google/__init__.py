@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: mocks.py, test_auth_provider.py, test_config_provider.py, test_serialization.py
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 7e3e554
+# git_commit: 223dfb0
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.google module."""
