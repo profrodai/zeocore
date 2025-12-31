@@ -4,7 +4,7 @@
 # role: module
 # exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm, generate_run_id, generate_artifact_id, is_valid_uuid (+25 more)
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 5d876e8
+# git_commit: 9e6703a
 # === QV-LLM:END ===
 
 """

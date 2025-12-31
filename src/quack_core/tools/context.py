@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, protocol.py
 # exports: ToolContext
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 5d876e8
+# git_commit: 9e6703a
 # === QV-LLM:END ===
 
 
@@ -14,7 +14,6 @@
 ToolContext: Immutable dependency container for tool execution.
 
 TOP-LEVEL IMMUTABILITY: Uses MappingProxyType for services/metadata.
-Nested mutable values (dicts, lists) inside are not recursively frozen.
 """
 
 from typing import Any, Mapping
@@ -22,7 +21,6 @@ from pathlib import Path
 from types import MappingProxyType
 from pydantic import BaseModel, ConfigDict, Field, field_validator, field_serializer
 
-# Fix #2: Import shared serialization logic
 from quack_core.lib.serialization import normalize_for_json
 
 
@@ -34,12 +32,13 @@ class ToolContext(BaseModel):
     Tools receive it as read-only and must not modify it.
 
     METADATA CONTRACT (ENFORCED):
+    - Must be a Mapping (dict-like)
     - Must be JSON-serializable (validated on construction)
-    - Uses shared normalize_for_json() - same logic as ToolRunner (Fix #2)
+    - Uses shared normalize_for_json() - same logic as ToolRunner
     - Primitives: str, int, float, bool, None
     - Collections: list, dict (string keys only)
     - Safe types auto-converted: Path→str, datetime→isoformat, Enum→value
-    - Pydantic models: converted via model_dump() (Fix #3 - strict isinstance)
+    - Pydantic models: converted via model_dump() (strict isinstance)
     - Top-level immutable (cannot reassign ctx.metadata)
     - Nested values not frozen (tools should treat as read-only)
     - Violations fail immediately with clear error
@@ -82,44 +81,68 @@ class ToolContext(BaseModel):
             f"work_dir/output_dir must be str or Path, got {type(v).__name__}"
         )
 
-    # Validators for top-level immutability
+    # Must-fix B: Guard against None for services
     @field_validator('services', mode='before')
     @classmethod
-    def make_immutable_services(cls, v: dict[str, Any] | Mapping[str, Any]) -> Mapping[
-        str, Any]:
-        """Convert to MappingProxyType for top-level immutability."""
-        if isinstance(v, MappingProxyType):
-            return v
-        return MappingProxyType(dict(v))
-
-    # Metadata validator: enforce JSON-serializability using shared logic (Fix #2)
-    @field_validator('metadata', mode='before')
-    @classmethod
-    def validate_and_normalize_metadata(cls, v: dict[str, Any] | Mapping[str, Any]) -> \
+    def validate_and_normalize_services(cls,
+                                        v: dict[str, Any] | Mapping[str, Any] | None) -> \
     Mapping[str, Any]:
         """
-        Validate metadata is JSON-serializable and normalize safe types.
+        Validate services is a Mapping and convert to MappingProxyType.
 
-        Fix #2: Uses shared normalize_for_json() to prevent drift with ToolRunner.
-        Fix #3: Strict isinstance check for Pydantic models (via shared implementation).
+        Must-fix B: Defensive coding - handle None gracefully.
         """
+        if v is None:
+            return MappingProxyType({})
+
         if isinstance(v, MappingProxyType):
             return v
 
-        # Normalize to dict first
-        metadata_dict = dict(v) if isinstance(v, Mapping) else v
+        if not isinstance(v, Mapping):
+            raise TypeError(
+                f"services must be a Mapping (dict-like), got {type(v).__name__}"
+            )
 
-        # Use shared normalization logic (Fix #2)
+        return MappingProxyType(dict(v))
+
+    # Must-fix #2: Strict type checking for metadata
+    @field_validator('metadata', mode='before')
+    @classmethod
+    def validate_and_normalize_metadata(cls,
+                                        v: dict[str, Any] | Mapping[str, Any] | None) -> \
+    Mapping[str, Any]:
+        """
+        Validate metadata is a Mapping and JSON-serializable, then normalize.
+
+        Must-fix #2: Explicitly enforce Mapping type before processing.
+        """
+        if v is None:
+            return MappingProxyType({})
+
+        if isinstance(v, MappingProxyType):
+            return v
+
+        # Must-fix #2: Strict type check BEFORE attempting conversion
+        if not isinstance(v, Mapping):
+            raise TypeError(
+                f"metadata must be a Mapping (dict-like), got {type(v).__name__}. "
+                f"Example: metadata={{'key': 'value'}}. "
+                f"Cannot pass list, string, or other non-mapping types."
+            )
+
+        # Now safe to convert to dict
+        metadata_dict = dict(v)
+
+        # Use shared normalization logic
         try:
             normalized = normalize_for_json(
                 metadata_dict,
                 path="metadata",
-                allow_pydantic=True,  # Allow Pydantic models in metadata
-                allow_string_fallback=False,  # Strict - no fallback
-                logger=None  # No logger during validation
+                allow_pydantic=True,
+                allow_string_fallback=False,
+                logger=None
             )
         except TypeError as e:
-            # Re-raise with context about metadata validation
             raise TypeError(
                 f"ToolContext metadata validation failed: {e}. "
                 f"Metadata must be JSON-serializable. "
@@ -145,31 +168,12 @@ class ToolContext(BaseModel):
 
     @property
     def work_path(self) -> Path:
-        """
-        Get work directory as Path for path computation.
-
-        Returns:
-            Path object for work_dir
-
-        Note:
-            This is for PATH COMPUTATION only (e.g., building file paths).
-            Tools should NOT perform I/O directly. Use fs service for I/O.
-        """
+        """Get work directory as Path for path computation (no I/O)."""
         return Path(self.work_dir)
 
     @property
     def output_path(self) -> Path:
-        """
-        Get output directory as Path.
-
-        Returns:
-            Path object for output_dir
-
-        Note:
-            This is for REFERENCE/DEBUG only.
-            Tools should NOT write to output_path directly.
-            Return data via CapabilityResult; runner writes outputs.
-        """
+        """Get output directory as Path (reference only, no direct writes)."""
         return Path(self.output_dir)
 
     # Accessor methods (pure - no side effects)
@@ -183,26 +187,12 @@ class ToolContext(BaseModel):
         return self.fs
 
     def get_service(self, name: str) -> Any | None:
-        """
-        Get a service by name (if runner provided it).
-
-        Args:
-            name: Service name (e.g. "slack", "github")
-
-        Returns:
-            Service instance or None if not available
-        """
+        """Get a service by name (if runner provided it)."""
         return self.services.get(name)
 
     def require_service(self, name: str) -> Any:
         """
         Get a service by name (raises if missing).
-
-        Args:
-            name: Service name (e.g. "slack", "github")
-
-        Returns:
-            Service instance
 
         Raises:
             ValueError: If service not available in context

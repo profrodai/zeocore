@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_config.py, test_config_provider.py, test_integration.py, test_llms.py, test_models.py (+3 more)
 # exports: TestFallbackConfig, TestProviderStatus, TestFallbackLLMClient
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 5d876e8
+# git_commit: 9e6703a
 # === QV-LLM:END ===
 
 """

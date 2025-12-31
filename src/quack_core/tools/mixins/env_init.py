@@ -5,9 +5,8 @@
 # neighbors: __init__.py, integration_enabled.py, lifecycle.py, output_handler.py
 # exports: ToolEnvInitializerMixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 5d876e8
+# git_commit: 9e6703a
 # === QV-LLM:END ===
-
 
 
 """
@@ -16,8 +15,6 @@ Environment validation mixin for tools.
 DOCTRINE STRICT MODE:
 This mixin VALIDATES existence only. It does NOT create directories.
 Runner creates all directories. Tools fail if they don't exist.
-
-Recommendation C: FS contract normalization is temporary (deadline: v3.0).
 """
 
 from __future__ import annotations
@@ -38,7 +35,7 @@ class ToolEnvInitializerMixin:
 
     USAGE: Tools must explicitly call initialize_environment() from initialize() or validate().
 
-    FS CONTRACT (Recommendation C - MIGRATION COMPAT with deadline):
+    FS CONTRACT (MIGRATION COMPAT with deadline):
 
     STRICT DOCTRINE (v3.0+): FS MUST return Result objects with:
         - .success: bool (operation succeeded)
@@ -50,11 +47,21 @@ class ToolEnvInitializerMixin:
         - .ok vs .success
         - .value vs .data
 
-    DEADLINE (Recommendation C): Remove normalization in v3.0.
-    Once all FS implementations use .success/.data/.error, remove _normalize_fs_result().
+    DEADLINE: Remove normalization in v3.0.
 
-    TRACKING: When normalization is used, this is logged at DEBUG level.
-              Use ctx.metadata["fs_contract_mode"]="compat" to track in manifests.
+    TRACKING (Must-fix A - corrected guidance):
+    When normalization is used, this is logged at DEBUG level via ctx.logger.
+
+    NOTE: ctx.metadata is immutable (MappingProxyType), so tools cannot modify it.
+    To track compat mode in manifests, the RUNNER should add flags when building
+    the initial ToolContext, like:
+
+        ctx = ToolContext(
+            ...,
+            metadata={"fs_contract_mode": "compat"} if using_compat else {}
+        )
+
+    Tools cannot and should not modify ctx.metadata after construction.
     """
 
     @staticmethod
@@ -62,8 +69,7 @@ class ToolEnvInitializerMixin:
         """
         Normalize FS result to common pattern (MIGRATION COMPAT MODE).
 
-        Recommendation C: This is temporary (deadline v3.0).
-        TODO(v3.0): Remove this method entirely.
+        DEADLINE: v3.0 - Remove this method entirely.
 
         Returns:
             (success, data, error, used_normalization) tuple
@@ -74,13 +80,13 @@ class ToolEnvInitializerMixin:
         success = getattr(result, 'success', None)
         if success is None:
             success = getattr(result, 'ok', False)
-            used_normalization = True  # Recommendation C: Track compat usage
+            used_normalization = True
 
         # Try .data first, fall back to .value (MIGRATION COMPAT)
         data = getattr(result, 'data', None)
         if data is None:
             data = getattr(result, 'value', None)
-            used_normalization = True  # Recommendation C: Track compat usage
+            used_normalization = True
 
         # Try .error
         error = getattr(result, 'error', None)
@@ -101,7 +107,7 @@ class ToolEnvInitializerMixin:
             path: Directory path to validate
             name: Human-readable name (e.g. "work", "output")
             fs: Filesystem service
-            ctx: Optional context for tracking compat mode
+            ctx: Optional context for tracking compat mode (logging only)
 
         Returns:
             CapabilityResult indicating success or failure
@@ -110,9 +116,8 @@ class ToolEnvInitializerMixin:
         success, info, error, used_normalization = self._normalize_fs_result(
             info_result)
 
-        # Recommendation C: Track when compat mode is used
+        # Track when compat mode is used (Must-fix A - via logger only)
         if used_normalization and ctx:
-            # Log at DEBUG level to help find remaining FS implementations needing updates
             if hasattr(ctx, 'logger') and ctx.logger:
                 ctx.logger.debug(
                     f"FS contract compat mode used for {name} directory validation. "
@@ -182,12 +187,9 @@ class ToolEnvInitializerMixin:
         This method validates they exist AND are directories.
 
         IMPORTANT: Tools must call this explicitly from initialize() or validate().
-        See module docstring for usage pattern.
-
-        Override this method to add custom validation logic.
 
         Args:
-            ctx: Tool context
+            ctx: Tool context (immutable)
 
         Returns:
             CapabilityResult indicating success or failure
@@ -195,13 +197,13 @@ class ToolEnvInitializerMixin:
         try:
             fs = ctx.require_fs()
 
-            # Validate work_dir (pass ctx for compat tracking)
+            # Validate work_dir (pass ctx for compat tracking via logger)
             if ctx.work_dir:
                 result = self._validate_directory(ctx.work_dir, "work", fs, ctx)
                 if result.status != CapabilityStatus.success:
                     return result
 
-            # Validate output_dir (pass ctx for compat tracking)
+            # Validate output_dir (pass ctx for compat tracking via logger)
             if ctx.output_dir:
                 result = self._validate_directory(ctx.output_dir, "output", fs, ctx)
                 if result.status != CapabilityStatus.success:

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, refs.py
 # exports: ToolInfo, Provenance, ManifestInput, RunManifest
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 5d876e8
+# git_commit: 9e6703a
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_auth_provider.py, test_serialization.py
 # exports: TestGoogleConfigProvider
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 5d876e8
+# git_commit: 9e6703a
 # === QV-LLM:END ===
 
 """

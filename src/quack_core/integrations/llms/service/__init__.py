@@ -5,7 +5,7 @@
 # neighbors: operations.py, dependencies.py, initialization.py, integration.py
 # exports: LLMIntegration, check_llm_dependencies
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 5d876e8
+# git_commit: 9e6703a
 # === QV-LLM:END ===
 
 """

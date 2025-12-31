@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, protocols.py, config.py, converter.py
 # exports: PandocIntegration, PandocConfig, PandocConfigProvider, DocumentConverter, ConversionMetrics, ConversionTask, FileInfo, create_integration
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 5d876e8
+# git_commit: 9e6703a
 # === QV-LLM:END ===
 
 """

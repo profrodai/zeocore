@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, protocols.py, auth.py, client.py
 # exports: GitHubConfigProvider
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 5d876e8
+# git_commit: 9e6703a
 # === QV-LLM:END ===
 
 """Configuration provider for GitHub integration."""
