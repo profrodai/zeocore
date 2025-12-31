@@ -5,7 +5,7 @@
 # neighbors: models.py, _impl.py
 # exports: EchoRequest, VideoRefRequest
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 223dfb0
+# git_commit: 5d876e8
 # === QV-LLM:END ===
 
 """

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, app.py, service.py, config.py, auth.py, dependencies.py (+1 more)
 # exports: JobRequest, JobResponse, JobStatus
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 223dfb0
+# git_commit: 5d876e8
 # === QV-LLM:END ===
 
 """

@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: test_anthropic.py, test_base.py, test_clients.py, test_mock.py, test_ollama.py, test_openai.py
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 223dfb0
+# git_commit: 5d876e8
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.llms.clients module."""

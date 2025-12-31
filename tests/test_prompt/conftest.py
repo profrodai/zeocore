@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_booster.py, test_enhancer.py, test_integration.py, test_plugin.py, test_registry.py (+2 more)
 # exports: mock_render_fn, basic_strategy, registered_strategy, prompt_output_dir, mock_llm_integration, complex_render_fn, complex_strategy
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 223dfb0
+# git_commit: 5d876e8
 # === QV-LLM:END ===
 
 """

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, integration_enabled.py, lifecycle.py, output_handler.py
 # exports: ToolEnvInitializerMixin
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 223dfb0
+# git_commit: 5d876e8
 # === QV-LLM:END ===
 
 
@@ -17,23 +17,7 @@ DOCTRINE STRICT MODE:
 This mixin VALIDATES existence only. It does NOT create directories.
 Runner creates all directories. Tools fail if they don't exist.
 
-USAGE PATTERN:
-Tools that inherit this mixin should call initialize_environment() from their
-initialize() or validate() hook:
-
-    class MyTool(BaseQuackTool, ToolEnvInitializerMixin):
-        def initialize(self, ctx: ToolContext) -> CapabilityResult[None]:
-            # Validate environment
-            env_result = self.initialize_environment(ctx)
-            if env_result.status != CapabilityStatus.success:
-                return env_result
-
-            # Continue with tool-specific initialization
-            return CapabilityResult.ok(data=None, msg="Initialized")
-
-This enforces clear responsibility:
-- Runner: creates ctx.work_dir and ctx.output_dir
-- Tools: validate they exist (fail fast if runner didn't set up correctly)
+Recommendation C: FS contract normalization is temporary (deadline: v3.0).
 """
 
 from __future__ import annotations
@@ -54,57 +38,61 @@ class ToolEnvInitializerMixin:
 
     USAGE: Tools must explicitly call initialize_environment() from initialize() or validate().
 
-    FS CONTRACT (Recommendation #3 - MIGRATION COMPAT MODE):
+    FS CONTRACT (Recommendation C - MIGRATION COMPAT with deadline):
 
-    STRICT DOCTRINE: FS should return Result objects with .success, .data, .error
-                     where .data is FileInfo with .exists and .is_dir attributes.
+    STRICT DOCTRINE (v3.0+): FS MUST return Result objects with:
+        - .success: bool (operation succeeded)
+        - .data: FileInfo object (or None if failed)
+        - .error: str (error message if not success)
+        - FileInfo MUST have .exists: bool and .is_dir: bool
 
-    MIGRATION COMPAT: This mixin normalizes common variations (.ok vs .success,
-                      .value vs .data) to support FS implementations during migration.
+    MIGRATION COMPAT (v2.x - TEMPORARY): This mixin normalizes variations:
+        - .ok vs .success
+        - .value vs .data
 
-    TODO(v3.0): Remove normalization and require strict contract only.
-                Once all FS implementations use .success/.data/.error consistently,
-                _normalize_fs_result() should be removed.
+    DEADLINE (Recommendation C): Remove normalization in v3.0.
+    Once all FS implementations use .success/.data/.error, remove _normalize_fs_result().
 
-    CURRENT CONTRACT REQUIREMENTS:
-    - Result object MUST have success indicator (.success or .ok)
-    - Result object MUST have data payload (.data or .value)
-    - FileInfo MUST have .exists: bool attribute
-    - FileInfo MUST have .is_dir: bool attribute
-    - Missing .exists or .is_dir triggers QC_ENV_FS_CONTRACT_INCOMPLETE error
+    TRACKING: When normalization is used, this is logged at DEBUG level.
+              Use ctx.metadata["fs_contract_mode"]="compat" to track in manifests.
     """
 
     @staticmethod
-    def _normalize_fs_result(result: Any) -> tuple[bool, Any, str | None]:
+    def _normalize_fs_result(result: Any) -> tuple[bool, Any, str | None, bool]:
         """
         Normalize FS result to common pattern (MIGRATION COMPAT MODE).
 
-        Recommendation #3: This is a migration shim to handle FS contract drift.
-        TODO(v3.0): Remove this method once all FS implementations use standard contract.
+        Recommendation C: This is temporary (deadline v3.0).
+        TODO(v3.0): Remove this method entirely.
 
         Returns:
-            (success, data, error) tuple
+            (success, data, error, used_normalization) tuple
         """
+        used_normalization = False
+
         # Try .success first, fall back to .ok (MIGRATION COMPAT)
         success = getattr(result, 'success', None)
         if success is None:
             success = getattr(result, 'ok', False)
+            used_normalization = True  # Recommendation C: Track compat usage
 
         # Try .data first, fall back to .value (MIGRATION COMPAT)
         data = getattr(result, 'data', None)
         if data is None:
             data = getattr(result, 'value', None)
+            used_normalization = True  # Recommendation C: Track compat usage
 
         # Try .error
         error = getattr(result, 'error', None)
 
-        return bool(success), data, error
+        return bool(success), data, error, used_normalization
 
     def _validate_directory(
             self,
             path: str,
             name: str,
-            fs: Any
+            fs: Any,
+            ctx: "ToolContext | None" = None
     ) -> CapabilityResult[None]:
         """
         Strictly validate a directory exists and is actually a directory.
@@ -113,13 +101,24 @@ class ToolEnvInitializerMixin:
             path: Directory path to validate
             name: Human-readable name (e.g. "work", "output")
             fs: Filesystem service
+            ctx: Optional context for tracking compat mode
 
         Returns:
             CapabilityResult indicating success or failure
         """
-        # Check file info exists (uses migration compat normalization)
         info_result = fs.get_file_info(path)
-        success, info, error = self._normalize_fs_result(info_result)
+        success, info, error, used_normalization = self._normalize_fs_result(
+            info_result)
+
+        # Recommendation C: Track when compat mode is used
+        if used_normalization and ctx:
+            # Log at DEBUG level to help find remaining FS implementations needing updates
+            if hasattr(ctx, 'logger') and ctx.logger:
+                ctx.logger.debug(
+                    f"FS contract compat mode used for {name} directory validation. "
+                    f"Update FS implementation to use .success/.data contract. "
+                    f"Compat mode will be removed in v3.0."
+                )
 
         if not success:
             return CapabilityResult.fail_from_exc(
@@ -135,7 +134,7 @@ class ToolEnvInitializerMixin:
                 exc=Exception("FileInfo data is None")
             )
 
-        # STRICT CONTRACT: FileInfo MUST have .exists (Recommendation #3)
+        # STRICT CONTRACT: FileInfo MUST have .exists
         if not hasattr(info, 'exists'):
             return CapabilityResult.fail_from_exc(
                 msg=f"FS contract breach: FileInfo missing 'exists' attribute. "
@@ -145,7 +144,6 @@ class ToolEnvInitializerMixin:
                 exc=Exception("FileInfo.exists not available - FS contract breach")
             )
 
-        # Check exists
         if not info.exists:
             return CapabilityResult.fail_from_exc(
                 msg=f"{name.capitalize()} directory does not exist: {path}. Runner must create it.",
@@ -153,7 +151,7 @@ class ToolEnvInitializerMixin:
                 exc=Exception(f"{name.capitalize()} directory missing")
             )
 
-        # STRICT CONTRACT: FileInfo MUST have .is_dir (Recommendation #3)
+        # STRICT CONTRACT: FileInfo MUST have .is_dir
         if not hasattr(info, 'is_dir'):
             return CapabilityResult.fail_from_exc(
                 msg=f"FS contract breach: FileInfo missing 'is_dir' attribute. "
@@ -197,15 +195,15 @@ class ToolEnvInitializerMixin:
         try:
             fs = ctx.require_fs()
 
-            # Validate work_dir
+            # Validate work_dir (pass ctx for compat tracking)
             if ctx.work_dir:
-                result = self._validate_directory(ctx.work_dir, "work", fs)
+                result = self._validate_directory(ctx.work_dir, "work", fs, ctx)
                 if result.status != CapabilityStatus.success:
                     return result
 
-            # Validate output_dir
+            # Validate output_dir (pass ctx for compat tracking)
             if ctx.output_dir:
-                result = self._validate_directory(ctx.output_dir, "output", fs)
+                result = self._validate_directory(ctx.output_dir, "output", fs, ctx)
                 if result.status != CapabilityStatus.success:
                     return result
 

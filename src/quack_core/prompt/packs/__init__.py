@@ -3,5 +3,5 @@
 # module: quack_core.prompt.packs.__init__
 # role: module
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 223dfb0
+# git_commit: 5d876e8
 # === QV-LLM:END ===

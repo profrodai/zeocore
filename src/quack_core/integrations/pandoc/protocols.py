@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, config.py, converter.py
 # exports: DocumentConverterProtocol, BatchConverterProtocol, PandocConversionProtocol
 # git_branch: refactor/toolkitWorkflow
-# git_commit: 223dfb0
+# git_commit: 5d876e8
 # === QV-LLM:END ===
 
 """
