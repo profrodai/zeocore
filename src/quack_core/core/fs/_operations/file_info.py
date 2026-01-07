@@ -12,7 +12,7 @@ import mimetypes
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
-from quack_core.core.fs._helpers.file_info import _get_iso_timestamps
+from quack_core.core.fs._internal.file_info import _get_iso_timestamps
 
 @dataclass
 class FileInfo:

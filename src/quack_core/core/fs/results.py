@@ -1,22 +1,10 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/results.py
-# module: quack_core.core.fs.results
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py
-# exports: OperationResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult, DataResult, PathResult
-# git_branch: feat/9-make-setup-work
-# git_commit: 26dbe353
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Generic, TypeVar
-
 from pydantic import BaseModel, Field, field_serializer, computed_field
 
 T = TypeVar("T")
 
 class OperationResult(BaseModel):
-    """Base class for all filesystem operation results."""
     success: bool = Field(description="Whether the operation was successful")
     path: Path | None = Field(default=None, description="Path operated on")
     message: str | None = Field(default=None)
@@ -27,14 +15,13 @@ class OperationResult(BaseModel):
         return str(path) if path else None
 
 class ReadResult(OperationResult, Generic[T]):
-    """Result of a file read operation."""
     content: T | None = Field(default=None, description="Content read from file")
     encoding: str | None = None
 
     @property
     def text(self) -> str:
         if self.content is None:
-            raise ValueError("No content available (read failed or empty)")
+            raise ValueError("No content available")
         if isinstance(self.content, str):
             return self.content
         if isinstance(self.content, bytes):
@@ -52,7 +39,6 @@ class ReadResult(OperationResult, Generic[T]):
         raise TypeError(f"Content is not binary: {type(self.content)}")
 
 class WriteResult(OperationResult):
-    """Result of a file write operation."""
     bytes_written: int = 0
     original_path: Path | None = None
     checksum: str | None = None
@@ -62,7 +48,6 @@ class WriteResult(OperationResult):
         return str(path) if path else None
 
 class FileInfoResult(OperationResult):
-    """Result of a file info operation."""
     exists: bool = False
     is_file: bool = False
     is_dir: bool = False
@@ -80,7 +65,6 @@ class FileInfoResult(OperationResult):
         return self.is_dir
 
 class DirectoryInfoResult(OperationResult):
-    """Result of a directory listing."""
     exists: bool = False
     is_empty: bool = True
     files: list[Path] = Field(default_factory=list)
@@ -94,7 +78,6 @@ class DirectoryInfoResult(OperationResult):
         return [str(p) for p in paths]
 
 class FindResult(OperationResult):
-    """Result of a file find operation."""
     files: list[Path] = Field(default_factory=list)
     directories: list[Path] = Field(default_factory=list)
     total_matches: int = 0
@@ -106,13 +89,11 @@ class FindResult(OperationResult):
         return [str(p) for p in paths]
 
 class DataResult(OperationResult, Generic[T]):
-    """Result for structured data operations."""
     data: T
     format: str
     schema_valid: bool | None = None
 
 class PathResult(OperationResult):
-    """Result of a path validation."""
     is_absolute: bool = False
     is_valid: bool = False
     exists: bool = False

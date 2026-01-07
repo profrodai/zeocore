@@ -1,6 +1,6 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_helpers/safe_ops.py
-# module: quack_core.core.fs._helpers.safe_ops
+# path: quack-core/src/quack_core/core/fs/_internal/safe_ops.py
+# module: quack_core.core.fs._internal.safe_ops
 # role: module
 # neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_info.py (+4 more)
 # git_branch: feat/9-make-setup-work
@@ -16,7 +16,7 @@ from quack_core.core.errors import (
     QuackIOError,
     QuackPermissionError
 )
-from quack_core.core.fs._helpers.path_utils import _normalize_path_param
+from quack_core.core.fs._internal.path_utils import _normalize_path_param
 
 def _safe_copy(src: Any, dst: Any, overwrite: bool = False) -> Path:
     src_path = _normalize_path_param(src)

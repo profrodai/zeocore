@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 from typing import Any
-from quack_core.core.fs._helpers.disk import _get_disk_usage, _is_path_writeable
+from quack_core.core.fs._internal.disk import _get_disk_usage, _is_path_writeable
 from quack_core.core.fs.api.public.coerce import coerce_path, coerce_path_result
 from quack_core.core.fs.results import DataResult
 from quack_core.core.logging import get_logger

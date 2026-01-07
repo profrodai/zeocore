@@ -11,9 +11,9 @@
 from pathlib import Path
 from typing import Any
 
-from quack_core.core.fs._helpers.common import _normalize_path
-from quack_core.core.fs._helpers.comparison import _is_same_file, _is_subdirectory
-from quack_core.core.fs._helpers.path_ops import _expand_user_vars, _split_path
+from quack_core.core.fs._internal.common import _normalize_path
+from quack_core.core.fs._internal.comparison import _is_same_file, _is_subdirectory
+from quack_core.core.fs._internal.path_ops import _expand_user_vars, _split_path
 from quack_core.core.fs.api.public.coerce import coerce_path, coerce_path_result
 from quack_core.core.fs.results import DataResult, PathResult
 from quack_core.core.logging import get_logger

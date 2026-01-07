@@ -12,7 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from quack_core.core.fs._helpers.path_utils import (
+from quack_core.core.fs._internal.path_utils import (
     _normalize_path_param,
     _extract_path_str,
 )

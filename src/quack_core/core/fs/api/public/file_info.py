@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 from typing import Any
-from quack_core.core.fs._helpers.file_info import (
+from quack_core.core.fs._internal.file_info import (
     _get_file_size_str,
     _get_file_timestamp,
     _get_file_type,

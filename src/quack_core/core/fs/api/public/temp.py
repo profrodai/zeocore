@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 from typing import Any
-from quack_core.core.fs._helpers.temp import _create_temp_directory, _create_temp_file
+from quack_core.core.fs._internal.temp import _create_temp_directory, _create_temp_file
 from quack_core.core.fs.api.public.coerce import coerce_path, coerce_path_result
 from quack_core.core.fs.results import DataResult
 from quack_core.core.logging import get_logger

@@ -8,13 +8,13 @@
 # git_commit: 26dbe353
 # === QV-LLM:END ===
 
-# This file now simply delegates to _helpers (SSOT).
+# This file now simply delegates to _internal (SSOT).
 # No logic duplication.
 
 from pathlib import Path
-from quack_core.core.fs._helpers.path_ops import _expand_user_vars, _split_path
-from quack_core.core.fs._helpers.common import _get_extension, _normalize_path
-from quack_core.core.fs._helpers.comparison import _is_same_file, _is_subdirectory
+from quack_core.core.fs._internal.path_ops import _expand_user_vars, _split_path
+from quack_core.core.fs._internal.common import _get_extension, _normalize_path
+from quack_core.core.fs._internal.comparison import _is_same_file, _is_subdirectory
 
 class PathOperationsMixin:
     def _resolve_path(self, path: str | Path) -> Path:

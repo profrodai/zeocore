@@ -1,6 +1,6 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_helpers/file_info.py
-# module: quack_core.core.fs._helpers.file_info
+# path: quack-core/src/quack_core/core/fs/_internal/file_info.py
+# module: quack_core.core.fs._internal.file_info
 # role: module
 # neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_ops.py (+4 more)
 # git_branch: feat/9-make-setup-work
@@ -11,7 +11,7 @@ import mimetypes
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from quack_core.core.fs._helpers.path_utils import _normalize_path_param
+from quack_core.core.fs._internal.path_utils import _normalize_path_param
 
 def _get_file_timestamp(path: Any) -> float:
     p = _normalize_path_param(path)

@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 from typing import Any
-from quack_core.core.fs._helpers.safe_ops import _safe_copy, _safe_delete, _safe_move
+from quack_core.core.fs._internal.safe_ops import _safe_copy, _safe_delete, _safe_move
 from quack_core.core.fs.api.public.coerce import coerce_path, coerce_path_result
 from quack_core.core.fs.results import OperationResult, WriteResult
 from quack_core.core.logging import get_logger

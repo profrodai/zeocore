@@ -11,7 +11,7 @@
 """
 ✅ Public Utility Functions (Safe for QuackTools and DuckTyper)
 
-These are stable, documented, and error-handled _helpers for working with the filesystem.
+These are stable, documented, and error-handled _internal for working with the filesystem.
 If you're building with `quack_core.core.fs.service`, use these functions directly.
 """
 

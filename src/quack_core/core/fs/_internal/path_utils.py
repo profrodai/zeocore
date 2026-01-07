@@ -1,45 +1,26 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_helpers/path_utils.py
-# module: quack_core.core.fs._helpers.path_utils
-# role: module
-# neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_info.py (+4 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 26dbe353
-# === QV-LLM:END ===
-
 import os
 from pathlib import Path
 from typing import Any
-
-from quack_core.core.fs.protocols import HasData, HasPath, HasUnwrap, HasValue
-
+from quack_core.fs.protocols import HasData, HasPath, HasUnwrap, HasValue
 
 def _extract_path_str(obj: Any) -> str:
-    """
-    Core logic to extract a string path from a polymorphic input.
-    SSOT for path coercion.
-    """
     if obj is None:
         raise TypeError("Path cannot be None")
-
     if isinstance(obj, str):
         return obj
     if isinstance(obj, Path):
         return str(obj)
     if hasattr(obj, "__fspath__"):
-        return os.fspath(obj)  # type: ignore
+        return os.fspath(obj) # type: ignore
 
-    # 1. Fail fast on failed Results
     if hasattr(obj, "success") and not getattr(obj, "success", True):
         raise ValueError(f"Cannot extract path from failed Result object: {obj}")
 
-    # 2. Try explicit unwrap methods
     if isinstance(obj, HasValue):
         return _extract_path_str(obj.value())
     if isinstance(obj, HasUnwrap):
         return _extract_path_str(obj.unwrap())
 
-    # 3. Try Result attributes (HasData / HasPath)
     if isinstance(obj, HasData) and obj.data is not None:
         if obj.data is not obj:
             try:
@@ -52,22 +33,14 @@ def _extract_path_str(obj: Any) -> str:
 
     raise TypeError(f"Could not coerce object of type {type(obj)} to path string")
 
-
 def _normalize_path_param(obj: Any) -> Path:
-    """
-    Strict normalization to Path.
-    """
     try:
         s = _extract_path_str(obj)
         return Path(s)
     except (TypeError, ValueError) as e:
         raise TypeError(f"Could not coerce {type(obj)} to Path: {e}") from e
 
-
 def _safe_path_str(obj: Any, default: str | None = None) -> str | None:
-    """
-    Safe extraction that never raises.
-    """
     try:
         return _extract_path_str(obj)
     except (TypeError, ValueError, AttributeError):

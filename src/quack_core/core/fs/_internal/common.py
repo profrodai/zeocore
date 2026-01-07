@@ -1,6 +1,6 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_helpers/common.py
-# module: quack_core.core.fs._helpers.common
+# path: quack-core/src/quack_core/core/fs/_internal/common.py
+# module: quack_core.core.fs._internal.common
 # role: module
 # neighbors: __init__.py, checksums.py, comparison.py, disk.py, file_info.py, file_ops.py (+4 more)
 # git_branch: feat/9-make-setup-work

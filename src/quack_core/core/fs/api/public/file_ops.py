@@ -10,7 +10,7 @@
 
 from typing import Any
 from quack_core.core.fs.api.public.coerce import coerce_path, coerce_path_result
-from quack_core.core.fs._helpers.file_ops import _atomic_write, _ensure_directory, \
+from quack_core.core.fs._internal.file_ops import _atomic_write, _ensure_directory, \
     _get_unique_filename
 from quack_core.core.fs.results import WriteResult, OperationResult, DataResult
 from quack_core.core.logging import get_logger

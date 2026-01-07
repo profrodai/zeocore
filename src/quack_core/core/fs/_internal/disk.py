@@ -1,6 +1,6 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_helpers/disk.py
-# module: quack_core.core.fs._helpers.disk
+# path: quack-core/src/quack_core/core/fs/_internal/disk.py
+# module: quack_core.core.fs._internal.disk
 # role: module
 # neighbors: __init__.py, checksums.py, common.py, comparison.py, file_info.py, file_ops.py (+4 more)
 # git_branch: feat/9-make-setup-work
@@ -11,7 +11,7 @@ import os
 import shutil
 from typing import Any
 from quack_core.core.errors import QuackIOError
-from quack_core.core.fs._helpers.path_utils import _normalize_path_param
+from quack_core.core.fs._internal.path_utils import _normalize_path_param
 
 def _get_disk_usage(path: Any) -> dict[str, int]:
     path_obj = _normalize_path_param(path)

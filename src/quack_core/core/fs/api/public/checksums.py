@@ -11,8 +11,8 @@
 from pathlib import Path
 from typing import Any
 
-from quack_core.core.fs._helpers.checksums import _compute_checksum
-from quack_core.core.fs._helpers.path_utils import _normalize_path_param
+from quack_core.core.fs._internal.checksums import _compute_checksum
+from quack_core.core.fs._internal.path_utils import _normalize_path_param
 from quack_core.core.fs.api.public.coerce import coerce_path_result
 from quack_core.core.fs.results import DataResult, OperationResult
 from quack_core.core.logging import get_logger

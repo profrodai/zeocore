@@ -1,6 +1,6 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_helpers/comparison.py
-# module: quack_core.core.fs._helpers.comparison
+# path: quack-core/src/quack_core/core/fs/_internal/comparison.py
+# module: quack_core.core.fs._internal.comparison
 # role: module
 # neighbors: __init__.py, checksums.py, common.py, disk.py, file_info.py, file_ops.py (+4 more)
 # git_branch: feat/9-make-setup-work
@@ -9,8 +9,8 @@
 
 import os
 from typing import Any
-from quack_core.core.fs._helpers.common import _normalize_path
-from quack_core.core.fs._helpers.path_utils import _normalize_path_param
+from quack_core.core.fs._internal.common import _normalize_path
+from quack_core.core.fs._internal.path_utils import _normalize_path_param
 
 def _is_same_file(path1: Any, path2: Any) -> bool:
     path1_obj = _normalize_path_param(path1)
