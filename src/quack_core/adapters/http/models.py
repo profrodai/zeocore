@@ -5,7 +5,7 @@
 # neighbors: __init__.py, app.py, service.py, config.py, auth.py, dependencies.py (+1 more)
 # exports: JobRequest, JobResponse, JobStatus
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 """

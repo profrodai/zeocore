@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, protocols.py, config.py, auth.py
 # exports: GitHubClient
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 """GitHub API client for quack_core."""

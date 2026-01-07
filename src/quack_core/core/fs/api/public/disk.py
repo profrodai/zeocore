@@ -5,7 +5,7 @@
 # neighbors: __init__.py, checksums.py, file_info.py, file_ops.py, path_ops.py, path_utils.py (+2 more)
 # exports: get_disk_usage, is_path_writeable
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 # quack-core/src/quack_core/fs/api/public/disk.py

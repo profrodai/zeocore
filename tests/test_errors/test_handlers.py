@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_base.py
 # exports: TestErrorHandler, TestHandleErrorsDecorator, TestGlobalErrorHandler
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 """

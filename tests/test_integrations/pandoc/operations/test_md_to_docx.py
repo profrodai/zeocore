@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_html_to_md.py, test_utils.py, test_utils_fix.py
 # exports: test_convert_markdown_to_docx_success, test_convert_markdown_to_docx_validation_error, test_convert_markdown_to_docx_conversion_failure, test_convert_markdown_to_docx_validation_failure, test_validate_conversion_md_to_docx, test_md_to_docx_validate_markdown_input_success, test_md_to_docx_validate_markdown_input_file_not_found, test_md_to_docx_validate_markdown_input_read_error (+8 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 """

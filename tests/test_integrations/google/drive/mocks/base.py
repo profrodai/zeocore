@@ -4,7 +4,7 @@
 # neighbors: __init__.py, credentials.py, download.py, media.py, requests.py, resources.py (+1 more)
 # exports: GenericApiRequestMock
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 """

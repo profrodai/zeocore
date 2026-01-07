@@ -4,7 +4,7 @@
 # role: utils
 # exports: atomic_write, compute_checksum, copy_safely, create_temp_directory, create_temp_file, delete_safely, ensure_directory, expand_user_vars (+17 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 # quack-core/src/quack_core/fs/utils/__init__.py

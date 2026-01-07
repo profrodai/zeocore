@@ -5,7 +5,7 @@
 # neighbors: __init__.py, utils.py, resolver.py
 # exports: ProjectDirectory, ProjectContext, ContentContext, PathInfo
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 """

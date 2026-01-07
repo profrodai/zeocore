@@ -5,7 +5,7 @@
 # neighbors: __init__.py, checksums.py, disk.py, file_info.py, file_ops.py, path_ops.py (+2 more)
 # exports: extract_path_from_result, extract_path_str, safe_path_str
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 # quack-core/src/quack_core/fs/api/public/path_utils.py

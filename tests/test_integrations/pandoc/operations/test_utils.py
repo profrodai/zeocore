@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_html_to_md.py, test_md_to_docx.py, test_utils_fix.py
 # exports: test_verify_pandoc_success, test_verify_pandoc_import_error, test_verify_pandoc_os_error, test_prepare_pandoc_args, test_get_file_info, test_validate_html_structure, test_validate_docx_structure, test_check_file_size (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 """

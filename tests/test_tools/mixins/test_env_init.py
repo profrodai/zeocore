@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_integration_enabled.py, test_lifecycle.py, test_output_handler.py
 # exports: TestToolEnvInitializerMixin, TestToolEnvInitializerMixinWithPytest, tool_env_initializer_mixin
 # git_branch: feat/9-make-setup-work
-# git_commit: 19533b6c
+# git_commit: 41712bc9
 # === QV-LLM:END ===
 
 """
