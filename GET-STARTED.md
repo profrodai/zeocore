@@ -59,7 +59,7 @@ Robust configuration system supporting YAML, environment variables, and runtime 
 ### `quack_core.lib.paths`
 Standardized path resolution and project structure detection across environments.
 
-### `quack_core.lib.fs`
+### `quack_core.core.fs`
 Safe and consistent filesystem operations with error handling and structured results.
 
 ### `quack_core.modules`
@@ -113,7 +113,7 @@ source_dir = context._get_source_dir()
 ### File Operations
 
 ```python
-from quack_core.lib.fs import service as fs
+from quack_core.core.fs import service as fs
 
 # Read text from a file
 result = fs._read_text("path/to/file.txt")
@@ -453,7 +453,7 @@ Tools built with QuackCore gain immediate compatibility with:
 
 To create your own tool:
 - Follow QuackCore’s plugin or integration protocol
-- Use `quack_core.config` and `quack_core.lib.fs` for standard behavior
+- Use `quack_core.config` and `quack_core.core.fs` for standard behavior
 - Register your tool with `quack_core.modules.registry`
 
 This ensures your tool can be consumed by orchestrators like **QuackBuddy** and exposed via upcoming standards such as **MCP**.
@@ -526,7 +526,7 @@ Example of a new tool setup:
 # my_quack_tool/main.py
 from quack_core.config import load_config
 from quack_core.lib.paths import resolver
-from quack_core.lib.fs import service as fs
+from quack_core.core.fs import service as fs
 from quack_core.cli import init_cli_env
 
 

@@ -27,7 +27,7 @@ from quack_core.lib.errors import (
     QuackIOError,
     QuackPermissionError,
 )
-from quack_core.lib.fs._helpers import (
+from quack_core.core.fs._helpers import (
     _compute_checksum,
     _create_temp_directory,
     _create_temp_file,
@@ -46,13 +46,13 @@ from quack_core.lib.fs._helpers import (
     _safe_delete,
     _safe_move,
 )
-from quack_core.lib.fs._helpers.file_ops import (
+from quack_core.core.fs._helpers.file_ops import (
     _atomic_write,
     _ensure_directory,
     _find_files_by_content,
     _get_unique_filename,
 )
-from quack_core.lib.fs._helpers.path_ops import (
+from quack_core.core.fs._helpers.path_ops import (
     _expand_user_vars,
     _join_path,
     _split_path,

@@ -14,7 +14,7 @@ Tests for the filesystem operation result classes.
 from pathlib import Path
 
 import pytest
-from quack_core.lib.fs import (
+from quack_core.core.fs import (
     DataResult,
     DirectoryInfoResult,
     FileInfoResult,

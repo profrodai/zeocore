@@ -94,7 +94,7 @@ def test_prepare_pandoc_args():
     assert "--custom-arg" in custom_args
 
 
-@patch('quack_core.lib.fs.service.standalone')
+@patch('quack_core.core.fs.service.standalone')
 def test_get_file_info(mock_fs):
     """Test getting file information for conversion."""
     # Setup mock fs

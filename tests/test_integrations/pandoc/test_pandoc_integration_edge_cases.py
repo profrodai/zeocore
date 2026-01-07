@@ -143,7 +143,7 @@ def test_integration_initialize_with_invalid_config():
         assert result.success
 
 
-@patch('quack_core.lib.fs.service.standalone')
+@patch('quack_core.core.fs.service.standalone')
 def test_integration_directory_conversion_edge_cases(mock_fs):
     """Test directory conversion edge cases."""
     integration = PandocIntegration()

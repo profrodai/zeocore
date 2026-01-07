@@ -31,7 +31,7 @@ from quack_core.lib.errors import (
     QuackBaseAuthError,
     QuackIntegrationError,
 )
-from quack_core.lib.fs.service import standalone
+from quack_core.core.fs.service import standalone
 from quack_core.lib.paths import service as paths_service
 
 NoneType = type(None)
@@ -195,7 +195,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             self, file_path: str, remote_path: str | None, parent_folder_id: str | None
     ) -> tuple[Any, str, str | None, str]:
         """Resolve file details for upload."""
-        from quack_core.lib.fs.service import standalone
+        from quack_core.core.fs.service import standalone
 
         # Extract clean paths using our new helper
         path_obj_result = paths_service.resolve_project_path(file_path)

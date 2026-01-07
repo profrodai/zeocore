@@ -32,7 +32,7 @@ from googleapiclient.errors import HttpError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.mail.protocols import GmailRequest, GmailService
 from quack_core.integrations.google.mail.utils.api import execute_api_request
-from quack_core.lib.fs.service import standalone
+from quack_core.core.fs.service import standalone
 
 T = TypeVar("T")  # Generic type for result content
 

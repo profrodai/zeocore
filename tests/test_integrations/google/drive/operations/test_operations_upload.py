@@ -89,12 +89,12 @@ class TestDriveOperationsUpload:
             )
 
             # Mock file info
-            with patch("quack_core.lib.fs.service.standalone.get_file_info") as mock_info:
+            with patch("quack_core.core.fs.service.standalone.get_file_info") as mock_info:
                 mock_info.return_value.success = True
                 mock_info.return_value.exists = True
 
                 # Mock get_mime_type
-                with patch("quack_core.lib.fs.service.standalone.get_mime_type") as mock_mime:
+                with patch("quack_core.core.fs.service.standalone.get_mime_type") as mock_mime:
                     mock_mime.return_value = "text/plain"
 
                     # Test with default parameters
@@ -132,7 +132,7 @@ class TestDriveOperationsUpload:
             )
 
             # Mock file info to show file doesn't exist
-            with patch("quack_core.lib.fs.service.standalone.get_file_info") as mock_info:
+            with patch("quack_core.core.fs.service.standalone.get_file_info") as mock_info:
                 mock_info.return_value.success = True
                 mock_info.return_value.exists = False
 

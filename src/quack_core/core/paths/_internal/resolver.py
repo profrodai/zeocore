@@ -19,7 +19,7 @@ from os import getcwd
 from os import path as ospath
 
 from quack_core.lib.errors import QuackFileNotFoundError, wrap_io_errors
-from quack_core.lib.fs.service import standalone
+from quack_core.core.fs.service import standalone
 from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.lib.paths.models import ContentContext, ProjectContext
 from quack_core.lib.paths._internal.utils import (

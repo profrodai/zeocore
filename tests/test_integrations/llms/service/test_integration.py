@@ -83,7 +83,7 @@ class TestLLMIntegrationComprehensive:
 
     def test_init_custom(self) -> None:
         """Test initializing with custom parameters."""
-        with patch("quack_core.lib.fs.service.get_file_info") as mock_file_info:
+        with patch("quack_core.core.fs.service.get_file_info") as mock_file_info:
             # Create a proper FileInfoResult
             file_info_result = MagicMock()
             file_info_result.success = True
@@ -92,7 +92,7 @@ class TestLLMIntegrationComprehensive:
             mock_file_info.return_value = file_info_result
 
             # Also patch resolve_path
-            with patch("quack_core.lib.fs.service.standalone.resolve_path") as mock_resolve_path:
+            with patch("quack_core.core.fs.service.standalone.resolve_path") as mock_resolve_path:
                 # Create a mock path string directly
                 mock_path = "/Users/rodrivera/custom_config.yaml"
                 mock_result = MagicMock()

@@ -23,7 +23,7 @@ from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import PandocConfig, PandocConfigProvider
 from quack_core.integrations.pandoc.converter import DocumentConverter
 from quack_core.integrations.pandoc.operations.utils import verify_pandoc
-from quack_core.lib.fs.service import FileSystemService
+from quack_core.core.fs.service import FileSystemService
 from quack_core.lib.paths.service import PathService
 
 logger = logging.getLogger(__name__)

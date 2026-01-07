@@ -116,7 +116,7 @@ packages = ["src/quack_core"]
 
 [project.entry-points."quack_core.modules"]
 paths = "quack_core.lib.paths.plugin:create_plugin"
-fs = "quack_core.lib.fs.plugin:create_plugin"
+fs = "quack_core.core.fs.plugin:create_plugin"
 config = "quack_core.config.plugin:create_plugin"
 prompt = "quack_core.prompt.plugin:create_plugin"
 

@@ -26,8 +26,8 @@ from _pytest.monkeypatch import MonkeyPatch
 # Now try to import the quack-core modules
 try:
     from quack_core.config.models import QuackConfig
-    from quack_core.lib.fs import DataResult, OperationResult
-    from quack_core.lib.fs.service import standalone as fs_standalone
+    from quack_core.core.fs import DataResult, OperationResult
+    from quack_core.core.fs.service import standalone as fs_standalone
     from quack_core.modules.protocols import QuackPluginProtocol
 except ImportError as e:
     print(f"Error importing quack-core modules: {e}")
@@ -36,8 +36,8 @@ except ImportError as e:
 
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
     from quack_core.config.models import QuackConfig
-    from quack_core.lib.fs import DataResult, OperationResult
-    from quack_core.lib.fs.service import standalone as fs_standalone
+    from quack_core.core.fs import DataResult, OperationResult
+    from quack_core.core.fs.service import standalone as fs_standalone
     from quack_core.modules.protocols import QuackPluginProtocol
 
 
@@ -50,7 +50,7 @@ def mock_fs_standalone():
     This helps us handle path issues in tests by normalizing the
     behavior of the underlying fs module.
     """
-    with patch("quack_core.lib.fs.service.standalone.normalize_path") as mock_normalize:
+    with patch("quack_core.core.fs.service.standalone.normalize_path") as mock_normalize:
         # Make normalize_path return Path objects for consistent behavior
         mock_normalize.side_effect = lambda p: Path(os.path.abspath(str(p)))
         yield

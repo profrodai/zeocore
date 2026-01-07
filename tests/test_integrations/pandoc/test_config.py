@@ -101,7 +101,7 @@ def test_config_provider_validation():
     assert provider.validate_config(valid_config) is not False
 
     # Invalid path (mocked in the test)
-    with patch('quack_core.lib.fs.service.is_valid_path', return_value=False):
+    with patch('quack_core.core.fs.service.is_valid_path', return_value=False):
         assert not provider.validate_config({"output_dir": "??invalid??"})
 
     # Invalid schema

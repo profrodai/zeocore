@@ -58,7 +58,7 @@ class TestToolkitImports(unittest.TestCase):
         Test that mixins can be combined with the base class.
         """
         # Create a patch for get_service to avoid filesystem issues
-        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.core.fs.service.get_service') as mock_get_service, \
              patch('os.getcwd') as mock_getcwd:
 
             # Configure the mock

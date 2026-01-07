@@ -37,9 +37,9 @@ logger = get_logger(__name__)
 
 # Import fs module with error handling
 try:
-    from quack_core.lib.fs.service import standalone as fs
+    from quack_core.core.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack_core.lib.fs.service")
+    logger.error("Could not import quack_core.core.fs.service")
     from types import SimpleNamespace
 
     # Create a safer join_path implementation

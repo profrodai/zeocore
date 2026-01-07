@@ -108,7 +108,7 @@ class CompleteTool(
         self._upload_service = None
 
         # Patch get_service to avoid filesystem issues
-        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.core.fs.service.get_service') as mock_get_service, \
                 patch('os.getcwd') as mock_getcwd, \
                 patch('quack_core.config.tooling.logger.setup_tool_logging'), \
                 patch('quack_core.config.tooling.logger.get_logger'):

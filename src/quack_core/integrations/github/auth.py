@@ -16,7 +16,7 @@ from typing import Any
 
 import requests
 from quack_core.integrations.core import AuthResult, BaseAuthProvider
-from quack_core.lib.fs import service as fs
+from quack_core.core.fs import service as fs
 from quack_core.lib.logging import get_logger
 
 logger = get_logger(__name__)

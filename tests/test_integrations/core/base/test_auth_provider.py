@@ -31,7 +31,7 @@ class TestBaseAuthProvider:
         credentials_file = str(temp_dir / "credentials.json")
 
         # Patch fs.service.standalone.resolve_path to return the expected path string
-        with patch("quack_core.lib.fs.service.standalone.resolve_path") as mock_resolve:
+        with patch("quack_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.return_value = credentials_file
             provider = MockAuthProvider(credentials_file=credentials_file)
             assert provider.credentials_file == credentials_file
@@ -50,18 +50,18 @@ class TestBaseAuthProvider:
         abs_path = "/absolute/path"
 
         # Need to patch the proper method now
-        with patch("quack_core.lib.fs.service.standalone.resolve_path") as mock_resolve:
+        with patch("quack_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.return_value = abs_path
             resolved = provider._resolve_path(abs_path)
             assert resolved == abs_path
             mock_resolve.assert_called_once_with(abs_path)
 
         # Test with resolver exception - patch the fs service instance
-        with patch("quack_core.lib.fs.service.standalone.resolve_path") as mock_resolve:
+        with patch("quack_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.side_effect = Exception("Test error")
 
             with patch(
-                    "quack_core.lib.fs.service.standalone.normalize_path") as mock_normalize:
+                    "quack_core.core.fs.service.standalone.normalize_path") as mock_normalize:
                 mock_normalize.return_value = "/normalized/path"
 
                 resolved = provider._resolve_path("relative/path")
@@ -88,7 +88,7 @@ class TestBaseAuthProvider:
             mock_exists.return_value = True
 
             # Patch resolve_path to return a string
-            with patch("quack_core.lib.fs.service.standalone.resolve_path") as mock_resolve:
+            with patch("quack_core.core.fs.service.standalone.resolve_path") as mock_resolve:
                 mock_resolve.return_value = str(credentials_file)
                 provider = MockAuthProvider(credentials_file=str(credentials_file))
 
@@ -102,7 +102,7 @@ class TestBaseAuthProvider:
             mock_exists.return_value = False
 
             # Patch resolve_path to return a string
-            with patch("quack_core.lib.fs.service.standalone.resolve_path") as mock_resolve:
+            with patch("quack_core.core.fs.service.standalone.resolve_path") as mock_resolve:
                 mock_resolve.return_value = "/nonexistent/path"
                 provider = MockAuthProvider(credentials_file="/nonexistent/path")
                 result = provider.authenticate()
@@ -130,19 +130,19 @@ class TestBaseAuthProvider:
         credentials_file = str(temp_dir / "creds" / "credentials.json")
 
         # Patch resolve_path to return a string
-        with patch("quack_core.lib.fs.service.standalone.resolve_path") as mock_resolve:
+        with patch("quack_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.return_value = credentials_file
             provider = MockAuthProvider(credentials_file=credentials_file)
 
             # Now correctly patch the methods
-            with patch("quack_core.lib.fs.service.standalone.split_path") as mock_split:
+            with patch("quack_core.core.fs.service.standalone.split_path") as mock_split:
                 mock_split.return_value = [str(temp_dir), "creds", "credentials.json"]
 
-                with patch("quack_core.lib.fs.service.standalone.join_path") as mock_join:
+                with patch("quack_core.core.fs.service.standalone.join_path") as mock_join:
                     mock_join.return_value = str(temp_dir / "creds")
 
                     with patch(
-                            "quack_core.lib.fs.service.standalone.create_directory") as mock_create:
+                            "quack_core.core.fs.service.standalone.create_directory") as mock_create:
                         mock_result = MagicMock()
                         mock_result.success = True
                         mock_create.return_value = mock_result
@@ -152,18 +152,18 @@ class TestBaseAuthProvider:
                         mock_create.assert_called_once()
 
         # Test with creation error
-        with patch("quack_core.lib.fs.service.standalone.resolve_path") as mock_resolve:
+        with patch("quack_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.return_value = credentials_file
             provider = MockAuthProvider(credentials_file=credentials_file)
 
-            with patch("quack_core.lib.fs.service.standalone.split_path") as mock_split:
+            with patch("quack_core.core.fs.service.standalone.split_path") as mock_split:
                 mock_split.return_value = [str(temp_dir), "creds", "credentials.json"]
 
-                with patch("quack_core.lib.fs.service.standalone.join_path") as mock_join:
+                with patch("quack_core.core.fs.service.standalone.join_path") as mock_join:
                     mock_join.return_value = str(temp_dir / "creds")
 
                     with patch(
-                            "quack_core.lib.fs.service.standalone.create_directory") as mock_create:
+                            "quack_core.core.fs.service.standalone.create_directory") as mock_create:
                         mock_result = MagicMock()
                         mock_result.success = False
                         mock_create.return_value = mock_result

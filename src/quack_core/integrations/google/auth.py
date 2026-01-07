@@ -25,7 +25,7 @@ from quack_core.integrations.core.base import BaseAuthProvider
 from quack_core.integrations.core.results import AuthResult
 from quack_core.integrations.google.serialization import serialize_credentials
 from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.fs.service import standalone
+from quack_core.core.fs.service import standalone
 
 
 class GoogleAuthProvider(BaseAuthProvider):

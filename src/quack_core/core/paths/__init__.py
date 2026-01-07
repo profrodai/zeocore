@@ -16,7 +16,7 @@ This package provides utilities for resolving paths, detecting project structure
 and inferring context in QuackCore projects.
 
 NOTE: This module does NOT expose low-level path manipulation (join/split).
-Use `quack_core.lib.fs` for filesystem primitives.
+Use `quack_core.core.fs` for filesystem primitives.
 """
 
 from quack_core.lib.paths.api.public.results import (

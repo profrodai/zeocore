@@ -19,7 +19,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from quack_core.lib.fs import DataResult, OperationResult
+from quack_core.core.fs import DataResult, OperationResult
 from quack_core.lib.logging import get_logger
 from quack_core.lib.paths._internal.resolver import PathResolver
 from quack_core.lib.paths._internal.utils import (

@@ -24,7 +24,7 @@ from quack_core.integrations.google.mail.protocols import (
     GoogleCredentials,
 )
 from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.fs import service as fs
+from quack_core.core.fs import service as fs
 from quack_core.lib.paths import service as paths
 
 

@@ -12,14 +12,14 @@ Utility functions for path resolution logic.
 
 This module provides semantic utilities (finding roots, inferring modules).
 Low-level path manipulations (join, split, normalize) are delegated to
-`quack_core.lib.fs`.
+`quack_core.core.fs`.
 """
 
 import os
 from typing import Any
 
 from quack_core.lib.errors import QuackFileNotFoundError, wrap_io_errors
-from quack_core.lib.fs.service import standalone
+from quack_core.core.fs.service import standalone
 from quack_core.lib.logging import get_logger
 from quack_core.lib.paths.models import PathInfo
 
@@ -42,7 +42,7 @@ def _normalize_path_param(path_param: Any) -> str:
 @wrap_io_errors
 def _normalize_path_with_info(path: Any) -> PathInfo:
     """
-    Normalize a path using lib.fs and return detailed information.
+    Normalize a path using core.fs and return detailed information.
     """
     path_str = _normalize_path_param(path)
 

@@ -43,9 +43,9 @@ from quack_core.lib.errors import QuackIntegrationError
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch):
     """
-    Stub out the quack_core.lib.fs.service.standalone methods for file operations.
+    Stub out the quack_core.core.fs.service.standalone methods for file operations.
     """
-    import quack_core.lib.fs.service as fs_service
+    import quack_core.core.fs.service as fs_service
     stub = SimpleNamespace()
     # Default get_file_info returns success, exists, size, modified
     stub.get_file_info = lambda path: SimpleNamespace(
@@ -112,7 +112,7 @@ def test_util_get_file_info_success():
 
 
 def test_util_get_file_info_not_found(monkeypatch):
-    quack_core.lib.fs.service.standalone.get_file_info = lambda p: SimpleNamespace(success=False, exists=False)
+    quack_core.core.fs.service.standalone.get_file_info = lambda p: SimpleNamespace(success=False, exists=False)
     with pytest.raises(QuackIntegrationError):
         util_get_file_info('missing.md')
 
@@ -304,7 +304,7 @@ def test_pandoc_config_default():
 
 def test_pandoc_config_validate_output_dir(monkeypatch):
     # Invalidate path
-    quack_core.lib.fs.service.standalone.get_path_info = lambda p: SimpleNamespace(success=False)
+    quack_core.core.fs.service.standalone.get_path_info = lambda p: SimpleNamespace(success=False)
     with pytest.raises(ValueError):
         PandocConfig(output_dir='??invalid')
 
@@ -315,7 +315,7 @@ def test_config_provider_validate_config(monkeypatch):
     # valid schema
     assert provider.validate_config({'output_dir': '/tmp'}) is not False
     # test invalid path
-    quack_core.lib.fs.service.standalone.is_valid_path = lambda p: False
+    quack_core.core.fs.service.standalone.is_valid_path = lambda p: False
     assert not provider.validate_config({'output_dir': '/tmp'})
 
 

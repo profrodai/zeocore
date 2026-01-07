@@ -148,7 +148,7 @@ class TestExplicitLoading(unittest.TestCase):
         # Mock entry point objects
         fs_ep = Mock()
         fs_ep.name = "fs"
-        fs_ep.value = "quack_core.lib.fs:create_plugin"
+        fs_ep.value = "quack_core.core.fs:create_plugin"
         fs_ep.load.return_value = lambda: fs_plugin
 
         paths_ep = Mock()
@@ -200,7 +200,7 @@ class TestExplicitLoading(unittest.TestCase):
 
         fs_ep = Mock()
         fs_ep.name = "fs"
-        fs_ep.value = "quack_core.lib.fs:create_plugin"
+        fs_ep.value = "quack_core.core.fs:create_plugin"
         fs_ep.load.return_value = lambda: fs_plugin
 
         mock_entry_points.return_value = [fs_ep]
@@ -240,7 +240,7 @@ class TestExplicitLoading(unittest.TestCase):
 
         fs_ep = Mock()
         fs_ep.name = "fs"
-        fs_ep.value = "quack_core.lib.fs:create_plugin"
+        fs_ep.value = "quack_core.core.fs:create_plugin"
         fs_ep.load.return_value = lambda: fs_plugin
 
         mock_entry_points.return_value = [fs_ep]
@@ -539,7 +539,7 @@ class TestListAvailableEntryPoints(unittest.TestCase):
         # Create mock entry points
         ep1 = Mock()
         ep1.name = "fs"
-        ep1.value = "quack_core.lib.fs:create_plugin"
+        ep1.value = "quack_core.core.fs:create_plugin"
 
         ep2 = Mock()
         ep2.name = "paths"

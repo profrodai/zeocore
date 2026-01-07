@@ -73,7 +73,7 @@ def test_pandoc_integration_initialization():
     assert integration.converter is None
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_initialize_success(mock_verify_pandoc,
                                                mock_expand_user_vars,
@@ -115,7 +115,7 @@ def test_pandoc_integration_initialize_failure(mock_verify_pandoc):
     assert integration._initialized is False
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_html_to_markdown(mock_verify_pandoc,
                                              mock_expand_user_vars,
@@ -151,7 +151,7 @@ def test_pandoc_integration_html_to_markdown(mock_verify_pandoc,
     mock_convert_file.assert_called()
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_markdown_to_docx(mock_verify_pandoc,
                                              mock_expand_user_vars,
@@ -187,7 +187,7 @@ def test_pandoc_integration_markdown_to_docx(mock_verify_pandoc,
     mock_convert_file.assert_called()
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_convert_directory(mock_verify_pandoc,
                                               mock_expand_user_vars,
@@ -288,7 +288,7 @@ def test_create_integration():
 
 # --- Integration tests ---
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_html_to_markdown_conversion(mock_verify_pandoc,
                                                 mock_expand_user_vars,
@@ -335,7 +335,7 @@ def test_end_to_end_html_to_markdown_conversion(mock_verify_pandoc,
     assert call_args[0][2] == "markdown"  # output_format
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_markdown_to_docx_conversion(mock_verify_pandoc,
                                                 mock_expand_user_vars,
@@ -383,7 +383,7 @@ def test_end_to_end_markdown_to_docx_conversion(mock_verify_pandoc,
 
 
 @patch('quack_core.integrations.pandoc.operations.utils.fs')
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_directory_conversion(mock_verify_pandoc,
                                          mock_expand_user_vars,

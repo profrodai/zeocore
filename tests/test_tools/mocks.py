@@ -22,7 +22,7 @@ from unittest.mock import MagicMock, patch
 
 from quack_core.integrations.core import IntegrationResult
 from quack_core.integrations.core.base import BaseIntegrationService
-from quack_core.lib.fs import DataResult, OperationResult
+from quack_core.core.fs import DataResult, OperationResult
 from quack_core.tools.base import BaseQuackToolPlugin
 
 
@@ -245,7 +245,7 @@ class BaseMockTool(BaseQuackToolPlugin):
         # We need to patch all external dependencies
         patch_targets = [
             # Filesystem
-            ("quack_core.lib.fs.service.get_service", create_mock_fs()),
+            ("quack_core.core.fs.service.get_service", create_mock_fs()),
             # Logging
             ("quack_core.config.tooling.logger.setup_tool_logging", MagicMock()),
             ("quack_core.config.tooling.logger.get_logger",

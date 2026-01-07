@@ -23,7 +23,7 @@ from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.protocols import DriveService
 from quack_core.integrations.google.drive.utils.api import execute_api_request
 from quack_core.lib.errors import QuackApiError
-from quack_core.lib.fs.service import standalone
+from quack_core.core.fs.service import standalone
 from quack_core.lib.paths import service as paths_service
 
 

@@ -654,7 +654,7 @@ class PluginLoader:
         of entry points.
 
         Args:
-            modules: List of module paths (e.g., ["quack_core.lib.fs.plugin"])
+            modules: List of module paths (e.g., ["quack_core.core.fs.plugin"])
             strict: If True, fail fast on first error with rollback
             auto_register: If True, automatically register loaded modules
 

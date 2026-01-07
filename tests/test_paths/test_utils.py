@@ -18,7 +18,7 @@ from unittest.mock import patch
 
 import pytest
 from quack_core.lib.errors import QuackFileNotFoundError
-from quack_core.lib.fs.service import standalone as fs_standalone
+from quack_core.core.fs.service import standalone as fs_standalone
 from quack_core.lib.paths import service as paths
 
 
@@ -162,7 +162,7 @@ class TestPathUtils:
     def test_normalize_path(self) -> None:
         """Test normalizing paths."""
         # Mock the normalize_path method to avoid filesystem access
-        with patch("quack_core.lib.fs.service.standalone.normalize_path") as mock_normalize:
+        with patch("quack_core.core.fs.service.standalone.normalize_path") as mock_normalize:
             # Set up the mock to return a Path object with an absolute path
             mock_normalize.return_value = Path("/absolute/path/file.txt")
 
@@ -172,7 +172,7 @@ class TestPathUtils:
             mock_normalize.assert_called_once_with("./test/../file.txt")
 
         # Test with empty path
-        with patch("quack_core.lib.fs.service.standalone.normalize_path") as mock_normalize:
+        with patch("quack_core.core.fs.service.standalone.normalize_path") as mock_normalize:
             mock_normalize.return_value = Path("/current/working/directory")
 
             normalized = fs_standalone.normalize_path("")
@@ -180,7 +180,7 @@ class TestPathUtils:
             mock_normalize.assert_called_once_with("")
 
         # Test with absolute path
-        with patch("quack_core.lib.fs.service.standalone.normalize_path") as mock_normalize:
+        with patch("quack_core.core.fs.service.standalone.normalize_path") as mock_normalize:
             mock_normalize.return_value = Path("/some/absolute/path")
 
             normalized = fs_standalone.normalize_path("/some/absolute/path")

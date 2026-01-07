@@ -63,7 +63,7 @@ def test_pandoc_integration_name_version():
     assert not integration._initialized
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_initialize_with_mocked_verify_pandoc(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
     """Test initialize method with mocked verify_pandoc."""
@@ -149,7 +149,7 @@ def test_is_pandoc_available():
         assert not integration.is_pandoc_available()
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_html_to_markdown_with_initialized_service(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
     """Test HTML to Markdown conversion with initialized service."""
@@ -186,7 +186,7 @@ def test_html_to_markdown_with_initialized_service(mock_verify_pandoc, mock_expa
     assert mock_convert_file.call_count == 2
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_markdown_to_docx_with_initialized_service(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
     """Test Markdown to DOCX conversion with initialized service."""
@@ -223,7 +223,7 @@ def test_markdown_to_docx_with_initialized_service(mock_verify_pandoc, mock_expa
     assert mock_convert_file.call_count == 2
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_convert_directory_with_initialized_service(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
     """Test directory conversion with initialized service."""
