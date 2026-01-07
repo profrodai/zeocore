@@ -1,16 +1,21 @@
-# quack-core/src/quack_core/logging/formatter.py
+
+
+
 """
 Custom formatters for quack-core logging.
 
 This module provides formatters that adapt log output based on Teaching Mode
-status and verbosity levels.
+status and verbosity levels via an injected provider.
 """
 
 import logging
 from enum import Enum
+from typing import Protocol
+
+# Constant key used in the 'extra' dict of log records to identify teaching logs
+TEACHING_EXTRA_KEY = "quack_teaching"
 
 
-# Define ANSI color codes for terminal output
 class Colors:
     RESET = "\033[0m"
     BOLD = "\033[1m"
@@ -22,103 +27,92 @@ class Colors:
     MAGENTA = "\033[35m"
 
 
-# Enum for verbosity levels that may be used in Teaching Mode
 class VerbosityLevel(str, Enum):
     BASIC = "BASIC"
     VERBOSE = "VERBOSE"
     DEBUG = "DEBUG"
 
 
-# Since quackster doesn't exist yet, we stub the required functions
-def teaching_is_enabled() -> bool:
-    """
-    Stub function to check if Teaching Mode is enabled.
+class TeachingProvider(Protocol):
+    """Protocol for checking Teaching Mode state."""
 
-    This will be replaced with an actual implementation when quackster
-    module is created.
+    def is_enabled(self) -> bool: ...
 
-    Returns:
-        Always False until quackster module is implemented
-    """
-    # TODO: Replace with actual implementation once quackster exists
-    return False
+    def get_level(self) -> VerbosityLevel: ...
 
 
-def teaching_get_level() -> VerbosityLevel:
-    """
-    Stub function to get the current Teaching Mode verbosity level.
+class DefaultTeachingProvider:
+    """Default provider that always returns disabled state."""
 
-    This will be replaced with an actual implementation when quackster
-    module is created.
+    def is_enabled(self) -> bool:
+        return False
 
-    Returns:
-        Always VerbosityLevel.BASIC until quackster module is implemented
-    """
-    # TODO: Replace with actual implementation once quackster exists
-    return VerbosityLevel.BASIC
+    def get_level(self) -> VerbosityLevel:
+        return VerbosityLevel.BASIC
+
+
+# Global mutable provider to allow injection after import
+_teaching_provider: TeachingProvider = DefaultTeachingProvider()
+
+
+def set_teaching_provider(provider: TeachingProvider) -> None:
+    """Inject a teaching provider."""
+    global _teaching_provider
+    _teaching_provider = provider
+
+
+def reset_teaching_provider() -> None:
+    """Reset the global teaching provider to default. Useful for test cleanup."""
+    global _teaching_provider
+    _teaching_provider = DefaultTeachingProvider()
 
 
 class TeachingAwareFormatter(logging.Formatter):
     """
     Custom formatter that enhances log messages based on Teaching Mode status.
-
-    This formatter applies special formatting to Teaching Mode logs and handles
-    different verbosity levels.
     """
 
     DEFAULT_FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
     def __init__(
-        self,
-        fmt: str | None = None,
-        datefmt: str | None = None,
-        color_enabled: bool = True,
+            self,
+            fmt: str | None = None,
+            datefmt: str | None = None,
+            color_enabled: bool = True,
+            teaching_provider: TeachingProvider | None = None,
     ):
         """
-        Initialize the formatter with optional custom formats.
+        Initialize the formatter.
 
         Args:
-            fmt: Custom format string (optional)
-            datefmt: Custom date format string (optional)
-            color_enabled: Whether to use ANSI color codes (default: True)
+            fmt: Log format string.
+            datefmt: Date format string.
+            color_enabled: Whether to use ANSI colors.
+            teaching_provider: Optional specific provider instance. If None,
+                               uses the global singleton.
         """
         super().__init__(fmt or self.DEFAULT_FORMAT, datefmt or self.DATE_FORMAT)
         self.color_enabled = color_enabled
+        self.teaching_provider = teaching_provider
 
     def format(self, record: logging.LogRecord) -> str:
-        """
-        Format the log record, with special handling for Teaching Mode logs.
-
-        Args:
-            record: The log record to format
-
-        Returns:
-            The formatted log message
-        """
-        # Get the basic formatted message
         formatted_msg = super().format(record)
-
-        # Apply level-based formatting
         formatted_msg = self._apply_level_formatting(record, formatted_msg)
 
-        # Apply Teaching Mode formatting if applicable
-        if "[Teaching Mode]" in record.getMessage():
+        # Detect Teaching Mode via the structured 'extra' attribute
+        # falling back to string check only for backwards compatibility/safety
+        is_teaching = (
+                getattr(record, TEACHING_EXTRA_KEY, False)
+                or "[Teaching Mode]" in record.getMessage()
+        )
+
+        if is_teaching:
             return self._format_teaching_log(formatted_msg)
 
         return formatted_msg
 
     def _apply_level_formatting(self, record: logging.LogRecord, msg: str) -> str:
-        """
-        Apply formatting based on the log level.
-
-        Args:
-            record: The log record
-            msg: The formatted message
-
-        Returns:
-            The formatted message with level-specific styling
-        """
         if not self.color_enabled:
             return msg
 
@@ -132,7 +126,6 @@ class TeachingAwareFormatter(logging.Formatter):
 
         color = level_colors.get(record.levelno, "")
         if color:
-            # Apply color to the level name portion of the message
             level_str = f"[{record.levelname}]"
             colored_level = f"{color}[{record.levelname}]{Colors.RESET}"
             return msg.replace(level_str, colored_level)
@@ -140,27 +133,17 @@ class TeachingAwareFormatter(logging.Formatter):
         return msg
 
     def _format_teaching_log(self, msg: str) -> str:
-        """
-        Apply special formatting to Teaching Mode logs.
+        # Use instance provider if set, otherwise fallback to global
+        provider = self.teaching_provider or _teaching_provider
 
-        Args:
-            msg: The formatted message
-
-        Returns:
-            The message with Teaching Mode specific formatting
-        """
-        # Check if Teaching Mode is enabled (using stub for now)
-        if not teaching_is_enabled():
+        if not provider.is_enabled():
             return msg
 
-        # Get Teaching Mode verbosity level (using stub for now)
-        verbosity = teaching_get_level()
+        verbosity = provider.get_level()
 
-        # Basic Teaching Mode formatting
         if not self.color_enabled:
             return f"🦆 {msg}"
 
-        # Apply color based on verbosity
         verbosity_formatting = {
             VerbosityLevel.BASIC: f"{Colors.CYAN}🦆 {msg}{Colors.RESET}",
             VerbosityLevel.VERBOSE: f"{Colors.MAGENTA}🦆 {Colors.BOLD}[VERBOSE]{Colors.RESET} {msg}",
