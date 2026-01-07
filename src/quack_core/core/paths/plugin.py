@@ -1,14 +1,4 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/paths/plugin.py
-# module: quack_core.core.paths.plugin
-# role: plugin
-# neighbors: __init__.py, service.py
-# exports: PathsPlugin, QuackPathsPlugin, create_plugin
-# git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
-# === QV-LLM:END ===
 
-# quack-core/src/quack_core/paths/plugin.py
 """
 Plugin interface for the paths module.
 
@@ -19,14 +9,14 @@ allowing QuackCore to expose path resolution functionality to other modules.
 from pathlib import Path
 from typing import Protocol
 
-from quack_core.fs.results import DataResult, OperationResult
-from quack_core.paths._internal.context import ContentContext, ProjectContext
-from quack_core.paths._internal.resolver import PathResolver
-from quack_core.paths._internal.utils import _normalize_path_param
+from quack_core.lib.fs import DataResult, OperationResult
+from quack_core.lib.paths.models import ContentContext, ProjectContext
+from quack_core.lib.paths._internal.resolver import PathResolver
+from quack_core.lib.paths._internal.utils import _normalize_path_param
 
 
 class PathsPlugin(Protocol):
-    """Protocol for paths plugins."""
+    """Protocol for paths modules."""
 
     @property
     def name(self) -> str:
@@ -37,51 +27,23 @@ class PathsPlugin(Protocol):
         self,
         start_dir: str | Path | DataResult | OperationResult | None = None,
     ) -> str:
-        """
-        Find the project root directory.
-
-        Args:
-            start_dir: Directory to start searching from (string, Path, DataResult,
-                       or OperationResult; default: current directory)
-
-        Returns:
-            Path to the project root directory as a string
-        """
-        ...  # pragma: no cover
+        """Find the project root directory."""
+        ...
 
     def detect_project_context(
         self,
         start_dir: str | Path | DataResult | OperationResult | None = None,
     ) -> ProjectContext:
-        """
-        Detect project context from a directory.
-
-        Args:
-            start_dir: Directory to start searching from (string, Path, DataResult,
-                       or OperationResult; default: current directory)
-
-        Returns:
-            ProjectContext object
-        """
-        ...  # pragma: no cover
+        """Detect project context from a directory."""
+        ...
 
     def detect_content_context(
         self,
         start_dir: str | Path | DataResult | OperationResult | None = None,
         content_type: str | None = None,
     ) -> ContentContext:
-        """
-        Detect content context from a directory.
-
-        Args:
-            start_dir: Directory to start searching from (string, Path, DataResult,
-                       or OperationResult; default: current directory)
-            content_type: Type of content (optional)
-
-        Returns:
-            ContentContext object
-        """
-        ...  # pragma: no cover
+        """Detect content context from a directory."""
+        ...
 
 
 class QuackPathsPlugin:
@@ -100,16 +62,7 @@ class QuackPathsPlugin:
         self,
         start_dir: str | Path | DataResult | OperationResult | None = None,
     ) -> str:
-        """
-        Find the project root directory.
-
-        Args:
-            start_dir: Directory to start searching from (string, Path, DataResult,
-                       or OperationResult; default: current directory)
-
-        Returns:
-            Path to the project root directory as a string
-        """
+        """Find the project root directory."""
         start = None if start_dir is None else _normalize_path_param(start_dir)
         return self._resolver._get_project_root(start)
 
@@ -117,16 +70,7 @@ class QuackPathsPlugin:
         self,
         start_dir: str | Path | DataResult | OperationResult | None = None,
     ) -> ProjectContext:
-        """
-        Detect project context from a directory.
-
-        Args:
-            start_dir: Directory to start searching from (string, Path, DataResult,
-                       or OperationResult; default: current directory)
-
-        Returns:
-            ProjectContext object
-        """
+        """Detect project context from a directory."""
         start = None if start_dir is None else _normalize_path_param(start_dir)
         return self._resolver._detect_project_context(start)
 
@@ -135,17 +79,7 @@ class QuackPathsPlugin:
         start_dir: str | Path | DataResult | OperationResult | None = None,
         content_type: str | None = None,
     ) -> ContentContext:
-        """
-        Detect content context from a directory.
-
-        Args:
-            start_dir: Directory to start searching from (string, Path, DataResult,
-                       or OperationResult; default: current directory)
-            content_type: Type of content (optional)
-
-        Returns:
-            ContentContext object
-        """
+        """Detect content context from a directory."""
         start = None if start_dir is None else _normalize_path_param(start_dir)
         return self._resolver._detect_content_context(start, content_type)
 
@@ -153,3 +87,5 @@ class QuackPathsPlugin:
 def create_plugin() -> PathsPlugin:
     """Create a new instance of the paths plugin."""
     return QuackPathsPlugin()
+
+
