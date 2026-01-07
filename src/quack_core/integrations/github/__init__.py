@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, protocols.py, config.py, auth.py, client.py
 # exports: GitHubIntegration, GitHubClient, GitHubAuthProvider, GitHubConfigProvider, GitHubIntegrationProtocol, GitHubRepo, GitHubUser, PullRequest (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """GitHub integration for quack_core."""

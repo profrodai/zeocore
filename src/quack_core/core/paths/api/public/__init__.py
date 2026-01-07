@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/paths/api/public/__init__.py
+# module: quack_core.core.paths.api.public.__init__
+# role: api
+# neighbors: results.py, path_utils.py
+# exports: PathResult, ContextResult
+# git_branch: feat/9-make-setup-work
+# git_commit: 19533b6c
+# === QV-LLM:END ===
+
 """
 Public API for the paths module.
 

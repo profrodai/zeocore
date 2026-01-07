@@ -5,7 +5,7 @@
 # neighbors: protocols.py, plugin.py, results.py
 # exports: FileSystemService, create_service, service, FileSystemOperations, OperationResult, ReadResult, WriteResult, FileInfoResult (+44 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 # quack-core/src/quack_core/fs/__init__.py

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, dependencies.py, initialization.py, integration.py
 # exports: chat, count_tokens, get_provider_status, reset_provider_status
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """

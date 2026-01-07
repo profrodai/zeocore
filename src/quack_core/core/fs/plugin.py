@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, results.py
 # exports: FSPlugin, QuackFSPlugin, create_plugin
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 # quack-core/src/quack_core/fs/plugin.py

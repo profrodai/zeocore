@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, registry.py, base.py
 # exports: IntegrationResult, AuthResult, ConfigResult, IntegrationLoadReport
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """

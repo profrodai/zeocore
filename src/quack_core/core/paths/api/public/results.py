@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/paths/api/public/results.py
+# module: quack_core.core.paths.api.public.results
+# role: api
+# neighbors: __init__.py, path_utils.py
+# exports: PathResult, StringResult, ContextResult
+# git_branch: feat/9-make-setup-work
+# git_commit: 19533b6c
+# === QV-LLM:END ===
+
 """
 Path resolution result models.
 

@@ -4,7 +4,7 @@
 # neighbors: base.py, credentials.py, download.py, media.py, requests.py, resources.py (+1 more)
 # exports: GenericApiRequestMock, MockDriveRequest, MockDrivePermissionsResource, MockDriveFilesResource, MockDriveService, create_mock_drive_service, create_error_drive_service, MockGoogleCredentials (+6 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """

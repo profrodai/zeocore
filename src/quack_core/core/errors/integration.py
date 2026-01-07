@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, handlers.py
 # exports: QuackIntegrationError, QuackAuthenticationError, QuackApiError, QuackQuotaExceededError
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 

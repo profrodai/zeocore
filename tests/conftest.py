@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_helper.py
 # exports: MockPlugin, mock_fs_standalone, patch_filesystem_operations, temp_dir, test_file, test_binary_file, sample_config, mock_env_vars (+4 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """

@@ -5,7 +5,7 @@
 # neighbors: service.py, protocols.py, config.py
 # exports: GoogleMailService, create_integration
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """

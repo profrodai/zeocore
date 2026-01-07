@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, config.py, fallback.py
 # exports: register_llm_client, get_llm_client
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """

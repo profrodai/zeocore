@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, protocols.py, config.py, converter.py
 # exports: ConversionMetrics, FileInfo, ConversionTask, ConversionDetails
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """

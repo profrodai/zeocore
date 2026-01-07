@@ -1,8 +1,8 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/lib/paths/_internal/__init__.py
-# module: quack_core.lib.paths._internal.__init__
+# path: quack-core/src/quack_core/core/paths/_internal/__init__.py
+# module: quack_core.core.paths._internal.__init__
 # role: module
 # neighbors: utils.py, context.py, resolver.py
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 21647d6
+# git_branch: feat/9-make-setup-work
+# git_commit: 19533b6c
 # === QV-LLM:END ===

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py, test_schema_examples.py
 # exports: TestCapabilityError, TestCapabilityLogEvent, TestCapabilityResult
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """

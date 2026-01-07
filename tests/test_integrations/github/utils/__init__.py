@@ -2,7 +2,7 @@
 # path: quack-core/tests/test_integrations/github/utils/__init__.py
 # role: utils
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """Tests for GitHub integration utilities."""

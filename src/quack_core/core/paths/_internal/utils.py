@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/paths/_internal/utils.py
+# module: quack_core.core.paths._internal.utils
+# role: utils
+# neighbors: __init__.py, context.py, resolver.py
+# git_branch: feat/9-make-setup-work
+# git_commit: 19533b6c
+# === QV-LLM:END ===
+
 """
 Utility functions for path resolution logic.
 

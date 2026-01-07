@@ -5,7 +5,7 @@
 # neighbors: __init__.py, download.py, folder.py, list_files.py, permissions.py
 # exports: initialize_drive_service, resolve_file_details, upload_file
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """

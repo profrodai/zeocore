@@ -5,7 +5,7 @@
 # neighbors: __init__.py
 # exports: PromptRenderResult, RegisterStrategyResult, GetStrategyResult, StrategyListResult, LoadPackResult
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 from typing import Any

@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/paths/plugin.py
+# module: quack_core.core.paths.plugin
+# role: plugin
+# neighbors: __init__.py, service.py, models.py
+# exports: PathsPlugin, QuackPathsPlugin, create_plugin
+# git_branch: feat/9-make-setup-work
+# git_commit: 19533b6c
+# === QV-LLM:END ===
+
 
 """
 Plugin interface for the paths module.

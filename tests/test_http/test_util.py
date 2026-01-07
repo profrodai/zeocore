@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py (+2 more)
 # exports: test_new_id, test_stable_hash, test_post_callback_mock
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """

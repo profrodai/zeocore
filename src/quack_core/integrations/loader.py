@@ -5,7 +5,7 @@
 # neighbors: __init__.py, config.py, boot.py
 # exports: list_available_entry_points, load_enabled_entry_points
 # git_branch: feat/9-make-setup-work
-# git_commit: c28ab838
+# git_commit: 19533b6c
 # === QV-LLM:END ===
 
 """
