@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_config.py, test_context.py, test_error.py, test_formatting.py (+5 more)
 # exports: TestInitCliEnv, TestFromCliOptions
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -18,7 +18,7 @@ import pytest
 from quack_core.interfaces.cli.legacy.boostrap import from_cli_options, init_cli_env
 from quack_core.interfaces.cli.legacy.context import QuackContext
 from quack_core.interfaces.cli.utils.options import CliOptions
-from quack_core.lib.errors import QuackError
+from quack_core.core.errors import QuackError
 
 from .mocks import (
     MockConfig,

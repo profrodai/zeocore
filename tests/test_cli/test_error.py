@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_formatting.py (+5 more)
 # exports: TestFormatCliError, TestHandleErrors, TestEnsureSingleInstance, TestGetCliInfo
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -22,7 +22,7 @@ from quack_core.interfaces.cli.utils.error import (
     get_cli_info,
     handle_errors,
 )
-from quack_core.lib.errors import QuackError
+from quack_core.core.errors import QuackError
 
 
 class TestFormatCliError:

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_atomic_wrapping.py, test_path_utils.py, test_results.py, test_service.py, test_utils.py
 # exports: TestFileSystemOperations
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -20,7 +20,7 @@ from unittest.mock import patch
 
 import pytest
 import yaml
-from quack_core.lib.errors import QuackFileExistsError, QuackIOError
+from quack_core.core.errors import QuackFileExistsError, QuackIOError
 from quack_core.core.fs._operations import FileSystemOperations
 
 

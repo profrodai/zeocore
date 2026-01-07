@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_resolvers.py, test_service.py, test_utils.py
 # exports: TestProjectDirectory, TestProjectContext, TestContentContext
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -13,7 +13,7 @@ Tests for project context models.
 
 from pathlib import Path
 
-from quack_core.lib.paths._internal.context import (
+from quack_core.core.paths._internal.context import (
     ContentContext,
     ProjectContext,
     ProjectDirectory,

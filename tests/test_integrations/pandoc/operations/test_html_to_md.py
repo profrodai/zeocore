@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_md_to_docx.py, test_utils.py, test_utils_fix.py
 # exports: test_post_process_markdown, test_convert_html_to_markdown_success, test_convert_html_to_markdown_validation_error, test_convert_html_to_markdown_conversion_failure, test_convert_html_to_markdown_validation_failure, test_validate_conversion_html_to_md, test_html_to_md_validate_input_success, test_html_to_md_validate_input_file_not_found (+7 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -28,7 +28,7 @@ from quack_core.integrations.pandoc.operations.html_to_md import (
     post_process_markdown,
     validate_html_conversion,
 )
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 # Import patched utilities to avoid DataResult validation errors
 from .test_utils_fix import (

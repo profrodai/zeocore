@@ -5,7 +5,7 @@
 # neighbors: __init__.py, html_to_md.py, md_to_docx.py
 # exports: verify_pandoc, prepare_pandoc_args, validate_html_structure, validate_docx_structure, safe_convert_to_int, get_size_str_wrapper, check_file_size, check_conversion_ratio (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -23,8 +23,8 @@ from typing import Any
 
 from quack_core.integrations.pandoc.config import PandocConfig
 from quack_core.integrations.pandoc.models import ConversionMetrics, FileInfo
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 

@@ -4,7 +4,7 @@
 # neighbors: __init__.py
 # exports: SampleFilePlugin, SamplePathPlugin, SampleConfigProvider, TestIntegration
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -18,10 +18,10 @@ import pytest
 import yaml
 from quack_core.config.loader import load_config
 from quack_core.config.models import QuackConfig
-from quack_core.lib.errors import QuackError
+from quack_core.core.errors import QuackError
 from quack_core.core.fs.service import FileSystemService
-from quack_core.lib.paths import PathResolver
-from quack_core.lib.paths import service as paths
+from quack_core.core.paths import PathResolver
+from quack_core.core.paths import service as paths
 from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ProviderPluginProtocol,

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py
 # exports: GoogleDriveService
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -26,13 +26,13 @@ from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.auth import GoogleAuthProvider
 from quack_core.integrations.google.config import GoogleConfigProvider
 from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
-from quack_core.lib.errors import (
+from quack_core.core.errors import (
     QuackApiError,
     QuackBaseAuthError,
     QuackIntegrationError,
 )
 from quack_core.core.fs.service import standalone
-from quack_core.lib.paths import service as paths_service
+from quack_core.core.paths import service as paths_service
 
 NoneType = type(None)
 T = TypeVar("T")  # Generic type for result content

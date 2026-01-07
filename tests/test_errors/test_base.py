@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_handlers.py
 # exports: TestQuackError, TestQuackIOError, TestSpecificErrors, TestWrapIOErrors
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-from quack_core.lib.errors import (
+from quack_core.core.errors import (
     QuackBaseAuthError,
     QuackConfigurationError,
     QuackError,

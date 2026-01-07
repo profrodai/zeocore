@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, protocol.py
 # exports: ToolContext
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 
@@ -21,7 +21,7 @@ from pathlib import Path
 from types import MappingProxyType
 from pydantic import BaseModel, ConfigDict, Field, field_validator, field_serializer
 
-from quack_core.lib.serialization import normalize_for_json
+from quack_core.core.serialization import normalize_for_json
 
 
 class ToolContext(BaseModel):
@@ -146,7 +146,7 @@ class ToolContext(BaseModel):
             raise TypeError(
                 f"ToolContext metadata validation failed: {e}. "
                 f"Metadata must be JSON-serializable. "
-                f"See quack_core.lib.serialization.normalize_for_json for details."
+                f"See quack_core.core.serialization.normalize_for_json for details."
             ) from e
 
         # Return as immutable

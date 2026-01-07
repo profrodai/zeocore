@@ -5,7 +5,7 @@
 # neighbors: __init__.py, utils.py, context.py
 # exports: PathResolver
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -18,11 +18,11 @@ It is an internal dependency of the public PathService.
 from os import getcwd
 from os import path as ospath
 
-from quack_core.lib.errors import QuackFileNotFoundError, wrap_io_errors
+from quack_core.core.errors import QuackFileNotFoundError, wrap_io_errors
 from quack_core.core.fs.service import standalone
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
-from quack_core.lib.paths.models import ContentContext, ProjectContext
-from quack_core.lib.paths._internal.utils import (
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.paths.models import ContentContext, ProjectContext
+from quack_core.core.paths._internal.utils import (
     _find_nearest_directory,
     _find_project_root,
     _normalize_path_param,

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, path_utils.py
 # exports: PathResult, StringResult, ContextResult
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -15,7 +15,7 @@ This module defines result models for path resolution operations.
 """
 
 from pydantic import BaseModel
-from quack_core.lib.paths.models import ContentContext, ProjectContext
+from quack_core.core.paths.models import ContentContext, ProjectContext
 
 
 class PathResult(BaseModel):

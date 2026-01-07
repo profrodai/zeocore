@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_drive.py, test_drive_models.py, test_drive_service_delete.py, test_drive_service_download.py (+6 more)
 # exports: TestGoogleDriveServiceFiles
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -16,9 +16,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from quack_core.integrations.google.drive.service import GoogleDriveService
-from quack_core.lib.errors import QuackFileNotFoundError
+from quack_core.core.errors import QuackFileNotFoundError
 from quack_core.core.fs import FileInfoResult
-from quack_core.lib.paths.api.public.results import PathResult
+from quack_core.core.paths.api.public.results import PathResult
 
 
 class TestGoogleDriveServiceFiles:

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_context.py, test_service.py, test_utils.py
 # exports: TestPathResolver
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -17,8 +17,8 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.lib.errors import QuackFileNotFoundError
-from quack_core.lib.paths import PathResolver
+from quack_core.core.errors import QuackFileNotFoundError
+from quack_core.core.paths import PathResolver
 
 
 class TestPathResolver:
@@ -32,7 +32,7 @@ class TestPathResolver:
 
     def test_get_project_root(self, mock_project_structure: Path) -> None:
         """Test finding a project root based on marker files."""
-        from quack_core.lib.paths import service as paths
+        from quack_core.core.paths import service as paths
 
         # Test finding from project root
         root_result = paths.get_project_root(str(mock_project_structure))
@@ -147,7 +147,7 @@ class TestPathResolver:
 
     def test_service_resolve_project_path(self, mock_project_structure: Path) -> None:
         """Test the public service.resolve_project_path method with error handling."""
-        from quack_core.lib.paths import service as paths
+        from quack_core.core.paths import service as paths
 
         # IMPORTANT: We need to handle the case where 'paths' is mocked (lambda)
         # vs when it is the real module.

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
 # exports: setup_integration_mocks, test_pandoc_integration_initialization, test_pandoc_integration_initialize_success, test_pandoc_integration_initialize_failure, test_pandoc_integration_html_to_markdown, test_pandoc_integration_markdown_to_docx, test_pandoc_integration_convert_directory, test_pandoc_integration_not_initialized (+5 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -22,7 +22,7 @@ from quack_core.integrations.core.protocols import IntegrationProtocol
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc import create_integration
 from quack_core.integrations.pandoc.service import PandocIntegration
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 # --- Shared Test Fixtures ---
 

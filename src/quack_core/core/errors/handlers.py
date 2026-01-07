@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, integration.py
 # exports: ErrorHandler, handle_errors
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -25,7 +25,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.traceback import Traceback
 
-from quack_core.lib.errors.base import QuackError
+from quack_core.core.errors.base import QuackError
 
 T = TypeVar("T")
 

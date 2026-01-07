@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # exports: fs_stub, test_verify_pandoc_success, test_verify_pandoc_import_error, test_prepare_pandoc_args_defaults, test_util_get_file_info_success, test_util_get_file_info_not_found, test_post_process_markdown, test_validate_html_structure_valid (+13 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 import os
@@ -36,7 +36,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     verify_pandoc,
 )
 from quack_core.integrations.pandoc.service import PandocIntegration
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 
 # Fixtures for monkeypatching filesystem service
@@ -283,7 +283,7 @@ def test_pandoc_integration_is_available(monkeypatch):
 
 def test_pandoc_integration_not_available(monkeypatch):
     import quack_core.integrations.pandoc.service as service_mod
-    from quack_core.lib.errors import QuackIntegrationError
+    from quack_core.core.errors import QuackIntegrationError
     monkeypatch.setattr(
         service_mod,
         'verify_pandoc',

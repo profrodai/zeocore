@@ -5,7 +5,7 @@
 # neighbors: __init__.py, config.py, serialization.py
 # exports: GoogleAuthProvider
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -24,7 +24,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from quack_core.integrations.core.base import BaseAuthProvider
 from quack_core.integrations.core.results import AuthResult
 from quack_core.integrations.google.serialization import serialize_credentials
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.core.fs.service import standalone
 
 

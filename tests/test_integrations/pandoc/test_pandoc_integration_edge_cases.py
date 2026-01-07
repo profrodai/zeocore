@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
 # exports: test_integration_with_custom_config_path, test_integration_with_custom_output_dir, test_integration_initialize_with_invalid_config, test_integration_directory_conversion_edge_cases, test_conversion_metrics_initialization, test_file_info_initialization, test_conversion_task_initialization, test_conversion_details_initialization (+9 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -41,7 +41,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     verify_pandoc,
 )
 from quack_core.integrations.pandoc.service import PandocIntegration
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 
 def test_integration_with_custom_config_path():
@@ -62,7 +62,7 @@ def test_integration_with_custom_config_path():
         return_value=SimpleNamespace(success=True)
     )
 
-    with patch('quack_core.lib.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
+    with patch('quack_core.core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.PandocConfigProvider',
                   return_value=mock_config_provider), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
@@ -97,7 +97,7 @@ def test_integration_with_custom_output_dir():
     # Ensure provider has expand_user_vars logic if it needs it
     mock_provider.expand_user_vars.side_effect = lambda x: x
 
-    with patch('quack_core.lib.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
+    with patch('quack_core.core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"):
         integration = PandocIntegration(output_dir="/custom/output")
@@ -167,7 +167,7 @@ def test_integration_directory_conversion_edge_cases(mock_fs):
     )
     integration.fs_service = mock_fs_service
 
-    with patch('quack_core.lib.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
+    with patch('quack_core.core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"):
         result = integration.initialize()

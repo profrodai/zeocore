@@ -5,7 +5,7 @@
 # neighbors: __init__.py, download.py, folder.py, list_files.py, permissions.py
 # exports: initialize_drive_service, resolve_file_details, upload_file
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -28,9 +28,9 @@ from quack_core.integrations.google.drive.protocols import (
     GoogleCredentials,
 )
 from quack_core.integrations.google.drive.utils.api import execute_api_request
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
 from quack_core.core.fs.service import standalone
-from quack_core.lib.paths import service as paths_service
+from quack_core.core.paths import service as paths_service
 
 
 def initialize_drive_service(credentials: GoogleCredentials) -> DriveService:

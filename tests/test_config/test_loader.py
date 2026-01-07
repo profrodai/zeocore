@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_models.py, test_utils.py
 # exports: TestConfigLoader
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -29,7 +29,7 @@ from quack_core.config.loader import (
     merge_configs,
 )
 from quack_core.config.models import QuackConfig
-from quack_core.lib.errors import QuackConfigurationError
+from quack_core.core.errors import QuackConfigurationError
 
 
 class TestConfigLoader:

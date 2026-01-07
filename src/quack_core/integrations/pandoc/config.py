@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, protocols.py, converter.py
 # exports: PandocOptions, ValidationConfig, RetryConfig, MetricsConfig, PandocConfig, PandocConfigProvider
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -26,7 +26,7 @@ from typing import Any, ClassVar
 from pydantic import BaseModel, Field, field_validator
 from quack_core.config.models import LoggingConfig
 from quack_core.integrations.core.base import BaseConfigProvider
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 
 logger = get_logger(__name__)
 

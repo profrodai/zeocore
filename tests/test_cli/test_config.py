@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_context.py, test_error.py, test_formatting.py (+5 more)
 # exports: TestFindProjectRoot, TestLoadConfig, TestMergeCliOverrides
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -21,7 +21,7 @@ from quack_core.interfaces.cli.legacy.config import (
     find_project_root,
     load_config,
 )
-from quack_core.lib.errors import QuackConfigurationError, QuackFileNotFoundError
+from quack_core.core.errors import QuackConfigurationError, QuackFileNotFoundError
 
 from .mocks import MockConfig
 

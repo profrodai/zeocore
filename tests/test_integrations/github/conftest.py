@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_api.py, test_auth.py, test_client.py, test_config.py, test_github_init.py (+5 more)
 # exports: mock_environment_token, mock_http_client, mock_rate_limited_client, patch_integration_registry, patch_registry_register, github_credentials_file, github_config_file, mock_github_auth_provider (+13 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """Shared fixtures for GitHub integration tests."""
@@ -34,7 +34,7 @@ from quack_core.integrations.github.models import (
     PullRequestStatus,
 )
 from quack_core.integrations.github.service import GitHubIntegration
-from quack_core.lib.errors import QuackQuotaExceededError
+from quack_core.core.errors import QuackQuotaExceededError
 
 # ------------------------------
 # Environment & HTTP Client Fixtures

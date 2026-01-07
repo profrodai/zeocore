@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, registry.py
 # exports: PluginInfo, PluginEntryPoint, LoadResult, PluginLoader, list_available_entry_points, load_enabled_entry_points, load_enabled_modules
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 
@@ -33,8 +33,8 @@ import inspect
 from importlib.metadata import entry_points
 
 from pydantic import BaseModel, Field, ValidationError
-from quack_core.lib.errors import QuackPluginError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackPluginError
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol
 
 

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, config.py, converter.py
 # exports: PandocIntegration, create_integration
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """Pandoc Integration Service
@@ -24,7 +24,7 @@ from quack_core.integrations.pandoc.config import PandocConfig, PandocConfigProv
 from quack_core.integrations.pandoc.converter import DocumentConverter
 from quack_core.integrations.pandoc.operations.utils import verify_pandoc
 from quack_core.core.fs.service import FileSystemService
-from quack_core.lib.paths.service import PathService
+from quack_core.core.paths.service import PathService
 
 logger = logging.getLogger(__name__)
 

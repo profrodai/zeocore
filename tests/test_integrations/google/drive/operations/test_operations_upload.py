@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_operations_download.py, test_operations_folder.py, test_operations_list_files.py, test_operations_permissions.py
 # exports: TestDriveOperationsUpload
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -17,8 +17,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.operations import upload
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
-from quack_core.lib.paths.api.public.results import PathResult
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.paths.api.public.results import PathResult
 
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,

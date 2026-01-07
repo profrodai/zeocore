@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_mail.py
 # exports: TestGoogleMailService
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -19,7 +19,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.mail.service import GoogleMailService
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 from tests.test_integrations.google.mail.mocks import (
     create_error_gmail_service,

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_config.py, test_config_provider.py, test_integration.py, test_llms.py, test_models.py (+3 more)
 # exports: TestFallbackConfig, TestProviderStatus, TestFallbackLLMClient
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -24,7 +24,7 @@ from quack_core.integrations.llms.fallback import (
     ProviderStatus,
 )
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
 
 from tests.test_integrations.llms.mocks.clients import MockClient
 

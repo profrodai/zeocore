@@ -5,7 +5,7 @@
 # neighbors: __init__.py, download.py, folder.py, list_files.py, upload.py
 # exports: set_file_permissions, get_sharing_link
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -23,7 +23,7 @@ from quack_core.integrations.google.drive.protocols import DriveService
 
 # Import the api.api module itself, not just the function
 from quack_core.integrations.google.drive.utils import api
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 def set_file_permissions(

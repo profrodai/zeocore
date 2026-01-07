@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py
 # exports: PathsPlugin, QuackPathsPlugin, create_plugin
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 
@@ -20,9 +20,9 @@ from pathlib import Path
 from typing import Protocol
 
 from quack_core.core.fs import DataResult, OperationResult
-from quack_core.lib.paths.models import ContentContext, ProjectContext
-from quack_core.lib.paths._internal.resolver import PathResolver
-from quack_core.lib.paths._internal.utils import _normalize_path_param
+from quack_core.core.paths.models import ContentContext, ProjectContext
+from quack_core.core.paths._internal.resolver import PathResolver
+from quack_core.core.paths._internal.utils import _normalize_path_param
 
 
 class PathsPlugin(Protocol):

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_anthropic.py, test_base.py, test_clients.py, test_mock.py, test_ollama.py
 # exports: TestOpenAIClient
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from quack_core.integrations.llms.clients.openai import OpenAIClient
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
 
 from tests.test_integrations.llms.mocks.openai import (
     MockOpenAIClient,

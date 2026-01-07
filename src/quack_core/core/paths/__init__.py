@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, plugin.py
 # exports: PathService, get_path_service, ProjectContext, ContentContext, ProjectDirectory, PathResult, StringResult, ContextResult
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 
@@ -19,17 +19,17 @@ NOTE: This module does NOT expose low-level path manipulation (join/split).
 Use `quack_core.core.fs` for filesystem primitives.
 """
 
-from quack_core.lib.paths.api.public.results import (
+from quack_core.core.paths.api.public.results import (
     ContextResult,
     PathResult,
     StringResult,
 )
-from quack_core.lib.paths.models import (
+from quack_core.core.paths.models import (
     ContentContext,
     ProjectContext,
     ProjectDirectory,
 )
-from quack_core.lib.paths.service import PathService
+from quack_core.core.paths.service import PathService
 
 # Lazy singleton
 _service: PathService | None = None

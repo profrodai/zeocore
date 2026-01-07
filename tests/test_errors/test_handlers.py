@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_base.py
 # exports: TestErrorHandler, TestHandleErrorsDecorator, TestGlobalErrorHandler
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -16,8 +16,8 @@ import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.lib.errors import QuackError, QuackFileNotFoundError
-from quack_core.lib.errors.handlers import (
+from quack_core.core.errors import QuackError, QuackFileNotFoundError
+from quack_core.core.errors.handlers import (
     ErrorHandler,
     global_error_handler,
     handle_errors,
@@ -137,7 +137,7 @@ class TestHandleErrorsDecorator:
         mock_console = MagicMock()
 
         with patch(
-            "quack_core.lib.errors.handlers.ErrorHandler",
+            "quack_core.core.errors.handlers.ErrorHandler",
             return_value=MagicMock(console=mock_console),
         ):
 
@@ -154,7 +154,7 @@ class TestHandleErrorsDecorator:
         mock_console = MagicMock()
 
         with patch(
-            "quack_core.lib.errors.handlers.ErrorHandler",
+            "quack_core.core.errors.handlers.ErrorHandler",
             return_value=MagicMock(console=mock_console),
         ):
 
@@ -170,7 +170,7 @@ class TestHandleErrorsDecorator:
         """Test using a custom title in the decorator."""
         mock_handler = MagicMock()
 
-        with patch("quack_core.lib.errors.handlers.ErrorHandler", return_value=mock_handler):
+        with patch("quack_core.core.errors.handlers.ErrorHandler", return_value=mock_handler):
 
             @handle_errors(title="Custom Error Title")
             def function_with_error() -> None:
@@ -187,7 +187,7 @@ class TestHandleErrorsDecorator:
         """Test using an exit code in the decorator."""
         mock_handler = MagicMock()
 
-        with patch("quack_core.lib.errors.handlers.ErrorHandler", return_value=mock_handler):
+        with patch("quack_core.core.errors.handlers.ErrorHandler", return_value=mock_handler):
 
             @handle_errors(exit_code=2)
             def function_with_error() -> None:

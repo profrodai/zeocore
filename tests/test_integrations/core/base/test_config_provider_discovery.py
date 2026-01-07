@@ -4,7 +4,7 @@
 # neighbors: __init__.py, auth_provider_impl.py, config_provider_impl.py, integration_service_impl.py, test_auth_provider.py, test_base.py (+3 more)
 # exports: TestBaseConfigProviderDiscovery
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -16,7 +16,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.lib.errors import QuackConfigurationError, QuackFileNotFoundError
+from quack_core.core.errors import QuackConfigurationError, QuackFileNotFoundError
 
 from .config_provider_impl import (
     MockConfigProvider,
@@ -94,7 +94,7 @@ class TestBaseConfigProviderDiscovery:
 
                     # Patch paths.service to avoid using get_project_root which is missing
                     with patch(
-                            "quack_core.lib.paths.service.get_project_root",
+                            "quack_core.core.paths.service.get_project_root",
                             create=True) as mock_get_root:
                         # Just ensure it doesn't get called here
                         result = provider._find_config_file()
@@ -104,7 +104,7 @@ class TestBaseConfigProviderDiscovery:
                         mock_get_root.assert_not_called()
 
         # Test with default locations
-        with patch("quack_core.lib.paths.service.get_project_root",
+        with patch("quack_core.core.paths.service.get_project_root",
                    create=True) as mock_get_root:
             mock_get_root.side_effect = QuackFileNotFoundError("mock error")
 
@@ -132,7 +132,7 @@ class TestBaseConfigProviderDiscovery:
                         assert result == "/default/config.yaml"
 
         # Test with project root detection
-        with patch("quack_core.lib.paths.service.get_project_root",
+        with patch("quack_core.core.paths.service.get_project_root",
                    create=True) as mock_get_root:
             mock_get_root.return_value = Path("/project")
 
@@ -151,7 +151,7 @@ class TestBaseConfigProviderDiscovery:
                         assert result == "/project/quack_config.yaml"
 
         # Test when no config file can be found
-        with patch("quack_core.lib.paths.service.get_project_root",
+        with patch("quack_core.core.paths.service.get_project_root",
                    create=True) as mock_get_root:
             mock_get_root.side_effect = QuackFileNotFoundError("/nonexistent")
 

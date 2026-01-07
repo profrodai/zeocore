@@ -5,7 +5,7 @@
 # neighbors: __init__.py, download.py, list_files.py, permissions.py, upload.py
 # exports: create_folder, delete_file
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -23,7 +23,7 @@ from quack_core.integrations.google.drive.operations.permissions import (
 )
 from quack_core.integrations.google.drive.protocols import DriveService
 from quack_core.integrations.google.drive.utils.api import execute_api_request
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 def create_folder(

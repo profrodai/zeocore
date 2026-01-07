@@ -5,7 +5,7 @@
 # neighbors: __init__.py, health.py, jobs.py
 # exports: list_operations
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 
@@ -24,7 +24,7 @@ from quack_core.adapters.http.dependencies import (
     get_registry,
     require_auth,
 )
-from quack_core.lib.registry import OperationRegistry, invoke_operation
+from quack_core.core.registry import OperationRegistry, invoke_operation
 
 router = APIRouter()
 

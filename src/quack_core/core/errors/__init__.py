@@ -5,7 +5,7 @@
 # neighbors: base.py, handlers.py, integration.py
 # exports: QuackError, QuackIOError, QuackFileNotFoundError, QuackPermissionError, QuackFileExistsError, QuackValidationError, QuackFormatError, QuackConfigurationError (+7 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -15,7 +15,7 @@ This module provides custom exception classes for QuackCore, with helpful contex
 and error messages for better diagnostics and troubleshooting.
 """
 
-from quack_core.lib.errors.base import (
+from quack_core.core.errors.base import (
     QuackBaseAuthError,
     QuackConfigurationError,
     QuackError,
@@ -28,7 +28,7 @@ from quack_core.lib.errors.base import (
     QuackValidationError,
     wrap_io_errors,
 )
-from quack_core.lib.errors.integration import (
+from quack_core.core.errors.integration import (
     QuackApiError,
     QuackAuthenticationError,
     QuackIntegrationError,

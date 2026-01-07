@@ -5,11 +5,11 @@
 # neighbors: __init__.py, models.py, plugin.py
 # exports: PromptService
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 from quack_core.prompt._internal.enhancer import enhance_with_llm_safe
 from quack_core.prompt._internal.registry import StrategyRegistry
 from quack_core.prompt._internal.selector import select_best_strategy

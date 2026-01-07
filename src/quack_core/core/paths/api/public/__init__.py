@@ -5,7 +5,7 @@
 # neighbors: results.py, path_utils.py
 # exports: PathResult, ContextResult
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -15,7 +15,7 @@ This package provides the public API for the paths module,
 including result types for path operations.
 """
 
-from quack_core.lib.paths.api.public.results import ContextResult, PathResult
+from quack_core.core.paths.api.public.results import ContextResult, PathResult
 
 __all__ = [
     "PathResult",

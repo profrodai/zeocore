@@ -4,7 +4,7 @@
 # role: api
 # exports: PathResult, ContextResult
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -14,7 +14,7 @@ This package provides the API for the paths module,
 including both public and internal interfaces.
 """
 
-from quack_core.lib.paths.api.public import ContextResult, PathResult
+from quack_core.core.paths.api.public import ContextResult, PathResult
 
 __all__ = [
     "PathResult",

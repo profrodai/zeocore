@@ -5,7 +5,7 @@
 # neighbors: __init__.py, operations.py, health.py
 # exports: start_job, job_status
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 
@@ -29,8 +29,8 @@ from quack_core.adapters.http.dependencies import (
 )
 from quack_core.adapters.http.models import JobRequest, JobResponse
 from quack_core.adapters.http.models import JobStatus as JobStatusModel
-from quack_core.lib.jobs import JobData, JobRunner, JobStatus, JobStore
-from quack_core.lib.registry import OperationRegistry
+from quack_core.core.jobs import JobData, JobRunner, JobStatus, JobStore
+from quack_core.core.registry import OperationRegistry
 
 router = APIRouter()
 

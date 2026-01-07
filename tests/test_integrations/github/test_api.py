@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_auth.py, test_client.py, test_config.py, test_github_init.py (+5 more)
 # exports: TestApiUtils, mock_session
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """Tests for GitHub API request utilities."""
@@ -15,7 +15,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 from quack_core.integrations.github.utils.api import make_request
-from quack_core.lib.errors import (
+from quack_core.core.errors import (
     QuackApiError,
     QuackAuthenticationError,
     QuackQuotaExceededError,

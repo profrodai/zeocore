@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, handlers.py
 # exports: QuackIntegrationError, QuackAuthenticationError, QuackApiError, QuackQuotaExceededError
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 
@@ -13,7 +13,7 @@
 Integration-related error classes for quack_core.
 """
 
-from quack_core.lib.errors.base import QuackError
+from quack_core.core.errors.base import QuackError
 
 
 class QuackIntegrationError(QuackError):

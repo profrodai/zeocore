@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py
 # exports: TestPathUtilities, TestFileUtilities
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -21,7 +21,7 @@ from unittest.mock import patch
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-from quack_core.lib.errors import (
+from quack_core.core.errors import (
     QuackFileExistsError,
     QuackFileNotFoundError,
     QuackIOError,

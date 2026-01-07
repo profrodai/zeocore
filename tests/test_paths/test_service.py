@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_context.py, test_resolvers.py, test_utils.py
 # exports: path_service, test_get_project_root, test_get_project_root_failure, test_resolve_project_path, test_detect_project_context, test_detect_content_context, test_get_known_directory, test_get_module_path (+9 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -15,8 +15,8 @@ import os
 from unittest.mock import patch
 
 import pytest
-from quack_core.lib.paths.api.public.results import ContextResult, PathResult
-from quack_core.lib.paths.service import PathService
+from quack_core.core.paths.api.public.results import ContextResult, PathResult
+from quack_core.core.paths.service import PathService
 
 
 # Create a fixture for the service
@@ -110,7 +110,7 @@ def test_get_known_directory(tmp_path, path_service):
 
     with patch.object(path_service, "detect_project_context") as mock_detect:
         # Mock the detect_project_context method to return a context with a known directory
-        from quack_core.lib.paths._internal.context import ProjectContext
+        from quack_core.core.paths._internal.context import ProjectContext
 
         context = ProjectContext(root_dir=str(tmp_path))
         src_dir = str(tmp_path / "src")
@@ -141,7 +141,7 @@ def test_get_module_path(tmp_path, path_service):
 
     with patch.object(path_service, "detect_project_context") as mock_detect:
         # Mock the detect_project_context method to return a context with a source directory
-        from quack_core.lib.paths._internal.context import ProjectContext
+        from quack_core.core.paths._internal.context import ProjectContext
 
         context = ProjectContext(root_dir=str(tmp_path))
         context._add_directory("src", str(src_dir), is_source=True)
@@ -190,7 +190,7 @@ def test_get_content_dir(tmp_path, path_service):
 
     with patch.object(path_service, "detect_project_context") as mock_detect:
         # Mock the detect_project_context method to return a context with a source directory
-        from quack_core.lib.paths._internal.context import ProjectContext
+        from quack_core.core.paths._internal.context import ProjectContext
 
         context = ProjectContext(root_dir=str(tmp_path))
         context._add_directory("src", str(src_dir), is_source=True)
@@ -216,7 +216,7 @@ def test_list_known_directories(tmp_path, path_service):
 
     with patch.object(path_service, "detect_project_context") as mock_detect:
         # Mock the detect_project_context method to return a context with known directories
-        from quack_core.lib.paths._internal.context import ProjectContext
+        from quack_core.core.paths._internal.context import ProjectContext
 
         context = ProjectContext(root_dir=str(tmp_path))
         context._add_directory("src", str(tmp_path / "src"), is_source=True)
@@ -257,7 +257,7 @@ def test_resolve_content_module(tmp_path, path_service):
 
     with patch.object(path_service, "detect_content_context") as mock_detect:
         # Mock the detect_content_context method to return a context with a source directory
-        from quack_core.lib.paths._internal.context import ContentContext
+        from quack_core.core.paths._internal.context import ContentContext
 
         context = ContentContext(root_dir=str(tmp_path))
         context._add_directory("src", str(src_dir), is_source=True)
@@ -265,7 +265,7 @@ def test_resolve_content_module(tmp_path, path_service):
 
         # Mock the _infer_module_from_path function
         with patch(
-            "quack_core.lib.paths._internal.utils._infer_module_from_path",
+            "quack_core.core.paths._internal.utils._infer_module_from_path",
             return_value="tutorials.sample.intro",
         ):
             # Test content module resolution

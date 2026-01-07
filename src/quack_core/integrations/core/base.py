@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, registry.py, results.py
 # exports: BaseAuthProvider, BaseConfigProvider, BaseIntegrationService
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -30,8 +30,8 @@ from quack_core.integrations.core.results import (
     ConfigResult,
     IntegrationResult,
 )
-from quack_core.lib.errors import QuackConfigurationError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackConfigurationError
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 
 
 class BaseAuthProvider(ABC, AuthProviderProtocol):
@@ -168,7 +168,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
         # 2. Determine Project Root
         project_root = None
         try:
-            from quack_core.lib.paths import service as paths
+            from quack_core.core.paths import service as paths
             if hasattr(paths, "get_project_root"):
                 root_result = paths.get_project_root()
                 if root_result.success:

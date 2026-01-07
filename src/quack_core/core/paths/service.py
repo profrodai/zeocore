@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, plugin.py
 # exports: PathService
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -20,15 +20,15 @@ from pathlib import Path
 from typing import Any
 
 from quack_core.core.fs import DataResult, OperationResult
-from quack_core.lib.logging import get_logger
-from quack_core.lib.paths._internal.resolver import PathResolver
-from quack_core.lib.paths._internal.utils import (
+from quack_core.core.logging import get_logger
+from quack_core.core.paths._internal.resolver import PathResolver
+from quack_core.core.paths._internal.utils import (
     _find_nearest_directory,
     _infer_module_from_path,
     _resolve_relative_to_project,
     _normalize_path_param,
 )
-from quack_core.lib.paths.api.public.results import ContextResult, PathResult, \
+from quack_core.core.paths.api.public.results import ContextResult, PathResult, \
     StringResult
 
 

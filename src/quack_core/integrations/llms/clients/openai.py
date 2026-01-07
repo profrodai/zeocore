@@ -5,7 +5,7 @@
 # neighbors: __init__.py, anthropic.py, base.py, mock.py, ollama.py
 # exports: OpenAIClient
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -23,7 +23,7 @@ from typing import Any
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms.clients.base import LLMClient
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
 
 
 class OpenAIClient(LLMClient):

@@ -5,20 +5,20 @@
 # neighbors: __init__.py, utils.py, resolver.py
 # exports: ProjectDirectory, ProjectContext, ContentContext, PathInfo
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
 DEPRECATED.
 
-The context models have been moved to `quack_core.lib.paths.models` to separate
+The context models have been moved to `quack_core.core.paths.models` to separate
 public types from internal implementation details.
 
 This file is a stub to prevent immediate import errors during refactoring but
 should be removed in the next cleanup cycle.
 """
 
-from quack_core.lib.paths.models import (
+from quack_core.core.paths.models import (
     ContentContext,
     PathInfo,
     ProjectContext,

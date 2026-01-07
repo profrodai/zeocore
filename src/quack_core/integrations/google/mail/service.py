@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, config.py
 # exports: GoogleMailService
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 import logging
@@ -23,9 +23,9 @@ from quack_core.integrations.google.mail.protocols import (
     GmailService,
     GoogleCredentials,
 )
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.core.fs import service as fs
-from quack_core.lib.paths import service as paths
+from quack_core.core.paths import service as paths
 
 
 class GoogleMailService(BaseIntegrationService):

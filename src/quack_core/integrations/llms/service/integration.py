@@ -5,7 +5,7 @@
 # neighbors: __init__.py, operations.py, dependencies.py, initialization.py
 # exports: LLMIntegration
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -23,8 +23,8 @@ from quack_core.integrations.llms.clients import LLMClient
 from quack_core.integrations.llms.config import LLMConfigProvider
 from quack_core.integrations.llms.fallback import FallbackConfig
 from quack_core.integrations.llms.service.dependencies import check_llm_dependencies
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.logging import LOG_LEVELS, LogLevel
 
 
 class LLMIntegration(BaseIntegrationService):

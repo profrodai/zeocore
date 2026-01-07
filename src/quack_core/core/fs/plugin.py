@@ -1,15 +1,18 @@
-"""
-Plugin interface for the filesystem module.
-
-This module defines the plugin interface for the filesystem module,
-allowing QuackCore to expose filesystem functionality to other modules.
-"""
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/plugin.py
+# module: quack_core.core.fs.plugin
+# role: plugin
+# neighbors: __init__.py, protocols.py, results.py
+# exports: FSPlugin, QuackFSPlugin, create_plugin
+# git_branch: feat/9-make-setup-work
+# git_commit: 26dbe353
+# === QV-LLM:END ===
 
 from pathlib import Path
 from typing import Protocol, TypeVar
 
-from quack_core.lib.fs.results import DataResult, OperationResult, ReadResult, WriteResult
-from quack_core.lib.fs.service import FileSystemService, get_service
+from quack_core.core.fs.results import DataResult, OperationResult, ReadResult, WriteResult
+from quack_core.core.fs.service import FileSystemService, get_service
 
 T = TypeVar("T")
 

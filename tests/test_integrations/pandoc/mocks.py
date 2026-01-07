@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test-pandoc-integration-full.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # exports: fs_stub, mock_pypandoc, mock_paths_service, mock_bs4, mock_docx
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 import os
@@ -95,13 +95,13 @@ def mock_paths_service(monkeypatch):
     mock.resolve_project_path = lambda path: path  # Just return the path unchanged
 
     # Create a temp module if it doesn't exist
-    if 'quack_core.lib.paths' not in pytest.importorskip("sys").modules:
+    if 'quack_core.core.paths' not in pytest.importorskip("sys").modules:
         import types
-        temp_module = types.ModuleType('quack_core.lib.paths')
-        pytest.importorskip("sys").modules['quack_core.lib.paths'] = temp_module
+        temp_module = types.ModuleType('quack_core.core.paths')
+        pytest.importorskip("sys").modules['quack_core.core.paths'] = temp_module
         temp_module.service = mock
     else:
-        monkeypatch.setattr('quack_core.lib.paths.service', mock)
+        monkeypatch.setattr('quack_core.core.paths.service', mock)
 
     return mock
 

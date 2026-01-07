@@ -4,7 +4,7 @@
 # neighbors: __init__.py
 # exports: EchoRequest, EchoResponse, TestAppBootstrap, TestAuthentication, TestOperationsRegistry, TestJobExecution, TestIdempotency, TestDirectOperationInvocation (+6 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 
@@ -22,7 +22,7 @@ from fastapi.testclient import TestClient
 from pydantic import BaseModel
 from quack_core.adapters.http.app import create_app
 from quack_core.adapters.http.config import HttpAdapterConfig
-from quack_core.lib.registry import get_registry, reset_registry
+from quack_core.core.registry import get_registry, reset_registry
 
 
 class EchoRequest(BaseModel):
@@ -76,7 +76,7 @@ def config():
 @pytest.fixture
 def client(config, registry):
     """Provide test client with injected dependencies."""
-    from quack_core.lib.jobs import InMemoryJobStore, ThreadPoolJobRunner
+    from quack_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
 
     # Create test store and runner
     store = InMemoryJobStore()

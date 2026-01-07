@@ -2,12 +2,11 @@
 # path: quack-core/src/quack_core/core/fs/api/__init__.py
 # module: quack_core.core.fs.api.__init__
 # role: api
-# exports: atomic_write, compute_checksum, copy_safely, create_temp_directory, create_temp_file, delete_safely, ensure_directory, expand_user_vars (+17 more)
+# exports: atomic_write, compute_checksum, copy_safely, create_temp_directory, create_temp_file, delete_safely, ensure_directory, expand_user_vars (+19 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
-# quack-core/src/quack_core/fs/api/__init__.py
 """
 Utility functions for filesystem _operations.
 
@@ -15,7 +14,7 @@ This module aggregates ONLY public helper functions for working with the filesys
 """
 
 # Re-export all public functions
-from quack_core.fs.api.public import (
+from quack_core.core.fs.api.public import (
     atomic_write,
     compute_checksum,
     copy_safely,
@@ -24,7 +23,6 @@ from quack_core.fs.api.public import (
     delete_safely,
     ensure_directory,
     expand_user_vars,
-    extract_path_from_result,
     extract_path_str,
     find_files_by_content,
     get_disk_usage,
@@ -41,10 +39,12 @@ from quack_core.fs.api.public import (
     normalize_path,
     safe_path_str,
     split_path,
+    coerce_path,
+    coerce_path_result,
+    coerce_path_str,
 )
 
 __all__ = [
-    # Re-export everything from public
     "atomic_write",
     "compute_checksum",
     "copy_safely",
@@ -67,7 +67,9 @@ __all__ = [
     "move_safely",
     "normalize_path",
     "split_path",
-    "extract_path_from_result",
     "extract_path_str",
     "safe_path_str",
+    "coerce_path",
+    "coerce_path_result",
+    "coerce_path_str",
 ]

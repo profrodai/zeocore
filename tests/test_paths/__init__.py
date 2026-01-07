@@ -3,11 +3,11 @@
 # role: tests
 # neighbors: conftest.py, test_context.py, test_resolvers.py, test_service.py, test_utils.py
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
-Test module for quack_core.lib.paths.
+Test module for quack_core.core.paths.
 
-This directory contains unit tests for the quack_core.lib.paths module.
+This directory contains unit tests for the quack_core.core.paths module.
 """
