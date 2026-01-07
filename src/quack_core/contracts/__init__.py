@@ -51,6 +51,7 @@ from quack_core.contracts.artifacts import (
     ToolInfo,
 )
 
+'''
 # Capability models
 from quack_core.contracts.capabilities import (
     # Demo (models only)
@@ -65,6 +66,8 @@ from quack_core.contracts.capabilities import (
     TranscriptionSegment,
     VideoRefRequest,
 )
+'''
+
 from quack_core.contracts.common import (
     ARTIFACT_SCHEMA_VERSION,
     # Versions
@@ -132,13 +135,13 @@ __all__ = [
 
     # --- Capabilities ---
     # Media
-    "TimeRange",
-    "SliceVideoRequest",
-    "SlicedClipData",
-    "SliceVideoResponse",
-    "TranscribeRequest",
-    "TranscriptionSegment",
-    "TranscribeResponse",
+    #"TimeRange",
+    #"SliceVideoRequest",
+    #"SlicedClipData",
+    #"SliceVideoResponse",
+    #"TranscribeRequest",
+    #"TranscriptionSegment",
+    #"TranscribeResponse",
     # Demo (models only, not implementations)
     "EchoRequest",
     "VideoRefRequest",

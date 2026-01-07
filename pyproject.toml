@@ -122,8 +122,8 @@ prompt = "quack_core.prompt.plugin:create_plugin"
 
 [project.entry-points."quack_core.integrations"]
 github = "quack_core.integrations.github:create_integration"
-google.mail = "quack_core.integrations.google.mail:create_integration"
-google.drive = "quack_core.integrations.google.drive:create_integration"
+"google.mail" = "quack_core.integrations.google.mail:create_integration"
+"google.drive" = "quack_core.integrations.google.drive:create_integration"
 pandoc = "quack_core.integrations.pandoc:create_integration"
 llms = "quack_core.integrations.llms:create_integration"
 

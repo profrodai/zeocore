@@ -21,6 +21,7 @@ from quack_core.contracts.capabilities.demo.models import (
     EchoRequest,
     VideoRefRequest,
 )
+'''
 from quack_core.contracts.capabilities.media import (
     SlicedClipData,
     SliceVideoRequest,
@@ -30,16 +31,16 @@ from quack_core.contracts.capabilities.media import (
     TranscribeResponse,
     TranscriptionSegment,
 )
-
+'''
 __all__ = [
     # Media
-    "TimeRange",
-    "SliceVideoRequest",
-    "SlicedClipData",
-    "SliceVideoResponse",
-    "TranscribeRequest",
-    "TranscriptionSegment",
-    "TranscribeResponse",
+    #"TimeRange",
+    #"SliceVideoRequest",
+    #"SlicedClipData",
+    #"SliceVideoResponse",
+    #"TranscribeRequest",
+    #"TranscriptionSegment",
+    #"TranscribeResponse",
     # Demo (models only)
     "EchoRequest",
     "VideoRefRequest",
