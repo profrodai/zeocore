@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/api/__init__.py
+# module: quack_core.core.fs.api.__init__
+# role: api
+# exports: atomic_write, compute_checksum, copy_safely, create_temp_directory, create_temp_file, delete_safely, ensure_directory, expand_user_vars (+17 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/api/__init__.py
 """
 Utility functions for filesystem _operations.

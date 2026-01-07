@@ -4,8 +4,8 @@
 # role: module
 # neighbors: service.py, models.py, protocols.py, config.py, auth.py, client.py
 # exports: GitHubIntegration, GitHubClient, GitHubAuthProvider, GitHubConfigProvider, GitHubIntegrationProtocol, GitHubRepo, GitHubUser, PullRequest (+2 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
 # === QV-LLM:END ===
 
 """GitHub integration for quack_core."""

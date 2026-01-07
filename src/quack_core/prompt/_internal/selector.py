@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, registry.py, enhancer.py
 # exports: select_best_strategy
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
 # === QV-LLM:END ===
 
 from typing import Any

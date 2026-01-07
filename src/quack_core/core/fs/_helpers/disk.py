@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_helpers/disk.py
+# module: quack_core.core.fs._helpers.disk
+# role: module
+# neighbors: __init__.py, checksums.py, common.py, comparison.py, file_info.py, file_ops.py (+4 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/_helpers/disk.py
 """
 Utility functions for disk _operations.

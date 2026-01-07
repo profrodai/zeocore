@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_mail.py, test_mail_service.py
 # exports: MockGmailRequest, MockGmailAttachmentsResource, MockGmailMessagesResource, MockGmailUsersResource, MockGmailService, MockGoogleCredentials, MockRequest, create_mock_gmail_service (+2 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
 # === QV-LLM:END ===
 
 """

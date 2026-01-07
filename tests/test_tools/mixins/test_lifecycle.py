@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_env_init.py, test_integration_enabled.py, test_output_handler.py
 # exports: TestQuackToolLifecycleMixin, TestQuackToolLifecycleMixinWithPytest, lifecycle_mixin
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
 # === QV-LLM:END ===
 
 """

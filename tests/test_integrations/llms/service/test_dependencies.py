@@ -3,8 +3,8 @@
 # role: service
 # neighbors: __init__.py, test_initialization.py, test_integration.py, test_operations.py
 # exports: TestDependencies
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
 # === QV-LLM:END ===
 
 from unittest.mock import MagicMock, patch

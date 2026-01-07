@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/paths/service.py
+# module: quack_core.core.paths.service
+# role: service
+# neighbors: __init__.py, plugin.py
+# exports: PathService
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/paths/service.py
 """
 Path service for quack_core.

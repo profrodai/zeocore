@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/api/public/file_info.py
+# module: quack_core.core.fs.api.public.file_info
+# role: api
+# neighbors: __init__.py, checksums.py, disk.py, file_ops.py, path_ops.py, path_utils.py (+2 more)
+# exports: get_file_type, get_file_size_str, get_file_timestamp, get_mime_type, is_file_locked
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/api/public/file_info.py
 """
 Public API for file information _operations.

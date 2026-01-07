@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_helpers/safe_ops.py
+# module: quack_core.core.fs._helpers.safe_ops
+# role: module
+# neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_info.py (+4 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/_helpers/safe_ops.py
 """
 Utility functions for safe file _operations (copy, move, delete).

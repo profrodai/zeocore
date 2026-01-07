@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/service/__init__.py
+# module: quack_core.core.fs.service.__init__
+# role: service
+# neighbors: base.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
+# exports: FileSystemService, create_service, service, get_service, read_text, write_text, read_binary, write_binary (+49 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/service/__init__.py
 """
 FileSystemService provides a high-level interface for filesystem operations.

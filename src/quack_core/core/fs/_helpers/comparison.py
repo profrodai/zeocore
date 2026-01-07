@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_helpers/comparison.py
+# module: quack_core.core.fs._helpers.comparison
+# role: module
+# neighbors: __init__.py, checksums.py, common.py, disk.py, file_info.py, file_ops.py (+4 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/_helpers/comparison.py
 """
 Utility functions for comparing files and paths.

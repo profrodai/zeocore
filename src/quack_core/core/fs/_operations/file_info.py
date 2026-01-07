@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_operations/file_info.py
+# module: quack_core.core.fs._operations.file_info
+# role: module
+# neighbors: __init__.py, base.py, core.py, directory_ops.py, find_ops.py, path_ops.py (+4 more)
+# exports: FileInfo, FileInfoOperationsMixin
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/_operations/file_info.py
 """
 File information _operations.

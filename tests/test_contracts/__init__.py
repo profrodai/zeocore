@@ -2,8 +2,8 @@
 # path: quack-core/tests/test_contracts/__init__.py
 # role: tests
 # neighbors: test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py, test_envelopes.py, test_schema_examples.py
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
 # === QV-LLM:END ===
 
 """

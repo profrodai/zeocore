@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/logging/config.py
+# module: quack_core.core.logging.config
+# role: module
+# neighbors: __init__.py, formatter.py, logger.py
+# exports: LogLevel, configure_logger, log_teaching
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 """
 Logger configuration for quack_core.
 

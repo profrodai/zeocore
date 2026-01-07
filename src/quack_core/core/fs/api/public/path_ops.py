@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/api/public/path_ops.py
+# module: quack_core.core.fs.api.public.path_ops
+# role: api
+# neighbors: __init__.py, checksums.py, disk.py, file_info.py, file_ops.py, path_utils.py (+2 more)
+# exports: split_path, expand_user_vars, normalize_path, is_same_file, is_subdirectory
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/api/public/path_ops.py
 """
 Public API for path _operations.

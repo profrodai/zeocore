@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/results.py
+# module: quack_core.core.fs.results
+# role: module
+# neighbors: __init__.py, protocols.py, plugin.py
+# exports: OperationResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult, DataResult, PathResult
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/results.py
 """
 Result models for filesystem _operations.

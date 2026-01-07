@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/errors/__init__.py
+# module: quack_core.core.errors.__init__
+# role: module
+# neighbors: base.py, handlers.py, integration.py
+# exports: QuackError, QuackIOError, QuackFileNotFoundError, QuackPermissionError, QuackFileExistsError, QuackValidationError, QuackFormatError, QuackConfigurationError (+7 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 """
 Error handling utilities for quack_core.
 

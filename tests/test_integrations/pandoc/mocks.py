@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, test-pandoc-integration-full.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # exports: fs_stub, mock_pypandoc, mock_paths_service, mock_bs4, mock_docx
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
 # === QV-LLM:END ===
 
 import os

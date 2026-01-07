@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/paths/_internal/resolver.py
+# module: quack_core.core.paths._internal.resolver
+# role: module
+# neighbors: __init__.py, utils.py, context.py
+# exports: PathResolver
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/paths/_internal/resolver.py
 """
 Path resolver service for quack_core.

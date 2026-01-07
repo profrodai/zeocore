@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/api/public/__init__.py
+# module: quack_core.core.fs.api.public.__init__
+# role: api
+# neighbors: checksums.py, disk.py, file_info.py, file_ops.py, path_ops.py, path_utils.py (+2 more)
+# exports: compute_checksum, get_disk_usage, is_path_writeable, get_file_type, get_file_size_str, get_file_timestamp, get_mime_type, is_file_locked (+17 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/api/public/__init__.py
 """
 ✅ Public Utility Functions (Safe for QuackTools and DuckTyper)

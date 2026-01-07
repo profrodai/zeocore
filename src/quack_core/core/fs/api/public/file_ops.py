@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/api/public/file_ops.py
+# module: quack_core.core.fs.api.public.file_ops
+# role: api
+# neighbors: __init__.py, checksums.py, disk.py, file_info.py, path_ops.py, path_utils.py (+2 more)
+# exports: atomic_write, ensure_directory, find_files_by_content, get_unique_filename
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/api/public/file_ops.py
 """
 Public API for file _operations.

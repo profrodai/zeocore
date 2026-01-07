@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/api/public/temp.py
+# module: quack_core.core.fs.api.public.temp
+# role: api
+# neighbors: __init__.py, checksums.py, disk.py, file_info.py, file_ops.py, path_ops.py (+2 more)
+# exports: create_temp_directory, create_temp_file
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/api/public/temp.py
 """
 Public API for temporary file and directory _operations.

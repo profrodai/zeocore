@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/service/utility_operations.py
+# module: quack_core.core.fs.service.utility_operations
+# role: service
+# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
+# exports: UtilityOperationsMixin
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/service/utility_operations.py
 """
 Utility operations for the FileSystemService.

@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/__init__.py
+# module: quack_core.core.fs.__init__
+# role: module
+# neighbors: protocols.py, plugin.py, results.py
+# exports: FileSystemService, create_service, service, FileSystemOperations, OperationResult, ReadResult, WriteResult, FileInfoResult (+44 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/__init__.py
 """
 Filesystem package for quack_core.

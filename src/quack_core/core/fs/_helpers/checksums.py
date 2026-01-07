@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_helpers/checksums.py
+# module: quack_core.core.fs._helpers.checksums
+# role: module
+# neighbors: __init__.py, common.py, comparison.py, disk.py, file_info.py, file_ops.py (+4 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: c28ab838
+# === QV-LLM:END ===
+
 # quack-core/src/quack_core/fs/_helpers/checksums.py
 """
 Utility functions for file checksums.
