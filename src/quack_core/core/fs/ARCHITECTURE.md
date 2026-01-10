@@ -1,234 +1,368 @@
-# quack_core.core.fs — Architecture
+# 🧠 `quack_core.core.fs` — Filesystem Architecture
 
-## Why this module exists
+**Status:** Canonical · Doctrine-Aligned
+**Ring:** Core (QuackCore)
+**Audience:** Core maintainers, QuackTool authors, junior contributors
+
+---
+
+## 1. Why this module exists
 
 `quack_core.core.fs` is the **filesystem kernel** of QuackCore.
 
-It provides:
-- **Safe, inspectable file operations** (read/write/copy/move/delete/list)
-- **A stable boundary** between raw `pathlib.Path` operations and user-facing workflows
-- **Typed results** that make CLI output and automation reliable (no exceptions-as-control-flow)
+It defines **how all file IO happens across the QuackVerse**, in a way that is:
 
-It does NOT:
-- implement domain workflows (that belongs in QuackTools / workflows)
-- bundle unrelated utilities (keep it small, composable, and teachable)
+* safe (no exceptions as control flow)
+* inspectable (typed results, structured errors)
+* teachable (clear contracts, layered responsibilities)
+* automation-ready (CLI, agents, Temporal, n8n)
 
----
+This module exists so that:
 
-## Design invariants (non-negotiable)
-
-### 1) Two-layer boundary: `_internal` vs `api/public`
-- `_internal/` may use `Path`, raise exceptions, and be “Pythonic”
-- `api/public/` must:
-  - normalize inputs
-  - catch exceptions
-  - return `*Result` Pydantic models
-  - never leak internal helpers directly
-
-### 2) Consistent return types
-- Public methods **never** return `Path` (unless wrapped in a `PathResult`)
-- Public methods **never** return `bool` / `str` directly when a Result exists
-- Internal helpers may return primitives for performance and simplicity
-
-### 3) Service-first API
-Everything user-facing routes through `FileSystemService`:
-
-- `FileSystemService` is composed via mixins:
-  - `PathOperationsMixin`
-  - `FileOperationsMixin`
-  - `UtilityOperationsMixin`
-  - `ValidationOperationsMixin` (optional but recommended)
-
-Standalone functions are thin convenience wrappers that call the service.
-
-### 4) Input normalization is centralized
-All public entry points accept common flexible inputs:
-- `str | Path | os.PathLike`
-- optional `encoding`, `errors`, `newline`, etc.
-
-Normalization rules live in one place and are reused.
-
-### 5) Errors are QuackErrors
-- Internals may raise native exceptions
-- Public layer catches and maps to:
-  - `QuackFileNotFoundError`
-  - `QuackPermissionError`
-  - `QuackValidationError`
-  - `QuackIOError`
-…then returns failure Results with structured diagnostics.
+> **No tool, agent, or workflow ever needs to touch `pathlib`, `os`, or raw IO directly.**
 
 ---
 
-## Public API surface
+## 2. Position in the QuackVerse (Doctrine Alignment)
 
-### Primary surface: `FileSystemService`
-- Provides all public filesystem operations
-- Methods return `*Result` objects
+### Ring placement
 
-### Secondary surface: functional wrappers
-For ergonomics in scripts:
-- `read_text(...)`
-- `write_text(...)`
-- `copy_file(...)`
-- etc.
+```
+Ring A — CORE (QuackCore)
+│
+├── core.fs  ← YOU ARE HERE
+│
+├── core.config
+├── core.logging
+├── core.errors
+└── core.protocols
+```
 
-They call `get_fs_service()` and delegate.
+### Responsibilities (non-negotiable)
 
----
+`core.fs`:
 
-## Core result models
+* ✅ defines IO **capabilities and contracts**
+* ✅ emits **artifacts + structured results**
+* ✅ is safe for **CLI, agents, and cloud execution**
+* ❌ does NOT orchestrate workflows
+* ❌ does NOT embed narratives or IP
+* ❌ does NOT render or schedule
 
-All public operations return a Pydantic model with a shared minimal contract:
-
-### Required fields (recommended baseline)
-- `ok: bool`
-- `path: Optional[str]` or `PathResult` composition
-- `error: Optional[ErrorInfo]` (structured)
-- `meta: Optional[dict]` (sizes, counts, timestamps, etc.)
-
-### "ErrorInfo" should include
-- `type`
-- `message`
-- `hint` (optional)
-- `exception` (optional stringified class)
-- `trace_id` (optional, if you do tracing)
+> `core.fs` answers:
+> **“What filesystem actions are possible, and in what shape?”**
 
 ---
 
-## File layout (canonical)
+## 3. Design invariants (non-negotiable)
 
-quack_core/lib/fs/
-- __init__.py
-- service.py
-- api/
-  - public/
-    - __init__.py
-    - results.py
-    - normalize.py
-    - wrappers.py
-- _internal/
-  - __init__.py
-  - types.py
-  - normalize.py
-  - errors.py
-  - path_ops.py
-  - file_ops.py
-  - util_ops.py
-  - validate.py
-- operations/
-  - __init__.py
-  - path_operations.py
-  - file_operations.py
-  - utility_operations.py
-  - validation_operations.py
-- mixins/
-  - __init__.py
-  - path_operations_mixin.py
-  - file_operations_mixin.py
-  - utility_operations_mixin.py
-  - validation_operations_mixin.py
-- tests/
-  - test_public_api_contracts.py
-  - test_path_ops.py
-  - test_file_ops.py
-  - test_wrappers.py
+### 1️⃣ Two-layer boundary: `_internal` vs `service`
 
-Notes:
-- `operations/` contains reusable operation primitives (still "public-ish" but not user-facing)
-- `mixins/` attach those operations to the service with consistent logging + error mapping
-- `_internal/` is the only place allowed to directly touch low-level implementation details
+There are **exactly two meaningful layers**.
+
+#### `_internal/` — Implementation layer
+
+* Pure IO helpers
+* Work only with `pathlib.Path`
+* Raise **native exceptions**
+* No Result models
+* No logging policy
+* No normalization logic
+
+> `_internal` is **not a public API**.
+
+#### `service/` — Contract layer (public)
+
+* Owns the public filesystem contract
+* Normalizes all inputs
+* Catches all exceptions
+* Maps errors to `ErrorInfo`
+* Returns typed `*Result` objects
+* Safe for tools, agents, CLI, Temporal
+
+> **Nothing outside `service/` should touch `_internal/`.**
 
 ---
 
-## Responsibilities by layer
+### 2️⃣ Service-first API (single source of truth)
+
+All filesystem access routes through:
+
+```python
+FileSystemService
+```
+
+Accessed via:
+
+```python
+from quack_core.core.fs.service import get_service
+```
+
+* One shared service instance
+* Configured once (base_dir, logging, policy)
+* Used everywhere (CLI, tools, tests, agents)
+
+There is **no alternate IO path**.
+
+---
+
+### 3️⃣ Input normalization is centralized
+
+All public methods accept **flexible inputs**:
+
+```python
+FsPathLike = str | Path | Result | Protocol
+```
+
+Normalization rules:
+
+* Implemented **once** in `core.fs.normalize`
+* Used **only by the service layer**
+* Never duplicated
+* Never implemented in `_internal`
+
+> If path coercion logic appears in more than one place, it is a bug.
+
+---
+
+### 4️⃣ Structured errors (no raw exceptions)
+
+* `_internal` raises native exceptions
+* `service` catches everything
+* Errors are mapped to structured `ErrorInfo`
+* Results **never raise**
+
+This is mandatory for:
+
+* CLI UX
+* Agent reasoning
+* Teaching
+* Cloud retries
+* Temporal workflows
+
+---
+
+## 4. Canonical file layout
+
+```
+quack_core/core/fs/
+│
+├── __init__.py
+│
+├── protocols.py        # FsPathLike, HasPath, HasData, etc.
+├── results.py          # Pydantic Result + ErrorInfo models
+├── normalize.py        # Input coercion (SSOT)
+│
+├── service/            # PUBLIC CONTRACT SURFACE
+│   ├── __init__.py     # get_service(), create_service()
+│   ├── base.py         # FileSystemService base + error mapping
+│   ├── standalone.py  # Functional wrappers (secondary surface)
+│   │
+│   ├── file_operations.py
+│   ├── path_operations.py
+│   ├── utility_operations.py
+│   └── validation_operations.py
+│
+├── operations/         # Bridge layer (optional, reusable)
+│   ├── file_ops.py
+│   ├── path_ops.py
+│   └── utility_ops.py
+│
+├── _internal/          # PURE IMPLEMENTATION
+│   ├── file_ops.py
+│   ├── path_ops.py
+│   ├── util_ops.py
+│   └── validate.py
+│
+└── tests/
+    ├── test_contract_never_raises.py
+    ├── test_error_mapping.py
+    ├── test_service_file_ops.py
+    └── test_standalone_wrappers.py
+```
+
+---
+
+## 5. Public API surfaces
+
+### Primary surface — `FileSystemService`
+
+This is the **only canonical API**.
+
+* All methods return `*Result`
+* All failures are structured
+* All inputs normalized
+* No side-effects beyond IO
+
+Used by:
+
+* QuackTools
+* Agents
+* CLI commands
+* Cloud execution
+
+---
+
+### Secondary surface — functional wrappers
+
+For ergonomics only:
+
+```python
+from quack_core.core.fs.service.standalone import read_text
+```
+
+Rules:
+
+* Wrappers **delegate only**
+* No logic
+* No normalization
+* No `_internal` imports
+* Safe to delete later if needed
+
+---
+
+## 6. Result model doctrine
+
+### Baseline contract (all Results)
+
+Every public method returns a Pydantic model with:
+
+```python
+ok: bool
+path: Optional[Path]
+error_info: Optional[ErrorInfo]
+meta: Optional[dict]
+```
+
+> `success` may exist for backward compatibility,
+> but `ok` is the canonical semantic.
+
+---
+
+### `ErrorInfo` (required structure)
+
+```python
+class ErrorInfo(BaseModel):
+    type: str              # e.g. "file_not_found"
+    message: str
+    hint: str | None
+    exception: str | None
+    trace_id: str | None
+```
+
+Mapped centrally in `service.base`.
+
+---
+
+## 7. Responsibilities by layer
 
 ### `_internal/*`
-Contains raw implementation helpers:
-- work with `Path`
-- raise standard exceptions
-- keep functions short and pure where possible
 
-Examples:
-- `_internal/path_ops.py`: ensure_dir, resolve, expanduser, glob
-- `_internal/file_ops.py`: atomic write, safe copy, read bytes
-- `_internal/util_ops.py`: compute hash, guess mime, size formatting
-- `_internal/validate.py`: validate extension, max size, forbidden paths
+* touch the filesystem
+* raise native exceptions
+* no logging policy
+* no Results
+* no normalization
 
-### `operations/*`
-Defines operation objects or small helpers used by mixins:
-- depends on `_internal`
-- still not the public API
-- should be stable and testable independently
+### `operations/*` (optional)
 
-### `api/public/*`
-The "contract surface":
-- `normalize.py`: input coercion and option defaults
-- `results.py`: Pydantic Result models
-- `wrappers.py`: functional wrappers
+* reusable groupings
+* depend on `_internal`
+* no public guarantees
 
-No business logic beyond:
-- normalize
-- call service
-- return result
+### `service/*`
 
-### `service.py`
-The composition root:
-- defines `FileSystemService(...)`
-- integrates mixins
-- owns shared dependencies (logger, config, path service if needed)
+* normalize inputs
+* catch + map errors
+* emit Results
+* own logging + policy
+* enforce doctrine
 
 ---
 
-## Method catalogue (what must exist)
+## 8. Required public method catalogue
 
-### Path operations (public)
-- `resolve(path) -> PathResult`
-- `exists(path) -> BoolResult`
-- `is_file(path) -> BoolResult`
-- `is_dir(path) -> BoolResult`
-- `ensure_dir(path, parents=True) -> PathResult`
-- `list_dir(path, pattern=None, recursive=False) -> PathsResult`
+### Path operations
 
-### File operations (public)
-- `read_text(path, encoding='utf-8') -> TextResult`
-- `write_text(path, text, encoding='utf-8', create_dirs=True) -> WriteResult`
-- `read_bytes(path) -> BytesResult`
-- `write_bytes(path, data, create_dirs=True) -> WriteResult`
-- `copy(src, dst, overwrite=False, create_dirs=True) -> CopyResult`
-- `move(src, dst, overwrite=False, create_dirs=True) -> MoveResult`
-- `delete(path, missing_ok=True) -> DeleteResult`
+* `resolve(path)`
+* `exists(path)`
+* `is_file(path)`
+* `is_dir(path)`
+* `ensure_dir(path, parents=True)`
+* `list_dir(path, pattern=None, recursive=False)`
 
-### Utility operations (public)
-- `stat(path) -> StatResult`
-- `hash_file(path, algo='sha256') -> HashResult`
-- `mime_type(path) -> MimeResult`
-- `tree(path, max_depth=..., pattern=...) -> TreeResult` (optional but useful)
+### File operations
 
-### Validation operations (public)
-- `validate_path(path, rules=...) -> ValidationResult`
-- `validate_file(path, max_bytes=..., allowed_ext=..., forbidden_globs=...) -> ValidationResult`
+* `read_text`
+* `write_text`
+* `read_bytes`
+* `write_bytes`
+* `copy`
+* `move`
+* `delete`
+
+### Utility operations
+
+* `stat`
+* `hash_file`
+* `mime_type`
+* `tree` (optional)
+
+### Validation operations
+
+* `validate_path`
+* `validate_file`
+
+---
+
+## 9. Test doctrine (mandatory)
+
+### Contract tests
+
+* No public method may raise
+* All failures return `ok=False`
+
+### Error mapping tests
+
+* missing file
+* permission denied
+* invalid path
+
+### Wrapper tests
+
+* wrappers delegate to service
+* no independent behavior
 
 ---
 
-## Cross-check checklist (for reconstruction)
+## 10. Why this matters for DuckTyper & AI-First Media
 
-### Contract checks
-- [ ] Every public method returns a `*Result` Pydantic model
-- [ ] No public method leaks raw `Path` or raw exceptions
-- [ ] Every failure case sets `ok=False` and fills `error`
+This design enables:
 
-### Boundary checks
-- [ ] `_internal/*` is never imported by consumers directly (only by operations/service/mixins)
-- [ ] `api/public/*` imports do not depend on `_internal/*`
+* agents reasoning over filesystem actions
+* reproducible content pipelines
+* Temporal-safe retries
+* n8n side-effect isolation
+* teachable automation flows
+* junior-safe contribution
 
-### Consistency checks
-- [ ] Normalization exists in one place (no duplicated coercion logic)
-- [ ] Encoding defaults are consistent (`utf-8`)
-- [ ] All operations support `create_dirs` where writing occurs
-
-### Test checks
-- [ ] One test ensures each public method never raises (contract test)
-- [ ] Golden tests for error mapping (missing file, permission denied)
-- [ ] Wrapper functions are tested to ensure they delegate to service
+> **If filesystem behavior is not predictable,
+> automation does not compound.**
 
 ---
+
+## 11. Final rule (non-negotiable)
+
+> **If a QuackTool, Agent, or Workflow touches `pathlib` directly — it is a bug.**
+
+All IO goes through `core.fs`.
+
+This is how the system scales, teaches, and survives refactors.
+
+---
+
+If you want, next I can:
+
+* produce a **junior dev checklist** (“if you add a method, you must do X”)
+* produce a **migration checklist** from your current code to this layout
+* generate **stub files** for the missing pieces (`normalize.py`, `ErrorInfo`, etc.)
