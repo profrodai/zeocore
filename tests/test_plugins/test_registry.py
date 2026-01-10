@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_discovery.py, test_explicit_loading.py, test_protocols.py
 # exports: BasicPlugin, CommandPlugin, WorkflowPlugin, ExtensionPlugin, ProviderPlugin, TestPluginRegistry
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py
 # exports: TestPathUtilities, TestFileUtilities
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -27,7 +27,7 @@ from quack_core.core.errors import (
     QuackIOError,
     QuackPermissionError,
 )
-from quack_core.core.fs._helpers import (
+from quack_core.core.fs._internal import (
     _compute_checksum,
     _create_temp_directory,
     _create_temp_file,
@@ -46,13 +46,13 @@ from quack_core.core.fs._helpers import (
     _safe_delete,
     _safe_move,
 )
-from quack_core.core.fs._helpers.file_ops import (
+from quack_core.core.fs._internal.file_ops import (
     _atomic_write,
     _ensure_directory,
     _find_files_by_content,
     _get_unique_filename,
 )
-from quack_core.core.fs._helpers.path_ops import (
+from quack_core.core.fs._internal.path_ops import (
     _expand_user_vars,
     _join_path,
     _split_path,

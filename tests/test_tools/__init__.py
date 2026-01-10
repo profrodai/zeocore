@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: conftest.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py, test_protocol.py (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """

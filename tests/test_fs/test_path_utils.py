@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_results.py, test_service.py, test_utils.py
 # exports: TestPathUtils
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
@@ -17,7 +17,7 @@ from unittest.mock import patch
 
 import pytest
 from quack_core.core.fs import DataResult, PathResult
-from quack_core.core.fs._helpers.path_utils import _extract_path_str, _safe_path_str
+from quack_core.core.fs._internal.path_utils import _extract_path_str, _safe_path_str
 
 
 class TestPathUtils(TestCase):

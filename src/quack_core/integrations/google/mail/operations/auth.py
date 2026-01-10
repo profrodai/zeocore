@@ -5,7 +5,7 @@
 # neighbors: __init__.py, attachments.py, email.py
 # exports: initialize_gmail_service
 # git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
+# git_commit: 26dbe353
 # === QV-LLM:END ===
 
 """
