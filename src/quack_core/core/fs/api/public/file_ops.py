@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/api/public/file_ops.py
+# module: quack_core.core.fs.api.public.file_ops
+# role: api
+# neighbors: __init__.py, checksums.py, coerce.py, disk.py, file_info.py, path_ops.py (+3 more)
+# exports: atomic_write, ensure_directory, get_unique_filename, find_files_by_content
+# git_branch: feat/9-make-setup-work
+# git_commit: 8bfe1405
+# === QV-LLM:END ===
+
 from typing import Any
 from quack_core.core.fs.service import get_service
 from quack_core.core.fs.results import WriteResult, OperationResult, DataResult

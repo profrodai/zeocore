@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/operations/find_ops.py
+# module: quack_core.core.fs.operations.find_ops
+# role: operations
+# neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, path_ops.py (+4 more)
+# exports: FindOperationsMixin
+# git_branch: feat/9-make-setup-work
+# git_commit: 8bfe1405
+# === QV-LLM:END ===
+
 from pathlib import Path
 
 

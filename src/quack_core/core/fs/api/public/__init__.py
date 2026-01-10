@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/api/public/__init__.py
+# module: quack_core.core.fs.api.public.__init__
+# role: api
+# neighbors: checksums.py, coerce.py, disk.py, file_info.py, file_ops.py, path_ops.py (+3 more)
+# exports: compute_checksum, get_disk_usage, is_path_writeable, get_file_type, get_file_size_str, get_file_timestamp, get_mime_type, is_file_locked (+20 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: 8bfe1405
+# === QV-LLM:END ===
+
 """
 ✅ Public Utility Functions (Wrapper around FileSystemService)
 """

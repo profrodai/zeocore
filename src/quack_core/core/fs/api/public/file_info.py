@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/api/public/file_info.py
+# module: quack_core.core.fs.api.public.file_info
+# role: api
+# neighbors: __init__.py, checksums.py, coerce.py, disk.py, file_ops.py, path_ops.py (+3 more)
+# exports: get_file_type, get_file_size_str, get_file_timestamp, get_mime_type, is_file_locked
+# git_branch: feat/9-make-setup-work
+# git_commit: 8bfe1405
+# === QV-LLM:END ===
+
 from typing import Any
 from quack_core.core.fs.service import get_service
 from quack_core.core.fs.results import DataResult

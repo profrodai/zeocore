@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/results.py
+# module: quack_core.core.fs.results
+# role: module
+# neighbors: __init__.py, protocols.py, plugin.py
+# exports: OperationResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult, DataResult, PathResult
+# git_branch: feat/9-make-setup-work
+# git_commit: 8bfe1405
+# === QV-LLM:END ===
+
 from pathlib import Path
 from typing import Any, Generic, TypeVar
 from pydantic import BaseModel, Field, field_serializer, computed_field

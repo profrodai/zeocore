@@ -4,7 +4,7 @@
 # neighbors: __init__.py, auth_provider_impl.py, config_provider_impl.py, integration_service_impl.py, test_auth_provider.py, test_base.py (+3 more)
 # exports: SampleIntegration, SampleAuthProvider, SampleConfigProvider, MinimalStorageProtocol, SampleStorageIntegration, TestIntegrationProtocol, TestAuthProviderProtocol, TestConfigProviderProtocol (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 26dbe353
+# git_commit: 8bfe1405
 # === QV-LLM:END ===
 
 """

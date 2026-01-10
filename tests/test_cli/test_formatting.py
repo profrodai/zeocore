@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_error.py (+5 more)
 # exports: TestColor, TestColorize, TestPrintFunctions, TestTable, TestDictToTable
 # git_branch: feat/9-make-setup-work
-# git_commit: 26dbe353
+# git_commit: 8bfe1405
 # === QV-LLM:END ===
 
 """

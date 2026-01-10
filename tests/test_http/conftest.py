@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py, test_routes_jobs.py (+2 more)
 # exports: clear_job_state, test_config, test_app, test_client, auth_headers, no_auth_config, no_auth_client
 # git_branch: feat/9-make-setup-work
-# git_commit: 26dbe353
+# git_commit: 8bfe1405
 # === QV-LLM:END ===
 
 """
