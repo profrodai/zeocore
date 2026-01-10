@@ -8,7 +8,7 @@
 # git_commit: 41712bc9
 # === QV-LLM:END ===
 
-"""GitHub issues _operations."""
+"""GitHub issues operations."""
 
 from typing import Any, Literal
 

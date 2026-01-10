@@ -21,7 +21,7 @@ from pathlib import Path
 from types import MappingProxyType
 from pydantic import BaseModel, ConfigDict, Field, field_validator, field_serializer
 
-from quack_core.lib.serialization import normalize_for_json
+from quack_core.core.serialization import normalize_for_json
 
 
 class ToolContext(BaseModel):
@@ -146,7 +146,7 @@ class ToolContext(BaseModel):
             raise TypeError(
                 f"ToolContext metadata validation failed: {e}. "
                 f"Metadata must be JSON-serializable. "
-                f"See quack_core.lib.serialization.normalize_for_json for details."
+                f"See quack_core.core.serialization.normalize_for_json for details."
             ) from e
 
         # Return as immutable

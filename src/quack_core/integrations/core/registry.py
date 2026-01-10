@@ -20,8 +20,8 @@ from collections.abc import Iterable
 from typing import TypeVar
 
 from quack_core.integrations.core.protocols import IntegrationProtocol
-from quack_core.lib.errors import QuackError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackError
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 
 T = TypeVar("T", bound=IntegrationProtocol)
 

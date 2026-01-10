@@ -95,13 +95,13 @@ def mock_paths_service(monkeypatch):
     mock.resolve_project_path = lambda path: path  # Just return the path unchanged
 
     # Create a temp module if it doesn't exist
-    if 'quack_core.lib.paths' not in pytest.importorskip("sys").modules:
+    if 'quack_core.core.paths' not in pytest.importorskip("sys").modules:
         import types
-        temp_module = types.ModuleType('quack_core.lib.paths')
-        pytest.importorskip("sys").modules['quack_core.lib.paths'] = temp_module
+        temp_module = types.ModuleType('quack_core.core.paths')
+        pytest.importorskip("sys").modules['quack_core.core.paths'] = temp_module
         temp_module.service = mock
     else:
-        monkeypatch.setattr('quack_core.lib.paths.service', mock)
+        monkeypatch.setattr('quack_core.core.paths.service', mock)
 
     return mock
 

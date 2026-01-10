@@ -13,7 +13,7 @@
 Integration-related error classes for quack_core.
 """
 
-from quack_core.lib.errors.base import QuackError
+from quack_core.core.errors.base import QuackError
 
 
 class QuackIntegrationError(QuackError):

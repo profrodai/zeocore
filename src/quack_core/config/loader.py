@@ -28,7 +28,7 @@ from typing import Any, TypeVar
 import yaml
 from quack_core.config.models import QuackConfig
 from quack_core.config.utils import find_project_root
-from quack_core.lib.errors import QuackConfigurationError, wrap_io_errors
+from quack_core.core.errors import QuackConfigurationError, wrap_io_errors
 
 T = TypeVar("T")
 

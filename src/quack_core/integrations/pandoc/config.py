@@ -26,7 +26,7 @@ from typing import Any, ClassVar
 from pydantic import BaseModel, Field, field_validator
 from quack_core.config.models import LoggingConfig
 from quack_core.integrations.core.base import BaseConfigProvider
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 
 logger = get_logger(__name__)
 

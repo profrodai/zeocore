@@ -102,7 +102,7 @@ class TestBaseIntegrationService:
             )
 
             service = MockIntegrationService(config_provider=config_provider)
-            with patch("quack_core.lib.errors.QuackConfigurationError", Exception):
+            with patch("quack_core.core.errors.QuackConfigurationError", Exception):
                 result = service.initialize()
 
                 assert result.success is False

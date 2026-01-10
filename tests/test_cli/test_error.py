@@ -22,7 +22,7 @@ from quack_core.interfaces.cli.utils.error import (
     get_cli_info,
     handle_errors,
 )
-from quack_core.lib.errors import QuackError
+from quack_core.core.errors import QuackError
 
 
 class TestFormatCliError:

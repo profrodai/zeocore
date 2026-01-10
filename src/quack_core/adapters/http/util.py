@@ -16,7 +16,7 @@ Utility functions for the HTTP adapter.
 from typing import Any
 
 import httpx
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 

@@ -28,7 +28,7 @@ from quack_core.integrations.pandoc.operations import (
     convert_markdown_to_docx,
     validate_docx_conversion,
 )
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 # Import patched utilities to avoid DataResult validation issues
 from .test_utils_fix import (

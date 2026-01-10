@@ -23,8 +23,8 @@ from pydantic import BaseModel, Field
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms.clients.base import LLMClient
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 
 
 class FallbackConfig(BaseModel):

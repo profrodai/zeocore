@@ -20,7 +20,7 @@ import pytest
 from quack_core.integrations.core.results import ConfigResult, IntegrationResult
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 from quack_core.integrations.llms.service import LLMIntegration
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.core.fs import DataResult, FileInfoResult
 
 from .mocks.clients import MockClient
@@ -35,7 +35,7 @@ class TestLLMService:
         # Create a service
         service = LLMIntegration()
 
-        # Mock the file _operations using our fs module
+        # Mock the file operations using our fs module
         with patch("quack_core.core.fs.service.get_file_info") as mock_file_info:
             file_info_result = FileInfoResult(
                 success=True,

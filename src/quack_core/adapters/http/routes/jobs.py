@@ -29,8 +29,8 @@ from quack_core.adapters.http.dependencies import (
 )
 from quack_core.adapters.http.models import JobRequest, JobResponse
 from quack_core.adapters.http.models import JobStatus as JobStatusModel
-from quack_core.lib.jobs import JobData, JobRunner, JobStatus, JobStore
-from quack_core.lib.registry import OperationRegistry
+from quack_core.core.jobs import JobData, JobRunner, JobStatus, JobStore
+from quack_core.core.registry import OperationRegistry
 
 router = APIRouter()
 

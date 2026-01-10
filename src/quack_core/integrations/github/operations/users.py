@@ -8,7 +8,7 @@
 # git_commit: 41712bc9
 # === QV-LLM:END ===
 
-"""GitHub user _operations."""
+"""GitHub user operations."""
 
 from typing import Any
 

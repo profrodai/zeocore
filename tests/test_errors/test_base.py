@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-from quack_core.lib.errors import (
+from quack_core.core.errors import (
     QuackBaseAuthError,
     QuackConfigurationError,
     QuackError,

@@ -36,7 +36,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     verify_pandoc,
 )
 from quack_core.integrations.pandoc.service import PandocIntegration
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 
 # Fixtures for monkeypatching filesystem service
@@ -283,7 +283,7 @@ def test_pandoc_integration_is_available(monkeypatch):
 
 def test_pandoc_integration_not_available(monkeypatch):
     import quack_core.integrations.pandoc.service as service_mod
-    from quack_core.lib.errors import QuackIntegrationError
+    from quack_core.core.errors import QuackIntegrationError
     monkeypatch.setattr(
         service_mod,
         'verify_pandoc',

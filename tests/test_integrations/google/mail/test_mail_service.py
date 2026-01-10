@@ -19,7 +19,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.mail.service import GoogleMailService
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 from tests.test_integrations.google.mail.mocks import (
     create_error_gmail_service,
@@ -62,7 +62,7 @@ class TestGoogleMailService:
     @patch("quack_core.integrations.google.config.GoogleConfigProvider.load_config")
     def test_initialize_config(self, mock_load_config: MagicMock) -> None:
         """Test initializing the service configuration."""
-        # Instead of mocking file _operations, mock the _initialize_config method itself
+        # Instead of mocking file operations, mock the _initialize_config method itself
         # and check that it gets the right inputs and generates the right outputs
 
         # Test with explicit parameters
@@ -274,7 +274,7 @@ class TestGoogleMailService:
             "gmail_user_id": "test@example.com",
         }
 
-        # Mock the email _operations module
+        # Mock the email operations module
         with patch(
             "quack_core.integrations.google.mail.operations.email.list_emails"
         ) as mock_list:
@@ -349,7 +349,7 @@ class TestGoogleMailService:
             "max_delay": 5.0,
         }
 
-        # Mock the email _operations module
+        # Mock the email operations module
         with patch(
             "quack_core.integrations.google.mail.operations.email.download_email"
         ) as mock_download:

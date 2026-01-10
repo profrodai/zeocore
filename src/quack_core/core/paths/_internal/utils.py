@@ -18,10 +18,10 @@ Low-level path manipulations (join, split, normalize) are delegated to
 import os
 from typing import Any
 
-from quack_core.lib.errors import QuackFileNotFoundError, wrap_io_errors
+from quack_core.core.errors import QuackFileNotFoundError, wrap_io_errors
 from quack_core.core.fs.service import standalone
-from quack_core.lib.logging import get_logger
-from quack_core.lib.paths.models import PathInfo
+from quack_core.core.logging import get_logger
+from quack_core.core.paths.models import PathInfo
 
 logger = get_logger(__name__)
 

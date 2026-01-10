@@ -292,7 +292,7 @@ class GoogleConfigProvider(BaseConfigProvider):
         Returns:
             dict[str, Any]: Configuration with resolved paths
         """
-        from quack_core.lib.paths import service as paths  # Direct import
+        from quack_core.core.paths import service as paths  # Direct import
 
         resolved_config = config.copy()
 

@@ -164,7 +164,7 @@ QuackCore includes **domain-agnostic primitives** required everywhere:
 
 * **Filesystem (`quack_core.core.fs`)**
   Standardized read/write, atomic operations, structured data IO, checksums.
-* **Paths (`quack_core.lib.paths`)**
+* **Paths (`quack_core.core.paths`)**
   Resolution, normalization, validation, safety semantics.
 * **Config (`quack_core.config`)**
   Typed, validated configuration conventions.

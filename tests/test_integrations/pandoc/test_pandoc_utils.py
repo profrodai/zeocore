@@ -39,7 +39,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     validate_html_structure,
     verify_pandoc,
 )
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 
 def test_conversion_metrics_initialization():

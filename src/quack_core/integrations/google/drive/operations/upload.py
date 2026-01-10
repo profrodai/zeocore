@@ -9,11 +9,11 @@
 # === QV-LLM:END ===
 
 """
-Upload _operations for Google Drive integration.
+Upload operations for Google Drive integration.
 
 This module provides functions for uploading files to Google Drive,
 including file metadata handling and media upload.
-All file paths are handled as strings. Filesystem _operations such as
+All file paths are handled as strings. Filesystem operations such as
 reading a file or obtaining file metadata are delegated to the QuackCore FS API.
 """
 
@@ -28,9 +28,9 @@ from quack_core.integrations.google.drive.protocols import (
     GoogleCredentials,
 )
 from quack_core.integrations.google.drive.utils.api import execute_api_request
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
 from quack_core.core.fs.service import standalone
-from quack_core.lib.paths import service as paths_service
+from quack_core.core.paths import service as paths_service
 
 
 def initialize_drive_service(credentials: GoogleCredentials) -> DriveService:

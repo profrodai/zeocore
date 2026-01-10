@@ -29,7 +29,7 @@ from quack_core.config.loader import (
     merge_configs,
 )
 from quack_core.config.models import QuackConfig
-from quack_core.lib.errors import QuackConfigurationError
+from quack_core.core.errors import QuackConfigurationError
 
 
 class TestConfigLoader:

@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-Folder _operations for Google Drive integration.
+Folder operations for Google Drive integration.
 
 This module provides functions for managing folders in Google Drive,
 including creating folders and deleting files or folders.
@@ -23,7 +23,7 @@ from quack_core.integrations.google.drive.operations.permissions import (
 )
 from quack_core.integrations.google.drive.protocols import DriveService
 from quack_core.integrations.google.drive.utils.api import execute_api_request
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 def create_folder(

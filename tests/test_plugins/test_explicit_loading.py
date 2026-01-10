@@ -29,7 +29,7 @@ import sys
 import unittest
 from unittest.mock import Mock, patch
 
-from quack_core.lib.errors import QuackPluginError
+from quack_core.core.errors import QuackPluginError
 from quack_core.modules.protocols import QuackPluginMetadata
 
 
@@ -153,12 +153,12 @@ class TestExplicitLoading(unittest.TestCase):
 
         paths_ep = Mock()
         paths_ep.name = "paths"
-        paths_ep.value = "quack_core.lib.paths:create_plugin"
+        paths_ep.value = "quack_core.core.paths:create_plugin"
         paths_ep.load.return_value = lambda: paths_plugin
 
         config_ep = Mock()
         config_ep.name = "config"
-        config_ep.value = "quack_core.lib.config:create_plugin"
+        config_ep.value = "quack_core.core.config:create_plugin"
         config_ep.load.return_value = lambda: config_plugin
 
         # Setup mock to return all three entry points
@@ -543,7 +543,7 @@ class TestListAvailableEntryPoints(unittest.TestCase):
 
         ep2 = Mock()
         ep2.name = "paths"
-        ep2.value = "quack_core.lib.paths:create_plugin"
+        ep2.value = "quack_core.core.paths:create_plugin"
 
         mock_entry_points.return_value = [ep1, ep2]
 

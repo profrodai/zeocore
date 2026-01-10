@@ -21,7 +21,7 @@ import logging
 import os
 from typing import Any
 
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, configure_logger
+from quack_core.core.logging import LOG_LEVELS, LogLevel, configure_logger
 
 _file_handlers: list[logging.FileHandler] = []
 
@@ -83,11 +83,11 @@ def get_logger(tool_name: str) -> logging.Logger:
     Get a named logger for the given tool.
     Wrapper around core logging.
     """
-    from quack_core.lib.logging import get_logger as core_get_logger
+    from quack_core.core.logging import get_logger as core_get_logger
     return core_get_logger(tool_name)
 
 
 def log_teaching(logger: Any, message: str, level: str = "INFO") -> None:
     """Log a Teaching Mode message for the tool."""
-    from quack_core.lib.logging import log_teaching as core_log_teaching
+    from quack_core.core.logging import log_teaching as core_log_teaching
     core_log_teaching(logger, message, level)

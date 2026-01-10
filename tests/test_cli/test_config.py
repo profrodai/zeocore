@@ -21,7 +21,7 @@ from quack_core.interfaces.cli.legacy.config import (
     find_project_root,
     load_config,
 )
-from quack_core.lib.errors import QuackConfigurationError, QuackFileNotFoundError
+from quack_core.core.errors import QuackConfigurationError, QuackFileNotFoundError
 
 from .mocks import MockConfig
 

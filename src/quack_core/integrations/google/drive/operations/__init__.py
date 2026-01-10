@@ -11,7 +11,7 @@
 """
 Operations package for Google Drive integration.
 
-This package contains specialized modules for different Google Drive _operations,
+This package contains specialized modules for different Google Drive operations,
 such as uploading, downloading, listing files, and managing permissions.
 """
 

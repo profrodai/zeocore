@@ -8,13 +8,13 @@
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive _operations permissions module.
+Tests for Google Drive operations permissions module.
 """
 
 from unittest.mock import patch
 
 from quack_core.integrations.google.drive.operations import permissions
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
@@ -26,7 +26,7 @@ from tests.test_integrations.google.drive.mocks import (
 
 
 class TestDriveOperationsPermissions:
-    """Tests for the Google Drive _operations permissions functions."""
+    """Tests for the Google Drive operations permissions functions."""
 
     def test_set_file_permissions(self) -> None:
         """Test setting file permissions."""

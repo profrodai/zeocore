@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-LLM _operations for the integration service.
+LLM operations for the integration service.
 
 This module provides methods for interacting with LLMs, such as chat and token counting.
 """

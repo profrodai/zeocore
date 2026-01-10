@@ -14,7 +14,7 @@ Tests for the plugin registry.
 from collections.abc import Callable
 
 import pytest
-from quack_core.lib.errors import QuackPluginError
+from quack_core.core.errors import QuackPluginError
 from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,

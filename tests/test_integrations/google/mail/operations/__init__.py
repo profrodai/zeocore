@@ -6,4 +6,4 @@
 # git_commit: 41712bc9
 # === QV-LLM:END ===
 
-"""Test package for quack_core.integrations.google.mail._operations module."""
+"""Test package for quack_core.integrations.google.mail.operations module."""

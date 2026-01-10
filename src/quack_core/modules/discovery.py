@@ -33,8 +33,8 @@ import inspect
 from importlib.metadata import entry_points
 
 from pydantic import BaseModel, Field, ValidationError
-from quack_core.lib.errors import QuackPluginError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackPluginError
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol
 
 

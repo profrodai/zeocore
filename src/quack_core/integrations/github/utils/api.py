@@ -15,12 +15,12 @@ from datetime import datetime
 from typing import Any
 
 import requests
-from quack_core.lib.errors import (
+from quack_core.core.errors import (
     QuackApiError,
     QuackAuthenticationError,
     QuackQuotaExceededError,
 )
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 

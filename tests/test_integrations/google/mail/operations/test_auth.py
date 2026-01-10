@@ -8,7 +8,7 @@
 # === QV-LLM:END ===
 
 """
-Tests for Gmail authentication _operations.
+Tests for Gmail authentication operations.
 
 This module tests the authentication functionality for the Google Mail integration,
 including initializing the Gmail service.
@@ -19,11 +19,11 @@ from unittest.mock import MagicMock, patch
 import pytest
 from quack_core.integrations.google.mail.operations import auth
 from quack_core.integrations.google.mail.protocols import GoogleCredentials
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 class TestGmailAuthOperations:
-    """Tests for Gmail authentication _operations."""
+    """Tests for Gmail authentication operations."""
 
     def test_initialize_gmail_service(self) -> None:
         """Test initializing the Gmail service."""

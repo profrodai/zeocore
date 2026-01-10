@@ -16,7 +16,7 @@ from quack_core.integrations.core import (
     ConfigProviderProtocol,
     IntegrationResult,
 )
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 from .auth import GitHubAuthProvider
 from .client import GitHubClient

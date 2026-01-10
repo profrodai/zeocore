@@ -324,7 +324,7 @@ def create_error_gmail_service(
     Args:
         list_error: Exception to raise on list operation
         get_error: Exception to raise on get operation
-        attachment_error: Exception to raise on attachment _operations
+        attachment_error: Exception to raise on attachment operations
 
     Returns:
         A mock Gmail service object that will raise exceptions

@@ -15,7 +15,7 @@ This module provides custom exception classes for QuackCore, with helpful contex
 and error messages for better diagnostics and troubleshooting.
 """
 
-from quack_core.lib.errors.base import (
+from quack_core.core.errors.base import (
     QuackBaseAuthError,
     QuackConfigurationError,
     QuackError,
@@ -28,7 +28,7 @@ from quack_core.lib.errors.base import (
     QuackValidationError,
     wrap_io_errors,
 )
-from quack_core.lib.errors.integration import (
+from quack_core.core.errors.integration import (
     QuackApiError,
     QuackAuthenticationError,
     QuackIntegrationError,

@@ -19,7 +19,7 @@ from quack_core.integrations.pandoc import (
     FileInfo,
     PandocConfig,
 )
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 # --- Tests for DocumentConverter ---
 

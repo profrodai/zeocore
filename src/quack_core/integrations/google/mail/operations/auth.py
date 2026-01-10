@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-Authentication _operations for Google Mail integration.
+Authentication operations for Google Mail integration.
 
 This module provides functions for authenticating with the Gmail API
 and initializing the service.
@@ -19,7 +19,7 @@ from quack_core.integrations.google.mail.protocols import (
     GmailService,
     GoogleCredentials,
 )
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 def initialize_gmail_service(credentials: GoogleCredentials) -> GmailService:

@@ -25,8 +25,8 @@ Following Python 3.13 best practices:
 
 from typing import TypeVar
 
-from quack_core.lib.errors import QuackPluginError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackPluginError
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,

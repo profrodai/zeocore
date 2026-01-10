@@ -131,7 +131,7 @@ T = TypeVar("T")  # Generic type for result content
 
 @runtime_checkable
 class CustomStorageIntegrationProtocol(Protocol):
-    """Custom protocol extending both IntegrationProtocol and adding storage _operations."""
+    """Custom protocol extending both IntegrationProtocol and adding storage operations."""
 
     @property
     def name(self) -> str: ...

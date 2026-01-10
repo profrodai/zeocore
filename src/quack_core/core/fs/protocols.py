@@ -1,34 +1,25 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/protocols.py
-# module: quack_core.core.fs.protocols
-# role: protocols
-# neighbors: __init__.py, plugin.py, results.py
-# exports: HasValue, HasUnwrap, BaseResult
-# git_branch: feat/9-make-setup-work
-# git_commit: 41712bc9
-# === QV-LLM:END ===
+from os import PathLike
+from pathlib import Path
+from typing import Any, Protocol, TypeAlias, runtime_checkable
 
-# quack-core/src/quack_core/fs/protocols.py
-from typing import Any, Protocol
-
-
+@runtime_checkable
 class HasValue(Protocol):
-    """Protocol for objects with a value or unwrap method."""
+    def value(self) -> Any: ...
 
-    def value(self) -> Any:
-        """Return the value inside the object."""
-        ...
-
-
+@runtime_checkable
 class HasUnwrap(Protocol):
-    """Protocol for objects with an unwrap method."""
+    def unwrap(self) -> Any: ...
 
-    def unwrap(self) -> Any:
-        """Unwrap the value inside the object."""
-        ...
+@runtime_checkable
+class HasPath(Protocol):
+    path: Path | None
 
+@runtime_checkable
+class HasData(Protocol):
+    data: Any
 
 class BaseResult(Protocol):
-    """Protocol for result objects."""
-
     success: bool
+
+# Standard public input type for the entire service layer
+FsPathLike: TypeAlias = str | Path | PathLike | HasPath | HasData | HasValue | HasUnwrap | BaseResult

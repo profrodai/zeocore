@@ -20,7 +20,7 @@ from unittest.mock import patch
 
 import pytest
 import yaml
-from quack_core.lib.errors import QuackFileExistsError, QuackIOError
+from quack_core.core.errors import QuackFileExistsError, QuackIOError
 from quack_core.core.fs._operations import FileSystemOperations
 
 
@@ -28,7 +28,7 @@ class TestFileSystemOperations:
     """Tests for the FileSystemOperations class."""
 
     def test_initialize(self, temp_dir: Path) -> None:
-        """Test initializing _operations with and without base_dir."""
+        """Test initializing operations with and without base_dir."""
         # Default initialization
         operations = FileSystemOperations()
         assert operations.base_dir == Path.cwd()
@@ -118,7 +118,7 @@ class TestFileSystemOperations:
         assert (temp_dir / "nonatomic.txt").read_text() == "content"
 
         # Test with calculate_checksum=True
-        # NOTE: Since _operations now return raw types, we can't check checksum directly
+        # NOTE: Since operations now return raw types, we can't check checksum directly
         # Just ensure the operation completes successfully
         result = operations._write_text(
             "checksum.txt", "content", calculate_checksum=True
@@ -143,7 +143,7 @@ class TestFileSystemOperations:
         assert (temp_dir / "nonatomic.bin").read_bytes() == b"\x04\x05\x06\x07"
 
         # Test with calculate_checksum=True
-        # NOTE: Since _operations now return raw types, we can't check checksum directly
+        # NOTE: Since operations now return raw types, we can't check checksum directly
         # Just ensure the operation completes successfully
         result = operations._write_binary(
             "checksum.bin", b"\x08\x09\x0a\x0b", calculate_checksum=True
@@ -251,7 +251,7 @@ class TestFileSystemOperations:
 
         # Test creating existing directory with exist_ok=False
         with patch(
-                "quack_core.core.fs._operations._ensure_directory"
+                "quack_core.core.fs.operations._ensure_directory"
         ) as mock_ensure_directory:
             mock_ensure_directory.side_effect = QuackFileExistsError(
                 str(temp_dir / "new_dir")
@@ -487,7 +487,7 @@ class TestFileSystemOperations:
             assert "json" in str(excinfo.value).lower() or "type error" in str(excinfo.value).lower()
 
     def test_error_handling(self, temp_dir: Path) -> None:
-        """Test error handling in _operations."""
+        """Test error handling in operations."""
         operations = FileSystemOperations(base_dir=temp_dir)
 
         # Test permission error
@@ -498,7 +498,7 @@ class TestFileSystemOperations:
             assert "permission denied" in str(excinfo.value).lower()
 
         # Test IO error
-        with patch("quack_core.core.fs._operations._atomic_write") as mock_atomic_write:
+        with patch("quack_core.core.fs.operations._atomic_write") as mock_atomic_write:
             mock_atomic_write.side_effect = QuackIOError("IO error")
             with pytest.raises(QuackIOError) as excinfo:
                 operations._write_text("io_error.txt", "content")

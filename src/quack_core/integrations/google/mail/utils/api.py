@@ -20,7 +20,7 @@ from typing import Protocol, TypeVar, runtime_checkable
 
 from googleapiclient.errors import HttpError
 from quack_core.integrations.google.mail.protocols import GmailRequest
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 T = TypeVar("T")  # Generic type for API response
 R = TypeVar("R")  # Generic type for request results

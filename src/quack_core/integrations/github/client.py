@@ -13,7 +13,7 @@
 from typing import Any, Literal
 
 import requests
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 from .models import GitHubRepo, GitHubUser, PullRequest
 from .operations import (

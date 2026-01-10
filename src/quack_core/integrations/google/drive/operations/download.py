@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-Download _operations for Google Drive integration.
+Download operations for Google Drive integration.
 
 This module provides robust file download functionality with improved error handling.
 """
@@ -22,9 +22,9 @@ from collections.abc import Mapping
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.protocols import DriveService
 from quack_core.integrations.google.drive.utils.api import execute_api_request
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 from quack_core.core.fs.service import standalone
-from quack_core.lib.paths import service as paths_service
+from quack_core.core.paths import service as paths_service
 
 
 def resolve_download_path(

@@ -19,7 +19,7 @@ without having to create a service instance.
 from pathlib import Path
 from typing import TypeVar
 
-from quack_core.fs.results import (
+from quack_core.core.fs.results import (
     DataResult,
     DirectoryInfoResult,
     FileInfoResult,
@@ -31,7 +31,7 @@ from quack_core.fs.results import (
 )
 
 # Import the complete FileSystemService with all mixins
-from quack_core.fs.service.full_class import FileSystemService
+from quack_core.core.fs.service.full_class import FileSystemService
 
 T = TypeVar("T")  # Generic type for flexible typing
 

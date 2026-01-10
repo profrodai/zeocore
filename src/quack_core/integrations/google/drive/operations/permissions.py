@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-Permission _operations for Google Drive integration.
+Permission operations for Google Drive integration.
 
 This module provides functions for managing file permissions in Google Drive,
 including setting permissions and retrieving sharing links.
@@ -23,7 +23,7 @@ from quack_core.integrations.google.drive.protocols import DriveService
 
 # Import the api.api module itself, not just the function
 from quack_core.integrations.google.drive.utils import api
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 def set_file_permissions(

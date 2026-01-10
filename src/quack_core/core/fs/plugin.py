@@ -8,8 +8,8 @@ allowing QuackCore to expose filesystem functionality to other modules.
 from pathlib import Path
 from typing import Protocol, TypeVar
 
-from quack_core.lib.fs.results import DataResult, OperationResult, ReadResult, WriteResult
-from quack_core.lib.fs.service import FileSystemService, get_service
+from quack_core.core.fs.results import DataResult, OperationResult, ReadResult, WriteResult
+from quack_core.core.fs.service import FileSystemService, get_service
 
 T = TypeVar("T")
 

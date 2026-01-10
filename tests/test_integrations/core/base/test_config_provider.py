@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 import pytest
 from quack_core.integrations.core.base import BaseConfigProvider
-from quack_core.lib.errors import QuackConfigurationError
+from quack_core.core.errors import QuackConfigurationError
 
 from .config_provider_impl import (
     MockConfigProvider,

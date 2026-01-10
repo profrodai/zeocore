@@ -7,7 +7,7 @@
 # git_commit: 41712bc9
 # === QV-LLM:END ===
 
-"""Tests for GitHub API _operations."""
+"""Tests for GitHub API operations."""
 
 import base64
 from unittest.mock import MagicMock, patch
@@ -39,7 +39,7 @@ from quack_core.integrations.github.operations import (
     unstar_repo,
     update_repository_file,
 )
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 @pytest.fixture
@@ -58,7 +58,7 @@ def mock_response():
 
 
 class TestUserOperations:
-    """Tests for user _operations."""
+    """Tests for user operations."""
 
     def test_get_user_authenticated(self, mock_session, mock_response):
         """Test getting the authenticated user."""
@@ -140,7 +140,7 @@ class TestUserOperations:
 
 
 class TestRepositoryOperations:
-    """Tests for repository _operations."""
+    """Tests for repository operations."""
 
     def test_get_repo(self, mock_session, mock_response):
         """Test getting a repository."""
@@ -515,7 +515,7 @@ class TestRepositoryOperations:
 
 
 class TestPullRequestOperations:
-    """Tests for pull request _operations."""
+    """Tests for pull request operations."""
 
     def test_create_pull_request(self, mock_session, mock_response):
         """Test creating a pull request."""
@@ -778,7 +778,7 @@ class TestPullRequestOperations:
 
 
 class TestIssueOperations:
-    """Tests for issue _operations."""
+    """Tests for issue operations."""
 
     def test_create_issue(self, mock_session, mock_response):
         """Test creating an issue."""

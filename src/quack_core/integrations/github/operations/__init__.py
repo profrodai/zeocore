@@ -8,7 +8,7 @@
 # git_commit: 41712bc9
 # === QV-LLM:END ===
 
-"""GitHub API _operations."""
+"""GitHub API operations."""
 
 from .issues import add_issue_comment, create_issue, get_issue, list_issues
 from .pull_requests import (
@@ -30,7 +30,7 @@ from .repositories import (
 from .users import get_user
 
 __all__ = [
-    # Repository _operations
+    # Repository operations
     "get_repo",
     "star_repo",
     "unstar_repo",
@@ -39,14 +39,14 @@ __all__ = [
     "check_repository_exists",
     "get_repository_file_content",
     "update_repository_file",
-    # User _operations
+    # User operations
     "get_user",
-    # Pull request _operations
+    # Pull request operations
     "create_pull_request",
     "list_pull_requests",
     "get_pull_request",
     "get_pull_request_files",
-    # Issue _operations
+    # Issue operations
     "create_issue",
     "list_issues",
     "get_issue",

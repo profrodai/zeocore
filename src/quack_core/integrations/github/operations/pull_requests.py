@@ -8,7 +8,7 @@
 # git_commit: 41712bc9
 # === QV-LLM:END ===
 
-"""GitHub pull request _operations."""
+"""GitHub pull request operations."""
 
 from datetime import datetime
 from typing import Any, Literal
@@ -20,8 +20,8 @@ from quack_core.integrations.github.models import (
     PullRequestStatus,
 )
 from quack_core.integrations.github.utils.api import make_request
-from quack_core.lib.errors import QuackError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackError
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 

@@ -25,7 +25,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.traceback import Traceback
 
-from quack_core.lib.errors.base import QuackError
+from quack_core.core.errors.base import QuackError
 
 T = TypeVar("T")
 

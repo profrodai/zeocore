@@ -18,10 +18,10 @@ import pytest
 import yaml
 from quack_core.config.loader import load_config
 from quack_core.config.models import QuackConfig
-from quack_core.lib.errors import QuackError
+from quack_core.core.errors import QuackError
 from quack_core.core.fs.service import FileSystemService
-from quack_core.lib.paths import PathResolver
-from quack_core.lib.paths import service as paths
+from quack_core.core.paths import PathResolver
+from quack_core.core.paths import service as paths
 from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ProviderPluginProtocol,
@@ -31,7 +31,7 @@ from quack_core.modules.registry import PluginRegistry
 
 # Test modules to register in the registry
 class SampleFilePlugin(CommandPluginProtocol):
-    """A test plugin for file _operations."""
+    """A test plugin for file operations."""
 
     def __init__(self, fs_service: FileSystemService) -> None:
         """Initialize with a filesystem service."""
@@ -71,7 +71,7 @@ class SampleFilePlugin(CommandPluginProtocol):
 
 
 class SamplePathPlugin(CommandPluginProtocol):
-    """A test plugin for path _operations."""
+    """A test plugin for path operations."""
 
     def __init__(self, path_resolver: PathResolver) -> None:
         """Initialize with a path resolver."""
@@ -144,7 +144,7 @@ class TestIntegration:
     """Integration tests for QuackCore components."""
 
     def test_config_to_filesystem_pipeline(self, temp_dir: Path) -> None:
-        """Test integrating configuration with filesystem _operations."""
+        """Test integrating configuration with filesystem operations."""
         # Create a test configuration file
         config_file = temp_dir / "test_config.yaml"  # Fixed string concatenation
         config_data = {
@@ -175,7 +175,7 @@ class TestIntegration:
         # Create services using the configuration
         fs_service = FileSystemService(base_dir=config.paths.base_dir)
 
-        # Test read/write _operations using configured paths
+        # Test read/write operations using configured paths
         output_file = output_dir / "output.txt"
 
         write_result = fs_service.write_text(output_file, "Generated output")

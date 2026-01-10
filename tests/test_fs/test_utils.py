@@ -21,7 +21,7 @@ from unittest.mock import patch
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-from quack_core.lib.errors import (
+from quack_core.core.errors import (
     QuackFileExistsError,
     QuackFileNotFoundError,
     QuackIOError,
@@ -658,7 +658,7 @@ class TestFileUtilities:
 
     @given(st.text(min_size=1, max_size=100))
     def test_hypothetical_path_operations(self, text: str) -> None:
-        """Test path _operations with hypothesis-generated text."""
+        """Test path operations with hypothesis-generated text."""
         # Handle problematic characters more carefully:
         # 1. Period at start of string
         # 2. Unicode characters that might cause file system issues

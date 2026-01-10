@@ -8,18 +8,18 @@
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive service folder _operations.
+Tests for Google Drive service folder operations.
 """
 
 from unittest.mock import MagicMock, patch
 
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.service import GoogleDriveService
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 class TestGoogleDriveServiceFolders:
-    """Tests for the GoogleDriveService folder _operations."""
+    """Tests for the GoogleDriveService folder operations."""
 
     @patch(
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"

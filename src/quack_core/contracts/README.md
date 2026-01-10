@@ -28,7 +28,7 @@ The `quack_core.contracts` module defines the **canonical data contracts** for t
 - Workflow orchestration
 
 ❌ **External dependencies**:
-- No imports from `quack_core.lib.*`
+- No imports from `quack_core.core.*`
 - No imports from `quack_core.tools.*`
 - No imports from `quack_core.integrations.*`
 - No imports from `quack_core.workflow.*`

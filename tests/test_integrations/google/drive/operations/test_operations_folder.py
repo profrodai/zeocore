@@ -8,14 +8,14 @@
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive _operations folder module.
+Tests for Google Drive operations folder module.
 """
 
 import logging
 from unittest.mock import patch
 
 from quack_core.integrations.google.drive.operations import folder
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
@@ -26,7 +26,7 @@ from tests.test_integrations.google.drive.mocks import (
 
 
 class TestDriveOperationsFolder:
-    """Tests for the Google Drive _operations folder functions."""
+    """Tests for the Google Drive operations folder functions."""
 
     def test_create_folder(self) -> None:
         """Test creating a folder in Google Drive."""

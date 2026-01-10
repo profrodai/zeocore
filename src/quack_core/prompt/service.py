@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 from quack_core.prompt._internal.enhancer import enhance_with_llm_safe
 from quack_core.prompt._internal.registry import StrategyRegistry
 from quack_core.prompt._internal.selector import select_best_strategy

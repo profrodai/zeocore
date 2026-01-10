@@ -8,7 +8,7 @@
 # === QV-LLM:END ===
 
 """
-Mock classes for Google Drive download _operations.
+Mock classes for Google Drive download operations.
 """
 
 import logging
@@ -48,10 +48,10 @@ def mock_download_file(
 
 class MockDownloadOperations:
     """
-    Mock class to replace the _operations/download.py module.
+    Mock class to replace the operations/download.py module.
 
     This provides replacement functions with matching signatures
-    to the real download _operations module.
+    to the real download operations module.
     """
 
     @staticmethod

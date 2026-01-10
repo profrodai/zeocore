@@ -21,7 +21,7 @@ import requests
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms.clients.ollama import OllamaClient
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 
 class TestOllamaClient:

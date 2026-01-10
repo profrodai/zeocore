@@ -22,9 +22,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from quack_core.adapters.http.config import HttpAdapterConfig
 from quack_core.adapters.http.routes import health, jobs, operations
-from quack_core.lib.jobs import InMemoryJobStore, JobStore, ThreadPoolJobRunner
-from quack_core.lib.logging import get_logger
-from quack_core.lib.registry import OperationRegistry, get_registry
+from quack_core.core.jobs import InMemoryJobStore, JobStore, ThreadPoolJobRunner
+from quack_core.core.logging import get_logger
+from quack_core.core.registry import OperationRegistry, get_registry
 
 logger = get_logger(__name__)
 

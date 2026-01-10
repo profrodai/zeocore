@@ -8,17 +8,17 @@
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive service deletion _operations.
+Tests for Google Drive service deletion operations.
 """
 
 from unittest.mock import MagicMock
 
 from quack_core.integrations.google.drive.service import GoogleDriveService
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 class TestGoogleDriveServiceDelete:
-    """Tests for the GoogleDriveService deletion _operations."""
+    """Tests for the GoogleDriveService deletion operations."""
 
     def test_delete_file(self) -> None:
         """Test deleting a file."""

@@ -8,9 +8,9 @@
 # === QV-LLM:END ===
 
 """
-Tests for Gmail email _operations.
+Tests for Gmail email operations.
 
-This module tests the email _operations functionality for the Google Mail integration,
+This module tests the email operations functionality for the Google Mail integration,
 including building queries, listing emails, and downloading emails.
 """
 
@@ -31,7 +31,7 @@ from quack_core.integrations.google.mail.protocols import (
 
 
 class TestGmailEmailOperations:
-    """Tests for Gmail email _operations."""
+    """Tests for Gmail email operations."""
 
     @pytest.fixture
     def mock_gmail_service(self):

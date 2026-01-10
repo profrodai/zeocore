@@ -18,7 +18,7 @@ import pytest
 from quack_core.interfaces.cli.legacy.boostrap import from_cli_options, init_cli_env
 from quack_core.interfaces.cli.legacy.context import QuackContext
 from quack_core.interfaces.cli.utils.options import CliOptions
-from quack_core.lib.errors import QuackError
+from quack_core.core.errors import QuackError
 
 from .mocks import (
     MockConfig,

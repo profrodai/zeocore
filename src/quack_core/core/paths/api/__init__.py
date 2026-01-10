@@ -14,7 +14,7 @@ This package provides the API for the paths module,
 including both public and internal interfaces.
 """
 
-from quack_core.lib.paths.api.public import ContextResult, PathResult
+from quack_core.core.paths.api.public import ContextResult, PathResult
 
 __all__ = [
     "PathResult",

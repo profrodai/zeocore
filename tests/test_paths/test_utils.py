@@ -17,9 +17,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from quack_core.lib.errors import QuackFileNotFoundError
+from quack_core.core.errors import QuackFileNotFoundError
 from quack_core.core.fs.service import standalone as fs_standalone
-from quack_core.lib.paths import service as paths
+from quack_core.core.paths import service as paths
 
 
 # Create mock DataResult for fs operations
@@ -140,7 +140,7 @@ class TestPathUtils:
 
         # Test resolving without explicit project root
         with patch(
-                "quack_core.lib.paths._internal.utils._find_project_root",
+                "quack_core.core.paths._internal.utils._find_project_root",
                 return_value=str(mock_project_structure),
         ):
             resolved_result = paths.resolve_relative_to_project("src/file.txt")
@@ -150,7 +150,7 @@ class TestPathUtils:
 
         # Test when project root cannot be found
         with patch(
-                "quack_core.lib.paths._internal.utils._find_project_root",
+                "quack_core.core.paths._internal.utils._find_project_root",
                 side_effect=QuackFileNotFoundError(""),
         ):
             # Should default to current directory
@@ -260,7 +260,7 @@ class TestPathUtils:
 
         # Test inferring from a file with a relative path
         with patch(
-                "quack_core.lib.paths._internal.utils._find_project_root",
+                "quack_core.core.paths._internal.utils._find_project_root",
                 return_value=str(mock_project_structure),
         ):
             module_name_result = paths.infer_module_from_path(
@@ -271,7 +271,7 @@ class TestPathUtils:
 
         # Test inferring when src directory cannot be found
         with patch(
-                "quack_core.lib.paths._internal.utils._find_nearest_directory",
+                "quack_core.core.paths._internal.utils._find_nearest_directory",
                 side_effect=QuackFileNotFoundError(""),
         ):
             # Should use file's directory as fallback
@@ -282,7 +282,7 @@ class TestPathUtils:
 
         # Test inferring when file is not in project
         with patch(
-                "quack_core.lib.paths._internal.utils._find_project_root",
+                "quack_core.core.paths._internal.utils._find_project_root",
                 side_effect=QuackFileNotFoundError(""),
         ):
             module_name_result = paths.infer_module_from_path(

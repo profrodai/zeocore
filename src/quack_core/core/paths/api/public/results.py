@@ -15,7 +15,7 @@ This module defines result models for path resolution operations.
 """
 
 from pydantic import BaseModel
-from quack_core.lib.paths.models import ContentContext, ProjectContext
+from quack_core.core.paths.models import ContentContext, ProjectContext
 
 
 class PathResult(BaseModel):

@@ -11,7 +11,7 @@
 """
 Operations package for pandoc integration.
 
-This package contains specialized modules for different pandoc _operations,
+This package contains specialized modules for different pandoc operations,
 such as HTML to Markdown and Markdown to DOCX conversion.
 """
 

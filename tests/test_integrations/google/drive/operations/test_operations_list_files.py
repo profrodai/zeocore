@@ -8,14 +8,14 @@
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive _operations list_files module.
+Tests for Google Drive operations list_files module.
 """
 
 from unittest.mock import patch
 
 from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
 from quack_core.integrations.google.drive.operations import list_files
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
@@ -26,7 +26,7 @@ from tests.test_integrations.google.drive.mocks import (
 
 
 class TestDriveOperationsListFiles:
-    """Tests for the Google Drive _operations list_files functions."""
+    """Tests for the Google Drive operations list_files functions."""
 
     def test_list_files(self) -> None:
         """Test listing files from Google Drive."""

@@ -7,7 +7,7 @@
 # === QV-LLM:END ===
 
 """
-Test module for quack_core.lib.paths.
+Test module for quack_core.core.paths.
 
-This directory contains unit tests for the quack_core.lib.paths module.
+This directory contains unit tests for the quack_core.core.paths module.
 """

@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from quack_core.integrations.llms.clients.openai import OpenAIClient
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
 
 from tests.test_integrations.llms.mocks.openai import (
     MockOpenAIClient,

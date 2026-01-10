@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-File listing _operations for Google Drive integration.
+File listing operations for Google Drive integration.
 
 This module provides functions for listing files and folders in Google Drive,
 including query building and result formatting.
@@ -23,8 +23,8 @@ from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
 from quack_core.integrations.google.drive.protocols import DriveService
 from quack_core.integrations.google.drive.utils.api import execute_api_request
 from quack_core.integrations.google.drive.utils.query import build_query
-from quack_core.lib.errors import QuackApiError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackApiError
+from quack_core.core.logging import get_logger
 
 
 def list_files(

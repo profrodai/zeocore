@@ -32,8 +32,8 @@ from quack_core.integrations.pandoc.operations.utils import (
     track_metrics,
     validate_html_structure,
 )
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 

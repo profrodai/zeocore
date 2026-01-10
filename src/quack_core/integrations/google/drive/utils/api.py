@@ -20,7 +20,7 @@ from typing import TypeVar
 
 from googleapiclient.errors import HttpError
 from quack_core.integrations.google.drive.protocols import DriveRequest
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 T = TypeVar("T")  # Generic type for API response
 R = TypeVar("R")  # Generic type for request results

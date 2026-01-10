@@ -11,7 +11,7 @@
 """
 Operations package for Google Mail integration.
 
-This package contains specialized modules for different Gmail _operations,
+This package contains specialized modules for different Gmail operations,
 such as listing emails, downloading messages, and handling attachments.
 """
 

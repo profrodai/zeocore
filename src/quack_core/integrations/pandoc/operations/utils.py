@@ -9,11 +9,11 @@
 # === QV-LLM:END ===
 
 """
-Utility functions for pandoc _operations.
+Utility functions for pandoc operations.
 
-This module provides helper functions for pandoc conversion _operations,
+This module provides helper functions for pandoc conversion operations,
 such as validation, metrics tracking, and pandoc installation verification.
-All file path values are handled as strings. Filesystem _operations are delegated
+All file path values are handled as strings. Filesystem operations are delegated
 to the quack_core.core.fs service.
 """
 
@@ -23,8 +23,8 @@ from typing import Any
 
 from quack_core.integrations.pandoc.config import PandocConfig
 from quack_core.integrations.pandoc.models import ConversionMetrics, FileInfo
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 

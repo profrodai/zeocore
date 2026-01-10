@@ -5,4 +5,4 @@
 # git_commit: 41712bc9
 # === QV-LLM:END ===
 
-"""Tests for GitHub _operations."""
+"""Tests for GitHub operations."""

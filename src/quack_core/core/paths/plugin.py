@@ -20,9 +20,9 @@ from pathlib import Path
 from typing import Protocol
 
 from quack_core.core.fs import DataResult, OperationResult
-from quack_core.lib.paths.models import ContentContext, ProjectContext
-from quack_core.lib.paths._internal.resolver import PathResolver
-from quack_core.lib.paths._internal.utils import _normalize_path_param
+from quack_core.core.paths.models import ContentContext, ProjectContext
+from quack_core.core.paths._internal.resolver import PathResolver
+from quack_core.core.paths._internal.utils import _normalize_path_param
 
 
 class PathsPlugin(Protocol):

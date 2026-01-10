@@ -24,7 +24,7 @@ from quack_core.adapters.http.dependencies import (
     get_registry,
     require_auth,
 )
-from quack_core.lib.registry import OperationRegistry, invoke_operation
+from quack_core.core.registry import OperationRegistry, invoke_operation
 
 router = APIRouter()
 

@@ -28,7 +28,7 @@ from quack_core.integrations.pandoc.operations.html_to_md import (
     post_process_markdown,
     validate_html_conversion,
 )
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 # Import patched utilities to avoid DataResult validation errors
 from .test_utils_fix import (

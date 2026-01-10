@@ -8,7 +8,7 @@
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive _operations download module.
+Tests for Google Drive operations download module.
 """
 
 import logging
@@ -16,9 +16,9 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from quack_core.integrations.google.drive.operations import download
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 from quack_core.core.fs import FileInfoResult, OperationResult, WriteResult
-from quack_core.lib.paths.api.public.results import PathResult
+from quack_core.core.paths.api.public.results import PathResult
 
 from tests.test_integrations.google.drive.mocks import (
     create_error_drive_service,
@@ -27,7 +27,7 @@ from tests.test_integrations.google.drive.mocks import (
 
 
 class TestDriveOperationsDownload:
-    """Tests for the Google Drive _operations download functions."""
+    """Tests for the Google Drive operations download functions."""
 
     def test_download_file_simple(self) -> None:
         """Test downloading a file from Google Drive - simplified approach."""
