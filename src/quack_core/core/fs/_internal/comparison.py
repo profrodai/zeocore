@@ -1,7 +1,16 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_internal/comparison.py
+# module: quack_core.core.fs._internal.comparison
+# role: module
+# neighbors: __init__.py, checksums.py, common.py, disk.py, file_info.py, file_ops.py (+4 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: ccfbaeea
+# === QV-LLM:END ===
+
 import os
 from typing import Any
 from pathlib import Path
-from quack_core.fs._internal.common import _normalize_path
+from quack_core.core.fs._internal.common import _normalize_path
 
 def _is_same_file(path1: Path, path2: Path) -> bool:
     try:

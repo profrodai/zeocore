@@ -5,7 +5,7 @@
 # neighbors: operations.py, dependencies.py, initialization.py, integration.py
 # exports: LLMIntegration, check_llm_dependencies
 # git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
+# git_commit: ccfbaeea
 # === QV-LLM:END ===
 
 """

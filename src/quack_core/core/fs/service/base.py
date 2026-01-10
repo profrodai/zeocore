@@ -1,12 +1,22 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/service/base.py
+# module: quack_core.core.fs.service.base
+# role: service
+# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
+# exports: FileSystemService
+# git_branch: feat/9-make-setup-work
+# git_commit: ccfbaeea
+# === QV-LLM:END ===
+
 from pathlib import Path
 from typing import Any
 
-from quack_core.fs.operations.base import FileSystemOperations
-from quack_core.fs.protocols import FsPathLike
-from quack_core.fs.normalize import coerce_path
-from quack_core.fs.results import ErrorInfo
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
-from quack_core.lib.errors import QuackValidationError
+from quack_core.core.fs.operations.base import FileSystemOperations
+from quack_core.core.fs.protocols import FsPathLike
+from quack_core.core.fs.normalize import coerce_path
+from quack_core.core.fs.results import ErrorInfo
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackValidationError
 
 
 class FileSystemService:

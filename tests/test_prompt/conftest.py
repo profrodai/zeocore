@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_booster.py, test_enhancer.py, test_integration.py, test_plugin.py, test_registry.py (+2 more)
 # exports: mock_render_fn, basic_strategy, registered_strategy, prompt_output_dir, mock_llm_integration, complex_render_fn, complex_strategy
 # git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
+# git_commit: ccfbaeea
 # === QV-LLM:END ===
 
 """

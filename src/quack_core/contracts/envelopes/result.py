@@ -5,7 +5,7 @@
 # neighbors: __init__.py, error.py, log.py
 # exports: CapabilityResult
 # git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
+# git_commit: ccfbaeea
 # === QV-LLM:END ===
 
 """

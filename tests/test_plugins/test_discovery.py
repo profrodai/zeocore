@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_explicit_loading.py, test_protocols.py, test_registry.py
 # exports: MockPlugin, TestPluginLoader
 # git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
+# git_commit: ccfbaeea
 # === QV-LLM:END ===
 
 """

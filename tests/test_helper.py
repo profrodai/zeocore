@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py
 # exports: setup_python_path
 # git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
+# git_commit: ccfbaeea
 # === QV-LLM:END ===
 
 """

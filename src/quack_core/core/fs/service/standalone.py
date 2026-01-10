@@ -1,15 +1,25 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/service/standalone.py
+# module: quack_core.core.fs.service.standalone
+# role: service
+# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
+# exports: read_text, write_text, read_binary, write_binary, read_lines, write_lines, copy, move (+41 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: ccfbaeea
+# === QV-LLM:END ===
+
 """
 Standalone wrappers that delegate to the singleton service.
 Ensures consistent configuration and state.
 """
 from typing import Any
 from pathlib import Path
-from quack_core.fs.service import get_service
-from quack_core.fs.results import (
+from quack_core.core.fs.service import get_service
+from quack_core.core.fs.results import (
     DataResult, DirectoryInfoResult, FileInfoResult, FindResult,
     OperationResult, PathResult, ReadResult, WriteResult
 )
-from quack_core.fs.normalize import coerce_path, coerce_path_str, safe_path_str
+from quack_core.core.fs.normalize import coerce_path, coerce_path_str, safe_path_str
 
 def read_text(path: Any, encoding: str = "utf-8") -> ReadResult[str]:
     return get_service().read_text(path, encoding)
@@ -153,7 +163,7 @@ def extract_path_from_result(path_or_result: Any) -> DataResult[str]:
 
 def extract_path_str(obj: Any) -> str:
     # Delegate to normalize logic
-    from quack_core.fs.normalize import coerce_path_str as _cps
+    from quack_core.core.fs.normalize import coerce_path_str as _cps
     return _cps(obj)
 
 def copy_safely(src: Any, dst: Any, overwrite: bool = False) -> WriteResult:

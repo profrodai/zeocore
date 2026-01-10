@@ -1,7 +1,15 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/api/__init__.py
+# module: quack_core.core.fs.api.__init__
+# role: api
+# git_branch: feat/9-make-setup-work
+# git_commit: ccfbaeea
+# === QV-LLM:END ===
+
 """
-DEPRECATED: Use quack_core.fs.service.standalone for utility functions.
+DEPRECATED: Use quack_core.core.fs.service.standalone for utility functions.
 """
 import warnings
-from quack_core.fs.service.standalone import *
+from quack_core.core.fs.service.standalone import *
 
-warnings.warn("quack_core.fs.api is deprecated. Use quack_core.fs.service or quack_core.fs.service.standalone instead.", DeprecationWarning, stacklevel=2)
+warnings.warn("quack_core.core.fs.api is deprecated. Use quack_core.core.fs.service or quack_core.core.fs.service.standalone instead.", DeprecationWarning, stacklevel=2)

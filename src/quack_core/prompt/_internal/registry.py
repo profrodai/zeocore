@@ -5,7 +5,7 @@
 # neighbors: __init__.py, enhancer.py, selector.py
 # exports: StrategyRegistry
 # git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
+# git_commit: ccfbaeea
 # === QV-LLM:END ===
 
 from collections.abc import Sequence

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_booster.py, test_enhancer.py, test_plugin.py, test_registry.py (+2 more)
 # exports: setup_teardown, create_and_register_test_strategies, test_strategy_registry_integration, test_booster_with_registry_integration, test_booster_auto_strategy_selection, test_llm_integration, test_full_pipeline_with_mock_llm, test_registry_import_integration
 # git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
+# git_commit: ccfbaeea
 # === QV-LLM:END ===
 
 """
