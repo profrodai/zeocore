@@ -4,7 +4,7 @@
 # neighbors: __init__.py, base.py, download.py, media.py, requests.py, resources.py (+1 more)
 # exports: MockGoogleCredentials, create_credentials
 # git_branch: feat/9-make-setup-work
-# git_commit: 8bfe1405
+# git_commit: 3a380e47
 # === QV-LLM:END ===
 
 """

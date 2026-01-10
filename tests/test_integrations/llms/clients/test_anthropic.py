@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_base.py, test_clients.py, test_mock.py, test_ollama.py, test_openai.py
 # exports: TestAnthropicClient
 # git_branch: feat/9-make-setup-work
-# git_commit: 8bfe1405
+# git_commit: 3a380e47
 # === QV-LLM:END ===
 
 """

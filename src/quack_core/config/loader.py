@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, plugin.py, utils.py
 # exports: load_yaml_config, find_config_file, load_config, merge_configs
 # git_branch: feat/9-make-setup-work
-# git_commit: 8bfe1405
+# git_commit: 3a380e47
 # === QV-LLM:END ===
 
 

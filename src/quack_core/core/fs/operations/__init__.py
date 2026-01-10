@@ -5,7 +5,7 @@
 # neighbors: base.py, core.py, directory_ops.py, file_info.py, find_ops.py, path_ops.py (+4 more)
 # exports: FileSystemOperations
 # git_branch: feat/9-make-setup-work
-# git_commit: 8bfe1405
+# git_commit: 3a380e47
 # === QV-LLM:END ===
 
 from quack_core.core.fs.operations.base import FileSystemOperations

@@ -2,6 +2,6 @@
 # path: quack-core/tests/test_integrations/__init__.py
 # role: tests
 # git_branch: feat/9-make-setup-work
-# git_commit: 8bfe1405
+# git_commit: 3a380e47
 # === QV-LLM:END ===
 

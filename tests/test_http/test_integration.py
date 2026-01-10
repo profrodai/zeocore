@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_jobs.py, test_routes_jobs.py (+2 more)
 # exports: integration_client, integration_headers, test_full_job_workflow, test_sync_vs_async_consistency, test_health_endpoints, test_cors_headers, test_openapi_docs
 # git_branch: feat/9-make-setup-work
-# git_commit: 8bfe1405
+# git_commit: 3a380e47
 # === QV-LLM:END ===
 
 """

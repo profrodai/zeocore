@@ -3,10 +3,13 @@
 # module: quack_core.core.fs.api.__init__
 # role: api
 # git_branch: feat/9-make-setup-work
-# git_commit: 8bfe1405
+# git_commit: 3a380e47
 # === QV-LLM:END ===
 
 """
-DEPRECATED: Use quack_core.core.fs.service or quack_core.core.fs.api.public
+DEPRECATED: Use quack_core.core.fs.service.standalone for utility functions.
 """
-from quack_core.core.fs.api.public import *
+import warnings
+from quack_core.core.fs.service.standalone import *
+
+warnings.warn("quack_core.core.fs.api is deprecated. Use quack_core.core.fs.service or quack_core.core.fs.service.standalone instead.", DeprecationWarning, stacklevel=2)
