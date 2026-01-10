@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/results.py
-# module: quack_core.core.fs.results
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py
-# exports: ErrorInfo, OperationResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult, DataResult (+1 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Generic, TypeVar, Optional
 from pydantic import BaseModel, Field, field_serializer, computed_field
@@ -16,7 +6,7 @@ T = TypeVar("T")
 
 class ErrorInfo(BaseModel):
     """Structured error information."""
-    type: str = Field(description="Error type identifier")
+    type: str = Field(description="Error type identifier (e.g. 'FileNotFoundError')")
     message: str = Field(description="Human-readable error message")
     hint: Optional[str] = Field(default=None, description="Optional hint for resolution")
     exception: Optional[str] = Field(default=None, description="Stringified exception class")
@@ -25,8 +15,14 @@ class OperationResult(BaseModel):
     success: bool = Field(description="Whether the operation was successful")
     path: Path | None = Field(default=None, description="Path operated on")
     message: str | None = Field(default=None)
-    error: str | None = Field(default=None) # Keep simple string for compat
+    error: str | None = Field(default=None, description="Legacy error string")
     error_info: ErrorInfo | None = Field(default=None, description="Structured error details")
+
+    @computed_field
+    @property
+    def ok(self) -> bool:
+        """Alias for success."""
+        return self.success
 
     @field_serializer('path')
     def serialize_path(self, path: Path | None, _info):

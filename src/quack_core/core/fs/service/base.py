@@ -1,24 +1,21 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
-# === QV-LLM:END ===
-
 from pathlib import Path
 
-from quack_core.core.fs.operations.base import FileSystemOperations
-from quack_core.core.fs.protocols import FsPathLike
-from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
-from quack_core.core.errors import QuackValidationError
-from quack_core.core.fs._internal.path_utils import _extract_path_str
+from quack_core.fs.operations.base import FileSystemOperations
+from quack_core.fs.protocols import FsPathLike
+from quack_core.fs.normalize import coerce_path
+from quack_core.fs.results import ErrorInfo
+from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.lib.errors import QuackValidationError
+
 
 class FileSystemService:
-    """Central FileSystem Service."""
-    def __init__(self, base_dir: str | Path | None = None, log_level: int = LOG_LEVELS[LogLevel.INFO]) -> None:
+    """
+    Central FileSystem Service.
+    Handles configuration, normalization, and error mapping.
+    """
+
+    def __init__(self, base_dir: str | Path | None = None,
+                 log_level: int = LOG_LEVELS[LogLevel.INFO]) -> None:
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
         self.base_dir = Path(base_dir) if base_dir else Path.cwd()
@@ -27,12 +24,37 @@ class FileSystemService:
     def _normalize_input_path(self, path: FsPathLike) -> Path:
         """
         SSOT for service input normalization.
-        Extracts path string from polymorphic input and returns a Path object.
+        Uses fs.normalize to coerce inputs.
         """
         try:
-            # We use the internal helper here because this is the service implementation details
-            # Callers should not need to know about _extract_path_str
-            path_str = _extract_path_str(path)
-            return Path(path_str)
+            return coerce_path(path)
         except (TypeError, ValueError) as e:
-            raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
+            raise QuackValidationError(f"Invalid path input: {path}",
+                                       original_error=e) from e
+
+    def _map_error(self, e: Exception) -> ErrorInfo:
+        """
+        Centralized error mapping logic.
+        Converts native exceptions to structured ErrorInfo.
+        """
+        err_type = type(e).__name__
+        msg = str(e)
+        hint = None
+
+        if isinstance(e, FileNotFoundError):
+            err_type = "FileNotFoundError"
+            msg = "File or directory not found"
+        elif isinstance(e, PermissionError):
+            err_type = "PermissionError"
+            msg = "Permission denied"
+            hint = "Check file permissions or run with elevated privileges."
+        elif isinstance(e, IsADirectoryError):
+            err_type = "IsADirectoryError"
+            msg = "Expected a file but found a directory"
+
+        return ErrorInfo(
+            type=err_type,
+            message=msg,
+            hint=hint,
+            exception=str(e)
+        )
