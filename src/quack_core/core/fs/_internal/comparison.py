@@ -1,28 +1,17 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/comparison.py
-# module: quack_core.core.fs._internal.comparison
-# role: module
-# neighbors: __init__.py, checksums.py, common.py, disk.py, file_info.py, file_ops.py (+4 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
-# === QV-LLM:END ===
-
 import os
 from typing import Any
-from quack_core.core.fs._internal.common import _normalize_path
-from quack_core.core.fs._internal.path_utils import _normalize_path_param
+from pathlib import Path
+from quack_core.fs._internal.common import _normalize_path
 
-def _is_same_file(path1: Any, path2: Any) -> bool:
-    path1_obj = _normalize_path_param(path1)
-    path2_obj = _normalize_path_param(path2)
+def _is_same_file(path1: Path, path2: Path) -> bool:
     try:
-        return os.path.samefile(str(path1_obj), str(path2_obj))
+        return os.path.samefile(str(path1), str(path2))
     except OSError:
-        return _normalize_path(path1_obj) == _normalize_path(path2_obj)
+        return _normalize_path(path1) == _normalize_path(path2)
 
-def _is_subdirectory(child: Any, parent: Any) -> bool:
-    child_path = _normalize_path(_normalize_path_param(child))
-    parent_path = _normalize_path(_normalize_path_param(parent))
+def _is_subdirectory(child: Path, parent: Path) -> bool:
+    child_path = _normalize_path(child)
+    parent_path = _normalize_path(parent)
     if child_path == parent_path:
         return False
     try:

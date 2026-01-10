@@ -1,63 +1,47 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/safe_ops.py
-# module: quack_core.core.fs._internal.safe_ops
-# role: module
-# neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_info.py (+4 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
-# === QV-LLM:END ===
-
 import shutil
 from pathlib import Path
 from typing import Any
-from quack_core.core.errors import QuackFileExistsError, QuackFileNotFoundError, QuackIOError, QuackPermissionError
-from quack_core.core.fs._internal.path_utils import _normalize_path_param
 
-def _safe_copy(src: Any, dst: Any, overwrite: bool = False) -> Path:
-    src_path = _normalize_path_param(src)
-    dst_path = _normalize_path_param(dst)
-    if not src_path.exists(): raise QuackFileNotFoundError(str(src_path))
-    if dst_path.exists() and not overwrite: raise QuackFileExistsError(str(dst_path))
+def _safe_copy(src: Path, dst: Path, overwrite: bool = False) -> Path:
+    if not src.exists(): raise FileNotFoundError(str(src))
+    if dst.exists() and not overwrite: raise FileExistsError(str(dst))
     try:
-        if src_path.is_dir():
-            if dst_path.exists() and overwrite: shutil.rmtree(dst_path)
-            shutil.copytree(src_path, dst_path)
+        if src.is_dir():
+            if dst.exists() and overwrite: shutil.rmtree(dst)
+            shutil.copytree(src, dst)
         else:
-            if not dst_path.parent.exists(): dst_path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(src_path, dst_path)
-        return dst_path
+            if not dst.parent.exists(): dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+        return dst
     except PermissionError as e:
-        raise QuackPermissionError(str(dst_path), "copy", original_error=e) from e
+        raise PermissionError(f"Permission denied copying to {dst}") from e
     except Exception as e:
-        raise QuackIOError(f"Copy failed: {e}", str(dst_path), original_error=e) from e
+        raise IOError(f"Copy failed: {e}") from e
 
-def _safe_move(src: Any, dst: Any, overwrite: bool = False) -> Path:
-    src_path = _normalize_path_param(src)
-    dst_path = _normalize_path_param(dst)
-    if not src_path.exists(): raise QuackFileNotFoundError(str(src_path))
-    if dst_path.exists() and not overwrite: raise QuackFileExistsError(str(dst_path))
+def _safe_move(src: Path, dst: Path, overwrite: bool = False) -> Path:
+    if not src.exists(): raise FileNotFoundError(str(src))
+    if dst.exists() and not overwrite: raise FileExistsError(str(dst))
     try:
-        if not dst_path.parent.exists(): dst_path.parent.mkdir(parents=True, exist_ok=True)
-        if dst_path.exists() and overwrite:
-            if dst_path.is_dir(): shutil.rmtree(dst_path)
-            else: dst_path.unlink()
-        shutil.move(str(src_path), str(dst_path))
-        return dst_path
+        if not dst.parent.exists(): dst.parent.mkdir(parents=True, exist_ok=True)
+        if dst.exists() and overwrite:
+            if dst.is_dir(): shutil.rmtree(dst)
+            else: dst.unlink()
+        shutil.move(str(src), str(dst))
+        return dst
     except PermissionError as e:
-        raise QuackPermissionError(str(dst_path), "move", original_error=e) from e
+        raise PermissionError(f"Permission denied moving to {dst}") from e
     except Exception as e:
-        raise QuackIOError(f"Move failed: {e}", str(dst_path), original_error=e) from e
+        raise IOError(f"Move failed: {e}") from e
 
-def _safe_delete(path: Any, missing_ok: bool = True) -> bool:
-    path_obj = _normalize_path_param(path)
-    if not path_obj.exists():
+def _safe_delete(path: Path, missing_ok: bool = True) -> bool:
+    if not path.exists():
         if missing_ok: return False
-        raise QuackFileNotFoundError(str(path_obj))
+        raise FileNotFoundError(str(path))
     try:
-        if path_obj.is_dir(): shutil.rmtree(path_obj)
-        else: path_obj.unlink()
+        if path.is_dir(): shutil.rmtree(path)
+        else: path.unlink()
         return True
     except PermissionError as e:
-        raise QuackPermissionError(str(path_obj), "delete", original_error=e) from e
+        raise PermissionError(f"Permission denied deleting {path}") from e
     except Exception as e:
-        raise QuackIOError(f"Delete failed: {e}", str(path_obj), original_error=e) from e
+        raise IOError(f"Delete failed: {e}") from e

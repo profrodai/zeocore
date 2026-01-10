@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 from quack_core.fs.operations.base import FileSystemOperations
 from quack_core.fs.protocols import FsPathLike
@@ -14,8 +15,7 @@ class FileSystemService:
     Handles configuration, normalization, and error mapping.
     """
 
-    def __init__(self, base_dir: str | Path | None = None,
-                 log_level: int = LOG_LEVELS[LogLevel.INFO]) -> None:
+    def __init__(self, base_dir: str | Path | None = None, log_level: int = LOG_LEVELS[LogLevel.INFO]) -> None:
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
         self.base_dir = Path(base_dir) if base_dir else Path.cwd()
@@ -29,8 +29,7 @@ class FileSystemService:
         try:
             return coerce_path(path)
         except (TypeError, ValueError) as e:
-            raise QuackValidationError(f"Invalid path input: {path}",
-                                       original_error=e) from e
+            raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
 
     def _map_error(self, e: Exception) -> ErrorInfo:
         """

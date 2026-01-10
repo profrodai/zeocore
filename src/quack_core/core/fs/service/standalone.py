@@ -1,24 +1,15 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/standalone.py
-# module: quack_core.core.fs.service.standalone
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: read_text, write_text, read_binary, write_binary, read_lines, write_lines, copy, move (+44 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
-# === QV-LLM:END ===
-
 """
 Standalone wrappers that delegate to the singleton service.
 Ensures consistent configuration and state.
 """
 from typing import Any
 from pathlib import Path
-from quack_core.core.fs.service import get_service
-from quack_core.core.fs.results import (
+from quack_core.fs.service import get_service
+from quack_core.fs.results import (
     DataResult, DirectoryInfoResult, FileInfoResult, FindResult,
     OperationResult, PathResult, ReadResult, WriteResult
 )
+from quack_core.fs.normalize import coerce_path, coerce_path_str, safe_path_str
 
 def read_text(path: Any, encoding: str = "utf-8") -> ReadResult[str]:
     return get_service().read_text(path, encoding)
@@ -150,38 +141,20 @@ def atomic_write(path: Any, content: str | bytes) -> WriteResult:
     return get_service().atomic_write(path, content)
 
 # Wrappers for path util functions that were in api/public
+# These are kept for compatibility but delegate to normalized logic
 def extract_path_from_result(path_or_result: Any) -> DataResult[str]:
-    # This logic belongs in the service/standalone layer as it deals with result objects
     try:
-        from quack_core.core.fs._internal.path_utils import _extract_path_str
-        path_str = _extract_path_str(path_or_result)
+        path_str = safe_path_str(path_or_result)
+        if path_str is None:
+             raise ValueError(f"Could not extract path from {path_or_result}")
         return DataResult(success=True, path=Path(path_str), data=path_str, format="path", message="Successfully extracted path")
     except Exception as e:
         return DataResult(success=False, path=None, data=str(path_or_result), format="path", error=str(e), message="Failed to extract path")
 
 def extract_path_str(obj: Any) -> str:
-    from quack_core.core.fs._internal.path_utils import _extract_path_str
-    return _extract_path_str(obj)
-
-def safe_path_str(obj: Any, default: str | None = None) -> str | None:
-    from quack_core.core.fs._internal.path_utils import _safe_path_str
-    return _safe_path_str(obj, default)
-
-def coerce_path(obj: Any) -> Path:
-    from quack_core.core.fs._internal.path_utils import _normalize_path_param
-    return _normalize_path_param(obj)
-
-def coerce_path_str(obj: Any) -> str:
-    from quack_core.core.fs._internal.path_utils import _extract_path_str
-    return _extract_path_str(obj)
-
-def coerce_path_result(obj: Any) -> DataResult[str]:
-    try:
-        from quack_core.core.fs._internal.path_utils import _extract_path_str
-        p_str = _extract_path_str(obj)
-        return DataResult(success=True, path=Path(p_str), data=p_str, format="path", message="Successfully coerced path")
-    except Exception as e:
-        return DataResult(success=False, path=None, data=str(obj), format="path", error=str(e), message="Failed to coerce path input")
+    # Delegate to normalize logic
+    from quack_core.fs.normalize import coerce_path_str as _cps
+    return _cps(obj)
 
 def copy_safely(src: Any, dst: Any, overwrite: bool = False) -> WriteResult:
     return get_service().copy(src, dst, overwrite)
@@ -191,3 +164,11 @@ def move_safely(src: Any, dst: Any, overwrite: bool = False) -> WriteResult:
 
 def delete_safely(path: Any, missing_ok: bool = True) -> OperationResult:
     return get_service().delete(path, missing_ok)
+
+# Helper wrapper for safe coercion result (often used in external error handling blocks)
+def coerce_path_result(obj: Any) -> DataResult[str]:
+    try:
+        p_str = coerce_path_str(obj)
+        return DataResult(success=True, path=Path(p_str), data=p_str, format="path", message="Coerced path")
+    except Exception as e:
+        return DataResult(success=False, path=None, data=str(obj), format="path", error=str(e), message="Coercion failed")

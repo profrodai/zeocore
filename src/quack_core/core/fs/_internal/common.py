@@ -1,12 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/common.py
-# module: quack_core.core.fs._internal.common
-# role: module
-# neighbors: __init__.py, checksums.py, comparison.py, disk.py, file_info.py, file_ops.py (+4 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
-# === QV-LLM:END ===
-
 from pathlib import Path
 
 def _get_extension(path: str | Path) -> str:

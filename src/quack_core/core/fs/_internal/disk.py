@@ -1,44 +1,32 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/disk.py
-# module: quack_core.core.fs._internal.disk
-# role: module
-# neighbors: __init__.py, checksums.py, common.py, comparison.py, file_info.py, file_ops.py (+4 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 3a380e47
-# === QV-LLM:END ===
-
 import os
 import shutil
 from typing import Any
-from quack_core.core.errors import QuackIOError
-from quack_core.core.fs._internal.path_utils import _normalize_path_param
+from pathlib import Path
 
-def _get_disk_usage(path: Any) -> dict[str, int]:
-    path_obj = _normalize_path_param(path)
+def _get_disk_usage(path: Path) -> dict[str, int]:
     try:
-        total, used, free = shutil.disk_usage(str(path_obj))
+        total, used, free = shutil.disk_usage(str(path))
         return {"total": total, "used": used, "free": free}
     except Exception as e:
-        raise QuackIOError(f"Error getting disk usage: {e}", str(path_obj)) from e
+        raise IOError(f"Error getting disk usage: {e}") from e
 
-def _is_path_writeable(path: Any) -> bool:
-    path_obj = _normalize_path_param(path)
-    if not path_obj.exists():
+def _is_path_writeable(path: Path) -> bool:
+    if not path.exists():
         try:
-            if path_obj.suffix:
-                with open(path_obj, "w") as _: pass
-                path_obj.unlink()
+            if path.suffix:
+                with open(path, "w") as _: pass
+                path.unlink()
             else:
-                path_obj.mkdir(parents=True)
-                path_obj.rmdir()
+                path.mkdir(parents=True)
+                path.rmdir()
             return True
         except Exception:
             return False
-    if path_obj.is_file():
-        return os.access(path_obj, os.W_OK)
-    if path_obj.is_dir():
+    if path.is_file():
+        return os.access(path, os.W_OK)
+    if path.is_dir():
         try:
-            test_file = path_obj / f"test_write_{os.getpid()}.tmp"
+            test_file = path / f"test_write_{os.getpid()}.tmp"
             with open(test_file, "w") as _: pass
             test_file.unlink()
             return True
