@@ -1,19 +1,8 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/structured_data.py
-# module: quack_core.core.fs.service.structured_data
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: StructuredDataMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: d448237f
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.results import DataResult, WriteResult, ErrorInfo
-from quack_core.core.fs.normalize import safe_path_str
 
 class StructuredDataMixin:
     operations: FileSystemOperations

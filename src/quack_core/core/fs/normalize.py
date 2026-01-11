@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/normalize.py
-# module: quack_core.core.fs.normalize
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py, results.py
-# exports: coerce_path, coerce_path_str, safe_path_str, coerce_path_result, extract_path_from_result
-# git_branch: feat/9-make-setup-work
-# git_commit: d448237f
-# === QV-LLM:END ===
-
 """
 Input normalization logic.
 This module is the Single Source of Truth for coercing inputs into Paths.
@@ -72,7 +62,8 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: b
                         If False, absolute paths must be within base_dir (if provided).
 
     Raises:
-        TypeError/ValueError on failure or sandbox violation.
+        TypeError: If input cannot be coerced to a path.
+        ValueError: If path is invalid, unsafe, or violates sandboxing.
     """
     try:
         s = _extract_path_str(obj)
@@ -109,12 +100,14 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: b
         # No base_dir context - return as is (resolved)
         return path.resolve()
 
-    except (TypeError, ValueError) as e:
-        # Re-raise known errors or wrap unknown ones
-        if isinstance(e, ValueError) and "escape" in str(e):
-            raise
-        if isinstance(e, ValueError) and "outside base directory" in str(e):
-            raise
+    except TypeError:
+        # Re-raise TypeErrors (wrong shape) as-is or wrap with context
+        raise
+    except ValueError:
+        # Re-raise ValueErrors (sandbox/validity) as-is
+        raise
+    except Exception as e:
+        # Wrap unknown errors
         raise TypeError(f"Could not coerce {type(obj)} to Path: {e}") from e
 
 

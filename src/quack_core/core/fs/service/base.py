@@ -1,14 +1,5 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: d448237f
-# === QV-LLM:END ===
-
 from pathlib import Path
+from typing import Any, Optional
 import uuid
 
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -47,15 +38,13 @@ class FileSystemService:
         try:
             return coerce_path(path, base_dir=self.base_dir, allow_absolute=self.allow_absolute_paths)
         except ValueError as e:
-            # Let sandbox violations pass through as ValueError to be correctly classified in _map_error
-            # normalize.coerce_path raises ValueError for escapes and outside base_dir checks
-            if "escape" in str(e).lower() or "outside base directory" in str(e).lower():
-                raise e
-            # Wrap other ValueErrors (e.g. invalid chars, null bytes)
-            raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
+            # Re-raise sandbox/value errors to be mapped to specific error types
+            raise e
         except TypeError as e:
             # Wrap shape/type errors
             raise QuackValidationError(f"Invalid path input type: {path}", original_error=e) from e
+        except Exception as e:
+             raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
 
     def _map_error(self, e: Exception) -> ErrorInfo:
         """
