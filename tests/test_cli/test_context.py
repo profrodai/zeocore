@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_error.py, test_formatting.py (+5 more)
 # exports: TestQuackContext
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 
 """

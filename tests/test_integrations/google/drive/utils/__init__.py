@@ -3,6 +3,6 @@
 # role: utils
 # neighbors: test_utils_api.py, test_utils_query.py
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 

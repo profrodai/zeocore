@@ -3,7 +3,7 @@
 # module: quack_core.core.fs.api.__init__
 # role: api
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 
 """

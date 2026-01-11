@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, config.py, registry.py, fallback.py
 # exports: RoleType, ChatMessage, FunctionParameter, FunctionDefinition, ToolDefinition, FunctionCall, ToolCall, LLMOptions (+1 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 
 """

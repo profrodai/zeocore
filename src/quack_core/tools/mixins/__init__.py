@@ -5,7 +5,7 @@
 # neighbors: env_init.py, integration_enabled.py, lifecycle.py, output_handler.py
 # exports: IntegrationEnabledMixin, LifecycleMixin, ToolEnvInitializerMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 
 

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_info.py (+4 more)
 # exports: DirectoryScanStats
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 
 import os

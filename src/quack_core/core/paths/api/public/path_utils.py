@@ -5,7 +5,7 @@
 # neighbors: __init__.py, results.py
 # exports: ensure_clean_path, is_likely_drive_id, extract_path_from_path_result_string
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 
 """

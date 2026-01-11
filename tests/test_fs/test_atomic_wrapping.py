@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py, test_utils.py
 # exports: TestAtomicWrapping, temp_test_dir
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 
 """
