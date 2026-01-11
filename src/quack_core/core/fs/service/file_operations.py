@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, directory_operations.py, factory.py, full_class.py, path_operations.py (+4 more)
 # exports: FileOperationsMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: ccfbaeea
+# git_commit: de7513d4
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -27,7 +27,8 @@ class FileOperationsMixin:
             content = self.operations._read_text(norm_path, encoding)
             return ReadResult(success=True, path=norm_path, content=content, encoding=encoding, message=f"Read {len(content)} chars")
         except Exception as e:
-            self.logger.error(f"read_text failed: {e}")
+            # We don't log error here because it's returned in the result.
+            # Caller can decide to log based on result.success
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return ReadResult(
@@ -50,7 +51,6 @@ class FileOperationsMixin:
                 checksum = self.operations._compute_checksum(result_path, "sha256")
             return WriteResult(success=True, path=result_path, bytes_written=bytes_written, checksum=checksum, message=f"Wrote {bytes_written} bytes")
         except Exception as e:
-            self.logger.error(f"write_text failed: {e}")
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return WriteResult(
@@ -67,7 +67,6 @@ class FileOperationsMixin:
             content = self.operations._read_binary(norm_path)
             return ReadResult(success=True, path=norm_path, content=content, encoding=None, message=f"Read {len(content)} bytes")
         except Exception as e:
-            self.logger.error(f"read_binary failed: {e}")
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return ReadResult(
@@ -90,7 +89,6 @@ class FileOperationsMixin:
                 checksum = self.operations._compute_checksum(result_path, "sha256")
             return WriteResult(success=True, path=result_path, bytes_written=bytes_written, checksum=checksum, message=f"Wrote {bytes_written} bytes")
         except Exception as e:
-            self.logger.error(f"write_binary failed: {e}")
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return WriteResult(
@@ -108,7 +106,6 @@ class FileOperationsMixin:
             lines = content_str.splitlines()
             return ReadResult(success=True, path=norm_path, content=lines, encoding=encoding, message=f"Read {len(lines)} lines")
         except Exception as e:
-            self.logger.error(f"read_lines failed: {e}")
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return ReadResult(
@@ -134,7 +131,6 @@ class FileOperationsMixin:
                 size = len(content.encode(encoding))
             return WriteResult(success=True, path=result_path, bytes_written=size, message=f"Wrote {len(lines)} lines")
         except Exception as e:
-            self.logger.error(f"write_lines failed: {e}")
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return WriteResult(
@@ -155,7 +151,6 @@ class FileOperationsMixin:
                 size = result_path.stat().st_size
             return WriteResult(success=True, path=result_path, original_path=norm_src, bytes_written=size, message=f"Copied to {result_path}")
         except Exception as e:
-            self.logger.error(f"copy failed: {e}")
             safe_src_str = safe_path_str(src)
             safe_dst_str = safe_path_str(dst)
             safe_dst = Path(safe_dst_str) if safe_dst_str else None
@@ -176,7 +171,6 @@ class FileOperationsMixin:
             result_path = self.operations._move(norm_src, norm_dst, overwrite)
             return WriteResult(success=True, path=result_path, original_path=norm_src, message=f"Moved to {result_path}")
         except Exception as e:
-            self.logger.error(f"move failed: {e}")
             safe_src_str = safe_path_str(src)
             safe_dst_str = safe_path_str(dst)
             safe_dst = Path(safe_dst_str) if safe_dst_str else None
@@ -196,7 +190,6 @@ class FileOperationsMixin:
             deleted = self.operations._delete(norm_path, missing_ok)
             return OperationResult(success=True, path=norm_path, message="Deleted" if deleted else "Not found (ignored)")
         except Exception as e:
-            self.logger.error(f"delete failed: {e}")
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return OperationResult(

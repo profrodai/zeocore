@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
 # exports: read_text, write_text, read_binary, write_binary, read_lines, write_lines, copy, move (+41 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: ccfbaeea
+# git_commit: de7513d4
 # === QV-LLM:END ===
 
 """
@@ -178,7 +178,8 @@ def delete_safely(path: Any, missing_ok: bool = True) -> OperationResult:
 # Helper wrapper for safe coercion result (often used in external error handling blocks)
 def coerce_path_result(obj: Any) -> DataResult[str]:
     try:
-        p_str = coerce_path_str(obj)
+        from quack_core.core.fs.normalize import coerce_path_str as _cps
+        p_str = _cps(obj)
         return DataResult(success=True, path=Path(p_str), data=p_str, format="path", message="Coerced path")
     except Exception as e:
         return DataResult(success=False, path=None, data=str(obj), format="path", error=str(e), message="Coercion failed")

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, path_ops.py (+4 more)
 # exports: FindOperationsMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: ccfbaeea
+# git_commit: de7513d4
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -15,8 +15,8 @@ class FindOperationsMixin:
     def _resolve_path(self, path: str | Path) -> Path:
         raise NotImplementedError
 
-    def _find_files(self, path: str | Path, pattern: str, recursive: bool = True,
-                    include_hidden: bool = False) -> tuple[list[Path], list[Path]]:
+    def _find_files(self, path: str | Path, pattern: str, recursive: bool = True, include_hidden: bool = False) -> \
+    tuple[list[Path], list[Path]]:
         resolved = self._resolve_path(path)
         if not resolved.exists() or not resolved.is_dir():
             raise NotADirectoryError(f"Invalid search directory: {resolved}")

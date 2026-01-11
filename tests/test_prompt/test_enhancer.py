@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_booster.py, test_integration.py, test_plugin.py, test_registry.py (+2 more)
 # exports: mock_llm_integration_class, mock_config, test_load_config, test_enhance_with_llm, test_enhance_with_llm_init_failure, test_enhance_with_llm_chat_failure, test_enhance_with_llm_empty_response, test_enhance_with_llm_import_error (+4 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: ccfbaeea
+# git_commit: de7513d4
 # === QV-LLM:END ===
 
 """

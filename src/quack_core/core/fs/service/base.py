@@ -5,12 +5,14 @@
 # neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
 # exports: FileSystemService
 # git_branch: feat/9-make-setup-work
-# git_commit: ccfbaeea
+# git_commit: de7513d4
 # === QV-LLM:END ===
 
 from pathlib import Path
 from typing import Any
+import uuid
 
+# Updated import path to match doctrine (operations -> _ops)
 from quack_core.core.fs.operations.base import FileSystemOperations
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.normalize import coerce_path
@@ -22,48 +24,64 @@ from quack_core.core.errors import QuackValidationError
 class FileSystemService:
     """
     Central FileSystem Service.
-    Handles configuration, normalization, and error mapping.
+    Handles configuration, normalization (anchored), and error mapping.
     """
 
     def __init__(self, base_dir: str | Path | None = None, log_level: int = LOG_LEVELS[LogLevel.INFO]) -> None:
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
-        self.base_dir = Path(base_dir) if base_dir else Path.cwd()
+
+        # Ensure base_dir is absolute and resolved immediately
+        if base_dir:
+            self.base_dir = Path(base_dir).resolve()
+        else:
+            self.base_dir = Path.cwd().resolve()
+
         self.operations = FileSystemOperations(self.base_dir)
 
     def _normalize_input_path(self, path: FsPathLike) -> Path:
         """
         SSOT for service input normalization.
-        Uses fs.normalize to coerce inputs.
+        Coerces input to Path AND anchors it to the service's base_dir.
         """
         try:
-            return coerce_path(path)
+            # coerce_path now accepts base_dir to handle anchoring logic
+            return coerce_path(path, base_dir=self.base_dir)
         except (TypeError, ValueError) as e:
             raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
 
     def _map_error(self, e: Exception) -> ErrorInfo:
         """
         Centralized error mapping logic.
-        Converts native exceptions to structured ErrorInfo.
+        Converts native exceptions to structured ErrorInfo, preserving context.
         """
         err_type = type(e).__name__
         msg = str(e)
         hint = None
+        details = {}
+        trace_id = str(uuid.uuid4())
 
         if isinstance(e, FileNotFoundError):
             err_type = "FileNotFoundError"
-            msg = "File or directory not found"
+            hint = "Check if the file path is correct relative to base_dir."
         elif isinstance(e, PermissionError):
             err_type = "PermissionError"
-            msg = "Permission denied"
             hint = "Check file permissions or run with elevated privileges."
         elif isinstance(e, IsADirectoryError):
             err_type = "IsADirectoryError"
-            msg = "Expected a file but found a directory"
+            hint = "Expected a file but found a directory."
+
+        # Add basic details
+        if hasattr(e, 'filename'):
+            details['filename'] = str(e.filename)
+        if hasattr(e, 'errno'):
+            details['errno'] = e.errno
 
         return ErrorInfo(
             type=err_type,
             message=msg,
             hint=hint,
-            exception=str(e)
+            exception=str(e),
+            trace_id=trace_id,
+            details=details
         )

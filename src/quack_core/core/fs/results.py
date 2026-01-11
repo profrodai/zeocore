@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, plugin.py, normalize.py
 # exports: ErrorInfo, OperationResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult, DataResult (+1 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: ccfbaeea
+# git_commit: de7513d4
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -17,13 +17,15 @@ T = TypeVar("T")
 class ErrorInfo(BaseModel):
     """Structured error information."""
     type: str = Field(description="Error type identifier (e.g. 'FileNotFoundError')")
-    message: str = Field(description="Human-readable error message")
-    hint: Optional[str] = Field(default=None, description="Optional hint for resolution")
+    message: str = Field(description="Original exception message")
+    hint: Optional[str] = Field(default=None, description="User-friendly resolution hint")
     exception: Optional[str] = Field(default=None, description="Stringified exception class")
+    trace_id: Optional[str] = Field(default=None, description="Tracing identifier for debugging")
+    details: Optional[dict] = Field(default=None, description="Structured context (path, errno, etc)")
 
 class OperationResult(BaseModel):
     success: bool = Field(description="Whether the operation was successful")
-    path: Path | None = Field(default=None, description="Path operated on")
+    path: Path | None = Field(default=None, description="Path operated on (normalized)")
     message: str | None = Field(default=None)
     error: str | None = Field(default=None, description="Legacy error string")
     error_info: ErrorInfo | None = Field(default=None, description="Structured error details")
@@ -43,24 +45,32 @@ class ReadResult(OperationResult, Generic[T]):
     encoding: str | None = None
 
     @property
-    def text(self) -> str:
-        if self.content is None:
-            raise ValueError("No content available")
+    def text(self) -> str | None:
+        """Safe access to text content. Returns None if invalid type/missing."""
         if isinstance(self.content, str):
             return self.content
         if isinstance(self.content, bytes):
-            return self.content.decode(self.encoding or "utf-8")
-        raise TypeError(f"Content is not text: {type(self.content)}")
+            try:
+                return self.content.decode(self.encoding or "utf-8")
+            except Exception:
+                return None
+        return None
 
     @property
-    def binary(self) -> bytes:
-        if self.content is None:
-            raise ValueError("No content available")
+    def binary(self) -> bytes | None:
+        """Safe access to binary content. Returns None if invalid type/missing."""
         if isinstance(self.content, bytes):
             return self.content
         if isinstance(self.content, str):
-            return self.content.encode(self.encoding or "utf-8")
-        raise TypeError(f"Content is not binary: {type(self.content)}")
+            try:
+                return self.content.encode(self.encoding or "utf-8")
+            except Exception:
+                return None
+        return None
+
+    def as_text(self, default: str = "") -> str:
+        """Explicit coercion helper."""
+        return self.text if self.text is not None else default
 
 class WriteResult(OperationResult):
     bytes_written: int = 0

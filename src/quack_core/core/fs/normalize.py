@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, plugin.py, results.py
 # exports: coerce_path, coerce_path_str, safe_path_str
 # git_branch: feat/9-make-setup-work
-# git_commit: ccfbaeea
+# git_commit: de7513d4
 # === QV-LLM:END ===
 
 """
@@ -15,8 +15,9 @@ It does NOT depend on _internal or service.
 """
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 from quack_core.core.fs.protocols import HasData, HasPath, HasUnwrap, HasValue, FsPathLike
+
 
 def _extract_path_str(obj: Any) -> str:
     """Core logic to extract a string path from a polymorphic input."""
@@ -28,7 +29,7 @@ def _extract_path_str(obj: Any) -> str:
     if isinstance(obj, Path):
         return str(obj)
     if hasattr(obj, "__fspath__"):
-        return os.fspath(obj) # type: ignore
+        return os.fspath(obj)  # type: ignore
 
     # Fail fast on failed Results
     if hasattr(obj, "success") and not getattr(obj, "success", True):
@@ -41,7 +42,6 @@ def _extract_path_str(obj: Any) -> str:
         return _extract_path_str(obj.unwrap())
 
     # Result attributes (HasData / HasPath)
-    # Prefer 'data' if it looks path-like, else 'path'
     if isinstance(obj, HasData) and obj.data is not None:
         if obj.data is not obj:
             try:
@@ -54,16 +54,33 @@ def _extract_path_str(obj: Any) -> str:
 
     raise TypeError(f"Could not coerce object of type {type(obj)} to path string")
 
-def coerce_path(obj: FsPathLike) -> Path:
+
+def coerce_path(obj: FsPathLike, base_dir: Path | None = None) -> Path:
     """
-    Strictly coerce input to a pathlib.Path.
+    Strictly coerce input to a pathlib.Path and optionally anchor to base_dir.
     Raises TypeError/ValueError on failure.
     """
     try:
         s = _extract_path_str(obj)
-        return Path(s)
+        path = Path(s)
+
+        if base_dir:
+            # Handle user home expansion
+            path = path.expanduser()
+
+            # If path is absolute, return as is (doctrine: absolute paths override base_dir context)
+            if path.is_absolute():
+                return path.resolve()
+
+            # Anchor to base_dir
+            # Resolve to handle ../ backtracking if needed, but stay anchored?
+            # Simple join is safest default for strict anchoring.
+            return (base_dir / path).resolve()
+
+        return path
     except (TypeError, ValueError) as e:
         raise TypeError(f"Could not coerce {type(obj)} to Path: {e}") from e
+
 
 def coerce_path_str(obj: FsPathLike) -> str:
     """
@@ -71,6 +88,7 @@ def coerce_path_str(obj: FsPathLike) -> str:
     Raises TypeError/ValueError on failure.
     """
     return _extract_path_str(obj)
+
 
 def safe_path_str(obj: Any, default: str | None = None) -> str | None:
     """

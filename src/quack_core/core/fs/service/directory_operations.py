@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
 # exports: DirectoryOperationsMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: ccfbaeea
+# git_commit: de7513d4
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -27,7 +27,6 @@ class DirectoryOperationsMixin:
             result_path = self.operations._ensure_directory(normalized_path, exist_ok)
             return OperationResult(success=True, path=result_path, message=f"Directory created: {result_path}")
         except Exception as e:
-            self.logger.error(f"Error creating directory: {e}")
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return OperationResult(
@@ -62,7 +61,6 @@ class DirectoryOperationsMixin:
                 message=f"FileInfo: {normalized_path}"
             )
         except Exception as e:
-            self.logger.error(f"Error getting file info: {e}")
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return FileInfoResult(
@@ -91,7 +89,6 @@ class DirectoryOperationsMixin:
                 message=f"Listed directory: {normalized_path}"
             )
         except Exception as e:
-            self.logger.error(f"Error listing directory: {e}")
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return DirectoryInfoResult(
@@ -117,7 +114,6 @@ class DirectoryOperationsMixin:
                 message=f"Found {len(files)} files"
             )
         except Exception as e:
-            self.logger.error(f"Error finding files: {e}")
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return FindResult(
