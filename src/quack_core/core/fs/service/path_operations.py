@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/path_operations.py
-# module: quack_core.core.fs.service.path_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: PathOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 01ff6772
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -37,7 +27,6 @@ class PathOperationsMixin:
             joined_str = str(Path(base).joinpath(*others))
 
             # 2. Normalize via SSOT to ensure sandbox safety
-            # This ensures the resulting joined path is anchored to base_dir
             norm_path = self._normalize_input_path(joined_str)
 
             return DataResult(ok=True, path=norm_path, data=str(norm_path), format="path", message="Joined paths")
@@ -72,7 +61,8 @@ class PathOperationsMixin:
     def normalize_path(self, path: FsPathLike) -> PathResult:
         try:
             norm_path = self._normalize_input_path(path)
-            res_path = self.operations._normalize_path(norm_path)
+            # Use _resolve_path (strict=False) which is equivalent to non-strict normalization
+            res_path = self.operations._resolve_path(norm_path)
             return PathResult(ok=True, path=res_path, is_absolute=res_path.is_absolute(), is_valid=True,
                               exists=res_path.exists(), message=f"Normalized: {res_path}")
         except Exception as e:
@@ -87,9 +77,10 @@ class PathOperationsMixin:
 
     def expand_user_vars(self, path: FsPathLike) -> DataResult[str]:
         try:
-            norm_path = self._normalize_input_path(path)
-            expanded = self.operations._expand_user_vars(norm_path)
-            return DataResult(ok=True, path=norm_path, data=expanded, format="path", message=f"Expanded: {expanded}")
+            # Operate on raw string to prevent premature normalization/anchoring
+            raw_path_str = coerce_path_str(path)
+            expanded = self.operations._expand_user_vars(raw_path_str)
+            return DataResult(ok=True, path=None, data=expanded, format="path", message=f"Expanded: {expanded}")
         except Exception as e:
             return DataResult(
                 ok=False,

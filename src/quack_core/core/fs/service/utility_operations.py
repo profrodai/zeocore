@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/utility_operations.py
-# module: quack_core.core.fs.service.utility_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: UtilityOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 01ff6772
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -220,6 +210,10 @@ class UtilityOperationsMixin:
             )
 
     def is_path_writeable(self, path: FsPathLike) -> DataResult[bool]:
+        """
+        Checks if the path is writeable.
+        WARNING: This method performs a write probe (side effect) if the path does not exist.
+        """
         try:
             norm_path = self._normalize_input_path(path)
             w = self.operations._is_path_writeable(norm_path)

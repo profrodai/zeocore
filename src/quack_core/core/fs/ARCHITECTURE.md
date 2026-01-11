@@ -1,4 +1,4 @@
-# 🧠 `quack_core.core.fs` — Filesystem Architecture
+`quack_core.core.fs` — Filesystem Architecture
 
 **Status:** Canonical · Doctrine-Aligned
 **Ring:** Core (QuackCore)
@@ -32,8 +32,7 @@ Filesystem access is a **capability**, not an implementation detail.
 ```
 Ring A — CORE (QuackCore)
 │
-├── core.fs   ← YOU ARE HERE
-│
+├── core.fs      ← YOU ARE HERE
 ├── core.config
 ├── core.logging
 ├── core.errors
@@ -64,7 +63,9 @@ There are **three layers**, but **only one public surface**.
 
 ---
 
-### `_internal/` — Implementation layer (private, lowest level)
+### `_internal/` — Implementation layer
+
+*(private, lowest level)*
 
 * Pure IO helpers
 * Work only with `pathlib.Path`
@@ -79,7 +80,9 @@ There are **three layers**, but **only one public surface**.
 
 ---
 
-### `_ops/` — Operation façade layer (private, core plumbing)
+### `_ops/` — Operation façade layer
+
+*(private, core plumbing)*
 
 `_ops` is a **first-class internal operation façade**, not a convenience helper.
 
@@ -93,25 +96,28 @@ It exists to:
 
 **Characteristics:**
 
-* Calls `_internal/*`
-* Groups multiple low-level actions into reusable operations
-* May contain light internal logic (e.g. sequencing, helpers)
-* **Still raises native exceptions**
-* Returns **raw values only** (`Path`, `bytes`, `list[Path]`, `dict`, etc.)
-* Does **not**:
+* calls `_internal/*`
+* groups multiple low-level actions into reusable operations
+* may contain light internal logic (sequencing, helpers)
+* **still raises native exceptions**
+* returns **raw values only** (`Path`, `bytes`, `list[Path]`, `dict`, etc.)
 
-  * return `*Result`
-  * normalize `FsPathLike`
-  * decide logging policy
-  * map or swallow errors
-  * import `results.py` or `normalize.py`
+**Does NOT:**
+
+* return `*Result`
+* normalize `FsPathLike`
+* decide logging policy
+* map or swallow errors
+* import `results.py` or `normalize.py`
 
 > `_ops` is **core internal plumbing**.
-> It is private, but **not optional** once introduced.
+> It is private, but **not optional once introduced**.
 
 ---
 
-### `service/` — Contract layer (only public surface)
+### `service/` — Contract layer
+
+*(only public surface)*
 
 * Owns the **public filesystem contract**
 * Normalizes all inputs
@@ -132,7 +138,7 @@ It exists to:
 
 ---
 
-### 2️⃣ Service-first API (single source of truth)
+## 4. Service-first API (single source of truth)
 
 All filesystem access routes through:
 
@@ -150,11 +156,11 @@ from quack_core.core.fs.service import get_service
 * Configured once (base_dir, logging, policy)
 * Used everywhere (tools, tests, CLI, agents)
 
-There is **no alternate IO path**.
+> **There is no alternate IO path.**
 
 ---
 
-### 3️⃣ Input normalization is centralized
+## 5. Input normalization is centralized
 
 All public methods accept flexible inputs:
 
@@ -164,44 +170,44 @@ FsPathLike = str | Path | Result | Protocol
 
 Normalization rules:
 
-* Implemented **once** in `core.fs.normalize`
-* Used **only by the service layer**
-* Never duplicated
-* Never implemented in `_ops` or `_internal`
+* implemented **once** in `core.fs.normalize`
+* used **only by the service layer**
+* never duplicated
+* never implemented in `_ops` or `_internal`
 
-> If path coercion logic appears anywhere else, it is a bug.
+> If path coercion logic appears anywhere else, **it is a bug**.
 
 ---
 
-### 4️⃣ Structured errors (no raw exceptions)
+## 6. Structured errors (no raw exceptions)
 
 * `_internal` raises native exceptions
 * `_ops` raises native exceptions
 * `service` catches everything
-* Errors are mapped to structured `ErrorInfo`
-* Public methods **never raise**
+* errors are mapped to structured `ErrorInfo`
+* **public methods never raise**
 
-This is mandatory for:
+Mandatory for:
 
 * CLI UX
-* Agent reasoning
-* Teaching
-* Cloud retries
+* agent reasoning
+* teaching
+* cloud retries
 * Temporal workflows
 
 ---
 
-### 5️⃣ Public boundary is enforced by imports
+## 7. Public boundary enforcement (imports)
 
-**Allowed dependencies:**
+### Allowed dependencies
 
 * `service/*` → may import `_ops/*` and `_internal/*`
 * `_ops/*` → may import `_internal/*`
 * `_internal/*` → imports nothing from higher layers
 
-**Forbidden:**
+### Forbidden
 
-* Anything outside `service/*` importing `_ops/*` or `_internal/*`
+* anything outside `service/*` importing `_ops/*` or `_internal/*`
 * `_internal/*` importing `_ops/*` or `service/*`
 * `_ops/*` importing:
 
@@ -209,11 +215,13 @@ This is mandatory for:
   * `results.py`
   * `normalize.py`
 
-> If you see `from quack_core.core.fs._internal import ...` outside `service/`, it’s a doctrine violation.
+> If you see
+> `from quack_core.core.fs._internal import ...`
+> outside `service/`, **it is a doctrine violation**.
 
 ---
 
-## 4. Canonical file layout
+## 8. Canonical file layout
 
 ```
 quack_core/core/fs/
@@ -228,7 +236,6 @@ quack_core/core/fs/
 │   ├── __init__.py     # get_service(), create_service()
 │   ├── base.py         # FileSystemService base + error mapping
 │   ├── standalone.py  # Functional wrappers (secondary surface)
-│   │
 │   ├── file_operations.py
 │   ├── path_operations.py
 │   ├── utility_operations.py
@@ -254,16 +261,16 @@ quack_core/core/fs/
 
 ---
 
-## 5. Public API surfaces
+## 9. Public API surfaces
 
 ### Primary surface — `FileSystemService`
 
 The **only canonical API**.
 
-* All methods return `*Result`
-* All failures are structured
-* All inputs normalized
-* No side-effects beyond IO
+* all methods return `*Result`
+* all failures are structured
+* all inputs normalized
+* no side-effects beyond IO
 
 Used by:
 
@@ -284,19 +291,17 @@ from quack_core.core.fs.service.standalone import read_text
 
 Rules:
 
-* Wrappers **delegate only**
-* No logic
-* No normalization
-* No `_ops` / `_internal` imports
-* May be removed in the future without breaking contracts
+* wrappers delegate only
+* no logic
+* no normalization
+* no `_ops` / `_internal` imports
+* may be removed in the future without breaking contracts
 
 ---
 
-## 6. Result model doctrine
+## 10. Result model doctrine
 
 ### Baseline contract (all Results)
-
-Every public method returns a Pydantic model with:
 
 ```python
 ok: bool
@@ -314,7 +319,7 @@ meta: Optional[dict]
 
 ```python
 class ErrorInfo(BaseModel):
-    type: str              # e.g. "file_not_found"
+    type: str               # e.g. "file_not_found"
     message: str
     hint: str | None
     exception: str | None
@@ -325,7 +330,7 @@ Mapped centrally in `service.base`.
 
 ---
 
-## 7. Responsibilities by layer (summary)
+## 11. Responsibilities by layer (summary)
 
 ### `_internal/*`
 
@@ -357,16 +362,16 @@ Mapped centrally in `service.base`.
 
 ---
 
-## 8. Required public method catalogue
+## 12. Required public method catalogue
 
 ### Path operations
 
-* `resolve`
-* `exists`
-* `is_file`
-* `is_dir`
-* `ensure_dir`
-* `list_dir`
+* `resolve(path)`
+* `exists(path)`
+* `is_file(path)`
+* `is_dir(path)`
+* `ensure_dir(path, parents=True)`
+* `list_dir(path, pattern=None, recursive=False)`
 
 ### File operations
 
@@ -380,24 +385,24 @@ Mapped centrally in `service.base`.
 
 ### Utility operations
 
-* `stat`
-* `hash_file`
-* `mime_type`
-* `tree` (optional)
+* `get_file_info(path)` *(alias: `stat`)*
+* `compute_checksum(path)` *(alias: `hash_file`)*
+* `get_mime_type(path)` *(alias: `mime_type`)*
+* `tree` *(optional)*
 
 ### Validation operations
 
-* `validate_path`
-* `validate_file`
+* `is_valid_path` *(syntax check)*
+* `is_safe_path` *(sandbox check)*
 
 ---
 
-## 9. Test doctrine (mandatory)
+## 13. Test doctrine (mandatory)
 
 ### Contract tests
 
-* No public method may raise
-* All failures return `ok=False`
+* no public method may raise
+* all failures return `ok=False`
 
 ### Error mapping tests
 
@@ -418,7 +423,7 @@ Mapped centrally in `service.base`.
 
 ---
 
-## 10. Why this matters for DuckTyper & AI-First Media
+## 14. Why this matters for DuckTyper & AI-First Media
 
 This architecture enables:
 
@@ -433,7 +438,7 @@ This architecture enables:
 
 ---
 
-## 11. Final rule (non-negotiable)
+## 15. Final rule (non-negotiable)
 
 > **If a QuackTool, Agent, or Workflow touches `pathlib` directly — it is a bug.**
 
