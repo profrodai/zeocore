@@ -1,14 +1,14 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/operations/issues.py
-# module: quack_core.integrations.github.operations.issues
-# role: operations
+# path: quack-core/src/quack_core/integrations/github/_ops/issues.py
+# module: quack_core.integrations.github._ops.issues
+# role: _ops
 # neighbors: __init__.py, pull_requests.py, repositories.py, users.py
 # exports: create_issue, list_issues, get_issue, add_issue_comment
 # git_branch: feat/9-make-setup-work
 # git_commit: de7513d4
 # === QV-LLM:END ===
 
-"""GitHub issues operations."""
+"""GitHub issues _ops."""
 
 from typing import Any, Literal
 

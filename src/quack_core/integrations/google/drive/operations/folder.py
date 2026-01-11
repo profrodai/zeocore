@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/operations/folder.py
-# module: quack_core.integrations.google.drive.operations.folder
-# role: operations
+# path: quack-core/src/quack_core/integrations/google/drive/_ops/folder.py
+# module: quack_core.integrations.google.drive._ops.folder
+# role: _ops
 # neighbors: __init__.py, download.py, list_files.py, permissions.py, upload.py
 # exports: create_folder, delete_file
 # git_branch: feat/9-make-setup-work
@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-Folder operations for Google Drive integration.
+Folder _ops for Google Drive integration.
 
 This module provides functions for managing folders in Google Drive,
 including creating folders and deleting files or folders.

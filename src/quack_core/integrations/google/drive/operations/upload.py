@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/operations/upload.py
-# module: quack_core.integrations.google.drive.operations.upload
-# role: operations
+# path: quack-core/src/quack_core/integrations/google/drive/_ops/upload.py
+# module: quack_core.integrations.google.drive._ops.upload
+# role: _ops
 # neighbors: __init__.py, download.py, folder.py, list_files.py, permissions.py
 # exports: initialize_drive_service, resolve_file_details, upload_file
 # git_branch: feat/9-make-setup-work
@@ -9,11 +9,11 @@
 # === QV-LLM:END ===
 
 """
-Upload operations for Google Drive integration.
+Upload _ops for Google Drive integration.
 
 This module provides functions for uploading files to Google Drive,
 including file metadata handling and media upload.
-All file paths are handled as strings. Filesystem operations such as
+All file paths are handled as strings. Filesystem _ops such as
 reading a file or obtaining file metadata are delegated to the QuackCore FS API.
 """
 

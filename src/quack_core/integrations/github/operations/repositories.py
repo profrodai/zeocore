@@ -1,14 +1,14 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/operations/repositories.py
-# module: quack_core.integrations.github.operations.repositories
-# role: operations
+# path: quack-core/src/quack_core/integrations/github/_ops/repositories.py
+# module: quack_core.integrations.github._ops.repositories
+# role: _ops
 # neighbors: __init__.py, issues.py, pull_requests.py, users.py
 # exports: get_repo, star_repo, unstar_repo, is_repo_starred, fork_repo, check_repository_exists, get_repository_file_content, update_repository_file
 # git_branch: feat/9-make-setup-work
 # git_commit: de7513d4
 # === QV-LLM:END ===
 
-"""GitHub repository operations."""
+"""GitHub repository _ops."""
 
 import base64
 from typing import Any

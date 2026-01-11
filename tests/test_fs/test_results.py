@@ -130,7 +130,7 @@ class TestWriteResult:
         assert result.checksum == "abcdef1234567890"
 
     def test_copy_move_result(self) -> None:
-        """Test creating a result for copy/move operations."""
+        """Test creating a result for copy/move _ops."""
         result = WriteResult(
             path=Path("/test/dest.txt"),
             original_path=Path("/test/source.txt"),

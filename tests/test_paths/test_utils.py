@@ -22,7 +22,7 @@ from quack_core.core.fs.service import standalone as fs_standalone
 from quack_core.core.paths import service as paths
 
 
-# Create mock DataResult for fs operations
+# Create mock DataResult for fs _ops
 class MockDataResult:
     def __init__(self, success, data, error=None):
         self.success = success

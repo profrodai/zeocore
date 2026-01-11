@@ -84,7 +84,7 @@ def load_yaml_config(path: str) -> dict[str, Any]:
         QuackConfigurationError: If the file cannot be loaded/parsed.
     """
     try:
-        # Use direct file operations to avoid circular imports
+        # Use direct file _ops to avoid circular imports
         with open(os.path.expanduser(path), encoding="utf-8") as f:
             content = f.read()
 

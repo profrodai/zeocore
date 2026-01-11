@@ -8,7 +8,7 @@
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive service upload operations.
+Tests for Google Drive service upload _ops.
 """
 
 from pathlib import Path
@@ -20,7 +20,7 @@ from quack_core.core.errors import QuackApiError
 
 
 class TestGoogleDriveServiceUpload:
-    """Tests for the GoogleDriveService upload operations."""
+    """Tests for the GoogleDriveService upload _ops."""
 
     @patch(
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"

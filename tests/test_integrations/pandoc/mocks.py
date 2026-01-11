@@ -19,7 +19,7 @@ import pytest
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch):
     """
-    Stub out the quack_core.core.fs.service.standalone methods for file operations.
+    Stub out the quack_core.core.fs.service.standalone methods for file _ops.
     """
     import sys
     import types

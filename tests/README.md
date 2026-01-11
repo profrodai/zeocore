@@ -104,7 +104,7 @@ and more, for an overview, here is the full structure:
     │   │   │   │   ├── resources.py
     │   │   │   │   └── services.py
     │   │   │   ├── mocks.py
-    │   │   │   ├── operations
+    │   │   │   ├── _ops
     │   │   │   │   ├── __init__.py
     │   │   │   │   ├── test_operations_download.py
     │   │   │   │   ├── test_operations_folder.py
@@ -129,7 +129,7 @@ and more, for an overview, here is the full structure:
     │   │   ├── mail
     │   │   │   ├── __init__.py
     │   │   │   ├── mocks.py
-    │   │   │   ├── operations
+    │   │   │   ├── _ops
     │   │   │   │   ├── __init__.py
     │   │   │   │   ├── test_attachments.py
     │   │   │   │   ├── test_auth.py
@@ -177,7 +177,7 @@ and more, for an overview, here is the full structure:
     │   └── pandoc
     │       ├── __init__.py
     │       ├── mocks.py
-    │       ├── operations
+    │       ├── _ops
     │       │   ├── __init__.py
     │       │   ├── test_html_to_md.py
     │       │   ├── test_md_to_docx.py

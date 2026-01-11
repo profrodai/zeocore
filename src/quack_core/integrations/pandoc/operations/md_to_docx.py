@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/pandoc/operations/md_to_docx.py
-# module: quack_core.integrations.pandoc.operations.md_to_docx
-# role: operations
+# path: quack-core/src/quack_core/integrations/pandoc/_ops/md_to_docx.py
+# module: quack_core.integrations.pandoc._ops.md_to_docx
+# role: _ops
 # neighbors: __init__.py, utils.py, html_to_md.py
 # exports: convert_markdown_to_docx, validate_conversion
 # git_branch: feat/9-make-setup-work
@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-Markdown to DOCX conversion operations.
+Markdown to DOCX conversion _ops.
 
 This module provides functions for converting Markdown documents to DOCX
 using pandoc with optimized settings and error handling.

@@ -28,7 +28,7 @@ import pytest
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch):
     """
-    Stub out the quack_core.core.fs.service.standalone methods for file operations.
+    Stub out the quack_core.core.fs.service.standalone methods for file _ops.
     """
     # Create a module structure if it doesn't exist
     if 'quack_core.core.fs.service' not in sys.modules:
@@ -48,7 +48,7 @@ def fs_stub(monkeypatch):
     # Create the stub with all necessary methods
     stub = SimpleNamespace()
 
-    # Create a DataResult-like object to return from operations
+    # Create a DataResult-like object to return from _ops
     class DataResult:
         def __init__(self, success=True, data=None, error=None, path="/dummy/path",
                      message=None, format=None):
@@ -76,7 +76,7 @@ def fs_stub(monkeypatch):
         data=path.split(os.sep) if isinstance(path, str) else [str(path)]
     )
 
-    # Text file operations
+    # Text file _ops
     stub.write_text = lambda path, content, encoding=None: SimpleNamespace(
         success=True, bytes_written=len(content) if isinstance(content, str) else 0
     )

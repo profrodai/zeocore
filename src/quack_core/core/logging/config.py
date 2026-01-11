@@ -12,7 +12,7 @@
 Logger configuration for quack_core.
 
 This module handles the setup and configuration of loggers.
-It supports filesystem operations via lazy imports to avoid circular dependencies.
+It supports filesystem _ops via lazy imports to avoid circular dependencies.
 """
 
 import logging

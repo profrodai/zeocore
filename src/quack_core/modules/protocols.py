@@ -103,7 +103,7 @@ class PluginRegistryProtocol(Protocol):
     Protocol for a plugin registry.
 
     The registry maintains a collection of loaded modules, indexed by
-    their stable plugin_id. All operations use plugin_id as the key.
+    their stable plugin_id. All _ops use plugin_id as the key.
     """
 
     def register(self, plugin: QuackPluginProtocol) -> None:

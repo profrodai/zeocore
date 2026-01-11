@@ -20,7 +20,7 @@ Following Python 3.13 best practices:
 - Clear separation of concerns
 - Type hints for all public APIs
 - Structured error handling
-- Thread-safe operations where needed
+- Thread-safe _ops where needed
 """
 
 from typing import TypeVar
@@ -58,7 +58,7 @@ class PluginRegistry:
         Initialize the plugin registry.
 
         Args:
-            log_level: Logging level for registry operations
+            log_level: Logging level for registry _ops
         """
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)

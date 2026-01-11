@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/operations/download.py
-# module: quack_core.integrations.google.drive.operations.download
-# role: operations
+# path: quack-core/src/quack_core/integrations/google/drive/_ops/download.py
+# module: quack_core.integrations.google.drive._ops.download
+# role: _ops
 # neighbors: __init__.py, folder.py, list_files.py, permissions.py, upload.py
 # exports: resolve_download_path, download_file
 # git_branch: feat/9-make-setup-work
@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-Download operations for Google Drive integration.
+Download _ops for Google Drive integration.
 
 This module provides robust file download functionality with improved error handling.
 """

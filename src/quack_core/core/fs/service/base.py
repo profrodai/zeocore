@@ -1,19 +1,9 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 import uuid
 
-# Updated import path to match doctrine (operations -> _ops)
-from quack_core.core.fs.operations.base import FileSystemOperations
+# Updated import path to match renamed internal bridge layer
+from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.normalize import coerce_path
 from quack_core.core.fs.results import ErrorInfo
@@ -42,12 +32,12 @@ class FileSystemService:
     def _normalize_input_path(self, path: FsPathLike) -> Path:
         """
         SSOT for service input normalization.
-        Coerces input to Path AND anchors it to the service's base_dir.
+        Coerces input to Path AND anchors it to the service's base_dir with sandboxing.
         """
         try:
-            # coerce_path now accepts base_dir to handle anchoring logic
             return coerce_path(path, base_dir=self.base_dir)
         except (TypeError, ValueError) as e:
+            # Propagate ValueError for sandbox escapes as validation error
             raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
 
     def _map_error(self, e: Exception) -> ErrorInfo:
@@ -56,19 +46,17 @@ class FileSystemService:
         Converts native exceptions to structured ErrorInfo, preserving context.
         """
         err_type = type(e).__name__
+        exception_cls = e.__class__.__name__
         msg = str(e)
         hint = None
         details = {}
         trace_id = str(uuid.uuid4())
 
         if isinstance(e, FileNotFoundError):
-            err_type = "FileNotFoundError"
             hint = "Check if the file path is correct relative to base_dir."
         elif isinstance(e, PermissionError):
-            err_type = "PermissionError"
             hint = "Check file permissions or run with elevated privileges."
         elif isinstance(e, IsADirectoryError):
-            err_type = "IsADirectoryError"
             hint = "Expected a file but found a directory."
 
         # Add basic details
@@ -81,7 +69,7 @@ class FileSystemService:
             type=err_type,
             message=msg,
             hint=hint,
-            exception=str(e),
+            exception=exception_cls,
             trace_id=trace_id,
             details=details
         )

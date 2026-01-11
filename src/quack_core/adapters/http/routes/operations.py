@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/adapters/http/routes/operations.py
-# module: quack_core.adapters.http.routes.operations
-# role: operations
+# path: quack-core/src/quack_core/adapters/http/routes/_ops.py
+# module: quack_core.adapters.http.routes._ops
+# role: _ops
 # neighbors: __init__.py, health.py, jobs.py
 # exports: list_operations
 # git_branch: feat/9-make-setup-work
@@ -10,9 +10,9 @@
 
 
 """
-Operations routes for listing and invoking operations directly.
+Operations routes for listing and invoking _ops directly.
 
-This replaces the old "quackmedia" routes with a generic operations
+This replaces the old "quackmedia" routes with a generic _ops
 interface that works with the registry.
 """
 
@@ -35,7 +35,7 @@ def list_operations(
         tags: list[str] | None = None,
 ) -> dict[str, Any]:
     """
-    List all registered operations.
+    List all registered _ops.
 
     Args:
         registry: Operation registry (injected)
@@ -56,7 +56,7 @@ def list_operations(
                 "tags": op.tags,
             })
 
-    return {"operations": operations}
+    return {"_ops": operations}
 
 
 @router.post("/{op_name}", dependencies=[Depends(require_auth)])

@@ -1,16 +1,6 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/directory_operations.py
-# module: quack_core.core.fs.service.directory_operations
-# role: service
-# neighbors: __init__.py, base.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: DirectoryOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
-from quack_core.core.fs.operations.base import FileSystemOperations
+from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.results import DirectoryInfoResult, FindResult, OperationResult, FileInfoResult, ErrorInfo
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.normalize import safe_path_str

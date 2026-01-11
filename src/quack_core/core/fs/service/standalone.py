@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/standalone.py
-# module: quack_core.core.fs.service.standalone
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: read_text, write_text, read_binary, write_binary, read_lines, write_lines, copy, move (+41 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
-# === QV-LLM:END ===
-
 """
 Standalone wrappers that delegate to the singleton service.
 Ensures consistent configuration and state.
@@ -27,11 +17,17 @@ def read_text(path: Any, encoding: str = "utf-8") -> ReadResult[str]:
 def write_text(path: Any, content: str, encoding: str = "utf-8", atomic: bool = True, calculate_checksum: bool = False) -> WriteResult:
     return get_service().write_text(path, content, encoding, atomic, calculate_checksum)
 
-def read_binary(path: Any) -> ReadResult[bytes]:
-    return get_service().read_binary(path)
+def read_bytes(path: Any) -> ReadResult[bytes]:
+    return get_service().read_bytes(path)
 
-def write_binary(path: Any, content: bytes, atomic: bool = True, calculate_checksum: bool = False) -> WriteResult:
-    return get_service().write_binary(path, content, atomic, calculate_checksum)
+# Legacy alias
+read_binary = read_bytes
+
+def write_bytes(path: Any, content: bytes, atomic: bool = True, calculate_checksum: bool = False) -> WriteResult:
+    return get_service().write_bytes(path, content, atomic, calculate_checksum)
+
+# Legacy alias
+write_binary = write_bytes
 
 def read_lines(path: Any, encoding: str = "utf-8") -> ReadResult[list[str]]:
     return get_service().read_lines(path, encoding)

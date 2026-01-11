@@ -15,7 +15,7 @@ Consumed by: ALL Ring B tools (to emit artifacts), Ring C orchestrators (to rout
 Must NOT contain: File I/O, upload logic, storage implementation
 
 These models define HOW to reference artifacts without implementing
-the actual storage operations.
+the actual storage _ops.
 """
 
 from datetime import datetime

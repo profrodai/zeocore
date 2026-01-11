@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/operations/__init__.py
-# module: quack_core.integrations.google.drive.operations.__init__
-# role: operations
+# path: quack-core/src/quack_core/integrations/google/drive/_ops/__init__.py
+# module: quack_core.integrations.google.drive._ops.__init__
+# role: _ops
 # neighbors: download.py, folder.py, list_files.py, permissions.py, upload.py
 # exports: download, folder, list_files, permissions, upload
 # git_branch: feat/9-make-setup-work
@@ -11,7 +11,7 @@
 """
 Operations package for Google Drive integration.
 
-This package contains specialized modules for different Google Drive operations,
+This package contains specialized modules for different Google Drive _ops,
 such as uploading, downloading, listing files, and managing permissions.
 """
 

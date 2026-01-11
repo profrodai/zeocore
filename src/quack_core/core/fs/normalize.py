@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/normalize.py
-# module: quack_core.core.fs.normalize
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py, results.py
-# exports: coerce_path, coerce_path_str, safe_path_str
-# git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
-# === QV-LLM:END ===
-
 """
 Input normalization logic.
 This module is the Single Source of Truth for coercing inputs into Paths.
@@ -35,21 +25,22 @@ def _extract_path_str(obj: Any) -> str:
     if hasattr(obj, "success") and not getattr(obj, "success", True):
         raise ValueError(f"Cannot extract path from failed Result object: {obj}")
 
-    # Explicit unwrap methods
-    if isinstance(obj, HasValue):
+    # Explicit unwrap methods (using hasattr for safety)
+    if hasattr(obj, "value") and callable(obj.value):
         return _extract_path_str(obj.value())
-    if isinstance(obj, HasUnwrap):
+    if hasattr(obj, "unwrap") and callable(obj.unwrap):
         return _extract_path_str(obj.unwrap())
 
     # Result attributes (HasData / HasPath)
-    if isinstance(obj, HasData) and obj.data is not None:
+    # Prefer 'data' if it looks path-like, else 'path'
+    if hasattr(obj, "data") and obj.data is not None:
         if obj.data is not obj:
             try:
                 return _extract_path_str(obj.data)
             except (TypeError, ValueError):
                 pass
 
-    if isinstance(obj, HasPath) and obj.path is not None:
+    if hasattr(obj, "path") and obj.path is not None:
         return _extract_path_str(obj.path)
 
     raise TypeError(f"Could not coerce object of type {type(obj)} to path string")
@@ -57,7 +48,8 @@ def _extract_path_str(obj: Any) -> str:
 
 def coerce_path(obj: FsPathLike, base_dir: Path | None = None) -> Path:
     """
-    Strictly coerce input to a pathlib.Path and optionally anchor to base_dir.
+    Strictly coerce input to a pathlib.Path.
+    If base_dir is provided, anchors relative paths to it and prevents escape.
     Raises TypeError/ValueError on failure.
     """
     try:
@@ -65,20 +57,29 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None) -> Path:
         path = Path(s)
 
         if base_dir:
-            # Handle user home expansion
+            # Handle user home expansion first
             path = path.expanduser()
 
-            # If path is absolute, return as is (doctrine: absolute paths override base_dir context)
             if path.is_absolute():
+                # Doctrine: Absolute paths override base_dir context (use with caution)
                 return path.resolve()
 
-            # Anchor to base_dir
-            # Resolve to handle ../ backtracking if needed, but stay anchored?
-            # Simple join is safest default for strict anchoring.
-            return (base_dir / path).resolve()
+            # Anchor to base_dir and resolve
+            resolved_path = (base_dir / path).resolve()
+
+            # Strict Sandboxing Check
+            try:
+                resolved_path.relative_to(base_dir)
+            except ValueError:
+                raise ValueError(f"Path '{path}' attempts to escape base directory '{base_dir}'")
+
+            return resolved_path
 
         return path
     except (TypeError, ValueError) as e:
+        # Re-raise known errors or wrap unknown ones
+        if isinstance(e, ValueError) and "escape" in str(e):
+            raise
         raise TypeError(f"Could not coerce {type(obj)} to Path: {e}") from e
 
 

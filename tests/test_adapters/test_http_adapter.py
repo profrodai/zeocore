@@ -168,19 +168,19 @@ class TestAuthentication:
 
 
 class TestOperationsRegistry:
-    """Test operations registry integration."""
+    """Test _ops registry integration."""
 
     def test_list_operations(self, client):
-        """Should list registered operations."""
+        """Should list registered _ops."""
         response = client.get(
             "/ops",
             headers={"Authorization": "Bearer test-token-123"},
         )
         assert response.status_code == 200
         data = response.json()
-        assert "operations" in data
-        assert len(data["operations"]) == 1
-        assert data["operations"][0]["name"] == "test.echo"
+        assert "_ops" in data
+        assert len(data["_ops"]) == 1
+        assert data["_ops"][0]["name"] == "test.echo"
 
     def test_unsupported_operation_errors(self, client):
         """Unsupported operation should return 400 with structured error."""
@@ -501,7 +501,7 @@ class TestErrorHandling:
         assert data["detail"]["error"]["code"] == "JOB_NOT_FOUND"
 
     def test_async_operation_in_job(self, registry, client):
-        """Async operations should work in jobs (not just direct invocation)."""
+        """Async _ops should work in jobs (not just direct invocation)."""
 
         async def async_echo(req: EchoRequest) -> dict[str, Any]:
             # Simulate async work

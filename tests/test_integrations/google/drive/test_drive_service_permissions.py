@@ -8,7 +8,7 @@
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive service permissions operations.
+Tests for Google Drive service permissions _ops.
 """
 
 from unittest.mock import MagicMock, patch
@@ -18,7 +18,7 @@ from quack_core.core.errors import QuackApiError
 
 
 class TestGoogleDriveServicePermissions:
-    """Tests for the GoogleDriveService permissions operations."""
+    """Tests for the GoogleDriveService permissions _ops."""
 
     @patch(
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"

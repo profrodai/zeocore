@@ -1,6 +1,6 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/operations/test_utils_fix.py
-# role: operations
+# path: quack-core/tests/test_integrations/pandoc/_ops/test_utils_fix.py
+# role: _ops
 # neighbors: __init__.py, test_html_to_md.py, test_md_to_docx.py, test_utils.py
 # exports: patched_check_file_size, patched_check_conversion_ratio, patched_track_metrics, apply_utils_patches
 # git_branch: feat/9-make-setup-work
@@ -8,9 +8,9 @@
 # === QV-LLM:END ===
 
 """
-Helper functions to fix validation issues in utils operations.
+Helper functions to fix validation issues in utils _ops.
 
-This module provides patched implementations of certain utils operations
+This module provides patched implementations of certain utils _ops
 that can be used to avoid DataResult validation issues during testing.
 """
 import time
@@ -150,11 +150,11 @@ def apply_utils_patches():
         list: List of context managers that should be entered
     """
     patches = [
-        patch('quack_core.integrations.pandoc.operations.utils.check_file_size',
+        patch('quack_core.integrations.pandoc._ops.utils.check_file_size',
               patched_check_file_size),
-        patch('quack_core.integrations.pandoc.operations.utils.check_conversion_ratio',
+        patch('quack_core.integrations.pandoc._ops.utils.check_conversion_ratio',
               patched_check_conversion_ratio),
-        patch('quack_core.integrations.pandoc.operations.utils.track_metrics',
+        patch('quack_core.integrations.pandoc._ops.utils.track_metrics',
               patched_track_metrics)
     ]
     return patches

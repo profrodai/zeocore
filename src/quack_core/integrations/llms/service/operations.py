@@ -1,6 +1,6 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/service/operations.py
-# module: quack_core.integrations.llms.service.operations
+# path: quack-core/src/quack_core/integrations/llms/service/_ops.py
+# module: quack_core.integrations.llms.service._ops
 # role: service
 # neighbors: __init__.py, dependencies.py, initialization.py, integration.py
 # exports: chat, count_tokens, get_provider_status, reset_provider_status
@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-LLM operations for the integration service.
+LLM _ops for the integration service.
 
 This module provides methods for interacting with LLMs, such as chat and token counting.
 """

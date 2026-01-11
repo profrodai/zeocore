@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/pandoc/operations/html_to_md.py
-# module: quack_core.integrations.pandoc.operations.html_to_md
-# role: operations
+# path: quack-core/src/quack_core/integrations/pandoc/_ops/html_to_md.py
+# module: quack_core.integrations.pandoc._ops.html_to_md
+# role: _ops
 # neighbors: __init__.py, utils.py, md_to_docx.py
 # exports: convert_html_to_markdown, post_process_markdown, validate_conversion
 # git_branch: feat/9-make-setup-work
@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-HTML to Markdown conversion operations.
+HTML to Markdown conversion _ops.
 
 This module provides functions for converting HTML documents to Markdown
 using pandoc with optimized settings and error handling.

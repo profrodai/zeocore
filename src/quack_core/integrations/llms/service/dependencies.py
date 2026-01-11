@@ -2,7 +2,7 @@
 # path: quack-core/src/quack_core/integrations/llms/service/dependencies.py
 # module: quack_core.integrations.llms.service.dependencies
 # role: service
-# neighbors: __init__.py, operations.py, initialization.py, integration.py
+# neighbors: __init__.py, _ops.py, initialization.py, integration.py
 # exports: check_llm_dependencies
 # git_branch: feat/9-make-setup-work
 # git_commit: de7513d4

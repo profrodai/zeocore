@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/mail/operations/__init__.py
-# module: quack_core.integrations.google.mail.operations.__init__
-# role: operations
+# path: quack-core/src/quack_core/integrations/google/mail/_ops/__init__.py
+# module: quack_core.integrations.google.mail._ops.__init__
+# role: _ops
 # neighbors: attachments.py, auth.py, email.py
 # exports: email, auth, attachments
 # git_branch: feat/9-make-setup-work
@@ -11,7 +11,7 @@
 """
 Operations package for Google Mail integration.
 
-This package contains specialized modules for different Gmail operations,
+This package contains specialized modules for different Gmail _ops,
 such as listing emails, downloading messages, and handling attachments.
 """
 

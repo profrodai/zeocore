@@ -550,7 +550,7 @@ class TestFileSystemService:
 
     @given(st.text(min_size=1, max_size=100))
     def test_hypothetical_file_operations(self, content: str) -> None:
-        """Test file operations with hypothesis-generated content."""
+        """Test file _ops with hypothesis-generated content."""
         # Skip problematic input like lone carriage returns
         if content in ("\r", "\r\n", "\n\r"):
             return

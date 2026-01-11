@@ -11,7 +11,7 @@
 """
 Path resolution result models.
 
-This module defines result models for path resolution operations.
+This module defines result models for path resolution _ops.
 """
 
 from pydantic import BaseModel

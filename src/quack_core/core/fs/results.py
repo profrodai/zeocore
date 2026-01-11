@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/results.py
-# module: quack_core.core.fs.results
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py, normalize.py
-# exports: ErrorInfo, OperationResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult, DataResult (+1 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Generic, TypeVar, Optional
 from pydantic import BaseModel, Field, field_serializer, computed_field
@@ -19,7 +9,7 @@ class ErrorInfo(BaseModel):
     type: str = Field(description="Error type identifier (e.g. 'FileNotFoundError')")
     message: str = Field(description="Original exception message")
     hint: Optional[str] = Field(default=None, description="User-friendly resolution hint")
-    exception: Optional[str] = Field(default=None, description="Stringified exception class")
+    exception: Optional[str] = Field(default=None, description="Exception class name")
     trace_id: Optional[str] = Field(default=None, description="Tracing identifier for debugging")
     details: Optional[dict] = Field(default=None, description="Structured context (path, errno, etc)")
 
@@ -29,6 +19,7 @@ class OperationResult(BaseModel):
     message: str | None = Field(default=None)
     error: str | None = Field(default=None, description="Legacy error string")
     error_info: ErrorInfo | None = Field(default=None, description="Structured error details")
+    meta: dict | None = Field(default=None, description="Additional operation metadata")
 
     @computed_field
     @property

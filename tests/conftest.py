@@ -59,10 +59,10 @@ def mock_fs_standalone():
 @pytest.fixture(autouse=True)
 def patch_filesystem_operations():
     """
-    Patch filesystem operations for tests.
+    Patch filesystem _ops for tests.
 
     This fixture ensures that DataResult and OperationResult objects
-    are handled correctly in path-related operations during tests.
+    are handled correctly in path-related _ops during tests.
     """
     # Original Path.__init__ to preserve original behavior
     original_path_init = Path.__init__

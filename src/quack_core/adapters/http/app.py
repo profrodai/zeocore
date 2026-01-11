@@ -121,7 +121,7 @@ def create_app(
     app = FastAPI(
         title="QuackCore API",
         version="0.1.0",
-        description="HTTP API for QuackCore operations",
+        description="HTTP API for QuackCore _ops",
         lifespan=lifespan,
     )
 
@@ -148,7 +148,7 @@ def create_app(
     # Include routers
     app.include_router(health.router, prefix="/health", tags=["health"])
     app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
-    app.include_router(operations.router, prefix="/ops", tags=["operations"])
+    app.include_router(operations.router, prefix="/ops", tags=["_ops"])
 
     logger.info("FastAPI app created")
 

@@ -8,7 +8,7 @@
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive service file operations.
+Tests for Google Drive service file _ops.
 """
 
 from pathlib import Path
@@ -22,7 +22,7 @@ from quack_core.core.paths.api.public.results import PathResult
 
 
 class TestGoogleDriveServiceFiles:
-    """Tests for the GoogleDriveService file operations."""
+    """Tests for the GoogleDriveService file _ops."""
 
     @pytest.fixture
     def drive_service(self):

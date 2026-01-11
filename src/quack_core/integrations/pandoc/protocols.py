@@ -92,7 +92,7 @@ class BatchConverterProtocol(Protocol):
 @runtime_checkable
 class PandocConversionProtocol(Protocol):
     """
-    Protocol for the main pandoc conversion operations.
+    Protocol for the main pandoc conversion _ops.
     File path parameters and return types are represented as strings.
     """
 

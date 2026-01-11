@@ -11,7 +11,7 @@
 """
 Path service for quack_core.
 
-This module provides the PUBLIC high-level service for path operations.
+This module provides the PUBLIC high-level service for path _ops.
 It delegates logic to the internal Resolver and returns typed Result objects.
 """
 
@@ -34,7 +34,7 @@ from quack_core.core.paths.api.public.results import ContextResult, PathResult, 
 
 class PathService:
     """
-    Public service for path-related operations.
+    Public service for path-related _ops.
     Wraps internal logic with consistent error handling and return types.
     """
 

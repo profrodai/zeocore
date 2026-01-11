@@ -35,7 +35,7 @@ class TestLLMService:
         # Create a service
         service = LLMIntegration()
 
-        # Mock the file operations using our fs module
+        # Mock the file _ops using our fs module
         with patch("quack_core.core.fs.service.get_file_info") as mock_file_info:
             file_info_result = FileInfoResult(
                 success=True,

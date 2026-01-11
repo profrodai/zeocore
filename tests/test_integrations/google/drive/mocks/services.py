@@ -132,7 +132,7 @@ def create_mock_drive_service(
 
     Args:
         fileId: ID to use for created files
-        file_metadata: Metadata to return for file operations
+        file_metadata: Metadata to return for file _ops
         file_list: List of files to return in list operation
 
     Returns:
@@ -172,7 +172,7 @@ def create_error_drive_service(
         list_error: Exception to raise on list operation
         update_error: Exception to raise on update operation
         delete_error: Exception to raise on delete operation
-        permission_error: Exception to raise on permission operations
+        permission_error: Exception to raise on permission _ops
 
     Returns:
         A mock Drive service object that will raise the specified exceptions

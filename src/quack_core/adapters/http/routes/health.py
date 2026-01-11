@@ -2,7 +2,7 @@
 # path: quack-core/src/quack_core/adapters/http/routes/health.py
 # module: quack_core.adapters.http.routes.health
 # role: adapters
-# neighbors: __init__.py, operations.py, jobs.py
+# neighbors: __init__.py, _ops.py, jobs.py
 # exports: health_live, health_ready
 # git_branch: feat/9-make-setup-work
 # git_commit: de7513d4

@@ -1,14 +1,14 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/operations/pull_requests.py
-# module: quack_core.integrations.github.operations.pull_requests
-# role: operations
+# path: quack-core/src/quack_core/integrations/github/_ops/pull_requests.py
+# module: quack_core.integrations.github._ops.pull_requests
+# role: _ops
 # neighbors: __init__.py, issues.py, repositories.py, users.py
 # exports: create_pull_request, list_pull_requests, get_pull_request, merge_pull_request, get_pull_request_files, add_pull_request_review, get_pull_requests_by_user
 # git_branch: feat/9-make-setup-work
 # git_commit: de7513d4
 # === QV-LLM:END ===
 
-"""GitHub pull request operations."""
+"""GitHub pull request _ops."""
 
 from datetime import datetime
 from typing import Any, Literal

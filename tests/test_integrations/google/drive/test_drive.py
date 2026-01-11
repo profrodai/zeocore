@@ -14,7 +14,7 @@ This file imports all the specific test modules to ensure they are discovered
 by pytest when running the test suite.
 """
 
-# Import test classes from operations submodules
+# Import test classes from _ops submodules
 from tests.test_integrations.google.drive.operations.test_operations_download import (
     TestDriveOperationsDownload,
 )

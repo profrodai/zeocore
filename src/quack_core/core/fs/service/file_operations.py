@@ -1,16 +1,6 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/file_operations.py
-# module: quack_core.core.fs.service.file_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, full_class.py, path_operations.py (+4 more)
-# exports: FileOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
-from quack_core.core.fs.operations.base import FileSystemOperations
+from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.results import ReadResult, WriteResult, OperationResult, ErrorInfo
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.normalize import safe_path_str
@@ -27,8 +17,7 @@ class FileOperationsMixin:
             content = self.operations._read_text(norm_path, encoding)
             return ReadResult(success=True, path=norm_path, content=content, encoding=encoding, message=f"Read {len(content)} chars")
         except Exception as e:
-            # We don't log error here because it's returned in the result.
-            # Caller can decide to log based on result.success
+            # No logging on expected errors, let caller handle via result.success
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return ReadResult(
@@ -61,7 +50,7 @@ class FileOperationsMixin:
                 message="Failed to write file"
             )
 
-    def read_binary(self, path: FsPathLike) -> ReadResult[bytes]:
+    def read_bytes(self, path: FsPathLike) -> ReadResult[bytes]:
         try:
             norm_path = self._normalize_input_path(path)
             content = self.operations._read_binary(norm_path)
@@ -79,7 +68,8 @@ class FileOperationsMixin:
                 message="Failed to read binary file"
             )
 
-    def write_binary(self, path: FsPathLike, content: bytes, atomic: bool = True, calculate_checksum: bool = False) -> WriteResult:
+    # Renamed from write_binary for consistency
+    def write_bytes(self, path: FsPathLike, content: bytes, atomic: bool = True, calculate_checksum: bool = False) -> WriteResult:
         try:
             norm_path = self._normalize_input_path(path)
             result_path = self.operations._write_binary(norm_path, content, atomic)

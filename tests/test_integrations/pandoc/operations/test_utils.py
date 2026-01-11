@@ -1,6 +1,6 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/operations/test_utils.py
-# role: operations
+# path: quack-core/tests/test_integrations/pandoc/_ops/test_utils.py
+# role: _ops
 # neighbors: __init__.py, test_html_to_md.py, test_md_to_docx.py, test_utils_fix.py
 # exports: test_verify_pandoc_success, test_verify_pandoc_import_error, test_verify_pandoc_os_error, test_prepare_pandoc_args, test_get_file_info, test_validate_html_structure, test_validate_docx_structure, test_check_file_size (+2 more)
 # git_branch: feat/9-make-setup-work
@@ -40,7 +40,7 @@ from .test_utils_fix import (
     patched_track_metrics,
 )
 
-# --- Tests for operations.utils ---
+# --- Tests for _ops.utils ---
 
 def test_verify_pandoc_success(mock_pypandoc):
     """Test successful verification of pandoc."""
@@ -214,7 +214,7 @@ def test_check_conversion_ratio():
     assert "less than" in errors[0]
 
 
-@patch('quack_core.integrations.pandoc.operations.utils.logger')
+@patch('quack_core.integrations.pandoc._ops.utils.logger')
 def test_track_metrics(mock_logger):
     """Test tracking of conversion metrics."""
     metrics = ConversionMetrics()

@@ -62,7 +62,7 @@ class TestGoogleMailService:
     @patch("quack_core.integrations.google.config.GoogleConfigProvider.load_config")
     def test_initialize_config(self, mock_load_config: MagicMock) -> None:
         """Test initializing the service configuration."""
-        # Instead of mocking file operations, mock the _initialize_config method itself
+        # Instead of mocking file _ops, mock the _initialize_config method itself
         # and check that it gets the right inputs and generates the right outputs
 
         # Test with explicit parameters
@@ -178,7 +178,7 @@ class TestGoogleMailService:
     )
     @patch("quack_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
     @patch(
-        "quack_core.integrations.google.mail.operations.auth.initialize_gmail_service"
+        "quack_core.integrations.google.mail._ops.auth.initialize_gmail_service"
     )
     @patch("quack_core.integrations.core.base.BaseIntegrationService.initialize")
     def test_initialize(
@@ -274,16 +274,16 @@ class TestGoogleMailService:
             "gmail_user_id": "test@example.com",
         }
 
-        # Mock the email operations module
+        # Mock the email _ops module
         with patch(
-            "quack_core.integrations.google.mail.operations.email.list_emails"
+            "quack_core.integrations.google.mail._ops.email.list_emails"
         ) as mock_list:
             mock_list.return_value = IntegrationResult.success_result(
                 content=[{"id": "msg1"}, {"id": "msg2"}]
             )
 
             with patch(
-                "quack_core.integrations.google.mail.operations.email.build_query"
+                "quack_core.integrations.google.mail._ops.email.build_query"
             ) as mock_build:
                 mock_build.return_value = "after:2021/01/01 label:INBOX label:IMPORTANT"
 
@@ -315,7 +315,7 @@ class TestGoogleMailService:
         # Test with error
         service.gmail_service = create_error_gmail_service()
         with patch(
-            "quack_core.integrations.google.mail.operations.email.list_emails"
+            "quack_core.integrations.google.mail._ops.email.list_emails"
         ) as mock_list:
             mock_list.side_effect = Exception("API error")
 
@@ -349,9 +349,9 @@ class TestGoogleMailService:
             "max_delay": 5.0,
         }
 
-        # Mock the email operations module
+        # Mock the email _ops module
         with patch(
-            "quack_core.integrations.google.mail.operations.email.download_email"
+            "quack_core.integrations.google.mail._ops.email.download_email"
         ) as mock_download:
             mock_download.return_value = IntegrationResult.success_result(
                 content="/path/to/storage/email.html"
@@ -378,7 +378,7 @@ class TestGoogleMailService:
         # Test with error
         service.gmail_service = create_error_gmail_service()
         with patch(
-            "quack_core.integrations.google.mail.operations.email.download_email"
+            "quack_core.integrations.google.mail._ops.email.download_email"
         ) as mock_download:
             mock_download.side_effect = Exception("API error")
 

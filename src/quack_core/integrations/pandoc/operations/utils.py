@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/pandoc/operations/utils.py
-# module: quack_core.integrations.pandoc.operations.utils
-# role: operations
+# path: quack-core/src/quack_core/integrations/pandoc/_ops/utils.py
+# module: quack_core.integrations.pandoc._ops.utils
+# role: _ops
 # neighbors: __init__.py, html_to_md.py, md_to_docx.py
 # exports: verify_pandoc, prepare_pandoc_args, validate_html_structure, validate_docx_structure, safe_convert_to_int, get_size_str_wrapper, check_file_size, check_conversion_ratio (+2 more)
 # git_branch: feat/9-make-setup-work
@@ -9,11 +9,11 @@
 # === QV-LLM:END ===
 
 """
-Utility functions for pandoc operations.
+Utility functions for pandoc _ops.
 
-This module provides helper functions for pandoc conversion operations,
+This module provides helper functions for pandoc conversion _ops,
 such as validation, metrics tracking, and pandoc installation verification.
-All file path values are handled as strings. Filesystem operations are delegated
+All file path values are handled as strings. Filesystem _ops are delegated
 to the quack_core.core.fs service.
 """
 

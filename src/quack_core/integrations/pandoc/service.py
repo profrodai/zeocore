@@ -11,7 +11,7 @@
 """Pandoc Integration Service
 
 This module provides the main integration service for Pandoc document conversion.
-It handles initialization, configuration, and delegates conversion operations to
+It handles initialization, configuration, and delegates conversion _ops to
 specialized converters.
 """
 
@@ -34,7 +34,7 @@ class PandocIntegration(BaseIntegrationService):
 
     This service provides a high-level interface for converting documents
     using Pandoc. It manages configuration, initialization, and delegates
-    conversion operations to specialized converters.
+    conversion _ops to specialized converters.
 
     Attributes:
         converter: Document converter instance (available after initialization)

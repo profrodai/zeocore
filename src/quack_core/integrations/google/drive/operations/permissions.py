@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/operations/permissions.py
-# module: quack_core.integrations.google.drive.operations.permissions
-# role: operations
+# path: quack-core/src/quack_core/integrations/google/drive/_ops/permissions.py
+# module: quack_core.integrations.google.drive._ops.permissions
+# role: _ops
 # neighbors: __init__.py, download.py, folder.py, list_files.py, upload.py
 # exports: set_file_permissions, get_sharing_link
 # git_branch: feat/9-make-setup-work
@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 """
-Permission operations for Google Drive integration.
+Permission _ops for Google Drive integration.
 
 This module provides functions for managing file permissions in Google Drive,
 including setting permissions and retrieving sharing links.

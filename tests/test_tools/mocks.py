@@ -12,7 +12,7 @@ Mocks for testing the quack_core.tools module.
 
 This module provides mock objects and helper functions for testing
 the tools components without actually using the real implementations
-of services, filesystem operations, etc.
+of services, filesystem _ops, etc.
 """
 
 import os

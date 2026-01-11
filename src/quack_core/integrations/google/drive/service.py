@@ -12,7 +12,7 @@
 Google Drive integration service for quack_core.
 
 This module provides the main service class for Google Drive integration,
-handling file operations, folder management, and permissions.
+handling file _ops, folder management, and permissions.
 """
 
 import io

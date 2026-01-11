@@ -13,7 +13,7 @@ Core converter implementation for Pandoc integration.
 
 This module provides the main DocumentConverter class that implements
 the document conversion functionality using Pandoc. In this refactored
-version, all file paths are represented as strings. Filesystem operations
+version, all file paths are represented as strings. Filesystem _ops
 such as reading file info, creating directories, writing output files, etc.,
 are delegated to the quack_core.core.fs service functions.
 """

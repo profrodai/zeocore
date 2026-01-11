@@ -116,7 +116,7 @@ class PluginLoader:
         Initialize the plugin loader.
 
         Args:
-            log_level: Logging level for loader operations
+            log_level: Logging level for loader _ops
         """
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)

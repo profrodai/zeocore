@@ -10,7 +10,7 @@
 """
 HTTP Adapter for quack_core.
 
-Optional FastAPI-based HTTP API that exposes QuackCore operations
+Optional FastAPI-based HTTP API that exposes QuackCore _ops
 via REST endpoints. Only available when the 'http' extra is installed.
 """
 

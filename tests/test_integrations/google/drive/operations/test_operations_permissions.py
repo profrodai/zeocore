@@ -1,6 +1,6 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/operations/test_operations_permissions.py
-# role: operations
+# path: quack-core/tests/test_integrations/google/drive/_ops/test_operations_permissions.py
+# role: _ops
 # neighbors: __init__.py, test_operations_download.py, test_operations_folder.py, test_operations_list_files.py, test_operations_upload.py
 # exports: TestDriveOperationsPermissions
 # git_branch: feat/9-make-setup-work
@@ -8,7 +8,7 @@
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive operations permissions module.
+Tests for Google Drive _ops permissions module.
 """
 
 from unittest.mock import patch
@@ -26,7 +26,7 @@ from tests.test_integrations.google.drive.mocks import (
 
 
 class TestDriveOperationsPermissions:
-    """Tests for the Google Drive operations permissions functions."""
+    """Tests for the Google Drive _ops permissions functions."""
 
     def test_set_file_permissions(self) -> None:
         """Test setting file permissions."""

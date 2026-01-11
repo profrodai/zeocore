@@ -658,7 +658,7 @@ class TestFileUtilities:
 
     @given(st.text(min_size=1, max_size=100))
     def test_hypothetical_path_operations(self, text: str) -> None:
-        """Test path operations with hypothesis-generated text."""
+        """Test path _ops with hypothesis-generated text."""
         # Handle problematic characters more carefully:
         # 1. Period at start of string
         # 2. Unicode characters that might cause file system issues

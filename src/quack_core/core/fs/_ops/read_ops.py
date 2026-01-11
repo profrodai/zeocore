@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/operations/read_ops.py
-# module: quack_core.core.fs.operations.read_ops
-# role: operations
-# neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, find_ops.py (+4 more)
-# exports: ReadOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
-# === QV-LLM:END ===
-
 from pathlib import Path
 
 class ReadOperationsMixin:

@@ -9,10 +9,10 @@
 # === QV-LLM:END ===
 
 """
-Result models for integration operations.
+Result models for integration _ops.
 
 This module provides standardized result classes for various integration
-operations, enhancing error handling and return values.
+_ops, enhancing error handling and return values.
 """
 
 from typing import Any, Generic, TypeVar
@@ -23,7 +23,7 @@ T = TypeVar("T")  # Generic type for result content
 
 
 class IntegrationResult(BaseModel, Generic[T]):
-    """Base result for integration operations."""
+    """Base result for integration _ops."""
 
     success: bool = Field(
         default=True,
@@ -69,7 +69,7 @@ class IntegrationResult(BaseModel, Generic[T]):
 
 
 class AuthResult(BaseModel):
-    """Result for authentication operations."""
+    """Result for authentication _ops."""
 
     success: bool = Field(
         default=True,
@@ -154,7 +154,7 @@ class AuthResult(BaseModel):
 
 
 class ConfigResult(IntegrationResult[dict]):
-    """Result for configuration operations."""
+    """Result for configuration _ops."""
 
     config_path: str | None = Field(
         default=None,

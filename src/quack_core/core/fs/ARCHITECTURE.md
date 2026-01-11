@@ -359,10 +359,3 @@ All IO goes through `core.fs`.
 
 This is how the system scales, teaches, and survives refactors.
 
----
-
-If you want, next I can:
-
-* produce a **junior dev checklist** (“if you add a method, you must do X”)
-* produce a **migration checklist** from your current code to this layout
-* generate **stub files** for the missing pieces (`normalize.py`, `ErrorInfo`, etc.)

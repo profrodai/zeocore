@@ -1,14 +1,14 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/operations/users.py
-# module: quack_core.integrations.github.operations.users
-# role: operations
+# path: quack-core/src/quack_core/integrations/github/_ops/users.py
+# module: quack_core.integrations.github._ops.users
+# role: _ops
 # neighbors: __init__.py, issues.py, pull_requests.py, repositories.py
 # exports: get_user
 # git_branch: feat/9-make-setup-work
 # git_commit: de7513d4
 # === QV-LLM:END ===
 
-"""GitHub user operations."""
+"""GitHub user _ops."""
 
 from typing import Any
 
