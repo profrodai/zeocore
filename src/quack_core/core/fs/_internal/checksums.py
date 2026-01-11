@@ -1,14 +1,4 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/checksums.py
-# module: quack_core.core.fs._internal.checksums
-# role: module
-# neighbors: __init__.py, common.py, comparison.py, directory_ops.py, disk.py, file_info.py (+4 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
-# === QV-LLM:END ===
-
 import hashlib
-from typing import Any
 from pathlib import Path
 
 def _compute_checksum(path: Path, algorithm: str = "sha256") -> str:

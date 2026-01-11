@@ -1,16 +1,6 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/file_info.py
-# module: quack_core.core.fs._internal.file_info
-# role: module
-# neighbors: __init__.py, checksums.py, common.py, comparison.py, directory_ops.py, disk.py (+4 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
-# === QV-LLM:END ===
-
 import mimetypes
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
 
 def _get_file_timestamp(path: Path) -> float:
     return path.stat().st_mtime

@@ -1,30 +1,19 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/file_ops.py
-# module: quack_core.core.fs._internal.file_ops
-# role: module
-# neighbors: __init__.py, checksums.py, common.py, comparison.py, directory_ops.py, disk.py (+4 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
-# === QV-LLM:END ===
-
 import os
 import re
 import tempfile
 from pathlib import Path
-from typing import Any
-from quack_core.core.errors import QuackFileExistsError, QuackFileNotFoundError, QuackIOError
 from quack_core.core.fs._internal.directory_ops import _ensure_directory
 
 def _get_unique_filename(directory: Path, filename: str, raise_if_exists: bool = False) -> Path:
     if not directory.exists():
-        raise QuackFileNotFoundError(str(directory), message="Directory does not exist")
+        raise FileNotFoundError(f"Directory does not exist: {directory}")
     if not filename or not filename.strip():
-        raise QuackIOError("Filename cannot be empty", str(directory))
+        raise ValueError("Filename cannot be empty")
     path = directory / filename
     if not path.exists():
         return path
     if raise_if_exists:
-        raise QuackFileExistsError(str(path), message="File already exists")
+        raise FileExistsError(f"File already exists: {path}")
     stem = path.stem
     suffix = path.suffix
     counter = 1
@@ -60,13 +49,13 @@ def _atomic_write(path: Path, content: bytes) -> Path:
         if temp_file and temp_file.exists():
             try: temp_file.unlink()
             except OSError: pass
-        raise QuackIOError(f"Atomic write failed: {e}", str(path), original_error=e) from e
+        raise IOError(f"Atomic write failed: {e}") from e
 
 def _find_files_by_content(directory: Path, text_pattern: str, recursive: bool = True) -> list[Path]:
     try:
         regex = re.compile(text_pattern)
     except re.error as e:
-        raise QuackIOError(f"Invalid regex: {e}", str(directory)) from e
+        raise ValueError(f"Invalid regex: {e}") from e
     if not directory.exists() or not directory.is_dir():
         return []
     matches = []
