@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: conftest.py, test_booster.py, test_enhancer.py, test_integration.py, test_plugin.py, test_registry.py (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: d448237f
+# git_commit: 01ff6772
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_auth_provider.py, test_config_provider.py
 # exports: mock_credentials
 # git_branch: feat/9-make-setup-work
-# git_commit: d448237f
+# git_commit: 01ff6772
 # === QV-LLM:END ===
 
 from unittest.mock import MagicMock
