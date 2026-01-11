@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py, test_envelopes.py, test_schema_examples.py
 # git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
+# git_commit: 10c11a25
 # === QV-LLM:END ===
 
 """

@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: test_html_to_md.py, test_md_to_docx.py, test_utils.py, test_utils_fix.py
 # git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
+# git_commit: 10c11a25
 # === QV-LLM:END ===
 
 """
