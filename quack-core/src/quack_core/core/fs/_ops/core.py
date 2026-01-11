@@ -4,7 +4,7 @@
 # role: _ops
 # neighbors: __init__.py, base.py, directory_ops.py, file_info.py, find_ops.py, path_ops.py (+4 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: f85cce5a
+# git_commit: d448237f
 # === QV-LLM:END ===
 
 import mimetypes

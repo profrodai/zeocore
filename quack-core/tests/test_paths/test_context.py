@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_resolvers.py, test_service.py, test_utils.py
 # exports: TestProjectDirectory, TestProjectContext, TestContentContext
 # git_branch: feat/9-make-setup-work
-# git_commit: f85cce5a
+# git_commit: d448237f
 # === QV-LLM:END ===
 
 """
