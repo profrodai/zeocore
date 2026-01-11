@@ -5,12 +5,12 @@
 # neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, find_ops.py (+4 more)
 # exports: PathOperationsMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
+# git_commit: c47a9dfa
 # === QV-LLM:END ===
 
 from pathlib import Path
-from quack_core.core.fs._internal.path_ops import _expand_user_vars, _split_path
-from quack_core.core.fs._internal.common import _get_extension, _normalize_path
+from quack_core.core.fs._internal.path_ops import _expand_user_vars, _split_path, _resolve_path
+from quack_core.core.fs._internal.common import _get_extension
 from quack_core.core.fs._internal.comparison import _is_same_file, _is_subdirectory
 
 class PathOperationsMixin:
@@ -18,7 +18,9 @@ class PathOperationsMixin:
         return _split_path(path)
 
     def _normalize_path(self, path: Path) -> Path:
-        return _normalize_path(path)
+        # Internal normalization just means resolve().
+        # Policy normalization (sandboxing) happens in service layer via normalize.py
+        return path.resolve()
 
     def _expand_user_vars(self, path: Path) -> str:
         return str(_expand_user_vars(path))
@@ -31,6 +33,9 @@ class PathOperationsMixin:
 
     def _get_extension(self, path: Path) -> str:
         return _get_extension(path)
+
+    def _resolve_path(self, path: Path) -> Path:
+        return _resolve_path(path, strict=False)
 
     def _is_path_syntax_valid(self, path_str: str) -> bool:
         try:

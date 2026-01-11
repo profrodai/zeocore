@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/standalone.py
-# module: quack_core.core.fs.service.standalone
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: read_text, write_text, read_bytes, write_bytes, read_lines, write_lines, copy, move (+38 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
-# === QV-LLM:END ===
-
 """
 Standalone wrappers that delegate to the singleton service.
 Ensures consistent configuration and state.
@@ -17,7 +7,7 @@ from pathlib import Path
 from quack_core.core.fs.service import get_service
 from quack_core.core.fs.results import (
     DataResult, DirectoryInfoResult, FileInfoResult, FindResult,
-    OperationResult, PathResult, ReadResult, WriteResult
+    OperationResult, PathResult, ReadResult, WriteResult, BoolResult
 )
 from quack_core.core.fs.normalize import (
     coerce_path, coerce_path_str, safe_path_str,
@@ -108,10 +98,10 @@ def is_same_file(path1: Any, path2: Any) -> DataResult[bool]:
 def is_subdirectory(child: Any, parent: Any) -> DataResult[bool]:
     return get_service().is_subdirectory(child, parent)
 
-def path_exists(path: Any) -> DataResult[bool]:
+def path_exists(path: Any) -> BoolResult:
     return get_service().path_exists(path)
 
-def is_valid_path(path: Any) -> DataResult[bool]:
+def is_valid_path(path: Any) -> BoolResult:
     return get_service().is_valid_path(path)
 
 def get_path_info(path: Any) -> PathResult:

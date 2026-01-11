@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/utility_operations.py
-# module: quack_core.core.fs.service.utility_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: UtilityOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -25,13 +15,12 @@ class UtilityOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             res_path = self.operations._ensure_directory(norm_path, exist_ok)
-            return OperationResult(ok=True, success=True, path=res_path, message=f"Directory ensured: {res_path}")
+            return OperationResult(ok=True, path=res_path, message=f"Directory ensured: {res_path}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return OperationResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 error_info=self._map_error(e),
                 error=str(e),
@@ -43,13 +32,12 @@ class UtilityOperationsMixin:
             norm_dir = self._normalize_input_path(directory)
             unique = self.operations._get_unique_filename(norm_dir, filename)
             # path is the directory context, data is the result filename
-            return DataResult(ok=True, success=True, path=norm_dir, data=str(unique.name), format="filename", message=f"Unique filename: {unique.name}")
+            return DataResult(ok=True, path=norm_dir, data=str(unique.name), format="filename", message=f"Unique filename: {unique.name}")
         except Exception as e:
-            safe_p_str = safe_path_str(directory)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(directory)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data="",
                 format="filename",
@@ -62,13 +50,12 @@ class UtilityOperationsMixin:
         try:
             norm_dir = self._normalize_input_path(directory) if directory else None
             temp_path = self.operations._create_temp_file(suffix, prefix, norm_dir)
-            return DataResult(ok=True, success=True, path=temp_path, data=str(temp_path), format="path", message=f"Created temp file: {temp_path}")
+            return DataResult(ok=True, path=temp_path, data=str(temp_path), format="path", message=f"Created temp file: {temp_path}")
         except Exception as e:
-            safe_p_str = safe_path_str(directory) if directory else None
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(directory) if directory else None
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data="",
                 format="path",
@@ -81,13 +68,12 @@ class UtilityOperationsMixin:
         try:
             norm_dir = self._normalize_input_path(directory)
             matches = self.operations._find_files_by_content(norm_dir, text_pattern, recursive)
-            return DataResult(ok=True, success=True, path=norm_dir, data=[str(p) for p in matches], format="path_list", message=f"Found {len(matches)} files")
+            return DataResult(ok=True, path=norm_dir, data=[str(p) for p in matches], format="path_list", message=f"Found {len(matches)} files")
         except Exception as e:
-            safe_p_str = safe_path_str(directory)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(directory)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data=[],
                 format="path_list",
@@ -100,13 +86,12 @@ class UtilityOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             usage = self.operations._get_disk_usage(norm_path)
-            return DataResult(ok=True, success=True, path=norm_path, data=usage, format="disk_usage", message="Retrieved disk usage")
+            return DataResult(ok=True, path=norm_path, data=usage, format="disk_usage", message="Retrieved disk usage")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data={},
                 format="disk_usage",
@@ -119,13 +104,12 @@ class UtilityOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             ftype = self.operations._get_file_type(norm_path)
-            return DataResult(ok=True, success=True, path=norm_path, data=ftype, format="file_type", message=f"File type: {ftype}")
+            return DataResult(ok=True, path=norm_path, data=ftype, format="file_type", message=f"File type: {ftype}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data="",
                 format="file_type",
@@ -137,11 +121,10 @@ class UtilityOperationsMixin:
     def get_file_size_str(self, size_bytes: int) -> DataResult[str]:
         try:
             s = self.operations._get_file_size_str(size_bytes)
-            return DataResult(ok=True, success=True, path=None, data=s, format="size_string", message="Formatted size")
+            return DataResult(ok=True, path=None, data=s, format="size_string", message="Formatted size")
         except Exception as e:
             return DataResult(
                 ok=False,
-                success=False,
                 path=None,
                 data="",
                 format="size_string",
@@ -154,13 +137,12 @@ class UtilityOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             mime = self.operations._get_mime_type(norm_path)
-            return DataResult(ok=True, success=True, path=norm_path, data=mime, format="mime_type", message=f"Mime type: {mime}")
+            return DataResult(ok=True, path=norm_path, data=mime, format="mime_type", message=f"Mime type: {mime}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data=None,
                 format="mime_type",
@@ -173,13 +155,12 @@ class UtilityOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             ts = self.operations._get_file_timestamp(norm_path)
-            return DataResult(ok=True, success=True, path=norm_path, data=ts, format="timestamp", message="Retrieved timestamp")
+            return DataResult(ok=True, path=norm_path, data=ts, format="timestamp", message="Retrieved timestamp")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data=0.0,
                 format="timestamp",
@@ -192,13 +173,12 @@ class UtilityOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             cs = self.operations._compute_checksum(norm_path, algorithm)
-            return DataResult(ok=True, success=True, path=norm_path, data=cs, format="checksum", message="Computed checksum")
+            return DataResult(ok=True, path=norm_path, data=cs, format="checksum", message="Computed checksum")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data="",
                 format="checksum",
@@ -211,13 +191,12 @@ class UtilityOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             w = self.operations._is_path_writeable(norm_path)
-            return DataResult(ok=True, success=True, path=norm_path, data=w, format="boolean", message=f"Writeable: {w}")
+            return DataResult(ok=True, path=norm_path, data=w, format="boolean", message=f"Writeable: {w}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data=False,
                 format="boolean",
@@ -230,13 +209,12 @@ class UtilityOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             l = self.operations._is_file_locked(norm_path)
-            return DataResult(ok=True, success=True, path=norm_path, data=l, format="boolean", message=f"Locked: {l}")
+            return DataResult(ok=True, path=norm_path, data=l, format="boolean", message=f"Locked: {l}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data=False,
                 format="boolean",
@@ -254,13 +232,12 @@ class UtilityOperationsMixin:
             else:
                 result_path = self.operations._write_binary(norm_path, content, atomic=True)
                 size = len(content)
-            return WriteResult(ok=True, success=True, path=result_path, bytes_written=size, message="Atomic write successful")
+            return WriteResult(ok=True, path=result_path, bytes_written=size, message="Atomic write successful")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 error_info=self._map_error(e),
                 error=str(e),

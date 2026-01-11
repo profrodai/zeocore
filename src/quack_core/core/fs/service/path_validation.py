@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/path_validation.py
-# module: quack_core.core.fs.service.path_validation
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: PathValidationMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -25,13 +15,12 @@ class PathValidationMixin:
         try:
             normalized_path = self._normalize_input_path(path)
             exists = self.operations._path_exists(normalized_path)
-            return BoolResult(ok=True, success=True, path=normalized_path, value=exists, message=f"Path {'exists' if exists else 'does not exist'}")
+            return BoolResult(ok=True, path=normalized_path, value=exists, message=f"Path {'exists' if exists else 'does not exist'}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return BoolResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 value=False,
                 error_info=self._map_error(e),
@@ -43,13 +32,12 @@ class PathValidationMixin:
         try:
             normalized_path = self._normalize_input_path(path)
             is_valid = self.operations._is_path_syntax_valid(str(normalized_path))
-            return BoolResult(ok=True, success=True, path=normalized_path, value=is_valid, message=f"Syntax is {'valid' if is_valid else 'invalid'}")
+            return BoolResult(ok=True, path=normalized_path, value=is_valid, message=f"Syntax is {'valid' if is_valid else 'invalid'}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return BoolResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 value=False,
                 error_info=self._map_error(e),
@@ -62,13 +50,12 @@ class PathValidationMixin:
             normalized_path = self._normalize_input_path(path)
             result_path = self.operations._normalize_path(normalized_path)
             exists = self.operations._path_exists(result_path)
-            return PathResult(ok=True, success=True, path=result_path, is_absolute=result_path.is_absolute(), is_valid=True, exists=exists, message="Normalized path")
+            return PathResult(ok=True, path=result_path, is_absolute=result_path.is_absolute(), is_valid=True, exists=exists, message="Normalized path")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 is_valid=False,
                 error_info=self._map_error(e),
@@ -81,14 +68,13 @@ class PathValidationMixin:
             normalized_path = self._normalize_input_path(path)
             resolved = self.operations._resolve_path(normalized_path)
             if not resolved.exists():
-                return PathResult(ok=False, success=False, path=resolved, is_valid=True, exists=False, error="Path does not exist", message="Resolved but not found")
-            return PathResult(ok=True, success=True, path=resolved, is_absolute=True, is_valid=True, exists=True, message="Resolved existing path")
+                return PathResult(ok=False, path=resolved, is_valid=True, exists=False, error="Path does not exist", message="Resolved but not found")
+            return PathResult(ok=True, path=resolved, is_absolute=True, is_valid=True, exists=True, message="Resolved existing path")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 is_valid=False,
                 error_info=self._map_error(e),

@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_auth_provider.py, test_config_provider.py, test_serialization.py
 # exports: mock_credentials
 # git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
+# git_commit: c47a9dfa
 # === QV-LLM:END ===
 
 import json

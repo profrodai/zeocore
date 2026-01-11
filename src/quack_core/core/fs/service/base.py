@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Optional
 import uuid
@@ -79,7 +69,14 @@ class FileSystemService:
         elif isinstance(e, OSError):
             err_type = "io_error"
         elif isinstance(e, ValueError):  # Catch sandbox violations
-            err_type = "validation_error"
+            if "escape" in msg.lower():
+                err_type = "path_escape_attempt"
+                hint = "Path attempted to traverse above the base directory."
+            elif "outside base directory" in msg.lower():
+                err_type = "path_outside_base_dir"
+                hint = "Absolute paths outside the configured base directory are not allowed."
+            else:
+                err_type = "validation_error"
 
         if hasattr(e, 'filename'):
             details['filename'] = str(e.filename)
