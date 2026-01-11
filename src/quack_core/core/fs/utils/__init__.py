@@ -3,13 +3,13 @@
 # module: quack_core.core.fs.utils.__init__
 # role: utils
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 """
-DEPRECATED: Use quack_core.core.fs.api.public
+DEPRECATED: Use quack_core.core.fs.service.standalone for utility functions.
 """
 import warnings
-from quack_core.core.fs.api.public import *
+from quack_core.core.fs.service.standalone import *
 
-warnings.warn("quack_core.core.fs.utils is deprecated. Use quack_core.core.fs.api.public instead.", DeprecationWarning, stacklevel=2)
+warnings.warn("quack_core.core.fs.utils is deprecated. Use quack_core.core.fs.service.standalone instead.", DeprecationWarning, stacklevel=2)

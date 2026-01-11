@@ -3,6 +3,6 @@
 # module: quack_core.integrations.jupytext.__init__
 # role: module
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 

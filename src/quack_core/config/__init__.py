@@ -5,7 +5,7 @@
 # neighbors: models.py, plugin.py, utils.py, loader.py
 # exports: QuackConfig, GeneralConfig, LoggingConfig, PathsConfig, PluginsConfig, load_config, merge_configs, get_env (+4 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 

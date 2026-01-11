@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_bootstrap.py, test_config.py, test_context.py, test_error.py, test_formatting.py (+5 more)
 # exports: MockConfig, create_mock_logger, create_mock_logger_factory, patch_common_dependencies
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 """

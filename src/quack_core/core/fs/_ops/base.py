@@ -5,7 +5,7 @@
 # neighbors: __init__.py, core.py, directory_ops.py, file_info.py, find_ops.py, path_ops.py (+4 more)
 # exports: FileSystemOperations
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -19,7 +19,6 @@ from quack_core.core.fs._ops.find_ops import FindOperationsMixin
 from quack_core.core.fs._ops.path_ops import PathOperationsMixin
 from quack_core.core.fs._ops.serialization_ops import SerializationOperationsMixin
 from quack_core.core.fs._ops.utility_ops import UtilityOperationsMixin
-from quack_core.core.fs._ops.core import _resolve_path, _initialize_mime_types
 
 class FileSystemOperations(
     ReadOperationsMixin,
@@ -31,9 +30,6 @@ class FileSystemOperations(
     PathOperationsMixin,
     UtilityOperationsMixin,
 ):
-    def __init__(self, base_dir: Any = None) -> None:
-        self.base_dir = Path(base_dir) if base_dir else Path.cwd()
-        _initialize_mime_types()
-
-    def _resolve_path(self, path: str | Path) -> Path:
-        return _resolve_path(self.base_dir, path)
+    def __init__(self, base_dir: Path) -> None:
+        # base_dir provided only for context if needed, but methods expect absolute paths
+        self.base_dir = base_dir

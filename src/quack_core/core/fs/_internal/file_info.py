@@ -2,9 +2,9 @@
 # path: quack-core/src/quack_core/core/fs/_internal/file_info.py
 # module: quack_core.core.fs._internal.file_info
 # role: module
-# neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_ops.py (+4 more)
+# neighbors: __init__.py, checksums.py, common.py, comparison.py, directory_ops.py, disk.py (+5 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 import mimetypes

@@ -5,11 +5,12 @@
 # neighbors: __init__.py, base.py, core.py, file_info.py, find_ops.py, path_ops.py (+4 more)
 # exports: DirectoryInfo, DirectoryOperationsMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 from pathlib import Path
 from dataclasses import dataclass
+from quack_core.core.fs._internal.directory_ops import _ensure_directory
 
 @dataclass
 class DirectoryInfo:
@@ -22,19 +23,21 @@ class DirectoryInfo:
     total_directories: int
 
 class DirectoryOperationsMixin:
-    def _resolve_path(self, path: str | Path) -> Path:
-        raise NotImplementedError
+    # Thin bridge to _internal
+    def _ensure_directory(self, path: Path, exist_ok: bool = True) -> Path:
+        return _ensure_directory(path, exist_ok)
 
-    def _list_directory(self, path: str | Path, pattern: str | None = None, include_hidden: bool = False) -> DirectoryInfo:
-        resolved = self._resolve_path(path)
-        if not resolved.exists(): raise FileNotFoundError(f"Directory not found: {resolved}")
-        if not resolved.is_dir(): raise NotADirectoryError(f"Not a directory: {resolved}")
+    def _list_directory(self, path: Path, pattern: str | None = None, include_hidden: bool = False) -> DirectoryInfo:
+        # Implementation moved to _internal? Or kept here as "logic"?
+        # Keeping minimal logic here but ensuring no path resolution
+        if not path.exists(): raise FileNotFoundError(f"Directory not found: {path}")
+        if not path.is_dir(): raise NotADirectoryError(f"Not a directory: {path}")
 
         files = []
         directories = []
         total_size = 0
 
-        for item in resolved.iterdir():
+        for item in path.iterdir():
             if not include_hidden and item.name.startswith('.'): continue
             if pattern and not item.match(pattern): continue
 
@@ -46,7 +49,7 @@ class DirectoryOperationsMixin:
                 directories.append(item)
 
         return DirectoryInfo(
-            path=resolved, files=files, directories=directories, total_size=total_size,
+            path=path, files=files, directories=directories, total_size=total_size,
             is_empty=(len(files) == 0 and len(directories) == 0),
             total_files=len(files), total_directories=len(directories)
         )

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, plugin.py, normalize.py
 # exports: ErrorInfo, OperationResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult, DataResult (+1 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -24,7 +24,7 @@ class ErrorInfo(BaseModel):
     details: Optional[dict] = Field(default=None, description="Structured context (path, errno, etc)")
 
 class OperationResult(BaseModel):
-    success: bool = Field(description="Whether the operation was successful")
+    success: bool = Field(description="Legacy success flag")
     path: Path | None = Field(default=None, description="Path operated on (normalized)")
     message: str | None = Field(default=None)
     error: str | None = Field(default=None, description="Legacy error string")
@@ -34,7 +34,7 @@ class OperationResult(BaseModel):
     @computed_field
     @property
     def ok(self) -> bool:
-        """Alias for success."""
+        """Canonical success flag."""
         return self.success
 
     @field_serializer('path')

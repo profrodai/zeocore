@@ -5,14 +5,13 @@
 # neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
 # exports: FileSystemService
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 from pathlib import Path
 from typing import Any
 import uuid
 
-# Updated import path to match renamed internal bridge layer
 from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.normalize import coerce_path
@@ -37,6 +36,7 @@ class FileSystemService:
         else:
             self.base_dir = Path.cwd().resolve()
 
+        # _ops layer receives resolved base_dir
         self.operations = FileSystemOperations(self.base_dir)
 
     def _normalize_input_path(self, path: FsPathLike) -> Path:
@@ -47,13 +47,12 @@ class FileSystemService:
         try:
             return coerce_path(path, base_dir=self.base_dir)
         except (TypeError, ValueError) as e:
-            # Propagate ValueError for sandbox escapes as validation error
             raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
 
     def _map_error(self, e: Exception) -> ErrorInfo:
         """
         Centralized error mapping logic.
-        Converts native exceptions to structured ErrorInfo, preserving context.
+        Converts native exceptions to structured ErrorInfo.
         """
         err_type = type(e).__name__
         exception_cls = e.__class__.__name__
@@ -69,7 +68,6 @@ class FileSystemService:
         elif isinstance(e, IsADirectoryError):
             hint = "Expected a file but found a directory."
 
-        # Add basic details
         if hasattr(e, 'filename'):
             details['filename'] = str(e.filename)
         if hasattr(e, 'errno'):

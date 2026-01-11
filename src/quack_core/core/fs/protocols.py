@@ -5,7 +5,7 @@
 # neighbors: __init__.py, plugin.py, results.py, normalize.py
 # exports: HasValue, HasUnwrap, HasPath, HasData, BaseResult
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 from os import PathLike
@@ -29,6 +29,9 @@ class HasData(Protocol):
     data: Any
 
 class BaseResult(Protocol):
+    """Base protocol for result objects."""
+    # ok is canonical, success is legacy/compat
+    ok: bool
     success: bool
 
 # Standard public input type for the entire service layer

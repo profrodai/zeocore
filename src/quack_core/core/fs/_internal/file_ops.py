@@ -2,9 +2,9 @@
 # path: quack-core/src/quack_core/core/fs/_internal/file_ops.py
 # module: quack_core.core.fs._internal.file_ops
 # role: module
-# neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_info.py (+4 more)
+# neighbors: __init__.py, checksums.py, common.py, comparison.py, directory_ops.py, disk.py (+5 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 import os
@@ -12,17 +12,19 @@ import re
 import tempfile
 from pathlib import Path
 from typing import Any
+from quack_core.core.errors import QuackFileExistsError, QuackFileNotFoundError, QuackIOError
+from quack_core.core.fs._internal.directory_ops import _ensure_directory
 
 def _get_unique_filename(directory: Path, filename: str, raise_if_exists: bool = False) -> Path:
     if not directory.exists():
-        raise FileNotFoundError(f"Directory does not exist: {directory}")
+        raise QuackFileNotFoundError(str(directory), message="Directory does not exist")
     if not filename or not filename.strip():
-        raise ValueError("Filename cannot be empty")
+        raise QuackIOError("Filename cannot be empty", str(directory))
     path = directory / filename
     if not path.exists():
         return path
     if raise_if_exists:
-        raise FileExistsError(f"File already exists: {path}")
+        raise QuackFileExistsError(str(path), message="File already exists")
     stem = path.stem
     suffix = path.suffix
     counter = 1
@@ -31,17 +33,6 @@ def _get_unique_filename(directory: Path, filename: str, raise_if_exists: bool =
         if not candidate.exists():
             return candidate
         counter += 1
-
-def _ensure_directory(path: Path, exist_ok: bool = True) -> Path:
-    try:
-        path.mkdir(parents=True, exist_ok=exist_ok)
-        return path
-    except FileExistsError as e:
-        raise FileExistsError(f"Directory already exists: {path}") from e
-    except PermissionError as e:
-        raise PermissionError(f"Permission denied creating directory: {path}") from e
-    except Exception as e:
-        raise IOError(f"Failed to create directory: {e}") from e
 
 def _atomic_write(path: Path, content: bytes) -> Path:
     _ensure_directory(path.parent)
@@ -69,13 +60,13 @@ def _atomic_write(path: Path, content: bytes) -> Path:
         if temp_file and temp_file.exists():
             try: temp_file.unlink()
             except OSError: pass
-        raise IOError(f"Atomic write failed: {e}") from e
+        raise QuackIOError(f"Atomic write failed: {e}", str(path), original_error=e) from e
 
 def _find_files_by_content(directory: Path, text_pattern: str, recursive: bool = True) -> list[Path]:
     try:
         regex = re.compile(text_pattern)
     except re.error as e:
-        raise ValueError(f"Invalid regex: {e}") from e
+        raise QuackIOError(f"Invalid regex: {e}", str(directory)) from e
     if not directory.exists() or not directory.is_dir():
         return []
     matches = []

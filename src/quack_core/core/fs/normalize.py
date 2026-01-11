@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, plugin.py, results.py
 # exports: coerce_path, coerce_path_str, safe_path_str
 # git_branch: feat/9-make-setup-work
-# git_commit: 8234fdcd
+# git_commit: 227c3fdd
 # === QV-LLM:END ===
 
 """
@@ -31,11 +31,13 @@ def _extract_path_str(obj: Any) -> str:
     if hasattr(obj, "__fspath__"):
         return os.fspath(obj)  # type: ignore
 
-    # Fail fast on failed Results
-    if hasattr(obj, "success") and not getattr(obj, "success", True):
+    # Fail fast on failed Results (check 'ok' first as canonical, then 'success')
+    if hasattr(obj, "ok") and not getattr(obj, "ok", True):
+        raise ValueError(f"Cannot extract path from failed Result object: {obj}")
+    elif hasattr(obj, "success") and not getattr(obj, "success", True):
         raise ValueError(f"Cannot extract path from failed Result object: {obj}")
 
-    # Explicit unwrap methods (using hasattr for safety)
+    # Explicit unwrap methods
     if hasattr(obj, "value") and callable(obj.value):
         return _extract_path_str(obj.value())
     if hasattr(obj, "unwrap") and callable(obj.unwrap):
