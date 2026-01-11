@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_results.py
 # exports: dummy_processor, test_file_runner_with_local_file, test_runner_returns_failure_on_missing_file, test_runner_with_dry_run_option, test_runner_with_processor_failure
 # git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
+# git_commit: 10c11a25
 # === QV-LLM:END ===
 
 from pathlib import Path

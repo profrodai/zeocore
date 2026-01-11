@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_service.py, test_utils.py
 # exports: TestOperationResult, TestReadResult, TestWriteResult, TestFileInfoResult, TestDirectoryInfoResult, TestFindResult, TestDataResult
 # git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
+# git_commit: 10c11a25
 # === QV-LLM:END ===
 
 """

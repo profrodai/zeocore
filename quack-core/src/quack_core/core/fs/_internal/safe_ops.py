@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_internal/safe_ops.py
+# module: quack_core.core.fs._internal.safe_ops
+# role: module
+# neighbors: __init__.py, checksums.py, common.py, comparison.py, directory_ops.py, disk.py (+4 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: 10c11a25
+# === QV-LLM:END ===
+
 import shutil
 from pathlib import Path
 
