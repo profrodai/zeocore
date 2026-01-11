@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/results.py
-# module: quack_core.core.fs.results
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py, normalize.py
-# exports: ErrorInfo, OperationResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult, DataResult (+1 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Generic, TypeVar, Optional
 from pydantic import BaseModel, Field, field_serializer, computed_field
@@ -24,7 +14,7 @@ class ErrorInfo(BaseModel):
     details: Optional[dict] = Field(default=None, description="Structured context (path, errno, etc)")
 
 class OperationResult(BaseModel):
-    success: bool = Field(description="Legacy success flag")
+    success: bool = Field(description="Whether the operation was successful")
     path: Path | None = Field(default=None, description="Path operated on (normalized)")
     message: str | None = Field(default=None)
     error: str | None = Field(default=None, description="Legacy error string")
@@ -34,12 +24,19 @@ class OperationResult(BaseModel):
     @computed_field
     @property
     def ok(self) -> bool:
-        """Canonical success flag."""
+        """Alias for success."""
         return self.success
 
     @field_serializer('path')
     def serialize_path(self, path: Path | None, _info):
         return str(path) if path else None
+
+class BoolResult(OperationResult):
+    """Result of a boolean check operation (e.g. exists, is_file)."""
+    value: bool = Field(description="The boolean result")
+
+    def __bool__(self) -> bool:
+        return self.value
 
 class ReadResult(OperationResult, Generic[T]):
     content: T | None = Field(default=None, description="Content read from file")

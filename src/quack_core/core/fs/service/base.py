@@ -1,17 +1,8 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
-# === QV-LLM:END ===
-
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 import uuid
 
+# Updated import path to match renamed internal bridge layer
 from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.normalize import coerce_path
@@ -52,21 +43,31 @@ class FileSystemService:
     def _map_error(self, e: Exception) -> ErrorInfo:
         """
         Centralized error mapping logic.
-        Converts native exceptions to structured ErrorInfo.
+        Converts native exceptions to structured ErrorInfo with stable IDs.
         """
-        err_type = type(e).__name__
         exception_cls = e.__class__.__name__
         msg = str(e)
         hint = None
         details = {}
         trace_id = str(uuid.uuid4())
 
+        # Default generic type
+        err_type = "unknown_error"
+
         if isinstance(e, FileNotFoundError):
+            err_type = "file_not_found"
             hint = "Check if the file path is correct relative to base_dir."
         elif isinstance(e, PermissionError):
+            err_type = "permission_denied"
             hint = "Check file permissions or run with elevated privileges."
         elif isinstance(e, IsADirectoryError):
+            err_type = "is_a_directory"
             hint = "Expected a file but found a directory."
+        elif isinstance(e, NotADirectoryError):
+            err_type = "not_a_directory"
+            hint = "Expected a directory but found a file."
+        elif isinstance(e, OSError):
+            err_type = "io_error"
 
         if hasattr(e, 'filename'):
             details['filename'] = str(e.filename)
@@ -81,3 +82,15 @@ class FileSystemService:
             trace_id=trace_id,
             details=details
         )
+
+    # --- Canonical Aliases (as per ARCHITECTURE.md) ---
+    # These method signatures are dynamically fulfilled by the mixins, 
+    # but we can't easily alias them here before the class is fully composed 
+    # unless we define proxy methods or rely on consumers knowing the mixin names.
+    # To be explicit and help IDEs/Juniors, we can define simple forwarding here if needed,
+    # or rely on the mixins defining the canonical names directly.
+    #
+    # The Architecture doc asks for 'exists', 'resolve', 'ensure_dir', 'list_dir'.
+    # The mixins implement 'path_exists', 'resolve_path', 'ensure_directory', 'list_directory'.
+    # We will alias them in the Full Class composition or Mixins themselves.
+    # Here, we leave it clean.
