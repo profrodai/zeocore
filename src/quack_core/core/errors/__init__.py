@@ -5,7 +5,7 @@
 # neighbors: base.py, handlers.py, integration.py
 # exports: QuackError, QuackIOError, QuackFileNotFoundError, QuackPermissionError, QuackFileExistsError, QuackValidationError, QuackFormatError, QuackConfigurationError (+7 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: f85cce5a
+# git_commit: d448237f
 # === QV-LLM:END ===
 
 """

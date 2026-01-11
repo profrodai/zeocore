@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_html_to_md.py, test_md_to_docx.py, test_utils.py
 # exports: patched_check_file_size, patched_check_conversion_ratio, patched_track_metrics, apply_utils_patches
 # git_branch: feat/9-make-setup-work
-# git_commit: f85cce5a
+# git_commit: d448237f
 # === QV-LLM:END ===
 
 """

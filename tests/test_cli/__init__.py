@@ -3,6 +3,6 @@
 # role: tests
 # neighbors: mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_error.py, test_formatting.py (+5 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: f85cce5a
+# git_commit: d448237f
 # === QV-LLM:END ===
 
