@@ -5,7 +5,7 @@
 # neighbors: __init__.py, dependencies.py, integration.py, operations.py
 # exports: initialize_single_provider, initialize_with_fallback
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 """

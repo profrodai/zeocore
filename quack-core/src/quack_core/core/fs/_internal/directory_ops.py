@@ -5,18 +5,20 @@
 # neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_info.py (+4 more)
 # exports: DirectoryScanStats
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 import os
 from pathlib import Path
 from dataclasses import dataclass
 
+
 @dataclass
 class DirectoryScanStats:
     files: list[Path]
     directories: list[Path]
     total_size: int
+
 
 def _ensure_directory(path: Path, exist_ok: bool = True) -> Path:
     try:
@@ -29,7 +31,9 @@ def _ensure_directory(path: Path, exist_ok: bool = True) -> Path:
     except Exception as e:
         raise IOError(f"Failed to create directory: {e}") from e
 
-def _scan_directory(path: Path, pattern: str | None = None, include_hidden: bool = False) -> DirectoryScanStats:
+
+def _scan_directory(path: Path, pattern: str | None = None, recursive: bool = False,
+                    include_hidden: bool = False) -> DirectoryScanStats:
     if not path.exists(): raise FileNotFoundError(f"Directory not found: {path}")
     if not path.is_dir(): raise NotADirectoryError(f"Not a directory: {path}")
 
@@ -37,14 +41,24 @@ def _scan_directory(path: Path, pattern: str | None = None, include_hidden: bool
     directories = []
     total_size = 0
 
-    for item in path.iterdir():
-        if not include_hidden and item.name.startswith('.'): continue
-        if pattern and not item.match(pattern): continue
+    # Choose iterator based on recursion
+    iterator = path.rglob("*") if recursive else path.iterdir()
+
+    for item in iterator:
+        # Handle hidden files
+        if not include_hidden and item.name.startswith('.'):
+            continue
+
+        # Handle pattern matching (fnmatch style)
+        if pattern and not item.match(pattern):
+            continue
 
         if item.is_file():
             files.append(item)
-            try: total_size += item.stat().st_size
-            except OSError: pass
+            try:
+                total_size += item.stat().st_size
+            except OSError:
+                pass
         elif item.is_dir():
             directories.append(item)
 

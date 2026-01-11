@@ -5,7 +5,7 @@
 # neighbors: __init__.py, issues.py, pull_requests.py, repositories.py
 # exports: get_user
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 """GitHub user _ops."""
