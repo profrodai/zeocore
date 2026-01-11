@@ -1,31 +1,16 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/utility_operations.py
-# module: quack_core.core.fs.service.utility_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: UtilityOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: f85cce5a
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.results import DataResult, OperationResult, WriteResult, ErrorInfo
 from quack_core.core.fs.protocols import FsPathLike
-from quack_core.core.fs.normalize import safe_path_str
-
 
 class UtilityOperationsMixin:
     operations: FileSystemOperations
     logger: Any
     base_dir: Path  # Type hint from the main class
 
-    def _normalize_input_path(self, path: FsPathLike) -> Path:
-        raise NotImplementedError
-
-    def _map_error(self, e: Exception) -> ErrorInfo:
-        raise NotImplementedError
+    def _normalize_input_path(self, path: FsPathLike) -> Path: raise NotImplementedError
+    def _map_error(self, e: Exception) -> ErrorInfo: raise NotImplementedError
 
     def ensure_directory(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult:
         try:
@@ -45,6 +30,7 @@ class UtilityOperationsMixin:
         try:
             norm_dir = self._normalize_input_path(directory)
             unique = self.operations._get_unique_filename(norm_dir, filename)
+            # path is the directory context, data is the result filename
             return DataResult(ok=True, path=norm_dir, data=str(unique.name), format="filename",
                               message=f"Unique filename: {unique.name}")
         except Exception as e:
@@ -81,6 +67,33 @@ class UtilityOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to create temp file"
+            )
+
+    def create_temp_directory(self, prefix: str = "quackcore_", suffix: str = "", directory: FsPathLike | None = None) -> DataResult[str]:
+        """
+        Creates a temporary directory.
+        Defaults to .quack/tmp within the service base_dir to ensure sandboxing.
+        """
+        try:
+            if directory:
+                norm_dir = self._normalize_input_path(directory)
+            else:
+                # Doctrine: Default to .quack/tmp inside base_dir to ensure sandboxing
+                norm_dir = self.base_dir / ".quack" / "tmp"
+                if not norm_dir.exists():
+                    self.operations._ensure_directory(norm_dir)
+
+            temp_dir = self.operations._create_temp_directory(prefix, suffix, norm_dir)
+            return DataResult(ok=True, path=temp_dir, data=str(temp_dir), format="path", message=f"Created temp dir: {temp_dir}")
+        except Exception as e:
+            return DataResult(
+                ok=False,
+                path=None,
+                data="",
+                format="path",
+                error_info=self._map_error(e),
+                error=str(e),
+                message="Failed to create temp directory"
             )
 
     def find_files_by_content(self, directory: FsPathLike, text_pattern: str, recursive: bool = True) -> DataResult[
