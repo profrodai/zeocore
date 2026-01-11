@@ -5,7 +5,7 @@
 # neighbors: __init__.py, api.py
 # exports: build_query, build_file_fields
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 
 """

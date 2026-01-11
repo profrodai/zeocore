@@ -4,7 +4,7 @@
 # neighbors: echo_tool.py, minimal_runner.py
 # exports: main
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 
 

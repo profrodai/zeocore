@@ -5,7 +5,7 @@
 # neighbors: protocols.py, plugin.py, results.py, normalize.py
 # exports: FileSystemService, get_service, create_service, OperationResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult (+4 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: fd24bd26
+# git_commit: b69c49ac
 # === QV-LLM:END ===
 
 """
