@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: b69c49ac
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Optional
 import uuid
@@ -68,6 +58,9 @@ class FileSystemService:
         if isinstance(e, QuackValidationError):
             err_type = "validation_error"
             hint = "The input path is invalid, malformed, or unsafe."
+        elif isinstance(e, TypeError):
+            err_type = "validation_error"
+            hint = "Invalid path input type or shape."
         elif isinstance(e, FileNotFoundError):
             err_type = "file_not_found"
             hint = "Check if the file path is correct relative to base_dir."
