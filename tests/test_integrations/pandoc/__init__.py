@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 """

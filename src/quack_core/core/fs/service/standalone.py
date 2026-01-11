@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
 # exports: read_text, write_text, read_bytes, write_bytes, read_lines, write_lines, copy, move (+38 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 """
@@ -60,8 +60,8 @@ def delete(path: Any, missing_ok: bool = True) -> OperationResult:
 def create_directory(path: Any, exist_ok: bool = True) -> OperationResult:
     return get_service().create_directory(path, exist_ok)
 
-def list_directory(path: Any, pattern: str | None = None, include_hidden: bool = False) -> DirectoryInfoResult:
-    return get_service().list_directory(path, pattern, include_hidden)
+def list_directory(path: Any, pattern: str | None = None, recursive: bool = False, include_hidden: bool = False) -> DirectoryInfoResult:
+    return get_service().list_directory(path, pattern, recursive, include_hidden)
 
 def find_files(path: Any, pattern: str, recursive: bool = True, include_hidden: bool = False) -> FindResult:
     return get_service().find_files(path, pattern, recursive, include_hidden)

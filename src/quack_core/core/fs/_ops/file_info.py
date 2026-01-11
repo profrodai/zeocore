@@ -3,9 +3,9 @@
 # module: quack_core.core.fs._ops.file_info
 # role: _ops
 # neighbors: __init__.py, base.py, core.py, directory_ops.py, find_ops.py, path_ops.py (+4 more)
-# exports: FileInfo, FileInfoOperationsMixin
+# exports: FileInfoOperationsMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 import mimetypes
@@ -15,7 +15,8 @@ from typing import Optional
 from quack_core.core.fs._internal.file_info import _get_iso_timestamps
 
 @dataclass
-class FileInfo:
+class _FileInfo:
+    """Internal DTO for file stats. Not a public Result."""
     path: Path
     exists: bool
     is_file: bool = False
@@ -33,8 +34,8 @@ class FileInfoOperationsMixin:
     def _path_exists(self, path: Path) -> bool:
         return path.exists()
 
-    def _get_file_info(self, path: Path) -> FileInfo:
-        if not path.exists(): return FileInfo(path=path, exists=False)
+    def _get_file_info(self, path: Path) -> _FileInfo:
+        if not path.exists(): return _FileInfo(path=path, exists=False)
 
         stat = path.stat()
         mime = None
@@ -48,7 +49,7 @@ class FileInfoOperationsMixin:
 
         m_iso, c_iso = _get_iso_timestamps(path)
 
-        return FileInfo(
+        return _FileInfo(
             path=path, exists=True, is_file=path.is_file(), is_dir=path.is_dir(),
             size=stat.st_size, modified=stat.st_mtime, created=stat.st_ctime,
             modified_iso=m_iso, created_iso=c_iso, owner=owner,

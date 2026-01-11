@@ -5,7 +5,7 @@
 # neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
 # exports: FileSystemService
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -48,6 +48,7 @@ class FileSystemService:
         try:
             return coerce_path(path, base_dir=self.base_dir, allow_absolute=self.allow_absolute_paths)
         except (TypeError, ValueError) as e:
+            # Wrap standard coercion errors in QuackValidationError for classification
             raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
 
     def _map_error(self, e: Exception) -> ErrorInfo:
@@ -64,7 +65,10 @@ class FileSystemService:
         # Stable snake_case IDs
         err_type = "unknown_error"
 
-        if isinstance(e, FileNotFoundError):
+        if isinstance(e, QuackValidationError):
+            err_type = "validation_error"
+            hint = "The input path is invalid, malformed, or unsafe."
+        elif isinstance(e, FileNotFoundError):
             err_type = "file_not_found"
             hint = "Check if the file path is correct relative to base_dir."
         elif isinstance(e, PermissionError):
@@ -78,7 +82,7 @@ class FileSystemService:
             hint = "Expected a directory but found a file."
         elif isinstance(e, OSError):
             err_type = "io_error"
-        elif isinstance(e, ValueError):  # Catch sandbox violations
+        elif isinstance(e, ValueError):  # Catch sandbox violations that might bypass wrapper
             if "escape" in msg.lower():
                 err_type = "path_escape_attempt"
                 hint = "Path attempted to traverse above the base directory."

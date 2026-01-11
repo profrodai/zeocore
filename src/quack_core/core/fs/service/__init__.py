@@ -5,7 +5,7 @@
 # neighbors: base.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
 # exports: FileSystemService, create_service, get_service
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 from functools import lru_cache

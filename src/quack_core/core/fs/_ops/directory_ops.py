@@ -3,9 +3,9 @@
 # module: quack_core.core.fs._ops.directory_ops
 # role: _ops
 # neighbors: __init__.py, base.py, core.py, file_info.py, find_ops.py, path_ops.py (+4 more)
-# exports: DirectoryInfo, DirectoryOperationsMixin
+# exports: DirectoryOperationsMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -14,7 +14,8 @@ from quack_core.core.fs._internal.directory_ops import _ensure_directory, _scan_
 
 
 @dataclass
-class DirectoryInfo:
+class _DirectoryInfo:
+    """Internal DTO for directory stats. Not a public Result."""
     path: Path
     files: list[Path]
     directories: list[Path]
@@ -28,10 +29,11 @@ class DirectoryOperationsMixin:
     def _ensure_directory(self, path: Path, exist_ok: bool = True) -> Path:
         return _ensure_directory(path, exist_ok)
 
-    def _list_directory(self, path: Path, pattern: str | None = None, include_hidden: bool = False) -> DirectoryInfo:
-        stats = _scan_directory(path, pattern, include_hidden)
+    def _list_directory(self, path: Path, pattern: str | None = None, recursive: bool = False,
+                        include_hidden: bool = False) -> _DirectoryInfo:
+        stats = _scan_directory(path, pattern, recursive, include_hidden)
 
-        return DirectoryInfo(
+        return _DirectoryInfo(
             path=path,
             files=stats.files,
             directories=stats.directories,

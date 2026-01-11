@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_get_service.py, test_protocols.py, test_registry.py, test_registry_discovery.py, test_results.py
 # exports: MinimalIntegration, MinimalAuthProvider, MinimalConfigProvider, MinimalStorageIntegration, CustomStorageIntegrationProtocol, ExtendedIntegrationProtocol, TestProtocolInheritance
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 """

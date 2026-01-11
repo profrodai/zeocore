@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, path_operations.py (+4 more)
 # exports: FileSystemService
 # git_branch: feat/9-make-setup-work
-# git_commit: 0f7f21fc
+# git_commit: fd24bd26
 # === QV-LLM:END ===
 
 from typing import Any
@@ -43,8 +43,8 @@ class FileSystemService(
     def ensure_dir(self, path, exist_ok=True) -> Any:
         return self.ensure_directory(path, exist_ok)
 
-    def list_dir(self, path, pattern=None, include_hidden=False) -> Any:
-        return self.list_directory(path, pattern, include_hidden)
+    def list_dir(self, path, pattern=None, recursive=False, include_hidden=False) -> Any:
+        return self.list_directory(path, pattern, recursive, include_hidden)
 
     def is_file(self, path) -> BoolResult:
         """Check if path is a file."""
