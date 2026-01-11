@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, protocols.py, config.py, converter.py
 # exports: PandocIntegration, PandocConfig, PandocConfigProvider, DocumentConverter, ConversionMetrics, ConversionTask, FileInfo, create_integration
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 """

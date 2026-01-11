@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py (+2 more)
 # exports: MockUploadService, CompleteTool, TestToolkitIntegration, create_mock_fs, mock_upload_service, complete_tool, sample_file
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 """

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, core.py, directory_ops.py, find_ops.py, path_ops.py (+4 more)
 # exports: FileInfo, FileInfoOperationsMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 import mimetypes

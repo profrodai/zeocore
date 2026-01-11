@@ -4,7 +4,7 @@
 # neighbors: __init__.py, base.py, credentials.py, download.py, requests.py, resources.py (+1 more)
 # exports: MockDownloadStatus, MockMediaDownloader, create_mock_media_io_base_download
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 """

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, discovery.py
 # exports: QuackPluginMetadata, QuackPluginProtocol, PluginRegistryProtocol, PluginLoaderProtocol, CommandPluginProtocol, WorkflowPluginProtocol, ExtensionPluginProtocol, ProviderPluginProtocol (+1 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 

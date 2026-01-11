@@ -2,9 +2,9 @@
 # path: quack-core/src/quack_core/core/fs/_internal/common.py
 # module: quack_core.core.fs._internal.common
 # role: module
-# neighbors: __init__.py, checksums.py, comparison.py, directory_ops.py, disk.py, file_info.py (+5 more)
+# neighbors: __init__.py, checksums.py, comparison.py, directory_ops.py, disk.py, file_info.py (+4 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 from pathlib import Path

@@ -3,6 +3,6 @@
 # role: tests
 # neighbors: test_full_pipeline.py
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 

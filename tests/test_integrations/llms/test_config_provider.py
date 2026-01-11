@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_config.py, test_fallback.py, test_integration.py, test_llms.py, test_models.py (+3 more)
 # exports: TestLLMConfigProvider
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 """

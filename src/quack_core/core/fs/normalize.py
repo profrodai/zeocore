@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/normalize.py
+# module: quack_core.core.fs.normalize
+# role: module
+# neighbors: __init__.py, protocols.py, plugin.py, results.py
+# exports: coerce_path, coerce_path_str, safe_path_str, coerce_path_result, extract_path_from_result
+# git_branch: feat/9-make-setup-work
+# git_commit: e6c6b5b8
+# === QV-LLM:END ===
+
 """
 Input normalization logic.
 This module is the Single Source of Truth for coercing inputs into Paths.

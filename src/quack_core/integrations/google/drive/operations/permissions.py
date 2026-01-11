@@ -5,7 +5,7 @@
 # neighbors: __init__.py, download.py, folder.py, list_files.py, upload.py
 # exports: set_file_permissions, get_sharing_link
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 """

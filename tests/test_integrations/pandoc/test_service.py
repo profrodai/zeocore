@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
 # exports: setup_mocks, test_pandoc_integration_name_version, test_initialize_with_mocked_verify_pandoc, test_initialize_with_verify_pandoc_error, test_html_to_markdown_not_initialized, test_markdown_to_docx_not_initialized, test_convert_directory_not_initialized, test_is_pandoc_available (+3 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 """

@@ -4,7 +4,7 @@
 # role: adapters
 # neighbors: app.py, service.py, models.py, config.py, auth.py, dependencies.py (+1 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 """

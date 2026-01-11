@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, mocks.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # exports: fs_stub, test_verify_pandoc_success, test_verify_pandoc_import_error, test_prepare_pandoc_args_defaults, test_util_get_file_info_success, test_util_get_file_info_not_found, test_post_process_markdown, test_validate_html_structure_valid (+13 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 import os

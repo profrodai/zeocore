@@ -5,7 +5,7 @@
 # neighbors: models.py, protocols.py, config.py, registry.py, fallback.py
 # exports: LLMClient, OpenAIClient, AnthropicClient, OllamaClient, MockLLMClient, FallbackLLMClient, LLMConfig, LLMConfigProvider (+11 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 """

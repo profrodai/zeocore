@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test-pandoc-integration-full.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # exports: fs_stub, mock_pypandoc, mock_paths_service, mock_bs4, mock_docx
 # git_branch: feat/9-make-setup-work
-# git_commit: 227c3fdd
+# git_commit: e6c6b5b8
 # === QV-LLM:END ===
 
 import os
