@@ -1,12 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/disk.py
-# module: quack_core.core.fs._internal.disk
-# role: module
-# neighbors: __init__.py, checksums.py, common.py, comparison.py, directory_ops.py, file_info.py (+4 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 01ff6772
-# === QV-LLM:END ===
-
 import os
 import shutil
 from pathlib import Path
@@ -18,7 +9,12 @@ def _get_disk_usage(path: Path) -> dict[str, int]:
     except Exception as e:
         raise IOError(f"Error getting disk usage: {e}") from e
 
-def _is_path_writeable(path: Path) -> bool:
+def _probe_path_writeable(path: Path) -> bool:
+    """
+    Checks if a path is writeable by attempting to modify it (side-effect).
+    If the path does not exist, it attempts to create it.
+    Use with caution.
+    """
     if not path.exists():
         try:
             if path.suffix:

@@ -1,19 +1,9 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/utility_ops.py
-# module: quack_core.core.fs._ops.utility_ops
-# role: _ops
-# neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, find_ops.py (+4 more)
-# exports: UtilityOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 01ff6772
-# === QV-LLM:END ===
-
 from pathlib import Path
 from quack_core.core.fs._internal.checksums import _compute_checksum
 from quack_core.core.fs._internal.temp import _create_temp_file, _create_temp_directory
 from quack_core.core.fs._internal.file_ops import _get_unique_filename, _find_files_by_content
 from quack_core.core.fs._internal.directory_ops import _ensure_directory
-from quack_core.core.fs._internal.disk import _get_disk_usage, _is_path_writeable
+from quack_core.core.fs._internal.disk import _get_disk_usage, _probe_path_writeable
 from quack_core.core.fs._internal.file_info import _get_file_size_str, _get_file_timestamp, _get_file_type, _get_mime_type, _is_file_locked
 
 class UtilityOperationsMixin:
@@ -48,7 +38,7 @@ class UtilityOperationsMixin:
         return _get_mime_type(path)
 
     def _is_path_writeable(self, path: Path) -> bool:
-        return _is_path_writeable(path)
+        return _probe_path_writeable(path)
 
     def _is_file_locked(self, path: Path) -> bool:
         return _is_file_locked(path)
