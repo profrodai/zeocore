@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/full_class.py
-# module: quack_core.core.fs.service.full_class
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, path_operations.py (+4 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
-# === QV-LLM:END ===
-
 from typing import Any
 from quack_core.core.fs.service.base import FileSystemService as BaseFileSystemService
 from quack_core.core.fs.service.directory_operations import DirectoryOperationsMixin
@@ -51,7 +41,6 @@ class FileSystemService(
         res = self.get_file_info(path)
         return BoolResult(
             ok=res.ok,
-            success=res.success,
             path=res.path,
             value=res.is_file,
             message=f"Is file: {res.is_file}"
@@ -62,7 +51,6 @@ class FileSystemService(
         res = self.get_file_info(path)
         return BoolResult(
             ok=res.ok,
-            success=res.success,
             path=res.path,
             value=res.is_dir,
             message=f"Is dir: {res.is_dir}"

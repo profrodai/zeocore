@@ -4,7 +4,7 @@
 # neighbors: annotate_headers.py, fix_imports.py, fix_remaining_tests.py, flatten.py
 # exports: check_package, main
 # git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
+# git_commit: c47a9dfa
 # === QV-LLM:END ===
 
 # verify_installation.py

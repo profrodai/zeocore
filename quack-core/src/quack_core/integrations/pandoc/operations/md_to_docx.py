@@ -5,7 +5,7 @@
 # neighbors: __init__.py, utils.py, html_to_md.py
 # exports: convert_markdown_to_docx, validate_conversion
 # git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
+# git_commit: c47a9dfa
 # === QV-LLM:END ===
 
 """

@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/directory_operations.py
-# module: quack_core.core.fs.service.directory_operations
-# role: service
-# neighbors: __init__.py, base.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: DirectoryOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -22,17 +12,20 @@ class DirectoryOperationsMixin:
     def _map_error(self, e: Exception) -> ErrorInfo: raise NotImplementedError
 
     def create_directory(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult:
+        """
+        Create a directory. Alias for ensure_directory (UtilityOperationsMixin),
+        kept for backward compatibility with 'create_directory' calls.
+        """
         try:
             normalized_path = self._normalize_input_path(path)
             # normalized_path is already absolute/anchored
             result_path = self.operations._ensure_directory(normalized_path, exist_ok)
-            return OperationResult(ok=True, success=True, path=result_path, message=f"Directory created: {result_path}")
+            return OperationResult(ok=True, path=result_path, message=f"Directory created: {result_path}")
         except Exception as e:
-            # No logging on expected errors
-            safe_p = Path(safe_path_str(path) or "")
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return OperationResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 error_info=self._map_error(e),
                 error=str(e),
@@ -44,11 +37,10 @@ class DirectoryOperationsMixin:
             normalized_path = self._normalize_input_path(path)
             file_info = self.operations._get_file_info(normalized_path)
             if not file_info.exists:
-                return FileInfoResult(ok=True, success=True, path=normalized_path, exists=False, message="Path does not exist")
+                return FileInfoResult(ok=True, path=normalized_path, exists=False, message="Path does not exist")
 
             return FileInfoResult(
                 ok=True,
-                success=True,
                 path=normalized_path,
                 exists=file_info.exists,
                 is_file=file_info.is_file,
@@ -64,11 +56,10 @@ class DirectoryOperationsMixin:
                 message=f"FileInfo: {normalized_path}"
             )
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return FileInfoResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 exists=False,
                 error_info=self._map_error(e),
@@ -82,7 +73,6 @@ class DirectoryOperationsMixin:
             dir_info = self.operations._list_directory(normalized_path, pattern, include_hidden)
             return DirectoryInfoResult(
                 ok=True,
-                success=True,
                 path=normalized_path,
                 exists=True,
                 files=dir_info.files,
@@ -94,11 +84,10 @@ class DirectoryOperationsMixin:
                 message=f"Listed directory: {normalized_path}"
             )
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DirectoryInfoResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 error_info=self._map_error(e),
                 error=str(e),
@@ -111,7 +100,6 @@ class DirectoryOperationsMixin:
             files, directories = self.operations._find_files(normalized_path, pattern, recursive, include_hidden)
             return FindResult(
                 ok=True,
-                success=True,
                 path=normalized_path,
                 files=files,
                 directories=directories,
@@ -121,11 +109,10 @@ class DirectoryOperationsMixin:
                 message=f"Found {len(files)} files"
             )
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return FindResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 pattern=pattern,
                 error_info=self._map_error(e),

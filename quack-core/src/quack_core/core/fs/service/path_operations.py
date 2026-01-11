@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/path_operations.py
-# module: quack_core.core.fs.service.path_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: PathOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -23,16 +13,15 @@ class PathOperationsMixin:
 
     def join_path(self, *parts: FsPathLike) -> DataResult[str]:
         try:
-            if not parts: return DataResult(ok=True, success=True, path=Path("."), data=".", format="path", message="Empty join")
+            if not parts: return DataResult(ok=True, path=Path("."), data=".", format="path", message="Empty join")
             str_parts = [coerce_path_str(p) for p in parts]
             base = str_parts[0]
             others = [p.lstrip("/\\") for p in str_parts[1:]]
             joined = Path(base).joinpath(*others)
-            return DataResult(ok=True, success=True, path=joined, data=str(joined), format="path", message="Joined paths")
+            return DataResult(ok=True, path=joined, data=str(joined), format="path", message="Joined paths")
         except Exception as e:
             return DataResult(
                 ok=False,
-                success=False,
                 path=None,
                 data="",
                 format="path",
@@ -45,13 +34,12 @@ class PathOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             components = self.operations._split_path(norm_path)
-            return DataResult(ok=True, success=True, path=norm_path, data=components, format="path_components", message=f"Split {len(components)} components")
+            return DataResult(ok=True, path=norm_path, data=components, format="path_components", message=f"Split {len(components)} components")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data=[],
                 format="path_components",
@@ -64,13 +52,12 @@ class PathOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             res_path = self.operations._normalize_path(norm_path)
-            return PathResult(ok=True, success=True, path=res_path, is_absolute=res_path.is_absolute(), is_valid=True, exists=res_path.exists(), message=f"Normalized: {res_path}")
+            return PathResult(ok=True, path=res_path, is_absolute=res_path.is_absolute(), is_valid=True, exists=res_path.exists(), message=f"Normalized: {res_path}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 is_valid=False,
                 error_info=self._map_error(e),
@@ -82,13 +69,12 @@ class PathOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             expanded = self.operations._expand_user_vars(norm_path)
-            return DataResult(ok=True, success=True, path=norm_path, data=expanded, format="path", message=f"Expanded: {expanded}")
+            return DataResult(ok=True, path=norm_path, data=expanded, format="path", message=f"Expanded: {expanded}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data="",
                 format="path",
@@ -102,11 +88,10 @@ class PathOperationsMixin:
             p1 = self._normalize_input_path(path1)
             p2 = self._normalize_input_path(path2)
             same = self.operations._is_same_file(p1, p2)
-            return DataResult(ok=True, success=True, path=p1, data=same, format="boolean", message="Checked identity")
+            return DataResult(ok=True, path=p1, data=same, format="boolean", message="Checked identity")
         except Exception as e:
             return DataResult(
                 ok=False,
-                success=False,
                 path=None,
                 data=False,
                 format="boolean",
@@ -120,13 +105,12 @@ class PathOperationsMixin:
             c = self._normalize_input_path(child)
             p = self._normalize_input_path(parent)
             is_sub = self.operations._is_subdirectory(c, p)
-            return DataResult(ok=True, success=True, path=c, data=is_sub, format="boolean", message="Checked subdirectory")
+            return DataResult(ok=True, path=c, data=is_sub, format="boolean", message="Checked subdirectory")
         except Exception as e:
-            safe_p_str = safe_path_str(child)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            safe_child_str = safe_path_str(child)
+            safe_p = Path(safe_child_str) if safe_child_str else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data=False,
                 format="boolean",
@@ -138,11 +122,10 @@ class PathOperationsMixin:
     def create_temp_directory(self, prefix: str = "quackcore_", suffix: str = "") -> DataResult[str]:
         try:
             temp_dir = self.operations._create_temp_directory(prefix, suffix)
-            return DataResult(ok=True, success=True, path=temp_dir, data=str(temp_dir), format="path", message=f"Created temp dir: {temp_dir}")
+            return DataResult(ok=True, path=temp_dir, data=str(temp_dir), format="path", message=f"Created temp dir: {temp_dir}")
         except Exception as e:
             return DataResult(
                 ok=False,
-                success=False,
                 path=None,
                 data="",
                 format="path",
@@ -155,13 +138,12 @@ class PathOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             ext = self.operations._get_extension(norm_path)
-            return DataResult(ok=True, success=True, path=norm_path, data=ext, format="extension", message=f"Extension: {ext}")
+            return DataResult(ok=True, path=norm_path, data=ext, format="extension", message=f"Extension: {ext}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data="",
                 format="extension",
@@ -174,13 +156,12 @@ class PathOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             res = self.operations._resolve_path(norm_path)
-            return PathResult(ok=True, success=True, path=res, is_absolute=res.is_absolute(), is_valid=True, exists=res.exists(), message=f"Resolved: {res}")
+            return PathResult(ok=True, path=res, is_absolute=res.is_absolute(), is_valid=True, exists=res.exists(), message=f"Resolved: {res}")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 is_valid=False,
                 error_info=self._map_error(e),

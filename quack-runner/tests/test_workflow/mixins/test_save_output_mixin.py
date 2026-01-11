@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_integration_enabled.py, test_output_writer.py
 # exports: StubFS, Dummy, patch_fs_service, test_supported_formats, test_save_json_infer, test_save_yaml_explicit, test_save_csv_and_errors, test_save_txt (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
+# git_commit: c47a9dfa
 # === QV-LLM:END ===
 
 from pathlib import Path

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, mock.py, ollama.py, openai.py
 # exports: AnthropicClient
 # git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
+# git_commit: c47a9dfa
 # === QV-LLM:END ===
 
 

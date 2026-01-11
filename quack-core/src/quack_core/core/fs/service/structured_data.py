@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/structured_data.py
-# module: quack_core.core.fs.service.structured_data
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: StructuredDataMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -27,14 +17,13 @@ class StructuredDataMixin:
             data = self.operations._read_yaml(normalized_path)
             self.logger.debug(f"Read YAML from {normalized_path}")
             if not isinstance(data, dict):
-                return DataResult(ok=False, success=False, path=normalized_path, data={}, format="yaml", error=f"YAML content was not a dictionary (got {type(data)})", message="Invalid YAML structure")
-            return DataResult(ok=True, success=True, path=normalized_path, data=data, format="yaml", message="Read YAML")
+                return DataResult(ok=False, path=normalized_path, data={}, format="yaml", error=f"YAML content was not a dictionary (got {type(data)})", message="Invalid YAML structure")
+            return DataResult(ok=True, path=normalized_path, data=data, format="yaml", message="Read YAML")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data={},
                 format="yaml",
@@ -48,13 +37,12 @@ class StructuredDataMixin:
             normalized_path = self._normalize_input_path(path)
             result_path = self.operations._write_yaml(normalized_path, data, atomic)
             self.logger.debug(f"Wrote YAML to {result_path}")
-            return WriteResult(ok=True, success=True, path=result_path, message="Wrote YAML")
+            return WriteResult(ok=True, path=result_path, message="Wrote YAML")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 error_info=self._map_error(e),
                 error=str(e),
@@ -67,14 +55,13 @@ class StructuredDataMixin:
             data = self.operations._read_json(normalized_path)
             self.logger.debug(f"Read JSON from {normalized_path}")
             if not isinstance(data, dict):
-                return DataResult(ok=False, success=False, path=normalized_path, data={}, format="json", error=f"JSON content was not a dictionary (got {type(data)})", message="Invalid JSON structure")
-            return DataResult(ok=True, success=True, path=normalized_path, data=data, format="json", message="Read JSON")
+                return DataResult(ok=False, path=normalized_path, data={}, format="json", error=f"JSON content was not a dictionary (got {type(data)})", message="Invalid JSON structure")
+            return DataResult(ok=True, path=normalized_path, data=data, format="json", message="Read JSON")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 data={},
                 format="json",
@@ -88,13 +75,12 @@ class StructuredDataMixin:
             normalized_path = self._normalize_input_path(path)
             result_path = self.operations._write_json(normalized_path, data, atomic, indent)
             self.logger.debug(f"Wrote JSON to {result_path}")
-            return WriteResult(ok=True, success=True, path=result_path, message="Wrote JSON")
+            return WriteResult(ok=True, path=result_path, message="Wrote JSON")
         except Exception as e:
-            safe_p_str = safe_path_str(path)
-            safe_p = Path(safe_p_str) if safe_p_str else None
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                success=False,
                 path=safe_p,
                 error_info=self._map_error(e),
                 error=str(e),

@@ -4,7 +4,7 @@
 # role: module
 # neighbors: __init__.py, checksums.py, common.py, comparison.py, directory_ops.py, disk.py (+4 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
+# git_commit: c47a9dfa
 # === QV-LLM:END ===
 
 import os
@@ -18,3 +18,10 @@ def _expand_user_vars(path: Path) -> Path:
     path_str = os.path.expanduser(path_str)
     path_str = os.path.expandvars(path_str)
     return Path(path_str)
+
+def _resolve_path(path: Path, strict: bool = False) -> Path:
+    """
+    Wrapper around Path.resolve().
+    If strict=True, raises FileNotFoundError if path doesn't exist.
+    """
+    return path.resolve(strict=strict)

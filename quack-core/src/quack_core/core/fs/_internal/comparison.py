@@ -4,7 +4,7 @@
 # role: module
 # neighbors: __init__.py, checksums.py, common.py, directory_ops.py, disk.py, file_info.py (+4 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
+# git_commit: c47a9dfa
 # === QV-LLM:END ===
 
 import os

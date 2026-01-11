@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, results.py, normalize.py
 # exports: FSPlugin, QuackFSPlugin, create_plugin
 # git_branch: feat/9-make-setup-work
-# git_commit: 10c11a25
+# git_commit: c47a9dfa
 # === QV-LLM:END ===
 
 from pathlib import Path
