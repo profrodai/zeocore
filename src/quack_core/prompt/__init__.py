@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, plugin.py
 # exports: PromptService, PromptStrategy, StrategyInfo, create_default_prompt_service, PromptRenderResult, StrategyListResult, GetStrategyResult, RegisterStrategyResult (+1 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: b69c49ac
+# git_commit: f85cce5a
 # === QV-LLM:END ===
 
 """

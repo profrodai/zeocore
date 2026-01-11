@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_dependencies.py, test_integration.py, test_operations.py
 # exports: TestInitialization
 # git_branch: feat/9-make-setup-work
-# git_commit: b69c49ac
+# git_commit: f85cce5a
 # === QV-LLM:END ===
 
 """
