@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, config.py, converter.py
 # exports: DocumentConverterProtocol, BatchConverterProtocol, PandocConversionProtocol
 # git_branch: feat/9-make-setup-work
-# git_commit: b69c49ac
+# git_commit: f85cce5a
 # === QV-LLM:END ===
 
 """
