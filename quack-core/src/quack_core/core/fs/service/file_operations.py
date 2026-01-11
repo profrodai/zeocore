@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/file_operations.py
-# module: quack_core.core.fs.service.file_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, full_class.py, path_operations.py (+4 more)
-# exports: FileOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -25,12 +15,12 @@ class FileOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             content = self.operations._read_text(norm_path, encoding)
-            return ReadResult(success=True, path=norm_path, content=content, encoding=encoding, message=f"Read {len(content)} chars")
+            return ReadResult(ok=True, success=True, path=norm_path, content=content, encoding=encoding, message=f"Read {len(content)} chars")
         except Exception as e:
-            # No logging on expected errors, let caller handle via result.success
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return ReadResult(
+                ok=False,
                 success=False,
                 path=safe_p,
                 content=None,
@@ -48,11 +38,12 @@ class FileOperationsMixin:
             checksum = None
             if calculate_checksum:
                 checksum = self.operations._compute_checksum(result_path, "sha256")
-            return WriteResult(success=True, path=result_path, bytes_written=bytes_written, checksum=checksum, message=f"Wrote {bytes_written} bytes")
+            return WriteResult(ok=True, success=True, path=result_path, bytes_written=bytes_written, checksum=checksum, message=f"Wrote {bytes_written} bytes")
         except Exception as e:
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return WriteResult(
+                ok=False,
                 success=False,
                 path=safe_p,
                 error_info=self._map_error(e),
@@ -64,11 +55,12 @@ class FileOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             content = self.operations._read_binary(norm_path)
-            return ReadResult(success=True, path=norm_path, content=content, encoding=None, message=f"Read {len(content)} bytes")
+            return ReadResult(ok=True, success=True, path=norm_path, content=content, encoding=None, message=f"Read {len(content)} bytes")
         except Exception as e:
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return ReadResult(
+                ok=False,
                 success=False,
                 path=safe_p,
                 content=None,
@@ -87,11 +79,12 @@ class FileOperationsMixin:
             checksum = None
             if calculate_checksum:
                 checksum = self.operations._compute_checksum(result_path, "sha256")
-            return WriteResult(success=True, path=result_path, bytes_written=bytes_written, checksum=checksum, message=f"Wrote {bytes_written} bytes")
+            return WriteResult(ok=True, success=True, path=result_path, bytes_written=bytes_written, checksum=checksum, message=f"Wrote {bytes_written} bytes")
         except Exception as e:
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return WriteResult(
+                ok=False,
                 success=False,
                 path=safe_p,
                 error_info=self._map_error(e),
@@ -104,11 +97,12 @@ class FileOperationsMixin:
             norm_path = self._normalize_input_path(path)
             content_str = self.operations._read_text(norm_path, encoding)
             lines = content_str.splitlines()
-            return ReadResult(success=True, path=norm_path, content=lines, encoding=encoding, message=f"Read {len(lines)} lines")
+            return ReadResult(ok=True, success=True, path=norm_path, content=lines, encoding=encoding, message=f"Read {len(lines)} lines")
         except Exception as e:
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return ReadResult(
+                ok=False,
                 success=False,
                 path=safe_p,
                 content=None,
@@ -129,11 +123,12 @@ class FileOperationsMixin:
             else:
                 result_path = self.operations._write_text(norm_path, content, encoding, atomic)
                 size = len(content.encode(encoding))
-            return WriteResult(success=True, path=result_path, bytes_written=size, message=f"Wrote {len(lines)} lines")
+            return WriteResult(ok=True, success=True, path=result_path, bytes_written=size, message=f"Wrote {len(lines)} lines")
         except Exception as e:
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return WriteResult(
+                ok=False,
                 success=False,
                 path=safe_p,
                 error_info=self._map_error(e),
@@ -149,13 +144,14 @@ class FileOperationsMixin:
             size = 0
             if result_path.is_file():
                 size = result_path.stat().st_size
-            return WriteResult(success=True, path=result_path, original_path=norm_src, bytes_written=size, message=f"Copied to {result_path}")
+            return WriteResult(ok=True, success=True, path=result_path, original_path=norm_src, bytes_written=size, message=f"Copied to {result_path}")
         except Exception as e:
             safe_src_str = safe_path_str(src)
             safe_dst_str = safe_path_str(dst)
             safe_dst = Path(safe_dst_str) if safe_dst_str else None
             safe_src = Path(safe_src_str) if safe_src_str else None
             return WriteResult(
+                ok=False,
                 success=False,
                 path=safe_dst,
                 original_path=safe_src,
@@ -169,13 +165,14 @@ class FileOperationsMixin:
             norm_src = self._normalize_input_path(src)
             norm_dst = self._normalize_input_path(dst)
             result_path = self.operations._move(norm_src, norm_dst, overwrite)
-            return WriteResult(success=True, path=result_path, original_path=norm_src, message=f"Moved to {result_path}")
+            return WriteResult(ok=True, success=True, path=result_path, original_path=norm_src, message=f"Moved to {result_path}")
         except Exception as e:
             safe_src_str = safe_path_str(src)
             safe_dst_str = safe_path_str(dst)
             safe_dst = Path(safe_dst_str) if safe_dst_str else None
             safe_src = Path(safe_src_str) if safe_src_str else None
             return WriteResult(
+                ok=False,
                 success=False,
                 path=safe_dst,
                 original_path=safe_src,
@@ -188,11 +185,12 @@ class FileOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             deleted = self.operations._delete(norm_path, missing_ok)
-            return OperationResult(success=True, path=norm_path, message="Deleted" if deleted else "Not found (ignored)")
+            return OperationResult(ok=True, success=True, path=norm_path, message="Deleted" if deleted else "Not found (ignored)")
         except Exception as e:
             safe_p_str = safe_path_str(path)
             safe_p = Path(safe_p_str) if safe_p_str else None
             return OperationResult(
+                ok=False,
                 success=False,
                 path=safe_p,
                 error_info=self._map_error(e),

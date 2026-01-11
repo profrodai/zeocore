@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/directory_ops.py
-# module: quack_core.core.fs._ops.directory_ops
-# role: _ops
-# neighbors: __init__.py, base.py, core.py, file_info.py, find_ops.py, path_ops.py (+4 more)
-# exports: DirectoryInfo, DirectoryOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
-# === QV-LLM:END ===
-
 from pathlib import Path
 from dataclasses import dataclass
 from quack_core.core.fs._internal.directory_ops import _ensure_directory
@@ -28,8 +18,6 @@ class DirectoryOperationsMixin:
         return _ensure_directory(path, exist_ok)
 
     def _list_directory(self, path: Path, pattern: str | None = None, include_hidden: bool = False) -> DirectoryInfo:
-        # Implementation moved to _internal? Or kept here as "logic"?
-        # Keeping minimal logic here but ensuring no path resolution
         if not path.exists(): raise FileNotFoundError(f"Directory not found: {path}")
         if not path.is_dir(): raise NotADirectoryError(f"Not a directory: {path}")
 

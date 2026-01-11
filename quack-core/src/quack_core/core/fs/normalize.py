@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/normalize.py
-# module: quack_core.core.fs.normalize
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py, results.py
-# exports: coerce_path, coerce_path_str, safe_path_str, coerce_path_result, extract_path_from_result
-# git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
-# === QV-LLM:END ===
-
 """
 Input normalization logic.
 This module is the Single Source of Truth for coercing inputs into Paths.
@@ -17,8 +7,6 @@ import os
 from pathlib import Path
 from typing import Any, Optional
 from quack_core.core.fs.protocols import HasData, HasPath, HasUnwrap, HasValue, FsPathLike
-from quack_core.core.fs.results import DataResult
-
 
 def _extract_path_str(obj: Any) -> str:
     """Core logic to extract a string path from a polymorphic input."""
@@ -30,13 +18,13 @@ def _extract_path_str(obj: Any) -> str:
     if isinstance(obj, Path):
         return str(obj)
     if hasattr(obj, "__fspath__"):
-        return os.fspath(obj)  # type: ignore
+        return os.fspath(obj) # type: ignore
 
     # Fail fast on failed Results (check 'ok' first as canonical, then 'success')
     if hasattr(obj, "ok") and not getattr(obj, "ok", True):
         raise ValueError(f"Cannot extract path from failed Result object: {obj}")
     elif hasattr(obj, "success") and not getattr(obj, "success", True):
-        raise ValueError(f"Cannot extract path from failed Result object: {obj}")
+         raise ValueError(f"Cannot extract path from failed Result object: {obj}")
 
     # Explicit unwrap methods
     if hasattr(obj, "value") and callable(obj.value):
@@ -57,7 +45,6 @@ def _extract_path_str(obj: Any) -> str:
         return _extract_path_str(obj.path)
 
     raise TypeError(f"Could not coerce object of type {type(obj)} to path string")
-
 
 def coerce_path(obj: FsPathLike, base_dir: Path | None = None) -> Path:
     """
@@ -95,14 +82,12 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None) -> Path:
             raise
         raise TypeError(f"Could not coerce {type(obj)} to Path: {e}") from e
 
-
 def coerce_path_str(obj: FsPathLike) -> str:
     """
     Strictly coerce input to a string path.
     Raises TypeError/ValueError on failure.
     """
     return _extract_path_str(obj)
-
 
 def safe_path_str(obj: Any, default: str | None = None) -> str | None:
     """
@@ -113,31 +98,3 @@ def safe_path_str(obj: Any, default: str | None = None) -> str | None:
         return _extract_path_str(obj)
     except (TypeError, ValueError, AttributeError):
         return default
-
-
-def coerce_path_result(obj: Any) -> DataResult[str]:
-    """
-    Safely coerce input to a path string wrapped in a DataResult.
-    Used for error handling blocks where raising is not an option.
-    """
-    try:
-        p_str = coerce_path_str(obj)
-        return DataResult(success=True, path=Path(p_str), data=p_str, format="path", message="Coerced path")
-    except Exception as e:
-        return DataResult(success=False, path=None, data=str(obj), format="path", error=str(e),
-                          message="Coercion failed")
-
-
-def extract_path_from_result(path_or_result: Any) -> DataResult[str]:
-    """
-    Extract a path string from any result object or path-like object wrapped in DataResult.
-    """
-    try:
-        path_str = safe_path_str(path_or_result)
-        if path_str is None:
-            raise ValueError(f"Could not extract path from {path_or_result}")
-        return DataResult(success=True, path=Path(path_str), data=path_str, format="path",
-                          message="Successfully extracted path")
-    except Exception as e:
-        return DataResult(success=False, path=None, data=str(path_or_result), format="path", error=str(e),
-                          message="Failed to extract path")

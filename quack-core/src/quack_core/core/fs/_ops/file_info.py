@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/file_info.py
-# module: quack_core.core.fs._ops.file_info
-# role: _ops
-# neighbors: __init__.py, base.py, core.py, directory_ops.py, find_ops.py, path_ops.py (+4 more)
-# exports: FileInfo, FileInfoOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
-# === QV-LLM:END ===
-
 import mimetypes
 from dataclasses import dataclass
 from pathlib import Path
@@ -30,19 +20,15 @@ class FileInfo:
     mime_type: Optional[str] = None
 
 class FileInfoOperationsMixin:
-    def _resolve_path(self, path: str | Path) -> Path:
-        raise NotImplementedError
+    def _path_exists(self, path: Path) -> bool:
+        return path.exists()
 
-    def _path_exists(self, path: str | Path) -> bool:
-        return self._resolve_path(path).exists()
+    def _get_file_info(self, path: Path) -> FileInfo:
+        if not path.exists(): return FileInfo(path=path, exists=False)
 
-    def _get_file_info(self, path: str | Path) -> FileInfo:
-        resolved = self._resolve_path(path)
-        if not resolved.exists(): return FileInfo(path=resolved, exists=False)
-
-        stat = resolved.stat()
+        stat = path.stat()
         mime = None
-        if resolved.is_file(): mime, _ = mimetypes.guess_type(str(resolved))
+        if path.is_file(): mime, _ = mimetypes.guess_type(str(path))
 
         owner = None
         try:
@@ -50,10 +36,10 @@ class FileInfoOperationsMixin:
             owner = pwd.getpwuid(stat.st_uid).pw_name
         except (ImportError, KeyError, AttributeError): pass
 
-        m_iso, c_iso = _get_iso_timestamps(resolved)
+        m_iso, c_iso = _get_iso_timestamps(path)
 
         return FileInfo(
-            path=resolved, exists=True, is_file=resolved.is_file(), is_dir=resolved.is_dir(),
+            path=path, exists=True, is_file=path.is_file(), is_dir=path.is_dir(),
             size=stat.st_size, modified=stat.st_mtime, created=stat.st_ctime,
             modified_iso=m_iso, created_iso=c_iso, owner=owner,
             permissions=stat.st_mode, mime_type=mime

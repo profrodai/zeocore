@@ -1,18 +1,7 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: e6c6b5b8
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Optional
 import uuid
 
-# Updated import path to match renamed internal bridge layer
 from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.normalize import coerce_path
@@ -27,9 +16,11 @@ class FileSystemService:
     Handles configuration, normalization (anchored), and error mapping.
     """
 
-    def __init__(self, base_dir: str | Path | None = None, log_level: int = LOG_LEVELS[LogLevel.INFO]) -> None:
+    def __init__(self, base_dir: str | Path | None = None, log_level: int = LOG_LEVELS[LogLevel.INFO],
+                 allow_absolute_paths: bool = False) -> None:
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
+        self.allow_absolute_paths = allow_absolute_paths
 
         # Ensure base_dir is absolute and resolved immediately
         if base_dir:
@@ -37,8 +28,7 @@ class FileSystemService:
         else:
             self.base_dir = Path.cwd().resolve()
 
-        # _ops layer receives resolved base_dir
-        self.operations = FileSystemOperations(self.base_dir)
+        self.operations = FileSystemOperations()
 
     def _normalize_input_path(self, path: FsPathLike) -> Path:
         """
@@ -46,7 +36,7 @@ class FileSystemService:
         Coerces input to Path AND anchors it to the service's base_dir with sandboxing.
         """
         try:
-            return coerce_path(path, base_dir=self.base_dir)
+            return coerce_path(path, base_dir=self.base_dir, allow_absolute=self.allow_absolute_paths)
         except (TypeError, ValueError) as e:
             raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
 
@@ -61,7 +51,7 @@ class FileSystemService:
         details = {}
         trace_id = str(uuid.uuid4())
 
-        # Default generic type
+        # Stable snake_case IDs
         err_type = "unknown_error"
 
         if isinstance(e, FileNotFoundError):
@@ -78,6 +68,8 @@ class FileSystemService:
             hint = "Expected a directory but found a file."
         elif isinstance(e, OSError):
             err_type = "io_error"
+        elif isinstance(e, ValueError):  # Catch sandbox violations
+            err_type = "validation_error"
 
         if hasattr(e, 'filename'):
             details['filename'] = str(e.filename)
@@ -92,15 +84,3 @@ class FileSystemService:
             trace_id=trace_id,
             details=details
         )
-
-    # --- Canonical Aliases (as per ARCHITECTURE.md) ---
-    # These method signatures are dynamically fulfilled by the mixins, 
-    # but we can't easily alias them here before the class is fully composed 
-    # unless we define proxy methods or rely on consumers knowing the mixin names.
-    # To be explicit and help IDEs/Juniors, we can define simple forwarding here if needed,
-    # or rely on the mixins defining the canonical names directly.
-    #
-    # The Architecture doc asks for 'exists', 'resolve', 'ensure_dir', 'list_dir'.
-    # The mixins implement 'path_exists', 'resolve_path', 'ensure_directory', 'list_directory'.
-    # We will alias them in the Full Class composition or Mixins themselves.
-    # Here, we leave it clean.
