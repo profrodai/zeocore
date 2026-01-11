@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/directory_operations.py
-# module: quack_core.core.fs.service.directory_operations
-# role: service
-# neighbors: __init__.py, base.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: DirectoryOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: b69c49ac
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -32,12 +22,9 @@ class DirectoryOperationsMixin:
             result_path = self.operations._ensure_directory(normalized_path, exist_ok)
             return OperationResult(ok=True, path=result_path, message=f"Directory created: {result_path}")
         except Exception as e:
-            # No logging on expected errors
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return OperationResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to create directory"
@@ -68,11 +55,9 @@ class DirectoryOperationsMixin:
                 message=f"FileInfo: {normalized_path}"
             )
         except Exception as e:
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return FileInfoResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 exists=False,
                 error_info=self._map_error(e),
                 error=str(e),
@@ -97,11 +82,9 @@ class DirectoryOperationsMixin:
                 message=f"Listed directory: {normalized_path}"
             )
         except Exception as e:
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return DirectoryInfoResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to list directory"
@@ -122,11 +105,9 @@ class DirectoryOperationsMixin:
                 message=f"Found {len(files)} files"
             )
         except Exception as e:
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return FindResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 pattern=pattern,
                 error_info=self._map_error(e),
                 error=str(e),

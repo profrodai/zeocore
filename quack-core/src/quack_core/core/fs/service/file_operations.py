@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/file_operations.py
-# module: quack_core.core.fs.service.file_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, full_class.py, path_operations.py (+4 more)
-# exports: FileOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: b69c49ac
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -27,11 +17,9 @@ class FileOperationsMixin:
             content = self.operations._read_text(norm_path, encoding)
             return ReadResult(ok=True, path=norm_path, content=content, encoding=encoding, message=f"Read {len(content)} chars")
         except Exception as e:
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return ReadResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 content=None,
                 encoding=encoding,
                 error_info=self._map_error(e),
@@ -49,11 +37,9 @@ class FileOperationsMixin:
                 checksum = self.operations._compute_checksum(result_path, "sha256")
             return WriteResult(ok=True, path=result_path, bytes_written=bytes_written, checksum=checksum, message=f"Wrote {bytes_written} bytes")
         except Exception as e:
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to write file"
@@ -65,11 +51,9 @@ class FileOperationsMixin:
             content = self.operations._read_binary(norm_path)
             return ReadResult(ok=True, path=norm_path, content=content, encoding=None, message=f"Read {len(content)} bytes")
         except Exception as e:
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return ReadResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 content=None,
                 encoding=None,
                 error_info=self._map_error(e),
@@ -87,11 +71,9 @@ class FileOperationsMixin:
                 checksum = self.operations._compute_checksum(result_path, "sha256")
             return WriteResult(ok=True, path=result_path, bytes_written=bytes_written, checksum=checksum, message=f"Wrote {bytes_written} bytes")
         except Exception as e:
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to write binary file"
@@ -104,11 +86,9 @@ class FileOperationsMixin:
             lines = content_str.splitlines()
             return ReadResult(ok=True, path=norm_path, content=lines, encoding=encoding, message=f"Read {len(lines)} lines")
         except Exception as e:
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return ReadResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 content=None,
                 encoding=encoding,
                 error_info=self._map_error(e),
@@ -129,11 +109,9 @@ class FileOperationsMixin:
                 size = len(content.encode(encoding))
             return WriteResult(ok=True, path=result_path, bytes_written=size, message=f"Wrote {len(lines)} lines")
         except Exception as e:
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to write lines"
@@ -149,14 +127,11 @@ class FileOperationsMixin:
                 size = result_path.stat().st_size
             return WriteResult(ok=True, path=result_path, original_path=norm_src, bytes_written=size, message=f"Copied to {result_path}")
         except Exception as e:
-            safe_src_str = safe_path_str(src)
-            safe_dst_str = safe_path_str(dst)
-            safe_dst = Path(safe_dst_str) if safe_dst_str else None
-            safe_src = Path(safe_src_str) if safe_src_str else None
             return WriteResult(
                 ok=False,
-                path=safe_dst,
-                original_path=safe_src,
+                path=None,
+                # For copy/move, we can't easily return both paths safely if normalization failed
+                original_path=None,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Copy failed"
@@ -169,14 +144,10 @@ class FileOperationsMixin:
             result_path = self.operations._move(norm_src, norm_dst, overwrite)
             return WriteResult(ok=True, path=result_path, original_path=norm_src, message=f"Moved to {result_path}")
         except Exception as e:
-            safe_src_str = safe_path_str(src)
-            safe_dst_str = safe_path_str(dst)
-            safe_dst = Path(safe_dst_str) if safe_dst_str else None
-            safe_src = Path(safe_src_str) if safe_src_str else None
             return WriteResult(
                 ok=False,
-                path=safe_dst,
-                original_path=safe_src,
+                path=None,
+                original_path=None,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Move failed"
@@ -188,11 +159,9 @@ class FileOperationsMixin:
             deleted = self.operations._delete(norm_path, missing_ok)
             return OperationResult(ok=True, path=norm_path, message="Deleted" if deleted else "Not found (ignored)")
         except Exception as e:
-            s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return OperationResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Delete failed"
