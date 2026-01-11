@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_mail.py, test_mail_service.py
 # exports: MockGmailRequest, MockGmailAttachmentsResource, MockGmailMessagesResource, MockGmailUsersResource, MockGmailService, MockGoogleCredentials, MockRequest, create_mock_gmail_service (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: c47a9dfa
+# git_commit: 0f7f21fc
 # === QV-LLM:END ===
 
 """

@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_internal/directory_ops.py
+# module: quack_core.core.fs._internal.directory_ops
+# role: module
+# neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_info.py (+4 more)
+# exports: DirectoryScanStats
+# git_branch: feat/9-make-setup-work
+# git_commit: 0f7f21fc
+# === QV-LLM:END ===
+
 import os
 from pathlib import Path
 from dataclasses import dataclass

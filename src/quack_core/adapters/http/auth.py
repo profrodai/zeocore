@@ -5,7 +5,7 @@
 # neighbors: __init__.py, app.py, service.py, models.py, config.py, dependencies.py (+1 more)
 # exports: require_bearer, sign_payload
 # git_branch: feat/9-make-setup-work
-# git_commit: c47a9dfa
+# git_commit: 0f7f21fc
 # === QV-LLM:END ===
 
 

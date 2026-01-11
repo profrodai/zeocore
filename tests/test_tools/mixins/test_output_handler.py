@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_env_init.py, test_integration_enabled.py, test_lifecycle.py
 # exports: CustomOutputFormatMixin, TestOutputFormatMixin, TestOutputFormatMixinWithPytest, output_format_mixin, custom_output_format_mixin
 # git_branch: feat/9-make-setup-work
-# git_commit: c47a9dfa
+# git_commit: 0f7f21fc
 # === QV-LLM:END ===
 
 """
