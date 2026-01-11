@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/utility_ops.py
-# module: quack_core.core.fs._ops.utility_ops
-# role: _ops
-# neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, find_ops.py (+4 more)
-# exports: UtilityOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: f85cce5a
-# === QV-LLM:END ===
-
 from pathlib import Path
 from quack_core.core.fs._internal.checksums import _compute_checksum
 from quack_core.core.fs._internal.temp import _create_temp_file, _create_temp_directory
@@ -23,8 +13,8 @@ class UtilityOperationsMixin:
     def _create_temp_file(self, suffix: str, prefix: str, directory: Path | None) -> Path:
         return _create_temp_file(suffix, prefix, directory)
 
-    def _create_temp_directory(self, prefix: str, suffix: str) -> Path:
-        return _create_temp_directory(prefix, suffix)
+    def _create_temp_directory(self, prefix: str, suffix: str, directory: Path | None) -> Path:
+        return _create_temp_directory(prefix, suffix, directory)
 
     def _get_unique_filename(self, directory: Path, filename: str) -> Path:
         return _get_unique_filename(directory, filename)
