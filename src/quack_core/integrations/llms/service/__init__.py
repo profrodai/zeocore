@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/integrations/llms/service/__init__.py
 # module: quack_core.integrations.llms.service.__init__
 # role: service
-# neighbors: _ops.py, dependencies.py, initialization.py, integration.py
+# neighbors: dependencies.py, initialization.py, integration.py, operations.py
 # exports: LLMIntegration, check_llm_dependencies
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """

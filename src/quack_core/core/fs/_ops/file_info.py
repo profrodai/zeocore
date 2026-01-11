@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_ops/file_info.py
+# module: quack_core.core.fs._ops.file_info
+# role: _ops
+# neighbors: __init__.py, base.py, core.py, directory_ops.py, find_ops.py, path_ops.py (+4 more)
+# exports: FileInfo, FileInfoOperationsMixin
+# git_branch: feat/9-make-setup-work
+# git_commit: 8234fdcd
+# === QV-LLM:END ===
+
 import mimetypes
 from dataclasses import dataclass
 from pathlib import Path

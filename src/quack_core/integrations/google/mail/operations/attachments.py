@@ -1,11 +1,11 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/mail/_ops/attachments.py
-# module: quack_core.integrations.google.mail._ops.attachments
-# role: _ops
+# path: quack-core/src/quack_core/integrations/google/mail/operations/attachments.py
+# module: quack_core.integrations.google.mail.operations.attachments
+# role: module
 # neighbors: __init__.py, auth.py, email.py
 # exports: process_message_parts, handle_attachment
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """

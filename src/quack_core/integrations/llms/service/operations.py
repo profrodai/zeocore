@@ -1,11 +1,11 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/service/_ops.py
-# module: quack_core.integrations.llms.service._ops
+# path: quack-core/src/quack_core/integrations/llms/service/operations.py
+# module: quack_core.integrations.llms.service.operations
 # role: service
 # neighbors: __init__.py, dependencies.py, initialization.py, integration.py
 # exports: chat, count_tokens, get_provider_status, reset_provider_status
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """

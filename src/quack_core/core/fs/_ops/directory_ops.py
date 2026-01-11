@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_ops/directory_ops.py
+# module: quack_core.core.fs._ops.directory_ops
+# role: _ops
+# neighbors: __init__.py, base.py, core.py, file_info.py, find_ops.py, path_ops.py (+4 more)
+# exports: DirectoryInfo, DirectoryOperationsMixin
+# git_branch: feat/9-make-setup-work
+# git_commit: 8234fdcd
+# === QV-LLM:END ===
+
 from pathlib import Path
 from dataclasses import dataclass
 

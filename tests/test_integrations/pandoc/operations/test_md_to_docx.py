@@ -1,10 +1,10 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/_ops/test_md_to_docx.py
-# role: _ops
+# path: quack-core/tests/test_integrations/pandoc/operations/test_md_to_docx.py
+# role: tests
 # neighbors: __init__.py, test_html_to_md.py, test_utils.py, test_utils_fix.py
 # exports: test_convert_markdown_to_docx_success, test_convert_markdown_to_docx_validation_error, test_convert_markdown_to_docx_conversion_failure, test_convert_markdown_to_docx_validation_failure, test_validate_conversion_md_to_docx, test_md_to_docx_validate_markdown_input_success, test_md_to_docx_validate_markdown_input_file_not_found, test_md_to_docx_validate_markdown_input_read_error (+8 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """

@@ -1,9 +1,9 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/_ops/__init__.py
-# role: _ops
+# path: quack-core/tests/test_integrations/pandoc/operations/__init__.py
+# role: tests
 # neighbors: test_html_to_md.py, test_md_to_docx.py, test_utils.py, test_utils_fix.py
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """

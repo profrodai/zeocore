@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/adapters/http/routes/health.py
 # module: quack_core.adapters.http.routes.health
 # role: adapters
-# neighbors: __init__.py, _ops.py, jobs.py
+# neighbors: __init__.py, jobs.py, operations.py
 # exports: health_live, health_ready
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """

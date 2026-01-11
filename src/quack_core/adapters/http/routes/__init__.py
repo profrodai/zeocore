@@ -2,9 +2,9 @@
 # path: quack-core/src/quack_core/adapters/http/routes/__init__.py
 # module: quack_core.adapters.http.routes.__init__
 # role: adapters
-# neighbors: _ops.py, health.py, jobs.py
+# neighbors: health.py, jobs.py, operations.py
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """

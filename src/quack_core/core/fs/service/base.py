@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/service/base.py
+# module: quack_core.core.fs.service.base
+# role: service
+# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
+# exports: FileSystemService
+# git_branch: feat/9-make-setup-work
+# git_commit: 8234fdcd
+# === QV-LLM:END ===
+
 from pathlib import Path
 from typing import Any
 import uuid

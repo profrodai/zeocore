@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_ops/utility_ops.py
+# module: quack_core.core.fs._ops.utility_ops
+# role: _ops
+# neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, find_ops.py (+4 more)
+# exports: UtilityOperationsMixin
+# git_branch: feat/9-make-setup-work
+# git_commit: 8234fdcd
+# === QV-LLM:END ===
+
 from pathlib import Path
 from quack_core.core.fs._internal.checksums import _compute_checksum
 from quack_core.core.fs._internal.temp import _create_temp_file, _create_temp_directory

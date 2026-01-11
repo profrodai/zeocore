@@ -1,11 +1,11 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/_ops/list_files.py
-# module: quack_core.integrations.google.drive._ops.list_files
-# role: _ops
+# path: quack-core/src/quack_core/integrations/google/drive/operations/list_files.py
+# module: quack_core.integrations.google.drive.operations.list_files
+# role: module
 # neighbors: __init__.py, download.py, folder.py, permissions.py, upload.py
 # exports: list_files
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """

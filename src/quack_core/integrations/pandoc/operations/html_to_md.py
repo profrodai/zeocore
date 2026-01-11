@@ -1,11 +1,11 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/pandoc/_ops/html_to_md.py
-# module: quack_core.integrations.pandoc._ops.html_to_md
-# role: _ops
+# path: quack-core/src/quack_core/integrations/pandoc/operations/html_to_md.py
+# module: quack_core.integrations.pandoc.operations.html_to_md
+# role: module
 # neighbors: __init__.py, utils.py, md_to_docx.py
 # exports: convert_html_to_markdown, post_process_markdown, validate_conversion
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """

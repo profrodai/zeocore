@@ -1,11 +1,11 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/_ops/__init__.py
-# module: quack_core.integrations.github._ops.__init__
-# role: _ops
+# path: quack-core/src/quack_core/integrations/github/operations/__init__.py
+# module: quack_core.integrations.github.operations.__init__
+# role: module
 # neighbors: issues.py, pull_requests.py, repositories.py, users.py
 # exports: get_repo, star_repo, unstar_repo, is_repo_starred, fork_repo, check_repository_exists, get_repository_file_content, update_repository_file (+9 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """GitHub API _ops."""

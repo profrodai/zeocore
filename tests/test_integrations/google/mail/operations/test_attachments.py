@@ -1,10 +1,10 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/mail/_ops/test_attachments.py
-# role: _ops
+# path: quack-core/tests/test_integrations/google/mail/operations/test_attachments.py
+# role: tests
 # neighbors: __init__.py, test_auth.py, test_email.py
 # exports: TestGmailAttachmentOperations
 # git_branch: feat/9-make-setup-work
-# git_commit: de7513d4
+# git_commit: 8234fdcd
 # === QV-LLM:END ===
 
 """
