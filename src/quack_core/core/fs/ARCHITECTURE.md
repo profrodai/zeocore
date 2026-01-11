@@ -19,7 +19,9 @@ It defines **how all file IO happens across the QuackVerse**, in a way that is:
 
 This module exists so that:
 
-> **No tool, agent, or workflow ever needs to touch `pathlib`, `os`, or raw IO directly.**
+> **No tool, agent, or workflow ever touches `pathlib`, `os`, or raw IO directly.**
+
+Filesystem access is a **capability**, not an implementation detail.
 
 ---
 
@@ -30,7 +32,7 @@ This module exists so that:
 ```
 Ring A — CORE (QuackCore)
 │
-├── core.fs  ← YOU ARE HERE
+├── core.fs   ← YOU ARE HERE
 │
 ├── core.config
 ├── core.logging
@@ -56,48 +58,77 @@ Ring A — CORE (QuackCore)
 
 ## 3. Design invariants (non-negotiable)
 
-### 1️⃣ Layering doctrine: `_internal` + `_ops` + `service`
+### 1️⃣ Layering doctrine: `_internal` → `_ops` → `service`
 
-There are **three layers**, but only **one public surface**.
+There are **three layers**, but **only one public surface**.
 
-#### `_internal/` — Implementation layer (private)
+---
+
+### `_internal/` — Implementation layer (private, lowest level)
 
 * Pure IO helpers
 * Work only with `pathlib.Path`
-* Raise **native exceptions**
+* Raise **native Python exceptions**
 * No Result models
 * No logging policy
-* No normalization logic
+* No input normalization
+* No awareness of base directories or sandboxing rules
 
-> `_internal` is **not a public API**.
+> `_internal` is **pure implementation**.
+> It is **never imported outside Core FS internals**.
 
-#### `_ops/` — Operations layer (private, reusable)
+---
 
-`_ops` is a **composition / bundling layer** that:
+### `_ops/` — Operation façade layer (private, core plumbing)
 
-* calls `_internal` functions
-* groups low-level actions into reusable “operations”
-* may add *light* non-contract logic (e.g., small helpers, shared routines)
-* **still raises native exceptions**
-* **still returns raw values** (Paths, bytes, dicts, etc.)
-* **does not** create `*Result` objects
-* **does not** do public normalization
-* **does not** decide logging policy
+`_ops` is a **first-class internal operation façade**, not a convenience helper.
 
-**Purpose:** reduce duplication across service mixins and keep `_internal` minimal.
+It exists to:
 
-> `_ops` is **optional**. If it exists, it exists to keep `service/` clean and `_internal/` tiny.
+* compose `_internal` primitives into coherent filesystem operations
+* encapsulate *how* low-level actions are performed
+* provide a stable internal interface for the service layer
+* reduce duplication across service mixins
+* keep `_internal` small, focused, and testable
 
-#### `service/` — Contract layer (public)
+**Characteristics:**
 
-* Owns the public filesystem contract
+* Calls `_internal/*`
+* Groups multiple low-level actions into reusable operations
+* May contain light internal logic (e.g. sequencing, helpers)
+* **Still raises native exceptions**
+* Returns **raw values only** (`Path`, `bytes`, `list[Path]`, `dict`, etc.)
+* Does **not**:
+
+  * return `*Result`
+  * normalize `FsPathLike`
+  * decide logging policy
+  * map or swallow errors
+  * import `results.py` or `normalize.py`
+
+> `_ops` is **core internal plumbing**.
+> It is private, but **not optional** once introduced.
+
+---
+
+### `service/` — Contract layer (only public surface)
+
+* Owns the **public filesystem contract**
 * Normalizes all inputs
-* Catches all exceptions
-* Maps errors to `ErrorInfo`
+* Anchors paths to policy (`base_dir`, sandboxing, etc.)
+* Catches **all exceptions**
+* Maps failures to structured `ErrorInfo`
 * Returns typed `*Result` objects
-* Safe for tools, agents, CLI, Temporal
+* Owns logging and user-visible behavior
+* Safe for:
 
-> **Nothing outside `service/` should touch `_internal/` or `_ops/`.**
+  * QuackTools
+  * Agents
+  * CLI
+  * Temporal
+  * Cloud execution
+
+> **Nothing outside `service/` may import `_ops/` or `_internal/`.**
 
 ---
 
@@ -117,7 +148,7 @@ from quack_core.core.fs.service import get_service
 
 * One shared service instance
 * Configured once (base_dir, logging, policy)
-* Used everywhere (CLI, tools, tests, agents)
+* Used everywhere (tools, tests, CLI, agents)
 
 There is **no alternate IO path**.
 
@@ -125,7 +156,7 @@ There is **no alternate IO path**.
 
 ### 3️⃣ Input normalization is centralized
 
-All public methods accept **flexible inputs**:
+All public methods accept flexible inputs:
 
 ```python
 FsPathLike = str | Path | Result | Protocol
@@ -136,19 +167,19 @@ Normalization rules:
 * Implemented **once** in `core.fs.normalize`
 * Used **only by the service layer**
 * Never duplicated
-* Never implemented in `_internal` or `_ops`
+* Never implemented in `_ops` or `_internal`
 
-> If path coercion logic appears in more than one place, it is a bug.
+> If path coercion logic appears anywhere else, it is a bug.
 
 ---
 
 ### 4️⃣ Structured errors (no raw exceptions)
 
 * `_internal` raises native exceptions
-* `_ops` may raise native exceptions
+* `_ops` raises native exceptions
 * `service` catches everything
 * Errors are mapped to structured `ErrorInfo`
-* Results **never raise**
+* Public methods **never raise**
 
 This is mandatory for:
 
@@ -170,9 +201,13 @@ This is mandatory for:
 
 **Forbidden:**
 
-* anything outside `service/*` importing `_ops/*` or `_internal/*`
+* Anything outside `service/*` importing `_ops/*` or `_internal/*`
 * `_internal/*` importing `_ops/*` or `service/*`
-* `_ops/*` importing `service/*`, `results.py`, or `normalize.py`
+* `_ops/*` importing:
+
+  * `service/*`
+  * `results.py`
+  * `normalize.py`
 
 > If you see `from quack_core.core.fs._internal import ...` outside `service/`, it’s a doctrine violation.
 
@@ -192,14 +227,14 @@ quack_core/core/fs/
 ├── service/            # PUBLIC CONTRACT SURFACE (ONLY SURFACE)
 │   ├── __init__.py     # get_service(), create_service()
 │   ├── base.py         # FileSystemService base + error mapping
-│   ├── standalone.py   # Functional wrappers (secondary surface)
+│   ├── standalone.py  # Functional wrappers (secondary surface)
 │   │
 │   ├── file_operations.py
 │   ├── path_operations.py
 │   ├── utility_operations.py
 │   └── validation_operations.py
 │
-├── _ops/               # PRIVATE reusable operations (optional)
+├── _ops/               # PRIVATE operation façade (core plumbing)
 │   ├── file_ops.py
 │   ├── path_ops.py
 │   └── utility_ops.py
@@ -223,7 +258,7 @@ quack_core/core/fs/
 
 ### Primary surface — `FileSystemService`
 
-This is the **only canonical API**.
+The **only canonical API**.
 
 * All methods return `*Result`
 * All failures are structured
@@ -253,7 +288,7 @@ Rules:
 * No logic
 * No normalization
 * No `_ops` / `_internal` imports
-* Safe to delete later if needed
+* May be removed in the future without breaking contracts
 
 ---
 
@@ -290,50 +325,35 @@ Mapped centrally in `service.base`.
 
 ---
 
-## 7. Responsibilities by layer
+## 7. Responsibilities by layer (summary)
 
-### `_internal/*` (private)
+### `_internal/*`
 
-* touches the filesystem
+* touches filesystem
 * raises native exceptions
-* no logging policy
+* no Results
+* no normalization
+* no logging
+* no public guarantees
+
+### `_ops/*`
+
+* internal operation façade
+* composes `_internal`
+* raises native exceptions
+* returns raw values
 * no Results
 * no normalization
 * no public guarantees
 
-### `_ops/*` (private, optional)
-
-* composes reusable operations from `_internal`
-* **may** implement small shared routines to reduce duplication
-* may return raw values (Path, list[Path], bytes, dict, etc.)
-* raises native exceptions (still not safe for external callers)
-* no Results
-* no public normalization
-* no public guarantees
-
-**Examples of good `_ops` candidates:**
-
-* “copy with parents ensured” (still raising)
-* “atomic write strategy” (write temp then replace)
-* “list dir + filter + sort” used in multiple service mixins
-* “hash + stat bundle” reused by multiple public methods
-
-**Anti-patterns (don’t do this in `_ops`):**
-
-* returning `*Result`
-* swallowing exceptions
-* doing `FsPathLike` normalization
-* deciding UX messages or CLI formatting
-* importing `results.py` or `normalize.py`
-
-### `service/*` (public)
+### `service/*`
 
 * normalizes inputs
+* enforces sandboxing
 * catches + maps errors
 * emits Results
-* owns logging + policy
-* enforces doctrine
-* defines the public method catalog
+* owns logging + UX
+* defines the public contract
 
 ---
 
@@ -341,12 +361,12 @@ Mapped centrally in `service.base`.
 
 ### Path operations
 
-* `resolve(path)`
-* `exists(path)`
-* `is_file(path)`
-* `is_dir(path)`
-* `ensure_dir(path, parents=True)`
-* `list_dir(path, pattern=None, recursive=False)`
+* `resolve`
+* `exists`
+* `is_file`
+* `is_dir`
+* `ensure_dir`
+* `list_dir`
 
 ### File operations
 
@@ -390,26 +410,24 @@ Mapped centrally in `service.base`.
 * wrappers delegate to service
 * no independent behavior
 
-### Optional `_ops` tests (recommended)
+### `_ops` tests (recommended)
 
-If `_ops` exists:
-
-* test that `_ops` composes `_internal` correctly
-* test that `_ops` still raises native exceptions (no swallowing)
-* keep tests small—`_ops` is not a public contract
+* verify `_ops` composes `_internal`
+* ensure exceptions are not swallowed
+* keep tests small — `_ops` is internal
 
 ---
 
 ## 10. Why this matters for DuckTyper & AI-First Media
 
-This design enables:
+This architecture enables:
 
-* agents reasoning over filesystem actions
+* agent-safe filesystem reasoning
 * reproducible content pipelines
 * Temporal-safe retries
 * n8n side-effect isolation
-* teachable automation flows
-* junior-safe contribution
+* teachable automation systems
+* junior-safe contributions
 
 > **If filesystem behavior is not predictable, automation does not compound.**
 
