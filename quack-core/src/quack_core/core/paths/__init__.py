@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, plugin.py
 # exports: PathService, get_path_service, ProjectContext, ContentContext, ProjectDirectory, PathResult, StringResult, ContextResult
 # git_branch: feat/9-make-setup-work
-# git_commit: d448237f
+# git_commit: 01ff6772
 # === QV-LLM:END ===
 
 

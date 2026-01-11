@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: test_config.py, test_config_provider.py, test_fallback.py, test_integration.py, test_llms.py, test_models.py (+3 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: d448237f
+# git_commit: 01ff6772
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.llms module."""
