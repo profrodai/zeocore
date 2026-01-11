@@ -4,7 +4,7 @@
 # neighbors: config_tooling_test.py, http_adapter_usage.py, toolkit_usage.py
 # exports: example_1_discovery, example_2_explicit_loading, example_3_error_handling, example_4_configuration_driven, example_5_plugin_metadata, example_6_lifecycle_management, example_7_testing_pattern, main
 # git_branch: feat/9-make-setup-work
-# git_commit: c47a9dfa
+# git_commit: 0f7f21fc
 # === QV-LLM:END ===
 
 

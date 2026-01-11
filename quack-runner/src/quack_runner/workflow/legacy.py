@@ -5,7 +5,7 @@
 # neighbors: __init__.py, results.py, tool_runner.py
 # exports: FileWorkflowRunner, LegacyWorkflowOutputWriter, DefaultOutputWriter, RemoteFileHandler, InputResult, OutputResult, FinalResult
 # git_branch: feat/9-make-setup-work
-# git_commit: c47a9dfa
+# git_commit: 0f7f21fc
 # === QV-LLM:END ===
 
 """

@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/_ops/write_ops.py
+# module: quack_core.core.fs._ops.write_ops
+# role: _ops
+# neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, find_ops.py (+4 more)
+# exports: WriteOperationsMixin
+# git_branch: feat/9-make-setup-work
+# git_commit: 0f7f21fc
+# === QV-LLM:END ===
+
 from pathlib import Path
 from quack_core.core.fs._internal.file_ops import _atomic_write, _write_file_text, _write_file_bytes
 from quack_core.core.fs._internal.safe_ops import _safe_copy, _safe_move, _safe_delete

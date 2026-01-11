@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_capabilities.py, test_dependency_boundaries.py, test_envelopes.py, test_schema_examples.py
 # exports: TestStorageRef, TestChecksum, TestArtifactRef, TestRunManifest, TestManifestFixtures
 # git_branch: feat/9-make-setup-work
-# git_commit: c47a9dfa
+# git_commit: 0f7f21fc
 # === QV-LLM:END ===
 
 """

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, attachments.py, auth.py
 # exports: MessagesRequest, MessagesResource, UsersResource, GmailResponse, build_query, list_emails, download_email, clean_filename (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: c47a9dfa
+# git_commit: 0f7f21fc
 # === QV-LLM:END ===
 
 """
