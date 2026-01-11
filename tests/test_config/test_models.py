@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_loader.py, test_utils.py
 # exports: TestConfigModels
 # git_branch: feat/9-make-setup-work
-# git_commit: 01ff6772
+# git_commit: 24e0c6df
 # === QV-LLM:END ===
 
 """

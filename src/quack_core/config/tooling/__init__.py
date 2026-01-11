@@ -5,7 +5,7 @@
 # neighbors: base.py, loader.py, logger.py
 # exports: QuackToolConfigModel, load_tool_config, update_tool_config, setup_tool_logging, get_logger
 # git_branch: feat/9-make-setup-work
-# git_commit: 01ff6772
+# git_commit: 24e0c6df
 # === QV-LLM:END ===
 
 """

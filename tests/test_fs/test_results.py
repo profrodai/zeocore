@@ -1,10 +1,10 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_fs/test_results.py
 # role: tests
-# neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_service.py, test_utils.py
+# neighbors: __init__.py, test_architecture.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_service.py (+1 more)
 # exports: TestOperationResult, TestReadResult, TestWriteResult, TestFileInfoResult, TestDirectoryInfoResult, TestFindResult, TestDataResult
 # git_branch: feat/9-make-setup-work
-# git_commit: 01ff6772
+# git_commit: 24e0c6df
 # === QV-LLM:END ===
 
 """

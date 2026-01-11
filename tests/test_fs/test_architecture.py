@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_fs/test_architecture.py
+# role: tests
+# neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py (+1 more)
+# exports: get_imports, test_internal_import_boundary, test_ops_import_boundary
+# git_branch: feat/9-make-setup-work
+# git_commit: 24e0c6df
+# === QV-LLM:END ===
+
 import ast
 import os
 from pathlib import Path
