@@ -5,7 +5,7 @@
 # neighbors: api.py
 # exports: make_request
 # git_branch: feat/9-make-setup-work
-# git_commit: 2f6d56ab
+# git_commit: 528aa222
 # === QV-LLM:END ===
 
 """Utility functions for GitHub integration."""

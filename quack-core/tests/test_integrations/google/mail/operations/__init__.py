@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: test_attachments.py, test_auth.py, test_email.py
 # git_branch: feat/9-make-setup-work
-# git_commit: 2f6d56ab
+# git_commit: 528aa222
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.google.mail._ops module."""
