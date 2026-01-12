@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py, full_class.py (+5 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: d5eb52c8
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Optional
 import uuid
@@ -28,10 +18,10 @@ class FileSystemService:
     """
 
     def __init__(self, base_dir: str | Path | None = None, log_level: int = LOG_LEVELS[LogLevel.INFO],
-                 unsafe_allow_absolute_paths: bool = False) -> None:
+                 unsafe_disable_sandbox: bool = False) -> None:
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
-        self.unsafe_allow_absolute_paths = unsafe_allow_absolute_paths
+        self.unsafe_disable_sandbox = unsafe_disable_sandbox
 
         # Ensure base_dir is absolute and resolved immediately
         if base_dir:
@@ -39,12 +29,17 @@ class FileSystemService:
         else:
             self.base_dir = Path.cwd().resolve()
 
-        # SECURITY: Warn if absolute paths are allowed (sandboxing disabled)
-        if self.unsafe_allow_absolute_paths:
+        # SECURITY: Warn if sandboxing is disabled
+        # This is a trust boundary configuration, not a convenience feature
+        if self.unsafe_disable_sandbox:
             self.logger.warning(
-                "⚠️  SECURITY WARNING: unsafe_allow_absolute_paths=True - "
-                "Filesystem sandboxing is disabled for absolute paths. "
-                "Operations can access paths outside base_dir."
+                "⚠️  SECURITY WARNING: unsafe_disable_sandbox=True - "
+                "Filesystem sandboxing is DISABLED. Operations can access any path on the system. "
+                "This setting disables ALL path safety checks including: "
+                "(1) relative path escape attempts via '..' "
+                "(2) absolute path restrictions "
+                "(3) symlink-based escapes (TOCTOU vulnerabilities remain) "
+                "Only enable this in fully trusted environments."
             )
 
         self.operations = FileSystemOperations()
@@ -55,7 +50,7 @@ class FileSystemService:
         Coerces input to Path AND anchors it to the service's base_dir with sandboxing.
         """
         try:
-            return coerce_path(path, base_dir=self.base_dir, allow_absolute=self.unsafe_allow_absolute_paths)
+            return coerce_path(path, base_dir=self.base_dir, allow_absolute=self.unsafe_disable_sandbox)
         except (QuackPathEscapeError, QuackPathOutsideBaseDirError) as e:
             # Re-raise sandbox violations to be mapped to specific error types
             raise e
@@ -90,7 +85,7 @@ class FileSystemService:
             hint = "Path attempted to traverse above the base directory using '..' or similar."
         elif isinstance(e, QuackPathOutsideBaseDirError):
             err_type = "path_outside_base_dir"
-            hint = "Absolute paths outside the configured base directory are not allowed (unsafe_allow_absolute_paths=False)."
+            hint = "Absolute paths outside the configured base directory are not allowed (unsafe_disable_sandbox=False)."
 
         # VALIDATION ERRORS
         elif isinstance(e, QuackValidationError):

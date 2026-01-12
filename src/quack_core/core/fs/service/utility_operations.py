@@ -1,271 +1,213 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/utility_operations.py
-# module: quack_core.core.fs.service.utility_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
-# exports: UtilityOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: d5eb52c8
-# === QV-LLM:END ===
 
-from pathlib import Path
+"""
+Standalone wrappers that delegate to the singleton service.
+Ensures consistent configuration and state.
+
+DOCTRINE:
+- These are CONVENIENCE WRAPPERS ONLY (secondary surface)
+- They delegate to FileSystemService (primary surface)
+- No logic, no normalization, no direct _ops/_internal imports
+- May be removed in future without breaking core contracts
+
+CATALOGUE NOTE:
+The wrappers here represent the FULL secondary API surface.
+See FileSystemService for the primary (canonical) API.
+"""
 from typing import Any
-from quack_core.core.fs._ops.base import FileSystemOperations
-from quack_core.core.fs.results import DataResult, OperationResult, WriteResult, ErrorInfo
-from quack_core.core.fs.protocols import FsPathLike
-from quack_core.core.fs.normalize import safe_path_str
+from quack_core.core.fs.service import get_service
+from quack_core.core.fs.results import (
+    DataResult, DirectoryInfoResult, FileInfoResult, FindResult,
+    OperationResult, PathResult, ReadResult, WriteResult, BoolResult
+)
 
-class UtilityOperationsMixin:
-    operations: FileSystemOperations
-    logger: Any
-    base_dir: Path  # Type hint from the main class
+# ==============================================================================
+# FILE OPERATIONS
+# ==============================================================================
 
-    def _normalize_input_path(self, path: FsPathLike) -> Path: raise NotImplementedError
-    def _map_error(self, e: Exception) -> ErrorInfo: raise NotImplementedError
+def read_text(path: Any, encoding: str = "utf-8") -> ReadResult[str]:
+    return get_service().read_text(path, encoding)
 
-    def get_unique_filename(self, directory: FsPathLike, filename: str) -> DataResult[str]:
-        try:
-            norm_dir = self._normalize_input_path(directory)
-            unique = self.operations._get_unique_filename(norm_dir, filename)
-            # path is the directory context, data is the result filename
-            return DataResult(ok=True, path=norm_dir, data=str(unique.name), format="filename",
-                              message=f"Unique filename: {unique.name}")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data="",
-                format="filename",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Failed to generate filename"
-            )
+def write_text(path: Any, content: str, encoding: str = "utf-8", atomic: bool = True, calculate_checksum: bool = False) -> WriteResult:
+    return get_service().write_text(path, content, encoding, atomic, calculate_checksum)
 
-    def create_temp_file(self, suffix: str = ".txt", prefix: str = "quackcore_", directory: FsPathLike | None = None) -> \
-    DataResult[str]:
-        try:
-            if directory:
-                norm_dir = self._normalize_input_path(directory)
-            else:
-                # Doctrine: Default to .quack/tmp inside base_dir to ensure sandboxing
-                norm_dir = self.base_dir / ".quack" / "tmp"
-                if not norm_dir.exists():
-                    self.operations._ensure_directory(norm_dir)
+def read_bytes(path: Any) -> ReadResult[bytes]:
+    return get_service().read_bytes(path)
 
-            temp_path = self.operations._create_temp_file(suffix, prefix, norm_dir)
-            return DataResult(ok=True, path=temp_path, data=str(temp_path), format="path",
-                              message=f"Created temp file: {temp_path}")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data="",
-                format="path",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Failed to create temp file"
-            )
+# Legacy alias
+read_binary = read_bytes
 
-    def create_temp_directory(self, prefix: str = "quackcore_", suffix: str = "", directory: FsPathLike | None = None) -> DataResult[str]:
-        """
-        Creates a temporary directory.
-        Defaults to .quack/tmp within the service base_dir to ensure sandboxing.
-        """
-        try:
-            if directory:
-                norm_dir = self._normalize_input_path(directory)
-            else:
-                # Doctrine: Default to .quack/tmp inside base_dir to ensure sandboxing
-                norm_dir = self.base_dir / ".quack" / "tmp"
-                if not norm_dir.exists():
-                    self.operations._ensure_directory(norm_dir)
+def write_bytes(path: Any, content: bytes, atomic: bool = True, calculate_checksum: bool = False) -> WriteResult:
+    return get_service().write_bytes(path, content, atomic, calculate_checksum)
 
-            temp_dir = self.operations._create_temp_directory(prefix, suffix, norm_dir)
-            return DataResult(ok=True, path=temp_dir, data=str(temp_dir), format="path", message=f"Created temp dir: {temp_dir}")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data="",
-                format="path",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Failed to create temp directory"
-            )
+# Legacy alias
+write_binary = write_bytes
 
-    def find_files_by_content(self, directory: FsPathLike, text_pattern: str, recursive: bool = True) -> DataResult[
-        list[str]]:
-        try:
-            norm_dir = self._normalize_input_path(directory)
-            matches = self.operations._find_files_by_content(norm_dir, text_pattern, recursive)
-            return DataResult(ok=True, path=norm_dir, data=[str(p) for p in matches], format="path_list",
-                              message=f"Found {len(matches)} files")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data=[],
-                format="path_list",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Search failed"
-            )
+def read_lines(path: Any, encoding: str = "utf-8") -> ReadResult[list[str]]:
+    return get_service().read_lines(path, encoding)
 
-    def get_disk_usage(self, path: FsPathLike) -> DataResult[dict[str, int]]:
-        try:
-            norm_path = self._normalize_input_path(path)
-            usage = self.operations._get_disk_usage(norm_path)
-            return DataResult(ok=True, path=norm_path, data=usage, format="disk_usage", message="Retrieved disk usage")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data={},
-                format="disk_usage",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Failed to get disk usage"
-            )
+def write_lines(path: Any, lines: list[str], encoding: str = "utf-8", atomic: bool = True, line_ending: str = "\n") -> WriteResult:
+    return get_service().write_lines(path, lines, encoding, atomic, line_ending)
 
-    def get_file_type(self, path: FsPathLike) -> DataResult[str]:
-        try:
-            norm_path = self._normalize_input_path(path)
-            ftype = self.operations._get_file_type(norm_path)
-            return DataResult(ok=True, path=norm_path, data=ftype, format="file_type", message=f"File type: {ftype}")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data="",
-                format="file_type",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Failed to get file type"
-            )
+def copy(src: Any, dst: Any, overwrite: bool = False) -> WriteResult:
+    return get_service().copy(src, dst, overwrite)
 
-    def get_file_size_str(self, size_bytes: int) -> DataResult[str]:
-        try:
-            s = self.operations._get_file_size_str(size_bytes)
-            return DataResult(ok=True, path=None, data=s, format="size_string", message="Formatted size")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data="",
-                format="size_string",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Formatting failed"
-            )
+def move(src: Any, dst: Any, overwrite: bool = False) -> WriteResult:
+    return get_service().move(src, dst, overwrite)
 
-    def get_mime_type(self, path: FsPathLike) -> DataResult[str | None]:
-        try:
-            norm_path = self._normalize_input_path(path)
-            mime = self.operations._get_mime_type(norm_path)
-            return DataResult(ok=True, path=norm_path, data=mime, format="mime_type", message=f"Mime type: {mime}")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data=None,
-                format="mime_type",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Failed to get mime type"
-            )
+def delete(path: Any, missing_ok: bool = True) -> OperationResult:
+    return get_service().delete(path, missing_ok)
 
-    def get_file_timestamp(self, path: FsPathLike) -> DataResult[float]:
-        try:
-            norm_path = self._normalize_input_path(path)
-            ts = self.operations._get_file_timestamp(norm_path)
-            return DataResult(ok=True, path=norm_path, data=ts, format="timestamp", message="Retrieved timestamp")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data=0.0,
-                format="timestamp",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Failed to get timestamp"
-            )
+# ==============================================================================
+# DIRECTORY OPERATIONS
+# ==============================================================================
 
-    def compute_checksum(self, path: FsPathLike, algorithm: str = "sha256") -> DataResult[str]:
-        try:
-            norm_path = self._normalize_input_path(path)
-            cs = self.operations._compute_checksum(norm_path, algorithm)
-            return DataResult(ok=True, path=norm_path, data=cs, format="checksum", message="Computed checksum")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data="",
-                format="checksum",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Checksum failed"
-            )
+def create_directory(path: Any, exist_ok: bool = True) -> OperationResult:
+    return get_service().create_directory(path, exist_ok)
 
-    def is_path_writeable(self, path: FsPathLike) -> DataResult[bool]:
-        """
-        Checks if the path is writeable.
-        WARNING: This method performs a write probe (side effect) if the path does not exist.
-        """
-        try:
-            norm_path = self._normalize_input_path(path)
-            w = self.operations._is_path_writeable(norm_path)
-            return DataResult(
-                ok=True,
-                path=norm_path,
-                data=w,
-                format="boolean",
-                message=f"Writeable: {w}",
-                meta={"side_effect": "write_probe"}
-            )
-        except Exception as e:
-            s = safe_path_str(path)
-            return DataResult(
-                ok=False,
-                path=None,
-                data=False,
-                format="boolean",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Check failed",
-                meta={"side_effect": "write_probe", "input_path": s} if s else None
-            )
+def list_directory(path: Any, pattern: str | None = None, recursive: bool = False, include_hidden: bool = False) -> DirectoryInfoResult:
+    return get_service().list_directory(path, pattern, recursive, include_hidden)
 
-    def is_file_locked(self, path: FsPathLike) -> DataResult[bool]:
-        try:
-            norm_path = self._normalize_input_path(path)
-            l = self.operations._is_file_locked(norm_path)
-            return DataResult(ok=True, path=norm_path, data=l, format="boolean", message=f"Locked: {l}")
-        except Exception as e:
-            return DataResult(
-                ok=False,
-                path=None,
-                data=False,
-                format="boolean",
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Lock check failed"
-            )
+def find_files(path: Any, pattern: str, recursive: bool = True, include_hidden: bool = False) -> FindResult:
+    return get_service().find_files(path, pattern, recursive, include_hidden)
 
-    def atomic_write(self, path: FsPathLike, content: str | bytes) -> WriteResult:
-        try:
-            norm_path = self._normalize_input_path(path)
-            if isinstance(content, str):
-                result_path = self.operations._write_text(norm_path, content, atomic=True)
-                size = len(content.encode('utf-8'))
-            else:
-                result_path = self.operations._write_binary(norm_path, content, atomic=True)
-                size = len(content)
-            return WriteResult(ok=True, path=result_path, bytes_written=size, message="Atomic write successful")
-        except Exception as e:
-            return WriteResult(
-                ok=False,
-                path=None,
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Atomic write failed"
-            )
+# ==============================================================================
+# FILE INFO OPERATIONS
+# ==============================================================================
+
+def get_file_info(path: Any) -> FileInfoResult:
+    return get_service().get_file_info(path)
+
+# ==============================================================================
+# STRUCTURED DATA OPERATIONS
+# ==============================================================================
+
+def read_yaml(path: Any) -> DataResult[dict]:
+    return get_service().read_yaml(path)
+
+def write_yaml(path: Any, data: dict, atomic: bool = True) -> WriteResult:
+    return get_service().write_yaml(path, data, atomic)
+
+def read_json(path: Any) -> DataResult[dict]:
+    return get_service().read_json(path)
+
+def write_json(path: Any, data: dict, atomic: bool = True, indent: int = 2) -> WriteResult:
+    return get_service().write_json(path, data, atomic, indent)
+
+# ==============================================================================
+# PATH OPERATIONS
+# ==============================================================================
+
+def split_path(path: Any) -> DataResult[list[str]]:
+    return get_service().split_path(path)
+
+def join_path(*parts: Any) -> DataResult[str]:
+    return get_service().join_path(*parts)
+
+def normalize_path(path: Any) -> PathResult:
+    return get_service().normalize_path(path)
+
+def normalize_path_with_info(path: Any) -> PathResult:
+    """
+    Normalize path and return detailed info about it.
+    Includes: absolute status, validity, existence.
+    """
+    return get_service().normalize_path_with_info(path)
+
+def expand_user_vars(path: Any) -> DataResult[str]:
+    return get_service().expand_user_vars(path)
+
+def get_extension(path: Any) -> DataResult[str]:
+    return get_service().get_extension(path)
+
+def resolve_path(path: Any) -> PathResult:
+    return get_service().resolve_path(path)
+
+def is_same_file(path1: Any, path2: Any) -> DataResult[bool]:
+    return get_service().is_same_file(path1, path2)
+
+def is_subdirectory(child: Any, parent: Any) -> DataResult[bool]:
+    return get_service().is_subdirectory(child, parent)
+
+# ==============================================================================
+# PATH VALIDATION OPERATIONS
+# ==============================================================================
+
+def path_exists(path: Any) -> BoolResult:
+    return get_service().path_exists(path)
+
+def is_valid_path(path: Any) -> BoolResult:
+    return get_service().is_valid_path(path)
+
+def is_safe_path(path: Any) -> BoolResult:
+    return get_service().is_safe_path(path)
+
+# ==============================================================================
+# UTILITY OPERATIONS
+# ==============================================================================
+
+def ensure_directory(path: Any, exist_ok: bool = True) -> OperationResult:
+    return get_service().ensure_directory(path, exist_ok)
+
+def get_unique_filename(directory: Any, filename: str) -> DataResult[str]:
+    return get_service().get_unique_filename(directory, filename)
+
+def create_temp_file(suffix: str = ".txt", prefix: str = "quackcore_", directory: Any = None) -> DataResult[str]:
+    return get_service().create_temp_file(suffix, prefix, directory)
+
+def create_temp_directory(prefix: str = "quackcore_", suffix: str = "") -> DataResult[str]:
+    return get_service().create_temp_directory(prefix, suffix)
+
+def find_files_by_content(directory: Any, text_pattern: str, recursive: bool = True) -> DataResult[list[str]]:
+    return get_service().find_files_by_content(directory, text_pattern, recursive)
+
+def get_disk_usage(path: Any) -> DataResult[dict[str, int]]:
+    return get_service().get_disk_usage(path)
+
+def get_file_type(path: Any) -> DataResult[str]:
+    return get_service().get_file_type(path)
+
+def get_file_size_str(size_bytes: int) -> DataResult[str]:
+    return get_service().get_file_size_str(size_bytes)
+
+def get_file_timestamp(path: Any) -> DataResult[float]:
+    return get_service().get_file_timestamp(path)
+
+def get_mime_type(path: Any) -> DataResult[str | None]:
+    return get_service().get_mime_type(path)
+
+def compute_checksum(path: Any, algorithm: str = "sha256") -> DataResult[str]:
+    return get_service().compute_checksum(path, algorithm)
+
+def is_path_writeable(path: Any) -> DataResult[bool]:
+    return get_service().is_path_writeable(path)
+
+def is_file_locked(path: Any) -> DataResult[bool]:
+    return get_service().is_file_locked(path)
+
+def atomic_write(path: Any, content: str | bytes) -> WriteResult:
+    return get_service().atomic_write(path, content)
+
+# ==============================================================================
+# SAFE OPERATION ALIASES (delegate to same methods - naming for clarity)
+# ==============================================================================
+
+def copy_safely(src: Any, dst: Any, overwrite: bool = False) -> WriteResult:
+    """
+    Alias for copy(). The 'safely' suffix indicates error handling via Results.
+    All core operations are 'safe' (never raise), so this is semantic clarity only.
+    """
+    return get_service().copy(src, dst, overwrite)
+
+def move_safely(src: Any, dst: Any, overwrite: bool = False) -> WriteResult:
+    """
+    Alias for move(). The 'safely' suffix indicates error handling via Results.
+    All core operations are 'safe' (never raise), so this is semantic clarity only.
+    """
+    return get_service().move(src, dst, overwrite)
+
+def delete_safely(path: Any, missing_ok: bool = True) -> OperationResult:
+    """
+    Alias for delete(). The 'safely' suffix indicates error handling via Results.
+    All core operations are 'safe' (never raise), so this is semantic clarity only.
+    """
+    return get_service().delete(path, missing_ok)
