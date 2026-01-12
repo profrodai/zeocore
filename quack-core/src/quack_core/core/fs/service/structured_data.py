@@ -1,12 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/structured_data.py
-# module: quack_core.core.fs.service.structured_data
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
-# exports: StructuredDataMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: d5eb52c8
-# === QV-LLM:END ===
 
 from pathlib import Path
 from typing import Any
@@ -31,15 +22,15 @@ class StructuredDataMixin:
             return DataResult(ok=True, path=normalized_path, data=data, format="yaml", message="Read YAML")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 data=None,
                 format="yaml",
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to read YAML"
+                message="Failed to read YAML",
+                meta={"input_path": s} if s else None
             )
 
     def write_yaml(self, path: FsPathLike, data: dict, atomic: bool = True) -> WriteResult:
@@ -50,13 +41,13 @@ class StructuredDataMixin:
             return WriteResult(ok=True, path=result_path, message="Wrote YAML")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to write YAML"
+                message="Failed to write YAML",
+                meta={"input_path": s} if s else None
             )
 
     def read_json(self, path: FsPathLike) -> DataResult[dict]:
@@ -69,15 +60,15 @@ class StructuredDataMixin:
             return DataResult(ok=True, path=normalized_path, data=data, format="json", message="Read JSON")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 data=None,
                 format="json",
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to read JSON"
+                message="Failed to read JSON",
+                meta={"input_path": s} if s else None
             )
 
     def write_json(self, path: FsPathLike, data: dict, atomic: bool = True, indent: int = 2) -> WriteResult:
@@ -88,11 +79,11 @@ class StructuredDataMixin:
             return WriteResult(ok=True, path=result_path, message="Wrote JSON")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to write JSON"
+                message="Failed to write JSON",
+                meta={"input_path": s} if s else None
             )
