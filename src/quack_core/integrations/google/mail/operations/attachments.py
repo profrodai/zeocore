@@ -5,7 +5,7 @@
 # neighbors: __init__.py, auth.py, email.py
 # exports: process_message_parts, handle_attachment
 # git_branch: feat/9-make-setup-work
-# git_commit: ffd13f1b
+# git_commit: 2d6aea0e
 # === QV-LLM:END ===
 
 """

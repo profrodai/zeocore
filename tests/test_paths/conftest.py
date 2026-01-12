@@ -3,6 +3,6 @@
 # role: tests
 # neighbors: __init__.py, test_context.py, test_resolvers.py, test_service.py, test_utils.py
 # git_branch: feat/9-make-setup-work
-# git_commit: ffd13f1b
+# git_commit: 2d6aea0e
 # === QV-LLM:END ===
 
