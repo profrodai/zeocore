@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_fs/test_suite.py
+# role: tests
+# neighbors: __init__.py, test_architecture.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py (+2 more)
+# exports: TestPathNoneOnFailure, TestSandboxSecurity, TestErrorMappingOrder, TestNoRaiseContract, TestInputPathInMeta, TestInternalLayerDoctrine
+# git_branch: feat/9-make-setup-work
+# git_commit: d5eb52c8
+# === QV-LLM:END ===
+
 """
 Test suite for amended filesystem service implementation.
 Verifies all fixes from the feedback:
