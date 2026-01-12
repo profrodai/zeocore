@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, config.py
 # exports: GoogleCredentials, GmailRequest, GmailAttachmentsResource, GmailMessagesResource, GmailUsersResource, GmailService
 # git_branch: feat/9-make-setup-work
-# git_commit: 1a3eba04
+# git_commit: a427fe04
 # === QV-LLM:END ===
 
 """

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, query.py
 # exports: execute_api_request, with_exponential_backoff
 # git_branch: feat/9-make-setup-work
-# git_commit: 1a3eba04
+# git_commit: a427fe04
 # === QV-LLM:END ===
 
 """

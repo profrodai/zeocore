@@ -5,7 +5,7 @@
 # neighbors: __init__.py, legacy.py, tool_runner.py
 # exports: InputResult, OutputResult, FinalResult
 # git_branch: feat/9-make-setup-work
-# git_commit: 1a3eba04
+# git_commit: a427fe04
 # === QV-LLM:END ===
 
 from __future__ import annotations
