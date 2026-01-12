@@ -1,12 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/path_ops.py
-# module: quack_core.core.fs._internal.path_ops
-# role: module
-# neighbors: __init__.py, checksums.py, common.py, comparison.py, directory_ops.py, disk.py (+4 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 24e0c6df
-# === QV-LLM:END ===
-
 import os
 from pathlib import Path
 

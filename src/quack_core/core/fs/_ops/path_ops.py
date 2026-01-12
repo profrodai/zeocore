@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/path_ops.py
-# module: quack_core.core.fs._ops.path_ops
-# role: _ops
-# neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, find_ops.py (+4 more)
-# exports: PathOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 24e0c6df
-# === QV-LLM:END ===
-
 from pathlib import Path
 from quack_core.core.fs._internal.path_ops import _expand_user_vars, _split_path, _resolve_path, _is_path_syntax_valid
 from quack_core.core.fs._internal.common import _get_extension
@@ -29,8 +19,8 @@ class PathOperationsMixin:
     def _get_extension(self, path: Path) -> str:
         return _get_extension(path)
 
-    def _resolve_path(self, path: Path) -> Path:
-        return _resolve_path(path, strict=False)
+    def _resolve_path(self, path: Path, strict: bool = False) -> Path:
+        return _resolve_path(path, strict=strict)
 
     def _is_path_syntax_valid(self, path_str: str) -> bool:
         return _is_path_syntax_valid(path_str)

@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/path_validation.py
-# module: quack_core.core.fs.service.path_validation
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: PathValidationMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 24e0c6df
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -120,7 +110,9 @@ class PathValidationMixin:
     def normalize_path_with_info(self, path: FsPathLike) -> PathResult:
         try:
             normalized_path = self._normalize_input_path(path)
-            result_path = self.operations._normalize_path(normalized_path)
+            # Use _resolve_path (strict=False) which is equivalent to non-strict normalization logic
+            # previously handled by a separate normalize method in Ops.
+            result_path = self.operations._resolve_path(normalized_path, strict=False)
             exists = self.operations._path_exists(result_path)
             return PathResult(ok=True, path=result_path, is_absolute=result_path.is_absolute(), is_valid=True,
                               exists=exists, message="Normalized path")
@@ -137,12 +129,16 @@ class PathValidationMixin:
     def resolve_path_strict(self, path: FsPathLike) -> PathResult:
         try:
             normalized_path = self._normalize_input_path(path)
-            resolved = self.operations._resolve_path(normalized_path)
-            if not resolved.exists():
-                return PathResult(ok=False, path=resolved, is_valid=True, exists=False, error="Path does not exist",
-                                  message="Resolved but not found")
+            # Use strict=True for real strict resolution (raises FileNotFoundError if missing)
+            resolved = self.operations._resolve_path(normalized_path, strict=True)
             return PathResult(ok=True, path=resolved, is_absolute=True, is_valid=True, exists=True,
                               message="Resolved existing path")
+        except FileNotFoundError:
+            # Handle specifically to return clean result
+            # We can re-resolve non-strictly to get the path for the result object
+            non_strict_path = self.operations._resolve_path(normalized_path, strict=False)
+            return PathResult(ok=False, path=non_strict_path, is_valid=True, exists=False, error="Path does not exist",
+                              message="Resolved but not found")
         except Exception as e:
             return PathResult(
                 ok=False,

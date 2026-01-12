@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/normalize.py
-# module: quack_core.core.fs.normalize
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py, results.py
-# exports: coerce_path, coerce_path_str, safe_path_str, coerce_path_result, extract_path_from_result
-# git_branch: feat/9-make-setup-work
-# git_commit: 24e0c6df
-# === QV-LLM:END ===
-
 """
 Input normalization logic.
 This module is the Single Source of Truth for coercing inputs into Paths.
@@ -83,6 +73,9 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: b
         path = path.expanduser()
 
         if base_dir:
+            # Ensure base_dir is resolved for robust relative_to checks
+            base_dir = base_dir.resolve()
+
             # 1. Handle Absolute Paths
             if path.is_absolute():
                 if allow_absolute:

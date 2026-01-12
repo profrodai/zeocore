@@ -1,43 +1,29 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/directory_operations.py
-# module: quack_core.core.fs.service.directory_operations
-# role: service
-# neighbors: __init__.py, base.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: DirectoryOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 24e0c6df
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.results import DirectoryInfoResult, FindResult, OperationResult, FileInfoResult, ErrorInfo
 from quack_core.core.fs.protocols import FsPathLike
 
+
 class DirectoryOperationsMixin:
     operations: FileSystemOperations
     logger: Any
-    def _normalize_input_path(self, path: FsPathLike) -> Path: raise NotImplementedError
-    def _map_error(self, e: Exception) -> ErrorInfo: raise NotImplementedError
+
+    def _normalize_input_path(self, path: FsPathLike) -> Path:
+        raise NotImplementedError
+
+    def _map_error(self, e: Exception) -> ErrorInfo:
+        raise NotImplementedError
+
+    def ensure_directory(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult:
+        raise NotImplementedError
 
     def create_directory(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult:
         """
-        Create a directory. Alias for ensure_directory (UtilityOperationsMixin),
-        kept for backward compatibility with 'create_directory' calls.
+        Create a directory. Alias for ensure_directory, kept for backward compatibility.
+        Delegates to the canonical implementation in UtilityOperationsMixin.
         """
-        try:
-            normalized_path = self._normalize_input_path(path)
-            # normalized_path is already absolute/anchored
-            result_path = self.operations._ensure_directory(normalized_path, exist_ok)
-            return OperationResult(ok=True, path=result_path, message=f"Directory created: {result_path}")
-        except Exception as e:
-            return OperationResult(
-                ok=False,
-                path=None,
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Failed to create directory"
-            )
+        return self.ensure_directory(path, exist_ok)
 
     def get_file_info(self, path: FsPathLike) -> FileInfoResult:
         try:
@@ -73,7 +59,8 @@ class DirectoryOperationsMixin:
                 message="Failed to get info"
             )
 
-    def list_directory(self, path: FsPathLike, pattern: str | None = None, recursive: bool = False, include_hidden: bool = False) -> DirectoryInfoResult:
+    def list_directory(self, path: FsPathLike, pattern: str | None = None, recursive: bool = False,
+                       include_hidden: bool = False) -> DirectoryInfoResult:
         try:
             normalized_path = self._normalize_input_path(path)
             # Returns _DirectoryInfo (internal DTO)
@@ -99,7 +86,8 @@ class DirectoryOperationsMixin:
                 message="Failed to list directory"
             )
 
-    def find_files(self, path: FsPathLike, pattern: str, recursive: bool = True, include_hidden: bool = False) -> FindResult:
+    def find_files(self, path: FsPathLike, pattern: str, recursive: bool = True,
+                   include_hidden: bool = False) -> FindResult:
         try:
             normalized_path = self._normalize_input_path(path)
             files, directories = self.operations._find_files(normalized_path, pattern, recursive, include_hidden)
