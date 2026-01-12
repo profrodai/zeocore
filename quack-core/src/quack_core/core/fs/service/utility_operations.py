@@ -1,18 +1,9 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/utility_operations.py
-# module: quack_core.core.fs.service.utility_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: UtilityOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: a427fe04
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.results import DataResult, OperationResult, WriteResult, ErrorInfo
 from quack_core.core.fs.protocols import FsPathLike
+from quack_core.core.fs.normalize import safe_path_str
 
 class UtilityOperationsMixin:
     operations: FileSystemOperations
@@ -22,6 +13,22 @@ class UtilityOperationsMixin:
     def _normalize_input_path(self, path: FsPathLike) -> Path: raise NotImplementedError
     def _map_error(self, e: Exception) -> ErrorInfo: raise NotImplementedError
 
+    def ensure_directory(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult:
+        try:
+            norm_path = self._normalize_input_path(path)
+            res_path = self.operations._ensure_directory(norm_path, exist_ok)
+            return OperationResult(ok=True, path=res_path, message=f"Directory ensured: {res_path}")
+        except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
+            return OperationResult(
+                ok=False,
+                path=safe_p,
+                error_info=self._map_error(e),
+                error=str(e),
+                message="Failed to ensure directory"
+            )
+
     def get_unique_filename(self, directory: FsPathLike, filename: str) -> DataResult[str]:
         try:
             norm_dir = self._normalize_input_path(directory)
@@ -30,9 +37,11 @@ class UtilityOperationsMixin:
             return DataResult(ok=True, path=norm_dir, data=str(unique.name), format="filename",
                               message=f"Unique filename: {unique.name}")
         except Exception as e:
+            s = safe_path_str(directory)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data="",
                 format="filename",
                 error_info=self._map_error(e),
@@ -55,9 +64,11 @@ class UtilityOperationsMixin:
             return DataResult(ok=True, path=temp_path, data=str(temp_path), format="path",
                               message=f"Created temp file: {temp_path}")
         except Exception as e:
+            s = safe_path_str(directory) if directory else None
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data="",
                 format="path",
                 error_info=self._map_error(e),
@@ -82,9 +93,11 @@ class UtilityOperationsMixin:
             temp_dir = self.operations._create_temp_directory(prefix, suffix, norm_dir)
             return DataResult(ok=True, path=temp_dir, data=str(temp_dir), format="path", message=f"Created temp dir: {temp_dir}")
         except Exception as e:
+            s = safe_path_str(directory) if directory else None
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data="",
                 format="path",
                 error_info=self._map_error(e),
@@ -100,9 +113,11 @@ class UtilityOperationsMixin:
             return DataResult(ok=True, path=norm_dir, data=[str(p) for p in matches], format="path_list",
                               message=f"Found {len(matches)} files")
         except Exception as e:
+            s = safe_path_str(directory)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data=[],
                 format="path_list",
                 error_info=self._map_error(e),
@@ -116,9 +131,11 @@ class UtilityOperationsMixin:
             usage = self.operations._get_disk_usage(norm_path)
             return DataResult(ok=True, path=norm_path, data=usage, format="disk_usage", message="Retrieved disk usage")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data={},
                 format="disk_usage",
                 error_info=self._map_error(e),
@@ -132,9 +149,11 @@ class UtilityOperationsMixin:
             ftype = self.operations._get_file_type(norm_path)
             return DataResult(ok=True, path=norm_path, data=ftype, format="file_type", message=f"File type: {ftype}")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data="",
                 format="file_type",
                 error_info=self._map_error(e),
@@ -163,9 +182,11 @@ class UtilityOperationsMixin:
             mime = self.operations._get_mime_type(norm_path)
             return DataResult(ok=True, path=norm_path, data=mime, format="mime_type", message=f"Mime type: {mime}")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data=None,
                 format="mime_type",
                 error_info=self._map_error(e),
@@ -179,9 +200,11 @@ class UtilityOperationsMixin:
             ts = self.operations._get_file_timestamp(norm_path)
             return DataResult(ok=True, path=norm_path, data=ts, format="timestamp", message="Retrieved timestamp")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data=0.0,
                 format="timestamp",
                 error_info=self._map_error(e),
@@ -195,9 +218,11 @@ class UtilityOperationsMixin:
             cs = self.operations._compute_checksum(norm_path, algorithm)
             return DataResult(ok=True, path=norm_path, data=cs, format="checksum", message="Computed checksum")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data="",
                 format="checksum",
                 error_info=self._map_error(e),
@@ -213,16 +238,26 @@ class UtilityOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             w = self.operations._is_path_writeable(norm_path)
-            return DataResult(ok=True, path=norm_path, data=w, format="boolean", message=f"Writeable: {w}")
+            return DataResult(
+                ok=True,
+                path=norm_path,
+                data=w,
+                format="boolean",
+                message=f"Writeable: {w}",
+                meta={"side_effect": "write_probe"}
+            )
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data=False,
                 format="boolean",
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Check failed"
+                message="Check failed",
+                meta={"side_effect": "write_probe"}
             )
 
     def is_file_locked(self, path: FsPathLike) -> DataResult[bool]:
@@ -231,9 +266,11 @@ class UtilityOperationsMixin:
             l = self.operations._is_file_locked(norm_path)
             return DataResult(ok=True, path=norm_path, data=l, format="boolean", message=f"Locked: {l}")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data=False,
                 format="boolean",
                 error_info=self._map_error(e),
@@ -252,9 +289,11 @@ class UtilityOperationsMixin:
                 size = len(content)
             return WriteResult(ok=True, path=result_path, bytes_written=size, message="Atomic write successful")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Atomic write failed"
