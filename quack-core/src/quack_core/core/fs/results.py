@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, plugin.py, exceptions.py, normalize.py
 # exports: ErrorInfo, OperationResult, BoolResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: ffd13f1b
+# git_commit: 2d6aea0e
 # === QV-LLM:END ===
 
 from pathlib import Path

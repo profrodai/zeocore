@@ -3,6 +3,6 @@
 # role: tests
 # neighbors: test_integration_enabled.py, test_output_writer.py, test_save_output_mixin.py
 # git_branch: feat/9-make-setup-work
-# git_commit: ffd13f1b
+# git_commit: 2d6aea0e
 # === QV-LLM:END ===
 

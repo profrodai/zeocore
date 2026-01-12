@@ -5,7 +5,7 @@
 # neighbors: annotate_headers.py, fix_imports.py, fix_remaining_tests.py, verify_installation.py
 # exports: FileStat, should_skip_dir, iter_files, safe_slug, read_text_file, count_lines, flatten_to_file, write_manifest (+1 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: ffd13f1b
+# git_commit: 2d6aea0e
 # === QV-LLM:END ===
 
 from __future__ import annotations

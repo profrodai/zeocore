@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_initialization.py, test_integration.py, test_operations.py
 # exports: TestDependencies
 # git_branch: feat/9-make-setup-work
-# git_commit: ffd13f1b
+# git_commit: 2d6aea0e
 # === QV-LLM:END ===
 
 from unittest.mock import MagicMock, patch

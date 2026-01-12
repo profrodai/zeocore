@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_writers.py
 # exports: test_base_is_abstract
 # git_branch: feat/9-make-setup-work
-# git_commit: ffd13f1b
+# git_commit: 2d6aea0e
 # === QV-LLM:END ===
 
 import pytest
