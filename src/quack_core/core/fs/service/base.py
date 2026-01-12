@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py, full_class.py (+5 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Optional
 import uuid
@@ -45,10 +35,12 @@ class FileSystemService:
             self.logger.warning(
                 "⚠️  SECURITY WARNING: unsafe_disable_sandbox=True - "
                 "Filesystem sandboxing is DISABLED. Operations can access any path on the system. "
-                "This setting disables ALL path safety checks including: "
+                "This setting disables path safety checks for: "
                 "(1) relative path escape attempts via '..' "
-                "(2) absolute path restrictions "
-                "(3) symlink-based escapes (TOCTOU vulnerabilities remain) "
+                "(2) absolute path restrictions outside base_dir "
+                "NOTE: This does NOT protect against symlink-based TOCTOU attacks or symlinks "
+                "inside base_dir that point outside. For maximum security, use a dedicated "
+                "filesystem namespace or container-level isolation. "
                 "Only enable this in fully trusted environments."
             )
 
@@ -109,6 +101,9 @@ class FileSystemService:
         elif isinstance(e, FileNotFoundError):
             err_type = "file_not_found"
             hint = "Check if the file path is correct relative to base_dir."
+        elif isinstance(e, FileExistsError):
+            err_type = "file_exists"
+            hint = "Target already exists. Use overwrite=True or choose a different path."
         elif isinstance(e, PermissionError):
             err_type = "permission_denied"
             hint = "Check file permissions or run with elevated privileges."
