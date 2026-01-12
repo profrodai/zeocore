@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_error.py (+5 more)
 # exports: TestDetermineEffectiveLevel, TestAddFileHandler, TestSetupLogging, TestLoggerFactory
 # git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
+# git_commit: 6e6469fe
 # === QV-LLM:END ===
 
 """

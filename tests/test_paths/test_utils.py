@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_context.py, test_resolvers.py, test_service.py
 # exports: MockDataResult, TestPathUtils, mock_fs_methods
 # git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
+# git_commit: 6e6469fe
 # === QV-LLM:END ===
 
 """

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, enhancer.py
 # exports: select_best_strategy
 # git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
+# git_commit: 6e6469fe
 # === QV-LLM:END ===
 
 from typing import Any

@@ -5,7 +5,7 @@
 # neighbors: service.py, models.py, protocols.py
 # exports: GoogleDriveService, DriveFile, DriveFolder, create_integration
 # git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
+# git_commit: 6e6469fe
 # === QV-LLM:END ===
 
 """

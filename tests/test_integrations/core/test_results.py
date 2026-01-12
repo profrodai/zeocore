@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_get_service.py, test_protocol_inheritance.py, test_protocols.py, test_registry.py, test_registry_discovery.py
 # exports: TestIntegrationResult, TestAuthResult, TestConfigResult
 # git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
+# git_commit: 6e6469fe
 # === QV-LLM:END ===
 
 """

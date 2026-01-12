@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/core/fs/service/path_operations.py
 # module: quack_core.core.fs.service.path_operations
 # role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
+# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
 # exports: PathOperationsMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
+# git_commit: 6e6469fe
 # === QV-LLM:END ===
 
 from pathlib import Path
