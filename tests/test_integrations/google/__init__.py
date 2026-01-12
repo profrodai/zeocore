@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: mocks.py, test_auth_provider.py, test_config_provider.py, test_serialization.py
 # git_branch: feat/9-make-setup-work
-# git_commit: 6e6469fe
+# git_commit: 945fec3c
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.google module."""

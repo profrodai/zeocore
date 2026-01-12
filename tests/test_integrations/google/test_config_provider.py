@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_auth_provider.py, test_serialization.py
 # exports: TestGoogleConfigProvider
 # git_branch: feat/9-make-setup-work
-# git_commit: 6e6469fe
+# git_commit: 945fec3c
 # === QV-LLM:END ===
 
 """

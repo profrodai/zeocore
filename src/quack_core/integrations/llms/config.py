@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, registry.py, fallback.py
 # exports: OpenAIConfig, AnthropicConfig, OllamaConfig, LLMConfig, LLMConfigProvider
 # git_branch: feat/9-make-setup-work
-# git_commit: 6e6469fe
+# git_commit: 945fec3c
 # === QV-LLM:END ===
 
 """

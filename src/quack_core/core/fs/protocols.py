@@ -5,7 +5,7 @@
 # neighbors: __init__.py, plugin.py, results.py, exceptions.py, normalize.py
 # exports: HasValue, HasUnwrap, HasPath, HasData, BaseResult
 # git_branch: feat/9-make-setup-work
-# git_commit: 6e6469fe
+# git_commit: 945fec3c
 # === QV-LLM:END ===
 
 from os import PathLike

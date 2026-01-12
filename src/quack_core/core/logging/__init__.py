@@ -5,7 +5,7 @@
 # neighbors: config.py, formatter.py, logger.py
 # exports: get_logger, configure_logger, LOG_LEVELS, LogLevel
 # git_branch: feat/9-make-setup-work
-# git_commit: 6e6469fe
+# git_commit: 945fec3c
 # === QV-LLM:END ===
 
 """

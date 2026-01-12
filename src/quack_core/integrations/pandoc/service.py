@@ -5,7 +5,7 @@
 # neighbors: __init__.py, models.py, protocols.py, config.py, converter.py
 # exports: PandocIntegration, create_integration
 # git_branch: feat/9-make-setup-work
-# git_commit: 6e6469fe
+# git_commit: 945fec3c
 # === QV-LLM:END ===
 
 """Pandoc Integration Service

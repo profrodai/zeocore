@@ -5,7 +5,7 @@
 # neighbors: config.py, auth.py, serialization.py
 # exports: GoogleAuthProvider, GoogleConfigProvider
 # git_branch: feat/9-make-setup-work
-# git_commit: 6e6469fe
+# git_commit: 945fec3c
 # === QV-LLM:END ===
 
 """
