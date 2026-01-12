@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_artifacts.py, test_capabilities.py, test_envelopes.py, test_schema_examples.py
 # exports: DependencyChecker, TestDependencyBoundaries, TestImportPatterns
 # git_branch: feat/9-make-setup-work
-# git_commit: 24e0c6df
+# git_commit: 1a3eba04
 # === QV-LLM:END ===
 
 """
