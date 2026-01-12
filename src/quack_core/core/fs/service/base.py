@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Optional
 import uuid
@@ -16,6 +6,7 @@ from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.normalize import coerce_path
 from quack_core.core.fs.results import ErrorInfo
+from quack_core.core.fs.exceptions import QuackPathEscapeError, QuackPathOutsideBaseDirError
 from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.core.errors import QuackValidationError
 
@@ -47,9 +38,12 @@ class FileSystemService:
         """
         try:
             return coerce_path(path, base_dir=self.base_dir, allow_absolute=self.allow_absolute_paths)
-        except ValueError as e:
-            # Re-raise sandbox/value errors to be mapped to specific error types
+        except (QuackPathEscapeError, QuackPathOutsideBaseDirError) as e:
+            # Re-raise sandbox violations to be mapped to specific error types
             raise e
+        except ValueError as e:
+             # Wrap standard coercion errors in QuackValidationError
+             raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
         except TypeError as e:
             # Wrap shape/type errors
             raise QuackValidationError(f"Invalid path input type: {path}", original_error=e) from e
@@ -90,15 +84,17 @@ class FileSystemService:
             hint = "Expected a directory but found a file."
         elif isinstance(e, OSError):
             err_type = "io_error"
-        elif isinstance(e, ValueError):  # Catch sandbox violations and other ValueErrors
+        # Sandbox violations
+        elif isinstance(e, QuackPathEscapeError):
+            err_type = "path_escape_attempt"
+            hint = "Path attempted to traverse above the base directory."
+        elif isinstance(e, QuackPathOutsideBaseDirError):
+            err_type = "path_outside_base_dir"
+            hint = "Absolute paths outside the configured base directory are not allowed."
+        # Generic ValueErrors
+        elif isinstance(e, ValueError):
             msg_lower = msg.lower()
-            if "escape" in msg_lower:
-                err_type = "path_escape_attempt"
-                hint = "Path attempted to traverse above the base directory."
-            elif "outside base directory" in msg_lower:
-                err_type = "path_outside_base_dir"
-                hint = "Absolute paths outside the configured base directory are not allowed."
-            elif "unsupported algorithm" in msg_lower:
+            if "unsupported algorithm" in msg_lower:
                 err_type = "unsupported_algorithm"
                 hint = "Check the requested hash algorithm."
             elif "invalid regex" in msg_lower:

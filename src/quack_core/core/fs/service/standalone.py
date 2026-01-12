@@ -1,27 +1,12 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/standalone.py
-# module: quack_core.core.fs.service.standalone
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: read_text, write_text, read_bytes, write_bytes, read_lines, write_lines, copy, move (+39 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
-# === QV-LLM:END ===
-
 """
 Standalone wrappers that delegate to the singleton service.
 Ensures consistent configuration and state.
 """
 from typing import Any
-from pathlib import Path
 from quack_core.core.fs.service import get_service
 from quack_core.core.fs.results import (
     DataResult, DirectoryInfoResult, FileInfoResult, FindResult,
     OperationResult, PathResult, ReadResult, WriteResult, BoolResult
-)
-from quack_core.core.fs.normalize import (
-    coerce_path, coerce_path_str, safe_path_str,
-    coerce_path_result, extract_path_from_result, coerce_path_str as extract_path_str
 )
 
 def read_text(path: Any, encoding: str = "utf-8") -> ReadResult[str]:
