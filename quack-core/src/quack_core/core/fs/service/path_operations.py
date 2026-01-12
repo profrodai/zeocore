@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/path_operations.py
-# module: quack_core.core.fs.service.path_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
-# exports: PathOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 945fec3c
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -60,15 +50,15 @@ class PathOperationsMixin:
                               message=f"Split {len(components)} components")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 data=[],
                 format="path_components",
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to split path"
+                message="Failed to split path",
+                meta={"input_path": s} if s else None
             )
 
     def normalize_path(self, path: FsPathLike) -> PathResult:
@@ -79,14 +69,14 @@ class PathOperationsMixin:
                               exists=res_path.exists(), message=f"Normalized: {res_path}")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 is_valid=False,
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to normalize path"
+                message="Failed to normalize path",
+                meta={"input_path": s} if s else None
             )
 
     def expand_user_vars(self, path: FsPathLike) -> DataResult[str]:
@@ -96,15 +86,15 @@ class PathOperationsMixin:
             return DataResult(ok=True, path=None, data=expanded, format="path", message=f"Expanded: {expanded}")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 data="",
                 format="path",
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to expand variables"
+                message="Failed to expand variables",
+                meta={"input_path": s} if s else None
             )
 
     def is_same_file(self, path1: FsPathLike, path2: FsPathLike) -> DataResult[bool]:
@@ -114,6 +104,8 @@ class PathOperationsMixin:
             same = self.operations._is_same_file(p1, p2)
             return DataResult(ok=True, path=p1, data=same, format="boolean", message="Checked identity")
         except Exception as e:
+            s1 = safe_path_str(path1)
+            s2 = safe_path_str(path2)
             return DataResult(
                 ok=False,
                 path=None,
@@ -121,7 +113,8 @@ class PathOperationsMixin:
                 format="boolean",
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to compare files"
+                message="Failed to compare files",
+                meta={"input_path1": s1, "input_path2": s2} if (s1 or s2) else None
             )
 
     def is_subdirectory(self, child: FsPathLike, parent: FsPathLike) -> DataResult[bool]:
@@ -131,16 +124,17 @@ class PathOperationsMixin:
             is_sub = self.operations._is_subdirectory(c, p)
             return DataResult(ok=True, path=c, data=is_sub, format="boolean", message="Checked subdirectory")
         except Exception as e:
-            s = safe_path_str(child)
-            safe_p = Path(s) if s else None
+            s_child = safe_path_str(child)
+            s_parent = safe_path_str(parent)
             return DataResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 data=False,
                 format="boolean",
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to check subdirectory"
+                message="Failed to check subdirectory",
+                meta={"input_child": s_child, "input_parent": s_parent} if (s_child or s_parent) else None
             )
 
     def get_extension(self, path: FsPathLike) -> DataResult[str]:
@@ -150,15 +144,15 @@ class PathOperationsMixin:
             return DataResult(ok=True, path=norm_path, data=ext, format="extension", message=f"Extension: {ext}")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 data="",
                 format="extension",
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to extract extension"
+                message="Failed to extract extension",
+                meta={"input_path": s} if s else None
             )
 
     def resolve_path(self, path: FsPathLike) -> PathResult:
@@ -169,12 +163,12 @@ class PathOperationsMixin:
                               message=f"Resolved: {res}")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 is_valid=False,
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to resolve path"
+                message="Failed to resolve path",
+                meta={"input_path": s} if s else None
             )

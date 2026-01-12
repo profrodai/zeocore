@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/path_validation.py
-# module: quack_core.core.fs.service.path_validation
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
-# exports: PathValidationMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 945fec3c
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -33,14 +23,14 @@ class PathValidationMixin:
                               message=f"Path {'exists' if exists else 'does not exist'}")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return BoolResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 value=False,
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to check existence"
+                message="Failed to check existence",
+                meta={"input_path": s} if s else None
             )
 
     def is_valid_path(self, path: FsPathLike) -> BoolResult:
@@ -54,13 +44,15 @@ class PathValidationMixin:
             return BoolResult(ok=True, path=None, value=is_valid,
                               message=f"Syntax is {'valid' if is_valid else 'invalid'}")
         except Exception as e:
+            s = safe_path_str(path)
             return BoolResult(
                 ok=False,
                 path=None,
                 value=False,
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Failed to check syntax"
+                message="Failed to check syntax",
+                meta={"input_path": s} if s else None
             )
 
     def is_safe_path(self, path: FsPathLike) -> BoolResult:
@@ -73,13 +65,15 @@ class PathValidationMixin:
             norm_path = self._normalize_input_path(path)
             return BoolResult(ok=True, path=norm_path, value=True, message="Path is safe and anchored")
         except Exception as e:
+            s = safe_path_str(path)
             return BoolResult(
                 ok=False,
                 path=None,
                 value=False,
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Path is unsafe or invalid"
+                message="Path is unsafe or invalid",
+                meta={"input_path": s} if s else None
             )
 
     def validate_path(self, path: FsPathLike) -> BoolResult:
@@ -100,8 +94,7 @@ class PathValidationMixin:
                 return BoolResult(ok=False, path=norm_path, value=False, error="File does not exist",
                                   message="File does not exist")
 
-            # Using _get_file_info to check if it's a file without extra IO ops if possible,
-            # or just calling is_file from operations if available (FileInfo is safer)
+            # Using _get_file_info to check if it's a file
             info = self.operations._get_file_info(norm_path)
             if not info.is_file:
                 return BoolResult(ok=False, path=norm_path, value=False, error="Path is not a file",
@@ -110,35 +103,34 @@ class PathValidationMixin:
             return BoolResult(ok=True, path=norm_path, value=True, message="Path is a valid file")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return BoolResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 value=False,
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Validation failed"
+                message="Validation failed",
+                meta={"input_path": s} if s else None
             )
 
     def normalize_path_with_info(self, path: FsPathLike) -> PathResult:
         try:
             normalized_path = self._normalize_input_path(path)
-            # Use _resolve_path (strict=False) which is equivalent to non-strict normalization logic
-            # previously handled by a separate normalize method in Ops.
+            # Use _resolve_path (strict=False)
             result_path = self.operations._resolve_path(normalized_path, strict=False)
             exists = self.operations._path_exists(result_path)
             return PathResult(ok=True, path=result_path, is_absolute=result_path.is_absolute(), is_valid=True,
                               exists=exists, message="Normalized path")
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 is_valid=False,
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Normalization failed"
+                message="Normalization failed",
+                meta={"input_path": s} if s else None
             )
 
     def resolve_path_strict(self, path: FsPathLike) -> PathResult:
@@ -152,23 +144,30 @@ class PathValidationMixin:
         except FileNotFoundError:
             # Handle specifically to return clean result
             # We can re-resolve non-strictly to get the path for the result object
-            # (normalized_path is guaranteed to be set if we are here, or Exception block below catches it)
             if normalized_path:
-                non_strict_path = self.operations._resolve_path(normalized_path, strict=False)
-                return PathResult(ok=False, path=non_strict_path, is_valid=True, exists=False, error="Path does not exist",
-                                  message="Resolved but not found")
+                try:
+                    non_strict_path = self.operations._resolve_path(normalized_path, strict=False)
+                    return PathResult(ok=False, path=non_strict_path, is_valid=True, exists=False, error="Path does not exist",
+                                      message="Resolved but not found")
+                except Exception:
+                    # If even non-strict resolve fails, return None
+                    s = safe_path_str(path)
+                    return PathResult(ok=False, path=None, is_valid=True, exists=False, error="Path does not exist",
+                                      message="Resolved but not found",
+                                      meta={"input_path": s} if s else None)
             else:
-                 # Fallback if normalized_path wasn't set (unlikely for FileNotFoundError, but safe)
-                 return PathResult(ok=False, path=None, is_valid=True, exists=False, error="Path does not exist",
-                                  message="Resolved but not found")
+                s = safe_path_str(path)
+                return PathResult(ok=False, path=None, is_valid=True, exists=False, error="Path does not exist",
+                                  message="Resolved but not found",
+                                  meta={"input_path": s} if s else None)
         except Exception as e:
             s = safe_path_str(path)
-            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                path=safe_p,
+                path=None,
                 is_valid=False,
                 error_info=self._map_error(e),
                 error=str(e),
-                message="Resolution failed"
+                message="Resolution failed",
+                meta={"input_path": s} if s else None
             )
