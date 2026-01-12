@@ -1,18 +1,9 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/results.py
-# module: quack_core.core.fs.results
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py, exceptions.py, normalize.py
-# exports: ErrorInfo, OperationResult, BoolResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult (+2 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Generic, TypeVar, Optional
 from pydantic import BaseModel, Field, field_serializer, computed_field
 
 T = TypeVar("T")
+
 
 class ErrorInfo(BaseModel):
     """Structured error information."""
@@ -23,12 +14,24 @@ class ErrorInfo(BaseModel):
     trace_id: Optional[str] = Field(default=None, description="Tracing identifier for debugging")
     details: Optional[dict] = Field(default=None, description="Structured context (path, errno, etc)")
 
+
 class OperationResult(BaseModel):
-    ok: bool = Field(description="Whether the operation was successful")
-    path: Path | None = Field(default=None, description="Path operated on (normalized)")
-    message: str | None = Field(default=None)
-    error: str | None = Field(default=None, description="Legacy error string")
-    error_info: ErrorInfo | None = Field(default=None, description="Structured error details")
+    """
+    Base result for filesystem operations.
+
+    Fields:
+        ok: Primary success indicator (canonical)
+        path: Normalized path (None on failure to prevent unsafe path leaks)
+        error_info: Structured error details (canonical error representation)
+        meta: Additional operation metadata
+        message: Human-readable summary (success or failure)
+        error: Legacy string error (deprecated - use error_info instead)
+    """
+    ok: bool = Field(description="Whether the operation was successful (canonical)")
+    path: Path | None = Field(default=None, description="Path operated on (normalized, None on failure)")
+    message: str | None = Field(default=None, description="Human-readable operation summary")
+    error: str | None = Field(default=None, description="LEGACY: Use error_info instead")
+    error_info: ErrorInfo | None = Field(default=None, description="Structured error details (canonical)")
     meta: dict | None = Field(default=None, description="Additional operation metadata")
 
     @computed_field
@@ -41,6 +44,7 @@ class OperationResult(BaseModel):
     def serialize_path(self, path: Path | None, _info):
         return str(path) if path else None
 
+
 class BoolResult(OperationResult):
     """Result of a boolean check operation (e.g. exists, is_file)."""
     value: bool = Field(description="The boolean result")
@@ -48,7 +52,9 @@ class BoolResult(OperationResult):
     def __bool__(self) -> bool:
         return self.value
 
+
 class ReadResult(OperationResult, Generic[T]):
+    """Result of a read operation."""
     content: T | None = Field(default=None, description="Content read from file")
     encoding: str | None = None
 
@@ -80,7 +86,9 @@ class ReadResult(OperationResult, Generic[T]):
         """Explicit coercion helper."""
         return self.text if self.text is not None else default
 
+
 class WriteResult(OperationResult):
+    """Result of a write operation."""
     bytes_written: int = 0
     original_path: Path | None = None
     checksum: str | None = None
@@ -89,7 +97,9 @@ class WriteResult(OperationResult):
     def serialize_original_path(self, path: Path | None, _info):
         return str(path) if path else None
 
+
 class FileInfoResult(OperationResult):
+    """Result of file metadata query."""
     exists: bool = False
     is_file: bool = False
     is_dir: bool = False
@@ -106,7 +116,9 @@ class FileInfoResult(OperationResult):
     def is_directory(self) -> bool:
         return self.is_dir
 
+
 class DirectoryInfoResult(OperationResult):
+    """Result of directory listing/scan."""
     exists: bool = False
     is_empty: bool = True
     files: list[Path] = Field(default_factory=list)
@@ -119,7 +131,9 @@ class DirectoryInfoResult(OperationResult):
     def serialize_path_lists(self, paths: list[Path], _info):
         return [str(p) for p in paths]
 
+
 class FindResult(OperationResult):
+    """Result of file search operation."""
     files: list[Path] = Field(default_factory=list)
     directories: list[Path] = Field(default_factory=list)
     total_matches: int = 0
@@ -130,12 +144,23 @@ class FindResult(OperationResult):
     def serialize_path_lists(self, paths: list[Path], _info):
         return [str(p) for p in paths]
 
+
 class DataResult(OperationResult, Generic[T]):
+    """
+    Result containing structured data.
+
+    Fields:
+        data: The payload (can be any type: dict, list, str, etc.)
+        format: Data format identifier (e.g. 'yaml', 'json', 'path', 'boolean')
+        schema_valid: Whether data passed schema validation (optional)
+    """
     data: T | None = None
-    format: str
+    format: str = Field(default="data", description="Data format identifier")
     schema_valid: bool | None = None
 
+
 class PathResult(OperationResult):
+    """Result of path validation/normalization."""
     is_absolute: bool = False
     is_valid: bool = False
     exists: bool = False

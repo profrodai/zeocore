@@ -1,14 +1,4 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/full_class.py
-# module: quack_core.core.fs.service.full_class
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
-# === QV-LLM:END ===
 
-from typing import Any
 from quack_core.core.fs.service.base import FileSystemService as BaseFileSystemService
 from quack_core.core.fs.service.directory_operations import DirectoryOperationsMixin
 from quack_core.core.fs.service.file_info_operations import FileInfoOperationsMixin
@@ -17,7 +7,10 @@ from quack_core.core.fs.service.path_operations import PathOperationsMixin
 from quack_core.core.fs.service.utility_operations import UtilityOperationsMixin
 from quack_core.core.fs.service.structured_data import StructuredDataMixin
 from quack_core.core.fs.service.path_validation import PathValidationMixin
-from quack_core.core.fs.results import DataResult, PathResult, BoolResult, FileInfoResult
+from quack_core.core.fs.results import (
+    DataResult, PathResult, BoolResult, FileInfoResult,
+    OperationResult, DirectoryInfoResult
+)
 
 
 class FileSystemService(
@@ -36,16 +29,26 @@ class FileSystemService(
     """
 
     # Aliases to match ARCHITECTURE.md method catalogue
+    # NOTE: These return typed Results for doctrine compliance
+
     def exists(self, path) -> BoolResult:
+        """Alias for path_exists()."""
         return self.path_exists(path)
 
     def resolve(self, path) -> PathResult:
+        """Alias for resolve_path()."""
         return self.resolve_path(path)
 
-    def ensure_dir(self, path, exist_ok=True) -> Any:
+    def ensure_dir(self, path, exist_ok: bool = True) -> OperationResult:
+        """
+        Alias for ensure_directory().
+        Note: Always creates parent directories (parents=True internally).
+        """
         return self.ensure_directory(path, exist_ok)
 
-    def list_dir(self, path, pattern=None, recursive=False, include_hidden=False) -> Any:
+    def list_dir(self, path, pattern=None, recursive: bool = False,
+                 include_hidden: bool = False) -> DirectoryInfoResult:
+        """Alias for list_directory()."""
         return self.list_directory(path, pattern, recursive, include_hidden)
 
     def is_file(self, path) -> BoolResult:
@@ -73,13 +76,13 @@ class FileSystemService(
         )
 
     def stat(self, path) -> FileInfoResult:
-        """Alias for get_file_info."""
+        """Alias for get_file_info()."""
         return self.get_file_info(path)
 
-    def hash_file(self, path, algorithm="sha256") -> DataResult[str]:
-        """Alias for compute_checksum."""
+    def hash_file(self, path, algorithm: str = "sha256") -> DataResult[str]:
+        """Alias for compute_checksum()."""
         return self.compute_checksum(path, algorithm)
 
     def mime_type(self, path) -> DataResult[str | None]:
-        """Alias for get_mime_type."""
+        """Alias for get_mime_type()."""
         return self.get_mime_type(path)
