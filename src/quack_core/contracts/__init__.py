@@ -4,7 +4,7 @@
 # role: module
 # exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm, generate_run_id, generate_artifact_id, is_valid_uuid (+18 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 1a3eba04
+# git_commit: a427fe04
 # === QV-LLM:END ===
 
 """

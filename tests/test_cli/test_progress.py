@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_error.py (+5 more)
 # exports: TestProgressReporter, TestSimpleProgress, TestShowProgress, TestProgressCallback
 # git_branch: feat/9-make-setup-work
-# git_commit: 1a3eba04
+# git_commit: a427fe04
 # === QV-LLM:END ===
 
 """
