@@ -1,18 +1,8 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/path_operations.py
-# module: quack_core.core.fs.service.path_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: PathOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: a427fe04
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.results import DataResult, PathResult, ErrorInfo
-from quack_core.core.fs.normalize import coerce_path_str
+from quack_core.core.fs.normalize import coerce_path_str, safe_path_str
 from quack_core.core.fs.protocols import FsPathLike
 
 
@@ -41,9 +31,10 @@ class PathOperationsMixin:
 
             return DataResult(ok=True, path=norm_path, data=str(norm_path), format="path", message="Joined paths")
         except Exception as e:
+            # Join errors usually imply bad input before we have a path
             return DataResult(
                 ok=False,
-                path=None,  # Safety: Don't return unsafe path on error
+                path=None,
                 data="",
                 format="path",
                 error_info=self._map_error(e),
@@ -58,9 +49,11 @@ class PathOperationsMixin:
             return DataResult(ok=True, path=norm_path, data=components, format="path_components",
                               message=f"Split {len(components)} components")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data=[],
                 format="path_components",
                 error_info=self._map_error(e),
@@ -71,14 +64,15 @@ class PathOperationsMixin:
     def normalize_path(self, path: FsPathLike) -> PathResult:
         try:
             norm_path = self._normalize_input_path(path)
-            # Use _resolve_path (strict=False) which is equivalent to non-strict normalization
             res_path = self.operations._resolve_path(norm_path)
             return PathResult(ok=True, path=res_path, is_absolute=res_path.is_absolute(), is_valid=True,
                               exists=res_path.exists(), message=f"Normalized: {res_path}")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 is_valid=False,
                 error_info=self._map_error(e),
                 error=str(e),
@@ -87,14 +81,15 @@ class PathOperationsMixin:
 
     def expand_user_vars(self, path: FsPathLike) -> DataResult[str]:
         try:
-            # Operate on raw string to prevent premature normalization/anchoring
             raw_path_str = coerce_path_str(path)
             expanded = self.operations._expand_user_vars(raw_path_str)
             return DataResult(ok=True, path=None, data=expanded, format="path", message=f"Expanded: {expanded}")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data="",
                 format="path",
                 error_info=self._map_error(e),
@@ -126,9 +121,11 @@ class PathOperationsMixin:
             is_sub = self.operations._is_subdirectory(c, p)
             return DataResult(ok=True, path=c, data=is_sub, format="boolean", message="Checked subdirectory")
         except Exception as e:
+            s = safe_path_str(child)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data=False,
                 format="boolean",
                 error_info=self._map_error(e),
@@ -142,9 +139,11 @@ class PathOperationsMixin:
             ext = self.operations._get_extension(norm_path)
             return DataResult(ok=True, path=norm_path, data=ext, format="extension", message=f"Extension: {ext}")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data="",
                 format="extension",
                 error_info=self._map_error(e),
@@ -159,9 +158,11 @@ class PathOperationsMixin:
             return PathResult(ok=True, path=res, is_absolute=res.is_absolute(), is_valid=True, exists=res.exists(),
                               message=f"Resolved: {res}")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 is_valid=False,
                 error_info=self._map_error(e),
                 error=str(e),

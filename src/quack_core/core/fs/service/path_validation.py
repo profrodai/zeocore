@@ -1,20 +1,9 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/path_validation.py
-# module: quack_core.core.fs.service.path_validation
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: PathValidationMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: a427fe04
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.results import DataResult, PathResult, ErrorInfo, BoolResult
-from quack_core.core.fs.normalize import coerce_path_str
-
+from quack_core.core.fs.normalize import coerce_path_str, safe_path_str
 
 class PathValidationMixin:
     operations: FileSystemOperations
@@ -33,9 +22,11 @@ class PathValidationMixin:
             return BoolResult(ok=True, path=normalized_path, value=exists,
                               message=f"Path {'exists' if exists else 'does not exist'}")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return BoolResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 value=False,
                 error_info=self._map_error(e),
                 error=str(e),
@@ -108,9 +99,11 @@ class PathValidationMixin:
 
             return BoolResult(ok=True, path=norm_path, value=True, message="Path is a valid file")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return BoolResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 value=False,
                 error_info=self._map_error(e),
                 error=str(e),
@@ -127,9 +120,11 @@ class PathValidationMixin:
             return PathResult(ok=True, path=result_path, is_absolute=result_path.is_absolute(), is_valid=True,
                               exists=exists, message="Normalized path")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 is_valid=False,
                 error_info=self._map_error(e),
                 error=str(e),
@@ -137,6 +132,7 @@ class PathValidationMixin:
             )
 
     def resolve_path_strict(self, path: FsPathLike) -> PathResult:
+        normalized_path = None
         try:
             normalized_path = self._normalize_input_path(path)
             # Use strict=True for real strict resolution (raises FileNotFoundError if missing)
@@ -146,13 +142,21 @@ class PathValidationMixin:
         except FileNotFoundError:
             # Handle specifically to return clean result
             # We can re-resolve non-strictly to get the path for the result object
-            non_strict_path = self.operations._resolve_path(normalized_path, strict=False)
-            return PathResult(ok=False, path=non_strict_path, is_valid=True, exists=False, error="Path does not exist",
-                              message="Resolved but not found")
+            # (normalized_path is guaranteed to be set if we are here, or Exception block below catches it)
+            if normalized_path:
+                non_strict_path = self.operations._resolve_path(normalized_path, strict=False)
+                return PathResult(ok=False, path=non_strict_path, is_valid=True, exists=False, error="Path does not exist",
+                                  message="Resolved but not found")
+            else:
+                 # Fallback if normalized_path wasn't set (unlikely for FileNotFoundError, but safe)
+                 return PathResult(ok=False, path=None, is_valid=True, exists=False, error="Path does not exist",
+                                  message="Resolved but not found")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return PathResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 is_valid=False,
                 error_info=self._map_error(e),
                 error=str(e),

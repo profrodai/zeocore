@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/normalize.py
-# module: quack_core.core.fs.normalize
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py, results.py
-# exports: coerce_path, coerce_path_str, safe_path_str, coerce_path_result, extract_path_from_result
-# git_branch: feat/9-make-setup-work
-# git_commit: a427fe04
-# === QV-LLM:END ===
-
 """
 Input normalization logic.
 This module is the Single Source of Truth for coercing inputs into Paths.
@@ -48,7 +38,9 @@ def _extract_path_str(obj: Any) -> str:
     # Result attributes (HasData / HasPath)
     # Prefer 'data' if it looks path-like, else 'path'
     if hasattr(obj, "data") and obj.data is not None:
-        if obj.data is not obj:
+        # Only use .data if it is explicitly a string or path-like
+        # This prevents treating arbitrary payloads (dicts, lists) as paths
+        if isinstance(obj.data, (str, Path)) or hasattr(obj.data, "__fspath__"):
             try:
                 return _extract_path_str(obj.data)
             except (TypeError, ValueError):
@@ -64,9 +56,6 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: b
     """
     Strictly coerce input to a pathlib.Path.
     If base_dir is provided, anchors relative paths to it and prevents escape.
-
-    WARNING: If `base_dir` is not provided, this method returns resolved absolute paths
-    by default, which is unsafe for user input. The Service layer always passes `base_dir`.
 
     Args:
         obj: The input path-like object.

@@ -1,18 +1,9 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/structured_data.py
-# module: quack_core.core.fs.service.structured_data
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: StructuredDataMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: a427fe04
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.results import DataResult, WriteResult, ErrorInfo
+from quack_core.core.fs.normalize import safe_path_str
 
 class StructuredDataMixin:
     operations: FileSystemOperations
@@ -29,9 +20,11 @@ class StructuredDataMixin:
                 return DataResult(ok=False, path=normalized_path, data=None, format="yaml", error=f"YAML content was not a dictionary (got {type(data)})", message="Invalid YAML structure")
             return DataResult(ok=True, path=normalized_path, data=data, format="yaml", message="Read YAML")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data=None,
                 format="yaml",
                 error_info=self._map_error(e),
@@ -46,9 +39,11 @@ class StructuredDataMixin:
             self.logger.debug(f"Wrote YAML to {result_path}")
             return WriteResult(ok=True, path=result_path, message="Wrote YAML")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to write YAML"
@@ -63,9 +58,11 @@ class StructuredDataMixin:
                 return DataResult(ok=False, path=normalized_path, data=None, format="json", error=f"JSON content was not a dictionary (got {type(data)})", message="Invalid JSON structure")
             return DataResult(ok=True, path=normalized_path, data=data, format="json", message="Read JSON")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return DataResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 data=None,
                 format="json",
                 error_info=self._map_error(e),
@@ -80,9 +77,11 @@ class StructuredDataMixin:
             self.logger.debug(f"Wrote JSON to {result_path}")
             return WriteResult(ok=True, path=result_path, message="Wrote JSON")
         except Exception as e:
+            s = safe_path_str(path)
+            safe_p = Path(s) if s else None
             return WriteResult(
                 ok=False,
-                path=None,
+                path=safe_p,
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to write JSON"
