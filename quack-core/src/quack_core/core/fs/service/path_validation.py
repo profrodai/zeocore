@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/service/path_validation.py
+# module: quack_core.core.fs.service.path_validation
+# role: service
+# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
+# exports: PathValidationMixin
+# git_branch: feat/9-make-setup-work
+# git_commit: d5eb52c8
+# === QV-LLM:END ===
+
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations

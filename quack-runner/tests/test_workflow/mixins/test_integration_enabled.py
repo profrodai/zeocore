@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_output_writer.py, test_save_output_mixin.py
 # exports: DummyService, Host, test_resolve_none, test_resolve_and_initialize
 # git_branch: feat/9-make-setup-work
-# git_commit: 945fec3c
+# git_commit: d5eb52c8
 # === QV-LLM:END ===
 
 

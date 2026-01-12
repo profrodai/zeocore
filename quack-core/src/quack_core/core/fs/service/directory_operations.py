@@ -5,7 +5,7 @@
 # neighbors: __init__.py, base.py, factory.py, file_info_operations.py, file_operations.py, full_class.py (+5 more)
 # exports: DirectoryOperationsMixin
 # git_branch: feat/9-make-setup-work
-# git_commit: 945fec3c
+# git_commit: d5eb52c8
 # === QV-LLM:END ===
 
 from pathlib import Path

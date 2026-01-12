@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: test_anthropic.py, test_base.py, test_clients.py, test_mock.py, test_ollama.py, test_openai.py
 # git_branch: feat/9-make-setup-work
-# git_commit: 945fec3c
+# git_commit: d5eb52c8
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.llms.clients module."""
