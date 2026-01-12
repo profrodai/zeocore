@@ -1,3 +1,4 @@
+
 from pathlib import Path
 from typing import Any, Optional
 import uuid
@@ -11,10 +12,13 @@ from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.core.errors import QuackValidationError
 
 
-class FileSystemService:
+class _BaseFileSystemService:
     """
-    Central FileSystem Service.
+    Base FileSystem Service class (internal).
     Handles configuration, normalization (anchored), and error mapping.
+
+    NOTE: This is an internal base class. The public class is FileSystemService
+    in service/full_class.py.
     """
 
     def __init__(self, base_dir: str | Path | None = None, log_level: int = LOG_LEVELS[LogLevel.INFO],

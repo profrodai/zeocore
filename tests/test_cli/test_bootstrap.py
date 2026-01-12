@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_config.py, test_context.py, test_error.py, test_formatting.py (+5 more)
 # exports: TestInitCliEnv, TestFromCliOptions
 # git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
+# git_commit: 2f6d56ab
 # === QV-LLM:END ===
 
 """

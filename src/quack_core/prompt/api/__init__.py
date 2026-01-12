@@ -3,5 +3,5 @@
 # module: quack_core.prompt.api.__init__
 # role: api
 # git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
+# git_commit: 2f6d56ab
 # === QV-LLM:END ===

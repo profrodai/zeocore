@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py
 # exports: PromptPlugin, create_plugin
 # git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
+# git_commit: 2f6d56ab
 # === QV-LLM:END ===
 
 from quack_core.prompt.api.public.results import PromptRenderResult

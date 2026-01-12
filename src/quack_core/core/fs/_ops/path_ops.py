@@ -2,10 +2,7 @@
 # path: quack-core/src/quack_core/core/fs/_ops/path_ops.py
 # module: quack_core.core.fs._ops.path_ops
 # role: _ops
-# neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, find_ops.py (+4 more)
-# exports: PathOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
+# VERSION: V5 FINAL - _expand_user_vars returns Path (not str) for consistency
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -17,14 +14,12 @@ class PathOperationsMixin:
     def _split_path(self, path: Path) -> list[str]:
         return _split_path(path)
 
-    def _expand_user_vars(self, path_str: str) -> str:
+    def _expand_user_vars(self, path: Path) -> Path:
         """
-        Expand user vars from a string.
-        _ops layer converts str -> Path -> _internal -> str.
+        Expand user vars from a Path.
+        _ops layer: Path in, Path out (service decides stringification).
         """
-        path_obj = Path(path_str)
-        expanded_path = _expand_user_vars(path_obj)
-        return str(expanded_path)
+        return _expand_user_vars(path)
 
     def _is_same_file(self, path1: Path, path2: Path) -> bool:
         return _is_same_file(path1, path2)
