@@ -4,7 +4,7 @@
 # role: module
 # neighbors: __init__.py, checksums.py, common.py, comparison.py, directory_ops.py, disk.py (+4 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 6e6469fe
+# git_commit: 945fec3c
 # === QV-LLM:END ===
 
 import mimetypes

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, config.py, auth.py, client.py
 # exports: GitHubIntegrationProtocol
 # git_branch: feat/9-make-setup-work
-# git_commit: 6e6469fe
+# git_commit: 945fec3c
 # === QV-LLM:END ===
 
 """Protocols for GitHub integration."""
