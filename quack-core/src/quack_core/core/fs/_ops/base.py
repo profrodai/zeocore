@@ -5,7 +5,7 @@
 # neighbors: __init__.py, core.py, directory_ops.py, file_info.py, find_ops.py, path_ops.py (+4 more)
 # exports: FileSystemOperations
 # git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
+# git_commit: 2f6d56ab
 # === QV-LLM:END ===
 
 from quack_core.core.fs._ops.file_info import FileInfoOperationsMixin

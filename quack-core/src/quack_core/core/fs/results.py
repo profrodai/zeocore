@@ -1,3 +1,10 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/results.py
+# module: quack_core.core.fs.results
+# role: module
+# VERSION: V5 FINAL - Clarified PathResult.is_valid semantics
+# === QV-LLM:END ===
+
 from pathlib import Path
 from typing import Any, Generic, TypeVar, Optional
 from pydantic import BaseModel, Field, field_serializer, computed_field
@@ -160,12 +167,30 @@ class DataResult(OperationResult, Generic[T]):
 
 
 class PathResult(OperationResult):
-    """Result of path validation/normalization."""
+    """
+    Result of path validation/normalization/resolution.
+
+    Field Semantics:
+        is_valid: True if path passed service normalization + sandbox checks
+                  (i.e., coerce_path succeeded). False if validation failed.
+        is_absolute: True if the normalized path is absolute.
+        exists: True if the path exists on the filesystem (optional check).
+
+    Note: is_valid_path() returns BoolResult with syntax-only validation.
+          PathResult.is_valid indicates full service-level validation success.
+    """
     is_absolute: bool = False
-    is_valid: bool = False
-    exists: bool = False
+    is_valid: bool = Field(
+        default=False,
+        description="True if service normalization + sandbox validation succeeded"
+    )
+    exists: bool = Field(
+        default=False,
+        description="True if path exists on filesystem (checked if validation succeeded)"
+    )
 
     @computed_field
     @property
     def is_relative(self) -> bool:
+        """Computed: opposite of is_absolute."""
         return not self.is_absolute

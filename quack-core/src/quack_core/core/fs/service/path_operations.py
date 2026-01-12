@@ -2,10 +2,7 @@
 # path: quack-core/src/quack_core/core/fs/service/path_operations.py
 # module: quack_core.core.fs.service.path_operations
 # role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
-# exports: PathOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
+# VERSION: V5 FINAL - expand_user_vars now handles Path from _ops correctly
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -28,7 +25,8 @@ class PathOperationsMixin:
 
     def join_path(self, *parts: FsPathLike) -> DataResult[str]:
         try:
-            if not parts: return DataResult(ok=True, path=Path("."), data=".", format="path", message="Empty join")
+            if not parts:
+                return DataResult(ok=True, path=Path("."), data=".", format="path", message="Empty join")
             str_parts = [coerce_path_str(p) for p in parts]
             base = str_parts[0]
             others = [p.lstrip("/\\") for p in str_parts[1:]]
@@ -56,8 +54,13 @@ class PathOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             components = self.operations._split_path(norm_path)
-            return DataResult(ok=True, path=norm_path, data=components, format="path_components",
-                              message=f"Split {len(components)} components")
+            return DataResult(
+                ok=True,
+                path=norm_path,
+                data=components,
+                format="path_components",
+                message=f"Split {len(components)} components"
+            )
         except Exception as e:
             s = safe_path_str(path)
             return DataResult(
@@ -75,8 +78,14 @@ class PathOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             res_path = self.operations._resolve_path(norm_path)
-            return PathResult(ok=True, path=res_path, is_absolute=res_path.is_absolute(), is_valid=True,
-                              exists=res_path.exists(), message=f"Normalized: {res_path}")
+            return PathResult(
+                ok=True,
+                path=res_path,
+                is_absolute=res_path.is_absolute(),
+                is_valid=True,
+                exists=res_path.exists(),
+                message=f"Normalized: {res_path}"
+            )
         except Exception as e:
             s = safe_path_str(path)
             return PathResult(
@@ -90,10 +99,24 @@ class PathOperationsMixin:
             )
 
     def expand_user_vars(self, path: FsPathLike) -> DataResult[str]:
+        """
+        Expand ~ and environment variables in path.
+        Returns the expanded path as a string for user convenience.
+        """
         try:
+            # Convert to string for input
             raw_path_str = coerce_path_str(path)
-            expanded = self.operations._expand_user_vars(raw_path_str)
-            return DataResult(ok=True, path=None, data=expanded, format="path", message=f"Expanded: {expanded}")
+            # _ops now returns Path (not str)
+            expanded_path = self.operations._expand_user_vars(Path(raw_path_str))
+            # Service decides to expose as string for UX
+            expanded_str = str(expanded_path)
+            return DataResult(
+                ok=True,
+                path=None,  # Not normalized to base_dir
+                data=expanded_str,
+                format="path",
+                message=f"Expanded: {expanded_str}"
+            )
         except Exception as e:
             s = safe_path_str(path)
             return DataResult(
@@ -112,7 +135,13 @@ class PathOperationsMixin:
             p1 = self._normalize_input_path(path1)
             p2 = self._normalize_input_path(path2)
             same = self.operations._is_same_file(p1, p2)
-            return DataResult(ok=True, path=p1, data=same, format="boolean", message="Checked identity")
+            return DataResult(
+                ok=True,
+                path=p1,
+                data=same,
+                format="boolean",
+                message="Checked identity"
+            )
         except Exception as e:
             s1 = safe_path_str(path1)
             s2 = safe_path_str(path2)
@@ -132,7 +161,13 @@ class PathOperationsMixin:
             c = self._normalize_input_path(child)
             p = self._normalize_input_path(parent)
             is_sub = self.operations._is_subdirectory(c, p)
-            return DataResult(ok=True, path=c, data=is_sub, format="boolean", message="Checked subdirectory")
+            return DataResult(
+                ok=True,
+                path=c,
+                data=is_sub,
+                format="boolean",
+                message="Checked subdirectory"
+            )
         except Exception as e:
             s_child = safe_path_str(child)
             s_parent = safe_path_str(parent)
@@ -151,7 +186,13 @@ class PathOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             ext = self.operations._get_extension(norm_path)
-            return DataResult(ok=True, path=norm_path, data=ext, format="extension", message=f"Extension: {ext}")
+            return DataResult(
+                ok=True,
+                path=norm_path,
+                data=ext,
+                format="extension",
+                message=f"Extension: {ext}"
+            )
         except Exception as e:
             s = safe_path_str(path)
             return DataResult(
@@ -169,8 +210,14 @@ class PathOperationsMixin:
         try:
             norm_path = self._normalize_input_path(path)
             res = self.operations._resolve_path(norm_path)
-            return PathResult(ok=True, path=res, is_absolute=res.is_absolute(), is_valid=True, exists=res.exists(),
-                              message=f"Resolved: {res}")
+            return PathResult(
+                ok=True,
+                path=res,
+                is_absolute=res.is_absolute(),
+                is_valid=True,
+                exists=res.exists(),
+                message=f"Resolved: {res}"
+            )
         except Exception as e:
             s = safe_path_str(path)
             return PathResult(

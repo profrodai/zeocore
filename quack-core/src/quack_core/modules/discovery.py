@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, registry.py
 # exports: PluginInfo, PluginEntryPoint, LoadResult, PluginLoader, list_available_entry_points, load_enabled_entry_points, load_enabled_modules
 # git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
+# git_commit: 2f6d56ab
 # === QV-LLM:END ===
 
 

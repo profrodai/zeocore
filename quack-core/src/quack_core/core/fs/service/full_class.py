@@ -1,5 +1,11 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/service/full_class.py
+# module: quack_core.core.fs.service.full_class
+# role: service
+# VERSION: V5 FINAL - Imports _BaseFileSystemService (no name collision)
+# === QV-LLM:END ===
 
-from quack_core.core.fs.service.base import FileSystemService as BaseFileSystemService
+from quack_core.core.fs.service.base import _BaseFileSystemService
 from quack_core.core.fs.service.directory_operations import DirectoryOperationsMixin
 from quack_core.core.fs.service.file_info_operations import FileInfoOperationsMixin
 from quack_core.core.fs.service.file_operations import FileOperationsMixin
@@ -14,7 +20,7 @@ from quack_core.core.fs.results import (
 
 
 class FileSystemService(
-    BaseFileSystemService,
+    _BaseFileSystemService,
     DirectoryOperationsMixin,
     FileOperationsMixin,
     FileInfoOperationsMixin,
@@ -24,8 +30,10 @@ class FileSystemService(
     UtilityOperationsMixin,
 ):
     """
-    The main Filesystem Service composed of all mixins.
-    Provides canonical aliases for API completeness.
+    The main, canonical FileSystem Service.
+    Composed of all operation mixins with base functionality.
+
+    This is the ONLY public FileSystemService class.
     """
 
     # Aliases to match ARCHITECTURE.md method catalogue

@@ -5,7 +5,7 @@
 # neighbors: protocols.py, registry.py, results.py, base.py
 # exports: BaseAuthProvider, BaseConfigProvider, BaseIntegrationService, AuthProviderProtocol, ConfigProviderProtocol, IntegrationProtocol, StorageIntegrationProtocol, AuthResult (+7 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 2d6aea0e
+# git_commit: 2f6d56ab
 # === QV-LLM:END ===
 
 """
