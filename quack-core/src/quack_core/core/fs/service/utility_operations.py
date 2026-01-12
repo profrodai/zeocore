@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/utility_operations.py
-# module: quack_core.core.fs.service.utility_operations
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_operations.py, full_class.py (+4 more)
-# exports: UtilityOperationsMixin
-# git_branch: feat/9-make-setup-work
-# git_commit: 1a3eba04
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 from quack_core.core.fs._ops.base import FileSystemOperations
@@ -22,20 +12,6 @@ class UtilityOperationsMixin:
     def _normalize_input_path(self, path: FsPathLike) -> Path: raise NotImplementedError
     def _map_error(self, e: Exception) -> ErrorInfo: raise NotImplementedError
 
-    def ensure_directory(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult:
-        try:
-            norm_path = self._normalize_input_path(path)
-            res_path = self.operations._ensure_directory(norm_path, exist_ok)
-            return OperationResult(ok=True, path=res_path, message=f"Directory ensured: {res_path}")
-        except Exception as e:
-            return OperationResult(
-                ok=False,
-                path=None,
-                error_info=self._map_error(e),
-                error=str(e),
-                message="Failed to ensure directory"
-            )
-
     def get_unique_filename(self, directory: FsPathLike, filename: str) -> DataResult[str]:
         try:
             norm_dir = self._normalize_input_path(directory)
@@ -47,7 +23,7 @@ class UtilityOperationsMixin:
             return DataResult(
                 ok=False,
                 path=None,
-                data=None,
+                data="",
                 format="filename",
                 error_info=self._map_error(e),
                 error=str(e),
@@ -72,7 +48,7 @@ class UtilityOperationsMixin:
             return DataResult(
                 ok=False,
                 path=None,
-                data=None,
+                data="",
                 format="path",
                 error_info=self._map_error(e),
                 error=str(e),
@@ -99,7 +75,7 @@ class UtilityOperationsMixin:
             return DataResult(
                 ok=False,
                 path=None,
-                data=None,
+                data="",
                 format="path",
                 error_info=self._map_error(e),
                 error=str(e),
@@ -117,7 +93,7 @@ class UtilityOperationsMixin:
             return DataResult(
                 ok=False,
                 path=None,
-                data=None,
+                data=[],
                 format="path_list",
                 error_info=self._map_error(e),
                 error=str(e),
@@ -133,7 +109,7 @@ class UtilityOperationsMixin:
             return DataResult(
                 ok=False,
                 path=None,
-                data=None,
+                data={},
                 format="disk_usage",
                 error_info=self._map_error(e),
                 error=str(e),
@@ -149,7 +125,7 @@ class UtilityOperationsMixin:
             return DataResult(
                 ok=False,
                 path=None,
-                data=None,
+                data="",
                 format="file_type",
                 error_info=self._map_error(e),
                 error=str(e),
@@ -164,7 +140,7 @@ class UtilityOperationsMixin:
             return DataResult(
                 ok=False,
                 path=None,
-                data=None,
+                data="",
                 format="size_string",
                 error_info=self._map_error(e),
                 error=str(e),
@@ -196,7 +172,7 @@ class UtilityOperationsMixin:
             return DataResult(
                 ok=False,
                 path=None,
-                data=None,
+                data=0.0,
                 format="timestamp",
                 error_info=self._map_error(e),
                 error=str(e),
@@ -212,7 +188,7 @@ class UtilityOperationsMixin:
             return DataResult(
                 ok=False,
                 path=None,
-                data=None,
+                data="",
                 format="checksum",
                 error_info=self._map_error(e),
                 error=str(e),
