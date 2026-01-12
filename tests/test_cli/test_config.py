@@ -4,7 +4,7 @@
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_context.py, test_error.py, test_formatting.py (+5 more)
 # exports: TestFindProjectRoot, TestLoadConfig, TestMergeCliOverrides
 # git_branch: feat/9-make-setup-work
-# git_commit: 2f6d56ab
+# git_commit: 528aa222
 # === QV-LLM:END ===
 
 """

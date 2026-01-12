@@ -5,7 +5,7 @@
 # neighbors: __init__.py, ids.py, time.py, typing.py, versions.py
 # exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm
 # git_branch: feat/9-make-setup-work
-# git_commit: 2f6d56ab
+# git_commit: 528aa222
 # === QV-LLM:END ===
 
 """

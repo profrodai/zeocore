@@ -4,7 +4,7 @@
 # neighbors: __init__.py, auth_provider_impl.py, config_provider_impl.py, test_auth_provider.py, test_base.py, test_config_provider.py (+3 more)
 # exports: MockIntegrationService
 # git_branch: feat/9-make-setup-work
-# git_commit: 2f6d56ab
+# git_commit: 528aa222
 # === QV-LLM:END ===
 
 """

@@ -2,7 +2,10 @@
 # path: quack-core/src/quack_core/core/fs/service/path_operations.py
 # module: quack_core.core.fs.service.path_operations
 # role: service
-# VERSION: V5 FINAL - expand_user_vars now handles Path from _ops correctly
+# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
+# exports: PathOperationsMixin
+# git_branch: feat/9-make-setup-work
+# git_commit: 528aa222
 # === QV-LLM:END ===
 
 from pathlib import Path

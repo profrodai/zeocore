@@ -2,7 +2,10 @@
 # path: quack-core/src/quack_core/core/fs/service/full_class.py
 # module: quack_core.core.fs.service.full_class
 # role: service
-# VERSION: V5 FINAL - Imports _BaseFileSystemService (no name collision)
+# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
+# exports: FileSystemService
+# git_branch: feat/9-make-setup-work
+# git_commit: 528aa222
 # === QV-LLM:END ===
 
 from quack_core.core.fs.service.base import _BaseFileSystemService
