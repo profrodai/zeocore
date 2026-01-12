@@ -4,7 +4,7 @@
 # neighbors: __init__.py, example_test.py
 # exports: test_input_result_defaults, test_output_result_fields, test_final_result_fields
 # git_branch: feat/9-make-setup-work
-# git_commit: a427fe04
+# git_commit: 76a2f2b9
 # === QV-LLM:END ===
 
 from pathlib import Path
