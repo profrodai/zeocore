@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: mocks.py, test_drive.py, test_drive_models.py, test_drive_service_delete.py, test_drive_service_download.py, test_drive_service_files.py (+6 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 24e0c6df
+# git_commit: 1a3eba04
 # === QV-LLM:END ===
 
 """Test package for quack_core.integrations.google.drive module."""

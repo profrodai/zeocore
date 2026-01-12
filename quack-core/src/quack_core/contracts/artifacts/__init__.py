@@ -5,7 +5,7 @@
 # neighbors: manifest.py, refs.py
 # exports: StorageRef, Checksum, ArtifactRef, ToolInfo, Provenance, ManifestInput, RunManifest
 # git_branch: feat/9-make-setup-work
-# git_commit: 24e0c6df
+# git_commit: 1a3eba04
 # === QV-LLM:END ===
 
 """

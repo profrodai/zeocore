@@ -5,7 +5,7 @@
 # neighbors: __init__.py, pull_requests.py, repositories.py, users.py
 # exports: create_issue, list_issues, get_issue, add_issue_comment
 # git_branch: feat/9-make-setup-work
-# git_commit: 24e0c6df
+# git_commit: 1a3eba04
 # === QV-LLM:END ===
 
 """GitHub issues _ops."""
