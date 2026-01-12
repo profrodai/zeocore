@@ -5,7 +5,7 @@
 # neighbors: models.py, _impl.py
 # exports: EchoRequest, VideoRefRequest
 # git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
+# git_commit: 6e6469fe
 # === QV-LLM:END ===
 
 """

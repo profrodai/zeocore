@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/core/fs/results.py
 # module: quack_core.core.fs.results
 # role: module
-# neighbors: __init__.py, protocols.py, plugin.py, normalize.py
+# neighbors: __init__.py, protocols.py, plugin.py, exceptions.py, normalize.py
 # exports: ErrorInfo, OperationResult, BoolResult, ReadResult, WriteResult, FileInfoResult, DirectoryInfoResult, FindResult (+2 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
+# git_commit: 6e6469fe
 # === QV-LLM:END ===
 
 from pathlib import Path

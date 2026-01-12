@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, protocols.py, config.py, auth.py, client.py
 # exports: PullRequestStatus, GitHubUser, GitHubRepo, PullRequest
 # git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
+# git_commit: 6e6469fe
 # === QV-LLM:END ===
 
 """GitHub integration data models for quack_core."""
