@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py (+2 more)
 # exports: get_imports, test_internal_import_boundary, test_ops_import_boundary
 # git_branch: feat/9-make-setup-work
-# git_commit: d5eb52c8
+# git_commit: ffd13f1b
 # === QV-LLM:END ===
 
 import ast

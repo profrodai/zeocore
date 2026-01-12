@@ -5,7 +5,7 @@
 # neighbors: config_base.py
 # exports: BaseQuackTool, ToolContext, QuackToolProtocol, IntegrationEnabledMixin, LifecycleMixin, ToolEnvInitializerMixin, BaseQuackToolPlugin
 # git_branch: feat/9-make-setup-work
-# git_commit: d5eb52c8
+# git_commit: ffd13f1b
 # === QV-LLM:END ===
 
 

@@ -5,7 +5,7 @@
 # neighbors: __init__.py, registry.py, selector.py
 # exports: enhance_with_llm_safe
 # git_branch: feat/9-make-setup-work
-# git_commit: d5eb52c8
+# git_commit: ffd13f1b
 # === QV-LLM:END ===
 
 from quack_core.core.logging import get_logger

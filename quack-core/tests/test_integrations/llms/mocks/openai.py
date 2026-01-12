@@ -4,7 +4,7 @@
 # neighbors: __init__.py, anthropic.py, base.py, clients.py
 # exports: MockOpenAIResponse, MockOpenAIStreamingResponse, MockOpenAIErrorResponse, MockOpenAIClient
 # git_branch: feat/9-make-setup-work
-# git_commit: d5eb52c8
+# git_commit: ffd13f1b
 # === QV-LLM:END ===
 
 """
