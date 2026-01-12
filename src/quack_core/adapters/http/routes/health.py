@@ -5,7 +5,7 @@
 # neighbors: __init__.py, jobs.py, operations.py
 # exports: health_live, health_ready
 # git_branch: feat/9-make-setup-work
-# git_commit: d5eb52c8
+# git_commit: ffd13f1b
 # === QV-LLM:END ===
 
 """

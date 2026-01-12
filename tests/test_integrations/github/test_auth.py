@@ -4,7 +4,7 @@
 # neighbors: __init__.py, conftest.py, test_api.py, test_client.py, test_config.py, test_github_init.py (+5 more)
 # exports: test_create_integration, test_integration_registration, test_module_implements_getattr, test_registry_integration, test_module_init, test_lazy_loading, test_getattr_unknown_attribute
 # git_branch: feat/9-make-setup-work
-# git_commit: d5eb52c8
+# git_commit: ffd13f1b
 # === QV-LLM:END ===
 
 """Tests for GitHub integration initialization."""

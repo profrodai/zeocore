@@ -1,3 +1,13 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/src/quack_core/core/fs/service/utility_operations.py
+# module: quack_core.core.fs.service.utility_operations
+# role: service
+# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
+# exports: read_text, write_text, read_bytes, write_bytes, read_lines, write_lines, copy, move (+38 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: ffd13f1b
+# === QV-LLM:END ===
+
 
 """
 Standalone wrappers that delegate to the singleton service.
