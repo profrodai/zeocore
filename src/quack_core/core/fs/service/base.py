@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# module: quack_core.core.fs.service.base
-# role: service
-# neighbors: __init__.py, directory_operations.py, factory.py, file_operations.py, full_class.py, path_operations.py (+4 more)
-# exports: FileSystemService
-# git_branch: feat/9-make-setup-work
-# git_commit: 1a3eba04
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Optional
 import uuid
@@ -90,13 +80,23 @@ class FileSystemService:
             hint = "Expected a directory but found a file."
         elif isinstance(e, OSError):
             err_type = "io_error"
-        elif isinstance(e, ValueError):  # Catch sandbox violations
-            if "escape" in msg.lower():
+        elif isinstance(e, ValueError):  # Catch sandbox violations and other ValueErrors
+            msg_lower = msg.lower()
+            if "escape" in msg_lower:
                 err_type = "path_escape_attempt"
                 hint = "Path attempted to traverse above the base directory."
-            elif "outside base directory" in msg.lower():
+            elif "outside base directory" in msg_lower:
                 err_type = "path_outside_base_dir"
                 hint = "Absolute paths outside the configured base directory are not allowed."
+            elif "unsupported algorithm" in msg_lower:
+                err_type = "unsupported_algorithm"
+                hint = "Check the requested hash algorithm."
+            elif "invalid regex" in msg_lower:
+                err_type = "invalid_regex"
+                hint = "The provided regular expression pattern is invalid."
+            elif "is not a dict" in msg_lower: # Catching yaml/json parsing errors from ops
+                err_type = "invalid_data_format"
+                hint = "The file content structure does not match the expected format (e.g. dict)."
             else:
                 err_type = "validation_error"
 
