@@ -1,13 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/normalize.py
-# module: quack_core.core.fs.normalize
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py, results.py
-# exports: coerce_path, coerce_path_str, safe_path_str, coerce_path_result, extract_path_from_result
-# git_branch: feat/9-make-setup-work
-# git_commit: 76a2f2b9
-# === QV-LLM:END ===
-
 """
 Input normalization logic.
 This module is the Single Source of Truth for coercing inputs into Paths.
@@ -17,6 +7,7 @@ import os
 from pathlib import Path
 from typing import Any, TypeVar
 from quack_core.core.fs.protocols import FsPathLike
+from quack_core.core.fs.exceptions import QuackPathEscapeError, QuackPathOutsideBaseDirError
 
 T = TypeVar("T")
 
@@ -75,7 +66,7 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: b
 
     Raises:
         TypeError: If input cannot be coerced to a path.
-        ValueError: If path is invalid, unsafe, or violates sandboxing.
+        QuackPathSecurityError: If path violates sandboxing.
     """
     try:
         s = _extract_path_str(obj)
@@ -99,7 +90,7 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: b
                     resolved.relative_to(base_dir)
                     return resolved
                 except ValueError:
-                    raise ValueError(f"Path '{path}' is outside base directory '{base_dir}' (allow_absolute=False)")
+                    raise QuackPathOutsideBaseDirError(f"Path '{path}' is outside base directory '{base_dir}' (allow_absolute=False)")
 
             # 2. Handle Relative Paths (Anchor to base_dir)
             resolved_path = (base_dir / path).resolve()
@@ -108,7 +99,7 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: b
             try:
                 resolved_path.relative_to(base_dir)
             except ValueError:
-                raise ValueError(f"Path '{path}' attempts to escape base directory '{base_dir}'")
+                raise QuackPathEscapeError(f"Path '{path}' attempts to escape base directory '{base_dir}'")
 
             return resolved_path
 
@@ -118,8 +109,11 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: b
     except TypeError:
         # Re-raise TypeErrors (wrong shape) as-is or wrap with context
         raise
-    except ValueError:
-        # Re-raise ValueErrors (sandbox/validity) as-is
+    except ValueError as e:
+        # If it's already one of our security errors, re-raise
+        if isinstance(e, (QuackPathEscapeError, QuackPathOutsideBaseDirError)):
+            raise
+        # Otherwise re-raise standard ValueErrors
         raise
     except Exception as e:
         # Wrap unknown errors
