@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-core/tests/test_fs/test_api_surface.py
+# role: tests
+# neighbors: __init__.py, test_architecture.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py (+3 more)
+# exports: TestHardenedAPIExports, TestPublicAPIUsability, TestDoctrineEnforcement
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
+# === QV-LLM:END ===
+
 """
 Test suite to verify hardened API surface.
 Ensures internal modules cannot be accidentally imported.

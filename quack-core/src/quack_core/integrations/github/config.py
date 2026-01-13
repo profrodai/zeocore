@@ -5,7 +5,7 @@
 # neighbors: __init__.py, service.py, models.py, protocols.py, auth.py, client.py
 # exports: GitHubConfigProvider
 # git_branch: feat/9-make-setup-work
-# git_commit: 9bcf4e79
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """Configuration provider for GitHub integration."""

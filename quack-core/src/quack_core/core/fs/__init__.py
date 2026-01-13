@@ -2,7 +2,10 @@
 # path: quack-core/src/quack_core/core/fs/__init__.py
 # module: quack_core.core.fs.__init__
 # role: module
-# VERSION: V6 FINAL - Hardened public API surface
+# neighbors: protocols.py, plugin.py, results.py, exceptions.py, normalize.py
+# exports: FileSystemService, get_service, create_service, OperationResult, ErrorInfo, BoolResult, ReadResult, WriteResult (+5 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """

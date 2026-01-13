@@ -2,7 +2,10 @@
 # path: quack-core/src/quack_core/core/fs/service/__init__.py
 # module: quack_core.core.fs.service.__init__
 # role: service
-# VERSION: V6 FINAL - Hardened service API exports
+# neighbors: base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py, full_class.py (+5 more)
+# exports: FileSystemService, create_service, get_service
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
