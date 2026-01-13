@@ -5,7 +5,7 @@
 # neighbors: __init__.py, config.py, loader.py
 # exports: get_global_registry, load_integrations
 # git_branch: feat/9-make-setup-work
-# git_commit: 528aa222
+# git_commit: 9bcf4e79
 # === QV-LLM:END ===
 
 """

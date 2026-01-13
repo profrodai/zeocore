@@ -2,7 +2,10 @@
 # path: quack-core/src/quack_core/core/fs/plugin.py
 # module: quack_core.core.fs.plugin
 # role: plugin
-# VERSION: V6 FINAL - FSPlugin protocol aligned with FsPathLike
+# neighbors: __init__.py, protocols.py, results.py, exceptions.py, normalize.py
+# exports: FSPlugin, QuackFSPlugin, create_plugin
+# git_branch: feat/9-make-setup-work
+# git_commit: 9bcf4e79
 # === QV-LLM:END ===
 
 from pathlib import Path
