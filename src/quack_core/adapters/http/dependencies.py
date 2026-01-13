@@ -5,7 +5,7 @@
 # neighbors: __init__.py, app.py, service.py, models.py, config.py, auth.py (+1 more)
 # exports: get_cfg, get_registry, get_job_store, get_job_runner, require_auth
 # git_branch: feat/9-make-setup-work
-# git_commit: 9bcf4e79
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 

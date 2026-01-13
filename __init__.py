@@ -2,5 +2,5 @@
 # path: quack-core/__init__.py
 # role: module
 # git_branch: feat/9-make-setup-work
-# git_commit: 9bcf4e79
+# git_commit: f4879df3
 # === QV-LLM:END ===

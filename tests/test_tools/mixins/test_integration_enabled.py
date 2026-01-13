@@ -4,7 +4,7 @@
 # neighbors: __init__.py, test_env_init.py, test_lifecycle.py, test_output_handler.py
 # exports: MockIntegrationService, AnotherMockService, TestIntegrationEnabledMixin, TestIntegrationEnabledMixinWithPytest, integration_enabled_mixin
 # git_branch: feat/9-make-setup-work
-# git_commit: 9bcf4e79
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """

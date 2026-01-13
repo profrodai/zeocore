@@ -3,7 +3,7 @@
 # role: tests
 # neighbors: conftest.py, test_api.py, test_auth.py, test_client.py, test_config.py, test_github_init.py (+5 more)
 # git_branch: feat/9-make-setup-work
-# git_commit: 9bcf4e79
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """Tests for GitHub integration."""  # tests/test_integrations/github/__init__.py

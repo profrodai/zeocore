@@ -1,11 +1,11 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/lib/mime.py
-# module: quack_core.lib.mime
+# path: quack-core/src/quack_core/core/mime.py
+# module: quack_core.core.mime
 # role: module
 # neighbors: __init__.py, registry.py, jobs.py, serialization.py
 # exports: is_binary_extension, get_content_type, is_text_extension
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 223dfb0
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
