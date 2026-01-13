@@ -1,10 +1,10 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_fs/test_path_utils.py
 # role: tests
-# neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_results.py, test_service.py, test_utils.py
+# neighbors: __init__.py, test_api_surface.py, test_architecture.py, test_atomic_wrapping.py, test_operations.py, test_results.py (+3 more)
 # exports: TestPathUtils
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -16,8 +16,8 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import pytest
-from quack_core.lib.fs import DataResult, PathResult
-from quack_core.lib.fs._helpers.path_utils import _extract_path_str, _safe_path_str
+from quack_core.core.fs import DataResult, PathResult
+from quack_core.core.fs._internal.path_utils import _extract_path_str, _safe_path_str
 
 
 class TestPathUtils(TestCase):
@@ -129,19 +129,19 @@ class TestPathUtils(TestCase):
 
     def test_safe_path_with_invalid_object(self):
         """Test safe_path with an invalid object."""
-        with patch('quack_core.lib.fs._helpers.path_utils.logger') as mock_logger:
+        with patch('quack_core.core.fs._internal.path_utils.logger') as mock_logger:
             assert _safe_path_str(object()) is None
             mock_logger.warning.assert_called_once()
 
     def test_safe_path_with_custom_default(self):
         """Test safe_path with a custom default value."""
-        with patch('quack_core.lib.fs._helpers.path_utils.logger') as mock_logger:
+        with patch('quack_core.core.fs._internal.path_utils.logger') as mock_logger:
             assert _safe_path_str(object(), default="/fallback") == "/fallback"
             mock_logger.warning.assert_called_once()
 
     def test_safe_path_with_failed_result(self):
         """Test safe_path with a failed result."""
-        with patch('quack_core.lib.fs._helpers.path_utils.logger') as mock_logger:
+        with patch('quack_core.core.fs._internal.path_utils.logger') as mock_logger:
             result = PathResult(
                 success=False,
                 path=Path("a.txt"),

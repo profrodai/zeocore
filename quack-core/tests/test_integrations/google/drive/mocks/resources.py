@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, base.py, credentials.py, download.py, media.py, requests.py (+1 more)
 # exports: MockDrivePermissionsResource, MockDriveFilesResource
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -97,7 +97,7 @@ class MockDriveFilesResource(DriveFilesResource):
 
         Args:
             fileId: ID to return for created files
-            file_metadata: Metadata to return for file _operations
+            file_metadata: Metadata to return for file _ops
             file_list: List of files to return in list operation
             permissions_resource: Mock permissions resource to use
             create_error: Exception to raise on create operation, if any

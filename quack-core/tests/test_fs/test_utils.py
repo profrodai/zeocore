@@ -1,10 +1,10 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_fs/test_utils.py
 # role: tests
-# neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py
+# neighbors: __init__.py, test_api_surface.py, test_architecture.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py (+3 more)
 # exports: TestPathUtilities, TestFileUtilities
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -21,13 +21,13 @@ from unittest.mock import patch
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-from quack_core.lib.errors import (
+from quack_core.core.errors import (
     QuackFileExistsError,
     QuackFileNotFoundError,
     QuackIOError,
     QuackPermissionError,
 )
-from quack_core.lib.fs._helpers import (
+from quack_core.core.fs._internal import (
     _compute_checksum,
     _create_temp_directory,
     _create_temp_file,
@@ -46,13 +46,13 @@ from quack_core.lib.fs._helpers import (
     _safe_delete,
     _safe_move,
 )
-from quack_core.lib.fs._helpers.file_ops import (
+from quack_core.core.fs._internal.file_ops import (
     _atomic_write,
     _ensure_directory,
     _find_files_by_content,
     _get_unique_filename,
 )
-from quack_core.lib.fs._helpers.path_ops import (
+from quack_core.core.fs._internal.path_ops import (
     _expand_user_vars,
     _join_path,
     _split_path,
@@ -658,7 +658,7 @@ class TestFileUtilities:
 
     @given(st.text(min_size=1, max_size=100))
     def test_hypothetical_path_operations(self, text: str) -> None:
-        """Test path _operations with hypothesis-generated text."""
+        """Test path _ops with hypothesis-generated text."""
         # Handle problematic characters more carefully:
         # 1. Period at start of string
         # 2. Unicode characters that might cause file system issues

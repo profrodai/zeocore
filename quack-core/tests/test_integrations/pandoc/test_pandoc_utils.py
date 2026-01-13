@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
 # exports: test_conversion_metrics_initialization, test_file_info_initialization, test_conversion_task_initialization, test_conversion_details_initialization, test_get_file_info_edge_cases, test_check_file_size_edge_cases, test_check_conversion_ratio_edge_cases, test_track_metrics_logging (+5 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -39,7 +39,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     validate_html_structure,
     verify_pandoc,
 )
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 
 def test_conversion_metrics_initialization():
@@ -162,7 +162,7 @@ def test_get_file_info_edge_cases(monkeypatch):
     mock_fs.get_file_info = lambda path: SimpleNamespace(
         success=True, exists=True, size="not-a-number", modified=None
     )
-    monkeypatch.setattr('quack_core.integrations.pandoc.operations.utils.fs', mock_fs)
+    monkeypatch.setattr('quack_core.integrations.pandoc._ops.utils.fs', mock_fs)
 
     file_info = get_file_info("test.html")
     assert file_info.size == 1024  # Default when size conversion fails
@@ -174,7 +174,7 @@ def test_get_file_info_edge_cases(monkeypatch):
     mock_fs.get_extension = lambda path: SimpleNamespace(
         success=True, data=path.split('.')[-1]
     )
-    monkeypatch.setattr('quack_core.integrations.pandoc.operations.utils.fs', mock_fs)
+    monkeypatch.setattr('quack_core.integrations.pandoc._ops.utils.fs', mock_fs)
 
     # Test various extensions
     extensions_mapping = {
@@ -252,7 +252,7 @@ def test_check_conversion_ratio_edge_cases():
     assert "less than" in errors[0]
 
 
-@patch('quack_core.integrations.pandoc.operations.utils.logger')
+@patch('quack_core.integrations.pandoc._ops.utils.logger')
 def test_track_metrics_logging(mock_logger):
     """Test that track_metrics properly logs information."""
     metrics = ConversionMetrics()

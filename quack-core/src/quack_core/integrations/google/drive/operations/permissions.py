@@ -1,15 +1,15 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/google/drive/operations/permissions.py
 # module: quack_core.integrations.google.drive.operations.permissions
-# role: operations
+# role: module
 # neighbors: __init__.py, download.py, folder.py, list_files.py, upload.py
 # exports: set_file_permissions, get_sharing_link
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Permission _operations for Google Drive integration.
+Permission _ops for Google Drive integration.
 
 This module provides functions for managing file permissions in Google Drive,
 including setting permissions and retrieving sharing links.
@@ -23,7 +23,7 @@ from quack_core.integrations.google.drive.protocols import DriveService
 
 # Import the api.api module itself, not just the function
 from quack_core.integrations.google.drive.utils import api
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 def set_file_permissions(

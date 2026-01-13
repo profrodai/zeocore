@@ -745,7 +745,7 @@ finally:
 Be mindful of GitHub API rate limits, especially in batch operations:
 
 ```python
-# For bulk _operations, add delay between requests
+# For bulk _ops, add delay between requests
 import time
 
 repos = ["user/repo1", "user/repo2", "user/repo3", "user/repo4"]
@@ -805,9 +805,9 @@ except Exception as e:
 3. Confirm the resource exists
 
 ```python
-# Check if repository exists before _operations
+# Check if repository exists before _ops
 if github.client.check_repository_exists("username/repo"):
-    # Proceed with _operations
+    # Proceed with _ops
     pass
 else:
     print("Repository does not exist or is not accessible")
@@ -838,7 +838,7 @@ For detailed logging information:
 
 ```python
 import logging
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 # Set logging level to DEBUG for the GitHub integration
 logger = get_logger("quack_core.integrations.github")

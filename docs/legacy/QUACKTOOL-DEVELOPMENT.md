@@ -506,7 +506,7 @@ def process_large_files(self, folder_id):
 Use QuackCore's logging system for consistent logs:
 
 ```python
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 

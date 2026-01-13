@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, mocks.py, test_config_provider.py, test_serialization.py
 # exports: TestGoogleAuthProvider
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -19,7 +19,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from quack_core.integrations.core.results import AuthResult
 from quack_core.integrations.google.auth import GoogleAuthProvider
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 from .mocks import mock_credentials
 

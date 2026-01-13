@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/integrations/llms/service/initialization.py
 # module: quack_core.integrations.llms.service.initialization
 # role: service
-# neighbors: __init__.py, operations.py, dependencies.py, integration.py
+# neighbors: __init__.py, dependencies.py, integration.py, operations.py
 # exports: initialize_single_provider, initialize_with_fallback
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """

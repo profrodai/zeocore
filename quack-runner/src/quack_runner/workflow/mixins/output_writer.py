@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, save_output_mixin.py
 # exports: WorkflowError, LegacyWorkflowOutputWriter
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -62,7 +62,7 @@ class LegacyWorkflowOutputWriter:
     def write(self, result: OutputResult, input_path: Path,
               options: dict[str, Any]) -> FinalResult:
         """Write the output result to a file."""
-        from quack_core.lib.fs.service import standalone
+        from quack_core.core.fs.service import standalone
         fs = standalone
         out_dir = options.get("output_dir", "./output")
         fs.create_directory(out_dir, exist_ok=True)

@@ -1,15 +1,15 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/google/mail/operations/auth.py
 # module: quack_core.integrations.google.mail.operations.auth
-# role: operations
+# role: module
 # neighbors: __init__.py, attachments.py, email.py
 # exports: initialize_gmail_service
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Authentication _operations for Google Mail integration.
+Authentication _ops for Google Mail integration.
 
 This module provides functions for authenticating with the Gmail API
 and initializing the service.
@@ -19,7 +19,7 @@ from quack_core.integrations.google.mail.protocols import (
     GmailService,
     GoogleCredentials,
 )
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 def initialize_gmail_service(credentials: GoogleCredentials) -> GmailService:

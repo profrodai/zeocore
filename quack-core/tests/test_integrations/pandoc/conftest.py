@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # exports: fs_stub, mock_pypandoc, mock_paths_service, mock_bs4, mock_docx
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -28,27 +28,27 @@ import pytest
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch):
     """
-    Stub out the quack_core.lib.fs.service.standalone methods for file operations.
+    Stub out the quack_core.core.fs.service.standalone methods for file _ops.
     """
     # Create a module structure if it doesn't exist
-    if 'quack_core.lib.fs.service' not in sys.modules:
+    if 'quack_core.core.fs.service' not in sys.modules:
         # Create the module hierarchy
         if 'quack-core' not in sys.modules:
             quackcore_mod = types.ModuleType('quack-core')
             sys.modules['quack-core'] = quackcore_mod
 
-        if 'quack_core.lib.fs' not in sys.modules:
-            fs_mod = types.ModuleType('quack_core.lib.fs')
-            sys.modules['quack_core.lib.fs'] = fs_mod
+        if 'quack_core.core.fs' not in sys.modules:
+            fs_mod = types.ModuleType('quack_core.core.fs')
+            sys.modules['quack_core.core.fs'] = fs_mod
 
         # Create the service module
-        service_mod = types.ModuleType('quack_core.lib.fs.service')
-        sys.modules['quack_core.lib.fs.service'] = service_mod
+        service_mod = types.ModuleType('quack_core.core.fs.service')
+        sys.modules['quack_core.core.fs.service'] = service_mod
 
     # Create the stub with all necessary methods
     stub = SimpleNamespace()
 
-    # Create a DataResult-like object to return from operations
+    # Create a DataResult-like object to return from _ops
     class DataResult:
         def __init__(self, success=True, data=None, error=None, path="/dummy/path",
                      message=None, format=None):
@@ -76,7 +76,7 @@ def fs_stub(monkeypatch):
         data=path.split(os.sep) if isinstance(path, str) else [str(path)]
     )
 
-    # Text file operations
+    # Text file _ops
     stub.write_text = lambda path, content, encoding=None: SimpleNamespace(
         success=True, bytes_written=len(content) if isinstance(content, str) else 0
     )
@@ -128,7 +128,7 @@ def fs_stub(monkeypatch):
 
     # Set the standalone attribute directly in the module
     # This is the critical change - we need to directly set the attribute on the module
-    sys.modules['quack_core.lib.fs.service'].standalone = stub
+    sys.modules['quack_core.core.fs.service'].standalone = stub
     return stub
 
 
@@ -156,17 +156,17 @@ def mock_paths_service(monkeypatch):
     mock.resolve_project_path = lambda path: path
 
     # Create a proper paths module structure
-    if 'quack_core.lib.paths' not in sys.modules:
-        paths_mod = types.ModuleType('quack_core.lib.paths')
-        sys.modules['quack_core.lib.paths'] = paths_mod
+    if 'quack_core.core.paths' not in sys.modules:
+        paths_mod = types.ModuleType('quack_core.core.paths')
+        sys.modules['quack_core.core.paths'] = paths_mod
 
     # Add necessary functions directly to the module
-    sys.modules['quack_core.lib.paths'].service = mock
-    sys.modules['quack_core.lib.paths'].resolve_path = lambda path: os.path.abspath(
+    sys.modules['quack_core.core.paths'].service = mock
+    sys.modules['quack_core.core.paths'].resolve_path = lambda path: os.path.abspath(
         path) if path else "/dummy/path"
-    sys.modules['quack_core.lib.paths'].expand_user_vars = lambda path: os.path.expanduser(
+    sys.modules['quack_core.core.paths'].expand_user_vars = lambda path: os.path.expanduser(
         path) if path and isinstance(path, str) and path.startswith('~') else path
-    sys.modules['quack_core.lib.paths'].read_yaml = lambda path: SimpleNamespace(
+    sys.modules['quack_core.core.paths'].read_yaml = lambda path: SimpleNamespace(
         success=True, data={})
 
     return mock

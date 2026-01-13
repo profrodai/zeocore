@@ -1,20 +1,20 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/pandoc/operations/html_to_md.py
 # module: quack_core.integrations.pandoc.operations.html_to_md
-# role: operations
+# role: module
 # neighbors: __init__.py, utils.py, md_to_docx.py
 # exports: convert_html_to_markdown, post_process_markdown, validate_conversion
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-HTML to Markdown conversion operations.
+HTML to Markdown conversion _ops.
 
 This module provides functions for converting HTML documents to Markdown
 using pandoc with optimized settings and error handling.
 All file paths are represented as strings. Filesystem interactions are delegated
-to the quack_core.lib.fs service functions.
+to the quack_core.core.fs service functions.
 """
 
 import importlib
@@ -32,16 +32,16 @@ from quack_core.integrations.pandoc.operations.utils import (
     track_metrics,
     validate_html_structure,
 )
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 
 # Import fs module with error handling
 try:
-    from quack_core.lib.fs.service import standalone as fs
+    from quack_core.core.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack_core.lib.fs.service")
+    logger.error("Could not import quack_core.core.fs.service")
     from types import SimpleNamespace
 
     # Create a minimal fs stub if the module isn't available (for tests)

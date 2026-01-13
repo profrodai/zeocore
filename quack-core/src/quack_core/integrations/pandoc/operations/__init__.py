@@ -1,17 +1,17 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/pandoc/operations/__init__.py
 # module: quack_core.integrations.pandoc.operations.__init__
-# role: operations
+# role: module
 # neighbors: utils.py, html_to_md.py, md_to_docx.py
 # exports: convert_html_to_markdown, convert_markdown_to_docx, post_process_markdown, validate_html_conversion, validate_docx_conversion, check_conversion_ratio, check_file_size, get_file_info (+5 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
 Operations package for pandoc integration.
 
-This package contains specialized modules for different pandoc _operations,
+This package contains specialized modules for different pandoc _ops,
 such as HTML to Markdown and Markdown to DOCX conversion.
 """
 

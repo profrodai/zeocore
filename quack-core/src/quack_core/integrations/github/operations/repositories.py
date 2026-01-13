@@ -1,14 +1,14 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/github/operations/repositories.py
 # module: quack_core.integrations.github.operations.repositories
-# role: operations
+# role: module
 # neighbors: __init__.py, issues.py, pull_requests.py, users.py
 # exports: get_repo, star_repo, unstar_repo, is_repo_starred, fork_repo, check_repository_exists, get_repository_file_content, update_repository_file
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
-"""GitHub repository _operations."""
+"""GitHub repository _ops."""
 
 import base64
 from typing import Any
@@ -16,7 +16,7 @@ from typing import Any
 import requests
 from quack_core.integrations.github.models import GitHubRepo, GitHubUser
 from quack_core.integrations.github.utils.api import make_request
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 def get_repo(

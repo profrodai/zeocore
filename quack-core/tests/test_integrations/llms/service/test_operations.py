@@ -3,15 +3,15 @@
 # role: service
 # neighbors: __init__.py, test_dependencies.py, test_initialization.py, test_integration.py
 # exports: TestLLMOperationsComplete
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Comprehensive tests for LLM service _operations.
+Comprehensive tests for LLM service _ops.
 
-This module provides complete test coverage for the service/_operations.py file,
-which contains the chat and token counting _operations.
+This module provides complete test coverage for the service/_ops.py file,
+which contains the chat and token counting _ops.
 """
 
 from unittest.mock import MagicMock
@@ -28,7 +28,7 @@ from quack_core.integrations.llms.service.operations import (
 
 
 class TestLLMOperationsComplete:
-    """Comprehensive tests for LLM _operations."""
+    """Comprehensive tests for LLM _ops."""
 
     @pytest.fixture
     def mock_integration(self) -> MagicMock:

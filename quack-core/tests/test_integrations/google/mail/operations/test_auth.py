@@ -1,14 +1,14 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/google/mail/operations/test_auth.py
-# role: operations
+# role: tests
 # neighbors: __init__.py, test_attachments.py, test_email.py
 # exports: TestGmailAuthOperations
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Tests for Gmail authentication _operations.
+Tests for Gmail authentication _ops.
 
 This module tests the authentication functionality for the Google Mail integration,
 including initializing the Gmail service.
@@ -19,11 +19,11 @@ from unittest.mock import MagicMock, patch
 import pytest
 from quack_core.integrations.google.mail.operations import auth
 from quack_core.integrations.google.mail.protocols import GoogleCredentials
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 class TestGmailAuthOperations:
-    """Tests for Gmail authentication _operations."""
+    """Tests for Gmail authentication _ops."""
 
     def test_initialize_gmail_service(self) -> None:
         """Test initializing the Gmail service."""

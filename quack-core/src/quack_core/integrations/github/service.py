@@ -4,8 +4,8 @@
 # role: service
 # neighbors: __init__.py, models.py, protocols.py, config.py, auth.py, client.py
 # exports: GitHubIntegration
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """GitHub core integration service for quack_core."""
@@ -16,7 +16,7 @@ from quack_core.integrations.core import (
     ConfigProviderProtocol,
     IntegrationResult,
 )
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 from .auth import GitHubAuthProvider
 from .client import GitHubClient

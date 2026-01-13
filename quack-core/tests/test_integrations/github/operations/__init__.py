@@ -1,8 +1,8 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/github/operations/__init__.py
-# role: operations
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# role: tests
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
-"""Tests for GitHub _operations."""
+"""Tests for GitHub _ops."""

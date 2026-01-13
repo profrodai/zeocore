@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py
 # exports: EchoRequest, EchoResponse, TestAppBootstrap, TestAuthentication, TestOperationsRegistry, TestJobExecution, TestIdempotency, TestDirectOperationInvocation (+6 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -22,7 +22,7 @@ from fastapi.testclient import TestClient
 from pydantic import BaseModel
 from quack_core.adapters.http.app import create_app
 from quack_core.adapters.http.config import HttpAdapterConfig
-from quack_core.lib.registry import get_registry, reset_registry
+from quack_core.core.registry import get_registry, reset_registry
 
 
 class EchoRequest(BaseModel):
@@ -76,7 +76,7 @@ def config():
 @pytest.fixture
 def client(config, registry):
     """Provide test client with injected dependencies."""
-    from quack_core.lib.jobs import InMemoryJobStore, ThreadPoolJobRunner
+    from quack_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
 
     # Create test store and runner
     store = InMemoryJobStore()
@@ -168,19 +168,19 @@ class TestAuthentication:
 
 
 class TestOperationsRegistry:
-    """Test operations registry integration."""
+    """Test _ops registry integration."""
 
     def test_list_operations(self, client):
-        """Should list registered operations."""
+        """Should list registered _ops."""
         response = client.get(
             "/ops",
             headers={"Authorization": "Bearer test-token-123"},
         )
         assert response.status_code == 200
         data = response.json()
-        assert "operations" in data
-        assert len(data["operations"]) == 1
-        assert data["operations"][0]["name"] == "test.echo"
+        assert "_ops" in data
+        assert len(data["_ops"]) == 1
+        assert data["_ops"][0]["name"] == "test.echo"
 
     def test_unsupported_operation_errors(self, client):
         """Unsupported operation should return 400 with structured error."""
@@ -501,7 +501,7 @@ class TestErrorHandling:
         assert data["detail"]["error"]["code"] == "JOB_NOT_FOUND"
 
     def test_async_operation_in_job(self, registry, client):
-        """Async operations should work in jobs (not just direct invocation)."""
+        """Async _ops should work in jobs (not just direct invocation)."""
 
         async def async_echo(req: EchoRequest) -> dict[str, Any]:
             # Simulate async work

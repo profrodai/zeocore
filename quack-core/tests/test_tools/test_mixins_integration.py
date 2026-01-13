@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, mocks.py, test_base.py, test_imports.py, test_protocol.py (+2 more)
 # exports: MockIntegrationService, CompleteQuackTool, TestMixinIntegration
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -77,7 +77,7 @@ class CompleteQuackTool(
 
     def __init__(self) -> None:
         # Patch filesystem access and logging to avoid issues
-        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.core.fs.service.get_service') as mock_get_service, \
                 patch('quack_core.tools.base.setup_tool_logging'), \
                 patch('quack_core.tools.base.get_logger') as mock_get_logger, \
                 patch('os.getcwd') as mock_getcwd:

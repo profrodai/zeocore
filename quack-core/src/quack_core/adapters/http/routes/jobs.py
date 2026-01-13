@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/adapters/http/routes/jobs.py
 # module: quack_core.adapters.http.routes.jobs
 # role: adapters
-# neighbors: __init__.py, operations.py, health.py
+# neighbors: __init__.py, health.py, operations.py
 # exports: start_job, job_status
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -29,8 +29,8 @@ from quack_core.adapters.http.dependencies import (
 )
 from quack_core.adapters.http.models import JobRequest, JobResponse
 from quack_core.adapters.http.models import JobStatus as JobStatusModel
-from quack_core.lib.jobs import JobData, JobRunner, JobStatus, JobStore
-from quack_core.lib.registry import OperationRegistry
+from quack_core.core.jobs import JobData, JobRunner, JobStatus, JobStore
+from quack_core.core.registry import OperationRegistry
 
 router = APIRouter()
 

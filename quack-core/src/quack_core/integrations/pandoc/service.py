@@ -4,14 +4,14 @@
 # role: service
 # neighbors: __init__.py, models.py, protocols.py, config.py, converter.py
 # exports: PandocIntegration, create_integration
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """Pandoc Integration Service
 
 This module provides the main integration service for Pandoc document conversion.
-It handles initialization, configuration, and delegates conversion operations to
+It handles initialization, configuration, and delegates conversion _ops to
 specialized converters.
 """
 
@@ -23,8 +23,8 @@ from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import PandocConfig, PandocConfigProvider
 from quack_core.integrations.pandoc.converter import DocumentConverter
 from quack_core.integrations.pandoc.operations.utils import verify_pandoc
-from quack_core.lib.fs.service import FileSystemService
-from quack_core.lib.paths.service import PathService
+from quack_core.core.fs.service import FileSystemService
+from quack_core.core.paths.service import PathService
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class PandocIntegration(BaseIntegrationService):
 
     This service provides a high-level interface for converting documents
     using Pandoc. It manages configuration, initialization, and delegates
-    conversion operations to specialized converters.
+    conversion _ops to specialized converters.
 
     Attributes:
         converter: Document converter instance (available after initialization)

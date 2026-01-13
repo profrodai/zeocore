@@ -5,7 +5,7 @@
 ### 1. Use the Global Service Instance
 
 ```python
-from quack_core.lib.fs import service as fs
+from quack_core.core.fs import service as fs
 
 # Good - uses the global service instance
 result = fs._read_text("config.yaml")

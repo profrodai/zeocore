@@ -3,14 +3,14 @@ Example of how to use the quackcore logging module in different scenarios.
 """
 
 # Basic usage with the default logger
-from quack_core.lib.logging import logger
+from quack_core.core.logging import logger
 
 logger.info("This is a standard log message")
 logger.debug("This is a debug message")
 logger.warning("This is a warning message")
 
 # Module-specific logger
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 module_logger = get_logger(__name__)
 module_logger.info("This log comes from a specific module")
@@ -19,12 +19,12 @@ module_logger.info("This log comes from a specific module")
 logger.info("[Teaching Mode] This explains how the algorithm works")
 
 # Using log_teaching helper from config
-from quack_core.lib.logging.config import log_teaching
+from quack_core.core.logging.config import log_teaching
 
 log_teaching(logger, "Using the log_teaching helper function")
 
 # Configuring a logger with file output
-from quack_core.lib.logging import configure_logger
+from quack_core.core.logging import configure_logger
 from pathlib import Path
 
 file_logger = configure_logger(

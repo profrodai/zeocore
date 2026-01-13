@@ -2,9 +2,9 @@
 # path: quack-core/src/quack_core/adapters/http/routes/__init__.py
 # module: quack_core.adapters.http.routes.__init__
 # role: adapters
-# neighbors: operations.py, health.py, jobs.py
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# neighbors: health.py, jobs.py, operations.py
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """

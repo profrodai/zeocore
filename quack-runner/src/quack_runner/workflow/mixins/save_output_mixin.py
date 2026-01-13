@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, output_writer.py
 # exports: SaveOutputMixin
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -78,7 +78,7 @@ class SaveOutputMixin:
         """Get a function that can write CSV output."""
 
         def write_csv(data: Any, path: Path) -> Path:
-            from quack_core.lib.fs.service import standalone
+            from quack_core.core.fs.service import standalone
             if not isinstance(data, list) or not data or not isinstance(data[0], dict):
                 raise ValueError("CSV output requires a non-empty list of dictionaries")
 
@@ -102,7 +102,7 @@ class SaveOutputMixin:
         """Get a function that can write text output."""
 
         def write_text(data: Any, path: Path) -> Path:
-            from quack_core.lib.fs.service import standalone
+            from quack_core.core.fs.service import standalone
             text_content = str(data)
             fs = standalone
             result = fs.write_text(path, text_content)

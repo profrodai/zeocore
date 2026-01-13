@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_loader.py, test_utils.py
 # exports: TestConfigModels
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -60,8 +60,8 @@ class TestConfigModels:
         }
 
         # Test setup_logging method with the new implementation
-        with patch("quack_core.lib.logging.configure_logger") as mock_configure_logger:
-            with patch("quack_core.lib.logging.LOG_LEVELS", mock_log_levels):
+        with patch("quack_core.core.logging.configure_logger") as mock_configure_logger:
+            with patch("quack_core.core.logging.LOG_LEVELS", mock_log_levels):
                 # Create a mock logger to be returned
                 mock_logger = MagicMock()
                 mock_configure_logger.return_value = mock_logger

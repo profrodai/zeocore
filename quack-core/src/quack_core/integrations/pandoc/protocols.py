@@ -4,8 +4,8 @@
 # role: protocols
 # neighbors: __init__.py, service.py, models.py, config.py, converter.py
 # exports: DocumentConverterProtocol, BatchConverterProtocol, PandocConversionProtocol
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -14,7 +14,7 @@ Protocol definitions for Pandoc integration.
 This module defines protocol classes for document conversion services,
 ensuring proper typing throughout the codebase. In this refactored version,
 all file paths are represented as strings rather than pathlib.Path objects.
-File resolution and normalization are delegated to quack_core.lib.fs.
+File resolution and normalization are delegated to quack_core.core.fs.
 """
 
 from collections.abc import Sequence
@@ -92,7 +92,7 @@ class BatchConverterProtocol(Protocol):
 @runtime_checkable
 class PandocConversionProtocol(Protocol):
     """
-    Protocol for the main pandoc conversion _operations.
+    Protocol for the main pandoc conversion _ops.
     File path parameters and return types are represented as strings.
     """
 

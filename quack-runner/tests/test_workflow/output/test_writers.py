@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_base.py
 # exports: StubFS, patch_fs_service, test_default_writer_basics, test_default_writer_write_wrapper, test_yaml_writer
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -35,7 +35,7 @@ def patch_fs_service(monkeypatch):
     stub = StubFS()
 
     # Import the standalone module
-    from quack_core.lib.fs.service import standalone
+    from quack_core.core.fs.service import standalone
 
     # Replace individual functions in the standalone module
     monkeypatch.setattr(standalone, "write_json", stub.write_json)

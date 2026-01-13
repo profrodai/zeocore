@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, auth_provider_impl.py, config_provider_impl.py, integration_service_impl.py, test_auth_provider.py, test_base.py (+3 more)
 # exports: TestBaseIntegrationService
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 from unittest.mock import patch
@@ -36,7 +36,7 @@ class TestBaseIntegrationService:
         auth_provider = MockAuthProvider()
 
         # Patch the fs service standalone method to return the input path
-        with patch("quack_core.lib.fs.service.standalone.resolve_path") as mock_resolve:
+        with patch("quack_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.return_value = "/test/config.yaml"
 
             service = MockIntegrationService(
@@ -102,7 +102,7 @@ class TestBaseIntegrationService:
             )
 
             service = MockIntegrationService(config_provider=config_provider)
-            with patch("quack_core.lib.errors.QuackConfigurationError", Exception):
+            with patch("quack_core.core.errors.QuackConfigurationError", Exception):
                 result = service.initialize()
 
                 assert result.success is False

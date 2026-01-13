@@ -3,9 +3,9 @@
 # module: quack_core.contracts.capabilities.__init__
 # role: module
 # neighbors: contract.py
-# exports: TimeRange, SliceVideoRequest, SlicedClipData, SliceVideoResponse, TranscribeRequest, TranscriptionSegment, TranscribeResponse, EchoRequest (+1 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# exports: EchoRequest, VideoRefRequest
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -21,6 +21,7 @@ from quack_core.contracts.capabilities.demo.models import (
     EchoRequest,
     VideoRefRequest,
 )
+'''
 from quack_core.contracts.capabilities.media import (
     SlicedClipData,
     SliceVideoRequest,
@@ -30,16 +31,16 @@ from quack_core.contracts.capabilities.media import (
     TranscribeResponse,
     TranscriptionSegment,
 )
-
+'''
 __all__ = [
     # Media
-    "TimeRange",
-    "SliceVideoRequest",
-    "SlicedClipData",
-    "SliceVideoResponse",
-    "TranscribeRequest",
-    "TranscriptionSegment",
-    "TranscribeResponse",
+    #"TimeRange",
+    #"SliceVideoRequest",
+    #"SlicedClipData",
+    #"SliceVideoResponse",
+    #"TranscribeRequest",
+    #"TranscriptionSegment",
+    #"TranscribeResponse",
     # Demo (models only)
     "EchoRequest",
     "VideoRefRequest",

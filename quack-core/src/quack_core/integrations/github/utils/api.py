@@ -4,8 +4,8 @@
 # role: utils
 # neighbors: __init__.py
 # exports: make_request
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """GitHub API request utilities."""
@@ -15,12 +15,12 @@ from datetime import datetime
 from typing import Any
 
 import requests
-from quack_core.lib.errors import (
+from quack_core.core.errors import (
     QuackApiError,
     QuackAuthenticationError,
     QuackQuotaExceededError,
 )
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 

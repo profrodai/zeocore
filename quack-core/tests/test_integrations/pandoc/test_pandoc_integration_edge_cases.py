@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
 # exports: test_integration_with_custom_config_path, test_integration_with_custom_output_dir, test_integration_initialize_with_invalid_config, test_integration_directory_conversion_edge_cases, test_conversion_metrics_initialization, test_file_info_initialization, test_conversion_task_initialization, test_conversion_details_initialization (+9 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -41,7 +41,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     verify_pandoc,
 )
 from quack_core.integrations.pandoc.service import PandocIntegration
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 
 def test_integration_with_custom_config_path():
@@ -62,7 +62,7 @@ def test_integration_with_custom_config_path():
         return_value=SimpleNamespace(success=True)
     )
 
-    with patch('quack_core.lib.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
+    with patch('quack_core.core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.PandocConfigProvider',
                   return_value=mock_config_provider), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
@@ -97,7 +97,7 @@ def test_integration_with_custom_output_dir():
     # Ensure provider has expand_user_vars logic if it needs it
     mock_provider.expand_user_vars.side_effect = lambda x: x
 
-    with patch('quack_core.lib.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
+    with patch('quack_core.core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"):
         integration = PandocIntegration(output_dir="/custom/output")
@@ -143,7 +143,7 @@ def test_integration_initialize_with_invalid_config():
         assert result.success
 
 
-@patch('quack_core.lib.fs.service.standalone')
+@patch('quack_core.core.fs.service.standalone')
 def test_integration_directory_conversion_edge_cases(mock_fs):
     """Test directory conversion edge cases."""
     integration = PandocIntegration()
@@ -167,7 +167,7 @@ def test_integration_directory_conversion_edge_cases(mock_fs):
     )
     integration.fs_service = mock_fs_service
 
-    with patch('quack_core.lib.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
+    with patch('quack_core.core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
             patch('quack_core.integrations.pandoc.service.verify_pandoc',
                   return_value="2.11.0"):
         result = integration.initialize()
@@ -324,7 +324,7 @@ def test_get_file_info_edge_cases(monkeypatch):
     mock_fs.get_file_info = lambda path: SimpleNamespace(
         success=True, exists=True, size="not-a-number", modified=None
     )
-    monkeypatch.setattr('quack_core.integrations.pandoc.operations.utils.fs', mock_fs)
+    monkeypatch.setattr('quack_core.integrations.pandoc._ops.utils.fs', mock_fs)
 
     file_info = get_file_info("test.html")
     assert file_info.size == 1024  # Default when size conversion fails
@@ -336,7 +336,7 @@ def test_get_file_info_edge_cases(monkeypatch):
     mock_fs.get_extension = lambda path: SimpleNamespace(
         success=True, data=path.split('.')[-1]
     )
-    monkeypatch.setattr('quack_core.integrations.pandoc.operations.utils.fs', mock_fs)
+    monkeypatch.setattr('quack_core.integrations.pandoc._ops.utils.fs', mock_fs)
 
     # Test various extensions
     extensions_mapping = {
@@ -414,7 +414,7 @@ def test_check_conversion_ratio_edge_cases():
     assert "less than" in errors[0]
 
 
-@patch('quack_core.integrations.pandoc.operations.utils.logger')
+@patch('quack_core.integrations.pandoc._ops.utils.logger')
 def test_track_metrics_logging(mock_logger):
     """Test that track_metrics properly logs information."""
     metrics = ConversionMetrics()

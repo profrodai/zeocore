@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, test_resolvers.py, test_service.py, test_utils.py
 # exports: TestProjectDirectory, TestProjectContext, TestContentContext
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -13,7 +13,7 @@ Tests for project context models.
 
 from pathlib import Path
 
-from quack_core.lib.paths._internal.context import (
+from quack_core.core.paths._internal.context import (
     ContentContext,
     ProjectContext,
     ProjectDirectory,

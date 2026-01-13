@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_discovery.py, test_protocols.py, test_registry.py
 # exports: TestImportSideEffects, MockTestPlugin, TestExplicitLoading, TestPluginIdStability, TestRegistryClear, TestLoadEnabledModules, TestListAvailableEntryPoints
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -29,7 +29,7 @@ import sys
 import unittest
 from unittest.mock import Mock, patch
 
-from quack_core.lib.errors import QuackPluginError
+from quack_core.core.errors import QuackPluginError
 from quack_core.modules.protocols import QuackPluginMetadata
 
 
@@ -148,17 +148,17 @@ class TestExplicitLoading(unittest.TestCase):
         # Mock entry point objects
         fs_ep = Mock()
         fs_ep.name = "fs"
-        fs_ep.value = "quack_core.lib.fs:create_plugin"
+        fs_ep.value = "quack_core.core.fs:create_plugin"
         fs_ep.load.return_value = lambda: fs_plugin
 
         paths_ep = Mock()
         paths_ep.name = "paths"
-        paths_ep.value = "quack_core.lib.paths:create_plugin"
+        paths_ep.value = "quack_core.core.paths:create_plugin"
         paths_ep.load.return_value = lambda: paths_plugin
 
         config_ep = Mock()
         config_ep.name = "config"
-        config_ep.value = "quack_core.lib.config:create_plugin"
+        config_ep.value = "quack_core.core.config:create_plugin"
         config_ep.load.return_value = lambda: config_plugin
 
         # Setup mock to return all three entry points
@@ -200,7 +200,7 @@ class TestExplicitLoading(unittest.TestCase):
 
         fs_ep = Mock()
         fs_ep.name = "fs"
-        fs_ep.value = "quack_core.lib.fs:create_plugin"
+        fs_ep.value = "quack_core.core.fs:create_plugin"
         fs_ep.load.return_value = lambda: fs_plugin
 
         mock_entry_points.return_value = [fs_ep]
@@ -240,7 +240,7 @@ class TestExplicitLoading(unittest.TestCase):
 
         fs_ep = Mock()
         fs_ep.name = "fs"
-        fs_ep.value = "quack_core.lib.fs:create_plugin"
+        fs_ep.value = "quack_core.core.fs:create_plugin"
         fs_ep.load.return_value = lambda: fs_plugin
 
         mock_entry_points.return_value = [fs_ep]
@@ -539,11 +539,11 @@ class TestListAvailableEntryPoints(unittest.TestCase):
         # Create mock entry points
         ep1 = Mock()
         ep1.name = "fs"
-        ep1.value = "quack_core.lib.fs:create_plugin"
+        ep1.value = "quack_core.core.fs:create_plugin"
 
         ep2 = Mock()
         ep2.name = "paths"
-        ep2.value = "quack_core.lib.paths:create_plugin"
+        ep2.value = "quack_core.core.paths:create_plugin"
 
         mock_entry_points.return_value = [ep1, ep2]
 

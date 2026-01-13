@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, test_base.py, test_imports.py, test_mixins_integration.py, test_protocol.py (+2 more)
 # exports: MockIntegrationService, MockLogger, MockWorkflowRunner, BaseMockTool, BaseMockToolWithIntegration, create_mock_fs, mock_data_result, mock_operation_result (+2 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -12,7 +12,7 @@ Mocks for testing the quack_core.tools module.
 
 This module provides mock objects and helper functions for testing
 the tools components without actually using the real implementations
-of services, filesystem operations, etc.
+of services, filesystem _ops, etc.
 """
 
 import os
@@ -22,7 +22,7 @@ from unittest.mock import MagicMock, patch
 
 from quack_core.integrations.core import IntegrationResult
 from quack_core.integrations.core.base import BaseIntegrationService
-from quack_core.lib.fs import DataResult, OperationResult
+from quack_core.core.fs import DataResult, OperationResult
 from quack_core.tools.base import BaseQuackToolPlugin
 
 
@@ -245,7 +245,7 @@ class BaseMockTool(BaseQuackToolPlugin):
         # We need to patch all external dependencies
         patch_targets = [
             # Filesystem
-            ("quack_core.lib.fs.service.get_service", create_mock_fs()),
+            ("quack_core.core.fs.service.get_service", create_mock_fs()),
             # Logging
             ("quack_core.config.tooling.logger.setup_tool_logging", MagicMock()),
             ("quack_core.config.tooling.logger.get_logger",

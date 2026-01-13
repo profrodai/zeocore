@@ -4,15 +4,15 @@
 # role: service
 # neighbors: __init__.py, models.py, protocols.py
 # exports: GoogleDriveService
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
 Google Drive integration service for quack_core.
 
 This module provides the main service class for Google Drive integration,
-handling file _operations, folder management, and permissions.
+handling file _ops, folder management, and permissions.
 """
 
 import io
@@ -26,13 +26,13 @@ from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.auth import GoogleAuthProvider
 from quack_core.integrations.google.config import GoogleConfigProvider
 from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
-from quack_core.lib.errors import (
+from quack_core.core.errors import (
     QuackApiError,
     QuackBaseAuthError,
     QuackIntegrationError,
 )
-from quack_core.lib.fs.service import standalone
-from quack_core.lib.paths import service as paths_service
+from quack_core.core.fs.service import standalone
+from quack_core.core.paths import service as paths_service
 
 NoneType = type(None)
 T = TypeVar("T")  # Generic type for result content
@@ -195,7 +195,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             self, file_path: str, remote_path: str | None, parent_folder_id: str | None
     ) -> tuple[Any, str, str | None, str]:
         """Resolve file details for upload."""
-        from quack_core.lib.fs.service import standalone
+        from quack_core.core.fs.service import standalone
 
         # Extract clean paths using our new helper
         path_obj_result = paths_service.resolve_project_path(file_path)

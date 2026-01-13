@@ -1,15 +1,15 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/google/drive/operations/list_files.py
 # module: quack_core.integrations.google.drive.operations.list_files
-# role: operations
+# role: module
 # neighbors: __init__.py, download.py, folder.py, permissions.py, upload.py
 # exports: list_files
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-File listing _operations for Google Drive integration.
+File listing _ops for Google Drive integration.
 
 This module provides functions for listing files and folders in Google Drive,
 including query building and result formatting.
@@ -23,8 +23,8 @@ from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
 from quack_core.integrations.google.drive.protocols import DriveService
 from quack_core.integrations.google.drive.utils.api import execute_api_request
 from quack_core.integrations.google.drive.utils.query import build_query
-from quack_core.lib.errors import QuackApiError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackApiError
+from quack_core.core.logging import get_logger
 
 
 def list_files(

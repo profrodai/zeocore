@@ -2,7 +2,7 @@
 # path: quack-runner/tests/test_workflow/__init__.py
 # role: tests
 # neighbors: example_test.py, test_results.py
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 

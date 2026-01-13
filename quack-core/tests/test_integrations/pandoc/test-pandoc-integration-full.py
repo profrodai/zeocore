@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, mocks.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # exports: fs_stub, test_verify_pandoc_success, test_verify_pandoc_import_error, test_prepare_pandoc_args_defaults, test_util_get_file_info_success, test_util_get_file_info_not_found, test_post_process_markdown, test_validate_html_structure_valid (+13 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 import os
@@ -36,16 +36,16 @@ from quack_core.integrations.pandoc.operations.utils import (
     verify_pandoc,
 )
 from quack_core.integrations.pandoc.service import PandocIntegration
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 
 # Fixtures for monkeypatching filesystem service
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch):
     """
-    Stub out the quack_core.lib.fs.service.standalone methods for file operations.
+    Stub out the quack_core.core.fs.service.standalone methods for file _ops.
     """
-    import quack_core.lib.fs.service as fs_service
+    import quack_core.core.fs.service as fs_service
     stub = SimpleNamespace()
     # Default get_file_info returns success, exists, size, modified
     stub.get_file_info = lambda path: SimpleNamespace(
@@ -112,7 +112,7 @@ def test_util_get_file_info_success():
 
 
 def test_util_get_file_info_not_found(monkeypatch):
-    quack_core.lib.fs.service.standalone.get_file_info = lambda p: SimpleNamespace(success=False, exists=False)
+    quack_core.core.fs.service.standalone.get_file_info = lambda p: SimpleNamespace(success=False, exists=False)
     with pytest.raises(QuackIntegrationError):
         util_get_file_info('missing.md')
 
@@ -164,14 +164,14 @@ def converter(monkeypatch):
 def test_convert_file_html_to_md_success(converter, monkeypatch):
     # Stub file_info
     monkeypatch.setattr(
-        'quack_core.integrations.pandoc.operations.utils.get_file_info',
+        'quack_core.integrations.pandoc._ops.utils.get_file_info',
         lambda path: FileInfo(
             path=path, format='html', size=100, modified=None, extra_args=[]
         )
     )
     # Stub conversion operation
     monkeypatch.setattr(
-        'quack_core.integrations.pandoc.operations.html_to_md.convert_html_to_markdown',
+        'quack_core.integrations.pandoc._ops.html_to_md.convert_html_to_markdown',
         lambda i, o, cfg, m: IntegrationResult.success_result(['out.md'])
     )
 
@@ -283,7 +283,7 @@ def test_pandoc_integration_is_available(monkeypatch):
 
 def test_pandoc_integration_not_available(monkeypatch):
     import quack_core.integrations.pandoc.service as service_mod
-    from quack_core.lib.errors import QuackIntegrationError
+    from quack_core.core.errors import QuackIntegrationError
     monkeypatch.setattr(
         service_mod,
         'verify_pandoc',
@@ -304,7 +304,7 @@ def test_pandoc_config_default():
 
 def test_pandoc_config_validate_output_dir(monkeypatch):
     # Invalidate path
-    quack_core.lib.fs.service.standalone.get_path_info = lambda p: SimpleNamespace(success=False)
+    quack_core.core.fs.service.standalone.get_path_info = lambda p: SimpleNamespace(success=False)
     with pytest.raises(ValueError):
         PandocConfig(output_dir='??invalid')
 
@@ -315,7 +315,7 @@ def test_config_provider_validate_config(monkeypatch):
     # valid schema
     assert provider.validate_config({'output_dir': '/tmp'}) is not False
     # test invalid path
-    quack_core.lib.fs.service.standalone.is_valid_path = lambda p: False
+    quack_core.core.fs.service.standalone.is_valid_path = lambda p: False
     assert not provider.validate_config({'output_dir': '/tmp'})
 
 

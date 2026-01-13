@@ -3,12 +3,12 @@
 # role: tests
 # neighbors: __init__.py, mocks.py, test_drive.py, test_drive_models.py, test_drive_service_delete.py, test_drive_service_files.py (+6 more)
 # exports: TestGoogleDriveServiceDownload
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive service download _operations.
+Tests for Google Drive service download _ops.
 """
 
 from pathlib import Path
@@ -17,12 +17,12 @@ from unittest.mock import MagicMock, patch
 import pytest
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.service import GoogleDriveService
-from quack_core.lib.fs import FileInfoResult
-from quack_core.lib.paths.api.public.results import PathResult
+from quack_core.core.fs import FileInfoResult
+from quack_core.core.paths.api.public.results import PathResult
 
 
 class TestGoogleDriveServiceDownload:
-    """Tests for GoogleDriveService download _operations."""
+    """Tests for GoogleDriveService download _ops."""
 
     @pytest.fixture
     def drive_service(self) -> GoogleDriveService:
@@ -36,7 +36,7 @@ class TestGoogleDriveServiceDownload:
                 path="/fake/test/dir/mock_path"  # Use string path
             )
 
-            with patch("quack_core.lib.fs.service.standalone.get_file_info") as mock_file_info:
+            with patch("quack_core.core.fs.service.standalone.get_file_info") as mock_file_info:
                 # All file info checks should return that files exist
                 file_info_result = FileInfoResult(
                     success=True,

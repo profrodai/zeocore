@@ -1,14 +1,14 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/github/operations/__init__.py
 # module: quack_core.integrations.github.operations.__init__
-# role: operations
+# role: module
 # neighbors: issues.py, pull_requests.py, repositories.py, users.py
 # exports: get_repo, star_repo, unstar_repo, is_repo_starred, fork_repo, check_repository_exists, get_repository_file_content, update_repository_file (+9 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
-"""GitHub API _operations."""
+"""GitHub API _ops."""
 
 from .issues import add_issue_comment, create_issue, get_issue, list_issues
 from .pull_requests import (
@@ -30,7 +30,7 @@ from .repositories import (
 from .users import get_user
 
 __all__ = [
-    # Repository _operations
+    # Repository _ops
     "get_repo",
     "star_repo",
     "unstar_repo",
@@ -39,14 +39,14 @@ __all__ = [
     "check_repository_exists",
     "get_repository_file_content",
     "update_repository_file",
-    # User _operations
+    # User _ops
     "get_user",
-    # Pull request _operations
+    # Pull request _ops
     "create_pull_request",
     "list_pull_requests",
     "get_pull_request",
     "get_pull_request_files",
-    # Issue _operations
+    # Issue _ops
     "create_issue",
     "list_issues",
     "get_issue",

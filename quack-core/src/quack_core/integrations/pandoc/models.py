@@ -4,17 +4,17 @@
 # role: models
 # neighbors: __init__.py, service.py, protocols.py, config.py, converter.py
 # exports: ConversionMetrics, FileInfo, ConversionTask, ConversionDetails
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
 Data models for Pandoc integration.
 
-This module provides Pydantic models for representing conversion _operations,
+This module provides Pydantic models for representing conversion _ops,
 metrics, and results for document format conversions using Pandoc.
 In this refactored version, file paths are represented as strings rather than
-Path objects. All path resolution and normalization is delegated to quack_core.lib.fs.
+Path objects. All path resolution and normalization is delegated to quack_core.core.fs.
 """
 
 from datetime import datetime
@@ -26,7 +26,7 @@ T = TypeVar("T")  # Generic type for flexible typing
 
 
 class ConversionMetrics(BaseModel):
-    """Metrics for document conversion _operations."""
+    """Metrics for document conversion _ops."""
 
     conversion_times: dict[str, dict[str, float]] = Field(
         default_factory=dict,
