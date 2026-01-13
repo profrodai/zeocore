@@ -1,20 +1,20 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/google/mail/operations/email.py
 # module: quack_core.integrations.google.mail.operations.email
-# role: operations
+# role: module
 # neighbors: __init__.py, attachments.py, auth.py
 # exports: MessagesRequest, MessagesResource, UsersResource, GmailResponse, build_query, list_emails, download_email, clean_filename (+2 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Email _operations for Google Mail integration.
+Email _ops for Google Mail integration.
 
 This module provides functions for listing and downloading emails from Gmail,
 including handling message formats and content extraction.
 
-All file paths are handled as strings. Filesystem _operations (joining paths,
+All file paths are handled as strings. Filesystem _ops (joining paths,
 reading file info, writing files, etc.) are delegated to the QuackCore FS layer
 or built-in os.path utilities.
 """
@@ -32,7 +32,7 @@ from googleapiclient.errors import HttpError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.mail.protocols import GmailRequest, GmailService
 from quack_core.integrations.google.mail.utils.api import execute_api_request
-from quack_core.lib.fs.service import standalone
+from quack_core.core.fs.service import standalone
 
 T = TypeVar("T")  # Generic type for result content
 

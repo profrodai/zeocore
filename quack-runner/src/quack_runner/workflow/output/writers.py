@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, base.py
 # exports: JsonOutputWriter, YamlOutputWriter
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -58,7 +58,7 @@ class JsonOutputWriter(OutputWriter):
 
     def write_output(self, data: Any, output_path: str | Path) -> str:
         """Write data as JSON."""
-        from quack_core.lib.fs.service import standalone
+        from quack_core.core.fs.service import standalone
         output_path = Path(output_path)
 
         # Ensure directory exists
@@ -84,7 +84,7 @@ class YamlOutputWriter(OutputWriter):
 
     def write_output(self, data: Any, output_path: str | Path) -> str:
         """Write data as YAML."""
-        from quack_core.lib.fs.service import standalone
+        from quack_core.core.fs.service import standalone
         output_path = Path(output_path)
 
         # Ensure directory exists

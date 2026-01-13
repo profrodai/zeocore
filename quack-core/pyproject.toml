@@ -1,8 +1,8 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/pyproject.toml
 # role: module
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 # quack-core/pyproject.toml
@@ -115,15 +115,15 @@ path = "src/quack_core/__init__.py"
 packages = ["src/quack_core"]
 
 [project.entry-points."quack_core.modules"]
-paths = "quack_core.lib.paths.plugin:create_plugin"
-fs = "quack_core.lib.fs.plugin:create_plugin"
+paths = "quack_core.core.paths.plugin:create_plugin"
+fs = "quack_core.core.fs.plugin:create_plugin"
 config = "quack_core.config.plugin:create_plugin"
 prompt = "quack_core.prompt.plugin:create_plugin"
 
 [project.entry-points."quack_core.integrations"]
 github = "quack_core.integrations.github:create_integration"
-google.mail = "quack_core.integrations.google.mail:create_integration"
-google.drive = "quack_core.integrations.google.drive:create_integration"
+"google.mail" = "quack_core.integrations.google.mail:create_integration"
+"google.drive" = "quack_core.integrations.google.drive:create_integration"
 pandoc = "quack_core.integrations.pandoc:create_integration"
 llms = "quack_core.integrations.llms:create_integration"
 

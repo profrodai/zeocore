@@ -42,7 +42,7 @@ PRIORITY_NEIGHBORS = [
     "plugin.py",
     "config.py",
     "registry.py",
-    "operations.py",
+    "_ops.py",
     "results.py",
     "utils.py",
 ]
@@ -51,7 +51,7 @@ ROLE_KEYS = [
     "models",
     "protocols",
     "service",
-    "operations",
+    "_ops",
     "plugin",
     "utils",
     "api",

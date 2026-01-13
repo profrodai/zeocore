@@ -1,15 +1,15 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/pandoc/operations/md_to_docx.py
 # module: quack_core.integrations.pandoc.operations.md_to_docx
-# role: operations
+# role: module
 # neighbors: __init__.py, utils.py, html_to_md.py
 # exports: convert_markdown_to_docx, validate_conversion
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Markdown to DOCX conversion operations.
+Markdown to DOCX conversion _ops.
 
 This module provides functions for converting Markdown documents to DOCX
 using pandoc with optimized settings and error handling.
@@ -30,16 +30,16 @@ from quack_core.integrations.pandoc.operations.utils import (
     safe_convert_to_int,
     track_metrics,
 )
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 
 # Import fs module with error handling
 try:
-    from quack_core.lib.fs.service import standalone as fs
+    from quack_core.core.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack_core.lib.fs.service")
+    logger.error("Could not import quack_core.core.fs.service")
     from types import SimpleNamespace
 
     # Create a safer join_path implementation

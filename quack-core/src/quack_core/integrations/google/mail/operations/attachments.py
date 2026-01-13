@@ -1,19 +1,19 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/google/mail/operations/attachments.py
 # module: quack_core.integrations.google.mail.operations.attachments
-# role: operations
+# role: module
 # neighbors: __init__.py, auth.py, email.py
 # exports: process_message_parts, handle_attachment
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Upload operations for Google Mail attachments.
+Upload _ops for Google Mail attachments.
 
 This module provides functions for processing email message parts to extract
 HTML content and download attachments, saving them to a given storage path.
-All file path values are handled as strings. Filesystem operations
+All file path values are handled as strings. Filesystem _ops
 (like joining paths, checking file existence, creating directories, writing files, etc.)
 are delegated to the QuackCore FS layer or Python’s os.path utilities.
 """
@@ -25,7 +25,7 @@ import os
 from quack_core.integrations.google.mail.operations.email import clean_filename
 from quack_core.integrations.google.mail.protocols import GmailService
 from quack_core.integrations.google.mail.utils.api import execute_api_request
-from quack_core.lib.fs.service import standalone
+from quack_core.core.fs.service import standalone
 
 
 def process_message_parts(

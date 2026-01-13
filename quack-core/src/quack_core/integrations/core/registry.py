@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, protocols.py, results.py, base.py
 # exports: IntegrationRegistry
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -20,8 +20,8 @@ from collections.abc import Iterable
 from typing import TypeVar
 
 from quack_core.integrations.core.protocols import IntegrationProtocol
-from quack_core.lib.errors import QuackError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackError
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 
 T = TypeVar("T", bound=IntegrationProtocol)
 

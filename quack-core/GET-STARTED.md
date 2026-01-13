@@ -56,10 +56,10 @@ QuackCore is organized into distinct modules that provide clear functionality:
 ### `quack_core.config`
 Robust configuration system supporting YAML, environment variables, and runtime overrides.
 
-### `quack_core.lib.paths`
+### `quack_core.core.paths`
 Standardized path resolution and project structure detection across environments.
 
-### `quack_core.lib.fs`
+### `quack_core.core.fs`
 Safe and consistent filesystem operations with error handling and structured results.
 
 ### `quack_core.modules`
@@ -68,7 +68,7 @@ Extensible plugin discovery and registration framework to build modular CLI agen
 ### `quack_core.integrations`
 Interfaces to third-party services (Google Drive, Gmail, Notion, Pandoc) through a clean adapter layer.
 
-### `quack_core.lib.errors`
+### `quack_core.core.errors`
 Structured error handling system with typed exceptions for improved developer experience.
 
 ### `quack_core.cli`
@@ -97,7 +97,7 @@ custom_config = load_config("path/to/custom_config.yaml")
 ### Path Resolution
 
 ```python
-from quack_core.lib.paths import resolver
+from quack_core.core.paths import resolver
 
 # Find the project root directory
 project_root = resolver._get_project_root()
@@ -113,7 +113,7 @@ source_dir = context._get_source_dir()
 ### File Operations
 
 ```python
-from quack_core.lib.fs import service as fs
+from quack_core.core.fs import service as fs
 
 # Read text from a file
 result = fs._read_text("path/to/file.txt")
@@ -203,7 +203,7 @@ if emails_result.success:
 ### Error Handling
 
 ```python
-from quack_core.lib.errors import QuackError, QuackFileNotFoundError, wrap_io_errors
+from quack_core.core.errors import QuackError, QuackFileNotFoundError, wrap_io_errors
 
 
 # Use decorator for automatic error handling
@@ -453,7 +453,7 @@ Tools built with QuackCore gain immediate compatibility with:
 
 To create your own tool:
 - Follow QuackCore’s plugin or integration protocol
-- Use `quack_core.config` and `quack_core.lib.fs` for standard behavior
+- Use `quack_core.config` and `quack_core.core.fs` for standard behavior
 - Register your tool with `quack_core.modules.registry`
 
 This ensures your tool can be consumed by orchestrators like **QuackBuddy** and exposed via upcoming standards such as **MCP**.
@@ -525,8 +525,8 @@ Example of a new tool setup:
 ```python
 # my_quack_tool/main.py
 from quack_core.config import load_config
-from quack_core.lib.paths import resolver
-from quack_core.lib.fs import service as fs
+from quack_core.core.paths import resolver
+from quack_core.core.fs import service as fs
 from quack_core.cli import init_cli_env
 
 

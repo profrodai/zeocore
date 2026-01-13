@@ -2,9 +2,9 @@
 # path: quack-core/src/quack_core/contracts/__init__.py
 # module: quack_core.contracts.__init__
 # role: module
-# exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm, generate_run_id, generate_artifact_id, is_valid_uuid (+25 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm, generate_run_id, generate_artifact_id, is_valid_uuid (+18 more)
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -51,6 +51,7 @@ from quack_core.contracts.artifacts import (
     ToolInfo,
 )
 
+'''
 # Capability models
 from quack_core.contracts.capabilities import (
     # Demo (models only)
@@ -65,6 +66,8 @@ from quack_core.contracts.capabilities import (
     TranscriptionSegment,
     VideoRefRequest,
 )
+'''
+
 from quack_core.contracts.common import (
     ARTIFACT_SCHEMA_VERSION,
     # Versions
@@ -132,13 +135,13 @@ __all__ = [
 
     # --- Capabilities ---
     # Media
-    "TimeRange",
-    "SliceVideoRequest",
-    "SlicedClipData",
-    "SliceVideoResponse",
-    "TranscribeRequest",
-    "TranscriptionSegment",
-    "TranscribeResponse",
+    #"TimeRange",
+    #"SliceVideoRequest",
+    #"SlicedClipData",
+    #"SliceVideoResponse",
+    #"TranscribeRequest",
+    #"TranscriptionSegment",
+    #"TranscribeResponse",
     # Demo (models only, not implementations)
     "EchoRequest",
     "VideoRefRequest",

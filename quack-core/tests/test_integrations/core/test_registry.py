@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_get_service.py, test_protocol_inheritance.py, test_protocols.py, test_registry_discovery.py, test_results.py
 # exports: MockIntegration, registry, mock_integration, test_registry_creation, test_register_integration, test_register_duplicate_integration, test_unregister_integration, test_unregister_nonexistent_integration (+2 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -14,7 +14,7 @@ Tests for the integration registry module.
 import pytest
 from quack_core.integrations.core.registry import IntegrationRegistry
 from quack_core.integrations.core.results import IntegrationResult
-from quack_core.lib.errors import QuackError
+from quack_core.core.errors import QuackError
 
 
 # Create a mock integration for testing

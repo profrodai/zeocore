@@ -4,8 +4,8 @@
 # role: adapters
 # neighbors: __init__.py, app.py, service.py, models.py, config.py, auth.py (+1 more)
 # exports: get_cfg, get_registry, get_job_store, get_job_runner, require_auth
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -20,8 +20,8 @@ resources from app.state for use in route handlers.
 from fastapi import Request
 from quack_core.adapters.http.auth import require_bearer
 from quack_core.adapters.http.config import HttpAdapterConfig
-from quack_core.lib.jobs import JobRunner, JobStore
-from quack_core.lib.registry import OperationRegistry
+from quack_core.core.jobs import JobRunner, JobStore
+from quack_core.core.registry import OperationRegistry
 
 
 def get_cfg(request: Request) -> HttpAdapterConfig:

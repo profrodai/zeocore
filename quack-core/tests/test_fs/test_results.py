@@ -1,10 +1,10 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_fs/test_results.py
 # role: tests
-# neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_service.py, test_utils.py
+# neighbors: __init__.py, test_api_surface.py, test_architecture.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py (+3 more)
 # exports: TestOperationResult, TestReadResult, TestWriteResult, TestFileInfoResult, TestDirectoryInfoResult, TestFindResult, TestDataResult
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -14,7 +14,7 @@ Tests for the filesystem operation result classes.
 from pathlib import Path
 
 import pytest
-from quack_core.lib.fs import (
+from quack_core.core.fs import (
     DataResult,
     DirectoryInfoResult,
     FileInfoResult,
@@ -130,7 +130,7 @@ class TestWriteResult:
         assert result.checksum == "abcdef1234567890"
 
     def test_copy_move_result(self) -> None:
-        """Test creating a result for copy/move _operations."""
+        """Test creating a result for copy/move _ops."""
         result = WriteResult(
             path=Path("/test/dest.txt"),
             original_path=Path("/test/source.txt"),

@@ -4,8 +4,8 @@
 # role: adapters
 # neighbors: __init__.py, service.py, models.py, config.py, auth.py, dependencies.py (+1 more)
 # exports: create_app
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -22,9 +22,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from quack_core.adapters.http.config import HttpAdapterConfig
 from quack_core.adapters.http.routes import health, jobs, operations
-from quack_core.lib.jobs import InMemoryJobStore, JobStore, ThreadPoolJobRunner
-from quack_core.lib.logging import get_logger
-from quack_core.lib.registry import OperationRegistry, get_registry
+from quack_core.core.jobs import InMemoryJobStore, JobStore, ThreadPoolJobRunner
+from quack_core.core.logging import get_logger
+from quack_core.core.registry import OperationRegistry, get_registry
 
 logger = get_logger(__name__)
 
@@ -121,7 +121,7 @@ def create_app(
     app = FastAPI(
         title="QuackCore API",
         version="0.1.0",
-        description="HTTP API for QuackCore operations",
+        description="HTTP API for QuackCore _ops",
         lifespan=lifespan,
     )
 
@@ -148,7 +148,7 @@ def create_app(
     # Include routers
     app.include_router(health.router, prefix="/health", tags=["health"])
     app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
-    app.include_router(operations.router, prefix="/ops", tags=["operations"])
+    app.include_router(operations.router, prefix="/ops", tags=["_ops"])
 
     logger.info("FastAPI app created")
 

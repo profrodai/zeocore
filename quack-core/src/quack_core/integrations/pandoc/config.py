@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, service.py, models.py, protocols.py, converter.py
 # exports: PandocOptions, ValidationConfig, RetryConfig, MetricsConfig, PandocConfig, PandocConfigProvider
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -16,7 +16,7 @@ integration, handling settings for document conversion between various formats.
 
 In this refactored version, all file paths are handled exclusively as strings.
 Any interaction with file paths (normalization, validation, etc.) is delegated
-to the quack_core.lib.fs layer.
+to the quack_core.core.fs layer.
 """
 
 import json
@@ -26,15 +26,15 @@ from typing import Any, ClassVar
 from pydantic import BaseModel, Field, field_validator
 from quack_core.config.models import LoggingConfig
 from quack_core.integrations.core.base import BaseConfigProvider
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 
 logger = get_logger(__name__)
 
 # Import fs module with error handling
 try:
-    from quack_core.lib.fs.service import standalone as fs
+    from quack_core.core.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack_core.lib.fs.service")
+    logger.error("Could not import quack_core.core.fs.service")
     from types import SimpleNamespace
     # Create a minimal fs stub if the module isn't available (for tests)
     fs = SimpleNamespace(
@@ -142,7 +142,7 @@ class PandocConfig(BaseModel):
         """
         Validate that the output directory has a valid format.
 
-        Delegates to quack_core.lib.fs to validate the path format.
+        Delegates to quack_core.core.fs to validate the path format.
         If fs service is not available, accepts any path.
         """
         try:

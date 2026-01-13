@@ -4,8 +4,8 @@
 # role: models
 # neighbors: __init__.py, plugin.py, utils.py, loader.py
 # exports: LoggingConfig, PathsConfig, GeneralConfig, PluginsConfig, QuackConfig
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -49,7 +49,7 @@ class LoggingConfig(BaseModel):
 
     def setup_logging(self) -> None:
         """Set up logging based on configuration."""
-        from quack_core.lib.logging import LOG_LEVELS, configure_logger
+        from quack_core.core.logging import LOG_LEVELS, configure_logger
 
         level_name = self.level.upper()
         level = LOG_LEVELS.get(level_name, LOG_LEVELS["INFO"])

@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, results.py, legacy.py
 # exports: ToolRunner
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -37,10 +37,10 @@ from quack_core.contracts import (
     CapabilityError,
 )
 from quack_core.tools import ToolContext
-from quack_core.lib.logging import get_logger
-from quack_core.lib.fs.service import standalone as fs
-from quack_core.lib.serialization import normalize_for_json
-from quack_core.lib.mime import is_binary_extension, get_content_type
+from quack_core.core.logging import get_logger
+from quack_core.core.fs.service import standalone as fs
+from quack_core.core.serialization import normalize_for_json
+from quack_core.core.mime import is_binary_extension, get_content_type
 
 if TYPE_CHECKING:
     from quack_core.tools import BaseQuackTool

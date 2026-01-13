@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
 # exports: setup_integration_mocks, test_pandoc_integration_initialization, test_pandoc_integration_initialize_success, test_pandoc_integration_initialize_failure, test_pandoc_integration_html_to_markdown, test_pandoc_integration_markdown_to_docx, test_pandoc_integration_convert_directory, test_pandoc_integration_not_initialized (+5 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -22,7 +22,7 @@ from quack_core.integrations.core.protocols import IntegrationProtocol
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc import create_integration
 from quack_core.integrations.pandoc.service import PandocIntegration
-from quack_core.lib.errors import QuackIntegrationError
+from quack_core.core.errors import QuackIntegrationError
 
 # --- Shared Test Fixtures ---
 
@@ -38,7 +38,7 @@ def setup_integration_mocks(fs_stub, mock_paths_service):
         side_effect=lambda x: SimpleNamespace(success=True, path=x)
     )
 
-    # Define return values for methods used in initialize() and operations
+    # Define return values for methods used in initialize() and _ops
     fs_stub.get_path_info = MagicMock(
         return_value=SimpleNamespace(success=True)
     )
@@ -73,7 +73,7 @@ def test_pandoc_integration_initialization():
     assert integration.converter is None
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_initialize_success(mock_verify_pandoc,
                                                mock_expand_user_vars,
@@ -115,7 +115,7 @@ def test_pandoc_integration_initialize_failure(mock_verify_pandoc):
     assert integration._initialized is False
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_html_to_markdown(mock_verify_pandoc,
                                              mock_expand_user_vars,
@@ -151,7 +151,7 @@ def test_pandoc_integration_html_to_markdown(mock_verify_pandoc,
     mock_convert_file.assert_called()
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_markdown_to_docx(mock_verify_pandoc,
                                              mock_expand_user_vars,
@@ -187,7 +187,7 @@ def test_pandoc_integration_markdown_to_docx(mock_verify_pandoc,
     mock_convert_file.assert_called()
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_pandoc_integration_convert_directory(mock_verify_pandoc,
                                               mock_expand_user_vars,
@@ -236,10 +236,10 @@ def test_pandoc_integration_convert_directory(mock_verify_pandoc,
 
 
 def test_pandoc_integration_not_initialized():
-    """Test operations when integration is not initialized."""
+    """Test _ops when integration is not initialized."""
     integration = PandocIntegration()
 
-    # Try operations without initialization
+    # Try _ops without initialization
     html_result = integration.html_to_markdown("input.html")
     md_result = integration.markdown_to_docx("input.md")
     dir_result = integration.convert_directory("input_dir", "markdown")
@@ -288,7 +288,7 @@ def test_create_integration():
 
 # --- Integration tests ---
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_html_to_markdown_conversion(mock_verify_pandoc,
                                                 mock_expand_user_vars,
@@ -335,7 +335,7 @@ def test_end_to_end_html_to_markdown_conversion(mock_verify_pandoc,
     assert call_args[0][2] == "markdown"  # output_format
 
 
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_markdown_to_docx_conversion(mock_verify_pandoc,
                                                 mock_expand_user_vars,
@@ -382,8 +382,8 @@ def test_end_to_end_markdown_to_docx_conversion(mock_verify_pandoc,
     assert call_args[0][2] == "docx"  # output_format
 
 
-@patch('quack_core.integrations.pandoc.operations.utils.fs')
-@patch('quack_core.lib.fs.service.standalone.expand_user_vars')
+@patch('quack_core.integrations.pandoc._ops.utils.fs')
+@patch('quack_core.core.fs.service.standalone.expand_user_vars')
 @patch('quack_core.integrations.pandoc.service.verify_pandoc')
 def test_end_to_end_directory_conversion(mock_verify_pandoc,
                                          mock_expand_user_vars,
@@ -403,7 +403,7 @@ def test_end_to_end_directory_conversion(mock_verify_pandoc,
         return_value=SimpleNamespace(success=True, files=["file1.html", "file2.html"])
     )
 
-    # Mock for operations.utils used by the Converter
+    # Mock for _ops.utils used by the Converter
     mock_utils_fs.get_file_info.return_value = SimpleNamespace(
         success=True, exists=True, is_dir=False, size=100
     )

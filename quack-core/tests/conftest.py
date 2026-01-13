@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_helper.py
 # exports: MockPlugin, mock_fs_standalone, patch_filesystem_operations, temp_dir, test_file, test_binary_file, sample_config, mock_env_vars (+4 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -26,8 +26,8 @@ from _pytest.monkeypatch import MonkeyPatch
 # Now try to import the quack-core modules
 try:
     from quack_core.config.models import QuackConfig
-    from quack_core.lib.fs import DataResult, OperationResult
-    from quack_core.lib.fs.service import standalone as fs_standalone
+    from quack_core.core.fs import DataResult, OperationResult
+    from quack_core.core.fs.service import standalone as fs_standalone
     from quack_core.modules.protocols import QuackPluginProtocol
 except ImportError as e:
     print(f"Error importing quack-core modules: {e}")
@@ -36,8 +36,8 @@ except ImportError as e:
 
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
     from quack_core.config.models import QuackConfig
-    from quack_core.lib.fs import DataResult, OperationResult
-    from quack_core.lib.fs.service import standalone as fs_standalone
+    from quack_core.core.fs import DataResult, OperationResult
+    from quack_core.core.fs.service import standalone as fs_standalone
     from quack_core.modules.protocols import QuackPluginProtocol
 
 
@@ -50,7 +50,7 @@ def mock_fs_standalone():
     This helps us handle path issues in tests by normalizing the
     behavior of the underlying fs module.
     """
-    with patch("quack_core.lib.fs.service.standalone.normalize_path") as mock_normalize:
+    with patch("quack_core.core.fs.service.standalone.normalize_path") as mock_normalize:
         # Make normalize_path return Path objects for consistent behavior
         mock_normalize.side_effect = lambda p: Path(os.path.abspath(str(p)))
         yield
@@ -59,10 +59,10 @@ def mock_fs_standalone():
 @pytest.fixture(autouse=True)
 def patch_filesystem_operations():
     """
-    Patch filesystem operations for tests.
+    Patch filesystem _ops for tests.
 
     This fixture ensures that DataResult and OperationResult objects
-    are handled correctly in path-related operations during tests.
+    are handled correctly in path-related _ops during tests.
     """
     # Original Path.__init__ to preserve original behavior
     original_path_init = Path.__init__

@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, protocols.py, registry.py, results.py
 # exports: BaseAuthProvider, BaseConfigProvider, BaseIntegrationService
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -30,8 +30,8 @@ from quack_core.integrations.core.results import (
     ConfigResult,
     IntegrationResult,
 )
-from quack_core.lib.errors import QuackConfigurationError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackConfigurationError
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 
 
 class BaseAuthProvider(ABC, AuthProviderProtocol):
@@ -52,12 +52,12 @@ class BaseAuthProvider(ABC, AuthProviderProtocol):
 
     def _resolve_path(self, file_path: str) -> str:
         try:
-            from quack_core.lib.fs.service import standalone
+            from quack_core.core.fs.service import standalone
             result = standalone.resolve_path(file_path)
             return standalone.coerce_path_str(result)
         except Exception as e:
             self.logger.warning(f"Could not resolve project path: {e}")
-            from quack_core.lib.fs.service import standalone
+            from quack_core.core.fs.service import standalone
             normalized = standalone.normalize_path(file_path)
             return standalone.coerce_path_str(normalized)
 
@@ -84,7 +84,7 @@ class BaseAuthProvider(ABC, AuthProviderProtocol):
         if not self.credentials_file:
             return False
         try:
-            from quack_core.lib.fs.service import standalone
+            from quack_core.core.fs.service import standalone
             cred_path = standalone.coerce_path(self.credentials_file)
             parent_dir = cred_path.parent
             result = standalone.create_directory(parent_dir, exist_ok=True)
@@ -112,7 +112,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
     def name(self) -> str: ...
 
     def load_config(self, config_path: str | None = None) -> ConfigResult:
-        from quack_core.lib.fs.service import standalone
+        from quack_core.core.fs.service import standalone
 
         if not config_path:
             config_path = self._find_config_file()
@@ -154,7 +154,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
         return config_data.get(integration_name, {})
 
     def _find_config_file(self) -> str | None:
-        from quack_core.lib.fs.service import standalone
+        from quack_core.core.fs.service import standalone
 
         # 1. Check Environment Variable
         env_var = f"QUACK_{self.name.upper()}_CONFIG"
@@ -168,7 +168,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
         # 2. Determine Project Root
         project_root = None
         try:
-            from quack_core.lib.paths import service as paths
+            from quack_core.core.paths import service as paths
             if hasattr(paths, "get_project_root"):
                 root_result = paths.get_project_root()
                 if root_result.success:
@@ -202,7 +202,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
 
     def _resolve_path(self, file_path: str) -> str:
         try:
-            from quack_core.lib.fs.service import standalone
+            from quack_core.core.fs.service import standalone
             result = standalone.resolve_path(file_path)
             return standalone.coerce_path_str(result)
         except Exception as e:
@@ -243,7 +243,7 @@ class BaseIntegrationService(ABC, IntegrationProtocol):
     def _set_config_path(self, config_path: str) -> None:
         self.config_path = config_path
         try:
-            from quack_core.lib.fs.service import standalone
+            from quack_core.core.fs.service import standalone
             result = standalone.resolve_path(config_path)
             self.config_path = standalone.coerce_path_str(result)
             self.logger.debug(f"Set config path to {self.config_path}")

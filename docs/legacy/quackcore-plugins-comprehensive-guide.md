@@ -526,7 +526,7 @@ result = registry.execute_workflow("process-data", data=[{"foo": "bar"}])
 Use `QuackPluginError` for plugin-related errors and provide meaningful error messages:
 
 ```python
-from quack_core.lib.errors import QuackPluginError
+from quack_core.core.errors import QuackPluginError
 
 try:
     plugin = loader.load_plugin("non_existent_module")
@@ -793,13 +793,13 @@ class Service2:
    # Bad: Complex initialization
    class MyPlugin:
        def __init__(self):
-           # Expensive _operations during initialization
+           # Expensive _ops during initialization
            self.data = self._load_large_dataset()
    
    # Good: Lazy initialization
    class MyPlugin:
        def __init__(self):
-           # Defer expensive _operations
+           # Defer expensive _ops
            self._data = None
        
        @property
@@ -1327,7 +1327,7 @@ from typing import Any, Callable, List, Dict
 
 
 class QuackETL:
-    """A plugin for Extract, Transform, Load _operations on data."""
+    """A plugin for Extract, Transform, Load _ops on data."""
 
     @property
     def name(self) -> str:

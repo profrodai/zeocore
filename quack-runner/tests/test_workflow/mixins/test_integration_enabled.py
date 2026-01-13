@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_output_writer.py, test_save_output_mixin.py
 # exports: DummyService, Host, test_resolve_none, test_resolve_and_initialize
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 

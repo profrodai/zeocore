@@ -4,11 +4,11 @@
 # role: module
 # neighbors: __init__.py, registry.py, selector.py
 # exports: enhance_with_llm_safe
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 

@@ -4,12 +4,12 @@
 # role: service
 # neighbors: __init__.py, dependencies.py, initialization.py, integration.py
 # exports: chat, count_tokens, get_provider_status, reset_provider_status
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-LLM _operations for the integration service.
+LLM _ops for the integration service.
 
 This module provides methods for interacting with LLMs, such as chat and token counting.
 """

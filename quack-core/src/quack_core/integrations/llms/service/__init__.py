@@ -2,10 +2,10 @@
 # path: quack-core/src/quack_core/integrations/llms/service/__init__.py
 # module: quack_core.integrations.llms.service.__init__
 # role: service
-# neighbors: operations.py, dependencies.py, initialization.py, integration.py
+# neighbors: dependencies.py, initialization.py, integration.py, operations.py
 # exports: LLMIntegration, check_llm_dependencies
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -24,8 +24,8 @@ from quack_core.integrations.llms.clients import LLMClient, MockLLMClient
 from quack_core.integrations.llms.config import LLMConfig, LLMConfigProvider
 from quack_core.integrations.llms.fallback import FallbackConfig
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.logging import LOG_LEVELS, LogLevel
 
 
 def check_llm_dependencies() -> tuple[bool, str, list[str]]:

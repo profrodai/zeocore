@@ -1,14 +1,14 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_fs/test_atomic_wrapping.py
 # role: tests
-# neighbors: __init__.py, test_operations.py, test_path_utils.py, test_results.py, test_service.py, test_utils.py
+# neighbors: __init__.py, test_api_surface.py, test_architecture.py, test_operations.py, test_path_utils.py, test_results.py (+3 more)
 # exports: TestAtomicWrapping, temp_test_dir
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Tests to ensure that the write_text and write_binary operations wrap
+Tests to ensure that the write_text and write_binary _ops wrap
 their return values correctly in a WriteResult object—even when using atomic writes.
 
 The error we encountered in production (i.e. "PosixPath object has no attribute 'success'")
@@ -19,8 +19,8 @@ WriteResult. These tests will detect such scenarios.
 from pathlib import Path
 
 import pytest
-from quack_core.lib.fs import WriteResult
-from quack_core.lib.fs.service import FileSystemService
+from quack_core.core.fs import WriteResult
+from quack_core.core.fs.service import FileSystemService
 
 
 # A helper function to create a temporary directory for testing.
@@ -31,7 +31,7 @@ def temp_test_dir(tmp_path: Path) -> Path:
 
 
 class TestAtomicWrapping:
-    """Tests to verify that write operations return a WriteResult wrapper."""
+    """Tests to verify that write _ops return a WriteResult wrapper."""
 
     @pytest.fixture
     def fs_service(self) -> FileSystemService:

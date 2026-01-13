@@ -2,9 +2,9 @@
 # path: quack-core/tests/test_http/conftest.py
 # role: tests
 # neighbors: __init__.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py, test_routes_jobs.py (+2 more)
-# exports: clear_job_state, test_config, test_app, test_client, auth_headers, no_auth_config, no_auth_client
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# exports: clear_job_state, test_config, test_app, test_client, auth_headers, no_auth_config, no_auth_client, job_store, job_runner
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -15,15 +15,42 @@ import pytest
 from fastapi.testclient import TestClient
 from quack_core.adapters.http.app import create_app
 from quack_core.adapters.http.config import HttpAdapterConfig
-from quack_core.adapters.http.jobs import clear_jobs
+from quack_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
+from quack_core.core.registry import OperationRegistry
+
+
+@pytest.fixture
+def job_store():
+    """Create a fresh job store for testing."""
+    store = InMemoryJobStore()
+    yield store
+    store.clear()
+
+
+@pytest.fixture
+def test_registry():
+    """Create a test operation registry."""
+    return OperationRegistry()
+
+
+@pytest.fixture
+def job_runner(test_registry, job_store):
+    """Create a job runner for testing."""
+    runner = ThreadPoolJobRunner(
+        registry=test_registry,
+        store=job_store,
+        max_workers=2
+    )
+    yield runner
+    runner.shutdown(wait=True)
 
 
 @pytest.fixture(autouse=True)
-def clear_job_state():
-    """Clear job state before each test."""
-    clear_jobs()
+def clear_job_state(job_store):
+    """Clear job state before and after each test."""
+    job_store.clear()
     yield
-    clear_jobs()
+    job_store.clear()
 
 
 @pytest.fixture

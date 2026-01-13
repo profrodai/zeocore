@@ -4,8 +4,8 @@
 # role: module
 # neighbors: annotate_headers.py, fix_imports.py, fix_remaining_tests.py, verify_installation.py
 # exports: FileStat, should_skip_dir, iter_files, safe_slug, read_text_file, count_lines, flatten_to_file, write_manifest (+1 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 from __future__ import annotations

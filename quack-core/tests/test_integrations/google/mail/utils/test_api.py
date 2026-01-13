@@ -3,8 +3,8 @@
 # role: utils
 # neighbors: __init__.py
 # exports: TestGmailApiUtils
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -24,7 +24,7 @@ from quack_core.integrations.google.mail.utils.api import (
     execute_api_request,
     with_exponential_backoff,
 )
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 R = TypeVar("R")  # Generic type for return values
 

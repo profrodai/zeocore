@@ -4,14 +4,14 @@
 # role: utils
 # neighbors: api.py, query.py
 # exports: api, query
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
 Utilities package for Google Drive integration.
 
-This package provides reusable utility functions for Google Drive _operations,
+This package provides reusable utility functions for Google Drive _ops,
 including API wrappers, error handling, and query building.
 """
 

@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, manifest.py
 # exports: StorageRef, Checksum, ArtifactRef
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -15,7 +15,7 @@ Consumed by: ALL Ring B tools (to emit artifacts), Ring C orchestrators (to rout
 Must NOT contain: File I/O, upload logic, storage implementation
 
 These models define HOW to reference artifacts without implementing
-the actual storage operations.
+the actual storage _ops.
 """
 
 from datetime import datetime

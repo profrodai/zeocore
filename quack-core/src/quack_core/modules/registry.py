@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, protocols.py, discovery.py
 # exports: PluginRegistry
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -20,13 +20,13 @@ Following Python 3.13 best practices:
 - Clear separation of concerns
 - Type hints for all public APIs
 - Structured error handling
-- Thread-safe operations where needed
+- Thread-safe _ops where needed
 """
 
 from typing import TypeVar
 
-from quack_core.lib.errors import QuackPluginError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackPluginError
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,
@@ -58,7 +58,7 @@ class PluginRegistry:
         Initialize the plugin registry.
 
         Args:
-            log_level: Logging level for registry operations
+            log_level: Logging level for registry _ops
         """
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)

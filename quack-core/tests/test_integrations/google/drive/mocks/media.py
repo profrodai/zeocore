@@ -3,14 +3,14 @@
 # role: tests
 # neighbors: __init__.py, base.py, credentials.py, download.py, requests.py, resources.py (+1 more)
 # exports: MockDownloadStatus, MockMediaDownloader, create_mock_media_io_base_download
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Mock objects for Google Drive media _operations (downloads, uploads).
+Mock objects for Google Drive media _ops (downloads, uploads).
 
-This module provides mock implementations for media _operations such as
+This module provides mock implementations for media _ops such as
 download status, media uploaders, and downloaders.
 """
 
@@ -19,9 +19,9 @@ from collections.abc import Callable
 
 class MockDownloadStatus:
     """
-    A special mock for download status that properly supports comparison _operations.
+    A special mock for download status that properly supports comparison _ops.
 
-    This is needed because the real MediaIoBaseDownload status has comparison _operations
+    This is needed because the real MediaIoBaseDownload status has comparison _ops
     that are used internally, and MagicMock doesn't handle these correctly.
     """
 

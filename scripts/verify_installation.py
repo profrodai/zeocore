@@ -3,8 +3,8 @@
 # role: module
 # neighbors: annotate_headers.py, fix_imports.py, fix_remaining_tests.py, flatten.py
 # exports: check_package, main
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 # verify_installation.py

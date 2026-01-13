@@ -1,6 +1,6 @@
 ---
 title: QuackCore HTTP Adapter
-description: Optional FastAPI-based HTTP API for QuackCore operations
+description: Optional FastAPI-based HTTP API for QuackCore _ops
 ---
 
 # QuackCore HTTP Adapter

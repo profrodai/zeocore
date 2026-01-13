@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, base.py, mock.py, ollama.py, openai.py
 # exports: AnthropicClient
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -18,7 +18,7 @@ from typing import Any
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms.clients.base import LLMClient
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from quack_core.lib.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
 
 
 class AnthropicClient(LLMClient):

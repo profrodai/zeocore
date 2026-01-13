@@ -3,22 +3,22 @@
 # role: tests
 # neighbors: __init__.py, mocks.py, test_drive.py, test_drive_models.py, test_drive_service_download.py, test_drive_service_files.py (+6 more)
 # exports: TestGoogleDriveServiceDelete
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Tests for Google Drive service deletion _operations.
+Tests for Google Drive service deletion _ops.
 """
 
 from unittest.mock import MagicMock
 
 from quack_core.integrations.google.drive.service import GoogleDriveService
-from quack_core.lib.errors import QuackApiError
+from quack_core.core.errors import QuackApiError
 
 
 class TestGoogleDriveServiceDelete:
-    """Tests for the GoogleDriveService deletion _operations."""
+    """Tests for the GoogleDriveService deletion _ops."""
 
     def test_delete_file(self) -> None:
         """Test deleting a file."""

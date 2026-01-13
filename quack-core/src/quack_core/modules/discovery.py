@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, protocols.py, registry.py
 # exports: PluginInfo, PluginEntryPoint, LoadResult, PluginLoader, list_available_entry_points, load_enabled_entry_points, load_enabled_modules
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 
@@ -33,8 +33,8 @@ import inspect
 from importlib.metadata import entry_points
 
 from pydantic import BaseModel, Field, ValidationError
-from quack_core.lib.errors import QuackPluginError
-from quack_core.lib.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.errors import QuackPluginError
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol
 
 
@@ -116,7 +116,7 @@ class PluginLoader:
         Initialize the plugin loader.
 
         Args:
-            log_level: Logging level for loader operations
+            log_level: Logging level for loader _ops
         """
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
@@ -654,7 +654,7 @@ class PluginLoader:
         of entry points.
 
         Args:
-            modules: List of module paths (e.g., ["quack_core.lib.fs.plugin"])
+            modules: List of module paths (e.g., ["quack_core.core.fs.plugin"])
             strict: If True, fail fast on first error with rollback
             auto_register: If True, automatically register loaded modules
 

@@ -482,7 +482,7 @@ This is the base result class used for most integration operations:
 
 ```python
 class IntegrationResult(BaseModel, Generic[T]):
-    """Base result for integration _operations."""
+    """Base result for integration _ops."""
 
     success: bool = Field(
         default=True,
@@ -527,7 +527,7 @@ Specialized result class for authentication operations:
 
 ```python
 class AuthResult(BaseModel):
-    """Result for authentication _operations."""
+    """Result for authentication _ops."""
 
     success: bool = Field(
         default=True,
@@ -571,7 +571,7 @@ Specialized result class for configuration operations:
 
 ```python
 class ConfigResult(IntegrationResult[dict]):
-    """Result for configuration _operations."""
+    """Result for configuration _ops."""
 
     config_path: str | None = Field(
         default=None,
@@ -2588,7 +2588,7 @@ Enable debug logging to see detailed information:
 
 ```python
 import logging
-from quack_core.lib.logging import LogLevel, LOG_LEVELS
+from quack_core.core.logging import LogLevel, LOG_LEVELS
 from quack_core.integrations.core import registry
 
 # Enable debug logging

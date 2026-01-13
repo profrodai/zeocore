@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `quack_core.lib.logging` module provides a standardized approach to logging across all QuackCore components. It extends Python's built-in logging capabilities with features specifically designed for QuackCore applications, including:
+The `quack_core.core.logging` module provides a standardized approach to logging across all QuackCore components. It extends Python's built-in logging capabilities with features specifically designed for QuackCore applications, including:
 
 - Consistent log formatting across all QuackCore modules
 - Support for "Teaching Mode" with specialized log formatting
@@ -19,7 +19,7 @@ This documentation will help you integrate and use the QuackCore logging system 
 The simplest way to use QuackCore logging is to import the default logger:
 
 ```python
-from quack_core.lib.logging import logger
+from quack_core.core.logging import logger
 
 # Standard log messages
 logger.debug("Detailed information for debugging")
@@ -34,7 +34,7 @@ logger.critical("Critical error that may cause program termination")
 For better log organization, create a module-specific logger:
 
 ```python
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 # Create a logger with your module's name
 logger = get_logger(__name__)
@@ -64,7 +64,7 @@ The log level can be set through:
 2. Programmatically when creating a logger:
    ```python
    import logging
-   from quack_core.lib.logging import configure_logger
+   from quack_core.core.logging import configure_logger
    
    logger = configure_logger(name="my_module", level=logging.DEBUG)
    ```
@@ -82,7 +82,7 @@ To save logs to a file in addition to console output:
 
 ```python
 from pathlib import Path
-from quack_core.lib.logging import configure_logger
+from quack_core.core.logging import configure_logger
 
 log_path = Path("logs/my_application.log")
 logger = configure_logger(name="my_module", log_file=log_path)
@@ -97,7 +97,7 @@ logger.info("This message will appear in both console and log file")
 For more specific configuration needs:
 
 ```python
-from quack_core.lib.logging import configure_logger
+from quack_core.core.logging import configure_logger
 
 # Configure a custom logger
 logger = configure_logger(
@@ -113,12 +113,12 @@ logger = configure_logger(
 If you need to reference log level constants:
 
 ```python
-from quack_core.lib.logging import LOG_LEVELS, LogLevel
+from quack_core.core.logging import LOG_LEVELS, LogLevel
 
 # Check current log level against a threshold
 current_level = LOG_LEVELS[LogLevel.DEBUG]
 if logger.level <= current_level:
-    # Perform verbose logging _operations
+    # Perform verbose logging _ops
     pass
 ```
 
@@ -143,7 +143,7 @@ These messages will be specially formatted when Teaching Mode is enabled.
 You can also use the `log_teaching` helper function for Teaching Mode logs:
 
 ```python
-from quack_core.lib.logging import log_teaching
+from quack_core.core.logging import log_teaching
 
 log_teaching(logger, "This is how the data processing works", level="INFO")
 ```
@@ -181,7 +181,7 @@ Instead of using the general logger, create module-specific loggers to make log 
 
 ```python
 # In file: my_module/data_processor.py
-from quack_core.lib.logging import get_logger
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)  # Will create a logger named "my_module.data_processor"
 ```
@@ -221,8 +221,8 @@ You can add additional handlers to a logger after it's configured:
 
 ```python
 import logging
-from quack_core.lib.logging import get_logger
-from quack_core.lib.logging.formatter import TeachingAwareFormatter
+from quack_core.core.logging import get_logger
+from quack_core.core.logging.formatter import TeachingAwareFormatter
 
 logger = get_logger(__name__)
 
@@ -254,7 +254,7 @@ Colored output might not appear if:
 
 ## API Reference
 
-### Module: `quack_core.lib.logging`
+### Module: `quack_core.core.logging`
 
 #### Functions
 
@@ -267,7 +267,7 @@ Colored output might not appear if:
 - `LOG_LEVELS`: Mapping from LogLevel enum values to logging module constants
 - `LogLevel`: Enum for available log levels (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`)
 
-### Module: `quack_core.lib.logging.config`
+### Module: `quack_core.core.logging.config`
 
 #### Functions
 
@@ -279,7 +279,7 @@ Colored output might not appear if:
 
 - `LogLevel(str, Enum)`: Enum for available log levels
 
-### Module: `quack_core.lib.logging.formatter`
+### Module: `quack_core.core.logging.formatter`
 
 #### Classes
 

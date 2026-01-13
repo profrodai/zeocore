@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_integration_enabled.py, test_save_output_mixin.py
 # exports: StubFS, patch_fs_service, test_write_dict_json, test_write_plain_text, test_write_failure_raises
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 from pathlib import Path
@@ -53,7 +53,7 @@ def patch_fs_service(monkeypatch):
     original_write = DefaultOutputWriter.write
 
     def patched_write(self, result, input_path, options):
-        # Use our stub for filesystem operations
+        # Use our stub for filesystem _ops
         fs = stub_fs
         out_dir = options.get("output_dir", "./output")
         fs.create_directory(out_dir, exist_ok=True)

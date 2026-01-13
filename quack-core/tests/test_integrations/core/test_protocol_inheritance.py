@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_get_service.py, test_protocols.py, test_registry.py, test_registry_discovery.py, test_results.py
 # exports: MinimalIntegration, MinimalAuthProvider, MinimalConfigProvider, MinimalStorageIntegration, CustomStorageIntegrationProtocol, ExtendedIntegrationProtocol, TestProtocolInheritance
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -131,7 +131,7 @@ T = TypeVar("T")  # Generic type for result content
 
 @runtime_checkable
 class CustomStorageIntegrationProtocol(Protocol):
-    """Custom protocol extending both IntegrationProtocol and adding storage _operations."""
+    """Custom protocol extending both IntegrationProtocol and adding storage _ops."""
 
     @property
     def name(self) -> str: ...

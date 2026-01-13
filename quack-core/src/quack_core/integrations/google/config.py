@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, auth.py, serialization.py
 # exports: GoogleBaseConfig, GoogleDriveConfig, GoogleMailConfig, GoogleConfigProvider, GoogleConfig
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -292,7 +292,7 @@ class GoogleConfigProvider(BaseConfigProvider):
         Returns:
             dict[str, Any]: Configuration with resolved paths
         """
-        from quack_core.lib.paths import service as paths  # Direct import
+        from quack_core.core.paths import service as paths  # Direct import
 
         resolved_config = config.copy()
 

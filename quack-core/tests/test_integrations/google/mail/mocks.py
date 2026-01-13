@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_mail.py, test_mail_service.py
 # exports: MockGmailRequest, MockGmailAttachmentsResource, MockGmailMessagesResource, MockGmailUsersResource, MockGmailService, MockGoogleCredentials, MockRequest, create_mock_gmail_service (+2 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -324,7 +324,7 @@ def create_error_gmail_service(
     Args:
         list_error: Exception to raise on list operation
         get_error: Exception to raise on get operation
-        attachment_error: Exception to raise on attachment _operations
+        attachment_error: Exception to raise on attachment _ops
 
     Returns:
         A mock Gmail service object that will raise exceptions

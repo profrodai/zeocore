@@ -1,10 +1,10 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_fs/test_service.py
 # role: tests
-# neighbors: __init__.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py, test_utils.py
+# neighbors: __init__.py, test_api_surface.py, test_architecture.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py (+3 more)
 # exports: TestFileSystemService
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -20,7 +20,7 @@ from pathlib import Path
 import yaml
 from hypothesis import given
 from hypothesis import strategies as st
-from quack_core.lib.fs.service import FileSystemService
+from quack_core.core.fs.service import FileSystemService
 
 
 class TestFileSystemService:
@@ -550,7 +550,7 @@ class TestFileSystemService:
 
     @given(st.text(min_size=1, max_size=100))
     def test_hypothetical_file_operations(self, content: str) -> None:
-        """Test file _operations with hypothesis-generated content."""
+        """Test file _ops with hypothesis-generated content."""
         # Skip problematic input like lone carriage returns
         if content in ("\r", "\r\n", "\n\r"):
             return

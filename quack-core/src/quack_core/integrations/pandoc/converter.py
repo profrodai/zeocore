@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, service.py, models.py, protocols.py, config.py
 # exports: DocumentConverter
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -13,9 +13,9 @@ Core converter implementation for Pandoc integration.
 
 This module provides the main DocumentConverter class that implements
 the document conversion functionality using Pandoc. In this refactored
-version, all file paths are represented as strings. Filesystem _operations
+version, all file paths are represented as strings. Filesystem _ops
 such as reading file info, creating directories, writing output files, etc.,
-are delegated to the quack_core.lib.fs service functions.
+are delegated to the quack_core.core.fs service functions.
 """
 
 import os
@@ -37,16 +37,16 @@ from quack_core.integrations.pandoc.protocols import (
     BatchConverterProtocol,
     DocumentConverterProtocol,
 )
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 
 # Import fs module with error handling
 try:
-    from quack_core.lib.fs.service import standalone as fs
+    from quack_core.core.fs.service import standalone as fs
 except ImportError:
-    logger.error("Could not import quack_core.lib.fs.service")
+    logger.error("Could not import quack_core.core.fs.service")
     from types import SimpleNamespace
     # Create a minimal fs stub if the module isn't available (for tests)
     fs = SimpleNamespace(

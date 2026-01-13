@@ -1,20 +1,20 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/pandoc/operations/utils.py
 # module: quack_core.integrations.pandoc.operations.utils
-# role: operations
+# role: utils
 # neighbors: __init__.py, html_to_md.py, md_to_docx.py
 # exports: verify_pandoc, prepare_pandoc_args, validate_html_structure, validate_docx_structure, safe_convert_to_int, get_size_str_wrapper, check_file_size, check_conversion_ratio (+2 more)
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Utility functions for pandoc _operations.
+Utility functions for pandoc _ops.
 
-This module provides helper functions for pandoc conversion _operations,
+This module provides helper functions for pandoc conversion _ops,
 such as validation, metrics tracking, and pandoc installation verification.
-All file path values are handled as strings. Filesystem _operations are delegated
-to the quack_core.lib.fs service.
+All file path values are handled as strings. Filesystem _ops are delegated
+to the quack_core.core.fs service.
 """
 
 import os
@@ -23,14 +23,14 @@ from typing import Any
 
 from quack_core.integrations.pandoc.config import PandocConfig
 from quack_core.integrations.pandoc.models import ConversionMetrics, FileInfo
-from quack_core.lib.errors import QuackIntegrationError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 
 # Import fs service
 try:
-    from quack_core.lib.fs.service import standalone as fs
+    from quack_core.core.fs.service import standalone as fs
 except ImportError:
     # If fs service isn't available, create a minimal stub
     import types

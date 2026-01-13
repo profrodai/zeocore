@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py (+2 more)
 # exports: MockUploadService, CompleteTool, TestToolkitIntegration, create_mock_fs, mock_upload_service, complete_tool, sample_file
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
@@ -108,7 +108,7 @@ class CompleteTool(
         self._upload_service = None
 
         # Patch get_service to avoid filesystem issues
-        with patch('quack_core.lib.fs.service.get_service') as mock_get_service, \
+        with patch('quack_core.core.fs.service.get_service') as mock_get_service, \
                 patch('os.getcwd') as mock_getcwd, \
                 patch('quack_core.config.tooling.logger.setup_tool_logging'), \
                 patch('quack_core.config.tooling.logger.get_logger'):

@@ -1,14 +1,14 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/github/operations/pull_requests.py
 # module: quack_core.integrations.github.operations.pull_requests
-# role: operations
+# role: module
 # neighbors: __init__.py, issues.py, repositories.py, users.py
 # exports: create_pull_request, list_pull_requests, get_pull_request, merge_pull_request, get_pull_request_files, add_pull_request_review, get_pull_requests_by_user
-# git_branch: refactor/toolkitWorkflow
-# git_commit: 9e6703a
+# git_branch: feat/9-make-setup-work
+# git_commit: f4879df3
 # === QV-LLM:END ===
 
-"""GitHub pull request _operations."""
+"""GitHub pull request _ops."""
 
 from datetime import datetime
 from typing import Any, Literal
@@ -20,8 +20,8 @@ from quack_core.integrations.github.models import (
     PullRequestStatus,
 )
 from quack_core.integrations.github.utils.api import make_request
-from quack_core.lib.errors import QuackError
-from quack_core.lib.logging import get_logger
+from quack_core.core.errors import QuackError
+from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 
