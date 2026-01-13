@@ -2,127 +2,354 @@
 # path: quack-core/tests/test_http/test_jobs.py
 # role: tests
 # neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_routes_jobs.py (+2 more)
-# exports: job_config, test_set_cfg, test_resolve_callable_unknown_op, test_resolve_callable_mock, test_create_mock_function, test_enqueue_not_initialized, test_enqueue_and_get_status, test_enqueue_with_idempotency (+1 more)
+# exports: test_job_store_create_and_get, test_job_store_update, test_job_store_idempotency, test_job_store_cleanup_expired, test_job_runner_execution, test_job_runner_error_handling, test_job_runner_callback
 # git_branch: feat/9-make-setup-work
 # git_commit: f4879df3
 # === QV-LLM:END ===
 
 """
-Tests for job management functionality.
+Tests for job management functionality using core.jobs abstractions.
 """
 
 import time
+import uuid
 
 import pytest
-from quack_core.adapters.http.config import HttpAdapterConfig
-from quack_core.adapters.http.jobs import (
-    _create_mock_function,
-    enqueue,
-    get_status,
-    resolve_callable,
-    set_cfg,
+from quack_core.core.jobs import (
+    JobData,
+    JobStatus,
+    InMemoryJobStore,
+    ThreadPoolJobRunner,
 )
+from quack_core.core.registry import OperationRegistry, Operation
 
 
-@pytest.fixture
-def job_config():
-    """Create job test configuration."""
-    return HttpAdapterConfig(
-        max_workers=2,
-        job_ttl_seconds=60,
-        request_timeout_seconds=30
+def test_job_store_create_and_get(job_store):
+    """Test creating and retrieving jobs."""
+    job_data = JobData(
+        job_id=str(uuid.uuid4()),
+        op="test.operation",
+        params={"key": "value"},
+        status=JobStatus.QUEUED,
+        created_at=time.time(),
     )
 
+    job_store.create(job_data)
 
-def test_set_cfg(job_config):
-    """Test configuration setting."""
-    set_cfg(job_config)
-    # Should not raise
-
-
-def test_resolve_callable_unknown_op():
-    """Test resolving unknown operation."""
-    with pytest.raises(ValueError, match="Unsupported operation"):
-        resolve_callable("unknown.operation")
+    retrieved = job_store.get(job_data.job_id)
+    assert retrieved is not None
+    assert retrieved.job_id == job_data.job_id
+    assert retrieved.op == "test.operation"
+    assert retrieved.params == {"key": "value"}
+    assert retrieved.status == JobStatus.QUEUED
 
 
-def test_resolve_callable_mock():
-    """Test resolving operation that falls back to mock."""
-    # This should work since quack-media doesn't exist yet
-    fn = resolve_callable("quack-media.slice_video")
-    assert callable(fn)
+def test_job_store_update(job_store):
+    """Test updating job data."""
+    job_data = JobData(
+        job_id=str(uuid.uuid4()),
+        op="test.operation",
+        params={},
+        status=JobStatus.QUEUED,
+        created_at=time.time(),
+    )
 
-    # Test mock function
-    result = fn(input_path="/test", output_path="/out")
-    assert result["success"] is True
-    assert result["operation"] == "quack-media.slice_video"
+    job_store.create(job_data)
 
+    # Update status
+    job_data.status = JobStatus.RUNNING
+    job_store.update(job_data)
 
-def test_create_mock_function():
-    """Test mock function creation."""
-    mock_fn = _create_mock_function("test.operation")
-
-    result = mock_fn(param1="value1", param2="value2")
-
-    assert result["success"] is True
-    assert result["operation"] == "test.operation"
-    assert result["params"]["param1"] == "value1"
-    assert result["params"]["param2"] == "value2"
+    retrieved = job_store.get(job_data.job_id)
+    assert retrieved is not None
+    assert retrieved.status == JobStatus.RUNNING
 
 
-def test_enqueue_not_initialized():
-    """Test enqueuing when system not initialized."""
-    # Reset global state
-    from quack_core.adapters.http import jobs
-    jobs._executor = None
-    jobs._cfg = None
+def test_job_store_update_nonexistent(job_store):
+    """Test updating non-existent job raises error."""
+    job_data = JobData(
+        job_id=str(uuid.uuid4()),
+        op="test.operation",
+        params={},
+        status=JobStatus.QUEUED,
+        created_at=time.time(),
+    )
 
-    with pytest.raises(RuntimeError, match="Job system not initialized"):
-        enqueue("test.op", {})
-
-
-def test_enqueue_and_get_status(job_config):
-    """Test job enqueuing and status retrieval."""
-    set_cfg(job_config)
-
-    # Enqueue a job
-    job_id = enqueue("quack-media.slice_video", {"input_path": "/test"})
-
-    assert job_id is not None
-    assert len(job_id) == 36  # UUID4 length
-
-    # Get initial status (should exist immediately after enqueue)
-    status = get_status(job_id)
-    assert status is not None
-    assert status["job_id"] == job_id
-    assert status["status"] in ["queued", "running", "done"]
-
-    # Wait a bit for job to complete
-    time.sleep(0.2)
-
-    final_status = get_status(job_id)
-    assert final_status is not None
-    assert final_status["status"] in ["running", "done"]
+    with pytest.raises(KeyError):
+        job_store.update(job_data)
 
 
-def test_enqueue_with_idempotency(job_config):
-    """Test job idempotency."""
-    set_cfg(job_config)
+def test_job_store_idempotency(job_store):
+    """Test finding jobs by idempotency hash."""
+    hash_value = "test-hash-123"
 
-    params = {"input_path": "/test"}
-    key = "test-key-123"
+    job_data = JobData(
+        job_id=str(uuid.uuid4()),
+        op="test.operation",
+        params={},
+        status=JobStatus.QUEUED,
+        created_at=time.time(),
+        idempotency_hash=hash_value,
+    )
 
-    # Enqueue first job
-    job_id1 = enqueue("quack-media.slice_video", params, idempotency_key=key)
+    job_store.create(job_data)
 
-    # Enqueue same job again immediately (before first one finishes)
-    job_id2 = enqueue("quack-media.slice_video", params, idempotency_key=key)
+    # Find by hash
+    found = job_store.find_by_idempotency_hash(hash_value)
+    assert found is not None
+    assert found.job_id == job_data.job_id
+    assert found.idempotency_hash == hash_value
 
-    # Should return same job ID
-    assert job_id1 == job_id2
+    # Non-existent hash
+    not_found = job_store.find_by_idempotency_hash("non-existent")
+    assert not_found is None
 
 
-def test_get_status_not_found():
-    """Test getting status for non-existent job."""
-    status = get_status("non-existent-job-id")
-    assert status is None
+def test_job_store_cleanup_expired(job_store):
+    """Test cleanup of expired jobs."""
+    current_time = time.time()
+
+    # Create finished job (old)
+    old_job = JobData(
+        job_id=str(uuid.uuid4()),
+        op="test.operation",
+        params={},
+        status=JobStatus.DONE,
+        created_at=current_time - 200,
+        finished_at=current_time - 150,
+    )
+    job_store.create(old_job)
+
+    # Create finished job (recent)
+    recent_job = JobData(
+        job_id=str(uuid.uuid4()),
+        op="test.operation",
+        params={},
+        status=JobStatus.DONE,
+        created_at=current_time - 30,
+        finished_at=current_time - 20,
+    )
+    job_store.create(recent_job)
+
+    # Create running job (not finished)
+    running_job = JobData(
+        job_id=str(uuid.uuid4()),
+        op="test.operation",
+        params={},
+        status=JobStatus.RUNNING,
+        created_at=current_time - 200,
+    )
+    job_store.create(running_job)
+
+    # Cleanup jobs older than 100 seconds
+    removed = job_store.cleanup_expired(ttl_seconds=100)
+
+    assert removed == 1  # Only old_job should be removed
+    assert job_store.get(old_job.job_id) is None
+    assert job_store.get(recent_job.job_id) is not None
+    assert job_store.get(running_job.job_id) is not None
+
+
+def test_job_runner_execution(job_store):
+    """Test job runner executes jobs successfully."""
+    registry = OperationRegistry()
+
+    # Register a test operation
+    def test_operation(x: int, y: int) -> dict:
+        return {"result": x + y}
+
+    registry.register(
+        Operation(
+            name="test.add",
+            fn=test_operation,
+            is_async=False,
+        )
+    )
+
+    runner = ThreadPoolJobRunner(
+        registry=registry,
+        store=job_store,
+        max_workers=2,
+    )
+
+    try:
+        # Create and submit job
+        job_id = str(uuid.uuid4())
+        job_data = JobData(
+            job_id=job_id,
+            op="test.add",
+            params={"x": 5, "y": 3},
+            status=JobStatus.QUEUED,
+            created_at=time.time(),
+        )
+        job_store.create(job_data)
+
+        runner.submit(
+            job_id=job_id,
+            op_name="test.add",
+            params={"x": 5, "y": 3},
+            callback_url=None,
+        )
+
+        # Wait for completion
+        for _ in range(50):  # 5 seconds max
+            job = job_store.get(job_id)
+            if job and job.status == JobStatus.DONE:
+                break
+            time.sleep(0.1)
+
+        # Verify result
+        final_job = job_store.get(job_id)
+        assert final_job is not None
+        assert final_job.status == JobStatus.DONE
+        assert final_job.result == {"result": 8}
+        assert final_job.error is None
+        assert final_job.finished_at is not None
+
+    finally:
+        runner.shutdown(wait=True)
+
+
+def test_job_runner_error_handling(job_store):
+    """Test job runner handles errors properly."""
+    registry = OperationRegistry()
+
+    # Register an operation that fails
+    def failing_operation() -> dict:
+        raise ValueError("Test error message")
+
+    registry.register(
+        Operation(
+            name="test.fail",
+            fn=failing_operation,
+            is_async=False,
+        )
+    )
+
+    runner = ThreadPoolJobRunner(
+        registry=registry,
+        store=job_store,
+        max_workers=2,
+    )
+
+    try:
+        # Create and submit job
+        job_id = str(uuid.uuid4())
+        job_data = JobData(
+            job_id=job_id,
+            op="test.fail",
+            params={},
+            status=JobStatus.QUEUED,
+            created_at=time.time(),
+        )
+        job_store.create(job_data)
+
+        runner.submit(
+            job_id=job_id,
+            op_name="test.fail",
+            params={},
+            callback_url=None,
+        )
+
+        # Wait for completion
+        for _ in range(50):
+            job = job_store.get(job_id)
+            if job and job.status == JobStatus.ERROR:
+                break
+            time.sleep(0.1)
+
+        # Verify error
+        final_job = job_store.get(job_id)
+        assert final_job is not None
+        assert final_job.status == JobStatus.ERROR
+        assert "Test error message" in final_job.error
+        assert final_job.result is None
+        assert final_job.finished_at is not None
+
+    finally:
+        runner.shutdown(wait=True)
+
+
+def test_job_runner_async_operation(job_store):
+    """Test job runner executes async operations."""
+    registry = OperationRegistry()
+
+    # Register an async operation
+    async def async_operation(value: str) -> dict:
+        return {"echo": value}
+
+    registry.register(
+        Operation(
+            name="test.async",
+            fn=async_operation,
+            is_async=True,
+        )
+    )
+
+    runner = ThreadPoolJobRunner(
+        registry=registry,
+        store=job_store,
+        max_workers=2,
+    )
+
+    try:
+        # Create and submit job
+        job_id = str(uuid.uuid4())
+        job_data = JobData(
+            job_id=job_id,
+            op="test.async",
+            params={"value": "hello"},
+            status=JobStatus.QUEUED,
+            created_at=time.time(),
+        )
+        job_store.create(job_data)
+
+        runner.submit(
+            job_id=job_id,
+            op_name="test.async",
+            params={"value": "hello"},
+            callback_url=None,
+        )
+
+        # Wait for completion
+        for _ in range(50):
+            job = job_store.get(job_id)
+            if job and job.status == JobStatus.DONE:
+                break
+            time.sleep(0.1)
+
+        # Verify result
+        final_job = job_store.get(job_id)
+        assert final_job is not None
+        assert final_job.status == JobStatus.DONE
+        assert final_job.result == {"echo": "hello"}
+
+    finally:
+        runner.shutdown(wait=True)
+
+
+def test_job_data_to_dict():
+    """Test JobData serialization to dict."""
+    job_data = JobData(
+        job_id="test-123",
+        op="test.operation",
+        params={"key": "value"},
+        status=JobStatus.DONE,
+        created_at=1234567890.0,
+        result={"output": "data"},
+        error=None,
+        finished_at=1234567900.0,
+        callback_url="https://example.com/callback",
+    )
+
+    result = job_data.to_dict()
+
+    assert result["job_id"] == "test-123"
+    assert result["op"] == "test.operation"
+    assert result["params"] == {"key": "value"}
+    assert result["status"] == "done"
+    assert result["result"] == {"output": "data"}
+    assert result["error"] is None
+    assert result["created_at"] == 1234567890.0
+    assert result["finished_at"] == 1234567900.0
+    assert result["callback_url"] == "https://example.com/callback"
