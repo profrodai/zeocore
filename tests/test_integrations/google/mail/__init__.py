@@ -3,6 +3,6 @@
 # role: tests
 # neighbors: mocks.py, test_mail.py, test_mail_service.py
 # git_branch: feat/9-make-setup-work
-# git_commit: 528aa222
+# git_commit: 9bcf4e79
 # === QV-LLM:END ===
 

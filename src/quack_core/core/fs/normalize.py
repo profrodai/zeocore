@@ -5,7 +5,7 @@
 # neighbors: __init__.py, protocols.py, plugin.py, results.py, exceptions.py
 # exports: coerce_path, coerce_path_str, safe_path_str, coerce_path_result, extract_path_from_result
 # git_branch: feat/9-make-setup-work
-# git_commit: 528aa222
+# git_commit: 9bcf4e79
 # === QV-LLM:END ===
 
 """

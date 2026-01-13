@@ -2,7 +2,10 @@
 # path: quack-core/src/quack_core/core/fs/service/path_validation.py
 # module: quack_core.core.fs.service.path_validation
 # role: service
-# VERSION: V6 FINAL - Documented resolve_path_strict ok=False semantics
+# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
+# exports: PathValidationMixin
+# git_branch: feat/9-make-setup-work
+# git_commit: 9bcf4e79
 # === QV-LLM:END ===
 
 from pathlib import Path
