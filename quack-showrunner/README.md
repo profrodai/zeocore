@@ -1,12 +1,12 @@
 # 🎬 **Quackshowrunner**
 
-**Infrastructure-as-Code for the QuackVerse Runtime**
+**The Infrastructure-as-Code Engine for Sovereign Agent Architectures**
 
-Quackshowrunner wires systems together.
+Quackshowrunner wires the Sovereign Stack together.
 
 It does **not** think, decide, render, or create content.
 
-It provisions, connects, and operates the runtime in which AI-first organizations execute work.
+It provisions, connects, and operates the **local-first runtime** in which Sovereign Agents (e.g., OpenClaw) manage organizational operations.
 
 ---
 
@@ -14,18 +14,11 @@ It provisions, connects, and operates the runtime in which AI-first organization
 
 Quackshowrunner is the **infrastructure layer of the QuackVerse**.
 
-It is a **self-hosted, declarative runtime** that provisions and connects the **long-lived systems** an AI-first organization depends on:
-
-* durable workflow engines
-* execution gateways
-* integration fabrics
-* **external agent services**
-* **shared business systems (CRM, knowledge base)**
-* storage and observability
+In the Sovereign Agent era, it is the **declarative blueprint** for deploying an always-on "Digital Employee Factory" on operator-owned hardware (e.g., Mac Mini clusters). It ensures that while tools are atomic and agents are autonomous, the underlying environment is durable, reproducible, and portable.
 
 Quackshowrunner answers one question only:
 
-> **“What services are running, how are they connected, and how do we recover when something breaks?”**
+> **“What services are running on this local node, how are they secured, and how do we replicate the entire environment on a new machine?”**
 
 ---
 
@@ -33,223 +26,74 @@ Quackshowrunner answers one question only:
 
 Quackshowrunner does **not** contain:
 
-* business logic
-* agent reasoning
-* prompts or policies
-* UI code
-* rendering engines
-* domain workflows
-* proprietary IP
-
-Those belong elsewhere by doctrine.
+* **Sovereign Agent Logic:** It deploys OpenClaw but doesn't write its prompts.
+* **Organizational Memory:** It deploys the database but doesn't own the `.quack/ledger.db`.
+* **Atomic Limb Logic:** It doesn't know how to render video or ingest media.
+* **Business Logic:** It doesn't define what a "Lead" or a "Course" is.
 
 ---
 
 ## 🧭 **Position in the QuackVerse**
 
-QuackVerse is structured as three rings:
+```
+┌──────────────────────────────────────────────────────────┐
+│             RING C — AGENTIC CONTROL                     │
+│    OpenClaw (Manager) · Temporal · QuackRunner (Muscle)  │
+├──────────────────────────────────────────────────────────┤
+│             RING B — ATOMIC LIMBS (WORKERS)              │
+│    QuackIngest · QuackDistro · QuackVideo · QuackDeck    │
+├──────────────────────────────────────────────────────────┤
+│             RING A — THE SOVEREIGN BRAIN                 │
+│    Ticket System · QuackStore (.quack/) · QuackLedger    │
+└──────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════
+RUNTIME / OPERATIONS (Outside the Rings)
+Quackshowrunner — Infrastructure-as-Code
+══════════════════════════════════════════════
 
 ```
-┌────────────────────────────────────────────┐
-│        RING C — EXPERIENCES                │
-│  Temporal · n8n · QuackRunner · Agents     │
-│  Quackchat · CI                            │
-├────────────────────────────────────────────┤
-│        RING B — TOOLS (WORKERS)            │
-│  QuackVideo · QuackImage · QuackMachinima │
-│  QuackTutorial · QuackResearch · …         │
-├────────────────────────────────────────────┤
-│        RING A — CORE (KERNEL)              │
-│  QuackCore: Contracts · Capabilities       │
-│  Config · IO · Registries · Teaching       │
-└────────────────────────────────────────────┘
-```
 
-**Quackshowrunner lives outside the rings.**
-
-It is the **deployment and operations layer** that makes **Ring C services and shared business systems** run.
+**Quackshowrunner lives outside the rings.** It is the "Physical Factory" that houses the Sovereign Brain, the Atomic Limbs, and the Agentic Manager.
 
 ---
 
 ## 🏗 **Responsibilities**
 
-Quackshowrunner is responsible for:
+### **1️⃣ Local Service Provisioning**
+
+* **Temporal & QuackRunner:** Provisions the durable process OS and the execution muscle.
+* **n8n:** Wires the integration fabric for external side-effects (notifications, SaaS posting).
+* **Sovereign Agent Runtimes:** Deploys always-on environments for OpenClaw and other digital employees.
+* **Business Primitives:** Provisions **Twenty CRM** (State) and **Docusaurus** (Knowledge KB).
+
+### **2️⃣ Sovereign Wiring & Security**
+
+* **Local Networking:** Isolates the `.quack/` store and internal service traffic.
+* **Credential Injection:** Safely injects scoped tokens and service account keys into Agent runtimes.
+* **Local Object Storage:** Provisions MinIO or local FS mounts for the **Artifact Store**.
+
+### **3️⃣ Portability & "Nuclear Recovery"**
+
+* **Idempotent Setup:** Ensures `quackshowrunner up` produces an identical environment every time.
+* **Portable Backups:** Manages snapshots of the `.quack/` directory and Postgres state.
+* **Environment Parity:** Enables an operator to move their entire "Sovereign Stack" from a laptop to a dedicated Mac Mini in minutes.
 
 ---
 
-### **1️⃣ Provisioning Runtime Services**
+## 🧠 **Runtime Components (The Sovereign Stack)**
 
-#### Orchestration & Execution
+### **Temporal — The Watchdog**
 
-* **Temporal** — durable workflows and authoritative state
-* **n8n** — integration & external IO fabric
-* **QuackRunner** — tool execution gateway
+Temporal owns the **authoritative status** of Async Tickets. Quackshowrunner ensures Temporal is always-on to monitor background limbs.
 
-#### External Agent Services (Deployed, Not Defined)
+### **OpenClaw / Agents — The Manager**
 
-* deployment of **role-bound agent services**
-* configuration and credential injection
-* networking, health checks, restarts
+Quackshowrunner deploys the Agent services. It provides them with the **limbs.json** (Discovery) and the credentials needed to act.
 
-> **Important:**
-> Agent logic lives in `quackverse/agents/*`.
-> Quackshowrunner deploys agent services but contains **no agent source code**.
+### **The Sovereign Store (.quack/)**
 
-#### Business Systems (Shared Infrastructure)
-
-* **Twenty CRM** — relational system of record for business state
-* **Docusaurus** — canonical knowledge base / SOP surface
-
-#### Data & Observability
-
-* Datastores (Postgres, pgvector, MinIO)
-* Observability (metrics, logs, dashboards)
-
----
-
-### **2️⃣ Wiring & Topology**
-
-* service discovery
-* network boundaries
-* credentials injection
-* environment configuration
-* volume mounts
-* port exposure
-* zero-trust gateways
-
----
-
-### **3️⃣ Operational Safety**
-
-* idempotent setup
-* backup and restore
-* disaster recovery (“nuclear recovery”)
-* upgrades and migrations
-* health checks
-
----
-
-## 🚫 **Explicit Non-Responsibilities**
-
-By non-negotiable doctrine, Quackshowrunner **never**:
-
-* defines workflows (Temporal does)
-* decides sequencing (Temporal does)
-* selects tools (Agents do)
-* runs tools (QuackRunner does)
-* renders pixels (Tools do)
-* contains UI logic (Quackchat does)
-* embeds prompts or policies (Agents do)
-* encodes business rules for CRM or docs
-
----
-
-## 🧠 **Runtime Components (What Gets Deployed)**
-
----
-
-### **Temporal — Process OS**
-
-* authoritative workflow state
-* retries, timers, approvals
-* audit history
-
-**Temporal owns what happens next.**
-
----
-
-### **n8n — Integration Fabric**
-
-* webhooks
-* SaaS connectors
-* notifications
-* side-effects only
-
-**n8n owns external IO, not logic.**
-
-This includes:
-
-* updating Twenty CRM records
-* writing content into Docusaurus
-* triggering documentation builds or notifications
-
----
-
-### **QuackRunner — Execution Gateway**
-
-* starts QuackTool runs
-* tracks execution status
-* indexes artifacts
-* exposes logs
-
-**All tool execution flows through QuackRunner.**
-
----
-
-### **Agent Services — Judgment Actors (External)**
-
-Agents are **first-class Ring C codebases** living in:
-
-```
-quackverse/agents/*
-```
-
-Quackshowrunner’s responsibility is limited to:
-
-* deploying agent services
-* injecting configuration and credentials
-* wiring them to Temporal, QuackRunner, and storage
-* monitoring health
-
-Agents themselves:
-
-* read artifacts and manifests
-* propose decisions and plans
-* signal Temporal
-
-**Agents decide.
-Infrastructure does not.**
-
----
-
-### **Business Systems**
-
-#### **Twenty CRM — Business State**
-
-* deals, jobs, customers, orders
-* long-lived organizational truth
-* updated via Temporal → n8n workflows
-
-Twenty is:
-
-* shared across workflows and tools
-* queried by agents
-* never embedded inside tools
-
----
-
-#### **Docusaurus — Knowledge Surface**
-
-* SOPs
-* job descriptions
-* runbooks
-* agent-readable documentation
-
-Docusaurus is:
-
-* written to via workflows
-* read by humans and agents
-* never treated as a QuackTool
-
----
-
-### **Storage & Memory**
-
-* **Object storage** (MinIO / S3): artifacts
-* **Relational storage** (Postgres): state
-* **Vector storage** (pgvector): semantic memory
-
-**Artifacts are the system of record.**
+Quackshowrunner manages the persistent volumes where the **Ledger** and **Artifacts** live. It ensures this directory is protected and backed up.
 
 ---
 
@@ -257,99 +101,38 @@ Docusaurus is:
 
 ```text
 quackshowrunner/
-├── compose/                # Docker Compose definitions
-│   ├── temporal.yml
-│   ├── n8n.yml
-│   ├── quackrunner.yml
-│   ├── agents.deploy.yml  # Deploys external agent services
-│   ├── twenty.yml         # Twenty CRM deployment
-│   ├── docusaurus.yml     # Knowledge base deployment
-│   ├── storage.yml
-│   └── observability.yml
-│
-├── conf/                   # Service configuration
-│   ├── temporal/
-│   ├── postgres/
-│   ├── n8n/
-│   ├── twenty/
-│   ├── docusaurus/
-│   └── nginx/
-│
-├── scripts/                # Operational tooling
-│   ├── deploy.sh
-│   ├── backups.sh
-│   ├── restore.sh
-│   └── nuclear-recovery.sh
-│
-├── env/                    # Environment templates (no secrets)
-│   └── .env.example
-│
+├── compose/                # Sovereign Stack definitions
+│   ├── core.yml           # Temporal, Postgres, QuackRunner
+│   ├── agents.yml         # OpenClaw & Role-bound services
+│   ├── store.yml          # MinIO / Local FS mounts
+│   └── business.yml       # Twenty CRM & Docusaurus
+├── scripts/                # The Operator's Toolbelt
+│   ├── bootstrap.sh       # Hardware prep (Docker, env)
+│   ├── backup-sovereign.sh # Snapshot .quack/ and DBs
+│   └── restore-sovereign.sh # Reconstitute stack on new hardware
+├── env/                    # Local environment config
 └── README.md
+
 ```
-
----
-
-## 🔗 **Relationship to Other Repos**
-
-| Component       | Lives Where                  |
-| --------------- | ---------------------------- |
-| QuackCore       | `quackverse/quack-core`      |
-| QuackTools      | `quackverse/quacktools/*`    |
-| QuackRunner     | `quackverse/quackrunner`     |
-| Agents          | `quackverse/agents/*`        |
-| Quackchat       | `quackverse/quackchat`       |
-| Quackshowrunner | `quackverse/quackshowrunner` |
-| Everduck (IP)   | separate proprietary repo    |
-
-Quackshowrunner **deploys** these components.
-It does **not** own their source code.
-
----
-
-## 🎓 **Pedagogical Mandate**
-
-Quackshowrunner is **teachable infrastructure**.
-
-It exists so builders can learn:
-
-* how durable workflows are deployed
-* how agent systems are operated safely
-* how artifacts enable auditability
-* how shared business systems integrate cleanly
-* how AI systems recover from failure
-
-Infrastructure is curriculum — **logic lives elsewhere**.
 
 ---
 
 ## 🧭 **Governance Rules (Non-Negotiable)**
 
-1. Quackshowrunner is infrastructure only
-2. No business logic in IaC
-3. No prompts in infrastructure
-4. No rendering engines here
-5. Temporal owns workflow state
-6. QuackRunner owns execution
-7. n8n owns integrations only
-8. Agents own judgment
-9. Business systems are shared infrastructure
-10. Artifacts are the source of truth
-11. Engine public, content private
+1. **Infrastructure is Silent:** Quackshowrunner never executes business tasks; it only provides the room for them to happen.
+2. **Local-First Priority:** Default all storage and connectivity to local-first; cloud is the exception.
+3. **No Logic Leakage:** If you have to write a "Prompt" or a "Rule" in a YAML file here, it belongs in an Agent or a Limb instead.
+4. **Credential Isolation:** Agents never see the master host keys; they only see scoped tokens injected by the showrunner.
+5. **Artifact Store is Sacred:** The `.quack/` directory is the only state that matters for portability.
 
 ---
 
 ## 🧠 **Closing Statement**
 
-**Quackshowrunner is the wiring harness.**
-**Temporal is the brain stem.**
-**Agents provide judgment.**
-**QuackTools do the work.**
-**Quackchat is the cockpit.**
-**Twenty and Docusaurus hold organizational truth.**
-**Everduck is content — not infrastructure.**
+**Quackshowrunner is the Physical Factory.**
+**Temporal is the flight recorder.**
+**The Artifact Store is the memory.**
+**Sovereign Agents are the managers.**
+**Atomic Limbs are the machines.**
 
-When people change,
-when agents evolve,
-when tools are replaced —
-
-**the system keeps running.**
+Quackshowrunner ensures that the factory exists, is powered, and is ready for the Commander's intent. It is the foundation of **Infrastructure Sovereignty**.

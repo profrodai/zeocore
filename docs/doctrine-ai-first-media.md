@@ -1,213 +1,126 @@
-# 🧠 The AI-First Media Operating Doctrine (v1)
+# 🧠 The AI-First Media Operating Doctrine (v2)
 
-**Author:** Rod Rivera
+**Author:** Rod Rivera
 
-**Status:** Public · Living Document
+**Status:** Approved · Sovereign Agent Edition
 
-**Version:** POC / v1
+**Version:** v2 / Agentic OS
 
 ---
 
 ## 1. Purpose
 
-This doctrine defines how an **AI-first knowledge-work company** operates.
+This doctrine defines how a **Sovereign AI-first organization** operates.
 
-Not as a collection of tools.
-
-Not as a solo creator “hacking” productivity.
-
-But as an ** organization where AI replaces roles, not creativity**.
-
-The goal is to produce high-quality, repeatable, defensible media output with **minimal human overhead**, while maximizing learning, leverage, and long-term IP.
+We move beyond "using AI tools" to deploying a **Sovereign Agent Architecture**. The goal is a persistent, autonomous media factory where always-on agents manage the operations of a 15-to-20 person company, re-claiming commercial sovereignty for the solo operator.
 
 ---
 
-## 2. Core Principle
+## 2. Core Principle: The Manager/Limb Model
 
-> AI replaces staff. Humans provide taste, judgment, and narrative.
-> 
+> Agents manage. Tools produce. Humans command.
 
-We do not “use AI for tasks.”
-
-We design systems where AI performs **organizational functions** traditionally done by teams.
+We do not "prompt" for tasks. We design systems where **Sovereign Agents** (the Manager) manipulate **Atomic Limbs** (the Tools) to perform organizational functions. The human provides the "Commander's Intent" and final judgment.
 
 ---
 
-## 3. The Three Pillars
+## 3. The Three Pillars (Sovereign Edition)
 
-All systems must map to exactly **one** pillar.
-
-### Pillar A — Core Content Engine
+### Pillar A — The Core Root Asset
 
 The canonical source of truth.
 
-- One weekly long-form recording is the **root asset**
-- No derivative content exists without a parent recording
-- All value compounds from this single input
+* All content must derive from a **registered Root Asset** (Pillar A recording).
+* **QuackIngest** is the mandatory gatekeeper.
+* If an artifact cannot be traced to a root asset fingerprint in the ledger, it is a hallucination.
 
-> If it is not derived from the core recording, it does not exist.
-> 
+### Pillar B — The Agentic OS (QuackVerse)
 
----
+The operational brain and nervous system.
 
-### Pillar B — Automation & Orchestration
-
-The operational brain.
-
-- n8n is the **visible control plane**
-- All automation must be observable and explainable
-- Custom tools are allowed, but orchestration must be explicit
-
-> If it cannot be shown in a flow, it cannot be trusted.
-> 
-
----
+* **OpenClaw** is the manager of the always-on stack.
+* **The Artifact Store** (`.quack/`) is the local system of record.
+* Every action requires a **Ticket (RunID)** and a **Verified Manifest**.
 
 ### Pillar C — Narrative & IP Layer
 
 The brand moat.
 
-- Original characters (Rod, Quackster, Mator)
-- Machinima-style explainers
-- Used for **conceptual compression**, not volume
-
-> IP is leverage, not decoration.
-> 
+* Original IP (Prof Rod, Mator) provides conceptual compression.
+* **QuackMachinima** turns structured beats into rendered reality.
+* We open-source the engine; we keep the stories proprietary.
 
 ---
 
-## 4. Role-Replacement Model
+## 4. Role-Replacement (The Sovereign Staff)
 
-The company is designed around **roles**, not tools.
+We replace roles with specialized, role-bound Agent services.
 
-| Traditional Media Role | AI-First Equivalent |
+| Traditional Media Role | Sovereign Agent Equivalent |
 | --- | --- |
-| Research Associate | Research & prep agent |
-| Writer / Editor | Post-processing & synthesis agent |
-| Podcast Producer | Recording checklist + clipper agent |
-| Social Media Manager | Daily content generation agent |
-| Animator / Designer | Machinima & visual agent |
-| Chief of Staff | Orchestration & monitoring flows |
-
-Every automation must clearly answer:
-
-> Which role does this replace?
-> 
+| Research Associate | **QuackResearch** extraction agent |
+| Writer / Editor | **QuackDistro** derivation agent |
+| Brand Manager | **QuackBrandPack** constraint agent |
+| Compliance Officer | **QuackCompliance** guardrail agent |
+| Operations Manager | **Temporal** + **OpenClaw** Watchdogs |
 
 ---
 
-## 5. Canonical Content Flow
+## 5. Sovereign Content Flow (The Handshake)
 
-**Input**
-
-- One long-form recording (video + audio + metadata)
-
-**Processing**
-
-- Transcription
-- Structural analysis
-- Claim extraction
-- Narrative reframing
-
-**Outputs**
-
-- Short-form video scripts
-- LinkedIn posts
-- Blog drafts
-- Visual explainers
-- Comic or machinima assets
-
-Publishing may be manual in v1.
-
-**Generation is not.**
+1. **Ingestion:** Raw media is registered, fingerprinted, and locked as a Root Asset.
+2. **Analysis:** Agents trigger atomic limbs (Transcription, Extraction) via **Async Tickets**.
+3. **Derivation:** Manager Agents sequence Ring B tools to produce drafts, clips, and packs.
+4. **Verification:** Every output must emit a `manifest.json` and a `summary.md` for Agent context.
+5. **Approval:** The Human Commander reviews the "Monologue" in the **Quackchat Cockpit**.
 
 ---
 
-## 6. Automation Rules
+## 6. The Rules of Sovereignty
 
-1. **n8n is the single visible brain**
-    
-    Hidden scripts are allowed, hidden logic is not.
-    
-2. **Every flow must be teachable**
-    
-    If a junior developer or founder cannot understand it, it is wrong.
-    
-3. **No automation without documentation**
-    
-    Each flow produces:
-    
-    - A visual (screenshot or diagram)
-    - A functional explanation
-    - A business rationale
-4. **POC > Perfection**
-    
-    Systems must work end-to-end before they are optimized.
-    
+1. **Local-First:** All organizational memory lives in the project-local `.quack/` store.
+2. **Async or it Didn't Happen:** Long-running tasks must issue a Ticket. We never wait; we poll and verify.
+3. **Atomic Limbs Only:** Tools must do one job. If a limb is too complex for an agent to debug, it must be broken down.
+4. **The Hallucination Filter:** Success is a verified checksum, not a chat message. No manifest, no success.
 
 ---
 
 ## 7. Pedagogical Mandate
 
-Every internal system is also **external content**.
+Every internal system is **Curriculum**.
 
-- Automations are case studies
-- Flows are curricula
-- Infrastructure is narrative
-
-This doctrine powers:
-
-- AI Automators Club
-- QuackVerse tooling
-- Prof Rod AI educational content
-
-> If it cannot teach, it does not belong.
-> 
+* We do not just build; we teach **Sovereign Agent Architectures**.
+* Our infrastructure is the narrative.
+* Every tool implements `--discovery` to teach the Agent (and the Human) how to use it.
 
 ---
 
-## 8. Scope Discipline (v1)
+## 8. Operational North Star: The Monday Morning Briefing
 
-We explicitly do **not** aim for:
+The system must autonomously:
 
-- Full autonomy
-- Perfect automation
-- High-volume publishing
-- Platform-specific optimization
-
-v1 exists to prove:
-
-- Structural soundness
-- Role replacement
-- Compounding leverage
+* Collect and cluster AI news via **QuackResearch**.
+* Generate a human-readable **QuackBrief**.
+* Produce derived assets via **QuackDistro** and **QuackImage**.
+* Package everything for approval via **QuackPublishPack**.
+* Track the entire lineage in **QuackLedger**.
 
 ---
 
 ## 9. Success Criteria
 
-This doctrine is working if:
-
-- One person can operate a multi-channel media presence
-- Output quality is stable or improving
-- Systems survive breaks, travel, and context switches
-- Knowledge compounds instead of decaying
+* **Sovereignty:** The operator owns the compute and the intelligence.
+* **Durability:** The system survives crashes and context switches via the Ticket system.
+* **Leverage:** A solo operator commands the output of a 20-person team.
+* **Auditability:** Every artifact has a verifiable lineage back to Pillar A.
 
 ---
 
 ## 10. Closing Statement
 
-This is not a content strategy.
+The future of media is not "Creators." It is **Operators**.
 
-It is an **organizational philosophy**.
-
-> The future of media is not bigger teams.
-> 
-> 
-> It is better systems.
-> 
-
-This document will evolve.
-
-The principles will not.
+> We are architecting the **Headless Company**.
+> The Manager plans. The Limbs produce. The Human judges. The Organization compounds.
 
 ---

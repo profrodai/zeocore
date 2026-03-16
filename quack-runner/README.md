@@ -1,25 +1,24 @@
 # 🏃 **QuackRunner**
 
-**The Execution Gateway of the QuackVerse**
+**The Execution Gateway & Ticket Manager of the QuackVerse**
 
 > **QuackRunner executes.**
 > It does not decide *what* to run.
 > It does not decide *when* to run.
 > It does not plan workflows.
->
-> QuackRunner is the **only place where QuackTools are executed in production**.
+> QuackRunner is the **hardened muscle** of the QuackVerse, responsible for managing the lifecycle of **Atomic Limbs** and their background processes.
 
 ---
 
 ## 🧠 What QuackRunner Is
 
-**QuackRunner is a stateless execution service** in Ring C of the QuackVerse.
+**QuackRunner is a stateful execution service** in Ring C. In the Sovereign Agent Architecture, it acts as the bridge between the **Manager (Agent)** and the **Limbs (Tools)**.
 
-It exists to provide a **single, hardened, auditable execution surface** for all QuackTools.
+It provides a **hardened, auditable execution surface** that handles the heavy lifting of background process management, ensuring that long-running jobs are isolated, tracked, and verified.
 
 QuackRunner answers one question only:
 
-> **“Run this tool with these inputs, and tell me exactly what happened.”**
+> **“Execute this atomic limb, issue a Ticket, and monitor the process until the Manifest is signed.”**
 
 ---
 
@@ -27,319 +26,97 @@ QuackRunner answers one question only:
 
 QuackRunner is **not**:
 
-* a workflow engine (Temporal)
-* an agent or planner
-* an integration fabric (n8n)
-* a UI (Quackchat)
-* infrastructure-as-code (Quackshowrunner)
-* a business system (CRM, docs)
-* a place for prompts or policies
-
-It never:
-
-* selects tools
-* retries business logic
-* mutates CRM or docs
-* stores long-lived organizational state
-* embeds workflow sequencing
-
-Those responsibilities live elsewhere by doctrine.
+* **The Manager:** It does not select tools (Agents do).
+* **The Watchdog:** It does not own the high-level business retry logic (Temporal does).
+* **The Brain:** It does not store organizational memory (The Local Ledger does).
+* **The Integration Fabric:** It does not talk to SaaS APIs (n8n does).
 
 ---
 
 ## 🧭 Position in the QuackVerse
 
 ```
-┌────────────────────────────────────────────┐
-│        RING C — EXPERIENCES                │
-│  Temporal · Agents · QuackRunner           │
-│  Quackchat                                │
-├────────────────────────────────────────────┤
-│        RING B — TOOLS (WORKERS)            │
-│  QuackVideo · QuackImage · QuackMachinima │
-│  QuackQuote · QuackTutorial · …            │
-├────────────────────────────────────────────┤
-│        RING A — CORE (KERNEL)              │
-│  QuackCore: Contracts · Schemas            │
-│  Result Envelopes · Registries             │
-└────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│             RING C — AGENTIC CONTROL                     │
+│    OpenClaw (Manager) · Temporal · QuackRunner (Muscle)  │
+├──────────────────────────────────────────────────────────┤
+│             RING B — ATOMIC LIMBS (WORKERS)              │
+│    QuackIngest · QuackDistro · QuackVideo · QuackDeck    │
+├──────────────────────────────────────────────────────────┤
+│             RING A — THE SOVEREIGN BRAIN                 │
+│    Ticket System · QuackStore (.quack/) · QuackLedger    │
+└──────────────────────────────────────────────────────────┘
+
 ```
 
-**QuackRunner lives in Ring C.**
-
-It sits **between orchestration and execution**.
+**QuackRunner lives in Ring C.** It sits between the Agent's reasoning and the Tool's mutation.
 
 ---
 
 ## 🧠 Core Responsibilities
 
-QuackRunner is responsible for **execution only**.
+### 1️⃣ Ticket & PID Management
 
-### QuackRunner Does
+QuackRunner implements the **Async Handshake**. When a long-running limb is triggered:
 
-* accept **run requests**
-* resolve tools and versions
-* set up isolated execution environments
-* execute tools via the canonical `quack` CLI
-* stream and capture logs
-* collect artifacts
-* validate manifest emission
-* emit structured run results
+* It spawns the background process.
+* It captures the **PID** (Process ID).
+* It registers the **RunID Ticket** in the local `.quack/` store.
 
-### QuackRunner Does Not
+### 2️⃣ Isolated Execution
 
-* plan workflows
-* apply judgment
-* manage retries or backoff
-* perform side effects
-* call SaaS APIs
-* store canonical business truth
+It ensures that limbs run in a clean environment (venv, container, or sandbox) with:
 
----
+* Injected least-privilege credentials.
+* Enforced timeouts and resource limits.
+* Captured `stdout/stderr` streamed to the log store.
 
-## 🧠 Execution Model
+### 3️⃣ Verification & Handover
 
-Canonical execution path:
+Once a limb exits, QuackRunner:
 
-```
-Temporal → QuackRunner → QuackTool → Artifacts
-```
-
-Alternate (local / dev / interactive):
-
-```
-Quackchat → QuackRunner → QuackTool
-```
-
-QuackRunner treats tools as **black boxes**.
+* Verifies the presence of the `manifest.json`.
+* Validates the checksum of the artifacts.
+* Triggers the creation of the `summary.md` (Agent Context).
+* Updates the **RunResult** status in the Ledger.
 
 ---
 
-## 🧠 Run Lifecycle
+## 🏃 The Execution Model (Agentic)
 
-### 1️⃣ Receive Run Request
-
-Via HTTP API (typically from Temporal).
-
-A request includes:
-
-* tool name
-* tool version
-* verb (`run`, `render`, etc.)
-* input manifest reference
-* execution parameters
-* artifact destination
-
----
-
-### 2️⃣ Prepare Execution
-
-QuackRunner:
-
-* validates the request
-* resolves the tool binary / container
-* injects configuration and credentials
-* creates an isolated runtime (container / venv / sandbox)
-
----
-
-### 3️⃣ Execute Tool
-
-* invokes `quack <tool> <verb>`
-* streams stdout/stderr
-* tracks exit status
-* enforces timeouts and limits
-
----
-
-### 4️⃣ Collect Results
-
-After execution:
-
-* verifies artifact presence
-* verifies manifest emission
-* computes checksums
-* indexes metadata
-
----
-
-### 5️⃣ Emit Run Result
-
-QuackRunner emits a **RunResult** containing:
-
-* status (success / failure)
-* duration
-* artifact locations
-* manifest pointer
-* logs reference
-* error details (if any)
-
-This result is:
-
-* returned to Temporal
-* visible in Quackchat
-* auditable later
+1. **Request:** Agent/Temporal sends a `RunRequest` to QuackRunner.
+2. **Launch:** QuackRunner issues a **RunID**, starts the tool, and returns the Ticket immediately.
+3. **Monitor:** QuackRunner tracks the PID. If the process dies without a manifest, it marks the run as `QC_SYS_PID_LOST`.
+4. **Finalize:** Upon success, QuackRunner signals the Agent/Temporal that the **Proof of Work** is ready for inspection.
 
 ---
 
 ## 🧠 API Surface
 
-### Canonical Endpoints
+### Canonical Agentic Endpoints
 
-```
-POST /runs
-GET  /runs/{id}
-GET  /runs/{id}/artifacts
-GET  /runs/{id}/logs
-```
-
-QuackRunner’s API is:
-
-* machine-oriented
-* schema-driven
-* stable across tools
-
----
-
-## 🧠 Relationship to QuackCore
-
-QuackRunner **imports QuackCore**.
-
-From QuackCore it uses:
-
-* RunRequest / RunResult schemas
-* result envelopes
-* error models
-* artifact conventions
-* adapter libraries (HTTP, MCP)
-
-QuackRunner **does not live in QuackCore**.
-
-QuackCore stays pure.
-QuackRunner performs side effects.
-
----
-
-## 🧠 Relationship to Agents
-
-* Agents **decide** which tool should run
-* Agents **never execute tools**
-* Agents signal **Temporal**
-* Temporal calls **QuackRunner**
-
-Agents may read QuackRunner results, but never control execution directly.
-
----
-
-## 🧠 Relationship to Temporal
-
-Temporal:
-
-* owns workflow state
-* owns retries and timing
-* records history
-
-QuackRunner:
-
-* executes exactly what it is told
-* once per request
-* with no memory of previous runs
-
----
-
-## 🧠 Relationship to n8n
-
-n8n:
-
-* performs external side effects
-* updates CRM / docs / notifications
-
-QuackRunner:
-
-* never talks to SaaS APIs
-* never mutates business systems
-
----
-
-## 🧠 Relationship to Quackshowrunner
-
-* **Quackshowrunner deploys QuackRunner**
-* Quackshowrunner wires networking, storage, secrets
-* Quackshowrunner does not contain QuackRunner logic
-
----
-
-## 📦 Repository Structure
-
-```text
-quackrunner/
-├── src/
-│   ├── api/              # HTTP & MCP endpoints
-│   ├── execution/        # Tool execution engine
-│   ├── sandbox/          # Isolation & limits
-│   ├── artifacts/        # Artifact collection & indexing
-│   ├── logs/             # Log streaming & storage
-│   └── main.py           # App entrypoint
-│
-├── tests/
-├── README.md
-└── pyproject.toml
-```
-
----
-
-## 🔐 Security Model (High-Level)
-
-QuackRunner enforces:
-
-* strict input validation
-* isolated execution per run
-* least-privilege credentials
-* explicit artifact paths
-* immutable outputs
-* auditable logs
-
-Execution is treated as a **security boundary**.
-
----
-
-## 🎓 Pedagogical Mandate
-
-QuackRunner is **teachable infrastructure**.
-
-It should make explicit:
-
-* how execution differs from planning
-* why isolation matters
-* how artifacts enable auditability
-* how failures are surfaced cleanly
-
-Opaque execution is considered broken.
+* `POST /runs`: Trigger a limb (returns a Ticket).
+* `GET /runs/{run_id}/status`: Query the current state (Pending/Running/Success/Error).
+* `GET /runs/{run_id}/explain`: Retrieve the `summary.md` for LLM context.
+* `GET /runs/{run_id}/logs`: Stream the execution logs.
 
 ---
 
 ## 🧭 Governance Rules (Non-Negotiable)
 
-1. All tool execution flows through QuackRunner
-2. QuackRunner never selects tools
-3. QuackRunner never retries business logic
-4. QuackRunner never mutates business systems
-5. Tools are black boxes
-6. Artifacts + manifests are mandatory
-7. Logs are first-class outputs
-8. QuackCore remains pure
+1. **No Manifest, No Success:** QuackRunner never reports success unless the manifest checksum is verified.
+2. **Isolation is Mandatory:** Tools must run in isolated environments to prevent local state pollution.
+3. **Logs are First-Class:** Every run must produce an auditable log stream.
+4. **PID Authority:** QuackRunner is the authoritative source for whether a background limb is "Alive."
+5. **Machine-First:** All outputs must be optimized for Agent consumption (`QC_*` codes and JSON).
+6. **Local Sovereignty:** All execution data must be written to the project's local `.quack/` store.
 
 ---
 
 ## 🧠 Closing Statement
 
-**QuackRunner is the muscle of the QuackVerse.**
+**QuackRunner is the muscle that moves the Sovereign Organization.** It takes the abstract plans of the Agent and turns them into real, auditable mutations of data. It ensures that execution is not just a "demo," but a robust, industrial-grade process that provides the proof the organization needs to scale.
 
-Agents think.
-Temporal remembers.
-Tools work.
+---
 
-QuackRunner makes execution **real, safe, and auditable**.
-
-Without it, everything leaks.
-With it, the system holds.
+**Next Step:** QuackRunner is now aligned with the Agentic OS pivot. Would you like to proceed with the update for **QuackLedger** to formalize how it tracks these results in the "Sovereign Brain"?

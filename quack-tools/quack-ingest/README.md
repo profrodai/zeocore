@@ -1,300 +1,228 @@
-# 🦆 QuackIngest
+## 🦆 QuackIngest: The Sovereign CLI Surface
 
-**A QuackTool for Canonical Media Ingestion, Provenance Tracking, and Root Asset Registration**
+### 1. Discovery & Contract
 
-> **QuackIngest turns raw media chaos into a canonical root asset.**
-> It does not edit content.
-> It does not derive value.
-> It does not decide what matters.
+Before OpenClaw acts, it needs to know what "Limbs" it has.
 
----
-
-## 🧠 What QuackIngest Is
-
-QuackIngest is a **Ring B QuackTool** and the **mandatory entry point for Pillar A**.
-
-It consumes **raw media inputs**—such as recordings, exports, camera files, and clips—and emits a **RootAssetManifest**, which becomes the **single source of truth** for all downstream work.
-
-QuackIngest performs:
-
-* fingerprinting of all inputs
-* provenance recording (where this came from, when, how)
-* metadata normalization
-* canonical directory layout creation
-
-QuackIngest answers one question only:
-
-> **“What is the root asset this organization is allowed to build from?”**
+* **Command:** `quack ingest --discovery`
+* **Agent Value:** Returns JSON describing all subcommands, expected schemas for metadata, and supported file types. This prevents the agent from guessing the CLI arguments.
 
 ---
 
-## ❌ What QuackIngest Is Not
+### 2. The Atomic Limb Grammar
 
-QuackIngest is **not**:
+We break Ingestion into three distinct steps so the agent can verify each "link" in the chain.
 
-* a video editor
-* a transcoding or processing engine
-* a clipper or segmenter
-* a workflow orchestrator
-* a publishing system
-* an autonomous agent
+#### Step A: Register (The Handshake)
 
-It never:
-
-* trims or modifies media
-* derives secondary content
-* infers meaning or structure
-* talks to SaaS platforms
-* triggers downstream tools
-
-All transformation happens **after ingestion**, never during.
-
----
-
-## 🧭 Position in the QuackVerse Doctrine
-
-```
-┌────────────────────────────────────────────┐
-│        EXPERIENCES / ORCHESTRATION         │
-│  Quackchat · Temporal · n8n · Agents       │
-├────────────────────────────────────────────┤
-│               TOOLS (WORKERS)              │
-│        ▶ QuackIngest ◀                    │
-├────────────────────────────────────────────┤
-│              CORE (KERNEL)                 │
-│  QuackCore: FS · Schemas · IO · Results   │
-└────────────────────────────────────────────┘
-```
-
-QuackIngest:
-
-* imports **QuackCore only**
-* is executed via **QuackRunner**
-* emits **artifacts + manifest**
-* is stateless across runs
-
----
-
-## 🧱 Pillar A Non-Negotiable
-
-QuackIngest enforces the core rule of the AI-First Media Company:
-
-> **If it is not derived from a root asset, it does not exist.**
-
-Every downstream artifact must trace back to a **RootAssetManifest** produced by QuackIngest.
-
-No exceptions.
-No shortcuts.
-No “just this once.”
-
----
-
-## 🧰 Canonical CLI Surface
-
-QuackIngest does **not** expose its own CLI.
-
-All execution happens via the **single canonical CLI**:
+Instead of just pointing at a folder, the agent "opens" a root asset entry.
 
 ```bash
-quack ingest <verb> [options]
+quack ingest register --name "Episode_42_Riverside" --source "./downloads/raw_export"
+
 ```
 
-Required verbs:
+* **Output:** Returns a `RootAssetID`.
+* **Action:** Creates the entry in `.quack/ledger.db`.
 
-* `run`
-* `validate`
-* `doctor`
-* `explain`
+#### Step B: Fingerprint (The Proof)
 
----
-
-## 🚀 Common Commands
-
-### Ingest raw media into a root asset
+The agent tells the tool to verify the integrity of the files.
 
 ```bash
-quack ingest run ./incoming_media --out ./dist/root_assets
+quack ingest fingerprint <RootAssetID>
+
 ```
 
-Produces:
+* **Output:** `RunID: ingest_hash_001`.
+* **Behavior:** **Asynchronous.** OpenClaw polls for completion.
+* **Result:** Generates SHA-256 hashes for every file. This is the "Truth" that prevents hallucination.
 
-* a canonical root asset directory
-* a `root_asset_manifest.json`
-* normalized metadata for all inputs
+#### Step C: Finalize (The Lock)
 
----
-
-### Validate an ingestion source
+Once hashes are matched, the agent "commits" the asset to the Sovereign Store.
 
 ```bash
-quack ingest validate ./incoming_media
+quack ingest finalize <RootAssetID>
+
 ```
 
-Checks:
-
-* file integrity
-* supported media types
-* duplicate detection
-* metadata extractability
+* **Result:** Generates the `root_asset_manifest.json`. The asset is now "Canon."
 
 ---
 
-### Diagnose environment readiness
+### 3. The Async Status Loop (The Hallucination Killer)
+
+Since we are using the **Async/Ticket** model, OpenClaw uses a single unified command to check its work.
 
 ```bash
-quack ingest doctor
+quack status <RunID>
+
 ```
 
-Reports:
+**Status Responses:**
 
-* filesystem access
-* hashing / fingerprinting support
-* metadata extraction capabilities
+* `PENDING`: "I'm still hashing the 4GB video file, Mator. Check back in a minute."
+* `RUNNING`: "Processing... 65% complete."
+* `SUCCESS`: Returns the absolute path to the `.quack/runs/<RunID>/manifest.json`.
+* `FAILED`: Returns a **QC_ERROR_CODE** (e.g., `QC_IO_DECODE_ERROR`) and a human-readable explanation of why the file was corrupt.
 
 ---
 
-### Explain a root asset
+### 4. The Manifest & Summary (Agent Memory)
 
-```bash
-quack ingest explain ./dist/root_assets/<run-id>/
+Once `SUCCESS` is reached, OpenClaw reads the `summary.md` to update its own "internal monologue."
+
+**Example `summary.md` generated by QuackIngest:**
+
+> ### 📝 Ingestion Summary
+> 
+> 
+> **Root Asset:** `Episode_42_Riverside`
+> **Files Processed:** 3 (1x MP4, 2x WAV)
+> **Integrity:** All checksums verified.
+> **Total Duration:** 00:45:12
+> **Note:** Audio track 2 contains significant background noise (QC_VAL_NOISY_SIGNAL flagged).
+
+---
+
+## 🛠 Command Reference Table for OpenClaw
+
+| Verb | Usage | Mode | Agent Intent |
+| --- | --- | --- | --- |
+| `register` | `quack ingest register --name <N> --source <S>` | Sync | Open a new production slot. |
+| `fingerprint` | `quack ingest fingerprint <ID>` | **Async** | Prove the files are real and intact. |
+| `finalize` | `quack ingest finalize <ID>` | Sync | Lock the asset as the "Source of Truth." |
+| `doctor` | `quack ingest doctor` | Sync | Verify local disk space and FFmpeg health. |
+| `explain` | `quack ingest explain <ID>` | Sync | "Mator, tell me exactly what is in this asset." |
+
+---
+
+## 🧠 Why this works for Sovereign Agents
+
+1. **Sovereignty:** All metadata stays in `.quack/`. If you delete the tool, the history remains.
+2. **No Lying:** If OpenClaw says "I ingested it," but there is no `RootAssetID` in the `ledger.db`, it is caught in a lie.
+3. **Resilience:** If the Mac Mini loses power during a long fingerprinting task, the `RunID` remains in the ledger. OpenClaw can resume by checking the status again once power returns.
+
+To implement a **Best-in-Class Async Handshake**, the `RunID` ticket must be more than just a random string. It must be a **Stateful Token** that allows the Agent (OpenClaw) to treat the CLI as a reliable, persistent background worker.
+
+This structure lives in **QuackCore (Ring A)** and is the "glue" that allows a stateless CLI to behave like a stateful OS.
+
+---
+
+## 🎟️ The Quack `RunID` Ticket Structure
+
+Every time an asynchronous "limb" is invoked, QuackCore creates a **Job Entry** in the local project store (`.quack/runs/`).
+
+### 1. The Ticket Metadata (`ticket.json`)
+
+This is what the tool returns **immediately** to the Agent. It is the "receipt" for the work.
+
+```json
+{
+  "run_id": "ingest_20260315_z9f2k",
+  "tool": "quack-ingest",
+  "limb": "fingerprint",
+  "status": "pending",
+  "created_at": "2026-03-15T23:45:00Z",
+  "owner_agent": "OpenClaw-Local",
+  "pid": 45210,
+  "status_url": "quack status ingest_20260315_z9f2k"
+}
+
 ```
 
-Explains:
-
-* what files were ingested
-* how they were fingerprinted
-* where they came from
-* how downstream systems must reference them
-
 ---
 
-## 📥 Supported Input Sources (Indicative)
+### 2. The Authoritative Job State (`manifest.json`)
 
-QuackIngest is designed to accept **raw, unstructured inputs**, including:
+Once the tool completes the background task, it updates the ticket into a full **Manifest**. This is the "Proof of Work" that stops hallucinations.
 
-* Riverside / Streamyard exports
-* camera card dumps
-* phone video clips
-* audio recordings
-* robot / automation footage
-* mixed-format directories
+```json
+{
+  "header": {
+    "run_id": "ingest_20260315_z9f2k",
+    "version": "2.0",
+    "status": "success",
+    "duration_ms": 145200
+  },
+  "provenance": {
+    "source_path": "./downloads/raw_export",
+    "fingerprint_alg": "sha256",
+    "environment": {
+      "os": "macos-arm64",
+      "ffmpeg_version": "7.0.1"
+    }
+  },
+  "artifacts": [
+    {
+      "id": "file_001",
+      "rel_path": "media/video_main.mp4",
+      "mime": "video/mp4",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "metadata": { "width": 1920, "height": 1080, "fps": 30 }
+    }
+  ],
+  "results": {
+    "machine_code": "QC_SUCCESS",
+    "human_message": "Ingestion complete. 3 files registered and hashed."
+  }
+}
 
-Inputs are treated as **opaque blobs** at ingestion time.
-
----
-
-## 📦 Output Artifacts
-
-Each run produces a **root asset bundle**.
-
-Example:
-
-```text
-dist/
-└── root_assets/
-    └── run-2025-03-22T07-12-09/
-        ├── media/
-        │   ├── video_01.mp4
-        │   ├── audio_01.wav
-        │   └── camera_b_roll.mov
-        ├── metadata/
-        │   └── normalized.json
-        ├── root_asset_manifest.json
-        └── manifest.json
 ```
 
 ---
 
-### RootAssetManifest Is Sacred
+## 🔄 The "Best-in-Class" Handshake Loop
 
-The `root_asset_manifest.json` records:
+This is the explicit protocol OpenClaw must follow to ensure operational safety.
 
-* content hashes (fingerprints)
-* original filenames and paths
-* ingestion timestamp
-* source system (if known)
-* media type and basic properties
+### Step 1: Trigger (Async)
 
-All downstream tools **must reference this manifest**.
+**Agent:** `quack ingest fingerprint root_asset_001`
+**Tool:** Immediately writes `ticket.json` to `.quack/runs/run_id/` and spawns a background process.
+**Tool Output (to CLI):**
 
-If an artifact cannot point back to a root asset fingerprint, it is invalid.
+> ✅ **Ticket Issued:** `ingest_20260315_z9f2k`
+> Use `quack status ingest_20260315_z9f2k` to track progress.
 
----
+### Step 2: The Poll (Verification)
 
-## 🔗 How QuackIngest Fits into Workflows
+**Agent:** `quack status ingest_20260315_z9f2k --json`
+**Tool:** Reads the current state of the background process.
+**Tool Output (if still working):**
 
-QuackIngest is always **first**.
+```json
+{
+  "run_id": "ingest_20260315_z9f2k",
+  "status": "running",
+  "progress": 0.65,
+  "current_file": "video_main.mp4"
+}
 
-Typical flow:
-
-1. Raw media appears (recording, export, upload)
-2. **Quackchat / Agent** requests ingestion
-3. **Temporal** records the ingestion event
-4. **QuackRunner** executes `quack ingest run`
-5. Root asset bundle + manifest are written
-6. **All other tools** reference the root asset
-7. Derivation begins elsewhere
-
-QuackIngest exits immediately after registration.
-
----
-
-## ⚙️ Configuration (Indicative)
-
-Configuration is injected via **QuackCore primitives**.
-
-```yaml
-ingest:
-  fingerprint:
-    algorithm: sha256
-  metadata:
-    extract_basic: true
-  deduplication:
-    enabled: true
 ```
 
-Configuration is:
+### Step 3: The Close (Acknowledgment)
 
-* explicit
-* typed
-* auditable
-* environment-agnostic
-
----
-
-## 🧭 Governance Rules
-
-1. QuackIngest is mandatory for all media
-2. No transformation or derivation
-3. No orchestration or sequencing
-4. No SaaS integrations
-5. Emits root assets + manifest
-6. Uses QuackCore only
-7. Runs via the canonical `quack` CLI
+Once the status returns `success`, OpenClaw runs:
+**Agent:** `quack ingest explain ingest_20260315_z9f2k`
+**Tool:** Reads the `summary.md` (the LLM-optimized snippet).
+**Agent Internal Monologue:** *"The hashes match. The video is 1080p. I can now safely proceed to the next limb."*
 
 ---
 
-## 🧠 Closing Statement
+## 🛡️ Anti-Hallucination Guardrails
 
-QuackIngest exists to kill a dangerous assumption:
+1. **PID Tracking:** The ticket includes the `pid` (Process ID). If OpenClaw checks the status and the `pid` is no longer running but the status is still `pending`, the tool automatically updates to `QC_TOOL_CRASH`. The Agent is forced to deal with the reality of a crash.
+2. **Immutability:** Once a `run_id` manifest is marked `success`, it is write-protected. An Agent cannot "accidentally" overwrite the proof of what happened.
+3. **The Ledger Link:** QuackCore ensures the `RunID` is cross-referenced in the `.quack/ledger.db`. If OpenClaw tries to reference an artifact that doesn't exist in the ledger, the command fails with `QC_VAL_NOT_FOUND`.
 
-> *“The file already exists.”*
+---
 
-In an AI-first organization, **nothing exists until it is registered**.
+## 🧭 Governance Rule Update for Ring A
 
-QuackIngest turns:
+> **Doctrine Rule:** No limb shall exit with code 0 for a long-running task without issuing a Ticket. No Agent shall proceed to a dependent limb without verifying the Manifest of the predecessor.
 
-* chaos → canon
-* files → assets
-* memory → provenance
+**This structure creates a "Sovereign Audit Trail" that lives entirely on your hardware.**
 
-So that:
-
-* Pillar A is enforceable
-* automation is auditable
-* agents cannot hallucinate inputs
-* humans trust the system
-
-QuackIngest does not create value.
-
-It **protects the source of all value**.
+How does this **Ticket/Manifest** flow look for your "Optimistic Professor" persona? It seems to turn the "Mator" character into a very disciplined, record-keeping assistant.

@@ -1,121 +1,100 @@
 # QuackCore Error Code Reference
 
-This document defines the blessed error code taxonomy for QuackCore capabilities.
+This document defines the blessed error code taxonomy for QuackCore capabilities. In the Sovereign Agent Architecture, these codes are the primary mechanism for preventing agent hallucination by providing unambiguous, machine-readable feedback.
 
 All machine-readable error codes and skip codes must follow the format: `QC_<AREA>_<DETAIL>`
 
 ## Blessed Error Areas
 
-### QC_CFG_* - Configuration Errors
+### QC_SYS_* - System & Runtime Errors
 
-Configuration-related failures.
+Failures related to the local execution environment or process management.
 
-Examples:
-- `QC_CFG_MISSING` - Required configuration parameter missing
-- `QC_CFG_INVALID` - Configuration value is invalid
-- `QC_CFG_PARSE_ERROR` - Failed to parse configuration file
+* `QC_SYS_PID_LOST` - Background process ID no longer exists or crashed
+* `QC_SYS_DISK_FULL` - Insufficient space in the local Artifact Store
+* `QC_SYS_TIMEOUT` - Process exceeded the hard execution limit
+* `QC_SYS_DEP_MISSING` - Required system dependency (e.g., FFmpeg) not found
 
-### QC_IO_* - I/O Operations
+### QC_IO_* - I/O & Artifact Store Operations
 
-File and data I/O failures.
+Failures related to the `.quack/` store or local file operations.
 
-Examples:
-- `QC_IO_NOT_FOUND` - File or resource not found
-- `QC_IO_READ_ERROR` - Failed to read file
-- `QC_IO_WRITE_ERROR` - Failed to write file
-- `QC_IO_DECODE_ERROR` - Failed to decode media/data format
+* `QC_IO_NOT_FOUND` - File or resource not found in project path
+* `QC_IO_MANIFEST_CORRUPT` - Existing manifest failed checksum or parsing
+* `QC_IO_WRITE_ERROR` - Failed to commit artifact or manifest to the store
+* `QC_IO_LEDGER_LOCKED` - Local `ledger.db` is busy or read-only
 
-### QC_NET_* - Network Operations
+### QC_VAL_* - Validation & Agent Input Failures
 
-Network and connectivity failures.
+Errors in the parameters provided by the Agent (often used for skips).
 
-Examples:
-- `QC_NET_TIMEOUT` - Network request timed out
-- `QC_NET_UNAVAILABLE` - Service or endpoint unavailable
-- `QC_NET_DNS_ERROR` - DNS resolution failed
+* `QC_VAL_INVALID_ID` - Provided `RunID` or `AssetID` does not exist in ledger
+* `QC_VAL_TOO_SHORT` - Input below minimum threshold
+* `QC_VAL_UNSUPPORTED` - Format or codec unsupported by this limb
+* `QC_VAL_CHKSUM_MISMATCH` - Final artifact does not match expected manifest hash
 
-### QC_VAL_* - Validation Failures
+### QC_CFG_* - Configuration & Discovery
 
-Input validation and policy decisions (often used for skips).
+Errors in tool configuration or capability mapping.
 
-Examples:
-- `QC_VAL_INVALID` - Generic validation failure
-- `QC_VAL_TOO_SHORT` - Input below minimum threshold
-- `QC_VAL_TOO_LONG` - Input exceeds maximum threshold
-- `QC_VAL_UNSUPPORTED` - Unsupported format or provider
-- `QC_VAL_UNSUPPORTED_PROVIDER` - Unsupported service provider
+* `QC_CFG_MISSING` - Required configuration parameter missing
+* `QC_CFG_DISCOVERY_FAILED` - Tool failed to output machine-readable schema
+* `QC_CFG_PRESET_NOT_FOUND` - Requested execution preset does not exist
 
-### QC_AUTH_* - Authentication/Authorization
+### QC_NET_* - Network & Cloud Operations
 
-Security and permissions failures.
+Failures when a limb must cross the sovereign boundary to external APIs.
 
-Examples:
-- `QC_AUTH_INVALID` - Invalid credentials
-- `QC_AUTH_EXPIRED` - Credentials or token expired
-- `QC_AUTH_FORBIDDEN` - Insufficient permissions
+* `QC_NET_TIMEOUT` - Remote request timed out
+* `QC_NET_UNAVAILABLE` - External service (e.g., OpenAI, Anthropic) is down
+* `QC_NET_AUTH_EXPIRED` - Cloud credentials or tokens require rotation
+
+### QC_AUTH_* - Authentication & Permissions
+
+Security and local permission failures.
+
+* `QC_AUTH_FORBIDDEN` - Limb does not have local permission to access path
+* `QC_AUTH_SCOPE_MISSING` - Scoped token does not permit this specific action
 
 ### QC_RATE_* - Rate Limiting
 
-Rate limit and quota failures.
+* `QC_RATE_EXCEEDED` - External API rate limit reached
+* `QC_RATE_QUOTA_EXCEEDED` - Monthly commercial usage quota reached
 
-Examples:
-- `QC_RATE_EXCEEDED` - Request rate limit exceeded
-- `QC_RATE_QUOTA_EXCEEDED` - Usage quota exceeded
+### QC_TOOL_* - Limb-Internal Errors
 
-### QC_TOOL_* - Tool-Internal Errors
+Deterministic logic failures specific to a tool's domain.
 
-Errors internal to the tool implementation.
-
-Examples:
-- `QC_TOOL_CRASH` - Tool crashed unexpectedly
-- `QC_TOOL_TIMEOUT` - Tool execution timed out
-- `QC_TOOL_INVALID_STATE` - Tool in invalid state
-
-### QC_INT_* - Integration-Specific Errors
-
-Errors specific to external integrations.
-
-Examples:
-- `QC_INT_SALESFORCE_ERROR` - Salesforce API error
-- `QC_INT_DRIVE_ERROR` - Google Drive API error
-- `QC_INT_S3_ERROR` - AWS S3 error
+* `QC_TOOL_INVALID_STATE` - Mutation requested is impossible for current asset
+* `QC_TOOL_PROCESSING_FAILED` - Transformation logic failed despite valid inputs
 
 ## Usage Guidelines
 
 1. **Always use QC_ prefix** - All machine codes must start with `QC_`
-2. **Choose appropriate area** - Pick the most specific blessed area
-3. **Be specific with detail** - Make the detail portion descriptive
-4. **Document new codes** - Add new codes to this registry when defining them
-5. **Reuse existing codes** - Prefer existing codes over creating new ones
+2. **Machine-First** - Codes must be specific enough for an Agent (OpenClaw) to decide whether to retry, pivot, or escalate to the Human.
+3. **Immutability** - Do not change the meaning of a code once it is in production; version the detail if necessary.
+4. **Summary Pairing** - Every error returned to a CLI should be accompanied by a `human_message` for the `summary.md`.
 
 ## Examples in Code
+
 ```python
-# Skip due to validation policy
+# Agent provided a bad timestamp for a clip
+result = CapabilityResult.fail(
+    msg="Start time 00:50 exceeds video duration 00:45",
+    code="QC_VAL_INVALID_RANGE"
+)
+
+# Tool crashed during async execution
+result = CapabilityResult.fail(
+    msg="FFmpeg exited with code 137 (OOM)",
+    code="QC_SYS_PID_LOST",
+    metadata={"pid": 45210}
+)
+
+# Skip because the work is already done (Idempotency)
 result = CapabilityResult.skip(
-    reason="Video duration under 10 seconds",
-    code="QC_VAL_TOO_SHORT"
+    reason="Fingerprint already matches ledger entry",
+    code="QC_VAL_ALREADY_EXISTS"
 )
 
-# Error due to missing file
-result = CapabilityResult.fail(
-    msg="Video file not found",
-    code="QC_IO_NOT_FOUND",
-    metadata={"path": "/data/video.mp4"}
-)
-
-# Error due to network timeout
-result = CapabilityResult.fail(
-    msg="API request timed out after 30 seconds",
-    code="QC_NET_TIMEOUT",
-    metadata={"timeout_sec": 30}
-)
 ```
-
-## Adding New Areas
-
-If you need a new error area that doesn't fit the blessed taxonomy:
-
-1. Propose it in a design review
-2. Document the use case
-3. Add it to this registry
-4. Update `common/enums.py` documentation

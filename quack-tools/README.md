@@ -1,32 +1,31 @@
 # 🛠️ **QuackTools**
 
-**Deterministic Workers of the QuackVerse**
+**Atomic Limbs of the Sovereign Agent Architecture**
 
 > **Tools do the work.**
 > They do not decide *what* to do.
 > They do not decide *when* to do it.
 > They do not talk to each other.
->
-> QuackTools exist to **turn structured inputs into structured outputs — reliably and repeatably**.
+> QuackTools are **Atomic Limbs** designed to be manipulated by Sovereign Agents (e.g., OpenClaw). They turn structured instructions into verifiable proof of work.
 
 ---
 
 ## 🧠 What QuackTools Are
 
-**QuackTools are atomic, domain-focused workers** in the QuackVerse.
+**QuackTools are granular, domain-focused workers** in Ring B of the QuackVerse.
 
 Each QuackTool:
 
-* performs **one well-defined job**
+* performs **one atomic limb operation**
 * consumes **structured inputs**
-* produces **artifacts + manifests**
-* is **deterministic** given the same inputs
-* is **stateless across runs**
+* issues **Async Tickets** for long-running jobs
+* emits **verifiable manifests + LLM-optimized summaries**
+* is **deterministic** and **stateless**
 * imports **QuackCore only**
 
 QuackTools answer one question:
 
-> **“Given these inputs, produce these outputs.”**
+> **“Given this atomic instruction, mutate the project state and provide proof.”**
 
 ---
 
@@ -34,272 +33,142 @@ QuackTools answer one question:
 
 QuackTools are **not**:
 
-* agents
-* planners
-* workflow engines
-* orchestrators
-* integration hubs
-* CRMs
-* documentation systems
+* agents or managers
+* planners or sequencers
+* long-running autonomous services
 * UIs
-* long-running services
 
 They **never**:
 
-* decide which tool to run
-* sequence steps
-* retry or backoff
-* call other tools
-* update business systems
-* store canonical state
-* talk to SaaS APIs directly (except where explicitly allowed by contract)
-
-Those responsibilities live elsewhere by doctrine.
+* decide which tool to run (The Agent decides)
+* sequence steps (Temporal/Agent decides)
+* lie about completion (The Ticket/Manifest prevents this)
+* store canonical organizational state (The Ledger/Store does)
 
 ---
 
 ## 🧭 Position in the QuackVerse
 
-QuackVerse is structured as three rings:
+```
+┌──────────────────────────────────────────────────────────┐
+│             RING C — AGENTIC CONTROL                     │
+│    OpenClaw (Manager) · Temporal · Quackchat (Cockpit)   │
+├──────────────────────────────────────────────────────────┤
+│             RING B — ATOMIC LIMBS (WORKERS)              │
+│    QuackIngest · QuackDistro · QuackVideo · QuackDeck    │
+├──────────────────────────────────────────────────────────┤
+│             RING A — THE SOVEREIGN BRAIN                 │
+│    Ticket System · QuackStore (.quack/) · QuackLedger    │
+└──────────────────────────────────────────────────────────┘
 
 ```
-┌────────────────────────────────────────────┐
-│        RING C — EXPERIENCES                │
-│  Temporal · n8n · QuackRunner · Agents     │
-│  Quackchat                                │
-├────────────────────────────────────────────┤
-│        RING B — TOOLS (WORKERS)            │
-│  QuackVideo · QuackImage · QuackQuote     │
-│  QuackMachinima · QuackTutorial · …        │
-├────────────────────────────────────────────┤
-│        RING A — CORE (KERNEL)              │
-│  QuackCore: Contracts · Capabilities       │
-│  Config · IO · Registries · Teaching       │
-└────────────────────────────────────────────┘
-```
 
-**QuackTools live entirely in Ring B.**
-
-They are called *by* orchestration layers — never the other way around.
+**QuackTools live entirely in Ring B.** They are the "Limbs" triggered by the "Manager" in Ring C.
 
 ---
 
-## 🧠 Core Responsibilities
-
-QuackTools are responsible for **execution only**.
+## 🧠 Core Responsibilities (The Handshake)
 
 ### Tools Do
 
-* validate inputs
-* perform a bounded transformation
-* generate artifacts (files, media, data)
-* emit a manifest describing outputs
-* report structured results and errors
-* be safe to retry
-
-### Tools Do Not
-
-* plan workflows
-* apply judgment
-* manage retries
-* pause for approval
-* mutate CRM or docs
-* call external systems ad-hoc
-* remember past runs
+* **Issue Tickets:** Return a `RunID` immediately for async tasks.
+* **Mutate State:** Perform the bounded transformation.
+* **Provide Proof:** Emit a `manifest.json` with a verified checksum.
+* **Update Context:** Write a `summary.md` (LLM-snippet) so agents understand the result.
+* **Self-Describe:** Implement `--discovery` for machine-readable capability mapping.
 
 ---
 
-## 🧠 Tools vs Agents (Critical Distinction)
+## 🧠 Tools vs Agents (The Manager/Limb Distinction)
 
-| Aspect  | Tool                  | Agent                 |
-| ------- | --------------------- | --------------------- |
-| Purpose | Execute               | Decide                |
-| State   | Stateless             | Long-lived            |
-| Logic   | Deterministic         | Heuristics & policy   |
-| Inputs  | Structured            | Contextual            |
-| Outputs | Artifacts + manifests | Decisions + rationale |
-| Calls   | ❌ Never calls tools   | ❌ Never runs tools    |
+| Aspect | Tool (Limb) | Agent (Manager) |
+| --- | --- | --- |
+| Purpose | Execute Mutation | Decide & Sequence |
+| State | Stateless | Stateful Monologue |
+| Logic | Atomic/Deterministic | Heuristics & Policy |
+| Interface | CLI Grammar | Reasoning & Intent |
+| Output | Manifest + Summary | Decisions + Signals |
 
-> **Agents choose. Tools produce.**
-
----
-
-## 🧠 Tools vs Infrastructure
-
-| Concern        | Tool                        | Infrastructure     |
-| -------------- | --------------------------- | ------------------ |
-| Deployment     | Ephemeral                   | Long-lived         |
-| State          | Per run only                | Persistent         |
-| Responsibility | One job                     | System wiring      |
-| Examples       | Video cut, quote generation | CRM, docs, storage |
-
-If multiple workflows depend on it → **it’s infrastructure, not a tool**.
+> **The Agent (Manager) plans. The Tool (Limb) produces.**
 
 ---
 
-## 🧠 Execution Model
+## 🧠 Execution Model (Sovereign Edition)
 
-QuackTools are **never run directly** in production.
+QuackTools are anchored to the local project's **Artifact Store**.
 
-Canonical execution path:
+**The Async Handshake:**
 
-```
-Temporal → QuackRunner → QuackTool
-```
-
-* **Temporal** owns sequencing and retries
-* **QuackRunner** owns execution, logs, and artifacts
-* **QuackTool** performs the job and exits
-
-Tools do **not** know:
-
-* who called them
-* why they were called
-* what happens next
+1. **Trigger:** Agent calls `quack <tool> <limb>`.
+2. **Ticket:** Tool returns `RunID` and background-executes.
+3. **Poll:** Agent monitors `quack status <RunID>`.
+4. **Verify:** Tool writes `manifest.json`. Agent admits success only upon verification.
 
 ---
 
-## 🧠 Artifacts & Manifests
+## 🧠 The Sovereign Artifact Store (`.quack/`)
 
-Every QuackTool **must emit artifacts and a manifest**.
+Every tool operates within the local project boundary:
 
-### Artifacts
-
-* files (video, images, PDFs, JSON, etc.)
-* written to object storage
-* immutable per run
-
-### Manifests
-
-* describe what was produced
-* include metadata (params, versions, hashes)
-* are the system of record for integration
-* are readable by agents and humans
-
-> **If a tool didn’t emit a manifest, it didn’t happen.**
+* **Manifests:** Machine-readable proof of work.
+* **Summaries:** LLM-optimized context snippets (`summary.md`).
+* **Lineage:** Every run is recorded in the local `ledger.db`.
 
 ---
 
-## 🧠 Tool Interface Doctrine
+## 🧰 Tool Interface Doctrine
 
 ### One Canonical CLI
 
-All tools expose functionality through the **canonical `quack` CLI**:
+There is exactly **one** canonical CLI entry point:
+
+```bash
+quack <tool> <limb> [options]
 
 ```
-quack <tool> <verb> [options]
-```
 
-Examples:
-
-* `quack video cut`
-* `quack image thumbnail`
-* `quack quote generate`
-* `quack machinima render`
-
-Tools **register commands** — they do not define their own CLIs.
-
----
-
-### Required Verbs
+### Mandatory Agentic Verbs
 
 Every QuackTool must implement:
 
-* `run` — execute the job
-* `validate` — validate inputs
-* `doctor` — check environment & dependencies
-* `explain` — describe what the tool does and produces
-
-This is **non-negotiable**.
+* `status <RunID>` — Report progress of an async ticket.
+* `explain <RunID>` — Output the `summary.md` for LLM context.
+* `--discovery` — Output JSON-formatted capability and schema map.
+* `validate` — Check inputs before issuing a ticket.
+* `doctor` — Auto-fix local environment and dependencies.
 
 ---
 
-## 📦 Repository Structure
+## 📦 Monorepo Layout
 
 ```text
-quack-tools/
-├── quack-video/
-│   ├── src/
-│   ├── schemas/
-│   ├── tests/
-│   └── README.md
-│
-├── quack-image/
-├── quack-quote/
-├── quack-machinima/
-├── quack-tutorial/
-│
+quackverse/
+├── quackcore/              # Ring A: Ticket system & Ledger
+├── quacktools/             # Ring B: Atomic Limbs
+│   ├── quack-video/
+│   ├── quack-ingest/
+│   └── ...
+├── quackrunner/            # Ring C: Local execution gateway
 └── README.md
+
 ```
-
-Each tool:
-
-* is a standalone package
-* imports **QuackCore**
-* exposes a CLI entry
-* has no dependency on other tools
-* can be versioned independently
-
----
-
-## 🔗 Relationship to Other QuackVerse Components
-
-| Component           | Role                             |
-| ------------------- | -------------------------------- |
-| **QuackCore**       | Schemas, contracts, result types |
-| **QuackRunner**     | Execution & artifact indexing    |
-| **Temporal**        | Workflow sequencing              |
-| **Agents**          | Decision making                  |
-| **n8n**             | Side effects                     |
-| **Quackchat**       | Human steering                   |
-| **Quackshowrunner** | Deployment & ops                 |
-
-QuackTools depend on **QuackCore only**.
-
----
-
-## 🎓 Pedagogical Mandate
-
-QuackTools are **teaching primitives**.
-
-They should make clear:
-
-* what problem is being solved
-* what inputs are required
-* what outputs are produced
-* what assumptions exist
-* how failure is handled
-
-A tool that hides complexity instead of exposing it is considered broken.
 
 ---
 
 ## 🧭 Governance Rules (Non-Negotiable)
 
-1. Tools never orchestrate
-2. Tools never call tools
-3. Tools never contain judgment
-4. Tools never mutate business systems
-5. Tools are stateless across runs
-6. Tools emit artifacts + manifests
-7. Tools are CLI-first
-8. One job per tool
-9. Determinism over cleverness
+1. **Everything Emits Proof:** No manifest = it didn't happen.
+2. **Atomic Over Monolithic:** Prefer many small verbs over one complex command.
+3. **Async by Default:** Issue tickets for any task exceeding 2 seconds.
+4. **LLM-First context:** Always produce a `summary.md` for the agent.
+5. **Local Portability:** Store all artifacts and logs in the local `.quack/` store.
+6. **No Silent Failures:** Tools must return `QC_ERROR_CODES` for agents to handle.
+7. **Discovery is Sacred:** Agents must be able to self-teach via `--discovery`.
 
 ---
 
 ## 🧠 Closing Statement
 
-**QuackTools are the hands of the organization.**
+**QuackTools are the limbs of the Sovereign Organization.**
 
-They swing the hammer,
-cut the video,
-generate the quote,
-render the scene.
-
-They do not plan the job.
-They do not decide the order.
-They do not keep the books.
-
-That separation is what makes the QuackVerse
-**scalable, auditable, teachable — and sovereign**.
+They are built to be directed by always-on agents, tracked by durable workflows, and audited by humans. By separating the **judgment (Agent)** from the **mutation (Tool)**, we create a system that is scalable, auditable, and genuinely sovereign.

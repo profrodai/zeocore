@@ -1,32 +1,29 @@
 # 🧠 **Quack Agents**
 
-**Judgment-Bearing Services in the QuackVerse**
+**Judgment, Logic, and Monologue in the Sovereign Architecture**
 
 > **Agents decide.**
-> They do not execute tools.
-> They do not own workflows.
+> They do not execute limbs.
+> They do not own the artifact store.
 > They do not provision infrastructure.
->
-> Agents exist to **apply judgment, policy, and planning** inside AI-first organizations.
+> Agents exist to **manage the digital factory** by applying judgment, policy, and planning.
 
 ---
 
 ## 🧭 What Quack Agents Are
 
-**Quack Agents are first-class Ring C services** in the QuackVerse.
+**Quack Agents are the "Managers" in Ring C** of the QuackVerse.
 
-They are long-running services that:
+In the Sovereign Agent Architecture, they act as the primary operators of the system (e.g., OpenClaw). They are reasoning services that:
 
-* reason over artifacts and manifests
-* apply policies and heuristics
-* propose plans and decisions
-* select which tools *should* be used
-* explain *why* a decision was made
-* signal workflow engines with structured decisions
+* **Manipulate Atomic Limbs** in Ring B via the CLI/Runner.
+* **Maintain an Internal Monologue** by reading `summary.md` context snippets.
+* **Verify Reality** by checking `manifest.json` checksums in the `.quack/` store.
+* **Signal Workflows** to Temporal to ensure durability and human-in-the-loop triggers.
 
-Quack Agents answer one question:
+Agents answer one question:
 
-> **“Given what we know, what should happen next?”**
+> **“Given the current state of the ledger, what mutation should I perform next?”**
 
 ---
 
@@ -34,303 +31,99 @@ Quack Agents answer one question:
 
 Quack Agents are **not**:
 
-* tools
-* workflow engines
-* infrastructure
-* UI components
-* cron jobs
-* chatbots for end users
-* stateless functions
-
-They **do not**:
-
-* execute QuackTools directly
-* mutate business systems
-* retry or sequence workflows
-* render output
-* manage storage
-
-Those responsibilities live elsewhere by doctrine.
+* **Tools (Limbs):** They do not perform the deterministic work (e.g., they don't render video; they tell `QuackVideo` to do it).
+* **The System of Record:** They do not own the truth; the local `.quack/` store does.
+* **The Watchdog:** They do not handle their own retries or process persistence; Temporal does.
+* **The Command:** They do not define the final business goal; the Human Commander does.
 
 ---
 
 ## 🧭 Position in the QuackVerse
 
-QuackVerse is structured as three rings:
+```
+┌──────────────────────────────────────────────────────────┐
+│             RING C — AGENTIC CONTROL                     │
+│    OpenClaw (Manager) · Temporal · Quackchat (Cockpit)   │
+├──────────────────────────────────────────────────────────┤
+│             RING B — ATOMIC LIMBS (WORKERS)              │
+│    QuackIngest · QuackDistro · QuackVideo · QuackDeck    │
+├──────────────────────────────────────────────────────────┤
+│             RING A — THE SOVEREIGN BRAIN                 │
+│    Ticket System · QuackStore (.quack/) · QuackLedger    │
+└──────────────────────────────────────────────────────────┘
 
 ```
-┌────────────────────────────────────────────┐
-│        RING C — EXPERIENCES                │
-│  Temporal · n8n · QuackRunner · Agents     │
-│  Quackchat                                │
-├────────────────────────────────────────────┤
-│        RING B — TOOLS (WORKERS)            │
-│  QuackVideo · QuackImage · QuackQuote     │
-│  QuackMachinima · QuackTutorial · …        │
-├────────────────────────────────────────────┤
-│        RING A — CORE (KERNEL)              │
-│  QuackCore: Contracts · Capabilities       │
-│  Config · IO · Registries · Teaching       │
-└────────────────────────────────────────────┘
-```
 
-**Quack Agents live in Ring C.**
-
-They sit **above tools** and **alongside Temporal and Quackchat**.
+**Quack Agents live in Ring C.** They sit above the limbs and use Ring A (The Sovereign Brain) to ensure they are not hallucinating.
 
 ---
 
 ## 🧠 Core Responsibilities
 
-Quack Agents are responsible for **judgment**, not execution.
-
 ### Agents Do
 
-* read **artifacts** and **manifests**
-* interpret workflow context
-* apply domain rules and policies
-* evaluate alternatives
-* select tools and parameters
-* propose next actions
-* explain decisions in human-readable form
-* signal **Temporal** with structured decisions
+* **Read Context:** Parse the `summary.md` from the Artifact Store.
+* **Self-Teach:** Use the `--discovery` verb on limbs to learn available schemas.
+* **Issue Commands:** Trigger Ring B tools and handle the **Async Ticket** (RunID).
+* **Verify Proof:** Admit a task is done only when a `manifest.json` is verified.
+* **Explain:** Provide a rationale for why a specific limb or parameter was chosen.
 
 ### Agents Do Not
 
-* run tools (QuackRunner does)
-* sequence workflows (Temporal does)
-* perform side effects (n8n does)
-* own business state (CRM does)
-* store canonical truth (artifacts do)
+* **Lie:** They are prohibited from reporting success without a manifest checksum.
+* **Monolith:** They do not perform multi-step jobs in one process; they chain atomic limbs.
+* **Silent Fail:** They must escalate to the Human Cockpit (Quackchat) via Temporal when they hit a `QC_ERROR_CODE`.
 
 ---
 
-## 🧠 Agents vs Tools (Critical Distinction)
+## 🧠 Agents vs Tools (The Manager/Limb Distinction)
 
-| Aspect      | Agent                        | Tool                         |
-| ----------- | ---------------------------- | ---------------------------- |
-| Purpose     | Decide                       | Execute                      |
-| State       | Long-lived                   | Stateless per run            |
-| Logic       | Heuristics, policy, planning | Deterministic transformation |
-| Calls       | Signals workflows            | Runs jobs                    |
-| Outputs     | Decisions, explanations      | Artifacts, manifests         |
-| Retry logic | ❌ No                         | ❌ No                         |
-
-> **Agents choose. Tools produce.**
+| Aspect | Agent (Manager) | Tool (Limb) |
+| --- | --- | --- |
+| **Role** | Management & Judgment | Mutation & Execution |
+| **Logic** | Heuristic & Policy | Deterministic & Atomic |
+| **Memory** | Reasoning Monologue | manifest.json + summary.md |
+| **Handshake** | Issues the Ticket (RunID) | Performs the Work |
+| **Success** | Interprets the Summary | Signs the Manifest |
 
 ---
 
-## 🧠 Agents vs Workflows
+## 🔌 The Sovereign Handshake
 
-* **Temporal workflows** describe *what must happen and when*
-* **Agents** decide *how and why a choice is made*
+Agents follow the **Authoritative Job-State Pattern**:
 
-Agents:
-
-* do not own workflow state
-* do not handle retries
-* do not manage timers
-* do not persist execution history
-
-All durability belongs to Temporal.
+1. **Discovery:** Agent runs `quack --discovery` to map its current "limbs."
+2. **Action:** Agent triggers a limb and stores the **RunID Ticket**.
+3. **Observation:** Agent polls `quack status <RunID>` via Temporal.
+4. **Integration:** Agent reads `explain <RunID>` to ingest the result into its reasoning.
 
 ---
 
-## 🧠 Agents vs Quackchat
+## 🧠 Decision Payloads & The Ledger
 
-* **Quackchat** is the human control plane
-* **Agents** are autonomous decision services
+Agents do not just "think" in a vacuum. Every decision that results in a tool call must be recorded in the project-local `ledger.db`.
 
-Quackchat:
+A decision payload includes:
 
-* displays agent proposals
-* allows humans to approve / reject
-* sends signals back to Temporal
-
-Agents:
-
-* never interact directly with humans
-* never render UI
-* never execute commands
-
----
-
-## 🧠 Types of Agents
-
-Agents are **role-based**, not project-specific.
-
-Examples:
-
-* **ProducerAgent** — plans workflows and milestones
-* **EditorAgent** — critiques and improves content
-* **SalesOpsAgent** — pricing, quotes, deal structure
-* **QAAgent** — validation, consistency checks
-* **ComplianceAgent** — policy and regulatory review
-* **RenderSupervisorAgent** — validates render manifests
-
-You do **not** create:
-
-* “EverduckEpisode17Agent”
-* “Quote123Agent”
-
-Instead, you create **generic role agents** configured with:
-
-* domain context
-* policy packs
-* style guides
-* constraints
-
----
-
-## 🧠 Configuration, Not Specialization
-
-Agents remain generic.
-
-Specialization happens through:
-
-* manifests
-* domain packs
-* policy definitions
-* system prompts
-* configuration
-
-Example:
-
-* The same `ProducerAgent` can:
-
-  * plan an Everduck episode
-  * plan a print-shop quote
-  * plan a blog production pipeline
-
-Only the **inputs differ**.
-
----
-
-## 🔌 Communication Model
-
-Agents communicate through **strictly defined channels**.
-
-### 1️⃣ Read
-
-* artifacts
-* manifests
-* workflow context
-* historical decisions
-
-### 2️⃣ Decide
-
-* evaluate alternatives
-* produce a decision payload
-* include rationale
-
-### 3️⃣ Signal
-
-* send structured decisions to **Temporal**
-* never call tools directly
-* never mutate external systems
-
----
-
-## 🧠 Decision Payloads
-
-Agents emit **structured decisions**, not free-form text.
-
-A decision includes:
-
-* recommended next step
-* selected tool (by name)
-* parameters
-* confidence or risk flags
-* explanation
-
-These payloads are:
-
-* recorded by Temporal
-* visible in Quackchat
-* auditable later
-
----
-
-## 📦 Repository Structure
-
-```text
-quack-agents/
-├── agent-producer/
-│   ├── src/
-│   ├── policies/
-│   ├── prompts/
-│   ├── tests/
-│   └── README.md
-│
-├── agent-editor/
-├── agent-salesops/
-├── agent-qa/
-│
-└── README.md
-```
-
-Each agent:
-
-* is a standalone service
-* imports **QuackCore**
-* exposes a minimal API (HTTP / gRPC / queue)
-* is deployable independently
-
----
-
-## 🔗 Relationship to Other Repos
-
-| Component           | Responsibility                             |
-| ------------------- | ------------------------------------------ |
-| **QuackCore**       | Contracts, schemas, capability definitions |
-| **QuackTools**      | Deterministic work                         |
-| **Temporal**        | Workflow state and durability              |
-| **QuackRunner**     | Tool execution                             |
-| **n8n**             | External side effects                      |
-| **Quackchat**       | Human interaction                          |
-| **Quackshowrunner** | Deployment & operations                    |
-
-Agents depend on **QuackCore**, not on tools or infrastructure.
-
----
-
-## 🎓 Pedagogical Mandate
-
-Quack Agents are **teaching artifacts**.
-
-They should make explicit:
-
-* why decisions were made
-* what alternatives existed
-* which trade-offs were chosen
-* how judgment differs from execution
-
-Opaque agents are considered broken.
+* **Intent:** The high-level goal (e.g., "Normalize audio for Pillar A asset").
+* **Limb Selection:** Why `QuackVideo` was chosen over `QuackAudio`.
+* **Parameter Rationale:** Why a specific LUFS or codec was selected.
+* **The RunID Link:** The connection to the resulting Artifact Store entry.
 
 ---
 
 ## 🧭 Governance Rules (Non-Negotiable)
 
-1. Agents never execute tools
-2. Agents never own workflow state
-3. Agents never perform side effects
-4. Agents never embed infrastructure logic
-5. Agents emit structured decisions
-6. Agents explain themselves
-7. Tools remain deterministic
-8. Workflows remain durable
-9. Infrastructure remains boring
+1. **Verify or Deny:** Success is a manifest checksum, not a guess.
+2. **Respect the Context Window:** Use `summary.md` to avoid "context shredding."
+3. **Atomic Limbs Only:** Chain small, verifiable mutations.
+4. **Discoverable Limbs:** Never hardcode tool flags; always use `--discovery`.
+5. **Human Escalation:** When `QC_*` errors occur, signal the Cockpit for steering.
+6. **Local sovereignty:** Read and write only to the local `.quack/` store.
 
 ---
 
 ## 🧠 Closing Statement
 
-**Agents are the mind of the organization.**
-They plan, critique, and decide.
-
-They do not swing the hammer.
-They do not keep the books.
-They do not run the machines.
-
-That separation is what allows the system to scale,
-teach, and survive change.
+**Agents are the managers of the Digital Employee Factory.**
+They plan the production line, monitor the atomic limbs, and report back to the Human Commander. By strictly separating **Judgment (Agent)** from **Mutation (Tool)** and **Proof (Core)**, the organization remains auditable, durable, and genuinely sovereign.

@@ -1,28 +1,23 @@
 # 🦆 QuackLedger
 
-**A QuackTool for Deterministic Production Lineage Tracking and Operational Memory**
+**The Sovereign Brain's Memory & Lineage Repository**
 
-> **QuackLedger records what happened.**
+> **QuackLedger records reality.**
 > It does not plan.
 > It does not decide.
-> It does not optimize.
+> It does not hallucinate.
 
 ---
 
 ## 🧠 What QuackLedger Is
 
-QuackLedger is a **Ring B QuackTool**.
+QuackLedger is a **Ring A Kernel Primitive** implemented as a **Ring B Atomic Limb**. It is the authoritative memory of the QuackVerse.
 
-It consumes **artifacts and manifests** produced by other QuackTools and emits a **ledger of production lineage**, tracking:
-
-* what artifacts were produced
-* which root asset they derive from
-* where and how they were used
-* which assets remain unused
+It manages the project-local `ledger.db` within the `.quack/` store, tracking the **immutable production lineage** of every action taken by the organization. It connects **Root Assets** to their **Derived Artifacts** through the trail of **Verified Manifests**.
 
 QuackLedger answers one question only:
 
-> **“What has this system actually produced, and how has it been used?”**
+> **“What is the verified history of this project, and where is the proof?”**
 
 ---
 
@@ -30,203 +25,109 @@ QuackLedger answers one question only:
 
 QuackLedger is **not**:
 
-* a workflow engine
-* a scheduler or planner
-* a dashboard or analytics UI
-* a database of record
-* a recommendation system
-* an autonomous agent
-
-It never:
-
-* triggers tools
-* schedules content
-* publishes artifacts
-* infers intent
-* prioritizes work
-* modifies upstream data
-
-All judgment and action live in **Ring C**
-(Agents, Temporal, Quackchat).
+* **A Manager:** It does not decide what to do next (Agents do).
+* **A Database of Record:** It is a ledger of *events* and *artifacts*; business state lives in a CRM.
+* **A Workflow Engine:** It does not manage retries or timers (Temporal does).
+* **A Dashboard:** It is a machine-readable truth source, not a UI.
 
 ---
 
 ## 🧭 Position in the QuackVerse Doctrine
 
 ```
-┌────────────────────────────────────────────┐
-│        EXPERIENCES / ORCHESTRATION         │
-│  Quackchat · Temporal · n8n · Agents       │
-├────────────────────────────────────────────┤
-│               TOOLS (WORKERS)              │
-│        ▶ QuackLedger ◀                    │
-├────────────────────────────────────────────┤
-│              CORE (KERNEL)                 │
-│  QuackCore: Schemas · IO · Results        │
-└────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│             RING C — AGENTIC CONTROL                     │
+│    OpenClaw (Manager) · Temporal · Quackchat (Cockpit)   │
+├──────────────────────────────────────────────────────────┤
+│             RING B — ATOMIC LIMBS (WORKERS)              │
+│        ▶ QuackLedger ◀                                   │
+├──────────────────────────────────────────────────────────┤
+│             RING A — THE SOVEREIGN BRAIN                 │
+│    Ticket System · QuackStore (.quack/) · QuackLedger    │
+└──────────────────────────────────────────────────────────┘
+
 ```
 
-QuackLedger:
-
-* imports **QuackCore only**
-* is executed via **QuackRunner**
-* emits **artifacts + manifests**
-* is stateless across runs
+QuackLedger is the bridge between the **Kernel's state** (Ring A) and the **Agent's reasoning** (Ring C).
 
 ---
 
-## 🧾 The Role QuackLedger Replaces
+## 🧠 Core Responsibilities (The Memory Handshake)
 
-Traditional organizations rely on:
+### 1️⃣ Lineage Tracking
 
-* spreadsheets
-* tribal knowledge
-* “I think we already posted that”
-* Slack archaeology
+QuackLedger maps the "Parent-Child" relationship of artifacts. It ensures that a LinkedIn post (child) can be traced back to a specific timestamp in a Riverside recording (root).
 
-QuackLedger replaces **operations memory** with **artifacts + lineage**.
+### 2️⃣ Manifest Indexing
+
+Every time a limb (e.g., `QuackVideo`) completes a job, QuackLedger indexes the resulting `manifest.json`. It verifies the checksum before committing the event to the `ledger.db`.
+
+### 3️⃣ Usage Audit
+
+It records where and how artifacts were consumed. If an agent asks, "Have we used this clip for Prof Rod yet?", QuackLedger provides the definitive "Yes" or "No."
 
 ---
 
 ## 🧰 Canonical CLI Surface
 
-QuackLedger does **not** expose a standalone CLI.
-
-All execution happens via the **single canonical CLI**:
+QuackLedger is invoked by the **Sovereign Agent** to verify history before taking new actions.
 
 ```bash
-quack ledger <verb> [options]
+quack ledger <limb> [options]
+
 ```
 
-Required verbs:
+### Mandatory Agentic Verbs
 
-* `run`
-* `validate`
-* `doctor`
-* `explain`
+* `status` — Report on the integrity of the local `ledger.db`.
+* `query` — Search for artifacts based on tags, lineage, or parent IDs.
+* `explain` — Output the `summary.md` for a specific run or lineage chain.
+* `register` — Formally commit a verified manifest to the project history.
+* `doctor` — Repair orphaned artifacts or broken lineage links.
+* `--discovery` — Output machine-readable schemas for ledger queries.
 
 ---
 
-## 🚀 Common Commands
+## 🚀 Common Atomic Limbs
 
-### Generate a production ledger
-
-```bash
-quack ledger run ./artifact_store --out ./dist/ledger
-```
-
-Produces:
-
-* a structured ledger of produced artifacts
-* lineage mappings to root assets
-* usage and reuse records
-* unused / dormant asset listings
-
----
-
-### Validate artifact lineage
+### Query Lineage (Agent Context)
 
 ```bash
-quack ledger validate ./artifact_store
+quack ledger query --parent <RootAssetID> --type clip
+
 ```
 
-Checks:
-
-* manifest completeness
-* root asset references
-* derivation consistency
-* missing or orphaned artifacts
-
----
-
-### Diagnose environment readiness
+### Register Manifest (The Proof)
 
 ```bash
-quack ledger doctor
+quack ledger register --manifest .quack/runs/run_abc_123/manifest.json
+
 ```
-
-Reports:
-
-* artifact store accessibility
-* manifest schema resolution
-* filesystem permissions
-
----
-
-### Explain a ledger bundle
-
-```bash
-quack ledger explain ./dist/ledger/<run-id>/
-```
-
-Explains:
-
-* what was produced
-* where it came from
-* how it flowed through the system
-* what remains unused
 
 ---
 
 ## 📦 Output Artifacts
 
-Each run produces a **ledger artifact bundle**.
-
-Example:
+Each run produces a **ledger snapshot** or **lineage report**.
 
 ```text
-dist/
-└── ledger/
-    └── run-2025-03-22T09-55-07/
-        ├── produced.json
-        ├── lineage.json
-        ├── usage.json
-        ├── unused.json
-        └── manifest.json
+.quack/
+└── runs/
+    └── run_ledger_xyz/
+        ├── lineage.json    <-- The Parent-Child tree
+        ├── usage.json      <-- Publishing & consumption history
+        ├── summary.md      <-- LLM-optimized history snippet
+        └── manifest.json   <-- Verification of the query itself
+
 ```
 
 ---
 
-### Ledger Semantics
+## 🔗 How QuackLedger Kills Hallucinations
 
-* **Produced** → every artifact ever emitted
-* **Lineage** → root asset → derived artifact chains
-* **Usage** → where artifacts were consumed (tools, workflows, publishes)
-* **Unused** → artifacts with no downstream references
-
-> **Unused does not mean useless.**
-> It means *available leverage*.
-
----
-
-### Manifest Is the System of Record
-
-The `manifest.json` captures:
-
-* source artifact references and hashes
-* ledger construction parameters
-* produced reports
-* timestamps and checksums
-
-If it is not in the manifest, **it is not remembered**.
-
----
-
-## 🔗 How QuackLedger Fits into Workflows
-
-QuackLedger never orchestrates.
-
-Typical flow:
-
-1. **All tools** emit artifacts + manifests
-2. **Artifact store** accumulates history
-3. **Quackchat / Agent** requests a ledger snapshot
-4. **Temporal** records the request
-5. **QuackRunner** executes `quack ledger run`
-6. Ledger artifacts + manifest are written
-7. **Humans and agents** reason over reality
-
-QuackLedger exits immediately after recording history.
+1. **The Checksum Gate:** QuackLedger refuses to register any run that lacks a verified manifest checksum.
+2. **Context Injection:** When an agent (OpenClaw) starts a session, it runs `quack ledger explain --recent`. The resulting `summary.md` gives the agent the "Truth" of what happened while it was offline.
+3. **Lineage Enforcement:** If an agent tries to process a file that isn't in the ledger, the command fails with `QC_VAL_INVALID_ID`.
 
 ---
 
@@ -234,67 +135,22 @@ QuackLedger exits immediately after recording history.
 
 QuackLedger exists to answer:
 
-> **“What did we actually do last week?”**
+> **“What exactly did we produce last week, and which root assets are still untapped?”**
 
-Without:
-
-* opening dashboards
-* asking Slack
-* relying on memory
-
-If QuackLedger cannot produce that answer, the system is broken.
-
----
-
-## ⚙️ Configuration (Indicative)
-
-Configuration is injected via **QuackCore primitives**.
-
-```yaml
-ledger:
-  track_unused: true
-  include_external_usage: false
-  max_history_days: 90
-```
-
-Configuration is:
-
-* explicit
-* typed
-* auditable
-* environment-agnostic
+If QuackLedger cannot provide the proof without a human checking a folder, the system is broken.
 
 ---
 
 ## 🧭 Governance Rules
 
-1. QuackLedger records — it does not decide
-2. No scheduling, planning, or publishing
-3. No dashboards or UI
-4. No SaaS integrations
-5. Emits reports + manifest
-6. Uses QuackCore only
-7. Runs via the canonical `quack` CLI
+1. **Proof Over Memory:** If it isn't in the Ledger, it didn't happen.
+2. **Atomic Registration:** Every limb must register its result with the ledger upon completion.
+3. **Local Sovereignty:** The `ledger.db` must live inside the project's `.quack/` folder.
+4. **Machine-First:** Ledger queries must be optimized for Agent consumption (`JSON` + `summary.md`).
+5. **Immutable History:** Once a manifest is registered, its lineage entry is locked.
 
 ---
 
 ## 🧠 Closing Statement
 
-QuackLedger exists to eliminate **organizational amnesia**.
-
-It turns:
-
-* “I think we did that” → proof
-* scattered artifacts → lineage
-* unused work → visible leverage
-
-So that:
-
-* one person can run a media operation
-* agents can reason about reality
-* audits are trivial
-* breaks and vacations do not erase context
-
-QuackLedger does not remember *ideas*.
-
-It remembers **what actually happened** — and nothing more.
+**QuackLedger is the organizational memory.** It eliminates amnesia by turning scattered files into a verifiable, auditable chain of truth. It allows the Sovereign Agent to reason about the past so it can safely execute the future.

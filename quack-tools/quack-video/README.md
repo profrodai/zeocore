@@ -1,27 +1,27 @@
 # 🦆 QuackVideo
 
-**A QuackTool for Deterministic Video Processing and Asset Generation**
+**An Atomic Limb for Deterministic Video Processing and Asset Production**
 
 > **QuackVideo turns raw video inputs into structured, auditable video artifacts.**
-> It does not plan workflows. It does not publish. It does not decide what matters.
+> It does not decide what is interesting. It does not choose what to publish. It does not plan workflows.
 
 ---
 
 ## 🧠 What QuackVideo Is
 
-QuackVideo is a **Ring B QuackTool**.
+QuackVideo is a **Ring B Atomic Limb**.
 
-It consumes **video inputs** and produces **video-derived artifacts**, such as:
+It is a deterministic worker designed to be manipulated by Sovereign Agents (e.g., OpenClaw). It consumes **video inputs** and produces **video-derived artifacts**, such as:
 
 * processed video files
-* extracted clips
-* frames and thumbnails
+* atomic clips and segments
+* extracted frames and thumbnails
 * captions and transcripts
-* per-run manifests describing outputs
+* per-run manifests + LLM-optimized summaries
 
 QuackVideo answers one question only:
 
-> **“Given these video inputs and parameters, produce these video artifacts.”**
+> **“Given these video inputs and atomic parameters, produce these video artifacts and provide proof.”**
 
 ---
 
@@ -31,262 +31,136 @@ QuackVideo is **not**:
 
 * a video editor UI
 * a content strategy engine
-* a publishing system
 * a workflow orchestrator
-* a social-media automation tool
-* an AI agent
+* an AI agent (it is a tool used *by* agents)
 
 It never:
 
-* decides *what* clips to publish
+* decides *which* clips are worth keeping (The Agent decides)
 * talks to SaaS platforms directly
-* calls other tools
-* stores canonical business state
+* sequences multi-step edits (The Manager decides)
 
-Those responsibilities belong to **Ring C** (Temporal, Agents, Quackchat, n8n).
+Those responsibilities belong to **Ring C** (Sovereign Agents, Temporal, Quackchat).
 
 ---
 
-## 🧭 Position in the DuckTyper / QuackVerse Doctrine
+## 🧭 Position in the QuackVerse Doctrine
 
 ```
-┌────────────────────────────────────────────┐
-│        RING C — EXPERIENCES / CONTROL      │
-│  Quackchat · Temporal · n8n · Agents       │
-├────────────────────────────────────────────┤
-│        RING B — TOOLS (WORKERS)            │
-│        ▶ QuackVideo ◀                     │
-├────────────────────────────────────────────┤
-│        RING A — CORE (KERNEL)              │
-│  QuackCore: FS · Config · Results · IO     │
-└────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│             RING C — AGENTIC CONTROL                     │
+│    OpenClaw (Manager) · Temporal · Quackchat (Cockpit)   │
+├──────────────────────────────────────────────────────────┤
+│             RING B — ATOMIC LIMBS (WORKERS)              │
+│        ▶ QuackVideo ◀                                    │
+├──────────────────────────────────────────────────────────┤
+│             RING A — THE SOVEREIGN BRAIN                 │
+│    Ticket System · QuackStore (.quack/) · QuackLedger    │
+└──────────────────────────────────────────────────────────┘
+
 ```
 
 QuackVideo:
 
 * imports **QuackCore only**
-* is executed via **QuackRunner**
-* emits **artifacts + manifest**
-* is orchestrated externally
+* issues **Async Tickets** for long-running renders
+* stores all outputs in the local **Artifact Store** (`.quack/`)
+* is orchestrated by always-on agents
 
 ---
 
 ## 🧰 Canonical CLI Surface
 
-QuackVideo does **not** expose its own CLI.
-
-All interaction happens via the **single canonical CLI**:
+QuackVideo does **not** expose its own standalone CLI. All interaction happens via the **single canonical CLI**:
 
 ```bash
-quack video <verb> [options]
+quack video <limb> [options]
+
 ```
 
-Every QuackTool implements the standard verbs:
+### Mandatory Agentic Verbs
 
-* `run`
-* `validate`
-* `doctor`
-* `explain`
+* `status <RunID>` — Check progress of a video render ticket.
+* `explain <RunID>` — Output the `summary.md` for LLM context.
+* `--discovery` — Output JSON-formatted capability and schema map for the agent.
+* `validate` — Pre-flight check of video headers and parameters.
+* `doctor` — Auto-fix local FFmpeg/codec dependencies.
 
 ---
 
-## 🚀 Common Commands
+## 🚀 Common Atomic Limbs
 
-### Process a video
-
-```bash
-quack video run input.mp4 --out ./dist/video
-```
-
-Produces:
-
-* processed video(s)
-* derived assets (clips, frames, captions, etc.)
-* a manifest describing all outputs
-
----
-
-### Validate inputs & parameters
+### Process a video (Async)
 
 ```bash
-quack video validate input.mp4
+quack video process input.mp4 --normalize-audio
+
 ```
 
-Checks:
+Produces a `RunID` ticket. Agent polls `quack status` until completion.
 
-* file existence and format
-* FFmpeg availability
-* configuration validity
-* deterministic output constraints
-
----
-
-### Diagnose environment readiness
+### Extract Clip (Atomic)
 
 ```bash
-quack video doctor
+quack video clip input.mp4 --start 00:10 --end 00:20 --out ./dist/clips
+
 ```
 
-Reports:
-
-* FFmpeg / codec availability
-* GPU / acceleration detection (if applicable)
-* filesystem permissions
-* optional dependency status
-
----
-
-### Explain an output bundle
+### Extract Frames
 
 ```bash
-quack video explain ./dist/video/<run-id>/
+quack video frames input.mp4 --interval 60
+
 ```
-
-Explains:
-
-* what artifacts were generated
-* where the manifest lives
-* how downstream systems should consume outputs
-
----
-
-## 🎥 Supported Capabilities (Indicative)
-
-Depending on configuration, QuackVideo may produce:
-
-* **Video preprocessing**
-
-  * audio normalization
-  * noise reduction
-  * color correction
-* **Clip extraction**
-
-  * fixed-duration clips
-  * timestamp-based segments
-* **Frame extraction**
-
-  * thumbnail candidates
-  * still frames
-* **Captions & transcripts**
-
-  * subtitle files
-  * aligned text artifacts
-* **Format conversion**
-
-  * resolution
-  * aspect ratio
-  * codec/container changes
-
-All outputs are **deterministic and reproducible**.
 
 ---
 
 ## 📦 Output Artifacts
 
-Each run produces an **artifact bundle** with a manifest.
-
-Example:
+Each run produces an **artifact bundle** within the project's local store.
 
 ```text
-dist/
-└── video/
-    └── run-2024-03-21T10-32-00/
+.quack/
+└── runs/
+    └── run_vid_abc_123/
         ├── processed.mp4
-        ├── clips/
-        │   ├── clip_01.mp4
-        │   └── clip_02.mp4
-        ├── frames/
-        │   └── thumbnail_01.png
-        ├── captions.vtt
-        ├── transcript.json
-        └── manifest.json
+        ├── summary.md      <-- LLM-optimized context snippet
+        ├── manifest.json   <-- Machine-readable proof
+        └── artifacts/
+            └── thumbnail.png
+
 ```
 
-### Manifest Is the System of Record
+### The Manifest & Summary
 
-The `manifest.json` contains:
-
-* inputs
-* parameters
-* produced artifacts
-* checksums
-* timestamps
-
-If there is no manifest, **the run does not exist**.
+* **`manifest.json`**: Contains checksums, codec metadata, and timestamps. It is the machine's system of record.
+* **`summary.md`**: A high-level textual summary (e.g., "Extracted 10s clip. Verified 1080p. Audio normalized.") to prevent Agent context-shredding.
 
 ---
 
-## 🔗 How QuackVideo Fits into Larger Workflows
+## 🔗 The Agentic Handshake
 
-QuackVideo never orchestrates.
+QuackVideo never orchestrates. It follows the **Sovereign Handshake**:
 
-Typical flow:
-
-1. **Quackchat** captures intent (“process episode footage”)
-2. **Temporal** manages workflow state and approvals
-3. **QuackRunner** executes `quack video run …`
-4. Artifacts + manifest are stored
-5. **Agents** interpret outputs and propose next steps
-6. **n8n / integrations** perform side effects (upload, notify, publish)
-
-QuackVideo remains a pure worker throughout.
-
----
-
-## ⚙️ Configuration
-
-QuackVideo is configured via **QuackCore configuration primitives**.
-
-Example (indicative):
-
-```yaml
-video:
-  processing:
-    audio:
-      normalize: true
-      noise_reduction: true
-    video:
-      color_correction: true
-  clips:
-    enabled: true
-    duration: 60
-  captions:
-    enabled: true
-```
-
-Configuration is:
-
-* typed
-* validated
-* versioned
-* passed in by the orchestrator
+1. **Trigger:** Agent calls `quack video clip` and receives a `RunID`.
+2. **Poll:** Agent monitors `quack status <RunID>`.
+3. **Verify:** Once finished, the tool writes a verified manifest.
+4. **Context:** Agent reads `explain <RunID>` to update its internal monologue.
 
 ---
 
 ## 🧭 Governance Rules
 
-1. QuackVideo is a deterministic worker
-2. No workflow orchestration
-3. No SaaS side effects
-4. Emits artifacts + manifest
-5. Uses QuackCore only
-6. Runs via `quack` CLI only
+1. **Atomic Over Monolithic:** Use granular commands for better agent feedback loops.
+2. **Async by Default:** Any render or processing task issues a `RunID` ticket.
+3. **No Silent Failures:** Exit with `QC_ERROR_CODES` if codecs or files are missing.
+4. **Local Sovereignty:** All artifacts and manifests live in the project’s `.quack/` folder.
+5. **Everything Emits Proof:** If it didn't emit a manifest, it didn't happen.
 
 ---
 
 ## 🧠 Closing Statement
 
-QuackVideo is **not a video product**.
+QuackVideo is a **limb** of the organization.
 
-It is a **video worker** inside the DuckTyper AI Operating System.
-
-It transforms raw video into structured artifacts that can be:
-
-* reasoned about by agents
-* orchestrated by Temporal
-* published by integrations
-* audited long after execution
-
-It does not decide.
-
-It produces.
+It does not decide the narrative. It performs the mutation of video data exactly as instructed, providing the Sovereign Agent with the proof it needs to move the organization forward.
