@@ -12,9 +12,9 @@ build-backend = "hatchling.build"
 
 # This is a meta-package for development only, not published to PyPI
 [project]
-name = "ducktyper"
+name = "quackverse"
 version = "0.1.0"
-description = "Development environment for DuckTyper (QuackVerse architecture)"
+description = "Development environment for QuackVerse"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "AGPL-3.0" }
@@ -35,8 +35,8 @@ dev = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/ducktyper-ai/ducktyper"
-"Bug Tracker" = "https://github.com/ducktyper-ai/ducktyper/issues"
+"Homepage" = "https://github.com/ducktyper-ai/quackverse"
+"Bug Tracker" = "https://github.com/ducktyper-ai/quackverse/issues"
 
 # This is the key part for monorepo support
 [tool.hatch.build]
@@ -54,7 +54,7 @@ exclude = [
 
 # Shared configuration for all subpackages
 [tool.hatch.build.targets.wheel]
-packages = ["quack_core", "ducktyper", "quackster"]
+packages = ["quack_core", "quackster"]
 
 # Define no source package since this is a monorepo metapackage
 [tool.hatch.build.targets.sdist]
@@ -110,6 +110,6 @@ warn_return_any = true
 strict_optional = true
 
 [tool.pytest.ini_options]
-testpaths = ["quack-core/tests", "ducktyper/tests", "quackster/tests"]
+testpaths = ["quack-core/tests", "quackverse/tests", "quackster/tests"]
 python_files = ["test_*.py"]
 filterwarnings = ["error"]

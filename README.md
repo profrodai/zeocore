@@ -1,4 +1,4 @@
-# 🦆 DuckTyper
+# 🦆 QuackVerse
 
 **The Sovereign Operating System for Always-On Agents**
 
@@ -8,19 +8,19 @@
 > Verify with manifests.
 > Own the infrastructure.
 
-DuckTyper is an architectural doctrine for building **Sovereign Agent Architectures**. It turns raw compute into a **Digital Employee Factory** where always-on agents (like OpenClaw) act as the managers of deterministic, auditable limbs.
+QuackVerse is an architectural doctrine for building **Sovereign Agent Architectures**. It turns raw compute into a **Digital Employee Factory** where always-on agents (like OpenClaw) act as the managers of deterministic, auditable limbs.
 
 ---
 
 ## ✨ One Sentence
 
-**DuckTyper provides the local-first "Userland" for Sovereign Agents by separating kernel contracts, atomic CLI limbs, and an authoritative artifact store.**
+**QuackVerse provides the local-first "Userland" for Sovereign Agents by separating kernel contracts, atomic CLI limbs, and an authoritative artifact store.**
 
 ---
 
 ## 🧭 System Model (QuackVerse): The Sovereign Stack
 
-DuckTyper is implemented using **three strict architectural rings**, anchored by a local **Artifact Store**.
+QuackVerse is implemented using **three strict architectural rings**, anchored by a local **Artifact Store**.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -144,7 +144,7 @@ quackverse/
 
 ## 🧠 Closing Statement
 
-DuckTyper is built to empower **Sovereign Operators**.
+QuackVerse is built to empower **Sovereign Operators**.
 
 * **QuackCore** is the constitution.
 * **The Artifact Store** is the organizational memory.
