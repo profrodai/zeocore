@@ -20,7 +20,7 @@ import logging
 from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
-from quack_core.config.models import _normalize_path
+from quack_core.config.loader import _normalize_path
 from quack_core.integrations.core.base import BaseConfigProvider
 
 
