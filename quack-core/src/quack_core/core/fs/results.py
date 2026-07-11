@@ -45,6 +45,14 @@ class OperationResult(BaseModel):
     meta: dict | None = Field(default=None, description="Additional operation metadata")
 
 
+    @computed_field
+    @property
+    def success(self) -> bool:
+        """DEPRECATED - use .ok. Transitional R-1 alias delegating to the canonical
+        field; removed once a whole-tree audit shows zero .success readers on core/fs
+        results (migrate-fs-result-consumers-to-ok charter). Do not add new readers."""
+        return self.ok
+
     @field_serializer('path')
     def serialize_path(self, path: Path | None, _info):
         return str(path) if path else None
