@@ -32,6 +32,7 @@ from quack_core.integrations.core.results import (
 )
 from quack_core.core.errors import QuackConfigurationError
 from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.core.fs.normalize import coerce_path, coerce_path_str
 
 
 class BaseAuthProvider(ABC, AuthProviderProtocol):
@@ -54,12 +55,12 @@ class BaseAuthProvider(ABC, AuthProviderProtocol):
         try:
             from quack_core.core.fs.service import standalone
             result = standalone.resolve_path(file_path)
-            return standalone.coerce_path_str(result)
+            return coerce_path_str(result)
         except Exception as e:
             self.logger.warning(f"Could not resolve project path: {e}")
             from quack_core.core.fs.service import standalone
             normalized = standalone.normalize_path(file_path)
-            return standalone.coerce_path_str(normalized)
+            return coerce_path_str(normalized)
 
     @property
     @abstractmethod
@@ -85,7 +86,7 @@ class BaseAuthProvider(ABC, AuthProviderProtocol):
             return False
         try:
             from quack_core.core.fs.service import standalone
-            cred_path = standalone.coerce_path(self.credentials_file)
+            cred_path = coerce_path(self.credentials_file)
             parent_dir = cred_path.parent
             result = standalone.create_directory(parent_dir, exist_ok=True)
             return getattr(result, "success", False)
@@ -121,7 +122,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
                     "Configuration file not found in default locations."
                 )
 
-        config_path_str = standalone.coerce_path_str(config_path)
+        config_path_str = coerce_path_str(config_path)
 
         file_info = standalone.get_file_info(config_path_str)
         if not file_info.success or not file_info.exists:
@@ -160,7 +161,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
         env_var = f"QUACK_{self.name.upper()}_CONFIG"
         if config_path := os.environ.get(env_var):
             expanded_path = standalone.expand_user_vars(config_path)
-            path_str = standalone.coerce_path_str(expanded_path)
+            path_str = coerce_path_str(expanded_path)
             file_info = standalone.get_file_info(path_str)
             if file_info.success and file_info.exists:
                 return path_str
@@ -173,19 +174,19 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
                 root_result = paths.get_project_root()
                 if root_result.success:
                     # Explicitly use .path from result for strict correctness
-                    project_root = standalone.coerce_path(root_result.path)
+                    project_root = coerce_path(root_result.path)
         except Exception as e:
             self.logger.debug(f"Project root lookup failed, checking only direct paths: {e}")
 
         # 3. Check Default Locations
         for location in self.DEFAULT_CONFIG_LOCATIONS:
             expanded = standalone.expand_user_vars(location)
-            candidate_path = standalone.coerce_path(expanded)
+            candidate_path = coerce_path(expanded)
 
             if not candidate_path.is_absolute() and project_root:
                 candidate_path = project_root / candidate_path
 
-            candidate_str = standalone.coerce_path_str(candidate_path)
+            candidate_str = coerce_path_str(candidate_path)
             file_info = standalone.get_file_info(candidate_str)
             if file_info.success and file_info.exists:
                 return candidate_str
@@ -193,7 +194,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
         # 4. Fallback: check project root default file
         if project_root:
             fallback = project_root / "quack_config.yaml"
-            fallback_str = standalone.coerce_path_str(fallback)
+            fallback_str = coerce_path_str(fallback)
             file_info = standalone.get_file_info(fallback_str)
             if file_info.success and file_info.exists:
                 return fallback_str
@@ -204,7 +205,7 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
         try:
             from quack_core.core.fs.service import standalone
             result = standalone.resolve_path(file_path)
-            return standalone.coerce_path_str(result)
+            return coerce_path_str(result)
         except Exception as e:
             self.logger.warning(f"Could not resolve project path: {e}")
             return file_path
@@ -236,7 +237,7 @@ class BaseIntegrationService(ABC, IntegrationProtocol):
         self.config = config
         self._initialized = False
 
-        self.config_path = None
+        self.config_path: str | None = None
         if config_path:
             self._set_config_path(config_path)
 
@@ -245,7 +246,7 @@ class BaseIntegrationService(ABC, IntegrationProtocol):
         try:
             from quack_core.core.fs.service import standalone
             result = standalone.resolve_path(config_path)
-            self.config_path = standalone.coerce_path_str(result)
+            self.config_path = coerce_path_str(result)
             self.logger.debug(f"Set config path to {self.config_path}")
         except Exception as e:
             self.logger.error(f"Error setting config path: {e}")
