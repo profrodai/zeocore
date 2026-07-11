@@ -44,11 +44,6 @@ class OperationResult(BaseModel):
     error_info: ErrorInfo | None = Field(default=None, description="Structured error details (canonical)")
     meta: dict | None = Field(default=None, description="Additional operation metadata")
 
-    @computed_field
-    @property
-    def success(self) -> bool:
-        """Alias for ok (backward compatibility)."""
-        return self.ok
 
     @field_serializer('path')
     def serialize_path(self, path: Path | None, _info):

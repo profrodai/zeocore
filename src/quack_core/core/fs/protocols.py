@@ -30,9 +30,8 @@ class HasData(Protocol):
 
 class BaseResult(Protocol):
     """Base protocol for result objects."""
-    # ok is canonical, success is legacy/compat
+    # ok is canonical
     ok: bool
-    success: Optional[bool]
 
 # Standard public input type for the entire service layer
 FsPathLike: TypeAlias = str | Path | PathLike | HasPath | HasData | HasValue | HasUnwrap | BaseResult
