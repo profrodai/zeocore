@@ -37,8 +37,6 @@ def _extract_path_str(obj: Any) -> str:
     # Fail fast on failed Results (check 'ok' first as canonical, then 'success')
     if hasattr(obj, "ok") and not getattr(obj, "ok", True):
         raise ValueError(f"Cannot extract path from failed Result object: {obj}")
-    elif hasattr(obj, "success") and not getattr(obj, "success", True):
-        raise ValueError(f"Cannot extract path from failed Result object: {obj}")
 
     # Explicit unwrap methods
     if hasattr(obj, "value") and callable(obj.value):
