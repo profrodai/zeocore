@@ -113,7 +113,7 @@ def is_safe_path(path: Any) -> BoolResult:
     return get_service().is_safe_path(path)
 
 def get_path_info(path: Any) -> PathResult:
-    return get_service().get_path_info(path)
+    return get_service().normalize_path_with_info(path)
 
 def ensure_directory(path: Any, exist_ok: bool = True) -> OperationResult:
     return get_service().ensure_directory(path, exist_ok)
