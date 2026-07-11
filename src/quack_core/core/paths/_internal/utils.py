@@ -48,7 +48,7 @@ def _normalize_path_with_info(path: Any) -> PathInfo:
 
     res = standalone.normalize_path(path_str)
     # Check success AND data
-    if res.success and res.data:
+    if res.ok and res.data:
         return PathInfo(success=True, path=str(res.data), error=None)
 
     # Fallback
@@ -76,7 +76,7 @@ def _find_project_root(
 
     # Normalize via FS and ensure string
     norm_res = standalone.normalize_path(current_dir)
-    if norm_res.success and norm_res.data:
+    if norm_res.ok and norm_res.data:
         current_dir = str(norm_res.data)
     else:
         current_dir = os.path.abspath(current_dir)
@@ -90,7 +90,7 @@ def _find_project_root(
         # Check files
         for m in markers:
             res = standalone.join_path(current_dir, m)
-            if res.success and res.data:
+            if res.ok and res.data:
                 check_path = str(res.data)
                 if os.path.exists(check_path) and os.path.isfile(check_path):
                     return current_dir
@@ -99,7 +99,7 @@ def _find_project_root(
         found_dirs = 0
         for d in dir_markers:
             res = standalone.join_path(current_dir, d)
-            if res.success and res.data:
+            if res.ok and res.data:
                 check_path = str(res.data)
                 if os.path.exists(check_path) and os.path.isdir(check_path):
                     found_dirs += 1
@@ -134,14 +134,14 @@ def _find_nearest_directory(
         current_dir = _normalize_path_param(start_dir)
 
     norm_res = standalone.normalize_path(current_dir)
-    if norm_res.success and norm_res.data:
+    if norm_res.ok and norm_res.data:
         current_dir = str(norm_res.data)
     else:
         current_dir = os.path.abspath(current_dir)
 
     for _ in range(max_levels):
         res = standalone.join_path(current_dir, name)
-        if res.success and res.data:
+        if res.ok and res.data:
             candidate = str(res.data)
             if os.path.exists(candidate) and os.path.isdir(candidate):
                 return candidate
@@ -177,10 +177,10 @@ def _infer_module_from_path(
     abs_root_res = standalone.normalize_path(root_str)
 
     abs_path = str(
-        abs_path_res.data) if abs_path_res.success and abs_path_res.data else os.path.abspath(
+        abs_path_res.data) if abs_path_res.ok and abs_path_res.data else os.path.abspath(
         path_str)
     abs_root = str(
-        abs_root_res.data) if abs_root_res.success and abs_root_res.data else os.path.abspath(
+        abs_root_res.data) if abs_root_res.ok and abs_root_res.data else os.path.abspath(
         root_str)
 
     # Anchor to src
@@ -230,7 +230,7 @@ def _resolve_relative_to_project(
         root = _find_project_root()
 
     res = standalone.join_path(root, path_str)
-    if res.success and res.data:
+    if res.ok and res.data:
         return str(res.data)
 
     return os.path.join(root, path_str)
