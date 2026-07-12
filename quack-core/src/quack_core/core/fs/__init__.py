@@ -22,6 +22,7 @@ This module exposes ONLY the public API surface.
 Internal modules (_internal, _ops) are not exported.
 """
 
+from typing import Any
 from quack_core.core.fs.service import (
     FileSystemService,
     get_service,
@@ -67,7 +68,7 @@ __all__ = [
 
 # Doctrine enforcement: _internal and _ops are NOT exported
 # If you try to import them, you get AttributeError
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:  # noqa: ANN401  # dynamic attr type
     """Prevent accidental imports of internal modules."""
     if name.startswith('_internal') or name.startswith('_ops'):
         raise AttributeError(

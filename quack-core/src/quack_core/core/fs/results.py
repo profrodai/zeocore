@@ -10,7 +10,9 @@
 
 from pathlib import Path
 from typing import Any, Generic, TypeVar, Optional
-from pydantic import BaseModel, Field, field_serializer, computed_field
+from pydantic import (
+    BaseModel, Field, FieldSerializationInfo, field_serializer, computed_field,
+)
 
 T = TypeVar("T")
 
@@ -22,7 +24,9 @@ class ErrorInfo(BaseModel):
     hint: Optional[str] = Field(default=None, description="User-friendly resolution hint")
     exception: Optional[str] = Field(default=None, description="Exception class name")
     trace_id: Optional[str] = Field(default=None, description="Tracing identifier for debugging")
-    details: Optional[dict] = Field(default=None, description="Structured context (path, errno, etc)")
+    details: Optional[dict[str, Any]] = Field(
+        default=None, description="Structured context (path, errno, etc)"
+    )
 
 
 class OperationResult(BaseModel):
@@ -42,10 +46,12 @@ class OperationResult(BaseModel):
     message: str | None = Field(default=None, description="Human-readable operation summary")
     error: str | None = Field(default=None, description="LEGACY: Use error_info instead")
     error_info: ErrorInfo | None = Field(default=None, description="Structured error details (canonical)")
-    meta: dict | None = Field(default=None, description="Additional operation metadata")
+    meta: dict[str, Any] | None = Field(
+        default=None, description="Additional operation metadata"
+    )
 
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]  # pydantic computed_field+property, mypy limitation
     @property
     def success(self) -> bool:
         """DEPRECATED - use .ok. Transitional R-1 alias delegating to the canonical
@@ -54,7 +60,9 @@ class OperationResult(BaseModel):
         return self.ok
 
     @field_serializer('path')
-    def serialize_path(self, path: Path | None, _info):
+    def serialize_path(
+        self, path: Path | None, _info: FieldSerializationInfo
+    ) -> str | None:
         return str(path) if path else None
 
 
@@ -107,7 +115,9 @@ class WriteResult(OperationResult):
     checksum: str | None = None
 
     @field_serializer('original_path')
-    def serialize_original_path(self, path: Path | None, _info):
+    def serialize_original_path(
+        self, path: Path | None, _info: FieldSerializationInfo
+    ) -> str | None:
         return str(path) if path else None
 
 
@@ -141,7 +151,9 @@ class DirectoryInfoResult(OperationResult):
     total_size: int = 0
 
     @field_serializer('files', 'directories')
-    def serialize_path_lists(self, paths: list[Path], _info):
+    def serialize_path_lists(
+        self, paths: list[Path], _info: FieldSerializationInfo
+    ) -> list[str]:
         return [str(p) for p in paths]
 
 
@@ -154,7 +166,9 @@ class FindResult(OperationResult):
     recursive: bool = False
 
     @field_serializer('files', 'directories')
-    def serialize_path_lists(self, paths: list[Path], _info):
+    def serialize_path_lists(
+        self, paths: list[Path], _info: FieldSerializationInfo
+    ) -> list[str]:
         return [str(p) for p in paths]
 
 
@@ -195,7 +209,7 @@ class PathResult(OperationResult):
         description="True if path exists on filesystem (checked if validation succeeded)"
     )
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]  # pydantic computed_field+property, mypy limitation
     @property
     def is_relative(self) -> bool:
         """Computed: opposite of is_absolute."""
