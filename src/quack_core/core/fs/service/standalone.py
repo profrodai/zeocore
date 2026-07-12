@@ -64,16 +64,18 @@ def find_files(path: Any, pattern: str, recursive: bool = True, include_hidden: 
 def get_file_info(path: Any) -> FileInfoResult:
     return get_service().get_file_info(path)
 
-def read_yaml(path: Any) -> DataResult[dict]:
+def read_yaml(path: Any) -> DataResult[dict[str, Any]]:
     return get_service().read_yaml(path)
 
-def write_yaml(path: Any, data: dict, atomic: bool = True) -> WriteResult:
+def write_yaml(path: Any, data: dict[str, Any], atomic: bool = True) -> WriteResult:
     return get_service().write_yaml(path, data, atomic)
 
-def read_json(path: Any) -> DataResult[dict]:
+def read_json(path: Any) -> DataResult[dict[str, Any]]:
     return get_service().read_json(path)
 
-def write_json(path: Any, data: dict, atomic: bool = True, indent: int = 2) -> WriteResult:
+def write_json(
+    path: Any, data: dict[str, Any], atomic: bool = True, indent: int = 2
+) -> WriteResult:
     return get_service().write_json(path, data, atomic, indent)
 
 def split_path(path: Any) -> DataResult[list[str]]:

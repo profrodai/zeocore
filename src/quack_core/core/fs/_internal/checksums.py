@@ -21,7 +21,7 @@ def _compute_checksum(path: Path, algorithm: str = "sha256") -> str:
         with open(path, "rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_obj.update(chunk)
-        return hash_obj.hexdigest()
+        return str(hash_obj.hexdigest())
     except AttributeError:
         raise ValueError(f"Unsupported algorithm: {algorithm}")
     except Exception as e:

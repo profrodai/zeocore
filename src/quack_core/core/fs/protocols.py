@@ -34,4 +34,6 @@ class BaseResult(Protocol):
     ok: bool
 
 # Standard public input type for the entire service layer
-FsPathLike: TypeAlias = str | Path | PathLike | HasPath | HasData | HasValue | HasUnwrap | BaseResult
+FsPathLike: TypeAlias = (
+    str | Path | PathLike[str] | HasPath | HasData | HasValue | HasUnwrap | BaseResult
+)
