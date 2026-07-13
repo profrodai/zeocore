@@ -20,6 +20,7 @@ from quack_core.core.fs.results import (
     DataResult, PathResult, BoolResult, FileInfoResult,
     OperationResult, DirectoryInfoResult
 )
+from quack_core.core.fs.protocols import FsPathLike
 
 
 class FileSystemService(
@@ -42,27 +43,28 @@ class FileSystemService(
     # Aliases to match ARCHITECTURE.md method catalogue
     # NOTE: These return typed Results for doctrine compliance
 
-    def exists(self, path) -> BoolResult:
+    def exists(self, path: FsPathLike) -> BoolResult:
         """Alias for path_exists()."""
         return self.path_exists(path)
 
-    def resolve(self, path) -> PathResult:
+    def resolve(self, path: FsPathLike) -> PathResult:
         """Alias for resolve_path()."""
         return self.resolve_path(path)
 
-    def ensure_dir(self, path, exist_ok: bool = True) -> OperationResult:
+    def ensure_dir(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult:
         """
         Alias for ensure_directory().
         Note: Always creates parent directories (parents=True internally).
         """
         return self.ensure_directory(path, exist_ok)
 
-    def list_dir(self, path, pattern=None, recursive: bool = False,
+    def list_dir(
+        self, path: FsPathLike, pattern: str | None = None, recursive: bool = False,
                  include_hidden: bool = False) -> DirectoryInfoResult:
         """Alias for list_directory()."""
         return self.list_directory(path, pattern, recursive, include_hidden)
 
-    def is_file(self, path) -> BoolResult:
+    def is_file(self, path: FsPathLike) -> BoolResult:
         """Check if path is a file."""
         res = self.get_file_info(path)
         return BoolResult(
@@ -74,7 +76,7 @@ class FileSystemService(
             message=f"Is file: {res.is_file}" if res.ok else res.message
         )
 
-    def is_dir(self, path) -> BoolResult:
+    def is_dir(self, path: FsPathLike) -> BoolResult:
         """Check if path is a directory."""
         res = self.get_file_info(path)
         return BoolResult(
@@ -86,14 +88,14 @@ class FileSystemService(
             message=f"Is dir: {res.is_dir}" if res.ok else res.message
         )
 
-    def stat(self, path) -> FileInfoResult:
+    def stat(self, path: FsPathLike) -> FileInfoResult:
         """Alias for get_file_info()."""
         return self.get_file_info(path)
 
-    def hash_file(self, path, algorithm: str = "sha256") -> DataResult[str]:
+    def hash_file(self, path: FsPathLike, algorithm: str = "sha256") -> DataResult[str]:
         """Alias for compute_checksum()."""
         return self.compute_checksum(path, algorithm)
 
-    def mime_type(self, path) -> DataResult[str | None]:
+    def mime_type(self, path: FsPathLike) -> DataResult[str | None]:
         """Alias for get_mime_type()."""
         return self.get_mime_type(path)

@@ -1,353 +1,159 @@
-# 🦆 DuckTyper
+# 🦆 QuackVerse
 
-**The AI Operating System for Knowledge Work**
+**The Sovereign Operating System for Always-On Agents**
 
-> **Open-source the engine.  
-> Standardize the contracts once.  
-> Orchestrate durably.  
-> Integrate externally.  
-> Keep stories and courses proprietary.**
- 
-DuckTyper is built on **QuackVerse** — an internal architectural doctrine
-that defines how AI-first organizations are structured, governed, and run.
+> Open-source the engine.
+> Atomicize the limbs.
+> Handshake with tickets.
+> Verify with manifests.
+> Own the infrastructure.
 
-
-DuckTyper enables building **AI-first organizations** that are:
-
-- **auditable** (artifacts + manifests are the system of record)
-- **durable** (workflow state is owned by Temporal)
-- **sovereign** (portable infrastructure, minimal SaaS lock-in)
-- **teachable** (white-box by default)
-
-This is **not** a chatbot framework.  
-DuckTyper is **organizational infrastructure**.
+QuackVerse is an architectural doctrine for building **Sovereign Agent Architectures**. It turns raw compute into a **Digital Employee Factory** where always-on agents (like OpenClaw) act as the managers of deterministic, auditable limbs.
 
 ---
 
 ## ✨ One Sentence
 
-**DuckTyper turns AI from demos into operating reality by separating kernel contracts, deterministic workers, 
-and durable orchestration — and wiring them together safely.**
+**QuackVerse provides the local-first "Userland" for Sovereign Agents by separating kernel contracts, atomic CLI limbs, and an authoritative artifact store.**
 
 ---
 
-## 🧭 System Model (QuackVerse): Three Rings + One Runtime Layer
+## 🧭 System Model (QuackVerse): The Sovereign Stack
 
-DuckTyper is implemented using **three strict architectural rings**, plus a **runtime wiring layer**.
+QuackVerse is implemented using **three strict architectural rings**, anchored by a local **Artifact Store**.
+
+```
+┌──────────────────────────────────────────────────────────┐
+│             RING C — AGENTIC CONTROL                     │
+│    OpenClaw (Manager) · Temporal · Quackchat (Cockpit)   │
+├──────────────────────────────────────────────────────────┤
+│             RING B — ATOMIC LIMBS (WORKERS)              │
+│    QuackIngest · QuackDistro · QuackVideo · QuackDeck    │
+├──────────────────────────────────────────────────────────┤
+│             RING A — THE SOVEREIGN BRAIN                 │
+│    Ticket System · QuackStore (.quack/) · QuackLedger    │
+└──────────────────────────────────────────────────────────┘
 
 ```
 
-┌────────────────────────────────────────────┐
-│        RING C — EXPERIENCES / CONTROL      │
-│  Quackchat · Temporal · n8n · Agents · CI  │
-├────────────────────────────────────────────┤
-│        RING B — TOOLS (WORKERS)             │
-│  QuackVideo · QuackImage · QuackQuote · …  │
-├────────────────────────────────────────────┤
-│        RING A — CORE (KERNEL)               │
-│  Contracts · Capabilities · IO · Config    │
-│  Registries · Results · Adapters            │
-└────────────────────────────────────────────┘
+---
 
-══════════════════════════════════════════════
-RUNTIME / OPERATIONS (Outside the Rings)
-Quackshowrunner — Infrastructure-as-Code
-══════════════════════════════════════════════
+## 🟦 Ring A — Core (The Sovereign Brain)
 
-````
+The **Constitutional Layer**. In the Sovereign Agent era, Ring A moves from "definition" to "authoritative proof."
 
-### Key principle
+#### `.quack/` (The Artifact Store)
 
-- **Rings define behavior and responsibility**
-- **Quackshowrunner defines what is running and how it is wired**
-- Repo location ≠ architectural role
+The system of record lives hidden within each project.
+
+* **`ledger.db`**: The immutable lineage of every action taken.
+* **`runs/`**: Individual directories for every `RunID`.
+* **`limbs.json`**: The discovery manifest (tells Agents what limbs they have).
+
+#### The Ticket System (Async Handshake)
+
+To prevent agents from hallucinating success, all long-running tasks follow the **Ticket Protocol**:
+
+1. **Trigger:** Agent calls a limb; tool issues a `RunID` ticket and exits.
+2. **Poll:** Agent must poll `quack status <RunID>` for progress.
+3. **Verify:** Success is only valid when the tool writes a `QC_MANIFEST_VERIFIED` checksum.
 
 ---
 
-## 🧠 What Lives in This Monorepo
+## 🟨 Ring B — Atomic Limbs (The Hands)
 
-The DuckTyper monorepo contains **both the engine and its canonical runtime wiring**.
+Ring B tools are no longer monolithic "batch" scripts; they are **Atomic Limbs**.
 
-### 🟦 Ring A — Core (Kernel)
+* **Granular Verbs:** `add-slide`, `cut-clip`, `normalize-audio`.
+* **Stateless:** They do not remember the past; they read the current state from the `.quack/` store.
+* **Machine-First:** Every limb implements `--discovery` to output its own documentation for LLM consumption.
 
-#### `quackcore/`
-
-The **constitutional layer** of the DuckTyper.
-
-Defines:
-- schemas and contracts
-- capability interfaces
-- registries and discovery
-- config and logging semantics
-- filesystem and path primitives
-- result and error envelopes
-- adapter libraries (HTTP, MCP)
-
-> **QuackCore answers:**  
-> *“What shapes and rules are valid in this system?”*
-
-It never:
-- executes tools
-- orchestrates workflows
-- renders UI
-- embeds prompts or policies
+> **QuackLimbs answer:** > *“Given this specific instruction, mutate the project state and provide proof.”*
 
 ---
 
-### 🟨 Ring B — Tools (Workers)
+## 🟩 Ring C — Experience (The Manager & Cockpit)
 
-#### `quacktools/`
+#### Sovereign Agents (e.g., OpenClaw)
 
-**Atomic, deterministic workers**.
+The **Primary User**. The Agent is the "Manager" that sequences the Atomic Limbs of Ring B based on the "Sovereign Agent Guide" (Pillar A).
 
-Each tool:
-- performs one bounded job
-- consumes structured inputs
-- emits artifacts + a manifest
-- is stateless across runs
-- imports **QuackCore only**
+#### Temporal (The Watchdog)
 
-> **QuackTools answer:**  
-> *“Given these inputs, produce these outputs.”*
+The **Durable Memory**. Temporal tracks the long-running async tickets. If an Agent crashes or the power fails, Temporal ensures the "Manager" knows exactly where to resume.
 
-Tools never:
-- plan workflows
-- call other tools
-- talk to SaaS systems directly
-- store canonical state
+#### Quackchat (The Cockpit)
+
+Reframed from a "Chatbot" to a **Human Oversight Interface**. It is where the human "Operator" monitors the Agent’s "Monologue" and approves high-risk actions (spending money, publishing content).
 
 ---
 
-### 🟩 Ring C — Experiences (Control Planes)
+## 🔌 Communication Doctrine: The Handshake
 
-#### `quackrunner/`
-**The execution gateway**  
-Runs tools safely, isolates execution, captures logs, indexes artifacts.
-
-> *Executes exactly what it is told — once.*
-
----
-
-#### `quackchat/`
-**The human & agent cockpit**
-
-- intent entry
-- approvals / rejections
-- workflow visibility
-- explanations and steering
-
-> *Where intent enters the system.*
+1. **Discovery (Pre-flight):** Agent runs `quack --discovery` to learn available limbs.
+2. **The Ticket (Trigger):** Agent triggers an async limb and receives a `RunID`.
+3. **The Proof (Manifest):** Tool emits a `manifest.json` + `summary.md`.
+4. **The Monologue (Context):** Agent reads the `summary.md` (LLM-optimized snippet) to update its internal context without parsing raw data.
 
 ---
 
-#### `quackagents/`
-**Judgment-bearing services**
+## 🧰 Canonical CLI Surface
 
-Agents:
-- read artifacts and manifests
-- apply policy and heuristics
-- propose decisions
-- signal Temporal
-
-They never execute tools directly.
-
-> *Agents decide. Tools produce.*
-
----
-
-### 🧩 Shared Capabilities
-
-#### `quackintegrations/`
-
-Reusable **native integration capabilities** that increase sovereign leverage.
-
-Used when an integration:
-- removes brittle glue
-- enables repeatable, auditable workflows
-- is reusable across businesses
-- fits QuackCore’s config / error / result model
-
-n8n is preferred for:
-- fast-changing glue
-- one-off business logic
-- operational playbooks
-
----
-
-## 🏗 Runtime / Operations Layer (In-Repo, Outside the Rings)
-
-### 🎬 `quackshowrunner/`
-
-**Infrastructure-as-Code for the DuckTyper runtime**
-
-Quackshowrunner **lives in this monorepo**, but it is **not part of the three rings**.
-
-It is the **deployment and operations layer**.
-
-Quackshowrunner:
-
-- provisions and wires:
-  - Temporal
-  - n8n
-  - QuackRunner
-  - agent services
-  - shared business systems (CRM, knowledge base)
-  - storage and observability
-- manages:
-  - networking
-  - credentials injection
-  - backups and recovery
-  - upgrades and migrations
-
-It never:
-- contains business logic
-- defines workflows
-- embeds prompts
-- executes tools
-- renders UI
-
-> **In short:**  
-> **DuckTyper defines the system.**  
-> **Quackshowrunner runs the system.**
-
----
-
-## 🔌 Communication Doctrine
-
-Only **three communication paths** are allowed:
-
-1. **Artifact Interface (default)**  
-   Files + manifests, immutable, auditable
-
-2. **Service Interface (shared concerns)**  
-   Config, registries, schema validation
-
-3. **Adapter Interface (external)**  
-   HTTP / MCP at gateways only
-
-**Tools never talk to tools.**
-
-If a tool didn’t emit a manifest — **it didn’t happen**.
-
----
-
-## 🧰 Canonical Tool Surface
-
-There is exactly **one** CLI:
+Every tool in the QuackVerse follows the **Atomic Grammar**:
 
 ```bash
-quack <tool> <verb> [options]
-````
+quack <tool> <limb> [options]
 
-Every tool must implement:
+```
 
-* `run`
-* `validate`
-* `doctor`
-* `explain`
+**Mandatory Verbs for Agents:**
 
-No exceptions.
+* `status <RunID>`: Check the async ticket state.
+* `explain <RunID>`: Output the `summary.md` for LLM context.
+* `doctor`: Auto-fix the local environment.
+* `--discovery`: Output machine-readable capability map.
 
 ---
 
-## 🏃 Execution Model (Production)
-
-```
-Quackchat
-   ↓ intent / approvals
-Temporal
-   ↓ activity
-QuackRunner
-   ↓ isolated execution
-QuackTool
-   ↓
-Artifacts + Manifest
-```
-
-* **Temporal** owns workflow state, retries, history
-* **QuackRunner** owns execution and logs
-* **n8n** owns side-effects only
-* **Agents** propose decisions
-* **Quackchat** enables human steering
-
----
-
-## 📦 Monorepo Layout (Indicative)
+## 📦 Monorepo Layout (Sovereign Edition)
 
 ```text
 quackverse/
-├── quackcore/              # Ring A: kernel
-├── quacktools/             # Ring B: workers
-├── quackrunner/            # Ring C: execution
-├── quackchat/              # Ring C: cockpit
-├── quackagents/            # Ring C: judgment
-├── quackintegrations/      # Shared capabilities
-├── quackshowrunner/        # Runtime / IaC (outside rings)
+├── quackcore/              # Ring A: Ticket system & Ledger
+├── quacktools/             # Ring B: Atomic Limbs (Video, Ingest, etc.)
+├── quackrunner/            # Ring C: Local execution gateway
+├── quackchat/              # Ring C: Operator cockpit (TS/Web)
+├── agents/                 # Ring C: Sovereign Agent definitions (OpenClaw config)
 └── README.md
+
 ```
 
 ---
 
-## 🧪 The North Star Test
+## 🧭 Governance Rules (Agentic OS)
 
-A canonical workflow must exist and run end-to-end:
-
-* collect AI news
-* cluster and rank
-* draft agenda
-* generate content
-* produce assets
-* publish with approval
-
-It must run:
-
-* locally
-* automated
-* agent-assisted
-
-This is the **Monday Morning Briefing Test**.
-
----
-
-## 🧭 Governance Rules (Non-Negotiable)
-
-1. Core defines rules, not pipelines
-2. Tools never orchestrate
-3. UI never contains core logic
-4. Tools never import tools
-5. Capabilities are contracts
-6. Runtimes are replaceable
-7. Everything emits artifacts
-8. One canonical CLI (`quack`)
-9. One execution gateway (QuackRunner)
-10. MCP lives at the adapter layer
-11. Temporal owns workflow state
-12. n8n owns integrations
-13. Engine public, content private
-14. Teaching is first-class
-
-**Naming note:**  
-QuackVerse refers to the internal architectural doctrine and vocabulary.
-DuckTyper is the product and public-facing system built on it.
-
+1. **Artifacts are Canon:** If it isn't in the `.quack/` store, it never happened.
+2. **No Hallucinations:** Success requires a verified manifest checksum.
+3. **Atomic Limbs:** Prefer 10 small commands over 1 big command with 10 flags.
+4. **LLM Context First:** Every run must produce a `summary.md` for the agent.
+5. **Local-First:** The system of record must be portable within the project folder.
+6. **Async by Default:** Respect the agent’s context window; issue tickets for long jobs.
+7. **Sovereignty:** No cloud dependency for core organizational memory.
 
 ---
 
 ## 🧠 Closing Statement
 
-DuckTyper is built to replace **roles**, not tasks.
+QuackVerse is built to empower **Sovereign Operators**.
 
-* **QuackCore** is the constitution
-* **QuackTools** are the hands
-* **QuackRunner** is the muscle
-* **Temporal** is the process OS
-* **n8n** is connective tissue
-* **Agents** provide judgment
-* **Quackchat** is the cockpit
-* **Quackshowrunner** keeps it all running
+* **QuackCore** is the constitution.
+* **The Artifact Store** is the organizational memory.
+* **Atomic Limbs** are the digital hands.
+* **Sovereign Agents** are the digital managers.
+* **The Human** is the Commander-in-Chief.
 
-People can change.
-Tools can be swapped.
-Agents can evolve.
+**The Manager plans. The Limbs produce. The Human judges. The Organization compounds.**
 
-**The organization still runs.**
+---
+
+**Would you like me to update the specific "Governance Rules" or "Communication Doctrine" for any of the other Ring B tools (Video, Tutorial, Research) to reflect this atomic shift?**

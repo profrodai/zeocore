@@ -1,53 +1,34 @@
 # 🧠 **QuackCore**
 
-**The Kernel of the QuackVerse**
+**The Sovereign Kernel of the QuackVerse**
 
 > **QuackCore defines what is possible — not what happens.**
-> It is the constitutional layer that makes the QuackVerse inspectable, auditable, and composable at scale.
+> It is the constitutional layer and the "Sovereign Brain" that makes AI-first organizations auditable, portable, and resistant to hallucination.
 
 ---
 
 ## 🧠 What QuackCore Is
 
-**QuackCore is the kernel of the QuackVerse.**
+**QuackCore is the Ring A kernel of the QuackVerse.**
 
-It defines the **contracts, primitives, and invariants** that every other component relies on.
-
-QuackCore answers one question only:
-
-> **“What shapes, rules, and interfaces are valid in this system?”**
+It defines the **contracts, primitives, and authoritative state patterns** that every other component relies on. In the Sovereign Agent Architecture, QuackCore is the "Truth Provider" that allows agents like OpenClaw to verify their own actions against a local system of record.
 
 It does **not** decide:
 
-* what to run
-* when to run it
-* how to sequence work
-* which tools to choose
-* how users interact
-
-Those concerns live above the kernel.
+* what the Agent should "think"
+* when to trigger a limb
+* how to publish content
 
 ---
 
-## 🧾 “Pure” Means No Business Side Effects — Not “No I/O”
+## 🧾 The Sovereign "Truth" Primitives
 
-When we say QuackCore is *pure*, we mean:
+QuackCore is "pure" in logic but **authoritative in I/O**. It owns the standards for the **Local Project Brain**:
 
-> **QuackCore performs no *domain side effects* and owns no *control-plane responsibilities*.**
-
-QuackCore **may** include **infrastructure primitives** that perform low-level I/O, such as:
-
-* filesystem abstractions
-* config loading and validation
-* path resolution
-* serialization
-* checksums and hashing
-* artifact conventions
-* logging semantics
-
-These are **kernel capabilities**, not business actions.
-
-What QuackCore must never do is encode **what an organization does** or **how work flows**.
+* **The Ticket System (`quack_core.async`)**: Standardizes the `RunID` ticket and the status-polling handshake for asynchronous limbs.
+* **The Artifact Store (`quack_core.store`)**: Defines the `.quack/` directory structure, ensuring local portability.
+* **The Ledger (`quack_core.ledger`)**: Provides the schema and logic for the local `ledger.db`—the immutable production lineage.
+* **Discovery (`quack_core.discovery`)**: Generates machine-readable capability maps so agents can self-teach the CLI surface.
 
 ---
 
@@ -55,175 +36,62 @@ What QuackCore must never do is encode **what an organization does** or **how wo
 
 QuackCore is **not**:
 
-* a workflow engine
-* a scheduler
-* an execution service
-* an agent runtime
-* a UI or CLI application
-* an integration hub for business systems
-* a teaching platform
-* a product surface
-* a place for proprietary logic
-
-If a module needs to:
-
-* start a server
-* execute tools
-* manage long-running processes
-* mutate external business systems
-* embed prompts or policies
-* require production secrets to import safely
-
-…it does **not** belong in QuackCore.
+* **The Manager:** It does not plan (Agents do).
+* **The Muscle:** It does not execute CLI commands or start sub-processes (QuackRunner does).
+* **The Watchdog:** It does not manage durability or retries (Temporal does).
+* **The Repository:** It does not store stories or courses (Everduck does).
 
 ---
 
 ## 🧭 Position in the QuackVerse
 
 ```
-┌────────────────────────────────────────────┐
-│        RING C — EXPERIENCES                │
-│  Temporal · Agents · QuackRunner           │
-│  Quackchat · n8n                           │
-├────────────────────────────────────────────┤
-│        RING B — TOOLS (WORKERS)            │
-│  QuackVideo · QuackImage · QuackMachinima │
-│  QuackQuote · QuackTutorial · …            │
-├────────────────────────────────────────────┤
-│        RING A — CORE (KERNEL)              │
-│        ▶ QuackCore ◀                      │
-│  Contracts · Capabilities · Registries     │
-│  Config · IO · Results                    │
-└────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│             RING C — AGENTIC CONTROL                     │
+│    OpenClaw (Manager) · Temporal · Quackchat (Cockpit)   │
+├──────────────────────────────────────────────────────────┤
+│             RING B — ATOMIC LIMBS (WORKERS)              │
+│    QuackIngest · QuackDistro · QuackVideo · QuackDeck    │
+├──────────────────────────────────────────────────────────┤
+│             RING A — THE SOVEREIGN BRAIN                 │
+│        ▶ QuackCore ◀                                     │
+│    Ticket System · QuackStore (.quack/) · QuackLedger    │
+└──────────────────────────────────────────────────────────┘
+
 ```
 
-QuackCore lives entirely in **Ring A**.
-
-Everything depends on it.
-It depends on nothing above it.
+Everything depends on QuackCore. It is the only package allowed to be imported by Ring B workers.
 
 ---
 
 ## 🧠 Core Responsibilities
 
-QuackCore is responsible for **definition, validation, and transparency** — not execution.
+### 1️⃣ Authoritative Contracts (Anti-Hallucination)
 
----
+QuackCore defines the **Proof of Work** requirement.
 
-### 1️⃣ Contracts & Canonical Schemas
+* **Manifests:** Mandatory JSON schema for success.
+* **Summaries:** The `summary.md` standard—LLM-optimized snippets that update an agent's context without "context shredding."
+* **Checksums:** Logic for `QC_MANIFEST_VERIFIED` signatures.
 
-QuackCore defines the **canonical shapes** used across the QuackVerse:
+### 2️⃣ The Async Handshake (Tickets)
 
-* tool input schemas
-* tool output manifests
-* run requests and run results
-* error and status envelopes
-* artifact metadata
-* provenance and checksums
+Standardizes the `RunID` lifecycle:
 
-These contracts enable:
+* **Ticket Issuance:** Creating the `pending` state record.
+* **Polling Logic:** How `quack status` retrieves machine-readable progress.
+* **Verification:** The transition from `pending` to `success` based on file-system proofs.
 
-* interoperability
-* auditability
-* long-term stability
-* machine and human inspection
+### 3️⃣ Local Portability (The `.quack/` folder)
 
----
+Owns the filesystem primitives that ensure the **Sovereign Brain** stays with the project:
 
-### 2️⃣ Capability Interfaces
+* Standardizing the `runs/`, `assets/`, and `metadata/` hierarchies.
+* Ensuring the `ledger.db` is the single source of truth for project lineage.
 
-QuackCore defines **what kinds of things may exist**, without implementing them:
+### 4️⃣ Error Taxonomy (`QC_*` Codes)
 
-* tool capability protocols
-* execution request interfaces
-* storage abstraction interfaces
-* configuration contracts
-
-QuackCore answers:
-
-> *“If something claims to be a tool, runner, or capability, what must it look like?”*
-
----
-
-### 3️⃣ Registries & Discovery
-
-QuackCore provides typed registries and discovery mechanisms:
-
-* plugin discovery
-* capability registration
-* schema validation
-* deterministic error reporting
-
-This enables composition without tight coupling.
-
----
-
-### 4️⃣ Infrastructure Primitives (Kernel Services)
-
-QuackCore includes **domain-agnostic primitives** required everywhere:
-
-* **Filesystem (`quack_core.core.fs`)**
-  Standardized read/write, atomic operations, structured data IO, checksums.
-* **Paths (`quack_core.core.paths`)**
-  Resolution, normalization, validation, safety semantics.
-* **Config (`quack_core.config`)**
-  Typed, validated configuration conventions.
-* **Logging & CLI semantics**
-  Consistent diagnostics and structured output.
-* **Artifact conventions**
-  Naming, manifests, deterministic layouts.
-
-These primitives may perform I/O **as a capability**, but they do not encode workflows or decisions.
-
----
-
-### 5️⃣ Adapter Libraries (Not Hosted Services)
-
-QuackCore may include **adapter libraries** such as:
-
-* HTTP adapters
-* MCP adapters
-
-These define:
-
-* request/response envelopes
-* validation rules
-* error translation
-* auth propagation conventions
-
-They **do not**:
-
-* host servers
-* expose public endpoints
-* execute tools
-* manage lifecycle
-
-Hosted services live in **QuackRunner** or other Ring C components.
-
----
-
-### 6️⃣ Self-Describing & White-Box Conventions
-
-QuackCore is **explicitly white-box**.
-
-It defines conventions that allow the system to describe itself:
-
-* schema introspection
-* artifact manifests
-* provenance metadata
-* deterministic result envelopes
-* validation and diagnostics semantics
-
-This enables:
-
-* auditing
-* debugging
-* compliance
-* reproducibility
-* operational clarity
-
-This is **not teaching**.
-This is **transparency**.
+Defines the blessed machine-readable error codes. This allows agents to pivot or escalate based on **Area** (IO, VAL, SYS) rather than parsing raw stack traces.
 
 ---
 
@@ -231,104 +99,47 @@ This is **transparency**.
 
 ### ✅ Allowed in QuackCore
 
-* filesystem abstraction
-* config parsing and validation
-* logging and result envelopes
-* schema definitions
-* hashing and checksums
-* artifact conventions
-* adapter *libraries* (no hosting)
+* Artifact store definitions (`.quack/`)
+* Ledger schemas and lineage logic
+* Async ticket state models
+* `summary.md` generation primitives
+* Machine-readable `--discovery` schemas
+* Result/Error envelopes (`QC_` codes)
 
 ### ❌ Not Allowed in QuackCore
 
-* workflow logic
-* execution logic
-* business integrations (Twenty, Docusaurus, etc.)
-* domain actions (“publish”, “update CRM”, “render video”)
-* UI logic
-* agent reasoning
-* prompts or policies
-
----
-
-## 🧪 The Litmus Test
-
-A module belongs in QuackCore **only if**:
-
-* it is domain-agnostic
-* it introduces no side effects beyond primitive I/O
-* it encodes no business workflow
-* it is safe to import without secrets
-* it defines rules, not behavior
-
-If it *does something*, it does not belong here.
+* Agent prompts or "monologue" logic
+* CLI entry points for specific tools (e.g., `quack video`)
+* Temporal worker implementations
+* Third-party SaaS API clients (n8n handles these)
+* Rendering logic
 
 ---
 
 ## 🧠 QuackCore vs QuackRunner
 
-| Concern             | QuackCore | QuackRunner    |
-| ------------------- | --------- | -------------- |
-| Defines contracts   | ✅         | ❌              |
-| Provides primitives | ✅         | ❌              |
-| Hosts APIs          | ❌         | ✅              |
-| Executes tools      | ❌         | ✅              |
-| Side effects        | ❌         | ✅              |
-| Stability           | Very high | Evolves faster |
-
-QuackCore is the **constitution**.
-QuackRunner is an **institution** governed by it.
-
----
-
-## 📦 Indicative Repository Structure
-
-```text
-quack-core/
-├── contracts/          # Canonical schemas
-├── capabilities/       # Capability interfaces
-├── registries/         # Discovery & validation
-├── adapters/           # Adapter libraries (HTTP, MCP)
-├── config/             # Configuration models
-├── lib/
-│   └── fs/             # Filesystem primitives
-├── paths/              # Path semantics
-├── results/            # Result & error envelopes
-├── utils/              # Pure helpers only
-│
-├── tests/
-└── README.md
-```
+| Concern | QuackCore (Kernel) | QuackRunner (Muscle) |
+| --- | --- | --- |
+| **Defines Proof** | ✅ Yes | ❌ No |
+| **Owns Ledger** | ✅ Yes | ❌ No |
+| **Starts Process** | ❌ No | ✅ Yes |
+| **Manages PIDs** | ❌ No | ✅ Yes |
+| **Stability** | Constant (Constitution) | Evolutionary |
 
 ---
 
 ## 🧭 Governance Rules (Non-Negotiable)
 
-1. QuackCore defines rules, not pipelines
-2. No orchestration
-3. No execution
-4. No business side effects
-5. No prompts or policies
-6. Infrastructure primitives are allowed
-7. Adapter libraries allowed — hosting is not
-8. White-box by default
-9. Engine public, content private
+1. **Sovereignty First:** All organizational memory must be portable in the local project store.
+2. **Atomic Contracts:** Define small, verifiable interfaces.
+3. **No Manifest, No Success:** QuackCore logic must never validate a task without a manifest checksum.
+4. **Machine-First:** Discovery and Summaries are as important as raw data.
+5. **Engine Public, Content Private.**
 
 ---
 
 ## 🧠 Closing Statement
 
-**QuackCore is the constitutional layer of the QuackVerse.**
+**QuackCore is the Sovereign Brain.** It does not act, but it ensures that every action taken by an agent or tool is recorded, verified, and auditable. It is the bedrock that allows the "Optimistic Professor" to trust the machine.
 
-It does not act.
-It does not decide.
-It does not execute.
-
-It defines the invariants that make AI-first organizations:
-
-* auditable
-* composable
-* portable
-* and sovereign.
-
-If QuackCore is solid, everything built on top can evolve safely.
+---

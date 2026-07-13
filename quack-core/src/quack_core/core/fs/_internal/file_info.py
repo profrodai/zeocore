@@ -28,11 +28,12 @@ def _get_mime_type(path: Path) -> str | None:
 
 def _get_file_size_str(size_bytes: int) -> str:
     if size_bytes < 0: return "0 B"
+    size: float = float(size_bytes)
     for unit in ["B", "KB", "MB", "GB", "TB"]:
-        if size_bytes < 1024:
-            return f"{size_bytes:.2f} {unit}" if unit != "B" else f"{size_bytes} {unit}"
-        size_bytes /= 1024
-    return f"{size_bytes:.2f} PB"
+        if size < 1024:
+            return f"{size:.2f} {unit}" if unit != "B" else f"{int(size)} {unit}"
+        size /= 1024
+    return f"{size:.2f} PB"
 
 def _get_file_type(path: Path) -> str:
     if not path.exists(): return "nonexistent"

@@ -60,7 +60,7 @@ class PathResolver:
 
         # Output directory
         join_res = standalone.join_path(root_dir, "output")
-        if join_res.success and join_res.data:
+        if join_res.ok and join_res.data:
             out_path = str(join_res.data)
             if ospath.exists(out_path):
                 context._add_directory("output", out_path, is_output=True)
@@ -76,7 +76,7 @@ class PathResolver:
         }
         for name, attrs in standard_dirs.items():
             join_res = standalone.join_path(root_dir, name)
-            if not join_res.success or not join_res.data:
+            if not join_res.ok or not join_res.data:
                 continue
 
             dir_path = str(join_res.data)
@@ -95,7 +95,7 @@ class PathResolver:
 
         # 2. Look for project root that contains __init__.py
         join_res = standalone.join_path(current_dir, "__init__.py")
-        if join_res.success and join_res.data:
+        if join_res.ok and join_res.data:
             if ospath.exists(str(join_res.data)):
                 return current_dir
 
@@ -109,14 +109,14 @@ class PathResolver:
 
             for candidate in ["output", "build"]:
                 join_res = standalone.join_path(root_dir, candidate)
-                if join_res.success and join_res.data:
+                if join_res.ok and join_res.data:
                     path = str(join_res.data)
                     if ospath.exists(path):
                         return path
 
             if create:
                 res = standalone.join_path(root_dir, "output")
-                if res.success and res.data:
+                if res.ok and res.data:
                     out_path = str(res.data)
                     standalone.create_directory(out_path, exist_ok=True)
                     return out_path
@@ -127,7 +127,7 @@ class PathResolver:
             if create:
                 current = start_dir or getcwd()
                 res = standalone.join_path(current, "output")
-                if res.success and res.data:
+                if res.ok and res.data:
                     out_path = str(res.data)
                     standalone.create_directory(out_path, exist_ok=True)
                     return out_path
@@ -145,7 +145,7 @@ class PathResolver:
 
         root = project_root or self._get_project_root()
         res = standalone.join_path(root, path_value)
-        if res.success and res.data:
+        if res.ok and res.data:
             return str(res.data)
         return ospath.join(root, path_value)
 
@@ -173,7 +173,7 @@ class PathResolver:
         # Config file detection
         for fname in ["quack_config.yaml", "pyproject.toml", "setup.py"]:
             res = standalone.join_path(root, fname)
-            if res.success and res.data:
+            if res.ok and res.data:
                 check_path = str(res.data)
                 if ospath.exists(check_path):
                     context.config_file = check_path

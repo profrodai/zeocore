@@ -69,7 +69,13 @@ dev = [
     "hatchling",
     "black>=23.0.0",
     "hypothesis",
-    "python-docx"
+    "python-docx",
+    "types-PyYAML"
+]
+lint = [
+    # Tier-1 architecture linters (Master ruling: dedicated .[lint] extra).
+    # import-linter enforces the directional import contracts in .importlinter.
+    "import-linter>=2.5",
 ]
 gmail = [
     "google-api-python-client>=2.0.0",

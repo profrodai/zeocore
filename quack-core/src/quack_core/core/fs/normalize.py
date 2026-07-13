@@ -37,8 +37,6 @@ def _extract_path_str(obj: Any) -> str:
     # Fail fast on failed Results (check 'ok' first as canonical, then 'success')
     if hasattr(obj, "ok") and not getattr(obj, "ok", True):
         raise ValueError(f"Cannot extract path from failed Result object: {obj}")
-    elif hasattr(obj, "success") and not getattr(obj, "success", True):
-        raise ValueError(f"Cannot extract path from failed Result object: {obj}")
 
     # Explicit unwrap methods
     if hasattr(obj, "value") and callable(obj.value):
@@ -46,9 +44,9 @@ def _extract_path_str(obj: Any) -> str:
     if hasattr(obj, "unwrap") and callable(obj.unwrap):
         return _extract_path_str(obj.unwrap())
 
-    # Result attributes (HasData / HasPath)
+    # Result attributes: ok-gated so only typed Results unwrap .data (R-1 narrowing)
     # Prefer 'data' if it looks path-like, else 'path'
-    if hasattr(obj, "data") and obj.data is not None:
+    if hasattr(obj, "ok") and hasattr(obj, "data") and obj.data is not None:
         # Only use .data if it is explicitly a string or path-like
         # This prevents treating arbitrary payloads (dicts, lists) as paths
         if isinstance(obj.data, (str, Path)) or hasattr(obj.data, "__fspath__"):

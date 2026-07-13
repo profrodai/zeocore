@@ -26,7 +26,7 @@ def main():
     quack_config, http_config = load_tool_config(
         tool_name="http",
         config_model=HttpAdapterConfig,
-        config_path=None  # Uses default config locations
+        config_path=None,  # Uses default config locations
     )
 
     print(f"Starting HTTP adapter on {http_config.host}:{http_config.port}")
@@ -44,7 +44,6 @@ if __name__ == "__main__":
 """
 Sample configuration file showing HTTP adapter integration.
 Save as quack_config.yaml in your project root.
-"""
 
 # Standard QuackCore configuration
 general:
@@ -74,6 +73,7 @@ job_ttl_seconds: 1800
 max_workers: 4
 request_timeout_seconds: 600
 
+"""
 # File: examples/client_example.py
 """
 Example client for testing the HTTP adapter.
@@ -89,7 +89,7 @@ class QuackCoreHTTPClient:
     """Simple client for QuackCore HTTP adapter."""
 
     def __init__(self, base_url: str, auth_token: Optional[str] = None):
-        self.base_url = base_url.rstrip('/')
+        self.base_url = base_url.rstrip("/")
         self.headers = {}
         if auth_token:
             self.headers["Authorization"] = f"Bearer {auth_token}"
@@ -101,14 +101,15 @@ class QuackCoreHTTPClient:
             response.raise_for_status()
             return response.json()
 
-    async def create_job(self, op: str, params: Dict[str, Any],
-                         callback_url: Optional[str] = None,
-                         idempotency_key: Optional[str] = None) -> str:
+    async def create_job(
+        self,
+        op: str,
+        params: Dict[str, Any],
+        callback_url: Optional[str] = None,
+        idempotency_key: Optional[str] = None,
+    ) -> str:
         """Create a new job."""
-        payload = {
-            "op": op,
-            "params": params
-        }
+        payload = {"op": op, "params": params}
         if callback_url:
             payload["callback_url"] = callback_url
         if idempotency_key:
@@ -116,9 +117,7 @@ class QuackCoreHTTPClient:
 
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                f"{self.base_url}/jobs",
-                json=payload,
-                headers=self.headers
+                f"{self.base_url}/jobs", json=payload, headers=self.headers
             )
             response.raise_for_status()
             return response.json()["job_id"]
@@ -127,15 +126,14 @@ class QuackCoreHTTPClient:
         """Get job status."""
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                f"{self.base_url}/jobs/{job_id}",
-                headers=self.headers
+                f"{self.base_url}/jobs/{job_id}", headers=self.headers
             )
             response.raise_for_status()
             return response.json()
 
-    async def wait_for_completion(self, job_id: str,
-                                  timeout: int = 300,
-                                  poll_interval: float = 1.0) -> Dict[str, Any]:
+    async def wait_for_completion(
+        self, job_id: str, timeout: int = 300, poll_interval: float = 1.0
+    ) -> Dict[str, Any]:
         """Wait for job completion."""
         start_time = time.time()
 
@@ -149,22 +147,26 @@ class QuackCoreHTTPClient:
 
         raise TimeoutError(f"Job {job_id} did not complete within {timeout}s")
 
-    async def slice_video_sync(self, input_path: str, output_path: str,
-                               start: str, end: str, overwrite: bool = True) -> Dict[str, Any]:
+    async def slice_video_sync(
+        self,
+        input_path: str,
+        output_path: str,
+        start: str,
+        end: str,
+        overwrite: bool = True,
+    ) -> Dict[str, Any]:
         """Slice video synchronously."""
         params = {
             "input_path": input_path,
             "output_path": output_path,
             "start": start,
             "end": end,
-            "overwrite": overwrite
+            "overwrite": overwrite,
         }
 
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                f"{self.base_url}/quack-media/slice",
-                json=params,
-                headers=self.headers
+                f"{self.base_url}/quack-media/slice", json=params, headers=self.headers
             )
             response.raise_for_status()
             return response.json()
@@ -175,7 +177,7 @@ async def demo():
 
     client = QuackCoreHTTPClient(
         base_url="http://localhost:8080",
-        auth_token="development-token-change-in-production"
+        auth_token="development-token-change-in-production",
     )
 
     print("Testing HTTP adapter...")
@@ -194,7 +196,7 @@ async def demo():
             input_path="/test/input.mp4",
             output_path="/test/output.mp4",
             start="00:00:10",
-            end="00:00:20"
+            end="00:00:20",
         )
         print(f"✓ Sync slice result: {result}")
     except Exception as e:
@@ -207,8 +209,8 @@ async def demo():
             params={
                 "input_path": "/test/audio.mp3",
                 "model_name": "small",
-                "device": "auto"
-            }
+                "device": "auto",
+            },
         )
         print(f"✓ Created job: {job_id}")
 
@@ -224,13 +226,13 @@ async def demo():
         job_id1 = await client.create_job(
             op="quack-media.extract_frames",
             params={"input_path": "/test/video.mp4", "output_dir": "/test/frames"},
-            idempotency_key="test-idempotency-key"
+            idempotency_key="test-idempotency-key",
         )
 
         job_id2 = await client.create_job(
             op="quack-media.extract_frames",
             params={"input_path": "/test/video.mp4", "output_dir": "/test/frames"},
-            idempotency_key="test-idempotency-key"
+            idempotency_key="test-idempotency-key",
         )
 
         if job_id1 == job_id2:

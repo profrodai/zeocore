@@ -17,7 +17,7 @@ from quack_core.core.logging import LOG_LEVELS, LogLevel
 def create_service(
         base_dir: str | Path | None = None,
         log_level: int = LOG_LEVELS[LogLevel.INFO],
-        unsafe_disable_sandbox: bool = False,  # ← MUST MATCH base.py __init__
+        unsafe_allow_absolute_paths: bool = False,  # ← MUST MATCH base.py __init__
 ) -> FileSystemService:
     """
     Factory to create a FileSystemService instance.
@@ -25,13 +25,14 @@ def create_service(
     Args:
         base_dir: Root directory for the service. Defaults to CWD.
         log_level: Logging verbosity.
-        unsafe_disable_sandbox: If True, disables ALL filesystem sandboxing.
+        unsafe_allow_absolute_paths: If True, allows absolute paths outside base_dir (still blocks ../ escape).
                                 ⚠️  WARNING: This is a TRUST BOUNDARY setting.
-                                Allows operations outside base_dir and disables
-                                path safety checks. Only use in trusted environments.
+                                Permits absolute paths outside base_dir; the '..'
+                                traversal escape check remains active. Only use in
+                                trusted environments.
     """
     return FileSystemService(
         base_dir=base_dir,
         log_level=log_level,
-        unsafe_disable_sandbox=unsafe_disable_sandbox  # ← MUST MATCH
+        unsafe_allow_absolute_paths=unsafe_allow_absolute_paths  # ← MUST MATCH
     )

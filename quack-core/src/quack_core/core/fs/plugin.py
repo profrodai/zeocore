@@ -9,7 +9,7 @@
 # === QV-LLM:END ===
 
 from pathlib import Path
-from typing import Protocol, TypeVar
+from typing import Any, Protocol, TypeVar
 
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.results import DataResult, OperationResult, ReadResult, WriteResult
@@ -32,9 +32,11 @@ class FSPlugin(Protocol):
     def write_text(self, path: FsPathLike, content: str, encoding: str = "utf-8",
                    atomic: bool = True) -> WriteResult: ...
 
-    def read_yaml(self, path: FsPathLike) -> DataResult[dict]: ...
+    def read_yaml(self, path: FsPathLike) -> DataResult[dict[str, Any]]: ...
 
-    def write_yaml(self, path: FsPathLike, data: dict, atomic: bool = True) -> WriteResult: ...
+    def write_yaml(
+        self, path: FsPathLike, data: dict[str, Any], atomic: bool = True
+    ) -> WriteResult: ...
 
     def create_directory(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult: ...
 
@@ -58,10 +60,12 @@ class QuackFSPlugin:
     def write_text(self, path: FsPathLike, content: str, encoding: str = "utf-8", atomic: bool = True) -> WriteResult:
         return self._service.write_text(path, content, encoding, atomic)
 
-    def read_yaml(self, path: FsPathLike) -> DataResult[dict]:
+    def read_yaml(self, path: FsPathLike) -> DataResult[dict[str, Any]]:
         return self._service.read_yaml(path)
 
-    def write_yaml(self, path: FsPathLike, data: dict, atomic: bool = True) -> WriteResult:
+    def write_yaml(
+        self, path: FsPathLike, data: dict[str, Any], atomic: bool = True
+    ) -> WriteResult:
         return self._service.write_yaml(path, data, atomic)
 
     def create_directory(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult:
