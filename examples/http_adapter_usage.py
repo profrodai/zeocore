@@ -44,7 +44,6 @@ if __name__ == "__main__":
 """
 Sample configuration file showing HTTP adapter integration.
 Save as quack_config.yaml in your project root.
-"""
 
 # Standard QuackCore configuration
 general:
@@ -74,6 +73,7 @@ job_ttl_seconds: 1800
 max_workers: 4
 request_timeout_seconds: 600
 
+"""
 # File: examples/client_example.py
 """
 Example client for testing the HTTP adapter.
