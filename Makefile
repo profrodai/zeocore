@@ -117,6 +117,13 @@ install-dev: ## Install development dependencies
 	uv pip install -e ".[dev]" --python $(PYTHON)
 	@echo "${GREEN}Development dependencies installed${RESET}"
 
+.PHONY: install-lint
+install-lint: ## Install Tier-1 architecture linters (.[lint] extra — import-linter)
+	@echo "${BLUE}Installing architecture linters (.[lint])...${RESET}"
+	@if [ ! -f "$(PYTHON)" ]; then $(MAKE) --no-print-directory env; fi
+	cd quack-core && uv pip install -e ".[lint]" --python $(PYTHON)
+	@echo "${GREEN}Architecture linters installed${RESET}"
+
 .PHONY: setup
 setup: ## Create environment and install full development dependencies
 	@echo "${BLUE}Creating complete development environment...${RESET}"
@@ -150,19 +157,28 @@ check-env: ## Check that the virtual environment is active and working
 verify: ## The doctrine gate: format-check + ruff + mypy + hygiene + tests
 	@echo "${BLUE}Running doctrine gate...${RESET}"
 	@echo ""
-	@echo "${BLUE}[1/5] format-check${RESET}"
+	@echo "${BLUE}[1/8] format-check${RESET}"
 	@$(MAKE) --no-print-directory format-check
 	@echo ""
-	@echo "${BLUE}[2/5] ruff lint${RESET}"
+	@echo "${BLUE}[2/8] ruff lint${RESET}"
 	@$(MAKE) --no-print-directory lint
 	@echo ""
-	@echo "${BLUE}[3/5] mypy (strict)${RESET}"
+	@echo "${BLUE}[3/8] mypy (strict)${RESET}"
 	@$(MAKE) --no-print-directory typecheck
 	@echo ""
-	@echo "${BLUE}[4/5] hygiene-check (no test-detection in production code)${RESET}"
+	@echo "${BLUE}[4/8] arch-check (import-linter directional contracts)${RESET}"
+	@$(MAKE) --no-print-directory arch-check
+	@echo ""
+	@echo "${BLUE}[5/8] hygiene-check (no test-detection in production code)${RESET}"
 	@$(MAKE) --no-print-directory hygiene-check
 	@echo ""
-	@echo "${BLUE}[5/5] tests + coverage${RESET}"
+	@echo "${BLUE}[6/8] hygiene-secrets${RESET}"
+	@$(MAKE) --no-print-directory hygiene-secrets
+	@echo ""
+	@echo "${BLUE}[7/8] plugin-boundary${RESET}"
+	@$(MAKE) --no-print-directory plugin-boundary
+	@echo ""
+	@echo "${BLUE}[8/8] tests + coverage${RESET}"
 	@$(MAKE) --no-print-directory test
 	@echo ""
 	@echo "${GREEN}✓ verify complete: doctrine gate passes${RESET}"
@@ -173,6 +189,7 @@ verify-full: ## verify, preceded by clean caches + fresh editable install (slow,
 	@$(MAKE) --no-print-directory clean-caches
 	@$(MAKE) --no-print-directory install-all
 	@$(MAKE) --no-print-directory install-dev
+	@$(MAKE) --no-print-directory install-lint
 	@$(MAKE) --no-print-directory verify
 	@echo ""
 	@echo "${GREEN}✓ verify-full complete: system is healthy on a clean install${RESET}"
@@ -363,3 +380,12 @@ annotate: ## Add/update QV-LLM header blocks
 	@$(PYTHON) scripts/annotate_headers.py \
 	   --scope "$(ANNOTATE_SCOPE)" --extensions "$(ANNOTATE_EXT)" \
 	   --max-neighbors "$(ANNOTATE_MAX_NEIGHBORS)" --remove-legacy-path-line
+
+.PHONY: arch-check
+arch-check: ## Enforce directional import contracts (.importlinter via import-linter)
+	@echo "${BLUE}Checking import architecture (.importlinter)...${RESET}"
+	@$(VENV_NAME)/bin/lint-imports || ($(PYTHON) -m importlinter lint)
+	@echo "${GREEN}✓ arch OK — directional import contracts kept${RESET}"
+
+# Tier-1 grep-ban gate targets (Track C)
+include hygiene-grepbans.mk
