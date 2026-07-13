@@ -1,0 +1,29 @@
+# quack-runner/pyproject.toml
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quack-runner"
+version = "0.1.0"
+description = "Tool execution runner (ToolRunner) with file I/O and manifest generation for the Quack ecosystem"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "AGPL-3.0" }
+authors = [
+    { name = "Rod Rivera", email = "rod@aiproduct.engineer" },
+]
+dependencies = [
+    "quack-core",
+    "pydantic>=2.6.0",
+    "pyyaml>=6.0.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/quack_runner"]
+
+# Package-local first-party source pin — Master-ruled (Track B Rev 3) as a
+# package-local precedent, NOT a repo-wide workspace mint. Do not add a root
+# [tool.uv] workspace on the strength of this line.
+[tool.uv.sources]
+quack-core = { path = "../quack-core", editable = true }
