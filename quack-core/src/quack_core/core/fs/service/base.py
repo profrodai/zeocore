@@ -31,10 +31,10 @@ class _BaseFileSystemService:
     """
 
     def __init__(self, base_dir: str | Path | None = None, log_level: int = LOG_LEVELS[LogLevel.INFO],
-                 unsafe_disable_sandbox: bool = False) -> None:
+                 unsafe_allow_absolute_paths: bool = False) -> None:
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
-        self.unsafe_disable_sandbox = unsafe_disable_sandbox
+        self.unsafe_allow_absolute_paths = unsafe_allow_absolute_paths
 
         # Ensure base_dir is absolute and resolved immediately
         if base_dir:
@@ -44,13 +44,12 @@ class _BaseFileSystemService:
 
         # SECURITY: Warn if sandboxing is disabled
         # This is a trust boundary configuration, not a convenience feature
-        if self.unsafe_disable_sandbox:
+        if self.unsafe_allow_absolute_paths:
             self.logger.warning(
-                "⚠️  SECURITY WARNING: unsafe_disable_sandbox=True - "
-                "Filesystem sandboxing is DISABLED. Operations can access any path on the system. "
-                "This setting disables path safety checks for: "
-                "(1) relative path escape attempts via '..' "
-                "(2) absolute path restrictions outside base_dir "
+                "⚠️  SECURITY WARNING: unsafe_allow_absolute_paths=True - "
+                "Absolute paths outside base_dir are permitted. Operations can access paths "
+                "outside the sandbox root. Relative-path escape via '..' remains BLOCKED "
+                "(this flag does not disable the '..' traversal check). "
                 "NOTE: This does NOT protect against symlink-based TOCTOU attacks or symlinks "
                 "inside base_dir that point outside. For maximum security, use a dedicated "
                 "filesystem namespace or container-level isolation. "
@@ -65,7 +64,7 @@ class _BaseFileSystemService:
         Coerces input to Path AND anchors it to the service's base_dir with sandboxing.
         """
         try:
-            return coerce_path(path, base_dir=self.base_dir, allow_absolute=self.unsafe_disable_sandbox)
+            return coerce_path(path, base_dir=self.base_dir, allow_absolute=self.unsafe_allow_absolute_paths)
         except (QuackPathEscapeError, QuackPathOutsideBaseDirError) as e:
             # Re-raise sandbox violations to be mapped to specific error types
             raise e
@@ -100,7 +99,7 @@ class _BaseFileSystemService:
             hint = "Path attempted to traverse above the base directory using '..' or similar."
         elif isinstance(e, QuackPathOutsideBaseDirError):
             err_type = "path_outside_base_dir"
-            hint = "Absolute paths outside the configured base directory are not allowed (unsafe_disable_sandbox=False)."
+            hint = "Absolute paths outside the configured base directory are not allowed (unsafe_allow_absolute_paths=False)."
 
         # VALIDATION ERRORS
         elif isinstance(e, QuackValidationError):

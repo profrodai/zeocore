@@ -25,7 +25,7 @@ Use FileSystemService for all filesystem operations.
 """
 
 from functools import lru_cache
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from quack_core.core.fs.service.full_class import FileSystemService
 from quack_core.core.fs.service.factory import create_service
@@ -56,7 +56,7 @@ __all__ = [
 
 
 # Doctrine enforcement: Internal modules not exported
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:  # noqa: ANN401  # dynamic attr type
     """Prevent accidental imports of internal service modules."""
     # List of internal names that should not be imported
     internal_names = {

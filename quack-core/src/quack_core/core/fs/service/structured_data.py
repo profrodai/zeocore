@@ -22,7 +22,7 @@ class StructuredDataMixin:
     def _normalize_input_path(self, path: FsPathLike) -> Path: raise NotImplementedError
     def _map_error(self, e: Exception) -> ErrorInfo: raise NotImplementedError
 
-    def read_yaml(self, path: FsPathLike) -> DataResult[dict]:
+    def read_yaml(self, path: FsPathLike) -> DataResult[dict[str, Any]]:
         try:
             normalized_path = self._normalize_input_path(path)
             data = self.operations._read_yaml(normalized_path)
@@ -43,7 +43,9 @@ class StructuredDataMixin:
                 meta={"input_path": s} if s else None
             )
 
-    def write_yaml(self, path: FsPathLike, data: dict, atomic: bool = True) -> WriteResult:
+    def write_yaml(
+        self, path: FsPathLike, data: dict[str, Any], atomic: bool = True
+    ) -> WriteResult:
         try:
             normalized_path = self._normalize_input_path(path)
             result_path = self.operations._write_yaml(normalized_path, data, atomic)
@@ -60,7 +62,7 @@ class StructuredDataMixin:
                 meta={"input_path": s} if s else None
             )
 
-    def read_json(self, path: FsPathLike) -> DataResult[dict]:
+    def read_json(self, path: FsPathLike) -> DataResult[dict[str, Any]]:
         try:
             normalized_path = self._normalize_input_path(path)
             data = self.operations._read_json(normalized_path)
@@ -81,7 +83,10 @@ class StructuredDataMixin:
                 meta={"input_path": s} if s else None
             )
 
-    def write_json(self, path: FsPathLike, data: dict, atomic: bool = True, indent: int = 2) -> WriteResult:
+    def write_json(
+        self, path: FsPathLike, data: dict[str, Any],
+        atomic: bool = True, indent: int = 2,
+    ) -> WriteResult:
         try:
             normalized_path = self._normalize_input_path(path)
             result_path = self.operations._write_json(normalized_path, data, atomic, indent)
