@@ -100,7 +100,7 @@ def start_job(
                     "details": e.errors(),
                 }
             },
-        )
+        ) from e
 
     # Handle idempotency
     final_key = idempotency_key or req.idempotency_key

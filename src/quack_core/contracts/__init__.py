@@ -51,23 +51,22 @@ from quack_core.contracts.artifacts import (
     ToolInfo,
 )
 
-"""
-# Capability models
+# Capability models (demo only -- see demo/__init__.py: implementations are
+# internal-only and not exported; Media capability models below remain
+# commented out to match __all__, which does not yet declare them stable)
 from quack_core.contracts.capabilities import (
     # Demo (models only)
     EchoRequest,
-    SlicedClipData,
-    SliceVideoRequest,
-    SliceVideoResponse,
+    # SlicedClipData,
+    # SliceVideoRequest,
+    # SliceVideoResponse,
     # Media
-    TimeRange,
-    TranscribeRequest,
-    TranscribeResponse,
-    TranscriptionSegment,
+    # TimeRange,
+    # TranscribeRequest,
+    # TranscribeResponse,
+    # TranscriptionSegment,
     VideoRefRequest,
 )
-"""
-
 from quack_core.contracts.common import (  # Versions; Enums; IDs; Time
     ARTIFACT_SCHEMA_VERSION,
     CONTRACTS_VERSION,

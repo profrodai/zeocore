@@ -287,7 +287,7 @@ class TestLLMIntegrationComprehensive:
             with patch(
                 "quack_core.integrations.llms.service.dependencies.check_llm_dependencies",
                 return_value=mock_deps_result,
-            ) as mock_check_deps:
+            ):
                 # Mock extract_config with fallback configuration
                 mock_config = {
                     "default_provider": "openai",
@@ -295,7 +295,7 @@ class TestLLMIntegrationComprehensive:
                 }
                 with patch.object(
                     integration, "_extract_config", return_value=mock_config
-                ) as mock_extract:
+                ):
                     # Mock FallbackConfig creation
                     with patch(
                         "quack_core.integrations.llms.fallback.FallbackConfig"
@@ -334,7 +334,7 @@ class TestLLMIntegrationComprehensive:
                 integration,
                 "_extract_config",
                 side_effect=QuackIntegrationError("Integration error"),
-            ) as mock_extract:
+            ):
                 # Initialize should handle the error properly
                 result = integration.initialize()
 
@@ -355,7 +355,7 @@ class TestLLMIntegrationComprehensive:
             # Make _extract_config raise a generic exception
             with patch.object(
                 integration, "_extract_config", side_effect=Exception("Generic error")
-            ) as mock_extract:
+            ):
                 # Initialize should handle the error properly
                 result = integration.initialize()
 

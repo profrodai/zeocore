@@ -94,9 +94,12 @@ def configure_logger(
             logger.removeHandler(h)
             try:
                 h.close()
-            except Exception:
-                # Swallow errors during closure to ensure we proceed with config
-                pass
+            except Exception as e:
+                # Swallow errors during closure to ensure we proceed with
+                # config -- this module IS the logging config, so routing
+                # this through `logging` itself would be circular. Report
+                # to stderr directly instead of a fully silent pass.
+                print(f"Warning: failed to close log handler: {e}", file=sys.stderr)
 
     # Console handler
     stream = sys.stdout if teaching_to_stdout else sys.stderr

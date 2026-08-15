@@ -139,7 +139,7 @@ class TestLLMRegistry:
         """Test that provider names are case-insensitive."""
         with patch(
             "quack_core.integrations.llms.registry.get_llm_client", wraps=get_llm_client
-        ) as mock_get_client:
+        ):
             # Use a real client but patch the OpenAIClient constructor
             with patch(
                 "quack_core.integrations.llms.registry._LLM_REGISTRY"

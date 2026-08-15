@@ -450,14 +450,14 @@ def get_pull_requests_by_user(
     except Exception as e:
         msg = f"Failed to search for pull requests: {str(e)}"
         logger.error(msg)
-        raise QuackError(msg, original_error=e)
+        raise QuackError(msg, original_error=e) from e
 
     try:
         search_results = response.json()
     except Exception as e:
         msg = f"Failed to parse search results: {str(e)}"
         logger.error(msg)
-        raise QuackError(msg, original_error=e)
+        raise QuackError(msg, original_error=e) from e
 
     pr_list: list[PullRequest] = []
     for item in search_results.get("items", []):

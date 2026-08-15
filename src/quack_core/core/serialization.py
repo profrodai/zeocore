@@ -151,7 +151,7 @@ def normalize_for_json(
     except Exception as e:
         raise ValueError(
             f"Cannot serialize value at {path} (type={type(data).__name__}): {e}"
-        )
+        ) from e
 
 
 def is_json_safe(data: Any, allow_pydantic: bool = True) -> bool:

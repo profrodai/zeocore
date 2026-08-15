@@ -48,7 +48,6 @@ def test_stable_hash():
 def test_post_callback_mock():
     """Test callback posting with mocking (sync test)."""
     # This is a simplified test that doesn't require async
-    body = {"job_id": "123", "status": "done"}
     url = "http://example.com/callback"
 
     # Just test that the function exists and can be called

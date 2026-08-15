@@ -14,7 +14,6 @@ Tests for Google Drive _ops list_files module.
 from unittest.mock import patch
 
 from quack_core.core.errors import QuackApiError
-from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
 from quack_core.integrations.google.drive.operations import list_files
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
@@ -222,10 +221,6 @@ class TestDriveOperationsListFiles:
         ]
 
         mock_drive_service = create_mock_drive_service(file_list=file_list)
-
-        # Create model instances for comparison
-        expected_file = DriveFile.from_api_response(file_list[0])
-        expected_folder = DriveFolder.from_api_response(file_list[1])
 
         # Mock API responses
         with patch(

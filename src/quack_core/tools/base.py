@@ -95,8 +95,10 @@ class BaseQuackTool(ABC):
                 f"    name = 'my_tool'"
             )
 
-        # After validation, name is guaranteed non-None
-        assert self.name is not None, "name must be set by this point"
+        # After validation above, name is guaranteed non-None: either it was
+        # set directly, or the `elif self.name is None` branch already raised
+        # TypeError. No runtime check needed here (and asserts are stripped
+        # under `python -O`, so one would be silently inert anyway).
 
         if version is not None:
             self.version = version
