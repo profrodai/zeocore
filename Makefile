@@ -394,10 +394,23 @@ ANNOTATE_EXT ?= .py,.yaml,.yml,.toml,.env
 ANNOTATE_MAX_NEIGHBORS ?= 6
 
 .PHONY: annotate
-annotate: ## Add/update QV-LLM header blocks
+annotate: ## Add/update full QV-LLM header blocks (path/module/role/neighbors/exports/git)
 	@$(PYTHON) scripts/annotate_headers.py \
 	   --scope "$(ANNOTATE_SCOPE)" --extensions "$(ANNOTATE_EXT)" \
-	   --max-neighbors "$(ANNOTATE_MAX_NEIGHBORS)" --remove-legacy-path-line
+	   --max-neighbors "$(ANNOTATE_MAX_NEIGHBORS)" --remove-legacy-path-line \
+	   --mode full
+
+.PHONY: annotate-strip
+annotate-strip: ## Reduce existing QV-LLM blocks to path-only (min tokens, still re-annotatable)
+	@$(PYTHON) scripts/annotate_headers.py \
+	   --scope "$(ANNOTATE_SCOPE)" --extensions "$(ANNOTATE_EXT)" \
+	   --mode strip
+
+.PHONY: annotate-remove
+annotate-remove: ## Delete QV-LLM header blocks entirely, no trace left
+	@$(PYTHON) scripts/annotate_headers.py \
+	   --scope "$(ANNOTATE_SCOPE)" --extensions "$(ANNOTATE_EXT)" \
+	   --mode remove
 
 .PHONY: arch-check
 arch-check: ## Enforce directional import contracts (.importlinter via import-linter)
