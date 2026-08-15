@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Job execution interfaces and implementations for QuackCore.
 
@@ -169,11 +168,11 @@ class JobRunner(ABC):
 
     @abstractmethod
     def submit(
-            self,
-            job_id: str,
-            op_name: str,
-            params: dict[str, Any],
-            callback_url: str | None,
+        self,
+        job_id: str,
+        op_name: str,
+        params: dict[str, Any],
+        callback_url: str | None,
     ) -> None:
         """
         Submit a job for execution.
@@ -252,8 +251,8 @@ class InMemoryJobStore(JobStore):
         with self._lock:
             for job_id, job_data in self._jobs.items():
                 if (
-                        job_data.finished_at is not None
-                        and job_data.finished_at < cutoff_time
+                    job_data.finished_at is not None
+                    and job_data.finished_at < cutoff_time
                 ):
                     expired_ids.append(job_id)
 
@@ -280,11 +279,11 @@ class ThreadPoolJobRunner(JobRunner):
     """
 
     def __init__(
-            self,
-            registry: OperationRegistry,
-            store: JobStore,
-            max_workers: int = 4,
-            hmac_secret: str | None = None,
+        self,
+        registry: OperationRegistry,
+        store: JobStore,
+        max_workers: int = 4,
+        hmac_secret: str | None = None,
     ) -> None:
         """
         Initialize thread pool runner.
@@ -302,11 +301,11 @@ class ThreadPoolJobRunner(JobRunner):
         logger.info(f"ThreadPoolJobRunner initialized with {max_workers} workers")
 
     def submit(
-            self,
-            job_id: str,
-            op_name: str,
-            params: dict[str, Any],
-            callback_url: str | None,
+        self,
+        job_id: str,
+        op_name: str,
+        params: dict[str, Any],
+        callback_url: str | None,
     ) -> None:
         """Submit a job for execution."""
         self._executor.submit(
@@ -323,11 +322,11 @@ class ThreadPoolJobRunner(JobRunner):
         logger.info("ThreadPoolJobRunner shutdown")
 
     def _execute_job(
-            self,
-            job_id: str,
-            op_name: str,
-            params: dict[str, Any],
-            callback_url: str | None,
+        self,
+        job_id: str,
+        op_name: str,
+        params: dict[str, Any],
+        callback_url: str | None,
     ) -> None:
         """Execute a job in the thread pool."""
         logger.info(f"Starting job {job_id}: {op_name}")
@@ -350,6 +349,7 @@ class ThreadPoolJobRunner(JobRunner):
             # don't have a running event loop. If execution model changes, this
             # will raise a clear error.
             from quack_core.lib.registry import invoke_operation
+
             try:
                 result = asyncio.run(invoke_operation(op, params))
             except RuntimeError as e:
@@ -373,7 +373,7 @@ class ThreadPoolJobRunner(JobRunner):
                 self._send_callback(job_id, job_data, callback_url)
 
         except Exception as e:
-            error_msg = str(e).split('\n')[0]
+            error_msg = str(e).split("\n")[0]
             logger.error(f"Job {job_id} failed: {e}")
 
             # Update job with error
@@ -387,10 +387,10 @@ class ThreadPoolJobRunner(JobRunner):
                 self._send_callback(job_id, job_data, callback_url)
 
     def _send_callback(
-            self,
-            job_id: str,
-            job_data: JobData,
-            callback_url: str,
+        self,
+        job_id: str,
+        job_data: JobData,
+        callback_url: str,
     ) -> None:
         """Send callback for job completion."""
         from quack_core.adapters.http.auth import sign_payload

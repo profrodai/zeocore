@@ -50,10 +50,10 @@ class PathService:
         return _normalize_path_param(path_param)
 
     def get_project_root(
-            self,
-            start_dir: str | Path | DataResult | OperationResult | None = None,
-            marker_files: list[str | Path | DataResult | OperationResult] | None = None,
-            marker_dirs: list[str | Path | DataResult | OperationResult] | None = None,
+        self,
+        start_dir: str | Path | DataResult | OperationResult | None = None,
+        marker_files: list[str | Path | DataResult | OperationResult] | None = None,
+        marker_dirs: list[str | Path | DataResult | OperationResult] | None = None,
     ) -> PathResult:
         """Find the project root directory."""
         try:
@@ -68,9 +68,9 @@ class PathService:
             return PathResult(success=False, error=str(e))
 
     def resolve_project_path(
-            self,
-            path: str | Path | DataResult | OperationResult,
-            project_root: str | Path | DataResult | OperationResult | None = None,
+        self,
+        path: str | Path | DataResult | OperationResult,
+        project_root: str | Path | DataResult | OperationResult | None = None,
     ) -> PathResult:
         """Resolve a path relative to the project root."""
         try:
@@ -83,8 +83,8 @@ class PathService:
             return PathResult(success=False, error=str(e))
 
     def detect_project_context(
-            self,
-            start_dir: str | Path | DataResult | OperationResult | None = None,
+        self,
+        start_dir: str | Path | DataResult | OperationResult | None = None,
     ) -> ContextResult:
         """Detect project context from a directory."""
         try:
@@ -96,9 +96,9 @@ class PathService:
             return ContextResult(success=False, error=str(e))
 
     def get_known_directory(
-            self,
-            name: str,
-            start_dir: str | Path | DataResult | OperationResult | None = None,
+        self,
+        name: str,
+        start_dir: str | Path | DataResult | OperationResult | None = None,
     ) -> PathResult:
         """Get a known directory (e.g. 'src', 'output') by name."""
         try:
@@ -107,13 +107,15 @@ class PathService:
             ctx_res = self.detect_project_context(start)
 
             if not ctx_res.success or not ctx_res.context:
-                return PathResult(success=False,
-                                  error=ctx_res.error or "Context detection failed")
+                return PathResult(
+                    success=False, error=ctx_res.error or "Context detection failed"
+                )
 
             dir_path = ctx_res.context._get_directory(name)
             if not dir_path:
-                return PathResult(success=False,
-                                  error=f"Directory '{name}' not found in project")
+                return PathResult(
+                    success=False, error=f"Directory '{name}' not found in project"
+                )
 
             return PathResult(success=True, path=dir_path)
         except Exception as e:
@@ -121,9 +123,9 @@ class PathService:
             return PathResult(success=False, error=str(e))
 
     def get_module_path(
-            self,
-            module: str,
-            start_dir: str | Path | DataResult | OperationResult | None = None,
+        self,
+        module: str,
+        start_dir: str | Path | DataResult | OperationResult | None = None,
     ) -> PathResult:
         """Get the filesystem path for a Python module."""
         try:
@@ -139,17 +141,18 @@ class PathService:
 
             # This part still does FS checks, but they are semantic checks specific
             # to module resolution, which is acceptable here.
-            module_parts = module.split('.')
+            module_parts = module.split(".")
             file_path = os.path.join(src_dir, *module_parts)
 
             if os.path.isdir(file_path):
-                init_path = os.path.join(file_path, '__init__.py')
+                init_path = os.path.join(file_path, "__init__.py")
                 if os.path.exists(init_path):
                     return PathResult(success=True, path=init_path)
-                return PathResult(success=False,
-                                  error=f"Package '{module}' has no __init__.py")
+                return PathResult(
+                    success=False, error=f"Package '{module}' has no __init__.py"
+                )
             else:
-                py_path = file_path + '.py'
+                py_path = file_path + ".py"
                 if os.path.exists(py_path):
                     return PathResult(success=True, path=py_path)
                 return PathResult(success=False, error=f"Module '{module}' not found")
@@ -157,10 +160,10 @@ class PathService:
             return PathResult(success=False, error=str(e))
 
     def find_nearest_directory(
-            self,
-            name: str,
-            start_dir: str | Path | DataResult | OperationResult | None = None,
-            max_levels: int = 5,
+        self,
+        name: str,
+        start_dir: str | Path | DataResult | OperationResult | None = None,
+        max_levels: int = 5,
     ) -> PathResult:
         """Find the nearest directory with the given name (searching upwards)."""
         try:
@@ -171,9 +174,9 @@ class PathService:
             return PathResult(success=False, error=str(e))
 
     def resolve_relative_to_project(
-            self,
-            path: str | Path | DataResult | OperationResult,
-            project_root: str | Path | DataResult | OperationResult | None = None,
+        self,
+        path: str | Path | DataResult | OperationResult,
+        project_root: str | Path | DataResult | OperationResult | None = None,
     ) -> PathResult:
         """Resolve a path relative to the project root (lightweight)."""
         try:
@@ -185,9 +188,9 @@ class PathService:
             return PathResult(success=False, error=str(e))
 
     def infer_module_from_path(
-            self,
-            path: str | Path | DataResult | OperationResult,
-            project_root: str | Path | DataResult | OperationResult | None = None,
+        self,
+        path: str | Path | DataResult | OperationResult,
+        project_root: str | Path | DataResult | OperationResult | None = None,
     ) -> StringResult:
         """Infer the Python module name from a file path."""
         try:
@@ -199,9 +202,9 @@ class PathService:
             return StringResult(success=False, error=str(e))
 
     def get_relative_path(
-            self,
-            abs_path: str | Path | DataResult | OperationResult,
-            start_dir: str | Path | DataResult | OperationResult | None = None,
+        self,
+        abs_path: str | Path | DataResult | OperationResult,
+        start_dir: str | Path | DataResult | OperationResult | None = None,
     ) -> PathResult:
         """Get the path relative to the project root."""
         try:
@@ -222,8 +225,10 @@ class PathService:
                 common = ""
 
             if common != root:
-                return PathResult(success=False,
-                                  error=f"Path '{p}' is not inside project root '{root}'")
+                return PathResult(
+                    success=False,
+                    error=f"Path '{p}' is not inside project root '{root}'",
+                )
 
             rel = os.path.relpath(p, root)
             return PathResult(success=True, path=rel)

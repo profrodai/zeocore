@@ -58,15 +58,19 @@ def test_integration_with_custom_config_path():
     mock_fs.expand_user_vars = MagicMock(
         side_effect=lambda x: SimpleNamespace(success=True, data=x)
     )
-    mock_fs.create_directory = MagicMock(
-        return_value=SimpleNamespace(success=True)
-    )
+    mock_fs.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
 
-    with patch('quack_core.core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
-            patch('quack_core.integrations.pandoc.service.PandocConfigProvider',
-                  return_value=mock_config_provider), \
-            patch('quack_core.integrations.pandoc.service.verify_pandoc',
-                  return_value='2.11.0'):
+    with (
+        patch("quack_core.core.paths.service", MagicMock(expand_user_vars=lambda x: x)),
+        patch(
+            "quack_core.integrations.pandoc.service.PandocConfigProvider",
+            return_value=mock_config_provider,
+        ),
+        patch(
+            "quack_core.integrations.pandoc.service.verify_pandoc",
+            return_value="2.11.0",
+        ),
+    ):
         integration = PandocIntegration(config_path="/path/to/config.yaml")
         integration.config_provider = mock_config_provider
 
@@ -87,9 +91,7 @@ def test_integration_with_custom_output_dir():
     mock_fs.expand_user_vars = MagicMock(
         side_effect=lambda x: SimpleNamespace(success=True, data=x)
     )
-    mock_fs.create_directory = MagicMock(
-        return_value=SimpleNamespace(success=True)
-    )
+    mock_fs.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
 
     # Mock provider instance
     mock_provider = MagicMock()
@@ -97,9 +99,13 @@ def test_integration_with_custom_output_dir():
     # Ensure provider has expand_user_vars logic if it needs it
     mock_provider.expand_user_vars.side_effect = lambda x: x
 
-    with patch('quack_core.core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
-            patch('quack_core.integrations.pandoc.service.verify_pandoc',
-                  return_value="2.11.0"):
+    with (
+        patch("quack_core.core.paths.service", MagicMock(expand_user_vars=lambda x: x)),
+        patch(
+            "quack_core.integrations.pandoc.service.verify_pandoc",
+            return_value="2.11.0",
+        ),
+    ):
         integration = PandocIntegration(output_dir="/custom/output")
         integration.fs_service = mock_fs
         # Manually inject the mock provider
@@ -124,26 +130,26 @@ def test_integration_initialize_with_invalid_config():
     # Mock load_config to return failed result
     integration.config_provider = MagicMock()
     integration.config_provider.load_config.return_value = IntegrationResult(
-        success=False, error="Invalid config")
+        success=False, error="Invalid config"
+    )
 
     # Mock FS service
     mock_fs = MagicMock()
     mock_fs.expand_user_vars = MagicMock(
         side_effect=lambda x: SimpleNamespace(success=True, data=x)
     )
-    mock_fs.create_directory = MagicMock(
-        return_value=SimpleNamespace(success=True)
-    )
+    mock_fs.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
     integration.fs_service = mock_fs
 
-    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-               return_value='2.11.0'):
+    with patch(
+        "quack_core.integrations.pandoc.service.verify_pandoc", return_value="2.11.0"
+    ):
         result = integration.initialize()
         # Should succeed with warnings, using default config
         assert result.success
 
 
-@patch('quack_core.core.fs.service.standalone')
+@patch("quack_core.core.fs.service.standalone")
 def test_integration_directory_conversion_edge_cases(mock_fs):
     """Test directory conversion edge cases."""
     integration = PandocIntegration()
@@ -167,9 +173,13 @@ def test_integration_directory_conversion_edge_cases(mock_fs):
     )
     integration.fs_service = mock_fs_service
 
-    with patch('quack_core.core.paths.service', MagicMock(expand_user_vars=lambda x: x)), \
-            patch('quack_core.integrations.pandoc.service.verify_pandoc',
-                  return_value="2.11.0"):
+    with (
+        patch("quack_core.core.paths.service", MagicMock(expand_user_vars=lambda x: x)),
+        patch(
+            "quack_core.integrations.pandoc.service.verify_pandoc",
+            return_value="2.11.0",
+        ),
+    ):
         result = integration.initialize()
         assert result.success
 
@@ -222,7 +232,7 @@ def test_conversion_metrics_initialization():
         start_time=custom_time,
         total_attempts=5,
         successful_conversions=3,
-        failed_conversions=2
+        failed_conversions=2,
     )
 
     assert custom_metrics.start_time == custom_time
@@ -248,7 +258,7 @@ def test_file_info_initialization():
         format="markdown",
         size=1024,
         modified=123456789.0,
-        extra_args=["--strip-comments"]
+        extra_args=["--strip-comments"],
     )
 
     assert file_info.path == "/path/to/file.md"
@@ -265,9 +275,7 @@ def test_conversion_task_initialization():
 
     # Create a conversion task
     task = ConversionTask(
-        source=file_info,
-        target_format="markdown",
-        output_path="/path/to/output.md"
+        source=file_info, target_format="markdown", output_path="/path/to/output.md"
     )
 
     assert task.source == file_info
@@ -275,10 +283,7 @@ def test_conversion_task_initialization():
     assert task.output_path == "/path/to/output.md"
 
     # Test with optional output_path
-    task = ConversionTask(
-        source=file_info,
-        target_format="markdown"
-    )
+    task = ConversionTask(source=file_info, target_format="markdown")
 
     assert task.source == file_info
     assert task.target_format == "markdown"
@@ -304,7 +309,7 @@ def test_conversion_details_initialization():
         conversion_time=1.5,
         output_size=800,
         input_size=1000,
-        validation_errors=["Warning: missing header"]
+        validation_errors=["Warning: missing header"],
     )
 
     assert details.source_format == "html"
@@ -324,7 +329,7 @@ def test_get_file_info_edge_cases(monkeypatch):
     mock_fs.get_file_info = lambda path: SimpleNamespace(
         success=True, exists=True, size="not-a-number", modified=None
     )
-    monkeypatch.setattr('quack_core.integrations.pandoc._ops.utils.fs', mock_fs)
+    monkeypatch.setattr("quack_core.integrations.pandoc._ops.utils.fs", mock_fs)
 
     file_info = get_file_info("test.html")
     assert file_info.size == 1024  # Default when size conversion fails
@@ -334,9 +339,9 @@ def test_get_file_info_edge_cases(monkeypatch):
         success=True, exists=True, size=100, modified=None
     )
     mock_fs.get_extension = lambda path: SimpleNamespace(
-        success=True, data=path.split('.')[-1]
+        success=True, data=path.split(".")[-1]
     )
-    monkeypatch.setattr('quack_core.integrations.pandoc._ops.utils.fs', mock_fs)
+    monkeypatch.setattr("quack_core.integrations.pandoc._ops.utils.fs", mock_fs)
 
     # Test various extensions
     extensions_mapping = {
@@ -348,7 +353,7 @@ def test_get_file_info_edge_cases(monkeypatch):
         "doc": "docx",
         "pdf": "pdf",
         "txt": "plain",
-        "unknown": "unknown"
+        "unknown": "unknown",
     }
 
     for ext, expected_format in extensions_mapping.items():
@@ -414,7 +419,7 @@ def test_check_conversion_ratio_edge_cases():
     assert "less than" in errors[0]
 
 
-@patch('quack_core.integrations.pandoc._ops.utils.logger')
+@patch("quack_core.integrations.pandoc._ops.utils.logger")
 def test_track_metrics_logging(mock_logger):
     """Test that track_metrics properly logs information."""
     metrics = ConversionMetrics()
@@ -424,14 +429,7 @@ def test_track_metrics_logging(mock_logger):
     config.metrics.track_conversion_time = True
     config.metrics.track_file_sizes = True
 
-    track_metrics(
-        "test.html",
-        time.time() - 1.0,
-        100,
-        80,
-        metrics,
-        config
-    )
+    track_metrics("test.html", time.time() - 1.0, 100, 80, metrics, config)
 
     # Verify metrics were recorded
     assert "test.html" in metrics.conversion_times
@@ -471,7 +469,7 @@ def test_validate_html_structure_edge_cases():
     mock_bs.BeautifulSoup.return_value = mock_soup
     mock_bs.BeautifulSoup.side_effect = [mock_soup, Exception("Parsing error")]
 
-    with patch.dict(sys.modules, {'bs4': mock_bs}):
+    with patch.dict(sys.modules, {"bs4": mock_bs}):
         # First test valid HTML
         valid, errors = validate_html_structure("<html><body>content</body></html>")
         assert valid
@@ -500,15 +498,15 @@ def test_validate_docx_structure_edge_cases(monkeypatch):
     original_import = __import__
 
     def mock_import(name, globals=None, locals=None, fromlist=(), level=0):
-        if name == 'docx':
+        if name == "docx":
             raise ImportError("No module named 'docx'")
         return original_import(name, globals, locals, fromlist, level)
 
-    with patch('builtins.__import__', side_effect=mock_import):
+    with patch("builtins.__import__", side_effect=mock_import):
         # We need to ensure 'docx' is not in sys.modules to trigger the import logic
         with patch.dict(sys.modules):
-            if 'docx' in sys.modules:
-                del sys.modules['docx']
+            if "docx" in sys.modules:
+                del sys.modules["docx"]
 
             # When docx is not available, validation should pass (soft validation)
             # Note: We don't need to patch zipfile here because validate_docx_structure
@@ -520,7 +518,7 @@ def test_validate_docx_structure_edge_cases(monkeypatch):
     # Test with Document constructor raising error
     mock_docx = MagicMock()
     mock_docx.Document.side_effect = Exception("Failed to open document")
-    with patch.dict(sys.modules, {'docx': mock_docx}):
+    with patch.dict(sys.modules, {"docx": mock_docx}):
         # We don't need importlib patch here as we're injecting into sys.modules
         # but we need to ensure the mocked module is used
         valid, errors = validate_docx_structure("test.docx")
@@ -536,7 +534,7 @@ def test_validate_docx_structure_edge_cases(monkeypatch):
     mock_docx.Document.return_value = mock_doc
     mock_docx.Document.side_effect = None
 
-    with patch.dict(sys.modules, {'docx': mock_docx}):
+    with patch.dict(sys.modules, {"docx": mock_docx}):
         # Test valid DOCX
         valid, errors = validate_docx_structure("valid.docx")
         assert valid
@@ -575,13 +573,13 @@ def test_prepare_pandoc_args_comprehensive():
         standalone=False,
         markdown_headings="setext",
         reference_links=True,
-        resource_path=["/path/to/resources", "/another/path"]
+        resource_path=["/path/to/resources", "/another/path"],
     )
 
     custom_config = PandocConfig(
         pandoc_options=custom_options,
         html_to_md_extra_args=["--custom-arg1"],
-        md_to_docx_extra_args=["--custom-arg2"]
+        md_to_docx_extra_args=["--custom-arg2"],
     )
 
     # HTML to Markdown with custom config
@@ -627,27 +625,28 @@ def test_verify_pandoc_with_all_errors():
     mock_module.get_pandoc_version = MagicMock(return_value="3.5")
 
     # Test normal case
-    with patch.dict(sys.modules, {'pypandoc': mock_module}):
+    with patch.dict(sys.modules, {"pypandoc": mock_module}):
         version = verify_pandoc()
         assert version == "3.5"
 
     # Test import error
-    with patch('importlib.import_module',
-               side_effect=ImportError("No module named 'pypandoc'")):
+    with patch(
+        "importlib.import_module", side_effect=ImportError("No module named 'pypandoc'")
+    ):
         with pytest.raises(QuackIntegrationError) as exc_info:
             verify_pandoc()
         assert "pypandoc module is not installed" in str(exc_info.value)
 
     # Test OSError
     mock_module.get_pandoc_version.side_effect = OSError("Pandoc executable not found")
-    with patch.dict(sys.modules, {'pypandoc': mock_module}):
+    with patch.dict(sys.modules, {"pypandoc": mock_module}):
         with pytest.raises(QuackIntegrationError) as exc_info:
             verify_pandoc()
         assert "Pandoc is not installed" in str(exc_info.value)
 
     # Test general exception
     mock_module.get_pandoc_version.side_effect = Exception("Unexpected error")
-    with patch.dict(sys.modules, {'pypandoc': mock_module}):
+    with patch.dict(sys.modules, {"pypandoc": mock_module}):
         with pytest.raises(QuackIntegrationError) as exc_info:
             verify_pandoc()
         assert "Error checking pandoc" in str(exc_info.value)

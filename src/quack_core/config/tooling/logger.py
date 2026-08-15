@@ -27,10 +27,10 @@ _file_handlers: list[logging.FileHandler] = []
 
 
 def setup_tool_logging(
-        tool_name: str,
-        log_dir: str,
-        log_level: str = "INFO",
-        teaching_to_stdout: bool = False
+    tool_name: str,
+    log_dir: str,
+    log_level: str = "INFO",
+    teaching_to_stdout: bool = False,
 ) -> None:
     """
     Set up logging for a QuackTool with explicit paths.
@@ -84,10 +84,12 @@ def get_logger(tool_name: str) -> logging.Logger:
     Wrapper around core logging.
     """
     from quack_core.core.logging import get_logger as core_get_logger
+
     return core_get_logger(tool_name)
 
 
 def log_teaching(logger: Any, message: str, level: str = "INFO") -> None:
     """Log a Teaching Mode message for the tool."""
     from quack_core.core.logging import log_teaching as core_log_teaching
+
     core_log_teaching(logger, message, level)

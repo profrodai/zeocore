@@ -36,14 +36,17 @@ try:
 except ImportError:
     logger.error("Could not import quack_core.core.fs.service")
     from types import SimpleNamespace
+
     # Create a minimal fs stub if the module isn't available (for tests)
     fs = SimpleNamespace(
         is_valid_path=lambda path: True,
         normalize_path=lambda path: SimpleNamespace(success=True, path=path),
         normalize_path_with_info=lambda path: SimpleNamespace(success=True, path=path),
         get_path_info=lambda path: SimpleNamespace(success=True),
-        expand_user_vars=lambda path: path if not path or not isinstance(path, str) else os.path.expanduser(path),
-        read_yaml=lambda path: SimpleNamespace(success=True, data={})
+        expand_user_vars=lambda path: (
+            path if not path or not isinstance(path, str) else os.path.expanduser(path)
+        ),
+        read_yaml=lambda path: SimpleNamespace(success=True, data={}),
     )
 
 
@@ -146,9 +149,9 @@ class PandocConfig(BaseModel):
         If fs service is not available, accepts any path.
         """
         try:
-            if hasattr(fs, 'get_path_info'):
+            if hasattr(fs, "get_path_info"):
                 path_info = fs.get_path_info(v)
-                if not getattr(path_info, 'success', False):
+                if not getattr(path_info, "success", False):
                     raise ValueError(f"Invalid path format: {v}")
             return v
         except Exception as e:
@@ -226,8 +229,10 @@ class PandocConfigProvider(BaseConfigProvider):
                     return False
 
                 # Check for invalid characters
-                if any(char in path for char in ['?', '*', '<', '>', '|']):
-                    self.logger.warning(f"Output directory path contains invalid characters: {path}")
+                if any(char in path for char in ["?", "*", "<", ">", "|"]):
+                    self.logger.warning(
+                        f"Output directory path contains invalid characters: {path}"
+                    )
                     return False
 
             return True
@@ -244,10 +249,10 @@ class PandocConfigProvider(BaseConfigProvider):
         """
         default_config = PandocConfig().model_dump()
         output_dir = default_config.get("output_dir")
-        if output_dir and hasattr(fs, 'normalize_path_with_info'):
+        if output_dir and hasattr(fs, "normalize_path_with_info"):
             try:
                 normalized_path = fs.normalize_path_with_info(output_dir)
-                if getattr(normalized_path, 'success', False):
+                if getattr(normalized_path, "success", False):
                     default_config["output_dir"] = normalized_path.path
             except Exception as e:
                 self.logger.warning(f"Failed to normalize output dir path: {e}")
@@ -263,7 +268,7 @@ class PandocConfigProvider(BaseConfigProvider):
         config: dict[str, Any] = {}
         for key, value in os.environ.items():
             if key.startswith(self.ENV_PREFIX):
-                config_key = key[len(self.ENV_PREFIX):].lower()
+                config_key = key[len(self.ENV_PREFIX) :].lower()
 
                 # Try to parse JSON values for lists, dicts, booleans
                 if value.startswith(("[", "{")) or value.lower() in ("true", "false"):
@@ -277,18 +282,24 @@ class PandocConfigProvider(BaseConfigProvider):
                         # Use os.path functions directly to avoid DataResult issues
                         try:
                             # Safe check for mock objects vs real objects
-                            if hasattr(fs, 'expand_user_vars') and callable(fs.expand_user_vars):
+                            if hasattr(fs, "expand_user_vars") and callable(
+                                fs.expand_user_vars
+                            ):
                                 try:
                                     expanded_path = fs.expand_user_vars(value)
                                     config[config_key] = os.path.abspath(expanded_path)
                                 except Exception:
-                                     config[config_key] = os.path.abspath(os.path.expanduser(value))
+                                    config[config_key] = os.path.abspath(
+                                        os.path.expanduser(value)
+                                    )
                             else:
                                 config[config_key] = os.path.abspath(
-                                    os.path.expanduser(value))
+                                    os.path.expanduser(value)
+                                )
                         except Exception as e:
                             self.logger.warning(
-                                f"Failed to normalize path from env var: {e}")
+                                f"Failed to normalize path from env var: {e}"
+                            )
                             config[config_key] = value
                     else:
                         config[config_key] = value

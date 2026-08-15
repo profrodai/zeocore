@@ -28,8 +28,9 @@ logger = logging.getLogger(__name__)
 DEFAULT_ENTRY_GROUP = "quack_core.integrations"
 
 
-def list_available_entry_points(group: str = DEFAULT_ENTRY_GROUP) -> list[
-    dict[str, str]]:
+def list_available_entry_points(
+    group: str = DEFAULT_ENTRY_GROUP,
+) -> list[dict[str, str]]:
     """
     List available integration entry points without loading them.
 
@@ -43,20 +44,22 @@ def list_available_entry_points(group: str = DEFAULT_ENTRY_GROUP) -> list[
     # Use robust .select() method for Python 3.10+
     eps = entry_points().select(group=group)
     for ep in eps:
-        results.append({
-            "integration_id": ep.name,
-            "value": ep.value,
-            "module": ep.module,
-        })
+        results.append(
+            {
+                "integration_id": ep.name,
+                "value": ep.value,
+                "module": ep.module,
+            }
+        )
     return results
 
 
 def load_enabled_entry_points(
-        registry: IntegrationRegistry,
-        enabled: list[str],
-        group: str = DEFAULT_ENTRY_GROUP,
-        strict: bool = True,
-        initialize: bool = True
+    registry: IntegrationRegistry,
+    enabled: list[str],
+    group: str = DEFAULT_ENTRY_GROUP,
+    strict: bool = True,
+    initialize: bool = True,
 ) -> IntegrationLoadReport:
     """
     Load specific integrations by ID from entry points.
@@ -117,13 +120,16 @@ def load_enabled_entry_points(
             if initialize:
                 init_result = instance.initialize()
                 if not init_result.success:
-                    error_msg = f"Failed to initialize {integration_id}: {init_result.error}"
+                    error_msg = (
+                        f"Failed to initialize {integration_id}: {init_result.error}"
+                    )
                     report.errors.append(error_msg)
                     report.success = False
 
                     if strict:
                         logger.error(
-                            f"Strict mode enabled: Aborting after initialization failure of {integration_id}")
+                            f"Strict mode enabled: Aborting after initialization failure of {integration_id}"
+                        )
                         return report
 
                     continue

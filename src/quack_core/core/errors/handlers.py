@@ -71,8 +71,7 @@ class ErrorHandler:
         return "\n".join(result)
 
     def print_error(
-            self, error: Exception, title: str | None = None,
-            show_traceback: bool = False
+        self, error: Exception, title: str | None = None, show_traceback: bool = False
     ) -> str:
         """
         Print an error to the console using Rich panels.
@@ -107,11 +106,11 @@ class ErrorHandler:
             return f"{error_title}\n{formatted_error}"
 
     def handle_error(
-            self,
-            error: Exception,
-            title: str | None = None,
-            show_traceback: bool = False,
-            exit_code: int | None = None,
+        self,
+        error: Exception,
+        title: str | None = None,
+        show_traceback: bool = False,
+        exit_code: int | None = None,
     ) -> str:
         """
         Handle an error by printing it and optionally exiting.
@@ -123,10 +122,10 @@ class ErrorHandler:
 
 
 def handle_errors(
-        error_types: type[Exception] | tuple[type[Exception], ...] = Exception,
-        title: str | None = None,
-        show_traceback: bool = False,
-        exit_code: int | None = None,
+    error_types: type[Exception] | tuple[type[Exception], ...] = Exception,
+    title: str | None = None,
+    show_traceback: bool = False,
+    exit_code: int | None = None,
 ) -> Callable[[Callable[..., T]], Callable[..., T | None]]:
     """
     Decorator to handle errors in a function.

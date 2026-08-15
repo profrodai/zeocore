@@ -499,7 +499,8 @@ class TestRepositoryOperations:
 
             assert call_args[1]["method"] == "PUT"
             assert (
-                call_args[1]["url"] == "/repos/test_owner/test-repo/contents/GET-STARTED.md"
+                call_args[1]["url"]
+                == "/repos/test_owner/test-repo/contents/GET-STARTED.md"
             )
 
             # Check JSON body contains encoded content

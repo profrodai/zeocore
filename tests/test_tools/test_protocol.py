@@ -29,6 +29,7 @@ class TestQuackToolPluginProtocol(unittest.TestCase):
         """
         Test that a class implementing all required methods passes protocol check.
         """
+
         # Create a mock class that implements all protocol methods
         class MockToolImplementation:
             @property
@@ -47,7 +48,7 @@ class TestQuackToolPluginProtocol(unittest.TestCase):
                 return QuackPluginMetadata(
                     name="mock_tool",
                     version="1.0.0",
-                    description="Mock tool for testing"
+                    description="Mock tool for testing",
                 )
 
             def initialize(self) -> IntegrationResult:
@@ -59,10 +60,10 @@ class TestQuackToolPluginProtocol(unittest.TestCase):
                 return True
 
             def process_file(
-                    self,
-                    file_path: str,
-                    output_path: str | None = None,
-                    options: dict[str, Any] | None = None
+                self,
+                file_path: str,
+                output_path: str | None = None,
+                options: dict[str, Any] | None = None,
             ) -> IntegrationResult:
                 return IntegrationResult.success_result(
                     message="File processed successfully"

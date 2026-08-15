@@ -79,6 +79,7 @@ class TestGetIntegrationService(unittest.TestCase):
         """
         Test that get_integration_service returns the first matching service when multiple are found.
         """
+
         # Setup mock registry with multiple services
         class DriveService1(MockDriveService):
             @property
@@ -95,7 +96,7 @@ class TestGetIntegrationService(unittest.TestCase):
 
         mock_registry.get_integration_by_type.return_value = [
             mock_drive_service1,
-            mock_drive_service2
+            mock_drive_service2,
         ]
 
         # Call the function

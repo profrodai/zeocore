@@ -58,7 +58,7 @@ def initialize_drive_service(credentials: GoogleCredentials) -> DriveService:
 
 
 def resolve_file_details(
-        file_path: str, remote_path: str | None, parent_folder_id: str | None
+    file_path: str, remote_path: str | None, parent_folder_id: str | None
 ) -> tuple[str, str, str | None, str]:
     """
     Resolve file details for upload.
@@ -99,13 +99,13 @@ def resolve_file_details(
 
 
 def upload_file(
-        drive_service: DriveService,
-        file_path: str,
-        remote_path: str | None = None,
-        description: str | None = None,
-        parent_folder_id: str | None = None,
-        make_public: bool = True,
-        logger: logging.Logger | None = None,
+    drive_service: DriveService,
+    file_path: str,
+    remote_path: str | None = None,
+    description: str | None = None,
+    parent_folder_id: str | None = None,
+    make_public: bool = True,
+    logger: logging.Logger | None = None,
 ) -> IntegrationResult[str]:
     """
     Upload a file to Google Drive.
@@ -176,9 +176,9 @@ def upload_file(
 
         # Extract a usable link from the returned file data
         link: str = (
-                str(file.get("webViewLink", ""))
-                or str(file.get("webContentLink", ""))
-                or f"https://drive.google.com/file/d/{fileId}/view"
+            str(file.get("webViewLink", ""))
+            or str(file.get("webContentLink", ""))
+            or f"https://drive.google.com/file/d/{fileId}/view"
         )
 
         return IntegrationResult.success_result(

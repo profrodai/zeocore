@@ -31,10 +31,14 @@ class UtilityOperationsMixin:
     def _compute_checksum(self, path: Path, algorithm: str = "sha256") -> str:
         return _compute_checksum(path, algorithm)
 
-    def _create_temp_file(self, suffix: str, prefix: str, directory: Path | None) -> Path:
+    def _create_temp_file(
+        self, suffix: str, prefix: str, directory: Path | None
+    ) -> Path:
         return _create_temp_file(suffix, prefix, directory)
 
-    def _create_temp_directory(self, prefix: str, suffix: str, directory: Path | None) -> Path:
+    def _create_temp_directory(
+        self, prefix: str, suffix: str, directory: Path | None
+    ) -> Path:
         return _create_temp_directory(prefix, suffix, directory)
 
     def _get_unique_filename(self, directory: Path, filename: str) -> Path:
@@ -64,5 +68,7 @@ class UtilityOperationsMixin:
     def _is_file_locked(self, path: Path) -> bool:
         return _is_file_locked(path)
 
-    def _find_files_by_content(self, directory: Path, text_pattern: str, recursive: bool) -> list[Path]:
+    def _find_files_by_content(
+        self, directory: Path, text_pattern: str, recursive: bool
+    ) -> list[Path]:
         return _find_files_by_content(directory, text_pattern, recursive)

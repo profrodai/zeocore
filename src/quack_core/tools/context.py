@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 ToolContext: Immutable dependency container for tool execution.
 
@@ -65,7 +64,7 @@ class ToolContext(BaseModel):
     metadata: Mapping[str, Any] = Field(default_factory=dict)
 
     # Validators to accept str | Path
-    @field_validator('work_dir', 'output_dir', mode='before')
+    @field_validator("work_dir", "output_dir", mode="before")
     @classmethod
     def normalize_path(cls, v: str | Path) -> str:
         """
@@ -83,11 +82,11 @@ class ToolContext(BaseModel):
         )
 
     # Must-fix B: Guard against None for services
-    @field_validator('services', mode='before')
+    @field_validator("services", mode="before")
     @classmethod
-    def validate_and_normalize_services(cls,
-                                        v: dict[str, Any] | Mapping[str, Any] | None) -> \
-    Mapping[str, Any]:
+    def validate_and_normalize_services(
+        cls, v: dict[str, Any] | Mapping[str, Any] | None
+    ) -> Mapping[str, Any]:
         """
         Validate services is a Mapping and convert to MappingProxyType.
 
@@ -107,11 +106,11 @@ class ToolContext(BaseModel):
         return MappingProxyType(dict(v))
 
     # Must-fix #2: Strict type checking for metadata
-    @field_validator('metadata', mode='before')
+    @field_validator("metadata", mode="before")
     @classmethod
-    def validate_and_normalize_metadata(cls,
-                                        v: dict[str, Any] | Mapping[str, Any] | None) -> \
-    Mapping[str, Any]:
+    def validate_and_normalize_metadata(
+        cls, v: dict[str, Any] | Mapping[str, Any] | None
+    ) -> Mapping[str, Any]:
         """
         Validate metadata is a Mapping and JSON-serializable, then normalize.
 
@@ -141,7 +140,7 @@ class ToolContext(BaseModel):
                 path="metadata",
                 allow_pydantic=True,
                 allow_string_fallback=False,
-                logger=None
+                logger=None,
             )
         except TypeError as e:
             raise TypeError(
@@ -154,16 +153,13 @@ class ToolContext(BaseModel):
         return MappingProxyType(normalized)
 
     # Serializers for MappingProxyType
-    @field_serializer('services', 'metadata')
+    @field_serializer("services", "metadata")
     def serialize_mapping(self, v: Mapping[str, Any]) -> dict[str, Any]:
         """Convert MappingProxyType to dict for serialization."""
         return dict(v)
 
     # Configuration: frozen (immutable)
-    model_config = ConfigDict(
-        frozen=True,
-        arbitrary_types_allowed=True
-    )
+    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True)
 
     # Convenience properties for Path usage
 

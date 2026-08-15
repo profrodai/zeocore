@@ -30,6 +30,7 @@ def create_default_prompt_service() -> PromptService:
     """Factory to create a service with internal strategies pre-loaded."""
     return PromptService(load_defaults=True)
 
+
 __all__ = [
     "PromptService",
     "PromptStrategy",
@@ -39,5 +40,5 @@ __all__ = [
     "StrategyListResult",
     "GetStrategyResult",
     "RegisterStrategyResult",
-    "LoadPackResult"
+    "LoadPackResult",
 ]

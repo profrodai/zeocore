@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Structural protocol for QuackTools.
 
@@ -45,11 +44,7 @@ class QuackToolProtocol(Protocol):
     version: str  # Has default "1.0.0"
 
     # Core method
-    def run(
-            self,
-            request: Any,
-            ctx: "ToolContext"
-    ) -> "CapabilityResult[Any]":
+    def run(self, request: Any, ctx: "ToolContext") -> "CapabilityResult[Any]":
         """
         Execute the tool capability.
 
@@ -63,10 +58,7 @@ class QuackToolProtocol(Protocol):
         ...
 
     # Optional lifecycle method
-    def initialize(
-            self,
-            ctx: "ToolContext"
-    ) -> "CapabilityResult[None]":
+    def initialize(self, ctx: "ToolContext") -> "CapabilityResult[None]":
         """
         Initialize tool with context (optional).
 

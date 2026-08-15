@@ -19,6 +19,7 @@ def _get_disk_usage(path: Path) -> dict[str, int]:
     except Exception as e:
         raise OSError(f"Error getting disk usage: {e}") from e
 
+
 def _probe_path_writeable(path: Path) -> bool:
     """
     Checks if a path is writeable by attempting to modify it (side-effect).
@@ -28,7 +29,8 @@ def _probe_path_writeable(path: Path) -> bool:
     if not path.exists():
         try:
             if path.suffix:
-                with open(path, "w") as _: pass
+                with open(path, "w") as _:
+                    pass
                 path.unlink()
             else:
                 path.mkdir(parents=True)
@@ -41,7 +43,8 @@ def _probe_path_writeable(path: Path) -> bool:
     if path.is_dir():
         try:
             test_file = path / f"test_write_{os.getpid()}.tmp"
-            with open(test_file, "w") as _: pass
+            with open(test_file, "w") as _:
+                pass
             test_file.unlink()
             return True
         except Exception:

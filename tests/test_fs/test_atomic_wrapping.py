@@ -60,7 +60,7 @@ class TestAtomicWrapping:
         assert isinstance(result.path, Path), (
             "The 'path' attribute should be a Path object."
         )
-        assert result.bytes_written == len(content.encode('utf-8')), (
+        assert result.bytes_written == len(content.encode("utf-8")), (
             "The bytes_written should match the content length."
         )
         # Read the file and verify contents
@@ -80,7 +80,7 @@ class TestAtomicWrapping:
         assert isinstance(result, WriteResult)
         assert result.success is True
         assert isinstance(result.path, Path)
-        assert result.bytes_written == len(content.encode('utf-8'))
+        assert result.bytes_written == len(content.encode("utf-8"))
         assert file_path.read_text() == content, "File content does not match expected."
 
     def test_write_binary_atomic(

@@ -36,21 +36,27 @@ except ImportError:
     import types
 
     fs = types.SimpleNamespace()
-    fs.get_file_info = lambda path: types.SimpleNamespace(success=True, exists=True,
-                                                          size=1024)
+    fs.get_file_info = lambda path: types.SimpleNamespace(
+        success=True, exists=True, size=1024
+    )
     fs.create_directory = lambda path, exist_ok=True: types.SimpleNamespace(
-        success=True)
-    fs.join_path = lambda *parts: types.SimpleNamespace(success=True,
-                                                        data=os.path.join(*parts))
-    fs.split_path = lambda path: types.SimpleNamespace(success=True,
-                                                       data=path.split(os.sep))
-    fs.get_extension = lambda path: types.SimpleNamespace(success=True,
-                                                          data=path.split('.')[
-                                                              -1] if '.' in path else "")
-    fs.get_file_size_str = lambda size: types.SimpleNamespace(success=True,
-                                                              data=f"{size}B")
-    fs.read_text = lambda path, encoding=None: types.SimpleNamespace(success=True,
-                                                                     content="Content")
+        success=True
+    )
+    fs.join_path = lambda *parts: types.SimpleNamespace(
+        success=True, data=os.path.join(*parts)
+    )
+    fs.split_path = lambda path: types.SimpleNamespace(
+        success=True, data=path.split(os.sep)
+    )
+    fs.get_extension = lambda path: types.SimpleNamespace(
+        success=True, data=path.split(".")[-1] if "." in path else ""
+    )
+    fs.get_file_size_str = lambda size: types.SimpleNamespace(
+        success=True, data=f"{size}B"
+    )
+    fs.read_text = lambda path, encoding=None: types.SimpleNamespace(
+        success=True, content="Content"
+    )
     logger.warning("Using fs service stub")
 
 
@@ -66,7 +72,8 @@ def verify_pandoc() -> str:
     """
     try:
         import importlib
-        pypandoc = importlib.import_module('pypandoc')
+
+        pypandoc = importlib.import_module("pypandoc")
         version = pypandoc.get_pandoc_version()
         logger.info(f"Found pandoc version: {version}")
         return version
@@ -85,10 +92,10 @@ def verify_pandoc() -> str:
 
 
 def prepare_pandoc_args(
-        config: PandocConfig,
-        source_format: str,
-        target_format: str,
-        extra_args: list[str] | None = None,
+    config: PandocConfig,
+    source_format: str,
+    target_format: str,
+    extra_args: list[str] | None = None,
 ) -> list[str]:
     """
     Prepare pandoc conversion arguments.
@@ -126,7 +133,7 @@ def prepare_pandoc_args(
 
 
 def validate_html_structure(
-        content: str, check_links: bool = False
+    content: str, check_links: bool = False
 ) -> tuple[bool, list[str]]:
     """
     Validate HTML document structure.
@@ -153,8 +160,8 @@ def validate_html_structure(
             return False, errors
 
         if not (
-                soup.find(["h1", "h2", "h3", "h4", "h5", "h6"])
-                or soup.find(["header", "section", "article"])
+            soup.find(["h1", "h2", "h3", "h4", "h5", "h6"])
+            or soup.find(["header", "section", "article"])
         ):
             logger.warning("HTML document has no header tags or structural elements")
 
@@ -172,7 +179,7 @@ def validate_html_structure(
 
 
 def validate_docx_structure(
-        docx_path: str, check_links: bool = False
+    docx_path: str, check_links: bool = False
 ) -> tuple[bool, list[str]]:
     """
     Validate DOCX document structure.
@@ -238,7 +245,8 @@ def safe_convert_to_int(value: Any, default: int = 0) -> int:
         return int(value)
     except (ValueError, TypeError):
         logger.warning(
-            f"Could not convert value to integer: {value}, using default {default}")
+            f"Could not convert value to integer: {value}, using default {default}"
+        )
         return default
 
 
@@ -253,10 +261,13 @@ def get_size_str_wrapper(size: int) -> str:
         str: Human-readable size string
     """
     try:
-        if hasattr(fs, 'get_file_size_str'):
+        if hasattr(fs, "get_file_size_str"):
             result = fs.get_file_size_str(size)
-            if hasattr(result, 'success') and result.success and hasattr(result,
-                                                                         'data'):
+            if (
+                hasattr(result, "success")
+                and result.success
+                and hasattr(result, "data")
+            ):
                 return result.data
         # Fallback if fs service doesn't have the method or result is invalid
         return f"{size}B"
@@ -266,7 +277,7 @@ def get_size_str_wrapper(size: int) -> str:
 
 
 def check_file_size(
-        converted_size: int | None, validation_min_size: int | None
+    converted_size: int | None, validation_min_size: int | None
 ) -> tuple[bool, list[str]]:
     """
     Check if the converted file meets the minimum file size.
@@ -293,7 +304,7 @@ def check_file_size(
 
 
 def check_conversion_ratio(
-        converted_size: int | None, original_size: int | None, threshold: float | None
+    converted_size: int | None, original_size: int | None, threshold: float | None
 ) -> tuple[bool, list[str]]:
     """
     Check if the converted file size is not drastically smaller than the original.
@@ -325,12 +336,12 @@ def check_conversion_ratio(
 
 
 def track_metrics(
-        filename: str,
-        start_time: float,
-        original_size: int,
-        converted_size: int,
-        metrics: ConversionMetrics,
-        config: PandocConfig,
+    filename: str,
+    start_time: float,
+    original_size: int,
+    converted_size: int,
+    metrics: ConversionMetrics,
+    config: PandocConfig,
 ) -> None:
     """
     Track conversion metrics.
@@ -385,15 +396,15 @@ def get_file_info(path: str, format_hint: str | None = None) -> FileInfo:
     file_info = fs.get_file_info(path)
 
     exists = False
-    if hasattr(file_info, 'exists'):
+    if hasattr(file_info, "exists"):
         exists = file_info.exists
 
-    if not getattr(file_info, 'success', True) or not exists:
+    if not getattr(file_info, "success", True) or not exists:
         raise QuackIntegrationError(f"File not found: {path}")
 
     # Convert file size to integer safely
-    file_size = safe_convert_to_int(getattr(file_info, 'size', 1024), 1024)
-    modified_time: float | None = getattr(file_info, 'modified', None)
+    file_size = safe_convert_to_int(getattr(file_info, "size", 1024), 1024)
+    modified_time: float | None = getattr(file_info, "modified", None)
 
     # Determine format name
     if format_hint:
@@ -402,20 +413,26 @@ def get_file_info(path: str, format_hint: str | None = None) -> FileInfo:
         try:
             # Get extension safely
             extension = ""
-            if hasattr(fs, 'get_extension'):
+            if hasattr(fs, "get_extension"):
                 ext_result = fs.get_extension(path)
-                if hasattr(ext_result, 'success') and getattr(ext_result, 'success',
-                                                              False) and hasattr(
-                        ext_result, 'data'):
+                if (
+                    hasattr(ext_result, "success")
+                    and getattr(ext_result, "success", False)
+                    and hasattr(ext_result, "data")
+                ):
                     extension = ext_result.data
                 else:
                     # Fallback extension extraction
-                    extension = path.split('.')[-1] if isinstance(path,
-                                                                  str) and '.' in path else ""
+                    extension = (
+                        path.split(".")[-1]
+                        if isinstance(path, str) and "." in path
+                        else ""
+                    )
             else:
                 # Fallback if get_extension not available
-                extension = path.split('.')[-1] if isinstance(path,
-                                                              str) and '.' in path else ""
+                extension = (
+                    path.split(".")[-1] if isinstance(path, str) and "." in path else ""
+                )
 
             # Map the extension to a format name
             mapping: dict[str, str] = {
@@ -432,8 +449,11 @@ def get_file_info(path: str, format_hint: str | None = None) -> FileInfo:
         except Exception as e:
             logger.warning(f"Error getting file extension: {e}. Using fallback.")
             # Fallback to extension from path
-            extension = path.split('.')[-1] if isinstance(path,
-                                                          str) and '.' in path else "unknown"
+            extension = (
+                path.split(".")[-1]
+                if isinstance(path, str) and "." in path
+                else "unknown"
+            )
             format_name = extension
 
     return FileInfo(

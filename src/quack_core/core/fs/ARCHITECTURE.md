@@ -319,7 +319,7 @@ meta: Optional[dict]
 
 ```python
 class ErrorInfo(BaseModel):
-    type: str               # e.g. "file_not_found"
+    type: str  # e.g. "file_not_found"
     message: str
     hint: str | None
     exception: str | None

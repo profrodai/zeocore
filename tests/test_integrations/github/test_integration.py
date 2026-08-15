@@ -114,7 +114,7 @@ class TestGitHubMockedIntegration:
 
     @pytest.fixture
     def mock_integration(
-            self, temp_dir: Path, mock_session: MagicMock
+        self, temp_dir: Path, mock_session: MagicMock
     ) -> tuple[GitHubIntegration, MagicMock]:
         """Create a mock GitHub integration."""
         # Create credentials file.

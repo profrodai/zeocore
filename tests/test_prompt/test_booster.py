@@ -194,8 +194,8 @@ def test_booster_render_with_llm():
     mock_strategy = MagicMock()
     mock_strategy.id = "test-strategy"
     mock_strategy.input_vars = ["task_description"]
-    mock_strategy.render_fn = (
-        lambda task_description, **kwargs: f"Basic: {task_description}"
+    mock_strategy.render_fn = lambda task_description, **kwargs: (
+        f"Basic: {task_description}"
     )
 
     # Create a booster with this strategy already set
@@ -351,14 +351,12 @@ def test_booster_export(sample_strategy, tmp_path):
     with patch("quack_core.prompt.booster.standalone") as mock_standalone:
         # Configure the split_path mock
         mock_standalone.split_path.return_value = MagicMock(
-            success=True,
-            data=[str(tmp_path), "export.json"]
+            success=True, data=[str(tmp_path), "export.json"]
         )
 
         # Configure the join_path mock
         mock_standalone.join_path.return_value = MagicMock(
-            success=True,
-            data=str(tmp_path)
+            success=True, data=str(tmp_path)
         )
 
         # Configure the write_json mock
@@ -374,11 +372,15 @@ def test_booster_export(sample_strategy, tmp_path):
         mock_standalone.split_path.assert_called_with(json_path)
         mock_standalone.join_path.assert_called()
         mock_standalone.create_directory.assert_called()
-        mock_standalone.write_json.assert_called_with(json_path, {
-            "prompt": "Task: Export test",
-            "metadata": booster.metadata(),
-            "explanation": booster.explain(),
-        }, indent=2)
+        mock_standalone.write_json.assert_called_with(
+            json_path,
+            {
+                "prompt": "Task: Export test",
+                "metadata": booster.metadata(),
+                "explanation": booster.explain(),
+            },
+            indent=2,
+        )
 
 
 def test_booster_export_fallback(sample_strategy, tmp_path):
@@ -399,14 +401,12 @@ def test_booster_export_fallback(sample_strategy, tmp_path):
     with patch("quack_core.prompt.booster.standalone") as mock_standalone:
         # Configure the split_path mock
         mock_standalone.split_path.return_value = MagicMock(
-            success=True,
-            data=[str(tmp_path), "export.txt"]
+            success=True, data=[str(tmp_path), "export.txt"]
         )
 
         # Configure the join_path mock
         mock_standalone.join_path.return_value = MagicMock(
-            success=True,
-            data=str(tmp_path)
+            success=True, data=str(tmp_path)
         )
 
         # Configure the create_directory mock
@@ -416,8 +416,9 @@ def test_booster_export_fallback(sample_strategy, tmp_path):
         mock_standalone.write_text.return_value = MagicMock(success=True)
 
         # Configure the write_json mock to fail, which will trigger the fallback
-        mock_standalone.write_json.return_value = MagicMock(success=False,
-                                                            error="Test error")
+        mock_standalone.write_json.return_value = MagicMock(
+            success=False, error="Test error"
+        )
 
         # Mock tempfile to force an exception in the try block
         with patch("tempfile.NamedTemporaryFile", side_effect=Exception("Test error")):
@@ -430,6 +431,7 @@ def test_booster_export_fallback(sample_strategy, tmp_path):
 
                 # Verify json.dumps was called
                 mock_dumps.assert_called_once()
+
 
 def test_booster_estimate_token_count():
     """Test token count estimation."""

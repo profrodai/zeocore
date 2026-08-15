@@ -61,11 +61,19 @@ except ImportError:
 
     # Create a minimal fs stub if the module isn't available (for tests)
     fs = SimpleNamespace(
-        get_file_info=lambda path: SimpleNamespace(success=False, exists=False, error="Module not available"),
+        get_file_info=lambda path: SimpleNamespace(
+            success=False, exists=False, error="Module not available"
+        ),
         create_directory=lambda path, exist_ok=True: SimpleNamespace(success=True),
-        join_path=lambda *parts: SimpleNamespace(success=True, data=safe_join_path(*parts)),
-        split_path=lambda path: SimpleNamespace(success=True, data=path.split(os.sep) if isinstance(path, str) else []),
-        read_text=lambda path, encoding=None: SimpleNamespace(success=True, content="# Test Content")
+        join_path=lambda *parts: SimpleNamespace(
+            success=True, data=safe_join_path(*parts)
+        ),
+        split_path=lambda path: SimpleNamespace(
+            success=True, data=path.split(os.sep) if isinstance(path, str) else []
+        ),
+        read_text=lambda path, encoding=None: SimpleNamespace(
+            success=True, content="# Test Content"
+        ),
     )
 
 
@@ -85,23 +93,25 @@ def _validate_markdown_input(markdown_path: str) -> int:
     # Standard validation for normal code paths
     file_info = fs.get_file_info(markdown_path)
 
-    if not getattr(file_info, 'success', False) or not getattr(file_info, 'exists', False):
+    if not getattr(file_info, "success", False) or not getattr(
+        file_info, "exists", False
+    ):
         raise QuackIntegrationError(
             f"Input file not found: {markdown_path}",
             {"path": markdown_path, "format": "markdown"},
         )
 
     # Convert file size to integer safely
-    original_size = safe_convert_to_int(getattr(file_info, 'size', 0), 0)
+    original_size = safe_convert_to_int(getattr(file_info, "size", 0), 0)
 
     try:
         read_result = fs.read_text(markdown_path, encoding="utf-8")
-        if not getattr(read_result, 'success', False):
+        if not getattr(read_result, "success", False):
             raise QuackIntegrationError(
                 f"Could not read Markdown file: {getattr(read_result, 'error', 'Unknown error')}",
                 {"path": markdown_path},
             )
-        markdown_content = getattr(read_result, 'content', '')
+        markdown_content = getattr(read_result, "content", "")
         if not markdown_content.strip():
             raise QuackIntegrationError(
                 f"Markdown file is empty: {markdown_path}",
@@ -119,7 +129,7 @@ def _validate_markdown_input(markdown_path: str) -> int:
 
 
 def _convert_markdown_to_docx_once(
-        markdown_path: str, output_path: str, config: PandocConfig
+    markdown_path: str, output_path: str, config: PandocConfig
 ) -> None:
     """
     Perform a single conversion attempt from Markdown to DOCX using pandoc.
@@ -141,7 +151,7 @@ def _convert_markdown_to_docx_once(
     try:
         # Get the parent directory of the output file
         split_result = fs.split_path(output_path)
-        if not getattr(split_result, 'success', False):
+        if not getattr(split_result, "success", False):
             raise QuackIntegrationError(
                 f"Failed to split output path: {getattr(split_result, 'error', 'Unknown error')}",
                 {"path": output_path, "operation": "split_path"},
@@ -155,7 +165,7 @@ def _convert_markdown_to_docx_once(
             parent_dir = "."  # Default to current directory if no parent path
         else:
             join_result = fs.join_path(*path_components)
-            if not getattr(join_result, 'success', False):
+            if not getattr(join_result, "success", False):
                 raise QuackIntegrationError(
                     f"Failed to join path components: {getattr(join_result, 'error', 'Unknown error')}",
                     {"components": path_components, "operation": "join_path"},
@@ -165,7 +175,7 @@ def _convert_markdown_to_docx_once(
         # Create the parent directory
         # Ensure we call this even if we think it exists, for test verification
         dir_result = fs.create_directory(parent_dir, exist_ok=True)
-        if not getattr(dir_result, 'success', True):
+        if not getattr(dir_result, "success", True):
             raise QuackIntegrationError(
                 f"Failed to create output directory: {getattr(dir_result, 'error', 'Unknown error')}",
                 {"path": parent_dir, "operation": "create_directory"},
@@ -174,7 +184,7 @@ def _convert_markdown_to_docx_once(
         logger.debug(f"Converting {markdown_path} to DOCX with args: {extra_args}")
 
         # Import pypandoc dynamically
-        pypandoc = importlib.import_module('pypandoc')
+        pypandoc = importlib.import_module("pypandoc")
 
         # Execute the conversion
         pypandoc.convert_file(
@@ -188,7 +198,7 @@ def _convert_markdown_to_docx_once(
     except ImportError:
         raise QuackIntegrationError(
             "pypandoc module is not installed",
-            {"module": "pypandoc", "path": markdown_path}
+            {"module": "pypandoc", "path": markdown_path},
         )
     except Exception as e:
         if isinstance(e, QuackIntegrationError):
@@ -218,23 +228,23 @@ def _get_conversion_output(output_path: str, start_time: float) -> tuple[float, 
     # Standard code path for normal operation
     output_info = fs.get_file_info(output_path)
 
-    if not getattr(output_info, 'success', False):
+    if not getattr(output_info, "success", False):
         logger.warning(f"Failed to get info for converted file: {output_path}")
         raise QuackIntegrationError(
             f"Failed to get info for converted file: {getattr(output_info, 'error', 'Unknown error')}",
-            {"path": output_path}
+            {"path": output_path},
         )
 
     # Convert output size to integer safely
-    output_size = safe_convert_to_int(getattr(output_info, 'size', 0), 0)
+    output_size = safe_convert_to_int(getattr(output_info, "size", 0), 0)
     return conversion_time, output_size
 
 
 def convert_markdown_to_docx(
-        markdown_path: str,
-        output_path: str,
-        config: PandocConfig,
-        metrics: ConversionMetrics | None = None,
+    markdown_path: str,
+    output_path: str,
+    config: PandocConfig,
+    metrics: ConversionMetrics | None = None,
 ) -> IntegrationResult[tuple[str, ConversionDetails]]:
     """
     Convert a Markdown file to DOCX.
@@ -251,7 +261,7 @@ def convert_markdown_to_docx(
     # Get file name from the input path
     try:
         split_result = fs.split_path(markdown_path)
-        if getattr(split_result, 'success', False):
+        if getattr(split_result, "success", False):
             filename = split_result.data[-1]
         else:
             # Fallback if split_path fails
@@ -345,7 +355,7 @@ def convert_markdown_to_docx(
 
 
 def validate_conversion(
-        output_path: str, input_path: str, original_size: int, config: PandocConfig
+    output_path: str, input_path: str, original_size: int, config: PandocConfig
 ) -> list[str]:
     """
     Validate the converted DOCX document.
@@ -365,19 +375,17 @@ def validate_conversion(
     validation = config.validation
 
     output_info = fs.get_file_info(output_path)
-    success = getattr(output_info, 'success', False)
-    exists = getattr(output_info, 'exists', False)
+    success = getattr(output_info, "success", False)
+    exists = getattr(output_info, "exists", False)
 
     if not (success and exists):
         validation_errors.append(f"Output file does not exist: {output_path}")
         return validation_errors
 
     # Get output size safely
-    output_size = safe_convert_to_int(getattr(output_info, 'size', 0), 0)
+    output_size = safe_convert_to_int(getattr(output_info, "size", 0), 0)
 
-    valid_size, size_errors = check_file_size(
-        output_size, validation.min_file_size
-    )
+    valid_size, size_errors = check_file_size(output_size, validation.min_file_size)
     if not valid_size:
         validation_errors.extend(size_errors)
 
@@ -410,9 +418,10 @@ def _check_docx_metadata(docx_path: str, source_path: str, check_links: bool) ->
     """
     # Standard code path for normal operation
     split_result = fs.split_path(source_path)
-    if not getattr(split_result, 'success', False):
+    if not getattr(split_result, "success", False):
         logger.debug(
-            f"Failed to split source path: {getattr(split_result, 'error', 'Unknown error')}")
+            f"Failed to split source path: {getattr(split_result, 'error', 'Unknown error')}"
+        )
         return
 
     source_filename = split_result.data[-1]
@@ -428,21 +437,21 @@ def _check_docx_metadata(docx_path: str, source_path: str, check_links: bool) ->
             core_props = doc.core_properties
 
             if (
-                    hasattr(core_props, "title")
-                    and core_props.title
-                    and source_filename in str(core_props.title)
+                hasattr(core_props, "title")
+                and core_props.title
+                and source_filename in str(core_props.title)
             ):
                 source_found = True
             elif (
-                    hasattr(core_props, "comments")
-                    and core_props.comments
-                    and source_filename in str(core_props.comments)
+                hasattr(core_props, "comments")
+                and core_props.comments
+                and source_filename in str(core_props.comments)
             ):
                 source_found = True
             elif (
-                    hasattr(core_props, "subject")
-                    and core_props.subject
-                    and source_filename in str(core_props.subject)
+                hasattr(core_props, "subject")
+                and core_props.subject
+                and source_filename in str(core_props.subject)
             ):
                 source_found = True
 
@@ -453,6 +462,7 @@ def _check_docx_metadata(docx_path: str, source_path: str, check_links: bool) ->
 
     except Exception as e:
         logger.debug(f"Could not check document metadata: {str(e)}")
+
 
 # Add an alias for the test function with the same name used in the test
 validate_docx_conversion = validate_conversion

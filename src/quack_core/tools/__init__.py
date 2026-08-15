@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 quack_core.tools - Capability authoring framework (Ring B, Doctrine v3).
 
@@ -74,18 +73,16 @@ QuackToolLifecycleMixin = LifecycleMixin
 
 __all__ = [
     # Core
-    'BaseQuackTool',
-    'ToolContext',
-    'QuackToolProtocol',
-
+    "BaseQuackTool",
+    "ToolContext",
+    "QuackToolProtocol",
     # Mixins
-    'IntegrationEnabledMixin',
-    'LifecycleMixin',
-    'ToolEnvInitializerMixin',
-
+    "IntegrationEnabledMixin",
+    "LifecycleMixin",
+    "ToolEnvInitializerMixin",
     # Backward compatibility
-    'BaseQuackToolPlugin',
-    'QuackToolLifecycleMixin',
+    "BaseQuackToolPlugin",
+    "QuackToolLifecycleMixin",
 ]
 
 # Tool Author Guidelines

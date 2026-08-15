@@ -20,8 +20,12 @@ from quack_core.core.fs.results import ErrorInfo, FileInfoResult
 class FileInfoOperationsMixin:
     operations: FileSystemOperations
     logger: Any
-    def _normalize_input_path(self, path: FsPathLike) -> Path: raise NotImplementedError
-    def _map_error(self, e: Exception) -> ErrorInfo: raise NotImplementedError
+
+    def _normalize_input_path(self, path: FsPathLike) -> Path:
+        raise NotImplementedError
+
+    def _map_error(self, e: Exception) -> ErrorInfo:
+        raise NotImplementedError
 
     def get_file_info(self, path: FsPathLike) -> FileInfoResult:
         try:
@@ -29,7 +33,12 @@ class FileInfoOperationsMixin:
             # Returns _FileInfo (internal DTO)
             file_info = self.operations._get_file_info(normalized_path)
             if not file_info.exists:
-                return FileInfoResult(ok=True, path=normalized_path, exists=False, message="Path does not exist")
+                return FileInfoResult(
+                    ok=True,
+                    path=normalized_path,
+                    exists=False,
+                    message="Path does not exist",
+                )
 
             return FileInfoResult(
                 ok=True,
@@ -45,7 +54,7 @@ class FileInfoOperationsMixin:
                 owner=file_info.owner,
                 permissions=file_info.permissions,
                 mime_type=file_info.mime_type,
-                message=f"FileInfo: {normalized_path}"
+                message=f"FileInfo: {normalized_path}",
             )
         except Exception as e:
             s = safe_path_str(path)
@@ -56,5 +65,5 @@ class FileInfoOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to get info",
-                meta={"input_path": s} if s else None
+                meta={"input_path": s} if s else None,
             )

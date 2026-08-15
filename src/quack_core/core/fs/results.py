@@ -24,11 +24,14 @@ T = TypeVar("T")
 
 class ErrorInfo(BaseModel):
     """Structured error information."""
+
     type: str = Field(description="Error type identifier (e.g. 'file_not_found')")
     message: str = Field(description="Original exception message")
     hint: str | None = Field(default=None, description="User-friendly resolution hint")
     exception: str | None = Field(default=None, description="Exception class name")
-    trace_id: str | None = Field(default=None, description="Tracing identifier for debugging")
+    trace_id: str | None = Field(
+        default=None, description="Tracing identifier for debugging"
+    )
     details: dict[str, Any] | None = Field(
         default=None, description="Structured context (path, errno, etc)"
     )
@@ -46,15 +49,23 @@ class OperationResult(BaseModel):
         message: Human-readable summary (success or failure)
         error: Legacy string error (deprecated - use error_info instead)
     """
+
     ok: bool = Field(description="Whether the operation was successful (canonical)")
-    path: Path | None = Field(default=None, description="Path operated on (normalized, None on failure)")
-    message: str | None = Field(default=None, description="Human-readable operation summary")
-    error: str | None = Field(default=None, description="LEGACY: Use error_info instead")
-    error_info: ErrorInfo | None = Field(default=None, description="Structured error details (canonical)")
+    path: Path | None = Field(
+        default=None, description="Path operated on (normalized, None on failure)"
+    )
+    message: str | None = Field(
+        default=None, description="Human-readable operation summary"
+    )
+    error: str | None = Field(
+        default=None, description="LEGACY: Use error_info instead"
+    )
+    error_info: ErrorInfo | None = Field(
+        default=None, description="Structured error details (canonical)"
+    )
     meta: dict[str, Any] | None = Field(
         default=None, description="Additional operation metadata"
     )
-
 
     @computed_field  # type: ignore[prop-decorator]  # pydantic computed_field+property, mypy limitation
     @property
@@ -64,7 +75,7 @@ class OperationResult(BaseModel):
         results (migrate-fs-result-consumers-to-ok charter). Do not add new readers."""
         return self.ok
 
-    @field_serializer('path')
+    @field_serializer("path")
     def serialize_path(
         self, path: Path | None, _info: FieldSerializationInfo
     ) -> str | None:
@@ -73,6 +84,7 @@ class OperationResult(BaseModel):
 
 class BoolResult(OperationResult):
     """Result of a boolean check operation (e.g. exists, is_file)."""
+
     value: bool = Field(description="The boolean result")
 
     def __bool__(self) -> bool:
@@ -81,6 +93,7 @@ class BoolResult(OperationResult):
 
 class ReadResult(OperationResult, Generic[T]):
     """Result of a read operation."""
+
     content: T | None = Field(default=None, description="Content read from file")
     encoding: str | None = None
 
@@ -115,11 +128,12 @@ class ReadResult(OperationResult, Generic[T]):
 
 class WriteResult(OperationResult):
     """Result of a write operation."""
+
     bytes_written: int = 0
     original_path: Path | None = None
     checksum: str | None = None
 
-    @field_serializer('original_path')
+    @field_serializer("original_path")
     def serialize_original_path(
         self, path: Path | None, _info: FieldSerializationInfo
     ) -> str | None:
@@ -128,6 +142,7 @@ class WriteResult(OperationResult):
 
 class FileInfoResult(OperationResult):
     """Result of file metadata query."""
+
     exists: bool = False
     is_file: bool = False
     is_dir: bool = False
@@ -147,6 +162,7 @@ class FileInfoResult(OperationResult):
 
 class DirectoryInfoResult(OperationResult):
     """Result of directory listing/scan."""
+
     exists: bool = False
     is_empty: bool = True
     files: list[Path] = Field(default_factory=list)
@@ -155,7 +171,7 @@ class DirectoryInfoResult(OperationResult):
     total_directories: int = 0
     total_size: int = 0
 
-    @field_serializer('files', 'directories')
+    @field_serializer("files", "directories")
     def serialize_path_lists(
         self, paths: list[Path], _info: FieldSerializationInfo
     ) -> list[str]:
@@ -164,13 +180,14 @@ class DirectoryInfoResult(OperationResult):
 
 class FindResult(OperationResult):
     """Result of file search operation."""
+
     files: list[Path] = Field(default_factory=list)
     directories: list[Path] = Field(default_factory=list)
     total_matches: int = 0
     pattern: str
     recursive: bool = False
 
-    @field_serializer('files', 'directories')
+    @field_serializer("files", "directories")
     def serialize_path_lists(
         self, paths: list[Path], _info: FieldSerializationInfo
     ) -> list[str]:
@@ -186,6 +203,7 @@ class DataResult(OperationResult, Generic[T]):
         format: Data format identifier (e.g. 'yaml', 'json', 'path', 'boolean')
         schema_valid: Whether data passed schema validation (optional)
     """
+
     data: T | None = None
     format: str = Field(default="data", description="Data format identifier")
     schema_valid: bool | None = None
@@ -204,14 +222,15 @@ class PathResult(OperationResult):
     Note: is_valid_path() returns BoolResult with syntax-only validation.
           PathResult.is_valid indicates full service-level validation success.
     """
+
     is_absolute: bool = False
     is_valid: bool = Field(
         default=False,
-        description="True if service normalization + sandbox validation succeeded"
+        description="True if service normalization + sandbox validation succeeded",
     )
     exists: bool = Field(
         default=False,
-        description="True if path exists on filesystem (checked if validation succeeded)"
+        description="True if path exists on filesystem (checked if validation succeeded)",
     )
 
     @computed_field  # type: ignore[prop-decorator]  # pydantic computed_field+property, mypy limitation

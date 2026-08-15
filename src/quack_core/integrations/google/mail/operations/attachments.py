@@ -143,7 +143,6 @@ def handle_attachment(
         join_res = standalone.join_path(storage_path, clean_name)
         file_path = join_res.data if hasattr(join_res, "data") else join_res
 
-
         # Handle filename collisions
         counter = 1
         file_info = standalone.get_file_info(file_path)
@@ -162,13 +161,17 @@ def handle_attachment(
         dir_path = os.path.dirname(file_path)
         dir_result = standalone.create_directory(dir_path, exist_ok=True)
         if not (hasattr(dir_result, "success") and dir_result.success):
-            logger.error(f"Failed to create directory: {getattr(dir_result, 'error', '')}")
+            logger.error(
+                f"Failed to create directory: {getattr(dir_result, 'error', '')}"
+            )
             return None
 
         # Write the file
         write_result = standalone.write_binary(file_path, content)
         if not (hasattr(write_result, "success") and write_result.success):
-            logger.error(f"Failed to write attachment: {getattr(write_result, 'error', '')}")
+            logger.error(
+                f"Failed to write attachment: {getattr(write_result, 'error', '')}"
+            )
             return None
 
         return file_path

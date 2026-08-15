@@ -12,6 +12,7 @@
 LOCAL ORCHESTRATOR (DEV ONLY)
 Use this to test chains of capabilities without spinning up n8n.
 """
+
 import os
 import sys
 

@@ -58,10 +58,14 @@ class TestHardenedAPIExports:
         import quack_core.core.fs as fs
 
         # These should not be accessible
-        with pytest.raises(AttributeError, match="Internal modules.*not part of the public API"):
+        with pytest.raises(
+            AttributeError, match="Internal modules.*not part of the public API"
+        ):
             _ = fs._internal
 
-        with pytest.raises(AttributeError, match="Internal modules.*not part of the public API"):
+        with pytest.raises(
+            AttributeError, match="Internal modules.*not part of the public API"
+        ):
             _ = fs._ops
 
     def test_cannot_import_internal_directly_from_package(self):
@@ -145,10 +149,10 @@ class TestPublicAPIUsability:
         assert isinstance(service, FileSystemService)
 
         # Should have all expected methods
-        assert hasattr(service, 'read_text')
-        assert hasattr(service, 'write_text')
-        assert hasattr(service, 'exists')
-        assert hasattr(service, 'normalize_path')
+        assert hasattr(service, "read_text")
+        assert hasattr(service, "write_text")
+        assert hasattr(service, "exists")
+        assert hasattr(service, "normalize_path")
 
     def test_can_use_singleton_service(self):
         """Verify singleton accessor works."""
@@ -171,6 +175,7 @@ class TestPublicAPIUsability:
         # Should be usable in type hints
         def example_function() -> ReadResult[str]:
             from quack_core.core.fs import get_service
+
             return get_service().read_text("test.txt")
 
         # Type should be available
@@ -187,7 +192,7 @@ class TestDoctrineEnforcement:
         import quack_core.core.fs as fs
 
         # Path should not be in public API
-        assert 'Path' not in fs.__all__
+        assert "Path" not in fs.__all__
 
         # Users should use FsPathLike or just pass strings/Paths
         # They don't need to import Path from fs
@@ -197,8 +202,8 @@ class TestDoctrineEnforcement:
         import quack_core.core.fs as fs
 
         # Normalization is internal
-        assert 'normalize' not in fs.__all__
-        assert 'coerce_path' not in fs.__all__
+        assert "normalize" not in fs.__all__
+        assert "coerce_path" not in fs.__all__
 
         # All normalization happens inside service
 
@@ -207,8 +212,8 @@ class TestDoctrineEnforcement:
         import quack_core.core.fs as fs
 
         # No standalone operation functions in main module
-        assert 'read_text' not in fs.__all__
-        assert 'write_text' not in fs.__all__
+        assert "read_text" not in fs.__all__
+        assert "write_text" not in fs.__all__
 
         # Users must go through service
         # (standalone wrappers are in service.standalone if needed)

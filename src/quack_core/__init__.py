@@ -65,17 +65,15 @@ BaseQuackToolPlugin = BaseQuackTool
 
 __all__ = [
     # Core
-    'BaseQuackTool',
-    'ToolContext',
-    'QuackToolProtocol',
-
+    "BaseQuackTool",
+    "ToolContext",
+    "QuackToolProtocol",
     # Mixins
-    'IntegrationEnabledMixin',
-    'LifecycleMixin',
-    'ToolEnvInitializerMixin',
-
+    "IntegrationEnabledMixin",
+    "LifecycleMixin",
+    "ToolEnvInitializerMixin",
     # Backward compatibility
-    'BaseQuackToolPlugin',
+    "BaseQuackToolPlugin",
 ]
 
 # Tool Author Guidelines

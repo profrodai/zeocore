@@ -34,8 +34,9 @@ class StrategyRegistry:
         """Get a strategy by ID. Returns None if not found."""
         return self._strategies.get(strategy_id)
 
-    def find_by_tags(self, tags: Sequence[str], *, match_any: bool = False) -> list[
-        PromptStrategy]:
+    def find_by_tags(
+        self, tags: Sequence[str], *, match_any: bool = False
+    ) -> list[PromptStrategy]:
         """
         Find strategies matching the provided tags.
 

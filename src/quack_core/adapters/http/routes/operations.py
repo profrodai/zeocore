@@ -31,8 +31,8 @@ router = APIRouter()
 
 @router.get("", dependencies=[Depends(require_auth)])
 def list_operations(
-        registry: Annotated[OperationRegistry, Depends(get_registry)],
-        tags: list[str] | None = None,
+    registry: Annotated[OperationRegistry, Depends(get_registry)],
+    tags: list[str] | None = None,
 ) -> dict[str, Any]:
     """
     List all registered _ops.
@@ -50,20 +50,22 @@ def list_operations(
     for name in op_names:
         op = registry.get(name)
         if op:
-            operations.append({
-                "name": op.name,
-                "description": op.description,
-                "tags": op.tags,
-            })
+            operations.append(
+                {
+                    "name": op.name,
+                    "description": op.description,
+                    "tags": op.tags,
+                }
+            )
 
     return {"_ops": operations}
 
 
 @router.post("/{op_name}", dependencies=[Depends(require_auth)])
 async def invoke_operation_route(
-        op_name: str,
-        params: dict[str, Any],
-        registry: Annotated[OperationRegistry, Depends(get_registry)],
+    op_name: str,
+    params: dict[str, Any],
+    registry: Annotated[OperationRegistry, Depends(get_registry)],
 ) -> dict[str, Any]:
     """
     Invoke an operation synchronously or asynchronously.

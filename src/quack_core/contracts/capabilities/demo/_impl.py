@@ -57,10 +57,7 @@ def echo_text(req: EchoRequest) -> CapabilityResult[str]:
     return CapabilityResult.ok(
         data=final_text,
         msg="Echo successful",
-        metadata={
-            "used_preset": req.preset,
-            "greeting": greeting
-        }
+        metadata={"used_preset": req.preset, "greeting": greeting},
     )
 
 
@@ -100,11 +97,9 @@ def validate_video_ref(req: VideoRefRequest) -> CapabilityResult[bool]:
     if not any(provider in req.url for provider in supported_providers):
         return CapabilityResult.skip(
             reason=f"URL is not from a supported provider. Supported: {', '.join(supported_providers)}",
-            code="QC_VAL_UNSUPPORTED_PROVIDER"
+            code="QC_VAL_UNSUPPORTED_PROVIDER",
         )
 
     return CapabilityResult.ok(
-        data=True,
-        msg="Video reference is valid",
-        metadata={"url": req.url}
+        data=True, msg="Video reference is valid", metadata={"url": req.url}
     )

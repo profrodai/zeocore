@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Authentication utilities for the HTTP adapter.
 """
@@ -62,8 +61,6 @@ def sign_payload(payload: dict, secret: str) -> str:
     """
     body_json = json.dumps(payload, sort_keys=True)
     signature = hmac.new(
-        secret.encode(),
-        body_json.encode(),
-        hashlib.sha256
+        secret.encode(), body_json.encode(), hashlib.sha256
     ).hexdigest()
     return f"sha256={signature}"

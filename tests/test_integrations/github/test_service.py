@@ -257,7 +257,9 @@ class TestGitHubIntegration:
                     "token": "test_token",
                     "api_url": "https://api.github.com",
                 }
-                github_service.auth_provider = github_service.auth_provider or MagicMock()
+                github_service.auth_provider = (
+                    github_service.auth_provider or MagicMock()
+                )
                 github_service.auth_provider.get_credentials = MagicMock(
                     return_value={"token": "test_token"}
                 )
@@ -673,9 +675,12 @@ class TestGitHubIntegration:
 
         mock_config = MagicMock()
         mock_config.load_config.return_value = MagicMock(
-            success=True, content={"token": "test_token", "api_url": "https://api.github.com"}
+            success=True,
+            content={"token": "test_token", "api_url": "https://api.github.com"},
         )
-        mock_config.get_config = MagicMock(return_value={"token": "test_token", "api_url": "https://api.github.com"})
+        mock_config.get_config = MagicMock(
+            return_value={"token": "test_token", "api_url": "https://api.github.com"}
+        )
 
         service = GitHubIntegration()
         service.auth_provider = cast(AuthProviderProtocol, mock_auth)
