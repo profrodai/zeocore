@@ -111,7 +111,7 @@ async def invoke_operation_route(
                     "details": e.errors(),
                 }
             },
-        )
+        ) from e
 
     except Exception as e:
         # All other errors
@@ -127,4 +127,4 @@ async def invoke_operation_route(
                     },
                 }
             },
-        )
+        ) from e

@@ -83,7 +83,7 @@ class TestSchemaExamples:
         examples = _get_schema_examples(RunManifest)
 
         tool_names = set()
-        for i, example in enumerate(examples):
+        for _i, example in enumerate(examples):
             manifest = RunManifest.model_validate(example)
             tool_names.add(manifest.tool.name)
 

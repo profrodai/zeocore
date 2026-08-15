@@ -781,7 +781,9 @@ class TestPluginRegistry:
 
         # Mock a proper plugin factory function that returns a plugin with metadata
         mock_plugin = BasicPlugin()
-        mock_factory = lambda: mock_plugin
+
+        def mock_factory():
+            return mock_plugin
 
         # Create a proper mock entry point
         mock_ep = MagicMock()
@@ -807,7 +809,9 @@ class TestPluginRegistry:
 
         # Mock a proper plugin factory function that returns a plugin with metadata
         mock_plugin = BasicPlugin()
-        mock_factory = lambda: mock_plugin
+
+        def mock_factory():
+            return mock_plugin
 
         # Create a proper mock entry point
         mock_ep = MagicMock()

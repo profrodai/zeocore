@@ -165,7 +165,7 @@ class LLMIntegration(BaseIntegrationService):
             LLMConfig(**self.config)
             return self.config
         except Exception as e:
-            raise QuackIntegrationError(f"Invalid LLM configuration: {e}")
+            raise QuackIntegrationError(f"Invalid LLM configuration: {e}") from e
 
     def initialize(self) -> IntegrationResult:
         """

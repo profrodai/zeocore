@@ -156,7 +156,7 @@ class TestInitialization:
         with patch(
             "quack_core.integrations.llms.registry.get_llm_client",
             return_value=mock_client,
-        ) as mock_get_client:
+        ):
             # Call initialize_single_provider directly from a fixture to avoid implementation details
             with patch(
                 "quack_core.integrations.llms.service.initialization.initialize_single_provider",
@@ -312,7 +312,7 @@ class TestInitialization:
         with patch(
             "quack_core.integrations.llms.fallback.FallbackLLMClient",
             side_effect=Exception("Fallback initialization error"),
-        ) as mock_fallback_class:
+        ):
             # Mock initialize_single_provider to succeed
             success_result = IntegrationResult(
                 success=True, message="Initialized with single provider"
@@ -326,7 +326,7 @@ class TestInitialization:
                     # This will raise an exception
                     from quack_core.integrations.llms.fallback import FallbackLLMClient
 
-                    fallback_client = FallbackLLMClient()
+                    FallbackLLMClient()
                 except Exception as e:
                     self.logger.error(f"Failed to initialize fallback LLM client: {e}")
                     self.logger.warning("Falling back to single provider mode")
@@ -340,7 +340,7 @@ class TestInitialization:
                 with patch(
                     "quack_core.integrations.llms.service.initialization.initialize_single_provider",
                     return_value=success_result,
-                ) as mock_init_single:
+                ):
                     result = initialize_with_fallback(
                         mock_integration,
                         llm_config,

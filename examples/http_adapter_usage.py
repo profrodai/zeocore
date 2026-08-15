@@ -292,7 +292,7 @@ async def handle_job_callback(request: Request):
     try:
         data = json.loads(body)
     except json.JSONDecodeError:
-        raise HTTPException(400, "Invalid JSON")
+        raise HTTPException(400, "Invalid JSON") from None
 
     job_id = data.get("job_id")
     status = data.get("status")

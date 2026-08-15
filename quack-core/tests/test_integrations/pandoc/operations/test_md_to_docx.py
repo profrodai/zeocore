@@ -434,7 +434,7 @@ def test_md_to_docx_validate_conversion_docx_structure(
 
         # Test with structure verification enabled
         config.validation.verify_structure = True
-        errors = validate_conversion("output.docx", "input.md", 1000, config)
+        validate_conversion("output.docx", "input.md", 1000, config)
 
         # Both functions should be called
         assert mock_validate_docx.called, "validate_docx_structure was not called"

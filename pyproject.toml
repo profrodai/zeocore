@@ -92,6 +92,7 @@ select = [
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**/*.py" = ["S101"]  # Disable S101 (assert warning) in test files
+"examples/**/*.py" = ["S101"]  # Disable S101 (assert warning) in illustrative example scripts
 
 [tool.black]
 line-length = 88

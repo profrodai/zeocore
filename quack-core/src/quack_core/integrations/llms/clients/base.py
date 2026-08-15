@@ -253,7 +253,7 @@ class LLMClient(ABC, LLMProviderProtocol):
                         f"Failed to normalize message: {e}",
                         context={"message_type": type(message).__name__},
                         original_error=e,
-                    )
+                    ) from e
             elif isinstance(message, ChatMessage):
                 normalized_messages.append(message)
             else:

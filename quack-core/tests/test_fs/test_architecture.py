@@ -50,7 +50,7 @@ def test_internal_import_boundary():
         PACKAGE_ROOT / "tests",
     ]
 
-    for root, dirs, files in os.walk(PACKAGE_ROOT):
+    for root, _dirs, files in os.walk(PACKAGE_ROOT):
         for file in files:
             if not file.endswith(".py"):
                 continue
@@ -84,7 +84,7 @@ def test_ops_import_boundary():
         PACKAGE_ROOT / "tests",
     ]
 
-    for root, dirs, files in os.walk(PACKAGE_ROOT):
+    for root, _dirs, files in os.walk(PACKAGE_ROOT):
         for file in files:
             if not file.endswith(".py"):
                 continue

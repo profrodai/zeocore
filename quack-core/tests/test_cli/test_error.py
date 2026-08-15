@@ -138,9 +138,7 @@ class TestHandleErrors:
 
     def test_with_traceback(self) -> None:
         """Test showing traceback."""
-        with patch(
-            "quack_core.interfaces.cli.utils.error._print_error"
-        ) as mock_print_error:
+        with patch("quack_core.interfaces.cli.utils.error._print_error"):
             with patch("traceback.print_exc") as mock_print_exc:
 
                 @handle_errors(show_traceback=True)
@@ -154,9 +152,7 @@ class TestHandleErrors:
 
     def test_with_exit_code(self) -> None:
         """Test exiting with specific code."""
-        with patch(
-            "quack_core.interfaces.cli.utils.error._print_error"
-        ) as mock_print_error:
+        with patch("quack_core.interfaces.cli.utils.error._print_error"):
             with patch("sys.exit") as mock_exit:
 
                 @handle_errors(exit_code=42)
@@ -217,7 +213,7 @@ class TestEnsureSingleInstance:
             mock_socket_instance = MagicMock()
             mock_socket.return_value = mock_socket_instance
 
-            with patch("os.path.join", return_value="/tmp/test_app.lock") as mock_join:  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
+            with patch("os.path.join", return_value="/tmp/test_app.lock"):  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
                 # Fix: Patch builtins.open instead of just "open"
                 with patch("builtins.open", create=True) as mock_open:
                     mock_file = MagicMock()
