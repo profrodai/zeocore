@@ -26,8 +26,10 @@ from quack_core.config.tooling import (
 
 class MyConfig(QuackToolConfigModel):
     """Example tool-specific config model."""
+
     name: str = Field("demo")
     log_level: str = Field("DEBUG")
+
 
 def main():
     """Test the tooling module."""
@@ -46,6 +48,7 @@ def main():
     logger.debug("This should print and go to file.")
     logger.info("This is an INFO message.")
     logger.warning("This is a WARNING message.")
+
 
 if __name__ == "__main__":
     main()

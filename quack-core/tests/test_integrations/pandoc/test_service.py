@@ -45,9 +45,7 @@ def setup_mocks(fs_stub, mock_paths_service):
         side_effect=lambda x: SimpleNamespace(success=True, data=x)
     )
     # Ensure find_files exists
-    fs_stub.find_files = MagicMock(
-        return_value=SimpleNamespace(success=True, files=[])
-    )
+    fs_stub.find_files = MagicMock(return_value=SimpleNamespace(success=True, files=[]))
     fs_stub.get_file_info = MagicMock(
         return_value=SimpleNamespace(success=True, exists=True, is_dir=False, size=100)
     )
@@ -63,9 +61,11 @@ def test_pandoc_integration_name_version():
     assert not integration._initialized
 
 
-@patch('quack_core.core.fs.service.standalone.expand_user_vars')
-@patch('quack_core.integrations.pandoc.service.verify_pandoc')
-def test_initialize_with_mocked_verify_pandoc(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
+@patch("quack_core.core.fs.service.standalone.expand_user_vars")
+@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+def test_initialize_with_mocked_verify_pandoc(
+    mock_verify_pandoc, mock_expand_user_vars, setup_mocks
+):
     """Test initialize method with mocked verify_pandoc."""
     fs_stub, mock_paths_service = setup_mocks
 
@@ -87,7 +87,7 @@ def test_initialize_with_mocked_verify_pandoc(mock_verify_pandoc, mock_expand_us
     assert integration.converter is not None
 
 
-@patch('quack_core.integrations.pandoc.service.verify_pandoc')
+@patch("quack_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_with_verify_pandoc_error(mock_verify_pandoc, setup_mocks):
     """Test initialize method when verify_pandoc raises an error."""
     fs_stub, mock_paths_service = setup_mocks
@@ -138,20 +138,25 @@ def test_is_pandoc_available():
     integration = PandocIntegration()
 
     # Mock verify_pandoc to succeed
-    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-               return_value="2.11.0"):
+    with patch(
+        "quack_core.integrations.pandoc.service.verify_pandoc", return_value="2.11.0"
+    ):
         assert integration.is_pandoc_available()
         assert integration.get_pandoc_version() == "2.11.0"
 
     # Mock verify_pandoc to fail
-    with patch('quack_core.integrations.pandoc.service.verify_pandoc',
-               side_effect=QuackIntegrationError("Pandoc not found", {})):
+    with patch(
+        "quack_core.integrations.pandoc.service.verify_pandoc",
+        side_effect=QuackIntegrationError("Pandoc not found", {}),
+    ):
         assert not integration.is_pandoc_available()
 
 
-@patch('quack_core.core.fs.service.standalone.expand_user_vars')
-@patch('quack_core.integrations.pandoc.service.verify_pandoc')
-def test_html_to_markdown_with_initialized_service(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
+@patch("quack_core.core.fs.service.standalone.expand_user_vars")
+@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+def test_html_to_markdown_with_initialized_service(
+    mock_verify_pandoc, mock_expand_user_vars, setup_mocks
+):
     """Test HTML to Markdown conversion with initialized service."""
     fs_stub, mock_paths_service = setup_mocks
 
@@ -169,7 +174,7 @@ def test_html_to_markdown_with_initialized_service(mock_verify_pandoc, mock_expa
     integration.initialize()
 
     # Mock the converter
-    mock_result = IntegrationResult(success=True, content='output.md')
+    mock_result = IntegrationResult(success=True, content="output.md")
     mock_convert_file = MagicMock(return_value=mock_result)
 
     assert integration.converter is not None
@@ -186,9 +191,11 @@ def test_html_to_markdown_with_initialized_service(mock_verify_pandoc, mock_expa
     assert mock_convert_file.call_count == 2
 
 
-@patch('quack_core.core.fs.service.standalone.expand_user_vars')
-@patch('quack_core.integrations.pandoc.service.verify_pandoc')
-def test_markdown_to_docx_with_initialized_service(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
+@patch("quack_core.core.fs.service.standalone.expand_user_vars")
+@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+def test_markdown_to_docx_with_initialized_service(
+    mock_verify_pandoc, mock_expand_user_vars, setup_mocks
+):
     """Test Markdown to DOCX conversion with initialized service."""
     fs_stub, mock_paths_service = setup_mocks
 
@@ -206,7 +213,7 @@ def test_markdown_to_docx_with_initialized_service(mock_verify_pandoc, mock_expa
     integration.initialize()
 
     # Mock the converter
-    mock_result = IntegrationResult(success=True, content='output.docx')
+    mock_result = IntegrationResult(success=True, content="output.docx")
     mock_convert_file = MagicMock(return_value=mock_result)
 
     assert integration.converter is not None
@@ -223,9 +230,11 @@ def test_markdown_to_docx_with_initialized_service(mock_verify_pandoc, mock_expa
     assert mock_convert_file.call_count == 2
 
 
-@patch('quack_core.core.fs.service.standalone.expand_user_vars')
-@patch('quack_core.integrations.pandoc.service.verify_pandoc')
-def test_convert_directory_with_initialized_service(mock_verify_pandoc, mock_expand_user_vars, setup_mocks):
+@patch("quack_core.core.fs.service.standalone.expand_user_vars")
+@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+def test_convert_directory_with_initialized_service(
+    mock_verify_pandoc, mock_expand_user_vars, setup_mocks
+):
     """Test directory conversion with initialized service."""
     fs_stub, mock_paths_service = setup_mocks
 
@@ -251,7 +260,7 @@ def test_convert_directory_with_initialized_service(mock_verify_pandoc, mock_exp
     integration.initialize()
 
     # Mock the converter
-    mock_result = IntegrationResult(success=True, content=['output1.md', 'output2.md'])
+    mock_result = IntegrationResult(success=True, content=["output1.md", "output2.md"])
     mock_convert_batch = MagicMock(return_value=mock_result)
 
     assert integration.converter is not None

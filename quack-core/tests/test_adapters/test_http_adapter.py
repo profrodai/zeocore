@@ -8,7 +8,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Comprehensive test suite for HTTP adapter with dependency injection.
 """
@@ -27,11 +26,13 @@ from quack_core.core.registry import get_registry, reset_registry
 
 class EchoRequest(BaseModel):
     """Test request model."""
+
     text: str
 
 
 class EchoResponse(BaseModel):
     """Test response model."""
+
     echoed: str
 
 
@@ -136,10 +137,13 @@ class TestAuthentication:
 
     def test_jobs_require_auth(self, client):
         """Job endpoints should require auth."""
-        response = client.post("/jobs", json={
-            "op": "test.echo",
-            "params": {"text": "hello"},
-        })
+        response = client.post(
+            "/jobs",
+            json={
+                "op": "test.echo",
+                "params": {"text": "hello"},
+            },
+        )
         assert response.status_code == 401
 
     def test_valid_auth_accepted(self, client):
@@ -413,7 +417,7 @@ class TestCallbackSigning:
 
         assert sig1 != sig2
 
-    @patch('quack_core.adapters.http.util.httpx.AsyncClient')
+    @patch("quack_core.adapters.http.util.httpx.AsyncClient")
     def test_post_callback(self, mock_client):
         """Should post callback with signature header."""
         import asyncio
@@ -506,6 +510,7 @@ class TestErrorHandling:
         async def async_echo(req: EchoRequest) -> dict[str, Any]:
             # Simulate async work
             import asyncio
+
             await asyncio.sleep(0.01)
             return {"echoed": f"Async Job: {req.text}"}
 

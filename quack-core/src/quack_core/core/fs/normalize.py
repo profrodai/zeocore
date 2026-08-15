@@ -13,6 +13,7 @@ Input normalization logic.
 This module is the Single Source of Truth for coercing inputs into Paths.
 It does NOT depend on _internal or service.
 """
+
 import os
 from pathlib import Path
 from typing import Any, TypeVar
@@ -65,7 +66,9 @@ def _extract_path_str(obj: Any) -> str:
     raise TypeError(f"Could not coerce object of type {type(obj)} to path string")
 
 
-def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: bool = False) -> Path:
+def coerce_path(
+    obj: FsPathLike, base_dir: Path | None = None, allow_absolute: bool = False
+) -> Path:
     """
     Strictly coerce input to a pathlib.Path.
     If base_dir is provided, anchors relative paths to it and prevents escape.
@@ -102,7 +105,9 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: b
                     resolved.relative_to(base_dir)
                     return resolved
                 except ValueError:
-                    raise QuackPathOutsideBaseDirError(f"Path '{path}' is outside base directory '{base_dir}' (allow_absolute=False)")
+                    raise QuackPathOutsideBaseDirError(
+                        f"Path '{path}' is outside base directory '{base_dir}' (allow_absolute=False)"
+                    )
 
             # 2. Handle Relative Paths (Anchor to base_dir)
             resolved_path = (base_dir / path).resolve()
@@ -111,7 +116,9 @@ def coerce_path(obj: FsPathLike, base_dir: Path | None = None, allow_absolute: b
             try:
                 resolved_path.relative_to(base_dir)
             except ValueError:
-                raise QuackPathEscapeError(f"Path '{path}' attempts to escape base directory '{base_dir}'")
+                raise QuackPathEscapeError(
+                    f"Path '{path}' attempts to escape base directory '{base_dir}'"
+                )
 
             return resolved_path
 

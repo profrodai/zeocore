@@ -34,7 +34,7 @@ except ImportError as e:
     # Emergency fallbacks if needed
     import sys
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+    sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
     from quack_core.config.models import QuackConfig
     from quack_core.core.fs import DataResult, OperationResult
     from quack_core.core.fs.service import standalone as fs_standalone
@@ -50,7 +50,9 @@ def mock_fs_standalone():
     This helps us handle path issues in tests by normalizing the
     behavior of the underlying fs module.
     """
-    with patch("quack_core.core.fs.service.standalone.normalize_path") as mock_normalize:
+    with patch(
+        "quack_core.core.fs.service.standalone.normalize_path"
+    ) as mock_normalize:
         # Make normalize_path return Path objects for consistent behavior
         mock_normalize.side_effect = lambda p: Path(os.path.abspath(str(p)))
         yield
@@ -108,7 +110,7 @@ def test_file(temp_dir: Path) -> Generator[Path]:
 
 @pytest.fixture
 def test_binary_file(
-        temp_dir: Path,
+    temp_dir: Path,
 ) -> Generator[Path]:
     """Create a binary test file."""
     file_path = temp_dir / "test_binary_file.bin"

@@ -52,17 +52,13 @@ class ToolInfo(BaseModel):
     name: str = Field(
         ...,
         description="Tool identifier with namespace (e.g., 'media.slice_video', 'text.summarize')",
-        examples=["media.slice_video", "text.summarize", "crm.sync_contacts"]
+        examples=["media.slice_video", "text.summarize", "crm.sync_contacts"],
     )
 
-    version: str = Field(
-        ...,
-        description="Tool version (semver recommended)"
-    )
+    version: str = Field(..., description="Tool version (semver recommended)")
 
     metadata: dict[str, Any] = Field(
-        default_factory=dict,
-        description="Additional tool info (runtime, config, etc.)"
+        default_factory=dict, description="Additional tool info (runtime, config, etc.)"
     )
 
 
@@ -76,46 +72,30 @@ class Provenance(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    git_commit: str | None = Field(
-        None,
-        description="Git commit SHA of the code"
-    )
+    git_commit: str | None = Field(None, description="Git commit SHA of the code")
 
-    git_branch: str | None = Field(
-        None,
-        description="Git branch name"
-    )
+    git_branch: str | None = Field(None, description="Git branch name")
 
-    git_repo: str | None = Field(
-        None,
-        description="Git repository URL"
-    )
+    git_repo: str | None = Field(None, description="Git repository URL")
 
-    host: str | None = Field(
-        None,
-        description="Hostname where execution occurred"
-    )
+    host: str | None = Field(None, description="Hostname where execution occurred")
 
-    user: str | None = Field(
-        None,
-        description="User who triggered execution"
-    )
+    user: str | None = Field(None, description="User who triggered execution")
 
     environment: str | None = Field(
         None,
         description="Execution environment (local, dev, staging, prod)",
-        examples=["local", "dev", "staging", "prod"]
+        examples=["local", "dev", "staging", "prod"],
     )
 
     runner: str | None = Field(
         None,
         description="Runner that executed the tool (cli, n8n, temporal)",
-        examples=["cli", "n8n", "temporal", "lambda"]
+        examples=["cli", "n8n", "temporal", "lambda"],
     )
 
     metadata: dict[str, Any] = Field(
-        default_factory=dict,
-        description="Additional provenance data"
+        default_factory=dict, description="Additional provenance data"
     )
 
 
@@ -128,24 +108,16 @@ class ManifestInput(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    name: str = Field(
-        ...,
-        description="Input parameter name"
-    )
+    name: str = Field(..., description="Input parameter name")
 
-    artifact: ArtifactRef = Field(
-        ...,
-        description="Reference to the input artifact"
-    )
+    artifact: ArtifactRef = Field(..., description="Reference to the input artifact")
 
     required: bool = Field(
-        default=True,
-        description="Whether this input is required for the tool"
+        default=True, description="Whether this input is required for the tool"
     )
 
     description: str | None = Field(
-        None,
-        description="Human-readable description of this input"
+        None, description="Human-readable description of this input"
     )
 
 
@@ -187,10 +159,7 @@ class RunManifest(BaseModel):
                 {
                     "manifest_version": "1.0",
                     "run_id": "550e8400-e29b-41d4-a716-446655440000",
-                    "tool": {
-                        "name": "media.slice_video",
-                        "version": "1.0.0"
-                    },
+                    "tool": {"name": "media.slice_video", "version": "1.0.0"},
                     "started_at": "2025-01-15T10:30:00Z",
                     "finished_at": "2025-01-15T10:30:45Z",
                     "duration_sec": 45.0,
@@ -205,10 +174,10 @@ class RunManifest(BaseModel):
                                 "content_type": "video/mp4",
                                 "storage": {
                                     "scheme": "local",
-                                    "uri": "file:///data/input.mp4"
-                                }
+                                    "uri": "file:///data/input.mp4",
+                                },
                             },
-                            "required": True
+                            "required": True,
                         }
                     ],
                     "outputs": [
@@ -219,25 +188,19 @@ class RunManifest(BaseModel):
                             "content_type": "video/mp4",
                             "storage": {
                                 "scheme": "local",
-                                "uri": "file:///data/output/clip1.mp4"
-                            }
+                                "uri": "file:///data/output/clip1.mp4",
+                            },
                         }
                     ],
                     "intermediates": [],
                     "logs": [],
-                    "metadata": {
-                        "preset": "fast",
-                        "clip_count": 1
-                    }
+                    "metadata": {"preset": "fast", "clip_count": 1},
                 },
                 # Text capability example
                 {
                     "manifest_version": "1.0",
                     "run_id": "c3d4e5f6-7890-4abc-def0-123456789abc",
-                    "tool": {
-                        "name": "text.summarize",
-                        "version": "2.1.0"
-                    },
+                    "tool": {"name": "text.summarize", "version": "2.1.0"},
                     "started_at": "2025-01-15T11:00:00Z",
                     "finished_at": "2025-01-15T11:00:12Z",
                     "duration_sec": 12.0,
@@ -252,10 +215,10 @@ class RunManifest(BaseModel):
                                 "content_type": "text/markdown",
                                 "storage": {
                                     "scheme": "local",
-                                    "uri": "file:///data/document.md"
-                                }
+                                    "uri": "file:///data/document.md",
+                                },
                             },
-                            "required": True
+                            "required": True,
                         }
                     ],
                     "outputs": [
@@ -266,25 +229,22 @@ class RunManifest(BaseModel):
                             "content_type": "text/markdown",
                             "storage": {
                                 "scheme": "local",
-                                "uri": "file:///data/output/summary.md"
-                            }
+                                "uri": "file:///data/output/summary.md",
+                            },
                         }
                     ],
                     "intermediates": [],
                     "logs": [],
                     "metadata": {
                         "model": "llm:anthropic:claude-sonnet",
-                        "max_tokens": 500
-                    }
+                        "max_tokens": 500,
+                    },
                 },
                 # CRM integration example
                 {
                     "manifest_version": "1.0",
                     "run_id": "f6789abc-def0-4123-4567-89abcdef0123",
-                    "tool": {
-                        "name": "crm.sync_contacts",
-                        "version": "1.2.3"
-                    },
+                    "tool": {"name": "crm.sync_contacts", "version": "1.2.3"},
                     "started_at": "2025-01-15T12:00:00Z",
                     "finished_at": "2025-01-15T12:01:30Z",
                     "duration_sec": 90.0,
@@ -299,10 +259,10 @@ class RunManifest(BaseModel):
                                 "content_type": "text/csv",
                                 "storage": {
                                     "scheme": "local",
-                                    "uri": "file:///data/contacts.csv"
-                                }
+                                    "uri": "file:///data/contacts.csv",
+                                },
                             },
-                            "required": True
+                            "required": True,
                         }
                     ],
                     "outputs": [
@@ -313,8 +273,8 @@ class RunManifest(BaseModel):
                             "content_type": "application/json",
                             "storage": {
                                 "scheme": "local",
-                                "uri": "file:///data/output/sync_report.json"
-                            }
+                                "uri": "file:///data/output/sync_report.json",
+                            },
                         }
                     ],
                     "intermediates": [],
@@ -322,89 +282,74 @@ class RunManifest(BaseModel):
                     "metadata": {
                         "synced_count": 150,
                         "failed_count": 2,
-                        "crm_system": "salesforce"
-                    }
-                }
+                        "crm_system": "salesforce",
+                    },
+                },
             ]
-        }
+        },
     )
 
     # Schema version
     manifest_version: str = Field(
-        default=MANIFEST_VERSION,
-        description="Schema version for forward compatibility"
+        default=MANIFEST_VERSION, description="Schema version for forward compatibility"
     )
 
     # Execution identity
     run_id: str = Field(
         default_factory=generate_run_id,
-        description="Unique identifier for this execution (should match CapabilityResult.run_id)"
+        description="Unique identifier for this execution (should match CapabilityResult.run_id)",
     )
 
-    tool: ToolInfo = Field(
-        ...,
-        description="Information about the tool that executed"
-    )
+    tool: ToolInfo = Field(..., description="Information about the tool that executed")
 
     # Timing
     started_at: datetime = Field(
-        default_factory=utcnow,
-        description="UTC timestamp when execution started"
+        default_factory=utcnow, description="UTC timestamp when execution started"
     )
 
     finished_at: datetime | None = Field(
-        None,
-        description="UTC timestamp when execution finished"
+        None, description="UTC timestamp when execution finished"
     )
 
     duration_sec: float | None = Field(
-        None,
-        ge=0.0,
-        description="Execution duration in seconds (None if not measured)"
+        None, ge=0.0, description="Execution duration in seconds (None if not measured)"
     )
 
     # Status
     status: CapabilityStatus = Field(
-        ...,
-        description="Execution status (success, skipped, error)"
+        ..., description="Execution status (success, skipped, error)"
     )
 
     # Artifacts
     inputs: list[ManifestInput] = Field(
-        default_factory=list,
-        description="Input artifacts consumed by the tool"
+        default_factory=list, description="Input artifacts consumed by the tool"
     )
 
     outputs: list[ArtifactRef] = Field(
-        default_factory=list,
-        description="Output artifacts produced by the tool"
+        default_factory=list, description="Output artifacts produced by the tool"
     )
 
     intermediates: list[ArtifactRef] = Field(
-        default_factory=list,
-        description="Intermediate artifacts (may be cleaned up)"
+        default_factory=list, description="Intermediate artifacts (may be cleaned up)"
     )
 
     # Diagnostics (reuse envelope models)
     logs: list[CapabilityLogEvent] = Field(
-        default_factory=list,
-        description="Structured log events from execution"
+        default_factory=list, description="Structured log events from execution"
     )
 
     error: CapabilityError | None = Field(
-        None,
-        description="Structured error if status == error"
+        None, description="Structured error if status == error"
     )
 
     # Metadata
     metadata: dict[str, Any] = Field(
         default_factory=dict,
-        description="Free-form metadata (config, environment, capability-specific data)"
+        description="Free-form metadata (config, environment, capability-specific data)",
     )
 
     provenance: Provenance | None = Field(
-        None,
-        description="Provenance info for reproducibility"
+        None, description="Provenance info for reproducibility"
     )
 
     @field_validator("run_id")
@@ -415,8 +360,8 @@ class RunManifest(BaseModel):
             raise ValueError(f"run_id must be a valid UUID, got: {v}")
         return v
 
-    @model_validator(mode='after')
-    def validate_timing_consistency(self) -> 'RunManifest':
+    @model_validator(mode="after")
+    def validate_timing_consistency(self) -> "RunManifest":
         """
         Ensure timing fields are consistent.
 
@@ -441,8 +386,8 @@ class RunManifest(BaseModel):
 
         return self
 
-    @model_validator(mode='after')
-    def validate_status_invariants(self) -> 'RunManifest':
+    @model_validator(mode="after")
+    def validate_status_invariants(self) -> "RunManifest":
         """
         Enforce invariants between status and artifact lists.
 
@@ -455,9 +400,7 @@ class RunManifest(BaseModel):
         """
         if self.status == CapabilityStatus.error:
             if self.error is None:
-                raise ValueError(
-                    "status=error requires error field to be present"
-                )
+                raise ValueError("status=error requires error field to be present")
             if self.outputs:
                 raise ValueError(
                     "status=error must have empty outputs (no partial outputs allowed)"

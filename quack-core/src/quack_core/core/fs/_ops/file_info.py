@@ -18,6 +18,7 @@ from quack_core.core.fs._internal.file_info import _get_iso_timestamps
 @dataclass
 class _FileInfo:
     """Internal DTO for file stats. Not a public Result."""
+
     path: Path
     exists: bool
     is_file: bool = False
@@ -31,28 +32,41 @@ class _FileInfo:
     permissions: int = 0
     mime_type: str | None = None
 
+
 class FileInfoOperationsMixin:
     def _path_exists(self, path: Path) -> bool:
         return path.exists()
 
     def _get_file_info(self, path: Path) -> _FileInfo:
-        if not path.exists(): return _FileInfo(path=path, exists=False)
+        if not path.exists():
+            return _FileInfo(path=path, exists=False)
 
         stat = path.stat()
         mime = None
-        if path.is_file(): mime, _ = mimetypes.guess_type(str(path))
+        if path.is_file():
+            mime, _ = mimetypes.guess_type(str(path))
 
         owner = None
         try:
             import pwd
+
             owner = pwd.getpwuid(stat.st_uid).pw_name
-        except (ImportError, KeyError, AttributeError): pass
+        except (ImportError, KeyError, AttributeError):
+            pass
 
         m_iso, c_iso = _get_iso_timestamps(path)
 
         return _FileInfo(
-            path=path, exists=True, is_file=path.is_file(), is_dir=path.is_dir(),
-            size=stat.st_size, modified=stat.st_mtime, created=stat.st_ctime,
-            modified_iso=m_iso, created_iso=c_iso, owner=owner,
-            permissions=stat.st_mode, mime_type=mime
+            path=path,
+            exists=True,
+            is_file=path.is_file(),
+            is_dir=path.is_dir(),
+            size=stat.st_size,
+            modified=stat.st_mtime,
+            created=stat.st_ctime,
+            modified_iso=m_iso,
+            created_iso=c_iso,
+            owner=owner,
+            permissions=stat.st_mode,
+            mime_type=mime,
         )

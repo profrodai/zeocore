@@ -11,7 +11,6 @@
 Tests for utility functions.
 """
 
-
 from quack_core.adapters.http.util import new_id, post_callback, stable_hash
 
 

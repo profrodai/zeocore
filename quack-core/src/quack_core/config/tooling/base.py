@@ -25,4 +25,5 @@ class QuackToolConfigModel(BaseModel):
     Tools should subclass this with their own fields.
     This base class exists so tooling can type-check config models.
     """
+
     pass

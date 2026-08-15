@@ -43,6 +43,7 @@ class PromptService:
         try:
             if pack_name == "internal":
                 from quack_core.prompt.packs.internal import load as load_internal
+
                 count = load_internal(self._registry)
                 return LoadPackResult(success=True, loaded_count=count)
 
@@ -67,8 +68,9 @@ class PromptService:
         """Get a specific strategy."""
         strat = self._registry.get(strategy_id)
         if not strat:
-            return GetStrategyResult(success=False,
-                                     error=f"Strategy '{strategy_id}' not found")
+            return GetStrategyResult(
+                success=False, error=f"Strategy '{strategy_id}' not found"
+            )
         return GetStrategyResult(success=True, strategy=strat)
 
     def list_strategies(self) -> StrategyListResult:
@@ -77,17 +79,17 @@ class PromptService:
         return StrategyListResult(success=True, strategies=safe_list)
 
     def render(
-            self,
-            raw_prompt: str,
-            *,
-            schema: str | None = None,
-            examples: list[str] | str | None = None,
-            tags: list[str] | None = None,
-            strategy_id: str | None = None,
-            use_llm: bool = False,
-            llm_model: str | None = None,
-            llm_provider: str | None = None,
-            **kwargs
+        self,
+        raw_prompt: str,
+        *,
+        schema: str | None = None,
+        examples: list[str] | str | None = None,
+        tags: list[str] | None = None,
+        strategy_id: str | None = None,
+        use_llm: bool = False,
+        llm_model: str | None = None,
+        llm_provider: str | None = None,
+        **kwargs,
     ) -> PromptRenderResult:
         """
         Render a prompt using a selected strategy.
@@ -99,18 +101,18 @@ class PromptService:
                 strategy = self._registry.get(strategy_id)
                 if not strategy:
                     return PromptRenderResult(
-                        success=False,
-                        error=f"Strategy '{strategy_id}' not found"
+                        success=False, error=f"Strategy '{strategy_id}' not found"
                     )
             else:
                 # Pass kwargs so selector knows if 'data' or other keys exist
-                strategy = select_best_strategy(self._registry, tags, schema, examples,
-                                                extra_inputs=kwargs)
+                strategy = select_best_strategy(
+                    self._registry, tags, schema, examples, extra_inputs=kwargs
+                )
 
             if not strategy:
                 return PromptRenderResult(
                     success=False,
-                    error="No suitable strategy found and no defaults available."
+                    error="No suitable strategy found and no defaults available.",
                 )
 
             # 2. Prepare Inputs
@@ -120,11 +122,10 @@ class PromptService:
                 "task_description": raw_prompt,
                 "schema": schema,
                 "examples": examples,
-
                 # Computed/Derived
-                "example": examples[0] if isinstance(examples,
-                                                     list) and examples else examples,
-
+                "example": examples[0]
+                if isinstance(examples, list) and examples
+                else examples,
                 # Strict Aliases (ONLY semantically equivalent to "Task Description")
                 "prompt_text": raw_prompt,
                 "task_goal": raw_prompt,
@@ -148,7 +149,7 @@ class PromptService:
             if missing_fields:
                 return PromptRenderResult(
                     success=False,
-                    error=f"Missing required inputs for strategy '{strategy.id}': {', '.join(missing_fields)}"
+                    error=f"Missing required inputs for strategy '{strategy.id}': {', '.join(missing_fields)}",
                 )
 
             # 4. Render
@@ -157,15 +158,13 @@ class PromptService:
             metadata = {
                 "strategy_id": strategy.id,
                 "strategy_origin": strategy.origin,
-                "input_vars": list(render_kwargs.keys())
+                "input_vars": list(render_kwargs.keys()),
             }
 
             # 5. Optional Enhancement
             if use_llm:
                 rendered_prompt = enhance_with_llm_safe(
-                    rendered_prompt,
-                    model=llm_model,
-                    provider=llm_provider
+                    rendered_prompt, model=llm_model, provider=llm_provider
                 )
                 metadata["enhanced_by_llm"] = True
 
@@ -178,7 +177,7 @@ class PromptService:
                 strategy_id=strategy.id,
                 strategy_label=strategy.label,
                 metadata=metadata,
-                estimated_words=estimated_words
+                estimated_words=estimated_words,
             )
 
         except Exception as e:

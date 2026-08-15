@@ -43,13 +43,13 @@ class PandocIntegration(BaseIntegrationService):
     """
 
     def __init__(
-            self,
-            config_path: str | None = None,
-            output_dir: str | None = None,
-            config_provider: PandocConfigProvider | None = None,
-            paths_service: PathService | None = None,
-            fs_service: FileSystemService | None = None,
-            log_level: int | str | None = None,
+        self,
+        config_path: str | None = None,
+        output_dir: str | None = None,
+        config_provider: PandocConfigProvider | None = None,
+        paths_service: PathService | None = None,
+        fs_service: FileSystemService | None = None,
+        log_level: int | str | None = None,
     ) -> None:
         """Initialize the Pandoc integration service.
 
@@ -75,7 +75,7 @@ class PandocIntegration(BaseIntegrationService):
             auth_provider=None,
             config=None,
             config_path=config_path,
-            log_level=effective_log_level
+            log_level=effective_log_level,
         )
 
         # Store service instances
@@ -87,8 +87,10 @@ class PandocIntegration(BaseIntegrationService):
         except (FileNotFoundError, OSError):
             # If cwd() fails (e.g., in tests), use /tmp as base directory
             import tempfile
+
             self.fs_service = fs_service or FileSystemService(
-                base_dir=tempfile.gettempdir())
+                base_dir=tempfile.gettempdir()
+            )
 
         # Store initialization parameters
         self._init_output_dir = output_dir
@@ -162,7 +164,7 @@ class PandocIntegration(BaseIntegrationService):
 
             # Apply initialization overrides
             if self._init_output_dir:
-                config_dict['output_dir'] = self._init_output_dir
+                config_dict["output_dir"] = self._init_output_dir
 
             # Validate and create PandocConfig
             conversion_config = PandocConfig(**config_dict)
@@ -194,11 +196,14 @@ class PandocIntegration(BaseIntegrationService):
                 # Create directory
                 create_result = self.fs_service.create_directory(expanded_dir)
                 if not create_result.success:
-                    error_msg = f"Failed to create output directory: {create_result.error}"
+                    error_msg = (
+                        f"Failed to create output directory: {create_result.error}"
+                    )
                     logger.error(error_msg)
                     self._initialized = False
-                    return IntegrationResult.error_result(error=error_msg,
-                                                          message=error_msg)
+                    return IntegrationResult.error_result(
+                        error=error_msg, message=error_msg
+                    )
 
                 logger.info(f"Output directory ready: {expanded_dir}")
 
@@ -219,7 +224,7 @@ class PandocIntegration(BaseIntegrationService):
             return IntegrationResult(
                 success=True,
                 message="Pandoc integration initialized successfully",
-                content={"version": pandoc_version}
+                content={"version": pandoc_version},
             )
         except Exception as e:
             # Catch-all for unexpected errors during final converter setup
@@ -259,9 +264,9 @@ class PandocIntegration(BaseIntegrationService):
             return False
 
     def html_to_markdown(
-            self,
-            input_path: str,
-            output_path: str | None = None,
+        self,
+        input_path: str,
+        output_path: str | None = None,
     ) -> IntegrationResult:
         """Convert HTML file to Markdown.
 
@@ -283,27 +288,22 @@ class PandocIntegration(BaseIntegrationService):
 
             if output_path:
                 output_result = self.paths_service.resolve_project_path(output_path)
-                output_path = output_result.path if output_result.success else output_path
+                output_path = (
+                    output_result.path if output_result.success else output_path
+                )
 
             # Use converter - signature is: convert_file(input_path, output_path, output_format)
-            return self.converter.convert_file(
-                input_path,
-                output_path,
-                "markdown"
-            )
+            return self.converter.convert_file(input_path, output_path, "markdown")
 
         except Exception as e:
             error_msg = f"HTML to Markdown conversion failed: {str(e)}"
             logger.error(error_msg)
-            return IntegrationResult.error_result(
-                error=error_msg,
-                message=error_msg
-            )
+            return IntegrationResult.error_result(error=error_msg, message=error_msg)
 
     def markdown_to_docx(
-            self,
-            input_path: str,
-            output_path: str | None = None,
+        self,
+        input_path: str,
+        output_path: str | None = None,
     ) -> IntegrationResult:
         """Convert Markdown file to DOCX.
 
@@ -325,30 +325,25 @@ class PandocIntegration(BaseIntegrationService):
 
             if output_path:
                 output_result = self.paths_service.resolve_project_path(output_path)
-                output_path = output_result.path if output_result.success else output_path
+                output_path = (
+                    output_result.path if output_result.success else output_path
+                )
 
             # Use converter - signature is: convert_file(input_path, output_path, output_format)
-            return self.converter.convert_file(
-                input_path,
-                output_path,
-                "docx"
-            )
+            return self.converter.convert_file(input_path, output_path, "docx")
 
         except Exception as e:
             error_msg = f"Markdown to DOCX conversion failed: {str(e)}"
             logger.error(error_msg)
-            return IntegrationResult.error_result(
-                error=error_msg,
-                message=error_msg
-            )
+            return IntegrationResult.error_result(error=error_msg, message=error_msg)
 
     def convert_directory(
-            self,
-            input_dir: str,
-            output_format: str,
-            output_dir: str | None = None,
-            pattern: str = "*",
-            **options: Any
+        self,
+        input_dir: str,
+        output_format: str,
+        output_dir: str | None = None,
+        pattern: str = "*",
+        **options: Any,
     ) -> IntegrationResult:
         """Convert all matching files in a directory.
 
@@ -380,33 +375,30 @@ class PandocIntegration(BaseIntegrationService):
             if not dir_info.success or not dir_info.exists:
                 return IntegrationResult.error_result(
                     error=f"Input directory not found: {input_dir}",
-                    message=f"Input directory not found: {input_dir}"
+                    message=f"Input directory not found: {input_dir}",
                 )
 
             if not dir_info.is_dir:
                 return IntegrationResult.error_result(
                     error=f"Path is not a directory: {input_dir}",
-                    message=f"Path is not a directory: {input_dir}"
+                    message=f"Path is not a directory: {input_dir}",
                 )
 
             # Find files matching pattern
             find_result = self.fs_service.find_files(
-                directory=input_dir,
-                pattern=pattern
+                directory=input_dir, pattern=pattern
             )
 
             if not find_result.success:
                 return IntegrationResult.error_result(
                     error=f"Failed to find files: {find_result.error}",
-                    message=f"Failed to find files: {find_result.error}"
+                    message=f"Failed to find files: {find_result.error}",
                 )
 
             input_files = find_result.files or []
             if not input_files:
                 return IntegrationResult(
-                    success=True,
-                    message="No files found matching pattern",
-                    content=[]
+                    success=True, message="No files found matching pattern", content=[]
                 )
 
             # Create ConversionTask objects for each file
@@ -422,7 +414,7 @@ class PandocIntegration(BaseIntegrationService):
                         source=file_info,
                         target_format=output_format,
                         output_path=None,  # Let converter determine output path
-                        options=options  # Pass user provided options
+                        options=options,  # Pass user provided options
                     )
                     tasks.append(task)
                 except Exception as e:
@@ -432,22 +424,16 @@ class PandocIntegration(BaseIntegrationService):
             if not tasks:
                 return IntegrationResult.error_result(
                     error="No valid conversion tasks could be created",
-                    message="No valid conversion tasks could be created"
+                    message="No valid conversion tasks could be created",
                 )
 
             # Use converter for batch processing
-            return self.converter.convert_batch(
-                tasks=tasks,
-                output_dir=output_dir
-            )
+            return self.converter.convert_batch(tasks=tasks, output_dir=output_dir)
 
         except Exception as e:
             error_msg = f"Directory conversion failed: {str(e)}"
             logger.error(error_msg)
-            return IntegrationResult.error_result(
-                error=error_msg,
-                message=error_msg
-            )
+            return IntegrationResult.error_result(error=error_msg, message=error_msg)
 
 
 # Factory function for creating integration instance

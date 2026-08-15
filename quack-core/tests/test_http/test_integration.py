@@ -23,9 +23,7 @@ from quack_core.adapters.http.config import HttpAdapterConfig
 def integration_client():
     """Create client for integration testing."""
     config = HttpAdapterConfig(
-        auth_token="integration-test-token",
-        max_workers=1,
-        job_ttl_seconds=30
+        auth_token="integration-test-token", max_workers=1, job_ttl_seconds=30
     )
     app = create_app(config)
     return TestClient(app)
@@ -40,15 +38,19 @@ def integration_headers():
 def test_full_job_workflow(integration_client, integration_headers):
     """Test complete job workflow from creation to completion."""
     # Create job
-    create_response = integration_client.post("/jobs", json={
-        "op": "quack-media.slice_video",
-        "params": {
-            "input_path": "/test/input.mp4",
-            "output_path": "/test/output.mp4",
-            "start": "00:00:10",
-            "end": "00:00:20"
-        }
-    }, headers=integration_headers)
+    create_response = integration_client.post(
+        "/jobs",
+        json={
+            "op": "quack-media.slice_video",
+            "params": {
+                "input_path": "/test/input.mp4",
+                "output_path": "/test/output.mp4",
+                "start": "00:00:10",
+                "end": "00:00:20",
+            },
+        },
+        headers=integration_headers,
+    )
 
     assert create_response.status_code == 200
     job_data = create_response.json()
@@ -58,8 +60,7 @@ def test_full_job_workflow(integration_client, integration_headers):
     max_attempts = 20
     for attempt in range(max_attempts):
         status_response = integration_client.get(
-            f"/jobs/{job_id}",
-            headers=integration_headers
+            f"/jobs/{job_id}", headers=integration_headers
         )
 
         if status_response.status_code == 200:
@@ -82,31 +83,29 @@ def test_sync_vs_async_consistency(integration_client, integration_headers):
         "input_path": "/test.mp4",
         "output_path": "/out.mp4",
         "start": "00:00:05",
-        "end": "00:00:10"
+        "end": "00:00:10",
     }
 
     # Test sync endpoint
     sync_response = integration_client.post(
-        "/quack-media/slice",
-        json=params,
-        headers=integration_headers
+        "/quack-media/slice", json=params, headers=integration_headers
     )
     assert sync_response.status_code == 200
     sync_result = sync_response.json()
 
     # Test async endpoint
-    async_response = integration_client.post("/jobs", json={
-        "op": "quack-media.slice_video",
-        "params": params
-    }, headers=integration_headers)
+    async_response = integration_client.post(
+        "/jobs",
+        json={"op": "quack-media.slice_video", "params": params},
+        headers=integration_headers,
+    )
 
     job_id = async_response.json()["job_id"]
 
     # Wait for async completion
     for _ in range(20):
         status_response = integration_client.get(
-            f"/jobs/{job_id}",
-            headers=integration_headers
+            f"/jobs/{job_id}", headers=integration_headers
         )
 
         if status_response.status_code == 200:

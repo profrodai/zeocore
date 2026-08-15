@@ -40,7 +40,7 @@ class TestPathUtils(TestCase):
             path=Path("a.txt"),
             is_valid=True,
             is_absolute=False,
-            exists=False
+            exists=False,
         )
         assert _extract_path_str(result) == "a.txt"
 
@@ -49,8 +49,8 @@ class TestPathUtils(TestCase):
         result = DataResult(
             success=True,
             path=Path("ignored"),  # This should be ignored
-            data=Path("b.txt"),    # This should be used
-            format="path"
+            data=Path("b.txt"),  # This should be used
+            format="path",
         )
         assert _extract_path_str(result) == "b.txt"
 
@@ -59,8 +59,8 @@ class TestPathUtils(TestCase):
         result = DataResult(
             success=True,
             path=Path("ignored"),  # This should be ignored
-            data="c.txt",          # This should be used
-            format="path"
+            data="c.txt",  # This should be used
+            format="path",
         )
         assert _extract_path_str(result) == "c.txt"
 
@@ -78,7 +78,7 @@ class TestPathUtils(TestCase):
             path=Path("a.txt"),
             is_valid=False,
             is_absolute=False,
-            exists=False
+            exists=False,
         )
         with pytest.raises(ValueError):
             _extract_path_str(result)
@@ -90,8 +90,10 @@ class TestPathUtils(TestCase):
 
     def test_extract_path_str_with_value_method(self):
         """Test extracting from an object with a value method."""
+
         class ResultWithValue:
             success = True
+
             def value(self):
                 return "unwrapped.txt"
 
@@ -100,8 +102,10 @@ class TestPathUtils(TestCase):
 
     def test_extract_path_str_with_unwrap_method(self):
         """Test extracting from an object with an unwrap method."""
+
         class ResultWithUnwrap:
             success = True
+
             def unwrap(self):
                 return Path("unwrapped.txt")
 
@@ -110,13 +114,16 @@ class TestPathUtils(TestCase):
 
     def test_extract_path_str_with_nested_unwrapping(self):
         """Test extracting from nested result objects that need unwrapping."""
+
         class InnerResult:
             success = True
+
             def value(self):
                 return Path("inner.txt")
 
         class OuterResult:
             success = True
+
             def value(self):
                 return InnerResult()
 
@@ -129,25 +136,25 @@ class TestPathUtils(TestCase):
 
     def test_safe_path_with_invalid_object(self):
         """Test safe_path with an invalid object."""
-        with patch('quack_core.core.fs._internal.path_utils.logger') as mock_logger:
+        with patch("quack_core.core.fs._internal.path_utils.logger") as mock_logger:
             assert _safe_path_str(object()) is None
             mock_logger.warning.assert_called_once()
 
     def test_safe_path_with_custom_default(self):
         """Test safe_path with a custom default value."""
-        with patch('quack_core.core.fs._internal.path_utils.logger') as mock_logger:
+        with patch("quack_core.core.fs._internal.path_utils.logger") as mock_logger:
             assert _safe_path_str(object(), default="/fallback") == "/fallback"
             mock_logger.warning.assert_called_once()
 
     def test_safe_path_with_failed_result(self):
         """Test safe_path with a failed result."""
-        with patch('quack_core.core.fs._internal.path_utils.logger') as mock_logger:
+        with patch("quack_core.core.fs._internal.path_utils.logger") as mock_logger:
             result = PathResult(
                 success=False,
                 path=Path("a.txt"),
                 is_valid=False,
                 is_absolute=False,
-                exists=False
+                exists=False,
             )
             assert _safe_path_str(result, default="default.txt") == "default.txt"
             mock_logger.warning.assert_called_once()

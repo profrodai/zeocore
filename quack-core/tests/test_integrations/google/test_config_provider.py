@@ -227,7 +227,9 @@ class TestGoogleConfigProvider:
             "shared_folder_id": "folder123",
         }
 
-        with patch("quack_core.core.paths.service.PathService.resolve_project_path") as mock_resolve:
+        with patch(
+            "quack_core.core.paths.service.PathService.resolve_project_path"
+        ) as mock_resolve:
             mock_resolve.side_effect = [
                 "/project/config/secrets.json",
                 "/project/config/credentials.json",
@@ -246,7 +248,9 @@ class TestGoogleConfigProvider:
             "credentials_file": "/absolute/path/credentials.json",
         }
 
-        with patch("quack_core.core.paths.service.PathService.resolve_project_path") as mock_resolve:
+        with patch(
+            "quack_core.core.paths.service.PathService.resolve_project_path"
+        ) as mock_resolve:
             mock_resolve.side_effect = [
                 "/absolute/path/secrets.json",
                 "/absolute/path/credentials.json",
@@ -263,7 +267,9 @@ class TestGoogleConfigProvider:
             "credentials_file": "config/credentials.json",
         }
 
-        with patch("quack_core.core.paths.service.PathService.resolve_project_path") as mock_resolve:
+        with patch(
+            "quack_core.core.paths.service.PathService.resolve_project_path"
+        ) as mock_resolve:
             mock_resolve.side_effect = Exception("Resolver error")
 
             resolved = provider.resolve_config_paths(config)

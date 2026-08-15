@@ -108,6 +108,7 @@ def test_load_config():
             config["system_prompt"]["prompt_engineer"] == "Custom prompt template"
         )  # From custom config
 
+
 def test_enhance_with_llm(mock_llm_integration_class, mock_config):
     """Test enhancing a prompt with an LLM."""
     mock_class, mock_instance = mock_llm_integration_class

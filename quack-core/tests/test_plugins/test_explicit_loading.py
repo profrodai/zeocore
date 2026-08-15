@@ -8,7 +8,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Tests for explicit plugin loading behavior.
 
@@ -40,8 +39,7 @@ class TestImportSideEffects(unittest.TestCase):
         """Clean up any existing plugin state before each test."""
         # Remove modules module from sys.modules to force fresh import
         modules_to_remove = [
-            key for key in sys.modules.keys()
-            if key.startswith("quack_core.modules")
+            key for key in sys.modules.keys() if key.startswith("quack_core.modules")
         ]
         for module in modules_to_remove:
             del sys.modules[module]
@@ -123,11 +121,13 @@ class TestExplicitLoading(unittest.TestCase):
     def setUp(self):
         """Clean registry before each test."""
         from quack_core.modules import registry
+
         registry.clear()
 
     def tearDown(self):
         """Clean registry after each test."""
         from quack_core.modules import registry
+
         registry.clear()
 
     @patch("quack_core.modules.discovery.entry_points")
@@ -287,9 +287,7 @@ class TestExplicitLoading(unittest.TestCase):
         mock_entry_points.return_value = entry_points
 
         # Load in specific order (reversed)
-        result = load_enabled_entry_points(
-            enabled=["gamma", "alpha", "beta"]
-        )
+        result = load_enabled_entry_points(enabled=["gamma", "alpha", "beta"])
 
         # Verify order is preserved
         self.assertEqual(result.loaded, ["gamma", "alpha", "beta"])
@@ -360,11 +358,13 @@ class TestPluginIdStability(unittest.TestCase):
     def setUp(self):
         """Clean registry before each test."""
         from quack_core.modules import registry
+
         registry.clear()
 
     def tearDown(self):
         """Clean registry after each test."""
         from quack_core.modules import registry
+
         registry.clear()
 
     def test_registry_uses_plugin_id_not_name(self):
@@ -470,11 +470,13 @@ class TestLoadEnabledModules(unittest.TestCase):
     def setUp(self):
         """Clean registry before each test."""
         from quack_core.modules import registry
+
         registry.clear()
 
     def tearDown(self):
         """Clean registry after each test."""
         from quack_core.modules import registry
+
         registry.clear()
 
     @patch("quack_core.modules.discovery.importlib.import_module")

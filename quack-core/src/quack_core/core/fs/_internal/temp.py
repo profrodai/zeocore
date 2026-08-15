@@ -12,7 +12,9 @@ import tempfile
 from pathlib import Path
 
 
-def _create_temp_directory(prefix: str = "quackcore_", suffix: str = "", directory: Path | None = None) -> Path:
+def _create_temp_directory(
+    prefix: str = "quackcore_", suffix: str = "", directory: Path | None = None
+) -> Path:
     if directory and not directory.exists():
         directory.mkdir(parents=True, exist_ok=True)
     try:
@@ -21,7 +23,10 @@ def _create_temp_directory(prefix: str = "quackcore_", suffix: str = "", directo
     except Exception as e:
         raise OSError(f"Failed to create temporary directory: {e}") from e
 
-def _create_temp_file(suffix: str = ".txt", prefix: str = "quackcore_", directory: Path | None = None) -> Path:
+
+def _create_temp_file(
+    suffix: str = ".txt", prefix: str = "quackcore_", directory: Path | None = None
+) -> Path:
     if directory and not directory.exists():
         directory.mkdir(parents=True, exist_ok=True)
     try:

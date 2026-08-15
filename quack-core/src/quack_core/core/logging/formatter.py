@@ -9,8 +9,6 @@
 # === QV-LLM:END ===
 
 
-
-
 """
 Custom formatters for quack-core logging.
 
@@ -86,11 +84,11 @@ class TeachingAwareFormatter(logging.Formatter):
     DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
     def __init__(
-            self,
-            fmt: str | None = None,
-            datefmt: str | None = None,
-            color_enabled: bool = True,
-            teaching_provider: TeachingProvider | None = None,
+        self,
+        fmt: str | None = None,
+        datefmt: str | None = None,
+        color_enabled: bool = True,
+        teaching_provider: TeachingProvider | None = None,
     ):
         """
         Initialize the formatter.
@@ -113,8 +111,8 @@ class TeachingAwareFormatter(logging.Formatter):
         # Detect Teaching Mode via the structured 'extra' attribute
         # falling back to string check only for backwards compatibility/safety
         is_teaching = (
-                getattr(record, TEACHING_EXTRA_KEY, False)
-                or "[Teaching Mode]" in record.getMessage()
+            getattr(record, TEACHING_EXTRA_KEY, False)
+            or "[Teaching Mode]" in record.getMessage()
         )
 
         if is_teaching:

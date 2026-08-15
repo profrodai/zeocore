@@ -205,7 +205,9 @@ class TestSetupLogging:
             logging={"level": "CRITICAL", "file": "/path/to/logfile.log"}
         )
 
-        with patch("quack_core.interfaces.cli.utils.logging._add_file_handler") as mock_add_file:
+        with patch(
+            "quack_core.interfaces.cli.utils.logging._add_file_handler"
+        ) as mock_add_file:
             logger, _ = setup_logging(config=config)
 
             assert logger.level == logging.CRITICAL

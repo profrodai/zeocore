@@ -122,7 +122,9 @@ class TestProjectContext:
         context = ProjectContext(root_dir=str(Path("/project")))
 
         # Add directory using the add_directory method
-        context._add_directory(name="src", path=str(Path("/project/src")), is_source=True)
+        context._add_directory(
+            name="src", path=str(Path("/project/src")), is_source=True
+        )
 
         # Verify the directory was added
         assert "src" in context.directories
@@ -170,7 +172,9 @@ class TestContentContext:
         context._add_directory(
             name="assets", path=str(Path("/project/assets")), is_asset=True
         )
-        context._add_directory(name="temp", path=str(Path("/project/temp")), is_temp=True)
+        context._add_directory(
+            name="temp", path=str(Path("/project/temp")), is_temp=True
+        )
 
         # Test getting content-specific directories
         assert context._get_assets_dir() == str(Path("/project/assets"))
@@ -183,7 +187,9 @@ class TestContentContext:
 
     def test_inherit_from_project_context(self) -> None:
         """Test inheriting from a project context."""
-        project_context = ProjectContext(root_dir=str(Path("/project")), name="test-project")
+        project_context = ProjectContext(
+            root_dir=str(Path("/project")), name="test-project"
+        )
 
         # Add directories to project context
         project_context._add_directory(

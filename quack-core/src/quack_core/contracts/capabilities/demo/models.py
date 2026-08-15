@@ -15,10 +15,10 @@ These demonstrate the contract patterns without requiring heavy dependencies.
 Implementation is optional and only for demonstration purposes.
 """
 
-
 from pydantic import BaseModel
 
 # --- Request/Response Models ---
+
 
 class EchoRequest(BaseModel):
     """
@@ -41,6 +41,7 @@ class VideoRefRequest(BaseModel):
     """
 
     url: str
+
 
 # NOTE: Actual implementations (echo_text, validate_video_ref functions)
 # are OPTIONAL in contracts. They belong in Ring B (tools) if needed.

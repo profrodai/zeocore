@@ -54,9 +54,13 @@ def is_likely_drive_id(path: str) -> bool:
         return False
 
     # Drive IDs are typically 25-45 chars and don't contain path separators or dots
-    return (len(path) >= 25 and len(path) <= 45 and
-            "/" not in path and "\\" not in path and
-            "." not in path)
+    return (
+        len(path) >= 25
+        and len(path) <= 45
+        and "/" not in path
+        and "\\" not in path
+        and "." not in path
+    )
 
 
 def extract_path_from_path_result_string(path_string: str) -> str:

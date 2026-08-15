@@ -49,11 +49,11 @@ def _compute_idempotency_hash(op: str, params: dict, key: str) -> str:
 
 @router.post("", response_model=JobResponse, dependencies=[Depends(require_auth)])
 def start_job(
-        req: JobRequest,
-        registry: Annotated[OperationRegistry, Depends(get_registry)],
-        store: Annotated[JobStore, Depends(get_job_store)],
-        runner: Annotated[JobRunner, Depends(get_job_runner)],
-        idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+    req: JobRequest,
+    registry: Annotated[OperationRegistry, Depends(get_registry)],
+    store: Annotated[JobStore, Depends(get_job_store)],
+    runner: Annotated[JobRunner, Depends(get_job_runner)],
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
 ) -> JobResponse:
     """
     Start a new job.
@@ -107,8 +107,9 @@ def start_job(
     idempotency_hash = None
 
     if final_key:
-        idempotency_hash = _compute_idempotency_hash(req.op, serialized_params,
-                                                     final_key)
+        idempotency_hash = _compute_idempotency_hash(
+            req.op, serialized_params, final_key
+        )
         existing = store.find_by_idempotency_hash(idempotency_hash)
         if existing:
             return JobResponse(job_id=existing.job_id, status=existing.status.value)
@@ -138,11 +139,12 @@ def start_job(
     return JobResponse(job_id=job_id, status=JobStatus.QUEUED.value)
 
 
-@router.get("/{job_id}", response_model=JobStatusModel,
-            dependencies=[Depends(require_auth)])
+@router.get(
+    "/{job_id}", response_model=JobStatusModel, dependencies=[Depends(require_auth)]
+)
 def job_status(
-        job_id: str,
-        store: Annotated[JobStore, Depends(get_job_store)],
+    job_id: str,
+    store: Annotated[JobStore, Depends(get_job_store)],
 ) -> JobStatusModel:
     """
     Get job status.

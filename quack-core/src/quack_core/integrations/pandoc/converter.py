@@ -48,14 +48,22 @@ try:
 except ImportError:
     logger.error("Could not import quack_core.core.fs.service")
     from types import SimpleNamespace
+
     # Create a minimal fs stub if the module isn't available (for tests)
     fs = SimpleNamespace(
         get_file_info=lambda path: SimpleNamespace(success=True, exists=True, size=100),
         create_directory=lambda path, exist_ok=True: SimpleNamespace(success=True),
-        join_path=lambda *parts: SimpleNamespace(success=True, data=os.path.join(*parts)),
-        split_path=lambda path: SimpleNamespace(success=True, data=path.split(os.sep) if isinstance(path, str) else []),
-        get_extension=lambda path: SimpleNamespace(success=True, data=path.split('.')[-1] if isinstance(path, str) and '.' in path else ""),
-        read_text=lambda path, encoding=None: SimpleNamespace(success=True, content="")
+        join_path=lambda *parts: SimpleNamespace(
+            success=True, data=os.path.join(*parts)
+        ),
+        split_path=lambda path: SimpleNamespace(
+            success=True, data=path.split(os.sep) if isinstance(path, str) else []
+        ),
+        get_extension=lambda path: SimpleNamespace(
+            success=True,
+            data=path.split(".")[-1] if isinstance(path, str) and "." in path else "",
+        ),
+        read_text=lambda path, encoding=None: SimpleNamespace(success=True, content=""),
     )
 
 
@@ -90,7 +98,7 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
         return self._pandoc_version
 
     def convert_file(
-            self, input_path: str, output_path: str, output_format: str
+        self, input_path: str, output_path: str, output_format: str
     ) -> IntegrationResult[str]:
         """
         Convert a file from one format to another.
@@ -118,14 +126,15 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
                     output_dir = "."  # Default to current directory
 
                 dir_result = fs.create_directory(output_dir, exist_ok=True)
-                if not getattr(dir_result, 'success', False):
+                if not getattr(dir_result, "success", False):
                     return IntegrationResult.error_result(
                         f"Failed to create output directory: {getattr(dir_result, 'error', 'Unknown error')}"
                     )
             except Exception as e:
                 logger.error(f"Failed to create output directory: {e}")
                 return IntegrationResult.error_result(
-                    f"Failed to create output directory: {str(e)}")
+                    f"Failed to create output directory: {str(e)}"
+                )
 
             # Perform conversion based on file format
             if input_info.format == "html" and output_format == "markdown":
@@ -140,7 +149,11 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
 
                 if result.success and result.content:
                     # Unpack the returned tuple to get the output path string
-                    output_path_str = result.content[0] if isinstance(result.content, tuple) else result.content
+                    output_path_str = (
+                        result.content[0]
+                        if isinstance(result.content, tuple)
+                        else result.content
+                    )
                     return IntegrationResult.success_result(
                         output_path_str,
                         message=f"Successfully converted {input_path} to Markdown",
@@ -161,7 +174,11 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
 
                 if result.success and result.content:
                     # Unpack the returned tuple to get the output path string
-                    output_path_str = result.content[0] if isinstance(result.content, tuple) else result.content
+                    output_path_str = (
+                        result.content[0]
+                        if isinstance(result.content, tuple)
+                        else result.content
+                    )
                     return IntegrationResult.success_result(
                         output_path_str,
                         message=f"Successfully converted {input_path} to DOCX",
@@ -183,7 +200,7 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
             return IntegrationResult.error_result(f"Conversion error: {str(e)}")
 
     def convert_batch(
-            self, tasks: Sequence[ConversionTask], output_dir: str | None = None
+        self, tasks: Sequence[ConversionTask], output_dir: str | None = None
     ) -> IntegrationResult[list[str]]:
         """
         Convert a batch of files.
@@ -204,14 +221,15 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
         # Create the output directory
         try:
             dir_result = fs.create_directory(batch_output_dir, exist_ok=True)
-            if not getattr(dir_result, 'success', False):
+            if not getattr(dir_result, "success", False):
                 return IntegrationResult.error_result(
                     f"Failed to create output directory: {getattr(dir_result, 'error', 'Unknown error')}"
                 )
         except Exception as e:
             logger.error(f"Failed to create output directory: {e}")
             return IntegrationResult.error_result(
-                f"Failed to create output directory: {str(e)}")
+                f"Failed to create output directory: {str(e)}"
+            )
 
         # Initialize tracking variables
         successful_files: list[str] = []
@@ -228,9 +246,10 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
                     # Extract filename from source path
                     try:
                         split_result = fs.split_path(task.source.path)
-                        if not getattr(split_result, 'success', False):
+                        if not getattr(split_result, "success", False):
                             logger.error(
-                                f"Failed to split path: {getattr(split_result, 'error', 'Unknown error')}")
+                                f"Failed to split path: {getattr(split_result, 'error', 'Unknown error')}"
+                            )
                             failed_files.append(task.source.path)
                             continue
 
@@ -239,7 +258,11 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
                         name, _ = os.path.splitext(filename)
 
                         # Determine the new extension based on target format
-                        ext = ".md" if task.target_format == "markdown" else f".{task.target_format}"
+                        ext = (
+                            ".md"
+                            if task.target_format == "markdown"
+                            else f".{task.target_format}"
+                        )
                         output_path = os.path.join(batch_output_dir, name + ext)
                     except Exception as e:
                         logger.error(f"Failed to determine output path: {e}")
@@ -260,8 +283,9 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
                         f"Failed to convert {task.source.path} to {task.target_format}: {result.error}"
                     )
                     self.metrics.failed_conversions += 1
-                    self.metrics.errors[
-                        task.source.path] = result.error or "Unknown error"
+                    self.metrics.errors[task.source.path] = (
+                        result.error or "Unknown error"
+                    )
             except Exception as e:
                 failed_files.append(task.source.path)
                 logger.error(f"Error processing task for {task.source.path}: {str(e)}")
@@ -308,20 +332,26 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
             input_info = fs.get_file_info(input_path)
 
             # Check if files exist
-            if not getattr(output_info, 'success', False) or not getattr(output_info, 'exists', False):
+            if not getattr(output_info, "success", False) or not getattr(
+                output_info, "exists", False
+            ):
                 logger.error(f"Output file does not exist: {output_path}")
                 return False
 
-            if not getattr(input_info, 'success', False) or not getattr(input_info, 'exists', False):
+            if not getattr(input_info, "success", False) or not getattr(
+                input_info, "exists", False
+            ):
                 logger.error(f"Input file does not exist: {input_path}")
                 return False
 
             # Get file sizes
-            input_size = safe_convert_to_int(getattr(input_info, 'size', 0), 0)
-            output_size = safe_convert_to_int(getattr(output_info, 'size', 0), 0)
+            input_size = safe_convert_to_int(getattr(input_info, "size", 0), 0)
+            output_size = safe_convert_to_int(getattr(output_info, "size", 0), 0)
 
             # Calculate size change
-            size_change_percentage = (output_size / input_size * 100) if input_size > 0 else 0
+            size_change_percentage = (
+                (output_size / input_size * 100) if input_size > 0 else 0
+            )
             logger.debug(
                 f"Conversion size change: {input_size} → {output_size} bytes ({size_change_percentage:.1f}%)"
             )
@@ -329,21 +359,25 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
             # Get file extension
             try:
                 ext_result = fs.get_extension(output_path)
-                ext = getattr(ext_result, 'data', '') if getattr(ext_result, 'success', False) else ''
+                ext = (
+                    getattr(ext_result, "data", "")
+                    if getattr(ext_result, "success", False)
+                    else ""
+                )
             except Exception as e:
                 logger.error(f"Failed to get extension: {e}")
-                ext = output_path.split('.')[-1] if '.' in output_path else ''
+                ext = output_path.split(".")[-1] if "." in output_path else ""
 
             # Validate based on file type
             if ext in ("md", "markdown"):
                 try:
                     read_result = fs.read_text(output_path, encoding="utf-8")
-                    if not getattr(read_result, 'success', False):
+                    if not getattr(read_result, "success", False):
                         logger.error(
                             f"Failed to read markdown file: {getattr(read_result, 'error', 'Unknown error')}"
                         )
                         return False
-                    return len(getattr(read_result, 'content', '').strip()) > 0
+                    return len(getattr(read_result, "content", "").strip()) > 0
                 except Exception as e:
                     logger.error(f"Failed to read markdown file: {e}")
                     return False

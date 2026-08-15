@@ -181,7 +181,9 @@ class ExampleTool(
             message="Post-run cleanup completed successfully"
         )
 
-    def upload(self, file_path: str, destination: str | None = None) -> IntegrationResult:
+    def upload(
+        self, file_path: str, destination: str | None = None
+    ) -> IntegrationResult:
         """
         Upload a file to Google Drive.
 
@@ -195,7 +197,7 @@ class ExampleTool(
         if not self._drive_service:
             return IntegrationResult.error_result(
                 error="Google Drive integration not available",
-                message="Cannot upload file without Google Drive integration"
+                message="Cannot upload file without Google Drive integration",
             )
 
         try:
@@ -210,18 +212,17 @@ class ExampleTool(
             if upload_result.success:
                 return IntegrationResult.success_result(
                     content=upload_result.content,
-                    message="File uploaded successfully to Google Drive"
+                    message="File uploaded successfully to Google Drive",
                 )
             else:
                 return IntegrationResult.error_result(
                     error=upload_result.error,
-                    message="Failed to upload file to Google Drive"
+                    message="Failed to upload file to Google Drive",
                 )
         except Exception as e:
             self.logger.exception("Error uploading file to Google Drive")
             return IntegrationResult.error_result(
-                error=str(e),
-                message="Error uploading file to Google Drive"
+                error=str(e), message="Error uploading file to Google Drive"
             )
 
 
@@ -242,8 +243,7 @@ def main():
 
     # Process a file
     process_result = tool.process_file(
-        "example_data.json",
-        options={"calculate_stats": True}
+        "example_data.json", options={"calculate_stats": True}
     )
 
     if not process_result.success:
@@ -256,8 +256,7 @@ def main():
     # Optionally upload the result
     if tool.integration:
         upload_result = tool.upload(
-            process_result.content.output_file,
-            destination="my_folder_id"
+            process_result.content.output_file, destination="my_folder_id"
         )
 
         if upload_result.success:

@@ -8,7 +8,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Example: Doctrine-compliant echo tool.
 
@@ -31,6 +30,7 @@ from quack_core.tools import BaseQuackTool, ToolContext
 # Request model (in contracts in production)
 class EchoRequest(BaseModel):
     """Request for echo tool."""
+
     text: str
     override_greeting: str | None = None
 
@@ -47,10 +47,7 @@ class EchoTool(BaseQuackTool):
     """
 
     def __init__(self):
-        super().__init__(
-            name="echo",
-            version="1.0.0"
-        )
+        super().__init__(name="echo", version="1.0.0")
 
     def run(self, request: EchoRequest, ctx: ToolContext) -> CapabilityResult[str]:
         """
@@ -72,10 +69,7 @@ class EchoTool(BaseQuackTool):
         result_text = f"{greeting} {request.text}"
 
         # Return capability result
-        return CapabilityResult.ok(
-            data=result_text,
-            msg="Echo completed successfully"
-        )
+        return CapabilityResult.ok(data=result_text, msg="Echo completed successfully")
 
 
 # ❌ ANTI-PATTERNS (what NOT to do):

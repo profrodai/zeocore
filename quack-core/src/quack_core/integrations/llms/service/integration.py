@@ -14,6 +14,7 @@ Core LLM integration class.
 This module provides the main LLMIntegration class which serves as the entry point
 for using different LLM providers.
 """
+
 from collections.abc import Callable, Sequence
 
 from quack_core.core.errors import QuackIntegrationError
@@ -87,7 +88,7 @@ class LLMIntegration(BaseIntegrationService):
         Raises:
             QuackIntegrationError: If configuration is invalid
         """
-        if not getattr(self, 'config', None):
+        if not getattr(self, "config", None):
             # Get default configuration
             if not self.config_provider:
                 raise QuackIntegrationError("Configuration provider not initialized")
@@ -188,7 +189,7 @@ class LLMIntegration(BaseIntegrationService):
         Raises:
             QuackIntegrationError: If the client is not initialized
         """
-        if not getattr(self, '_initialized', False) or not self.client:
+        if not getattr(self, "_initialized", False) or not self.client:
             raise QuackIntegrationError("LLM client not initialized")
 
         return self.client

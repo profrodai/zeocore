@@ -34,12 +34,14 @@ from quack_core.core.paths.service import PathService
 # Lazy singleton
 _service: PathService | None = None
 
+
 def get_path_service() -> PathService:
     """Get the global PathService instance."""
     global _service
     if _service is None:
         _service = PathService()
     return _service
+
 
 __all__ = [
     # Service Access

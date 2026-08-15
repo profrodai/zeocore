@@ -8,7 +8,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Utility functions for the HTTP adapter.
 """
@@ -22,10 +21,10 @@ logger = get_logger(__name__)
 
 
 async def post_callback(
-        url: str,
-        body: dict[str, Any],
-        signature_header: str | None = None,
-        timeout: int = 10,
+    url: str,
+    body: dict[str, Any],
+    signature_header: str | None = None,
+    timeout: int = 10,
 ) -> None:
     """
     POST a callback with optional HMAC signature.

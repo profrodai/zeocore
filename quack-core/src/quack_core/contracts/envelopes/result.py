@@ -82,58 +82,48 @@ class CapabilityResult(BaseModel, Generic[T]):
 
     # Core status
     status: CapabilityStatus = Field(
-        ...,
-        description="Execution status for machine branching"
+        ..., description="Execution status for machine branching"
     )
 
     # Payload (the actual value produced by the capability)
     data: T | None = Field(
-        None,
-        description="The actual result data (type varies by capability)"
+        None, description="The actual result data (type varies by capability)"
     )
 
     # Telemetry
     run_id: str = Field(
         default_factory=generate_run_id,
-        description="Unique identifier for this execution (should match RunManifest.run_id)"
+        description="Unique identifier for this execution (should match RunManifest.run_id)",
     )
 
     timestamp: datetime = Field(
-        default_factory=utcnow,
-        description="UTC timestamp when result was created"
+        default_factory=utcnow, description="UTC timestamp when result was created"
     )
 
     duration_sec: float | None = Field(
-        None,
-        ge=0.0,
-        description="Execution duration in seconds (None if not measured)"
+        None, ge=0.0, description="Execution duration in seconds (None if not measured)"
     )
 
     # Messages
-    human_message: str = Field(
-        ...,
-        description="Readable summary for logs/CLI/UI"
-    )
+    human_message: str = Field(..., description="Readable summary for logs/CLI/UI")
 
     machine_message: str | None = Field(
         None,
-        description="Machine-readable code for orchestrator branching (must start with QC_)"
+        description="Machine-readable code for orchestrator branching (must start with QC_)",
     )
 
     # Diagnostics
     error: CapabilityError | None = Field(
-        None,
-        description="Structured error info if status == error"
+        None, description="Structured error info if status == error"
     )
 
     logs: list[CapabilityLogEvent] = Field(
-        default_factory=list,
-        description="Structured log events from execution"
+        default_factory=list, description="Structured log events from execution"
     )
 
     metadata: dict[str, Any] = Field(
         default_factory=dict,
-        description="Additional context (tool, version, config, etc.)"
+        description="Additional context (tool, version, config, etc.)",
     )
 
     @field_validator("machine_message")
@@ -147,8 +137,8 @@ class CapabilityResult(BaseModel, Generic[T]):
             )
         return v
 
-    @model_validator(mode='after')
-    def validate_status_invariants(self) -> 'CapabilityResult[T]':
+    @model_validator(mode="after")
+    def validate_status_invariants(self) -> "CapabilityResult[T]":
         """
         Enforce invariants between status and other fields.
 
@@ -159,19 +149,13 @@ class CapabilityResult(BaseModel, Generic[T]):
         """
         if self.status == CapabilityStatus.error:
             if self.error is None:
-                raise ValueError(
-                    "status=error requires error field to be present"
-                )
+                raise ValueError("status=error requires error field to be present")
             if self.machine_message is None:
-                raise ValueError(
-                    "status=error requires machine_message for branching"
-                )
+                raise ValueError("status=error requires machine_message for branching")
 
         if self.status == CapabilityStatus.success:
             if self.error is not None:
-                raise ValueError(
-                    "status=success must not have error field"
-                )
+                raise ValueError("status=success must not have error field")
             if self.machine_message is not None:
                 raise ValueError(
                     "status=success should not have machine_message "
@@ -195,13 +179,13 @@ class CapabilityResult(BaseModel, Generic[T]):
 
     @classmethod
     def ok(
-            cls,
-            data: T,
-            msg: str = "Success",
-            metadata: dict[str, Any] | None = None,
-            logs: list[CapabilityLogEvent] | None = None,
-            duration_sec: float | None = None,
-            run_id: str | None = None
+        cls,
+        data: T,
+        msg: str = "Success",
+        metadata: dict[str, Any] | None = None,
+        logs: list[CapabilityLogEvent] | None = None,
+        duration_sec: float | None = None,
+        run_id: str | None = None,
     ) -> "CapabilityResult[T]":
         """
         Create a successful result.
@@ -230,7 +214,7 @@ class CapabilityResult(BaseModel, Generic[T]):
             "human_message": msg,
             "metadata": metadata or {},
             "logs": logs or [],
-            "duration_sec": duration_sec
+            "duration_sec": duration_sec,
         }
         if run_id is not None:
             kwargs["run_id"] = run_id
@@ -238,11 +222,11 @@ class CapabilityResult(BaseModel, Generic[T]):
 
     @classmethod
     def skip(
-            cls,
-            reason: str,
-            code: str,
-            metadata: dict[str, Any] | None = None,
-            run_id: str | None = None
+        cls,
+        reason: str,
+        code: str,
+        metadata: dict[str, Any] | None = None,
+        run_id: str | None = None,
     ) -> "CapabilityResult[T]":
         """
         Create a skip result (valid policy decision).
@@ -269,7 +253,7 @@ class CapabilityResult(BaseModel, Generic[T]):
             "status": CapabilityStatus.skipped,
             "human_message": reason,
             "machine_message": code,
-            "metadata": metadata or {}
+            "metadata": metadata or {},
         }
         if run_id is not None:
             kwargs["run_id"] = run_id
@@ -277,13 +261,13 @@ class CapabilityResult(BaseModel, Generic[T]):
 
     @classmethod
     def fail(
-            cls,
-            msg: str,
-            code: str,
-            exception: Exception | None = None,
-            metadata: dict[str, Any] | None = None,
-            logs: list[CapabilityLogEvent] | None = None,
-            run_id: str | None = None
+        cls,
+        msg: str,
+        code: str,
+        exception: Exception | None = None,
+        metadata: dict[str, Any] | None = None,
+        logs: list[CapabilityLogEvent] | None = None,
+        run_id: str | None = None,
     ) -> "CapabilityResult[T]":
         """
         Create an error result.
@@ -319,7 +303,7 @@ class CapabilityResult(BaseModel, Generic[T]):
             "machine_message": code,
             "error": CapabilityError(code=code, message=msg, details=err_details),
             "metadata": metadata or {},
-            "logs": logs or []
+            "logs": logs or [],
         }
         if run_id is not None:
             kwargs["run_id"] = run_id
@@ -327,12 +311,12 @@ class CapabilityResult(BaseModel, Generic[T]):
 
     @classmethod
     def fail_from_exc(
-            cls,
-            msg: str,
-            code: str,
-            exc: Exception,
-            metadata: dict[str, Any] | None = None,
-            run_id: str | None = None
+        cls,
+        msg: str,
+        code: str,
+        exc: Exception,
+        metadata: dict[str, Any] | None = None,
+        run_id: str | None = None,
     ) -> "CapabilityResult[T]":
         """
         Convenience wrapper for fail() that always includes exception.
@@ -357,4 +341,6 @@ class CapabilityResult(BaseModel, Generic[T]):
             ...         exc=e
             ...     )
         """
-        return cls.fail(msg=msg, code=code, exception=exc, metadata=metadata, run_id=run_id)
+        return cls.fail(
+            msg=msg, code=code, exception=exc, metadata=metadata, run_id=run_id
+        )

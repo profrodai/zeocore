@@ -54,23 +54,18 @@ class CapabilityLogEvent(BaseModel):
     """
 
     timestamp: datetime = Field(
-        default_factory=utcnow,
-        description="UTC timestamp when log was created"
+        default_factory=utcnow, description="UTC timestamp when log was created"
     )
 
     level: LogLevel = Field(
-        default=LogLevel.INFO,
-        description="Severity level of the log event"
+        default=LogLevel.INFO, description="Severity level of the log event"
     )
 
-    message: str = Field(
-        ...,
-        description="Human-readable log message"
-    )
+    message: str = Field(..., description="Human-readable log message")
 
     context: dict[str, Any] = Field(
         default_factory=dict,
-        description="Structured context for debugging (tool, step, metrics, etc.)"
+        description="Structured context for debugging (tool, step, metrics, etc.)",
     )
 
     model_config = ConfigDict(
@@ -83,8 +78,8 @@ class CapabilityLogEvent(BaseModel):
                     "context": {
                         "tool": "slice_video",
                         "run_kind": "local",
-                        "clip_count": 5
-                    }
+                        "clip_count": 5,
+                    },
                 },
                 {
                     "timestamp": "2025-01-15T10:30:15Z",
@@ -94,9 +89,9 @@ class CapabilityLogEvent(BaseModel):
                         "tool": "slice_video",
                         "step": "encode_clip_3",
                         "error_type": "FFmpegError",
-                        "clip_index": 3
-                    }
-                }
+                        "clip_index": 3,
+                    },
+                },
             ]
         }
     )

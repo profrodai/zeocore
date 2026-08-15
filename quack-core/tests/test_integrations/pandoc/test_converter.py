@@ -23,6 +23,7 @@ from quack_core.integrations.pandoc import (
 
 # --- Tests for DocumentConverter ---
 
+
 def test_document_converter_initialization(mock_pypandoc):
     """Test DocumentConverter initialization."""
     config = PandocConfig()
@@ -41,10 +42,10 @@ def test_convert_file_html_to_markdown_success(mock_pypandoc, fs_stub):
 
     # Mock the conversion operation
     with patch(
-            'quack_core.integrations.pandoc._ops.convert_html_to_markdown') as mock_convert:
+        "quack_core.integrations.pandoc._ops.convert_html_to_markdown"
+    ) as mock_convert:
         mock_convert.return_value = IntegrationResult.success_result(
-            ("output.md", MagicMock()),
-            message="Success"
+            ("output.md", MagicMock()), message="Success"
         )
 
         # Run conversion
@@ -66,10 +67,10 @@ def test_convert_file_markdown_to_docx_success(mock_pypandoc, fs_stub):
 
     # Mock the conversion operation
     with patch(
-            'quack_core.integrations.pandoc._ops.convert_markdown_to_docx') as mock_convert:
+        "quack_core.integrations.pandoc._ops.convert_markdown_to_docx"
+    ) as mock_convert:
         mock_convert.return_value = IntegrationResult.success_result(
-            ("output.docx", MagicMock()),
-            message="Success"
+            ("output.docx", MagicMock()), message="Success"
         )
 
         # Run conversion
@@ -90,7 +91,8 @@ def test_convert_file_unsupported_format(mock_pypandoc):
 
     # Mock file info to return unsupported format
     with patch(
-            'quack_core.integrations.pandoc._ops.utils.get_file_info') as mock_get_info:
+        "quack_core.integrations.pandoc._ops.utils.get_file_info"
+    ) as mock_get_info:
         mock_get_info.return_value = FileInfo(
             path="file.txt", format="txt", size=100, modified=None, extra_args=[]
         )
@@ -110,7 +112,8 @@ def test_convert_file_integration_error(mock_pypandoc):
 
     # Mock conversion to raise error
     with patch(
-            'quack_core.integrations.pandoc._ops.utils.get_file_info') as mock_get_info:
+        "quack_core.integrations.pandoc._ops.utils.get_file_info"
+    ) as mock_get_info:
         mock_get_info.side_effect = QuackIntegrationError("Test error", {})
 
         # Run conversion
@@ -127,23 +130,33 @@ def test_convert_batch_all_success(mock_pypandoc):
     converter = DocumentConverter(config)
 
     # Mock convert_file to always succeed
-    with patch.object(converter, 'convert_file') as mock_convert:
+    with patch.object(converter, "convert_file") as mock_convert:
         mock_convert.return_value = IntegrationResult.success_result("output.md")
 
         # Create tasks
         tasks = [
             ConversionTask(
-                source=FileInfo(path="file1.html", format="html", size=100,
-                                modified=None, extra_args=[]),
+                source=FileInfo(
+                    path="file1.html",
+                    format="html",
+                    size=100,
+                    modified=None,
+                    extra_args=[],
+                ),
                 target_format="markdown",
-                output_path="output1.md"
+                output_path="output1.md",
             ),
             ConversionTask(
-                source=FileInfo(path="file2.html", format="html", size=100,
-                                modified=None, extra_args=[]),
+                source=FileInfo(
+                    path="file2.html",
+                    format="html",
+                    size=100,
+                    modified=None,
+                    extra_args=[],
+                ),
                 target_format="markdown",
-                output_path="output2.md"
-            )
+                output_path="output2.md",
+            ),
         ]
 
         # Run batch conversion
@@ -166,23 +179,33 @@ def test_convert_batch_partial_failure(mock_pypandoc):
             return IntegrationResult.error_result("Conversion failed")
         return IntegrationResult.success_result(output_path)
 
-    with patch.object(converter, 'convert_file') as mock_convert:
+    with patch.object(converter, "convert_file") as mock_convert:
         mock_convert.side_effect = mock_convert_side_effect
 
         # Create tasks
         tasks = [
             ConversionTask(
-                source=FileInfo(path="file1.html", format="html", size=100,
-                                modified=None, extra_args=[]),
+                source=FileInfo(
+                    path="file1.html",
+                    format="html",
+                    size=100,
+                    modified=None,
+                    extra_args=[],
+                ),
                 target_format="markdown",
-                output_path="output1.md"
+                output_path="output1.md",
             ),
             ConversionTask(
-                source=FileInfo(path="file2.html", format="html", size=100,
-                                modified=None, extra_args=[]),
+                source=FileInfo(
+                    path="file2.html",
+                    format="html",
+                    size=100,
+                    modified=None,
+                    extra_args=[],
+                ),
                 target_format="markdown",
-                output_path="output2.md"
-            )
+                output_path="output2.md",
+            ),
         ]
 
         # Run batch conversion
@@ -201,23 +224,33 @@ def test_convert_batch_all_failure(mock_pypandoc):
     converter = DocumentConverter(config)
 
     # Mock convert_file to always fail
-    with patch.object(converter, 'convert_file') as mock_convert:
+    with patch.object(converter, "convert_file") as mock_convert:
         mock_convert.return_value = IntegrationResult.error_result("Conversion failed")
 
         # Create tasks
         tasks = [
             ConversionTask(
-                source=FileInfo(path="file1.html", format="html", size=100,
-                                modified=None, extra_args=[]),
+                source=FileInfo(
+                    path="file1.html",
+                    format="html",
+                    size=100,
+                    modified=None,
+                    extra_args=[],
+                ),
                 target_format="markdown",
-                output_path="output1.md"
+                output_path="output1.md",
             ),
             ConversionTask(
-                source=FileInfo(path="file2.html", format="html", size=100,
-                                modified=None, extra_args=[]),
+                source=FileInfo(
+                    path="file2.html",
+                    format="html",
+                    size=100,
+                    modified=None,
+                    extra_args=[],
+                ),
                 target_format="markdown",
-                output_path="output2.md"
-            )
+                output_path="output2.md",
+            ),
         ]
 
         # Run batch conversion
@@ -235,8 +268,13 @@ def test_validate_conversion(mock_pypandoc, fs_stub):
     converter = DocumentConverter(config)
 
     # Test successful validation
-    with patch('quack_core.core.fs.service.standalone.get_file_info', return_value=SimpleNamespace(success=True, exists=True, size=100)):
-            assert not converter.validate_conversion("output.md", "input.html") # Expect no errors
+    with patch(
+        "quack_core.core.fs.service.standalone.get_file_info",
+        return_value=SimpleNamespace(success=True, exists=True, size=100),
+    ):
+        assert not converter.validate_conversion(
+            "output.md", "input.html"
+        )  # Expect no errors
 
     # Test failure when output file doesn't exist
     fs_stub.get_file_info = lambda path: SimpleNamespace(

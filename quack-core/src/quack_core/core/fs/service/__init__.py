@@ -60,14 +60,14 @@ def __getattr__(name: str) -> Any:  # noqa: ANN401  # dynamic attr type
     """Prevent accidental imports of internal service modules."""
     # List of internal names that should not be imported
     internal_names = {
-        '_BaseFileSystemService',
-        'DirectoryOperationsMixin',
-        'FileOperationsMixin',
-        'FileInfoOperationsMixin',
-        'PathOperationsMixin',
-        'PathValidationMixin',
-        'UtilityOperationsMixin',
-        'StructuredDataMixin',
+        "_BaseFileSystemService",
+        "DirectoryOperationsMixin",
+        "FileOperationsMixin",
+        "FileInfoOperationsMixin",
+        "PathOperationsMixin",
+        "PathValidationMixin",
+        "UtilityOperationsMixin",
+        "StructuredDataMixin",
     }
 
     if name in internal_names:
@@ -76,4 +76,6 @@ def __getattr__(name: str) -> Any:  # noqa: ANN401  # dynamic attr type
             f"Use FileSystemService instead, which includes all operations."
         )
 
-    raise AttributeError(f"Module 'quack_core.core.fs.service' has no attribute '{name}'")
+    raise AttributeError(
+        f"Module 'quack_core.core.fs.service' has no attribute '{name}'"
+    )

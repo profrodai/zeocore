@@ -68,18 +68,13 @@ Breaking changes require:
 
 ```python
 # Correct usage
-from quack_core.contracts import (
-    CapabilityResult,
-    ArtifactRef,
-    RunManifest,
-    StorageRef
-)
+from quack_core.contracts import CapabilityResult, ArtifactRef, RunManifest, StorageRef
 
 # Tool emits a result
 result = CapabilityResult.ok(
     data=transcription,
     msg="Transcription completed",
-    metadata={"model": "whisper-large"}
+    metadata={"model": "whisper-large"},
 )
 
 # Tool creates artifact reference
@@ -87,7 +82,7 @@ artifact = ArtifactRef(
     role="transcript_txt",
     kind=ArtifactKind.final,
     content_type="text/plain",
-    storage=StorageRef(scheme="local", uri="/data/transcript.txt")
+    storage=StorageRef(scheme="local", uri="/data/transcript.txt"),
 )
 
 # Runner reads manifest

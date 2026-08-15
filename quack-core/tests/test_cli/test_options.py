@@ -14,7 +14,6 @@ This module contains tests for the command line interface option parsing
 and resolving functionality.
 """
 
-
 from hypothesis import given
 from hypothesis import strategies as st
 from quack_core.interfaces.cli.utils.options import resolve_cli_args
@@ -45,16 +44,12 @@ class TestResolveCliArgs:
 
     def test_multiple_key_value_pairs(self):
         """Test that multiple key-value pairs are resolved correctly."""
-        result = resolve_cli_args(
-            ["--config", "config.yaml", "--log-level", "debug"]
-        )
+        result = resolve_cli_args(["--config", "config.yaml", "--log-level", "debug"])
         assert result == {"config": "config.yaml", "log-level": "debug"}
 
     def test_mixed_flags_and_values(self):
         """Test that a mix of flags and key-value pairs is resolved correctly."""
-        result = resolve_cli_args(
-            ["--verbose", "--config", "config.yaml", "--debug"]
-        )
+        result = resolve_cli_args(["--verbose", "--config", "config.yaml", "--debug"])
         assert result == {
             "verbose": True,
             "config": "config.yaml",
@@ -88,16 +83,12 @@ class TestResolveCliArgs:
 
     def test_equals_sign_multiple_values(self):
         """Test that multiple values with equals signs are resolved correctly."""
-        result = resolve_cli_args(
-            ["--config=config.yaml", "--log-level=debug"]
-        )
+        result = resolve_cli_args(["--config=config.yaml", "--log-level=debug"])
         assert result == {"config": "config.yaml", "log-level": "debug"}
 
     def test_equals_sign_mixed(self):
         """Test that mixed equals signs and space separations are resolved."""
-        result = resolve_cli_args(
-            ["--config=config.yaml", "--log-level", "debug"]
-        )
+        result = resolve_cli_args(["--config=config.yaml", "--log-level", "debug"])
         assert result == {"config": "config.yaml", "log-level": "debug"}
 
     def test_positional_args(self):
@@ -193,8 +184,8 @@ class TestResolveCliArgs:
         # Check that all arguments were processed correctly
         for key, value in arg_dict.items():
             # Handle the special case where value is '-'
-            if value == '-':
-                assert result.get(key) == '-'
+            if value == "-":
+                assert result.get(key) == "-"
             else:
                 assert result.get(key) == value
 

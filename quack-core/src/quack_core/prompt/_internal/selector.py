@@ -16,11 +16,11 @@ from .registry import StrategyRegistry
 
 
 def select_best_strategy(
-        registry: StrategyRegistry,
-        tags: list[str] | None = None,
-        schema: str | None = None,
-        examples: list[str] | str | None = None,
-        extra_inputs: dict[str, Any] | None = None,
+    registry: StrategyRegistry,
+    tags: list[str] | None = None,
+    schema: str | None = None,
+    examples: list[str] | str | None = None,
+    extra_inputs: dict[str, Any] | None = None,
 ) -> PromptStrategy | None:
     """
     Heuristic logic to select the best strategy based on inputs.

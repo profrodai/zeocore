@@ -15,7 +15,6 @@ This module provides a registry for LLM clients, allowing for
 dynamic loading and access to different LLM implementations.
 """
 
-
 from quack_core.core.errors import QuackIntegrationError
 from quack_core.core.logging import get_logger
 from quack_core.integrations.llms.clients.anthropic import AnthropicClient

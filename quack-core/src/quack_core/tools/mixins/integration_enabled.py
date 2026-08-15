@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
+
 class IntegrationEnabledMixin:
     """
     Mixin for tools that need integration services.
@@ -30,10 +31,7 @@ class IntegrationEnabledMixin:
     """
 
     def get_service(
-            self,
-            name: str,
-            ctx: ToolContext,
-            expected_type: type[T] | None = None
+        self, name: str, ctx: ToolContext, expected_type: type[T] | None = None
     ) -> T | Any | None:
         """Get a service from the context (if runner provided it)."""
         svc = ctx.get_service(name)
@@ -49,10 +47,7 @@ class IntegrationEnabledMixin:
         return svc
 
     def require_service(
-            self,
-            name: str,
-            ctx: ToolContext,
-            expected_type: type[T] | None = None
+        self, name: str, ctx: ToolContext, expected_type: type[T] | None = None
     ) -> T | Any:
         """Get a service from context (raises if missing)."""
         svc = ctx.require_service(name)

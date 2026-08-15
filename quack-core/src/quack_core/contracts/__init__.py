@@ -51,7 +51,7 @@ from quack_core.contracts.artifacts import (
     ToolInfo,
 )
 
-'''
+"""
 # Capability models
 from quack_core.contracts.capabilities import (
     # Demo (models only)
@@ -66,25 +66,21 @@ from quack_core.contracts.capabilities import (
     TranscriptionSegment,
     VideoRefRequest,
 )
-'''
+"""
 
-from quack_core.contracts.common import (
+from quack_core.contracts.common import (  # Versions; Enums; IDs; Time
     ARTIFACT_SCHEMA_VERSION,
-    # Versions
     CONTRACTS_VERSION,
     ENVELOPE_VERSION,
     MANIFEST_VERSION,
     ArtifactKind,
-    # Enums
     CapabilityStatus,
     ChecksumAlgorithm,
     LogLevel,
     StorageScheme,
     generate_artifact_id,
-    # IDs
     generate_run_id,
     is_valid_uuid,
-    # Time
     utcnow,
     utcnow_iso,
 )
@@ -118,12 +114,10 @@ __all__ = [
     "MANIFEST_VERSION",
     "ARTIFACT_SCHEMA_VERSION",
     "ENVELOPE_VERSION",
-
     # --- Envelopes ---
     "CapabilityResult",
     "CapabilityError",
     "CapabilityLogEvent",
-
     # --- Artifacts ---
     "StorageRef",
     "Checksum",
@@ -132,16 +126,15 @@ __all__ = [
     "Provenance",
     "ManifestInput",
     "RunManifest",
-
     # --- Capabilities ---
     # Media
-    #"TimeRange",
-    #"SliceVideoRequest",
-    #"SlicedClipData",
-    #"SliceVideoResponse",
-    #"TranscribeRequest",
-    #"TranscriptionSegment",
-    #"TranscribeResponse",
+    # "TimeRange",
+    # "SliceVideoRequest",
+    # "SlicedClipData",
+    # "SliceVideoResponse",
+    # "TranscribeRequest",
+    # "TranscriptionSegment",
+    # "TranscribeResponse",
     # Demo (models only, not implementations)
     "EchoRequest",
     "VideoRefRequest",

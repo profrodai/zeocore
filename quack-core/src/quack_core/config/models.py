@@ -59,9 +59,12 @@ class LoggingConfig(BaseModel):
         if not self.console:
             for handler in logger.handlers[:]:
                 import logging
+
                 # Check identity of stream to safely target stderr
-                if isinstance(handler,
-                              logging.StreamHandler) and handler.stream is sys.stderr:
+                if (
+                    isinstance(handler, logging.StreamHandler)
+                    and handler.stream is sys.stderr
+                ):
                     logger.removeHandler(handler)
 
 
@@ -115,8 +118,9 @@ class QuackConfig(BaseModel):
     logging: LoggingConfig = Field(
         default_factory=LoggingConfig, description="Logging settings"
     )
-    integrations: dict[str, Any] = Field(default_factory=dict,
-                                         description="Integration settings")
+    integrations: dict[str, Any] = Field(
+        default_factory=dict, description="Integration settings"
+    )
 
     plugins: PluginsConfig = Field(
         default_factory=PluginsConfig, description="Plugin settings"

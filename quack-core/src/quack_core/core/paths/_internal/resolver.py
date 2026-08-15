@@ -39,10 +39,10 @@ class PathResolver:
         self._cache: dict[str, ProjectContext] = {}
 
     def _get_project_root(
-            self,
-            start_dir: str | None = None,
-            marker_files: list[str] | None = None,
-            marker_dirs: list[str] | None = None,
+        self,
+        start_dir: str | None = None,
+        marker_files: list[str] | None = None,
+        marker_dirs: list[str] | None = None,
     ) -> str:
         return _find_project_root(start_dir, marker_files, marker_dirs)
 
@@ -100,8 +100,9 @@ class PathResolver:
 
         raise QuackFileNotFoundError("src", "Could not find source directory.")
 
-    def _find_output_directory(self, start_dir: str | None = None,
-                               create: bool = False) -> str:
+    def _find_output_directory(
+        self, start_dir: str | None = None, create: bool = False
+    ) -> str:
         """Find or create output directory."""
         try:
             root_dir = self._get_project_root(start_dir)
@@ -133,9 +134,9 @@ class PathResolver:
             raise e
 
     def _resolve_project_path(
-            self,
-            path_value: str | None,
-            project_root: str | None = None,
+        self,
+        path_value: str | None,
+        project_root: str | None = None,
     ) -> str:
         if path_value is None:
             return ""
@@ -182,9 +183,9 @@ class PathResolver:
         return context
 
     def _detect_content_context(
-            self,
-            start_dir: str | None = None,
-            content_type: str | None = None,
+        self,
+        start_dir: str | None = None,
+        content_type: str | None = None,
     ) -> ContentContext:
         proj_ctx = self._detect_project_context(start_dir)
         context = ContentContext(

@@ -63,8 +63,12 @@ class FileSystemService(
         return self.ensure_directory(path, exist_ok)
 
     def list_dir(
-        self, path: FsPathLike, pattern: str | None = None, recursive: bool = False,
-                 include_hidden: bool = False) -> DirectoryInfoResult:
+        self,
+        path: FsPathLike,
+        pattern: str | None = None,
+        recursive: bool = False,
+        include_hidden: bool = False,
+    ) -> DirectoryInfoResult:
         """Alias for list_directory()."""
         return self.list_directory(path, pattern, recursive, include_hidden)
 
@@ -77,7 +81,7 @@ class FileSystemService(
             value=res.is_file,
             error_info=res.error_info,
             error=res.error,
-            message=f"Is file: {res.is_file}" if res.ok else res.message
+            message=f"Is file: {res.is_file}" if res.ok else res.message,
         )
 
     def is_dir(self, path: FsPathLike) -> BoolResult:
@@ -89,7 +93,7 @@ class FileSystemService(
             value=res.is_dir,
             error_info=res.error_info,
             error=res.error,
-            message=f"Is dir: {res.is_dir}" if res.ok else res.message
+            message=f"Is dir: {res.is_dir}" if res.ok else res.message,
         )
 
     def stat(self, path: FsPathLike) -> FileInfoResult:

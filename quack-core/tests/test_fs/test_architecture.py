@@ -64,8 +64,10 @@ def test_internal_import_boundary():
                 imports = get_imports(file_path)
                 for imp in imports:
                     if imp.startswith(internal_marker):
-                        pytest.fail(f"Doctrine Violation: {file_path} imports {imp}. "
-                                    f"_internal should only be used by _ops.")
+                        pytest.fail(
+                            f"Doctrine Violation: {file_path} imports {imp}. "
+                            f"_internal should only be used by _ops."
+                        )
 
 
 def test_ops_import_boundary():
@@ -96,5 +98,7 @@ def test_ops_import_boundary():
                 imports = get_imports(file_path)
                 for imp in imports:
                     if imp.startswith(ops_marker):
-                        pytest.fail(f"Doctrine Violation: {file_path} imports {imp}. "
-                                    f"_ops should only be used by service.")
+                        pytest.fail(
+                            f"Doctrine Violation: {file_path} imports {imp}. "
+                            f"_ops should only be used by service."
+                        )

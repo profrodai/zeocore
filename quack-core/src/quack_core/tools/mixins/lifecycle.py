@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Lifecycle hooks for tools (doctrine-compliant).
 
@@ -45,11 +44,7 @@ class LifecycleMixin:
         ...         return CapabilityResult.ok(data=result)
     """
 
-    def pre_run(
-            self,
-            request: Any,
-            ctx: ToolContext
-    ) -> CapabilityResult[None]:
+    def pre_run(self, request: Any, ctx: ToolContext) -> CapabilityResult[None]:
         """
         Hook called before run().
 
@@ -66,10 +61,7 @@ class LifecycleMixin:
         return CapabilityResult.ok(data=None, msg="Pre-run checks passed")
 
     def post_run(
-            self,
-            request: Any,
-            result: CapabilityResult,
-            ctx: ToolContext
+        self, request: Any, result: CapabilityResult, ctx: ToolContext
     ) -> CapabilityResult:
         """
         Hook called after run().
@@ -86,11 +78,7 @@ class LifecycleMixin:
         """
         return result
 
-    def validate(
-            self,
-            request: Any,
-            ctx: ToolContext
-    ) -> CapabilityResult[None]:
+    def validate(self, request: Any, ctx: ToolContext) -> CapabilityResult[None]:
         """
         Validation hook.
 
@@ -104,10 +92,7 @@ class LifecycleMixin:
         # Fix #5: explicit data=None for honest typing
         return CapabilityResult.ok(data=None, msg="Validation passed")
 
-    def cleanup(
-            self,
-            ctx: ToolContext
-    ) -> CapabilityResult[None]:
+    def cleanup(self, ctx: ToolContext) -> CapabilityResult[None]:
         """
         Cleanup hook (called even on error).
 

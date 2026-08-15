@@ -64,7 +64,9 @@ class TestHandleErrors:
     def test_basic_decorator(self) -> None:
         """Test basic usage of the decorator."""
         # Mock the print_error function BEFORE defining functions with decorators
-        with patch("quack_core.interfaces.cli.utils.error._print_error") as mock_print_error:
+        with patch(
+            "quack_core.interfaces.cli.utils.error._print_error"
+        ) as mock_print_error:
             # Define a function with the decorator
             @handle_errors()
             def successful_function() -> str:
@@ -90,7 +92,9 @@ class TestHandleErrors:
 
     def test_with_specific_error_types(self) -> None:
         """Test specifying error types to catch."""
-        with patch("quack_core.interfaces.cli.utils.error._print_error") as mock_print_error:
+        with patch(
+            "quack_core.interfaces.cli.utils.error._print_error"
+        ) as mock_print_error:
             # Define a function that catches only ValueError
             @handle_errors(error_types=ValueError)
             def value_error_function() -> None:
@@ -119,7 +123,9 @@ class TestHandleErrors:
 
     def test_with_custom_title(self) -> None:
         """Test using a custom error title."""
-        with patch("quack_core.interfaces.cli.utils.error._print_error") as mock_print_error:
+        with patch(
+            "quack_core.interfaces.cli.utils.error._print_error"
+        ) as mock_print_error:
 
             @handle_errors(title="Custom Error Title")
             def custom_title_function() -> None:
@@ -132,7 +138,9 @@ class TestHandleErrors:
 
     def test_with_traceback(self) -> None:
         """Test showing traceback."""
-        with patch("quack_core.interfaces.cli.utils.error._print_error") as mock_print_error:
+        with patch(
+            "quack_core.interfaces.cli.utils.error._print_error"
+        ) as mock_print_error:
             with patch("traceback.print_exc") as mock_print_exc:
 
                 @handle_errors(show_traceback=True)
@@ -146,7 +154,9 @@ class TestHandleErrors:
 
     def test_with_exit_code(self) -> None:
         """Test exiting with specific code."""
-        with patch("quack_core.interfaces.cli.utils.error._print_error") as mock_print_error:
+        with patch(
+            "quack_core.interfaces.cli.utils.error._print_error"
+        ) as mock_print_error:
             with patch("sys.exit") as mock_exit:
 
                 @handle_errors(exit_code=42)

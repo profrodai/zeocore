@@ -61,7 +61,9 @@ class TestBaseConfigProvider:
 
             with patch("quack_core.core.fs.service.standalone.read_yaml") as mock_read:
                 mock_read.return_value.success = True
-                mock_read.return_value.data = {"test_section": {"test_key": "test_value"}}
+                mock_read.return_value.data = {
+                    "test_section": {"test_key": "test_value"}
+                }
 
                 result = provider.load_config(str(config_file))
                 assert result.success is True

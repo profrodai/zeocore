@@ -110,7 +110,8 @@ class LLMIntegration(BaseIntegrationService):
             auth_provider=None,
             config=None,
             config_path=config_path,
-            log_level=log_level)
+            log_level=log_level,
+        )
 
         self.provider = provider
         self.model = model

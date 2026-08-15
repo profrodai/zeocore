@@ -21,6 +21,7 @@ from quack_core.prompt.models import PromptStrategy
 def render_zero_shot(task_description: str) -> str:
     return f"{task_description}".strip()
 
+
 zero_shot_strategy = PromptStrategy(
     id="zero-shot-prompting",
     label="Zero-shot Prompting",
@@ -33,8 +34,11 @@ zero_shot_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Multi-Shot Structured ---
-def render_multi_shot_structured(task_description: str, schema: str, examples: list[str] | str) -> str:
+def render_multi_shot_structured(
+    task_description: str, schema: str, examples: list[str] | str
+) -> str:
     ex_str = "\n\n".join(examples) if isinstance(examples, list) else examples
     return f"""
 {task_description}
@@ -45,6 +49,7 @@ Here are some examples:
 Return your output in JSON using this schema:
 {schema}
 """.strip()
+
 
 multi_shot_structured_strategy = PromptStrategy(
     id="multi-shot-structured",
@@ -58,8 +63,11 @@ multi_shot_structured_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Single-Shot Structured ---
-def render_single_shot_structured(task_description: str, schema: str, example: str | None = None) -> str:
+def render_single_shot_structured(
+    task_description: str, schema: str, example: str | None = None
+) -> str:
     ex_section = f"\nHere is an example:\n{example}\n" if example else ""
     return f"""
 {task_description}
@@ -67,6 +75,7 @@ def render_single_shot_structured(task_description: str, schema: str, example: s
 {ex_section}Return your output in JSON using this schema:
 {schema}
 """.strip()
+
 
 single_shot_structured_strategy = PromptStrategy(
     id="single-shot-structured",
@@ -79,6 +88,7 @@ single_shot_structured_strategy = PromptStrategy(
     priority=60,
     example=None,
 )
+
 
 # --- ReAct Agentic ---
 def render_react_agentic(
@@ -141,6 +151,7 @@ Final Answer: <your final answer to the task>
 Begin!
 """.strip()
 
+
 react_agentic_strategy = PromptStrategy(
     id="react-agentic",
     label="ReAct Agentic Prompt",
@@ -153,8 +164,11 @@ react_agentic_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Zero-Shot Chain of Thought ---
-def render_zero_shot_cot(task_description: str, final_instruction: str | None = None) -> str:
+def render_zero_shot_cot(
+    task_description: str, final_instruction: str | None = None
+) -> str:
     final_instr = ""
     if final_instruction:
         final_instr = f"\n\n{final_instruction}"
@@ -164,6 +178,7 @@ def render_zero_shot_cot(task_description: str, final_instruction: str | None = 
 
 Let's think through this step by step.{final_instr}
 """.strip()
+
 
 zero_shot_cot_strategy = PromptStrategy(
     id="zero-shot-cot",
@@ -177,8 +192,11 @@ zero_shot_cot_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Task Decomposition ---
-def render_task_decomposition(task_description: str, output_format: str | None = None) -> str:
+def render_task_decomposition(
+    task_description: str, output_format: str | None = None
+) -> str:
     output_format_section = ""
     if output_format:
         output_format_section = f"""
@@ -200,6 +218,7 @@ To solve this effectively, please:
 {output_format_section}
 """.strip()
 
+
 task_decomposition_strategy = PromptStrategy(
     id="task-decomposition",
     label="Task Decomposition",
@@ -211,6 +230,7 @@ task_decomposition_strategy = PromptStrategy(
     priority=100,
     example=None,
 )
+
 
 # --- Apply Best Practices ---
 def render_apply_best_practices(prompt_text: str, guidelines: list[str]) -> str:
@@ -225,6 +245,7 @@ Original prompt:
 Provide the improved prompt only.
 """.strip()
 
+
 apply_best_practices_strategy = PromptStrategy(
     id="apply-best-practices",
     label="Apply Best Practices",
@@ -237,12 +258,14 @@ apply_best_practices_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Automatic Prompt Engineering ---
 def render_automatic_prompt_engineering(task_goal: str, num_variants: int = 5) -> str:
     return f"""
 We have the following goal: {task_goal}
 Generate {num_variants} prompt variants that preserve the same semantics.
 """.strip()
+
 
 automatic_prompt_engineering_strategy = PromptStrategy(
     id="automatic-prompt-engineering",
@@ -256,14 +279,18 @@ automatic_prompt_engineering_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Chain of Thought Prompting ---
-def render_chain_of_thought_prompting(task_description: str, final_instruction: str | None = None) -> str:
+def render_chain_of_thought_prompting(
+    task_description: str, final_instruction: str | None = None
+) -> str:
     final_instr = f"\n{final_instruction}" if final_instruction else ""
     return f"""
 {task_description}
 
 Let's think through this step by step.{final_instr}
 """.strip()
+
 
 chain_of_thought_prompting_strategy = PromptStrategy(
     id="chain-of-thought-prompting",
@@ -277,12 +304,14 @@ chain_of_thought_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Code Prompting ---
 def render_code_prompting(code_task_description: str) -> str:
     return f"""
 Write code to accomplish the following task:
 {code_task_description}
 """.strip()
+
 
 code_prompting_strategy = PromptStrategy(
     id="code-prompting",
@@ -296,6 +325,7 @@ code_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Contextual Prompting ---
 def render_contextual_prompting(context: str, task_description: str) -> str:
     return f"""
@@ -303,6 +333,7 @@ Context: {context}
 
 {task_description}
 """.strip()
+
 
 contextual_prompting_strategy = PromptStrategy(
     id="contextual-prompting",
@@ -316,6 +347,7 @@ contextual_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Debugging Code Prompting ---
 def render_debugging_code_prompting(broken_code: str) -> str:
     return f"""
@@ -324,6 +356,7 @@ The following code has errors:
 
 Please debug it and explain the fixes.
 """.strip()
+
 
 debugging_code_prompting_strategy = PromptStrategy(
     id="debugging-code-prompting",
@@ -337,12 +370,14 @@ debugging_code_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Explaining Code Prompting ---
 def render_explaining_code_prompting(code_snippet: str) -> str:
     return f"""
 Explain what the following code does in plain English:
 {code_snippet}
 """.strip()
+
 
 explaining_code_prompting_strategy = PromptStrategy(
     id="explaining-code-prompting",
@@ -355,6 +390,7 @@ explaining_code_prompting_strategy = PromptStrategy(
     priority=100,
     example=None,
 )
+
 
 # --- Few-shot Prompting ---
 def render_few_shot_prompting(task_description: str, examples: list[str] | str) -> str:
@@ -370,6 +406,7 @@ Examples:
 {examples_str}
 """.strip()
 
+
 few_shot_prompting_strategy = PromptStrategy(
     id="few-shot-prompting",
     label="Few-shot Prompting",
@@ -382,12 +419,14 @@ few_shot_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- JSON Repair Prompting ---
 def render_json_repair_prompting(incomplete_json: str) -> str:
     return f"""
 The text below is a possibly incomplete or malformed JSON. Repair it to valid JSON:
 {incomplete_json}
 """.strip()
+
 
 json_repair_prompting_strategy = PromptStrategy(
     id="json-repair-prompting",
@@ -401,13 +440,17 @@ json_repair_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Multimodal Prompting ---
-def render_multimodal_prompting(modalities_description: str, task_description: str) -> str:
+def render_multimodal_prompting(
+    modalities_description: str, task_description: str
+) -> str:
     return f"""
 You have the following inputs: {modalities_description}
 
 {task_description}
 """.strip()
+
 
 multimodal_prompting_strategy = PromptStrategy(
     id="multimodal-prompting",
@@ -421,6 +464,7 @@ multimodal_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- One-shot Prompting ---
 def render_one_shot_prompting(task_description: str, example: str) -> str:
     return f"""
@@ -429,6 +473,7 @@ def render_one_shot_prompting(task_description: str, example: str) -> str:
 Example:
 {example}
 """.strip()
+
 
 one_shot_prompting_strategy = PromptStrategy(
     id="one-shot-prompting",
@@ -441,6 +486,7 @@ one_shot_prompting_strategy = PromptStrategy(
     priority=100,
     example=None,
 )
+
 
 # --- ReAct Prompting ---
 def render_react_prompting(
@@ -470,6 +516,7 @@ Final Answer: <your answer>
 {examples_section}
 """.strip()
 
+
 react_prompting_strategy = PromptStrategy(
     id="react-prompting",
     label="ReAct Prompting",
@@ -482,12 +529,14 @@ react_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Role Prompting ---
 def render_role_prompting(role: str, task_description: str) -> str:
     return f"""
 I want you to act as a {role}.
 {task_description}
 """.strip()
+
 
 role_prompting_strategy = PromptStrategy(
     id="role-prompting",
@@ -501,6 +550,7 @@ role_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Self-consistency Prompting ---
 def render_self_consistency_prompting(task_description: str) -> str:
     return f"""
@@ -508,6 +558,7 @@ def render_self_consistency_prompting(task_description: str) -> str:
 
 Generate multiple reasoning paths with a higher temperature and select the most common answer.
 """.strip()
+
 
 self_consistency_prompting_strategy = PromptStrategy(
     id="self-consistency-prompting",
@@ -521,12 +572,14 @@ self_consistency_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Simplify Prompt ---
 def render_simplify_prompt(prompt_text: str) -> str:
     return f"""
 Rewrite the following prompt to be clear and simple:
 {prompt_text}
 """.strip()
+
 
 simplify_prompt_strategy = PromptStrategy(
     id="simplify-prompt",
@@ -540,6 +593,7 @@ simplify_prompt_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Step-back Prompting ---
 def render_step_back_prompting(background_prompt: str, main_task: str) -> str:
     return f"""
@@ -547,6 +601,7 @@ def render_step_back_prompting(background_prompt: str, main_task: str) -> str:
 
 Now, using the above, {main_task}
 """.strip()
+
 
 step_back_prompting_strategy = PromptStrategy(
     id="step-back-prompting",
@@ -559,6 +614,7 @@ step_back_prompting_strategy = PromptStrategy(
     priority=100,
     example=None,
 )
+
 
 # --- System Prompt Engineer ---
 def render_system_prompt_engineer(strategy: str) -> str:
@@ -579,6 +635,7 @@ Aim for clarity, precision, and effectiveness. The improved prompt should be com
 IMPORTANT: Only output the rewritten prompt without explanations or meta-commentary.
 """.strip()
 
+
 system_prompt_engineer_strategy = PromptStrategy(
     id="system-prompt-engineer",
     label="System Prompt Engineer",
@@ -591,6 +648,7 @@ system_prompt_engineer_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- System Prompting ---
 def render_system_prompting(task_description: str, system_instructions: str) -> str:
     return f"""
@@ -598,6 +656,7 @@ def render_system_prompting(task_description: str, system_instructions: str) -> 
 
 {task_description}
 """.strip()
+
 
 system_prompting_strategy = PromptStrategy(
     id="system-prompting",
@@ -611,12 +670,14 @@ system_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Translating Code Prompting ---
 def render_translating_code_prompting(source_code: str, target_language: str) -> str:
     return f"""
 Translate the following code into {target_language}:
 {source_code}
 """.strip()
+
 
 translating_code_prompting_strategy = PromptStrategy(
     id="translating-code-prompting",
@@ -630,6 +691,7 @@ translating_code_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Tree of Thoughts Prompting ---
 def render_tree_of_thought_prompting(task_description: str) -> str:
     return f"""
@@ -637,6 +699,7 @@ def render_tree_of_thought_prompting(task_description: str) -> str:
 
 Explore several alternative intermediate steps in parallel and select the optimal result.
 """.strip()
+
 
 tree_of_thought_prompting_strategy = PromptStrategy(
     id="tree-of-thought-prompting",
@@ -650,6 +713,7 @@ tree_of_thought_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Working with Schemas Prompting ---
 def render_working_with_schemas_prompting(schema: str, data: str) -> str:
     return f"""
@@ -661,6 +725,7 @@ And the data:
 
 Generate a JSON object conforming to the schema.
 """.strip()
+
 
 working_with_schemas_prompting_strategy = PromptStrategy(
     id="working-with-schemas-prompting",
@@ -674,12 +739,14 @@ working_with_schemas_prompting_strategy = PromptStrategy(
     example=None,
 )
 
+
 # --- Writing Code Prompting ---
 def render_writing_code_prompting(task_description: str) -> str:
     return f"""
 Write a code snippet in the appropriate programming language to:
 {task_description}
 """.strip()
+
 
 writing_code_prompting_strategy = PromptStrategy(
     id="writing-code-prompting",
@@ -692,6 +759,7 @@ writing_code_prompting_strategy = PromptStrategy(
     priority=100,
     example=None,
 )
+
 
 def get_internal_strategies() -> list[PromptStrategy]:
     """Returns a list of all core strategies defined in this module."""

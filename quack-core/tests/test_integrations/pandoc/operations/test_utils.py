@@ -42,6 +42,7 @@ from .test_utils_fix import (
 
 # --- Tests for _ops.utils ---
 
+
 def test_verify_pandoc_success(mock_pypandoc):
     """Test successful verification of pandoc."""
     version = verify_pandoc()
@@ -49,7 +50,7 @@ def test_verify_pandoc_success(mock_pypandoc):
     assert mock_pypandoc.get_pandoc_version.called
 
 
-@patch('importlib.import_module')
+@patch("importlib.import_module")
 def test_verify_pandoc_import_error(mock_import_module):
     """Test handling of ImportError during pandoc verification."""
     # Make import_module raise ImportError
@@ -61,7 +62,7 @@ def test_verify_pandoc_import_error(mock_import_module):
     assert "pypandoc module is not installed" in str(exc_info.value)
 
 
-@patch('pypandoc.get_pandoc_version')
+@patch("pypandoc.get_pandoc_version")
 def test_verify_pandoc_os_error(mock_get_version):
     """Test handling of OSError during pandoc verification."""
     mock_get_version.side_effect = OSError("Pandoc not found")
@@ -94,16 +95,14 @@ def test_prepare_pandoc_args():
     assert "--custom-arg" in custom_args
 
 
-@patch('quack_core.core.fs.service.standalone')
+@patch("quack_core.core.fs.service.standalone")
 def test_get_file_info(mock_fs):
     """Test getting file information for conversion."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(
         success=True, exists=True, size=100, modified=time.time()
     )
-    mock_fs.get_extension.return_value = SimpleNamespace(
-        success=True, data="html"
-    )
+    mock_fs.get_extension.return_value = SimpleNamespace(success=True, data="html")
 
     # Test with HTML file
     html_info = get_file_info("test.html")
@@ -127,7 +126,7 @@ def test_get_file_info(mock_fs):
     # get_file_info('missing.html')
 
 
-@patch('bs4.BeautifulSoup')
+@patch("bs4.BeautifulSoup")
 def test_validate_html_structure(mock_soup_class):
     """Test validation of HTML document structure."""
     # Create a mock BeautifulSoup instance
@@ -153,12 +152,13 @@ def test_validate_html_structure(mock_soup_class):
         MagicMock(get=lambda attr: "")  # Empty href
     ]
     valid, errors = validate_html_structure(
-        "<html><body><a href=\"\"></a></body></html>", check_links=True)
+        '<html><body><a href=""></a></body></html>', check_links=True
+    )
     assert not valid
     assert "empty links" in errors[0].lower()
 
 
-@patch('docx.Document')
+@patch("docx.Document")
 def test_validate_docx_structure(mock_document):
     """Test validation of DOCX document structure."""
     # Create mock Document instance
@@ -178,7 +178,7 @@ def test_validate_docx_structure(mock_document):
     assert "no paragraphs" in errors[0].lower()
 
     # Test with docx not installed
-    with patch.dict('sys.modules', {'docx': None}):
+    with patch.dict("sys.modules", {"docx": None}):
         valid, errors = validate_docx_structure("test.docx")
         assert valid
         assert not errors
@@ -214,7 +214,7 @@ def test_check_conversion_ratio():
     assert "less than" in errors[0]
 
 
-@patch('quack_core.integrations.pandoc._ops.utils.logger')
+@patch("quack_core.integrations.pandoc._ops.utils.logger")
 def test_track_metrics(mock_logger):
     """Test tracking of conversion metrics."""
     metrics = ConversionMetrics()
@@ -227,7 +227,7 @@ def test_track_metrics(mock_logger):
         100,  # Original size
         80,  # Converted size
         metrics,
-        config
+        config,
     )
 
     # Verify metrics were recorded
@@ -241,14 +241,7 @@ def test_track_metrics(mock_logger):
     config.metrics.track_conversion_time = False
     config.metrics.track_file_sizes = False
 
-    patched_track_metrics(
-        "test2.html",
-        time.time(),
-        200,
-        160,
-        metrics,
-        config
-    )
+    patched_track_metrics("test2.html", time.time(), 200, 160, metrics, config)
 
     # Verify metrics were not recorded
     assert "test2.html" not in metrics.conversion_times

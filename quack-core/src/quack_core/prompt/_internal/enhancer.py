@@ -14,10 +14,7 @@ logger = get_logger(__name__)
 
 
 def enhance_with_llm_safe(
-        prompt_text: str,
-        model: str | None = None,
-        provider: str | None = None,
-        **kwargs
+    prompt_text: str, model: str | None = None, provider: str | None = None, **kwargs
 ) -> str:
     """
     Safely attempts to enhance a prompt using the LLM integration.
@@ -32,8 +29,9 @@ def enhance_with_llm_safe(
         from quack_core.integrations.llms.service import LLMIntegration
 
         # Initialize service
-        llm_service = LLMIntegration(provider=provider, model=model,
-                                     enable_fallback=True)
+        llm_service = LLMIntegration(
+            provider=provider, model=model, enable_fallback=True
+        )
         init_res = llm_service.initialize()
         if not init_res.success:
             logger.warning(f"LLM Enhancer unavailable: {init_res.error}")
