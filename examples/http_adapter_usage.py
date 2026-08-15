@@ -326,4 +326,4 @@ if __name__ == "__main__":
     print("Endpoints:")
     print("  POST /webhook/quack-core - Receive job callbacks")
     print("  GET  /health - Health check")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)  # noqa: S104 -- demo/example code, not shipped runtime, self-documenting reachability choice
