@@ -46,17 +46,14 @@ class CapabilityError(BaseModel):
     code: str = Field(
         ...,
         description="Machine-readable error code (QC_* format)",
-        examples=["QC_CFG_ERROR", "QC_IO_NOT_FOUND", "QC_NET_TIMEOUT"]
+        examples=["QC_CFG_ERROR", "QC_IO_NOT_FOUND", "QC_NET_TIMEOUT"],
     )
 
-    message: str = Field(
-        ...,
-        description="Human-readable error description"
-    )
+    message: str = Field(..., description="Human-readable error description")
 
     details: dict[str, Any] = Field(
         default_factory=dict,
-        description="Additional context for debugging (exception type, stack traces, etc.)"
+        description="Additional context for debugging (exception type, stack traces, etc.)",
     )
 
     @field_validator("code")

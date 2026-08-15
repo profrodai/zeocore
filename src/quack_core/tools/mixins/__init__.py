@@ -72,7 +72,7 @@ if warn_mode:
         "Direct submodule imports are discouraged and may break in future versions. "
         "(Disable this warning by unsetting QUACK_WARN_NONCANONICAL_IMPORTS)",
         FutureWarning,
-        stacklevel=2
+        stacklevel=2,
     )
 
 # Must-fix #4: NO strict ImportError mode
@@ -85,7 +85,7 @@ from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 from quack_core.tools.mixins.lifecycle import LifecycleMixin
 
 __all__ = [
-    'IntegrationEnabledMixin',
-    'LifecycleMixin',
-    'ToolEnvInitializerMixin',
+    "IntegrationEnabledMixin",
+    "LifecycleMixin",
+    "ToolEnvInitializerMixin",
 ]

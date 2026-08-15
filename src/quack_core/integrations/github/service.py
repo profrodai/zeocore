@@ -61,7 +61,8 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
             auth_provider=None,
             config=None,
             config_path=config_path,
-            log_level=effective_log_level)
+            log_level=effective_log_level,
+        )
 
         self.client = None
 

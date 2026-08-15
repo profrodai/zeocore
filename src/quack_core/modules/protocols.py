@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Plugin protocols for quack_core.
 
@@ -180,7 +179,7 @@ class PluginLoaderProtocol(Protocol):
     """
 
     def load_entry_points(
-            self, group: str = "quack_core.modules"
+        self, group: str = "quack_core.modules"
     ) -> list[QuackPluginProtocol]:
         """
         Load modules from entry points.

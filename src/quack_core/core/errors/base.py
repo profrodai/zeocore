@@ -271,4 +271,3 @@ def wrap_io_errors(func: Callable[..., R]) -> Callable[..., R]:
             raise _exception_converter(e) from e
 
     return wrapper
-

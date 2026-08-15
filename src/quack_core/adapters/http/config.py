@@ -13,7 +13,6 @@
 Configuration for the HTTP adapter.
 """
 
-
 from pydantic import AnyHttpUrl, Field
 from quack_core.config.tooling.base import QuackToolConfigModel
 

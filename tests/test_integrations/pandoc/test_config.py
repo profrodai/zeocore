@@ -24,6 +24,7 @@ from quack_core.integrations.pandoc.config import (
 
 # --- Tests for PandocConfig ---
 
+
 def test_pandoc_config_initialization():
     """Test that PandocConfig initializes with default values."""
     config = PandocConfig()
@@ -48,15 +49,10 @@ def test_pandoc_config_custom_values():
     custom_config = PandocConfig(
         output_dir="/custom/output",
         pandoc_options=PandocOptions(
-            wrap="auto",
-            standalone=False,
-            markdown_headings="setext"
+            wrap="auto", standalone=False, markdown_headings="setext"
         ),
-        validation=ValidationConfig(
-            min_file_size=100,
-            check_links=True
-        ),
-        html_to_md_extra_args=["--no-highlight"]
+        validation=ValidationConfig(min_file_size=100, check_links=True),
+        html_to_md_extra_args=["--no-highlight"],
     )
 
     assert custom_config.output_dir == "/custom/output"
@@ -79,8 +75,8 @@ def test_pandoc_config_validate_output_dir(fs_stub):
     # PandocConfig(output_dir='??invalid??')
 
 
-
 # --- Tests for PandocConfigProvider ---
+
 
 def test_config_provider_default_config():
     """Test that the config provider returns default config values."""
@@ -101,7 +97,7 @@ def test_config_provider_validation():
     assert provider.validate_config(valid_config) is not False
 
     # Invalid path (mocked in the test)
-    with patch('quack_core.core.fs.service.is_valid_path', return_value=False):
+    with patch("quack_core.core.fs.service.is_valid_path", return_value=False):
         assert not provider.validate_config({"output_dir": "??invalid??"})
 
     # Invalid schema
@@ -113,13 +109,12 @@ def test_config_provider_load_from_environment(monkeypatch):
     provider = PandocConfigProvider()
 
     # Set environment variables
-    monkeypatch.setenv('QUACK_PANDOC_OUTPUT_DIR', '/env/output')
-    monkeypatch.setenv('QUACK_PANDOC_STANDALONE', 'false')
-    monkeypatch.setenv('QUACK_PANDOC_WRAP', 'auto')
+    monkeypatch.setenv("QUACK_PANDOC_OUTPUT_DIR", "/env/output")
+    monkeypatch.setenv("QUACK_PANDOC_STANDALONE", "false")
+    monkeypatch.setenv("QUACK_PANDOC_WRAP", "auto")
 
     env_config = provider.load_from_environment()
 
-    assert env_config.get('output_dir') is not None
-    assert env_config.get('standalone') == False
-    assert env_config.get('wrap') == 'auto'
-
+    assert env_config.get("output_dir") is not None
+    assert env_config.get("standalone") == False
+    assert env_config.get("wrap") == "auto"

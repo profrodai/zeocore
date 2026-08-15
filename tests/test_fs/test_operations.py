@@ -228,13 +228,17 @@ class TestFileSystemOperations:
         # Test deleting non-existent file (should succeed with missing_ok=True)
         # NOTE: This has been updated to match the actual implementation
         result = operations._delete("to_delete.txt")
-        assert result is False  # The implementation returns False for missing files with missing_ok=True
+        assert (
+            result is False
+        )  # The implementation returns False for missing files with missing_ok=True
 
         # Test deleting non-existent file with missing_ok=False
         with pytest.raises(Exception) as excinfo:
             operations._delete("to_delete.txt", missing_ok=False)
-        assert "not found" in str(excinfo.value).lower() or "does not exist" in str(
-            excinfo.value).lower()
+        assert (
+            "not found" in str(excinfo.value).lower()
+            or "does not exist" in str(excinfo.value).lower()
+        )
 
     def test_create_directory(self, temp_dir: Path) -> None:
         """Test creating a directory."""
@@ -251,7 +255,7 @@ class TestFileSystemOperations:
 
         # Test creating existing directory with exist_ok=False
         with patch(
-                "quack_core.core.fs._ops._ensure_directory"
+            "quack_core.core.fs._ops._ensure_directory"
         ) as mock_ensure_directory:
             mock_ensure_directory.side_effect = QuackFileExistsError(
                 str(temp_dir / "new_dir")
@@ -341,7 +345,9 @@ class TestFileSystemOperations:
         # Now returns tuple of (files, directories)
         result = operations._find_files(".", "*file*.txt")
         files, directories = result
-        assert len(files) == 3  # Now matches: find_file1.txt, find_file2.txt, and subfile.txt
+        assert (
+            len(files) == 3
+        )  # Now matches: find_file1.txt, find_file2.txt, and subfile.txt
         assert any(f.name == "find_file1.txt" for f in files)
         assert any(f.name == "find_file2.txt" for f in files)
         assert any(f.name == "subfile.txt" for f in files)
@@ -361,7 +367,10 @@ class TestFileSystemOperations:
         # Test finding with non-existent directory - updated to expect FileNotFoundError
         with pytest.raises(Exception) as excinfo:
             operations._find_files("nonexistent_dir", "*")
-        assert "does not exist" in str(excinfo.value).lower() or "not a directory" in str(excinfo.value).lower()
+        assert (
+            "does not exist" in str(excinfo.value).lower()
+            or "not a directory" in str(excinfo.value).lower()
+        )
 
     def test_read_yaml(self, temp_dir: Path) -> None:
         """Test reading YAML files."""
@@ -390,8 +399,10 @@ class TestFileSystemOperations:
         with pytest.raises(Exception) as excinfo:
             operations._read_yaml("invalid.yaml")
         # The error message contains details about the YAML parsing error
-        assert "mapping values" in str(excinfo.value).lower() or "yaml" in str(
-            excinfo.value).lower()
+        assert (
+            "mapping values" in str(excinfo.value).lower()
+            or "yaml" in str(excinfo.value).lower()
+        )
 
         # Test non-dictionary YAML
         list_yaml = temp_dir / "list.yaml"
@@ -445,8 +456,10 @@ class TestFileSystemOperations:
         with pytest.raises(Exception) as excinfo:
             operations._read_json("invalid.json")
         # The error message contains details about the JSON parsing error
-        assert "expecting value" in str(excinfo.value).lower() or "json" in str(
-            excinfo.value).lower()
+        assert (
+            "expecting value" in str(excinfo.value).lower()
+            or "json" in str(excinfo.value).lower()
+        )
 
         # Test non-dictionary JSON
         list_json = temp_dir / "list.json"
@@ -484,7 +497,10 @@ class TestFileSystemOperations:
             mock_dumps.side_effect = TypeError("Type error")
             with pytest.raises(Exception) as excinfo:
                 operations._write_json("error.json", {"error": object()})
-            assert "json" in str(excinfo.value).lower() or "type error" in str(excinfo.value).lower()
+            assert (
+                "json" in str(excinfo.value).lower()
+                or "type error" in str(excinfo.value).lower()
+            )
 
     def test_error_handling(self, temp_dir: Path) -> None:
         """Test error handling in _ops."""

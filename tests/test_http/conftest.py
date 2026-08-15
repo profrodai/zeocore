@@ -36,11 +36,7 @@ def test_registry():
 @pytest.fixture
 def job_runner(test_registry, job_store):
     """Create a job runner for testing."""
-    runner = ThreadPoolJobRunner(
-        registry=test_registry,
-        store=job_store,
-        max_workers=2
-    )
+    runner = ThreadPoolJobRunner(registry=test_registry, store=job_store, max_workers=2)
     yield runner
     runner.shutdown(wait=True)
 
@@ -60,7 +56,7 @@ def test_config():
         auth_token="test-token",
         job_ttl_seconds=60,
         max_workers=2,
-        request_timeout_seconds=30
+        request_timeout_seconds=30,
     )
 
 

@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 FastAPI dependencies for HTTP adapter.
 

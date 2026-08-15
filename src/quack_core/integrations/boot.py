@@ -16,7 +16,6 @@ to explicitly load runtime dependencies. It manages a global registry instance
 for convenience but allows for dependency injection.
 """
 
-
 from quack_core.integrations.core.registry import IntegrationRegistry
 from quack_core.integrations.core.results import IntegrationLoadReport
 from quack_core.integrations.loader import load_enabled_entry_points
@@ -36,10 +35,10 @@ def get_global_registry() -> IntegrationRegistry:
 
 
 def load_integrations(
-        enabled: list[str],
-        registry: IntegrationRegistry | None = None,
-        strict: bool = True,
-        initialize: bool = True
+    enabled: list[str],
+    registry: IntegrationRegistry | None = None,
+    strict: bool = True,
+    initialize: bool = True,
 ) -> IntegrationLoadReport:
     """
     Boot specific integrations.
@@ -56,8 +55,5 @@ def load_integrations(
     target_registry = registry or _global_registry
 
     return load_enabled_entry_points(
-        registry=target_registry,
-        enabled=enabled,
-        strict=strict,
-        initialize=initialize
+        registry=target_registry, enabled=enabled, strict=strict, initialize=initialize
     )

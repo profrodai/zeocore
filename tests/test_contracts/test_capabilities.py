@@ -15,19 +15,16 @@ Validates request/response schemas and demo implementations.
 
 import pytest
 from pydantic import ValidationError
-from quack_core.contracts import (
+from quack_core.contracts import (  # Supporting types; Demo (models only); Media
     ArtifactKind,
-    # Supporting types
     ArtifactRef,
     CapabilityStatus,
-    # Demo (models only)
     EchoRequest,
     SlicedClipData,
     SliceVideoRequest,
     SliceVideoResponse,
     StorageRef,
     StorageScheme,
-    # Media
     TimeRange,
     TranscribeRequest,
     TranscribeResponse,
@@ -77,17 +74,16 @@ class TestSliceVideoModels:
             kind=ArtifactKind.intermediate,
             content_type="video/mp4",
             storage=StorageRef(
-                scheme=StorageScheme.local,
-                uri="file:///data/input.mp4"
-            )
+                scheme=StorageScheme.local, uri="file:///data/input.mp4"
+            ),
         )
 
         request = SliceVideoRequest(
             source=source,
             clips=[
                 TimeRange(start_sec=0, end_sec=30),
-                TimeRange(start_sec=60, end_sec=90)
-            ]
+                TimeRange(start_sec=60, end_sec=90),
+            ],
         )
 
         assert len(request.clips) == 2
@@ -99,7 +95,7 @@ class TestSliceVideoModels:
             role="video_source",
             kind=ArtifactKind.intermediate,
             content_type="video/mp4",
-            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/in.mp4")
+            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/in.mp4"),
         )
 
         request = SliceVideoRequest(
@@ -107,7 +103,7 @@ class TestSliceVideoModels:
             clips=[TimeRange(start_sec=0, end_sec=10)],
             preset="fast",
             output_format="webm",
-            re_encode=True
+            re_encode=True,
         )
 
         assert request.preset == "fast"
@@ -120,13 +116,13 @@ class TestSliceVideoModels:
             role="video_slice_1",
             kind=ArtifactKind.final,
             content_type="video/mp4",
-            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/clip.mp4")
+            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/clip.mp4"),
         )
 
         clip = SlicedClipData(
             artifact=artifact,
             duration_sec=30.0,
-            original_range=TimeRange(start_sec=0, end_sec=30)
+            original_range=TimeRange(start_sec=0, end_sec=30),
         )
 
         assert clip.duration_sec == 30.0
@@ -138,7 +134,7 @@ class TestSliceVideoModels:
             role="video_slice_1",
             kind=ArtifactKind.final,
             content_type="video/mp4",
-            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/clip.mp4")
+            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/clip.mp4"),
         )
 
         response = SliceVideoResponse(
@@ -146,10 +142,10 @@ class TestSliceVideoModels:
                 SlicedClipData(
                     artifact=clip_artifact,
                     duration_sec=30.0,
-                    original_range=TimeRange(start_sec=0, end_sec=30)
+                    original_range=TimeRange(start_sec=0, end_sec=30),
                 )
             ],
-            metadata={"preset": "fast"}
+            metadata={"preset": "fast"},
         )
 
         assert len(response.generated_clips) == 1
@@ -165,14 +161,12 @@ class TestTranscribeModels:
             role="video_source",
             kind=ArtifactKind.intermediate,
             content_type="video/mp4",
-            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/video.mp4")
+            storage=StorageRef(
+                scheme=StorageScheme.local, uri="file:///data/video.mp4"
+            ),
         )
 
-        request = TranscribeRequest(
-            source=source,
-            language="en",
-            detect_speakers=True
-        )
+        request = TranscribeRequest(source=source, language="en", detect_speakers=True)
 
         assert request.source.role == "video_source"
         assert request.language == "en"
@@ -185,7 +179,7 @@ class TestTranscribeModels:
             end=5.2,
             text="Hello, world!",
             speaker="Speaker 1",
-            confidence=0.95
+            confidence=0.95,
         )
 
         assert segment.text == "Hello, world!"
@@ -197,20 +191,12 @@ class TestTranscribeModels:
         response = TranscribeResponse(
             full_text="Hello, world! This is a test.",
             segments=[
-                TranscriptionSegment(
-                    start=0.0,
-                    end=5.0,
-                    text="Hello, world!"
-                ),
-                TranscriptionSegment(
-                    start=5.0,
-                    end=8.5,
-                    text="This is a test."
-                )
+                TranscriptionSegment(start=0.0, end=5.0, text="Hello, world!"),
+                TranscriptionSegment(start=5.0, end=8.5, text="This is a test."),
             ],
             detected_language="en",
             word_count=6,
-            metadata={"model": "whisper-large-v3"}
+            metadata={"model": "whisper-large-v3"},
         )
 
         assert response.word_count == 6
@@ -236,10 +222,7 @@ class TestDemoCapabilities:
 
     def test_echo_text_custom_greeting(self):
         """Test echo with custom greeting."""
-        request = EchoRequest(
-            text="QuackCore",
-            override_greeting="Welcome to"
-        )
+        request = EchoRequest(text="QuackCore", override_greeting="Welcome to")
         result = echo_text(request)
 
         assert result.data == "Welcome to QuackCore"

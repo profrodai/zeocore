@@ -61,10 +61,10 @@ def _normalize_path_with_info(path: Any) -> PathInfo:
 
 @wrap_io_errors
 def _find_project_root(
-        start_dir: Any | None = None,
-        marker_files: list[str] | None = None,
-        marker_dirs: list[str] | None = None,
-        max_levels: int = 5,
+    start_dir: Any | None = None,
+    marker_files: list[str] | None = None,
+    marker_dirs: list[str] | None = None,
+    max_levels: int = 5,
 ) -> str:
     """
     Find project root by looking for markers in parent directories.
@@ -82,7 +82,11 @@ def _find_project_root(
         current_dir = os.path.abspath(current_dir)
 
     markers = marker_files or [
-        "pyproject.toml", "setup.py", ".git", ".quack", "quack_config.yaml"
+        "pyproject.toml",
+        "setup.py",
+        ".git",
+        ".quack",
+        "quack_config.yaml",
     ]
     dir_markers = marker_dirs or ["src", "quack-core", "tests"]
 
@@ -113,17 +117,14 @@ def _find_project_root(
             break
         current_dir = parent
 
-    raise QuackFileNotFoundError(
-        current_dir,
-        "Could not find project root directory."
-    )
+    raise QuackFileNotFoundError(current_dir, "Could not find project root directory.")
 
 
 @wrap_io_errors
 def _find_nearest_directory(
-        name: str,
-        start_dir: Any | None = None,
-        max_levels: int = 5,
+    name: str,
+    start_dir: Any | None = None,
+    max_levels: int = 5,
 ) -> str:
     """
     Find the nearest directory with the given name by searching UPWARDS.
@@ -158,8 +159,8 @@ def _find_nearest_directory(
 
 @wrap_io_errors
 def _infer_module_from_path(
-        path: Any,
-        project_root: Any | None = None,
+    path: Any,
+    project_root: Any | None = None,
 ) -> str:
     """
     Infer a Python module name from a file path.
@@ -176,12 +177,16 @@ def _infer_module_from_path(
     abs_path_res = standalone.normalize_path(path_str)
     abs_root_res = standalone.normalize_path(root_str)
 
-    abs_path = str(
-        abs_path_res.path) if abs_path_res.ok and abs_path_res.path else os.path.abspath(
-        path_str)
-    abs_root = str(
-        abs_root_res.path) if abs_root_res.ok and abs_root_res.path else os.path.abspath(
-        root_str)
+    abs_path = (
+        str(abs_path_res.path)
+        if abs_path_res.ok and abs_path_res.path
+        else os.path.abspath(path_str)
+    )
+    abs_root = (
+        str(abs_root_res.path)
+        if abs_root_res.ok and abs_root_res.path
+        else os.path.abspath(root_str)
+    )
 
     # Anchor to src
     try:
@@ -213,8 +218,8 @@ def _infer_module_from_path(
 
 @wrap_io_errors
 def _resolve_relative_to_project(
-        path: Any,
-        project_root: Any | None = None,
+    path: Any,
+    project_root: Any | None = None,
 ) -> str:
     """
     Resolve a path relative to the project root.

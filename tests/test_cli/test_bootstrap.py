@@ -51,7 +51,10 @@ class TestInitCliEnv:
         mock_context = MagicMock(spec=QuackContext)
 
         # Patch the QuackContext constructor to avoid validation errors
-        with patch("quack_core.interfaces.cli.legacy.boostrap.QuackContext", return_value=mock_context):
+        with patch(
+            "quack_core.interfaces.cli.legacy.boostrap.QuackContext",
+            return_value=mock_context,
+        ):
             # Set environment for test
             with patch.dict(os.environ, {"QUACK_ENV": "development"}):
                 # Call the function under test
@@ -90,7 +93,10 @@ class TestInitCliEnv:
         mock_context = MagicMock(spec=QuackContext)
 
         # Patch the QuackContext constructor to avoid validation errors
-        with patch("quack_core.interfaces.cli.legacy.boostrap.QuackContext", return_value=mock_context):
+        with patch(
+            "quack_core.interfaces.cli.legacy.boostrap.QuackContext",
+            return_value=mock_context,
+        ):
             # Call with explicit parameters
             context = init_cli_env(
                 config_path="/path/to/config.yaml",
@@ -137,7 +143,10 @@ class TestInitCliEnv:
         mock_context = MagicMock(spec=QuackContext)
 
         # Patch the QuackContext constructor to avoid validation errors
-        with patch("quack_core.interfaces.cli.legacy.boostrap.QuackContext", return_value=mock_context):
+        with patch(
+            "quack_core.interfaces.cli.legacy.boostrap.QuackContext",
+            return_value=mock_context,
+        ):
             # Call with debug=True
             init_cli_env(debug=True)
 
@@ -162,7 +171,10 @@ class TestInitCliEnv:
         mock_context = MagicMock(spec=QuackContext)
 
         # Patch the QuackContext constructor to avoid validation errors
-        with patch("quack_core.interfaces.cli.legacy.boostrap.QuackContext", return_value=mock_context):
+        with patch(
+            "quack_core.interfaces.cli.legacy.boostrap.QuackContext",
+            return_value=mock_context,
+        ):
             # Call with verbose=True
             init_cli_env(verbose=True)
 

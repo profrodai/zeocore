@@ -13,6 +13,7 @@ Helper functions to fix validation issues in utils _ops.
 This module provides patched implementations of certain utils _ops
 that can be used to avoid DataResult validation issues during testing.
 """
+
 import time
 from unittest.mock import patch
 
@@ -69,7 +70,8 @@ def patched_check_conversion_ratio(output_size, original_size, min_ratio=0.05):
         is_valid = ratio >= min_ratio_float
         if not is_valid:
             errors.append(
-                f"Conversion ratio ({ratio:.2f}) is less than the minimum threshold ({min_ratio_float:.2f})")
+                f"Conversion ratio ({ratio:.2f}) is less than the minimum threshold ({min_ratio_float:.2f})"
+            )
         return is_valid, errors
 
     if original_size_int == 0:
@@ -90,7 +92,7 @@ def patched_check_conversion_ratio(output_size, original_size, min_ratio=0.05):
 
 
 def patched_track_metrics(
-        filename, start_time, original_size, converted_size, metrics, config
+    filename, start_time, original_size, converted_size, metrics, config
 ):
     """
     Patched version of track_metrics that avoids DataResult validation issues.
@@ -118,8 +120,11 @@ def patched_track_metrics(
         metrics.processed_files += 1
 
     # Track time if configured
-    if hasattr(config, "metrics") and hasattr(config.metrics,
-                                              "track_conversion_time") and config.metrics.track_conversion_time:
+    if (
+        hasattr(config, "metrics")
+        and hasattr(config.metrics, "track_conversion_time")
+        and config.metrics.track_conversion_time
+    ):
         end_time = time.time()
         duration = end_time - start_time
 
@@ -130,8 +135,11 @@ def patched_track_metrics(
             metrics.conversion_times[filename] = {"start": start_time, "end": end_time}
 
     # Track file sizes if configured
-    if hasattr(config, "metrics") and hasattr(config.metrics,
-                                              "track_file_sizes") and config.metrics.track_file_sizes:
+    if (
+        hasattr(config, "metrics")
+        and hasattr(config.metrics, "track_file_sizes")
+        and config.metrics.track_file_sizes
+    ):
         ratio = converted_size_int / original_size_int if original_size_int > 0 else 0
 
         if hasattr(metrics, "file_sizes"):
@@ -150,11 +158,17 @@ def apply_utils_patches():
         list: List of context managers that should be entered
     """
     patches = [
-        patch('quack_core.integrations.pandoc._ops.utils.check_file_size',
-              patched_check_file_size),
-        patch('quack_core.integrations.pandoc._ops.utils.check_conversion_ratio',
-              patched_check_conversion_ratio),
-        patch('quack_core.integrations.pandoc._ops.utils.track_metrics',
-              patched_track_metrics)
+        patch(
+            "quack_core.integrations.pandoc._ops.utils.check_file_size",
+            patched_check_file_size,
+        ),
+        patch(
+            "quack_core.integrations.pandoc._ops.utils.check_conversion_ratio",
+            patched_check_conversion_ratio,
+        ),
+        patch(
+            "quack_core.integrations.pandoc._ops.utils.track_metrics",
+            patched_track_metrics,
+        ),
     ]
     return patches

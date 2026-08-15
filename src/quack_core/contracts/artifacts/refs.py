@@ -78,33 +78,30 @@ class StorageRef(BaseModel):
                 {
                     "scheme": "local",
                     "uri": "file:///data/transcript.txt",
-                    "metadata": {}
+                    "metadata": {},
                 },
                 {
                     "scheme": "s3",
                     "uri": "s3://my-bucket/outputs/video.mp4",
                     "bucket": "my-bucket",
                     "key": "outputs/video.mp4",
-                    "metadata": {"region": "us-east-1"}
+                    "metadata": {"region": "us-east-1"},
                 },
                 {
                     "scheme": "custom",
                     "scheme_custom": "minio",
                     "uri": "minio://my-bucket/file.mp4",
-                    "metadata": {"endpoint": "minio.example.com:9000"}
-                }
+                    "metadata": {"endpoint": "minio.example.com:9000"},
+                },
             ]
-        }
+        },
     )
 
-    scheme: StorageScheme = Field(
-        ...,
-        description="Storage backend type"
-    )
+    scheme: StorageScheme = Field(..., description="Storage backend type")
 
     scheme_custom: str | None = Field(
         None,
-        description="Custom scheme name when scheme=custom (e.g., 'minio', 'ceph')"
+        description="Custom scheme name when scheme=custom (e.g., 'minio', 'ceph')",
     )
 
     uri: str = Field(
@@ -114,36 +111,30 @@ class StorageRef(BaseModel):
             "file:///data/output.txt",
             "s3://bucket/key.mp4",
             "gs://bucket/object.json",
-            "https://example.com/file.pdf"
-        ]
+            "https://example.com/file.pdf",
+        ],
     )
 
     bucket: str | None = Field(
-        None,
-        description="Bucket name (for object storage schemes like s3, gcs, azure)"
+        None, description="Bucket name (for object storage schemes like s3, gcs, azure)"
     )
 
-    key: str | None = Field(
-        None,
-        description="Object key/path within bucket"
-    )
+    key: str | None = Field(None, description="Object key/path within bucket")
 
     metadata: dict[str, Any] = Field(
         default_factory=dict,
-        description="Storage-specific metadata (region, credentials ref, etc.)"
+        description="Storage-specific metadata (region, credentials ref, etc.)",
     )
 
-    @model_validator(mode='after')
-    def validate_custom_scheme(self) -> 'StorageRef':
+    @model_validator(mode="after")
+    def validate_custom_scheme(self) -> "StorageRef":
         """Ensure scheme_custom is provided when scheme is custom."""
         if self.scheme == StorageScheme.custom and not self.scheme_custom:
-            raise ValueError(
-                "scheme_custom must be specified when scheme=custom"
-            )
+            raise ValueError("scheme_custom must be specified when scheme=custom")
         return self
 
-    @model_validator(mode='after')
-    def validate_uri_matches_scheme(self) -> 'StorageRef':
+    @model_validator(mode="after")
+    def validate_uri_matches_scheme(self) -> "StorageRef":
         """Basic validation that URI prefix matches declared scheme."""
         scheme_prefixes = {
             StorageScheme.local: ("file://",),
@@ -183,18 +174,18 @@ class Checksum(BaseModel):
 
     algorithm: ChecksumAlgorithm = Field(
         default=ChecksumAlgorithm.sha256,
-        description="Hashing algorithm used (sha256 is blessed)"
+        description="Hashing algorithm used (sha256 is blessed)",
     )
 
     algorithm_custom: str | None = Field(
         None,
-        description="Custom algorithm name when algorithm=custom (e.g., 'blake2b', 'md5')"
+        description="Custom algorithm name when algorithm=custom (e.g., 'blake2b', 'md5')",
     )
 
     value: str = Field(
         ...,
         description="Hex-encoded checksum value",
-        examples=["a1b2c3d4e5f6...", "5d41402abc4b2a76b9719d911017c592"]
+        examples=["a1b2c3d4e5f6...", "5d41402abc4b2a76b9719d911017c592"],
     )
 
     @field_validator("value")
@@ -207,8 +198,8 @@ class Checksum(BaseModel):
             raise ValueError(f"Checksum value must be valid hexadecimal, got: {v}")
         return v.lower()
 
-    @model_validator(mode='after')
-    def validate_sha256_and_custom(self) -> 'Checksum':
+    @model_validator(mode="after")
+    def validate_sha256_and_custom(self) -> "Checksum":
         """
         Validate SHA256 checksums and enforce custom algorithm naming.
         """
@@ -221,9 +212,7 @@ class Checksum(BaseModel):
 
         # If algorithm is custom, require algorithm_custom
         if self.algorithm == ChecksumAlgorithm.custom and not self.algorithm_custom:
-            raise ValueError(
-                "algorithm_custom must be specified when algorithm=custom"
-            )
+            raise ValueError("algorithm_custom must be specified when algorithm=custom")
 
         return self
 
@@ -277,73 +266,70 @@ class ArtifactRef(BaseModel):
                     "content_type": "text/plain",
                     "storage": {
                         "scheme": "local",
-                        "uri": "file:///data/transcript.txt"
+                        "uri": "file:///data/transcript.txt",
                     },
                     "size_bytes": 2048,
                     "checksum": {
                         "algorithm": "sha256",
-                        "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                        "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
                     },
                     "created_at": "2025-01-15T10:30:00Z",
                     "tags": {"language": "en"},
-                    "metadata": {"word_count": 150}
+                    "metadata": {"word_count": 150},
                 }
             ]
-        }
+        },
     )
 
     artifact_id: str = Field(
         default_factory=generate_artifact_id,
-        description="Unique identifier for this artifact"
+        description="Unique identifier for this artifact",
     )
 
     role: ArtifactRole = Field(
         ...,
         description="Semantic role in workflow (e.g., media.transcript_txt, text.summary_md)",
-        examples=["media.video_source", "media.transcript_txt", "text.summary_md", "crm.contacts_csv"]
+        examples=[
+            "media.video_source",
+            "media.transcript_txt",
+            "text.summary_md",
+            "crm.contacts_csv",
+        ],
     )
 
     kind: ArtifactKind = Field(
-        ...,
-        description="Classification for retention and routing"
+        ..., description="Classification for retention and routing"
     )
 
     content_type: str = Field(
         ...,
         description="MIME type of the artifact content",
-        examples=["text/plain", "video/mp4", "application/json", "image/jpeg"]
+        examples=["text/plain", "video/mp4", "application/json", "image/jpeg"],
     )
 
-    storage: StorageRef = Field(
-        ...,
-        description="Where the artifact is stored"
-    )
+    storage: StorageRef = Field(..., description="Where the artifact is stored")
 
     size_bytes: int | None = Field(
-        None,
-        ge=0,
-        description="Size of the artifact in bytes"
+        None, ge=0, description="Size of the artifact in bytes"
     )
 
     checksum: Checksum | None = Field(
-        None,
-        description="Checksum for integrity verification"
+        None, description="Checksum for integrity verification"
     )
 
     created_at: datetime = Field(
-        default_factory=utcnow,
-        description="UTC timestamp when artifact was created"
+        default_factory=utcnow, description="UTC timestamp when artifact was created"
     )
 
     tags: dict[str, str] = Field(
         default_factory=dict,
         description="Additional routing/filtering metadata",
-        examples=[{"language": "en"}, {"speaker": "Alice"}, {"quality": "high"}]
+        examples=[{"language": "en"}, {"speaker": "Alice"}, {"quality": "high"}],
     )
 
     metadata: dict[str, Any] = Field(
         default_factory=dict,
-        description="Free-form metadata (duration, resolution, etc.)"
+        description="Free-form metadata (duration, resolution, etc.)",
     )
 
     @field_validator("artifact_id")

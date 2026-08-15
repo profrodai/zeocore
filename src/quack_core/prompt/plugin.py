@@ -16,6 +16,7 @@ class PromptPlugin:
     """
     QuackCore plugin wrapping the PromptService.
     """
+
     def __init__(self):
         self.name = "prompt"
         self._service = PromptService(load_defaults=True)
@@ -29,6 +30,7 @@ class PromptPlugin:
     def get_service(self) -> PromptService:
         """Access the underlying PromptService."""
         return self._service
+
 
 def create_plugin() -> PromptPlugin:
     return PromptPlugin()

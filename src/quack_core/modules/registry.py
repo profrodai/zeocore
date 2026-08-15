@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Plugin registry for quack_core.
 
@@ -130,9 +129,7 @@ class PluginRegistry:
         # Register in type-specific registries
         self._register_by_type(plugin, plugin_id)
 
-    def _register_by_type(
-            self, plugin: QuackPluginProtocol, plugin_id: str
-    ) -> None:
+    def _register_by_type(self, plugin: QuackPluginProtocol, plugin_id: str) -> None:
         """
         Register the plugin in appropriate type-specific registries.
 
@@ -155,9 +152,7 @@ class PluginRegistry:
         if isinstance(plugin, ProviderPluginProtocol):
             self._provider_plugins[plugin_id] = plugin
 
-    def _register_commands(
-            self, plugin: CommandPluginProtocol, plugin_id: str
-    ) -> None:
+    def _register_commands(self, plugin: CommandPluginProtocol, plugin_id: str) -> None:
         """
         Register commands provided by a command plugin.
 
@@ -180,7 +175,7 @@ class PluginRegistry:
         )
 
     def _register_workflows(
-            self, plugin: WorkflowPluginProtocol, plugin_id: str
+        self, plugin: WorkflowPluginProtocol, plugin_id: str
     ) -> None:
         """
         Register workflows provided by a workflow plugin.
@@ -204,7 +199,7 @@ class PluginRegistry:
         )
 
     def _register_extension(
-            self, plugin: ExtensionPluginProtocol, plugin_id: str
+        self, plugin: ExtensionPluginProtocol, plugin_id: str
     ) -> None:
         """
         Register an extension plugin for a target plugin.
@@ -240,9 +235,7 @@ class PluginRegistry:
 
         self.logger.debug(f"Unregistered plugin: {plugin_id}")
 
-    def _unregister_by_type(
-            self, plugin: QuackPluginProtocol, plugin_id: str
-    ) -> None:
+    def _unregister_by_type(self, plugin: QuackPluginProtocol, plugin_id: str) -> None:
         """
         Remove the plugin from type-specific registries.
 
@@ -273,7 +266,8 @@ class PluginRegistry:
             target = plugin.get_target_plugin()
             if target in self._extensions:
                 self._extensions[target] = [
-                    p for p in self._extensions[target]
+                    p
+                    for p in self._extensions[target]
                     if self._get_plugin_id(p) != plugin_id
                 ]
                 if not self._extensions[target]:
@@ -299,9 +293,7 @@ class PluginRegistry:
         self._extensions.clear()
         self.logger.debug("Cleared all registered modules")
 
-    def execute_command(
-            self, command: str, *args: object, **kwargs: object
-    ) -> object:
+    def execute_command(self, command: str, *args: object, **kwargs: object) -> object:
         """
         Execute a command by name.
 
@@ -325,7 +317,7 @@ class PluginRegistry:
         return plugin.execute_command(command, *args, **kwargs)
 
     def execute_workflow(
-            self, workflow: str, *args: object, **kwargs: object
+        self, workflow: str, *args: object, **kwargs: object
     ) -> object:
         """
         Execute a workflow by name.
@@ -496,7 +488,7 @@ class PluginRegistry:
         return list(self._workflows.keys())
 
     def get_command_plugin_for_command(
-            self, command: str
+        self, command: str
     ) -> CommandPluginProtocol | None:
         """
         Get the plugin that provides a specific command.
@@ -510,7 +502,7 @@ class PluginRegistry:
         return self._commands.get(command)
 
     def get_workflow_plugin_for_workflow(
-            self, workflow: str
+        self, workflow: str
     ) -> WorkflowPluginProtocol | None:
         """
         Get the plugin that provides a specific workflow.
@@ -523,9 +515,7 @@ class PluginRegistry:
         """
         return self._workflows.get(workflow)
 
-    def get_extensions_for_plugin(
-            self, target: str
-    ) -> list[ExtensionPluginProtocol]:
+    def get_extensions_for_plugin(self, target: str) -> list[ExtensionPluginProtocol]:
         """
         Get all extensions targeting a specific plugin.
 
@@ -537,9 +527,7 @@ class PluginRegistry:
         """
         return self._extensions.get(target, [])
 
-    def find_plugins_by_capability(
-            self, capability: str
-    ) -> list[QuackPluginProtocol]:
+    def find_plugins_by_capability(self, capability: str) -> list[QuackPluginProtocol]:
         """
         Find modules that advertise a specific capability.
 

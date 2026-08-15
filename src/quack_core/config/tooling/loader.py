@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Configuration loading utilities for QuackTools.
 
@@ -27,11 +26,7 @@ from .base import QuackToolConfigModel
 T = TypeVar("T", bound=QuackToolConfigModel)
 
 
-def load_tool_config(
-        config: QuackConfig,
-        tool_name: str,
-        config_model: type[T]
-) -> T:
+def load_tool_config(config: QuackConfig, tool_name: str, config_model: type[T]) -> T:
     """
     Extract and validate tool-specific config from the main QuackConfig.
 
@@ -59,11 +54,7 @@ def load_tool_config(
     return tool_config
 
 
-def update_tool_config(
-        config: QuackConfig,
-        tool_name: str,
-        new_data: Mapping
-) -> None:
+def update_tool_config(config: QuackConfig, tool_name: str, new_data: Mapping) -> None:
     """
     Update a tool's config section in the QuackConfig.
 

@@ -40,10 +40,7 @@ class TestStorageRef:
 
     def test_local_storage_ref(self):
         """Test creating a local file reference."""
-        ref = StorageRef(
-            scheme=StorageScheme.local,
-            uri="file:///data/video.mp4"
-        )
+        ref = StorageRef(scheme=StorageScheme.local, uri="file:///data/video.mp4")
 
         assert ref.scheme == StorageScheme.local
         assert ref.uri == "file:///data/video.mp4"
@@ -55,7 +52,7 @@ class TestStorageRef:
             uri="s3://my-bucket/path/to/file.mp4",
             bucket="my-bucket",
             key="path/to/file.mp4",
-            metadata={"region": "us-east-1"}
+            metadata={"region": "us-east-1"},
         )
 
         assert ref.scheme == StorageScheme.s3
@@ -69,7 +66,7 @@ class TestStorageRef:
             scheme=StorageScheme.custom,
             scheme_custom="minio",
             uri="minio://my-bucket/file.mp4",
-            metadata={"endpoint": "minio.example.com:9000"}
+            metadata={"endpoint": "minio.example.com:9000"},
         )
 
         assert ref.scheme == StorageScheme.custom
@@ -81,7 +78,7 @@ class TestStorageRef:
         with pytest.raises(ValidationError) as exc_info:
             StorageRef(
                 scheme=StorageScheme.custom,
-                uri="custom://my-bucket/file.mp4"
+                uri="custom://my-bucket/file.mp4",
                 # Missing scheme_custom
             )
 
@@ -95,52 +92,52 @@ class TestChecksum:
         """Test creating a valid checksum."""
         checksum = Checksum(
             algorithm=ChecksumAlgorithm.sha256,
-            value="1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014"
+            value="1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014",
         )
 
         assert checksum.algorithm == ChecksumAlgorithm.sha256
-        assert checksum.value == "1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014"
+        assert (
+            checksum.value
+            == "1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014"
+        )
 
     def test_checksum_lowercase_normalization(self):
         """Test that checksum values are normalized to lowercase."""
         checksum = Checksum(
             algorithm=ChecksumAlgorithm.sha256,
-            value="1B4F0E9851971998E732078544C96B36C3D01CEDF7CAA332359D6F1D83567014"
+            value="1B4F0E9851971998E732078544C96B36C3D01CEDF7CAA332359D6F1D83567014",
         )
 
-        assert checksum.value == "1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014"
+        assert (
+            checksum.value
+            == "1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014"
+        )
 
     def test_invalid_checksum_hex(self):
         """Test that invalid hex values are rejected."""
         with pytest.raises(ValidationError):
             Checksum(
                 algorithm=ChecksumAlgorithm.sha256,
-                value="not-a-hex-value-" + "0" * 48  # Need 64 chars total
+                value="not-a-hex-value-" + "0" * 48,  # Need 64 chars total
             )
 
     def test_sha256_length_validation(self):
         """Test that SHA256 checksums must be exactly 64 hex characters."""
         # Too short
         with pytest.raises(ValidationError) as exc_info:
-            Checksum(
-                algorithm=ChecksumAlgorithm.sha256,
-                value="abc123"
-            )
+            Checksum(algorithm=ChecksumAlgorithm.sha256, value="abc123")
         assert "64 hex characters" in str(exc_info.value).lower()
 
         # Too long
         with pytest.raises(ValidationError):
-            Checksum(
-                algorithm=ChecksumAlgorithm.sha256,
-                value="a" * 65
-            )
+            Checksum(algorithm=ChecksumAlgorithm.sha256, value="a" * 65)
 
     def test_custom_checksum_algorithm(self):
         """Test using a custom checksum algorithm."""
         checksum = Checksum(
             algorithm=ChecksumAlgorithm.custom,
             algorithm_custom="blake2b",
-            value="abcd1234"  # Custom algorithms don't enforce length
+            value="abcd1234",  # Custom algorithms don't enforce length
         )
 
         assert checksum.algorithm == ChecksumAlgorithm.custom
@@ -151,7 +148,7 @@ class TestChecksum:
         with pytest.raises(ValidationError) as exc_info:
             Checksum(
                 algorithm=ChecksumAlgorithm.custom,
-                value="abcd1234"
+                value="abcd1234",
                 # Missing algorithm_custom
             )
 
@@ -168,9 +165,8 @@ class TestArtifactRef:
             kind=ArtifactKind.final,
             content_type="text/plain",
             storage=StorageRef(
-                scheme=StorageScheme.local,
-                uri="file:///data/transcript.txt"
-            )
+                scheme=StorageScheme.local, uri="file:///data/transcript.txt"
+            ),
         )
 
         assert artifact.role == "transcript_txt"
@@ -188,12 +184,15 @@ class TestArtifactRef:
             size_bytes=1024,
             checksum=Checksum(
                 algorithm=ChecksumAlgorithm.sha256,
-                value="60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752"
-            )
+                value="60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752",
+            ),
         )
 
         assert artifact.size_bytes == 1024
-        assert artifact.checksum.value == "60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752"
+        assert (
+            artifact.checksum.value
+            == "60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752"
+        )
 
     def test_artifact_with_tags(self):
         """Test artifact with routing tags."""
@@ -202,7 +201,7 @@ class TestArtifactRef:
             kind=ArtifactKind.final,
             content_type="text/plain",
             storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/t.txt"),
-            tags={"language": "en", "speaker_count": "2"}
+            tags={"language": "en", "speaker_count": "2"},
         )
 
         assert artifact.tags["language"] == "en"
@@ -215,7 +214,9 @@ class TestArtifactRef:
                 role="",  # Empty role
                 kind=ArtifactKind.final,
                 content_type="text/plain",
-                storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/f.txt")
+                storage=StorageRef(
+                    scheme=StorageScheme.local, uri="file:///data/f.txt"
+                ),
             )
 
     def test_artifact_id_must_be_uuid(self):
@@ -226,7 +227,9 @@ class TestArtifactRef:
                 role="test",
                 kind=ArtifactKind.final,
                 content_type="text/plain",
-                storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/f.txt")
+                storage=StorageRef(
+                    scheme=StorageScheme.local, uri="file:///data/f.txt"
+                ),
             )
 
 
@@ -237,7 +240,7 @@ class TestRunManifest:
         """Test creating a basic run manifest."""
         manifest = RunManifest(
             tool=ToolInfo(name="slice_video", version="1.0.0"),
-            status=CapabilityStatus.success
+            status=CapabilityStatus.success,
         )
 
         assert manifest.tool.name == "slice_video"
@@ -250,14 +253,14 @@ class TestRunManifest:
             role="video_source",
             kind=ArtifactKind.intermediate,
             content_type="video/mp4",
-            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/in.mp4")
+            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/in.mp4"),
         )
 
         output_artifact = ArtifactRef(
             role="video_slice_1",
             kind=ArtifactKind.final,
             content_type="video/mp4",
-            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/out.mp4")
+            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/out.mp4"),
         )
 
         manifest = RunManifest(
@@ -265,12 +268,10 @@ class TestRunManifest:
             status=CapabilityStatus.success,
             inputs=[
                 ManifestInput(
-                    name="source_video",
-                    artifact=input_artifact,
-                    required=True
+                    name="source_video", artifact=input_artifact, required=True
                 )
             ],
-            outputs=[output_artifact]
+            outputs=[output_artifact],
         )
 
         assert len(manifest.inputs) == 1
@@ -288,7 +289,7 @@ class TestRunManifest:
             status=CapabilityStatus.success,
             started_at=started,
             finished_at=finished,
-            duration_sec=45.0
+            duration_sec=45.0,
         )
 
         assert manifest.finished_at > manifest.started_at
@@ -303,7 +304,7 @@ class TestRunManifest:
                 tool=ToolInfo(name="test", version="1.0.0"),
                 status=CapabilityStatus.success,
                 started_at=started,
-                finished_at=finished
+                finished_at=finished,
             )
 
         assert "finished_at" in str(exc_info.value).lower()
@@ -319,7 +320,7 @@ class TestRunManifest:
                 status=CapabilityStatus.success,
                 started_at=started,
                 finished_at=finished,
-                duration_sec=100.0  # Doesn't match 45 seconds
+                duration_sec=100.0,  # Doesn't match 45 seconds
             )
 
         assert "duration_sec" in str(exc_info.value).lower()
@@ -329,7 +330,7 @@ class TestRunManifest:
         with pytest.raises(ValidationError) as exc_info:
             RunManifest(
                 tool=ToolInfo(name="test", version="1.0.0"),
-                status=CapabilityStatus.error
+                status=CapabilityStatus.error,
                 # Missing error field
             )
 
@@ -341,11 +342,8 @@ class TestRunManifest:
             tool=ToolInfo(name="test", version="1.0.0"),
             status=CapabilityStatus.success,
             provenance=Provenance(
-                git_commit="abc123",
-                git_branch="main",
-                environment="prod",
-                runner="n8n"
-            )
+                git_commit="abc123", git_branch="main", environment="prod", runner="n8n"
+            ),
         )
 
         assert manifest.provenance.git_commit == "abc123"
@@ -421,7 +419,7 @@ class TestManifestFixtures:
             role="debug.temp_file",
             kind=ArtifactKind.intermediate,
             content_type="text/plain",
-            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/temp.txt")
+            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/temp.txt"),
         )
 
         with pytest.raises(ValidationError) as exc_info:
@@ -429,13 +427,13 @@ class TestManifestFixtures:
                 tool=ToolInfo(name="test.tool", version="1.0.0"),
                 status=CapabilityStatus.error,
                 error=CapabilityError(code="QC_IO_ERROR", message="Failed"),
-                intermediates=[intermediate_artifact]  # Not allowed
+                intermediates=[intermediate_artifact],  # Not allowed
             )
 
         errors = exc_info.value.errors()
         assert any(
-            "intermediates" in str(err.get("loc", [])) or
-            "intermediates" in err.get("msg", "").lower()
+            "intermediates" in str(err.get("loc", []))
+            or "intermediates" in err.get("msg", "").lower()
             for err in errors
         )
 
@@ -445,19 +443,19 @@ class TestManifestFixtures:
             role="debug.temp_file",
             kind=ArtifactKind.intermediate,
             content_type="text/plain",
-            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/temp.txt")
+            storage=StorageRef(scheme=StorageScheme.local, uri="file:///data/temp.txt"),
         )
 
         with pytest.raises(ValidationError) as exc_info:
             RunManifest(
                 tool=ToolInfo(name="test.tool", version="1.0.0"),
                 status=CapabilityStatus.skipped,
-                intermediates=[intermediate_artifact]  # Not allowed
+                intermediates=[intermediate_artifact],  # Not allowed
             )
 
         errors = exc_info.value.errors()
         assert any(
-            "intermediates" in str(err.get("loc", [])) or
-            "intermediates" in err.get("msg", "").lower()
+            "intermediates" in str(err.get("loc", []))
+            or "intermediates" in err.get("msg", "").lower()
             for err in errors
         )

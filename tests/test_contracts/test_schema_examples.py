@@ -73,8 +73,9 @@ class TestSchemaExamples:
     def test_run_manifest_examples_validate(self):
         """Test that RunManifest examples are valid."""
         examples = _get_schema_examples(RunManifest)
-        assert len(examples) >= 3, \
+        assert len(examples) >= 3, (
             "RunManifest should have multiple domain examples (media, text, crm, etc.)"
+        )
         _assert_examples_validate(RunManifest)
 
     def test_run_manifest_examples_represent_diverse_domains(self):
@@ -86,8 +87,9 @@ class TestSchemaExamples:
             manifest = RunManifest.model_validate(example)
             tool_names.add(manifest.tool.name)
 
-        assert len(tool_names) >= 3, \
+        assert len(tool_names) >= 3, (
             f"RunManifest examples should represent diverse domains, got: {tool_names}"
+        )
 
     def test_run_manifest_examples_use_namespaced_naming(self):
         """
@@ -100,20 +102,23 @@ class TestSchemaExamples:
             manifest = RunManifest.model_validate(example)
 
             # Tool name should be namespaced (contain a dot)
-            assert "." in manifest.tool.name, \
+            assert "." in manifest.tool.name, (
                 f"Example {i}: tool name '{manifest.tool.name}' must be namespaced (e.g., 'domain.tool')"
+            )
 
             # Input artifact roles should be namespaced
             for input_idx, manifest_input in enumerate(manifest.inputs):
                 role = manifest_input.artifact.role
-                assert "." in role, \
+                assert "." in role, (
                     f"Example {i}, input {input_idx}: role '{role}' must be namespaced (e.g., 'domain.role')"
+                )
 
             # Output artifact roles should be namespaced
             for output_idx, output in enumerate(manifest.outputs):
                 role = output.role
-                assert "." in role, \
+                assert "." in role, (
                     f"Example {i}, output {output_idx}: role '{role}' must be namespaced (e.g., 'domain.role')"
+                )
 
     def test_run_manifest_examples_have_valid_uuids(self):
         """
@@ -126,20 +131,23 @@ class TestSchemaExamples:
             manifest = RunManifest.model_validate(example)
 
             # Check run_id
-            assert is_valid_uuid(manifest.run_id), \
+            assert is_valid_uuid(manifest.run_id), (
                 f"Example {i}: run_id '{manifest.run_id}' is not a valid UUID"
+            )
 
             # Check artifact_ids in inputs
             for input_idx, manifest_input in enumerate(manifest.inputs):
                 artifact_id = manifest_input.artifact.artifact_id
-                assert is_valid_uuid(artifact_id), \
+                assert is_valid_uuid(artifact_id), (
                     f"Example {i}, input {input_idx}: artifact_id '{artifact_id}' is not a valid UUID"
+                )
 
             # Check artifact_ids in outputs
             for output_idx, output in enumerate(manifest.outputs):
                 artifact_id = output.artifact_id
-                assert is_valid_uuid(artifact_id), \
+                assert is_valid_uuid(artifact_id), (
                     f"Example {i}, output {output_idx}: artifact_id '{artifact_id}' is not a valid UUID"
+                )
 
     def test_run_manifest_examples_have_valid_timestamps(self):
         """
@@ -151,27 +159,31 @@ class TestSchemaExamples:
         for i, example in enumerate(_get_schema_examples(RunManifest)):
             # Check raw example data for timestamp format
             started_at = example.get("started_at", "")
-            assert started_at.endswith("Z"), \
+            assert started_at.endswith("Z"), (
                 f"Example {i}: started_at should use Z format (got: {started_at})"
+            )
 
             # Verify it's actually parseable as ISO 8601
             try:
                 datetime.fromisoformat(started_at.replace("Z", "+00:00"))
             except ValueError as e:
                 pytest.fail(
-                    f"Example {i}: started_at '{started_at}' is not valid ISO 8601: {e}")
+                    f"Example {i}: started_at '{started_at}' is not valid ISO 8601: {e}"
+                )
 
             # Check finished_at if present
             if "finished_at" in example:
                 finished_at = example["finished_at"]
-                assert finished_at.endswith("Z"), \
+                assert finished_at.endswith("Z"), (
                     f"Example {i}: finished_at should use Z format (got: {finished_at})"
+                )
 
                 try:
                     datetime.fromisoformat(finished_at.replace("Z", "+00:00"))
                 except ValueError as e:
                     pytest.fail(
-                        f"Example {i}: finished_at '{finished_at}' is not valid ISO 8601: {e}")
+                        f"Example {i}: finished_at '{finished_at}' is not valid ISO 8601: {e}"
+                    )
 
     def test_run_manifest_examples_enforce_status_invariants(self):
         """
@@ -187,25 +199,31 @@ class TestSchemaExamples:
 
             if manifest.status.value == "success":
                 # Success cannot have error field
-                assert manifest.error is None, \
+                assert manifest.error is None, (
                     f"Example {i}: success status cannot have error field"
+                )
 
             elif manifest.status.value == "error":
                 # Error must have error field
-                assert manifest.error is not None, \
+                assert manifest.error is not None, (
                     f"Example {i}: error status must have error field"
+                )
                 # Error cannot have outputs or intermediates
-                assert manifest.outputs == [], \
+                assert manifest.outputs == [], (
                     f"Example {i}: error status must have empty outputs"
-                assert manifest.intermediates == [], \
+                )
+                assert manifest.intermediates == [], (
                     f"Example {i}: error status must have empty intermediates"
+                )
 
             elif manifest.status.value == "skipped":
                 # Skipped cannot have outputs or intermediates
-                assert manifest.outputs == [], \
+                assert manifest.outputs == [], (
                     f"Example {i}: skipped status must have empty outputs"
-                assert manifest.intermediates == [], \
+                )
+                assert manifest.intermediates == [], (
                     f"Example {i}: skipped status must have empty intermediates"
+                )
 
     def test_run_manifest_examples_keep_intermediates_empty(self):
         """
@@ -219,6 +237,7 @@ class TestSchemaExamples:
             manifest = RunManifest.model_validate(example)
 
             # For documentation clarity, examples should show the clean case
-            assert manifest.intermediates == [], \
-                f"Example {i}: examples should use empty intermediates for clarity " \
+            assert manifest.intermediates == [], (
+                f"Example {i}: examples should use empty intermediates for clarity "
                 f"(intermediates are allowed but make examples more complex)"
+            )

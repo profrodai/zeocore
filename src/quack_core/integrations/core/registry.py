@@ -68,13 +68,13 @@ class IntegrationRegistry:
         if not key or not key.strip():
             raise QuackError(
                 f"Invalid integration ID: '{key}'. ID cannot be empty.",
-                {"integration_id": key}
+                {"integration_id": key},
             )
 
         if " " in key:
             raise QuackError(
                 f"Invalid integration ID: '{key}'. ID cannot contain whitespace.",
-                {"integration_id": key}
+                {"integration_id": key},
             )
 
         if key in self._integrations:
@@ -102,7 +102,8 @@ class IntegrationRegistry:
             return True
 
         self.logger.warning(
-            f"Integration not found for unregistration: {integration_id}")
+            f"Integration not found for unregistration: {integration_id}"
+        )
         return False
 
     def get_integration(self, integration_id: str) -> IntegrationProtocol | None:

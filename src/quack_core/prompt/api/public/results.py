@@ -16,6 +16,7 @@ from quack_core.prompt.models import PromptStrategy, StrategyInfo
 
 class PromptRenderResult(BaseModel):
     """Result of a prompt rendering operation."""
+
     success: bool
     prompt: str | None = None
     strategy_id: str | None = None
@@ -24,26 +25,34 @@ class PromptRenderResult(BaseModel):
     estimated_words: int | None = None
     error: str | None = None
 
+
 class RegisterStrategyResult(BaseModel):
     """Result of registering a strategy."""
+
     success: bool
     strategy_id: str | None = None
     error: str | None = None
 
+
 class GetStrategyResult(BaseModel):
     """Result of retrieving a strategy."""
+
     success: bool
     strategy: PromptStrategy | None = None
     error: str | None = None
 
+
 class StrategyListResult(BaseModel):
     """Result of listing strategies."""
+
     success: bool
     strategies: list[StrategyInfo] = Field(default_factory=list)
     error: str | None = None
 
+
 class LoadPackResult(BaseModel):
     """Result of loading a strategy pack."""
+
     success: bool
     loaded_count: int = 0
     error: str | None = None

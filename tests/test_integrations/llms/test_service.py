@@ -101,7 +101,9 @@ class TestLLMService:
                 mock_normalize_path.return_value = mock_path
 
                 # Also patch the BaseIntegrationService._set_config_path method
-                with patch("quack_core.integrations.core.base.BaseIntegrationService._set_config_path"):
+                with patch(
+                    "quack_core.integrations.core.base.BaseIntegrationService._set_config_path"
+                ):
                     # Also patch os.getcwd() to avoid FileNotFoundError
                     with patch("os.getcwd", return_value="/Users/rodrivera"):
                         service = LLMIntegration(

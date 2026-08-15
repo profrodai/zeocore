@@ -18,6 +18,7 @@ from quack_core.core.errors.base import QuackError
 
 class QuackIntegrationError(QuackError):
     """Base exception for all integration-related errors."""
+
     pass
 
 
@@ -25,11 +26,11 @@ class QuackAuthenticationError(QuackIntegrationError):
     """Raised when there's an authentication error with an integration."""
 
     def __init__(
-            self,
-            message: str,
-            service: str | None = None,
-            credentials_path: str | None = None,
-            original_error: Exception | None = None,
+        self,
+        message: str,
+        service: str | None = None,
+        credentials_path: str | None = None,
+        original_error: Exception | None = None,
     ) -> None:
         context: dict[str, object] = {}
         if service is not None:
@@ -46,12 +47,12 @@ class QuackApiError(QuackIntegrationError):
     """Raised when there's an error with an external API."""
 
     def __init__(
-            self,
-            message: str,
-            service: str | None = None,
-            status_code: int | None = None,
-            api_method: str | None = None,
-            original_error: Exception | None = None,
+        self,
+        message: str,
+        service: str | None = None,
+        status_code: int | None = None,
+        api_method: str | None = None,
+        original_error: Exception | None = None,
     ) -> None:
         context: dict[str, object] = {}
         if service is not None:
@@ -71,12 +72,12 @@ class QuackQuotaExceededError(QuackApiError):
     """Raised when an API quota is exceeded."""
 
     def __init__(
-            self,
-            message: str,
-            service: str | None = None,
-            resource: str | None = None,
-            limit: int | None = None,
-            original_error: Exception | None = None,
+        self,
+        message: str,
+        service: str | None = None,
+        resource: str | None = None,
+        limit: int | None = None,
+        original_error: Exception | None = None,
     ) -> None:
         # Prepare specific context data
         quota_context: dict[str, object] = {}

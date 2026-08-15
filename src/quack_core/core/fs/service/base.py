@@ -32,8 +32,12 @@ class _BaseFileSystemService:
     in service/full_class.py.
     """
 
-    def __init__(self, base_dir: str | Path | None = None, log_level: int = LOG_LEVELS[LogLevel.INFO],
-                 unsafe_allow_absolute_paths: bool = False) -> None:
+    def __init__(
+        self,
+        base_dir: str | Path | None = None,
+        log_level: int = LOG_LEVELS[LogLevel.INFO],
+        unsafe_allow_absolute_paths: bool = False,
+    ) -> None:
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
         self.unsafe_allow_absolute_paths = unsafe_allow_absolute_paths
@@ -66,18 +70,28 @@ class _BaseFileSystemService:
         Coerces input to Path AND anchors it to the service's base_dir with sandboxing.
         """
         try:
-            return coerce_path(path, base_dir=self.base_dir, allow_absolute=self.unsafe_allow_absolute_paths)
+            return coerce_path(
+                path,
+                base_dir=self.base_dir,
+                allow_absolute=self.unsafe_allow_absolute_paths,
+            )
         except (QuackPathEscapeError, QuackPathOutsideBaseDirError) as e:
             # Re-raise sandbox violations to be mapped to specific error types
             raise e
         except ValueError as e:
             # Wrap standard coercion errors in QuackValidationError
-            raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
+            raise QuackValidationError(
+                f"Invalid path input: {path}", original_error=e
+            ) from e
         except TypeError as e:
             # Wrap shape/type errors
-            raise QuackValidationError(f"Invalid path input type: {path}", original_error=e) from e
+            raise QuackValidationError(
+                f"Invalid path input type: {path}", original_error=e
+            ) from e
         except Exception as e:
-            raise QuackValidationError(f"Invalid path input: {path}", original_error=e) from e
+            raise QuackValidationError(
+                f"Invalid path input: {path}", original_error=e
+            ) from e
 
     def _map_error(self, e: Exception) -> ErrorInfo:
         """
@@ -117,7 +131,9 @@ class _BaseFileSystemService:
             hint = "Check if the file path is correct relative to base_dir."
         elif isinstance(e, FileExistsError):
             err_type = "file_exists"
-            hint = "Target already exists. Use overwrite=True or choose a different path."
+            hint = (
+                "Target already exists. Use overwrite=True or choose a different path."
+            )
         elif isinstance(e, PermissionError):
             err_type = "permission_denied"
             hint = "Check file permissions or run with elevated privileges."
@@ -140,7 +156,9 @@ class _BaseFileSystemService:
             elif "invalid regex" in msg_lower:
                 err_type = "invalid_regex"
                 hint = "The provided regular expression pattern is invalid."
-            elif "is not a dict" in msg_lower:  # Catching yaml/json parsing errors from ops
+            elif (
+                "is not a dict" in msg_lower
+            ):  # Catching yaml/json parsing errors from ops
                 err_type = "invalid_data_format"
                 hint = "The file content structure does not match the expected format (e.g. dict)."
             else:
@@ -148,10 +166,10 @@ class _BaseFileSystemService:
                 hint = "Input validation failed."
 
         # Extract error details if available
-        if hasattr(e, 'filename'):
-            details['filename'] = str(e.filename)
-        if hasattr(e, 'errno'):
-            details['errno'] = e.errno
+        if hasattr(e, "filename"):
+            details["filename"] = str(e.filename)
+        if hasattr(e, "errno"):
+            details["errno"] = e.errno
 
         return ErrorInfo(
             type=err_type,
@@ -159,5 +177,5 @@ class _BaseFileSystemService:
             hint=hint,
             exception=exception_cls,
             trace_id=trace_id,
-            details=details if details else None
+            details=details if details else None,
         )

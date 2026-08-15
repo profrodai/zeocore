@@ -62,8 +62,7 @@ class TestDriveOperationsDownload:
 
             # Configure paths_service mock
             mock_paths_service.resolve_project_path.return_value = PathResult(
-                success=True,
-                path="/tmp/test_file.txt"
+                success=True, path="/tmp/test_file.txt"
             )
 
             # Configure downloader mock
@@ -102,7 +101,7 @@ class TestDriveOperationsDownload:
 
         # Patch the standalone module directly as it's imported in download.py
         with patch(
-                "quack_core.integrations.google.drive._ops.download.standalone"
+            "quack_core.integrations.google.drive._ops.download.standalone"
         ) as mock_fs:
             # Setup the mock to return Path objects directly (not DataResult)
             temp_dir_path = tmp_path / "temp_dir"
@@ -124,15 +123,15 @@ class TestDriveOperationsDownload:
         local_dir = tmp_path / "local_dir"
 
         with patch(
-                "quack_core.integrations.google.drive._ops.download.paths_service"
+            "quack_core.integrations.google.drive._ops.download.paths_service"
         ) as mock_paths_service:
             mock_paths_service.resolve_project_path.return_value = PathResult(
                 success=True,
-                path=str(local_dir)  # Use string, not Path
+                path=str(local_dir),  # Use string, not Path
             )
 
             with patch(
-                    "quack_core.integrations.google.drive._ops.download.standalone"
+                "quack_core.integrations.google.drive._ops.download.standalone"
             ) as mock_fs:
                 # Setup mock to return a directory
                 mock_fs.get_file_info.return_value = FileInfoResult(
@@ -155,15 +154,15 @@ class TestDriveOperationsDownload:
         local_file = tmp_path / "specific_file.txt"
 
         with patch(
-                "quack_core.integrations.google.drive._ops.download.paths_service"
+            "quack_core.integrations.google.drive._ops.download.paths_service"
         ) as mock_paths_service:
             mock_paths_service.resolve_project_path.return_value = PathResult(
                 success=True,
-                path=str(local_file)  # Use string, not Path
+                path=str(local_file),  # Use string, not Path
             )
 
             with patch(
-                    "quack_core.integrations.google.drive._ops.download.standalone"
+                "quack_core.integrations.google.drive._ops.download.standalone"
             ) as mock_fs:
                 # Setup mock to return a file
                 mock_fs.get_file_info.return_value = FileInfoResult(
@@ -189,7 +188,7 @@ class TestDriveOperationsDownload:
 
         # Mock execute_api_request to raise QuackApiError
         with patch(
-                "quack_core.integrations.google.drive.utils.api.execute_api_request"
+            "quack_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.side_effect = QuackApiError(
                 "Failed to get file metadata",
@@ -228,7 +227,7 @@ class TestDriveOperationsDownload:
             # Configure mocks
             mock_paths_service.resolve_project_path.return_value = PathResult(
                 success=True,
-                path="/tmp/test_file.txt"  # Use string, not Path
+                path="/tmp/test_file.txt",  # Use string, not Path
             )
 
             mock_fs.join_path.return_value = Path("/tmp/test_file.txt")

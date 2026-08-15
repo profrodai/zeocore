@@ -15,7 +15,9 @@ from pathlib import Path
 from quack_core.core.fs._internal.directory_ops import _ensure_directory
 
 
-def _get_unique_filename(directory: Path, filename: str, raise_if_exists: bool = False) -> Path:
+def _get_unique_filename(
+    directory: Path, filename: str, raise_if_exists: bool = False
+) -> Path:
     if not directory.exists():
         raise FileNotFoundError(f"Directory does not exist: {directory}")
     if not filename or not filename.strip():
@@ -90,7 +92,9 @@ def _atomic_write(path: Path, content: bytes) -> Path:
         raise OSError(f"Atomic write failed: {e}") from e
 
 
-def _find_files_by_content(directory: Path, text_pattern: str, recursive: bool = True) -> list[Path]:
+def _find_files_by_content(
+    directory: Path, text_pattern: str, recursive: bool = True
+) -> list[Path]:
     try:
         regex = re.compile(text_pattern)
     except re.error as e:
@@ -104,7 +108,8 @@ def _find_files_by_content(directory: Path, text_pattern: str, recursive: bool =
     matches = []
     iterator = directory.rglob("*") if recursive else directory.glob("*")
     for p in iterator:
-        if not p.is_file(): continue
+        if not p.is_file():
+            continue
         try:
             with open(p, encoding="utf-8", errors="ignore") as f:
                 if regex.search(f.read()):

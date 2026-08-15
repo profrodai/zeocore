@@ -46,21 +46,22 @@ except ImportError:
 
     # Create a minimal fs stub if the module isn't available (for tests)
     fs = SimpleNamespace(
-        get_file_info=lambda path: SimpleNamespace(success=False, exists=False,
-                                                   error="Module not available"),
+        get_file_info=lambda path: SimpleNamespace(
+            success=False, exists=False, error="Module not available"
+        ),
         create_directory=lambda path, exist_ok=True: SimpleNamespace(success=True),
-        join_path=lambda *parts: SimpleNamespace(success=True,
-                                                 data=os.path.join(*parts)),
-        split_path=lambda path: SimpleNamespace(success=True,
-                                                data=path.split(os.sep) if isinstance(
-                                                    path, str) else []),
-        write_text=lambda path, content, encoding=None: SimpleNamespace(success=True,
-                                                                        bytes_written=len(
-                                                                            content) if isinstance(
-                                                                            content,
-                                                                            str) else 0),
-        read_text=lambda path, encoding=None: SimpleNamespace(success=True,
-                                                              content="<html><body>Test</body></html>")
+        join_path=lambda *parts: SimpleNamespace(
+            success=True, data=os.path.join(*parts)
+        ),
+        split_path=lambda path: SimpleNamespace(
+            success=True, data=path.split(os.sep) if isinstance(path, str) else []
+        ),
+        write_text=lambda path, content, encoding=None: SimpleNamespace(
+            success=True, bytes_written=len(content) if isinstance(content, str) else 0
+        ),
+        read_text=lambda path, encoding=None: SimpleNamespace(
+            success=True, content="<html><body>Test</body></html>"
+        ),
     )
 
 
@@ -79,13 +80,14 @@ def _validate_input(html_path: str, config: PandocConfig) -> int:
         QuackIntegrationError: If the input file is missing or has invalid structure.
     """
     file_info = fs.get_file_info(html_path)
-    if not getattr(file_info, 'success', False) or not getattr(file_info, 'exists',
-                                                               False):
+    if not getattr(file_info, "success", False) or not getattr(
+        file_info, "exists", False
+    ):
         raise QuackIntegrationError(f"Input file not found: {html_path}")
 
     # Convert file size to integer safely
     try:
-        if hasattr(file_info, 'size'):
+        if hasattr(file_info, "size"):
             if hasattr(file_info.size, "__int__"):
                 original_size = int(file_info.size)
             elif file_info.size is not None:
@@ -105,11 +107,11 @@ def _validate_input(html_path: str, config: PandocConfig) -> int:
 
     try:
         read_result = fs.read_text(html_path)
-        if not getattr(read_result, 'success', False):
+        if not getattr(read_result, "success", False):
             raise QuackIntegrationError(
                 f"Could not read HTML file: {getattr(read_result, 'error', 'Unknown error')}"
             )
-        html_content = getattr(read_result, 'content', '')
+        html_content = getattr(read_result, "content", "")
         if not isinstance(html_content, str):
             logger.warning(
                 f"HTML content is not a string, skipping validation: {type(html_content)}"
@@ -146,7 +148,7 @@ def _attempt_conversion(html_path: str, config: PandocConfig) -> str:
         QuackIntegrationError: If the pandoc conversion fails.
     """
     try:
-        pypandoc = importlib.import_module('pypandoc')
+        pypandoc = importlib.import_module("pypandoc")
     except ImportError as e:
         raise QuackIntegrationError(f"pypandoc module is not installed: {str(e)}")
 
@@ -165,12 +167,12 @@ def _attempt_conversion(html_path: str, config: PandocConfig) -> str:
 
 
 def _write_and_validate_output(
-        cleaned_markdown: str,
-        output_path: str,
-        input_path: str,
-        original_size: int,
-        config: PandocConfig,
-        attempt_start: float,
+    cleaned_markdown: str,
+    output_path: str,
+    input_path: str,
+    original_size: int,
+    config: PandocConfig,
+    attempt_start: float,
 ) -> tuple[float, int, list[str]]:
     """
     Write the converted markdown to the output file and validate the conversion.
@@ -188,13 +190,13 @@ def _write_and_validate_output(
     """
     output_dir = os.path.dirname(output_path)
     dir_result = fs.create_directory(output_dir, exist_ok=True)
-    if not getattr(dir_result, 'success', False):
+    if not getattr(dir_result, "success", False):
         raise QuackIntegrationError(
             f"Failed to create output directory: {getattr(dir_result, 'error', 'Unknown error')}"
         )
 
     write_result = fs.write_text(output_path, cleaned_markdown, encoding="utf-8")
-    if not getattr(write_result, 'success', False):
+    if not getattr(write_result, "success", False):
         raise QuackIntegrationError(
             f"Failed to write output file: {getattr(write_result, 'error', 'Unknown error')}"
         )
@@ -202,14 +204,16 @@ def _write_and_validate_output(
     conversion_time = time.time() - attempt_start
 
     output_info = fs.get_file_info(output_path)
-    if not getattr(output_info, 'success', False):
+    if not getattr(output_info, "success", False):
         raise QuackIntegrationError(
             f"Failed to get info for converted file: {output_path}"
         )
 
     output_size = 0
-    if hasattr(write_result, "bytes_written") and getattr(write_result, 'bytes_written',
-                                                          None) is not None:
+    if (
+        hasattr(write_result, "bytes_written")
+        and getattr(write_result, "bytes_written", None) is not None
+    ):
         try:
             output_size = int(write_result.bytes_written)
         except (TypeError, ValueError):
@@ -217,9 +221,11 @@ def _write_and_validate_output(
                 f"Could not convert bytes_written to integer: {getattr(write_result, 'bytes_written', None)}"
             )
 
-    if output_size == 0 and hasattr(output_info, 'size') and getattr(output_info,
-                                                                     'size',
-                                                                     None) is not None:
+    if (
+        output_size == 0
+        and hasattr(output_info, "size")
+        and getattr(output_info, "size", None) is not None
+    ):
         try:
             output_size = int(output_info.size)
         except (TypeError, ValueError):
@@ -235,10 +241,10 @@ def _write_and_validate_output(
 
 
 def convert_html_to_markdown(
-        html_path: str,
-        output_path: str,
-        config: PandocConfig,
-        metrics: ConversionMetrics | None = None,
+    html_path: str,
+    output_path: str,
+    config: PandocConfig,
+    metrics: ConversionMetrics | None = None,
 ) -> IntegrationResult[tuple[str, ConversionDetails]]:
     """
     Convert an HTML file to Markdown.
@@ -255,9 +261,10 @@ def convert_html_to_markdown(
     # Get the basename safely
     try:
         split_result = fs.split_path(html_path)
-        if getattr(split_result, 'success', False):
+        if getattr(split_result, "success", False):
             filename = split_result.data[
-                -1]  # Get the last component which is the filename
+                -1
+            ]  # Get the last component which is the filename
         else:
             # Fallback
             filename = os.path.basename(html_path)
@@ -363,7 +370,7 @@ def post_process_markdown(markdown_content: str) -> str:
 
 
 def validate_conversion(
-        output_path: str, input_path: str, original_size: int, config: PandocConfig
+    output_path: str, input_path: str, original_size: int, config: PandocConfig
 ) -> list[str]:
     """
     Validate the converted markdown document.
@@ -382,21 +389,23 @@ def validate_conversion(
     # During tests, paths might not be actual file paths
     # Check if we're in a test by looking for test indicators in paths
     is_test_environment = (
-        'test' in output_path.lower() or
-        'test' in input_path.lower() or
-        config.validation.min_file_size < 20
+        "test" in output_path.lower()
+        or "test" in input_path.lower()
+        or config.validation.min_file_size < 20
     )
 
     # Get file info and examine results
     output_info = fs.get_file_info(output_path)
-    success = getattr(output_info, 'success', False)
-    exists = getattr(output_info, 'exists', False)
+    success = getattr(output_info, "success", False)
+    exists = getattr(output_info, "exists", False)
 
     # Check if this is a test environment - if so, be more lenient
     if is_test_environment:
         # In test environments, assume the file exists even if get_file_info says otherwise
         if not (success and exists):
-            logger.debug(f"Test environment detected - assuming {output_path} exists despite contradicting file system info")
+            logger.debug(
+                f"Test environment detected - assuming {output_path} exists despite contradicting file system info"
+            )
     elif not (success and exists):
         # Only in non-test environments do we fail validation if the file doesn't exist
         validation_errors.append(f"Output file does not exist: {output_path}")
@@ -404,9 +413,11 @@ def validate_conversion(
 
     # Get output size safely
     try:
-        output_size = int(getattr(output_info, 'size', 0)) if getattr(output_info,
-                                                                      'size',
-                                                                      None) is not None else 0
+        output_size = (
+            int(getattr(output_info, "size", 0))
+            if getattr(output_info, "size", None) is not None
+            else 0
+        )
     except (TypeError, ValueError):
         logger.warning(
             f"Could not convert output size to integer: {getattr(output_info, 'size', None)}, using 0"
@@ -417,8 +428,8 @@ def validate_conversion(
     content_length = 0
     try:
         read_result = fs.read_text(output_path, encoding="utf-8")
-        if getattr(read_result, 'success', False):
-            content = getattr(read_result, 'content', '')
+        if getattr(read_result, "success", False):
+            content = getattr(read_result, "content", "")
             content_length = len(content)
             # If the content length is larger than the reported size, use that instead
             if content_length > output_size:
@@ -446,12 +457,13 @@ def validate_conversion(
     # Run content validation regardless of environment
     try:
         read_result = fs.read_text(output_path, encoding="utf-8")
-        if not getattr(read_result, 'success', False):
+        if not getattr(read_result, "success", False):
             validation_errors.append(
-                f"Error reading output file: {getattr(read_result, 'error', 'Unknown error')}")
+                f"Error reading output file: {getattr(read_result, 'error', 'Unknown error')}"
+            )
             return validation_errors
 
-        content = getattr(read_result, 'content', '')
+        content = getattr(read_result, "content", "")
         if not content.strip():
             validation_errors.append("Output file is empty")
         elif len(content.strip()) < 10 and "# " not in content:
@@ -466,7 +478,7 @@ def validate_conversion(
 
         # Get source filename safely
         split_result = fs.split_path(input_path)
-        if getattr(split_result, 'success', False):
+        if getattr(split_result, "success", False):
             source_file_name = split_result.data[-1]
             if config.validation.check_links and source_file_name not in content:
                 logger.debug(

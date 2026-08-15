@@ -16,19 +16,23 @@ import time
 
 def test_post_jobs_no_auth(test_client):
     """Test job creation fails without auth."""
-    response = test_client.post("/jobs", json={
-        "op": "quack-media.slice_video",
-        "params": {"input_path": "/test"}
-    })
+    response = test_client.post(
+        "/jobs",
+        json={"op": "quack-media.slice_video", "params": {"input_path": "/test"}},
+    )
     assert response.status_code == 401
 
 
 def test_post_jobs_success(test_client, auth_headers):
     """Test successful job creation."""
-    response = test_client.post("/jobs", json={
-        "op": "quack-media.slice_video",
-        "params": {"input_path": "/test", "output_path": "/out"}
-    }, headers=auth_headers)
+    response = test_client.post(
+        "/jobs",
+        json={
+            "op": "quack-media.slice_video",
+            "params": {"input_path": "/test", "output_path": "/out"},
+        },
+        headers=auth_headers,
+    )
 
     assert response.status_code == 200
     data = response.json()
@@ -38,11 +42,15 @@ def test_post_jobs_success(test_client, auth_headers):
 
 def test_post_jobs_with_callback(test_client, auth_headers):
     """Test job creation with callback URL."""
-    response = test_client.post("/jobs", json={
-        "op": "quack-media.slice_video",
-        "params": {"input_path": "/test"},
-        "callback_url": "http://example.com/callback"
-    }, headers=auth_headers)
+    response = test_client.post(
+        "/jobs",
+        json={
+            "op": "quack-media.slice_video",
+            "params": {"input_path": "/test"},
+            "callback_url": "http://example.com/callback",
+        },
+        headers=auth_headers,
+    )
 
     assert response.status_code == 200
 
@@ -51,16 +59,18 @@ def test_post_jobs_with_idempotency_header(test_client, auth_headers):
     """Test job creation with idempotency header."""
     headers = {**auth_headers, "Idempotency-Key": "test-123"}
 
-    response1 = test_client.post("/jobs", json={
-        "op": "quack-media.slice_video",
-        "params": {"input_path": "/test"}
-    }, headers=headers)
+    response1 = test_client.post(
+        "/jobs",
+        json={"op": "quack-media.slice_video", "params": {"input_path": "/test"}},
+        headers=headers,
+    )
 
     # Make second request immediately
-    response2 = test_client.post("/jobs", json={
-        "op": "quack-media.slice_video",
-        "params": {"input_path": "/test"}
-    }, headers=headers)
+    response2 = test_client.post(
+        "/jobs",
+        json={"op": "quack-media.slice_video", "params": {"input_path": "/test"}},
+        headers=headers,
+    )
 
     assert response1.status_code == 200
     assert response2.status_code == 200
@@ -76,10 +86,11 @@ def test_get_job_status_not_found(test_client, auth_headers):
 def test_get_job_status_success(test_client, auth_headers):
     """Test getting job status."""
     # Create a job first
-    create_response = test_client.post("/jobs", json={
-        "op": "quack-media.slice_video",
-        "params": {"input_path": "/test"}
-    }, headers=auth_headers)
+    create_response = test_client.post(
+        "/jobs",
+        json={"op": "quack-media.slice_video", "params": {"input_path": "/test"}},
+        headers=auth_headers,
+    )
 
     job_id = create_response.json()["job_id"]
 
@@ -95,10 +106,14 @@ def test_get_job_status_success(test_client, auth_headers):
 def test_job_lifecycle(test_client, auth_headers):
     """Test complete job lifecycle."""
     # Create job
-    create_response = test_client.post("/jobs", json={
-        "op": "quack-media.slice_video",
-        "params": {"input_path": "/test", "output_path": "/out"}
-    }, headers=auth_headers)
+    create_response = test_client.post(
+        "/jobs",
+        json={
+            "op": "quack-media.slice_video",
+            "params": {"input_path": "/test", "output_path": "/out"},
+        },
+        headers=auth_headers,
+    )
 
     assert create_response.status_code == 200
     job_id = create_response.json()["job_id"]

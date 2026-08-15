@@ -73,47 +73,71 @@ class TestColorize:
     def test_basic_colorization(self) -> None:
         """Test basic text colorization."""
         # Test with foreground color
-        with patch("quack_core.interfaces.cli.utils.formatting.supports_color", return_value=True):
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.supports_color",
+            return_value=True,
+        ):
             result = colorize("Test text", fg="red")
             assert result == "\033[31mTest text\033[0m"
 
         # Test with background color
-        with patch("quack_core.interfaces.cli.utils.formatting.supports_color", return_value=True):
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.supports_color",
+            return_value=True,
+        ):
             result = colorize("Test text", bg="blue")
             assert result == "\033[44mTest text\033[0m"
 
         # Test with both fg and bg
-        with patch("quack_core.interfaces.cli.utils.formatting.supports_color", return_value=True):
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.supports_color",
+            return_value=True,
+        ):
             result = colorize("Test text", fg="green", bg="white")
             assert result == "\033[32;47mTest text\033[0m"
 
     def test_with_styles(self) -> None:
         """Test text with style attributes."""
         # Test with bold
-        with patch("quack_core.interfaces.cli.utils.formatting.supports_color", return_value=True):
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.supports_color",
+            return_value=True,
+        ):
             result = colorize("Test text", bold=True)
             assert result == "\033[1mTest text\033[0m"
 
         # Test with multiple styles
-        with patch("quack_core.interfaces.cli.utils.formatting.supports_color", return_value=True):
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.supports_color",
+            return_value=True,
+        ):
             result = colorize("Test text", fg="blue", bold=True, underline=True)
             assert result == "\033[1;4;34mTest text\033[0m"
 
     def test_without_color_support(self) -> None:
         """Test behavior when terminal doesn't support color."""
         # When color is not supported, should return the original text
-        with patch("quack_core.interfaces.cli.utils.formatting.supports_color", return_value=False):
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.supports_color",
+            return_value=False,
+        ):
             result = colorize("Test text", fg="red", bold=True)
             assert result == "Test text"
 
         # Unless force=True is specified
-        with patch("quack_core.interfaces.cli.utils.formatting.supports_color", return_value=False):
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.supports_color",
+            return_value=False,
+        ):
             result = colorize("Test text", fg="red", bold=True, force=True)
             assert result == "\033[1;31mTest text\033[0m"
 
     def test_all_style_combinations(self) -> None:
         """Test various style combinations."""
-        with patch("quack_core.interfaces.cli.utils.formatting.supports_color", return_value=True):
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.supports_color",
+            return_value=True,
+        ):
             # Test all styles together
             result = colorize(
                 "Test text",
@@ -139,7 +163,10 @@ class TestColorize:
 
     def test_colors_with_reset(self) -> None:
         """Test using 'reset' color values."""
-        with patch("quack_core.interfaces.cli.utils.formatting.supports_color", return_value=True):
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.supports_color",
+            return_value=True,
+        ):
             # Reset foreground color
             result = colorize("Test text", fg="reset")
             assert result == "\033[39mTest text\033[0m"
@@ -159,7 +186,9 @@ class TestPrintFunctions:
     def test_print_error(self) -> None:
         """Test print_error function."""
         with patch("builtins.print") as mock_print:
-            with patch("quack_core.interfaces.cli.utils.formatting.colorize") as mock_colorize:
+            with patch(
+                "quack_core.interfaces.cli.utils.formatting.colorize"
+            ) as mock_colorize:
                 mock_colorize.return_value = "COLORIZED ERROR"
 
                 # Test basic error
@@ -185,7 +214,9 @@ class TestPrintFunctions:
     def test_print_warning(self) -> None:
         """Test print_warning function."""
         with patch("builtins.print") as mock_print:
-            with patch("quack_core.interfaces.cli.utils.formatting.colorize") as mock_colorize:
+            with patch(
+                "quack_core.interfaces.cli.utils.formatting.colorize"
+            ) as mock_colorize:
                 mock_colorize.return_value = "COLORIZED WARNING"
 
                 print_warning("Test warning")
@@ -201,7 +232,9 @@ class TestPrintFunctions:
     def test_print_success(self) -> None:
         """Test print_success function."""
         with patch("builtins.print") as mock_print:
-            with patch("quack_core.interfaces.cli.utils.formatting.colorize") as mock_colorize:
+            with patch(
+                "quack_core.interfaces.cli.utils.formatting.colorize"
+            ) as mock_colorize:
                 mock_colorize.return_value = "COLORIZED SUCCESS"
 
                 print_success("Test success")
@@ -215,7 +248,9 @@ class TestPrintFunctions:
     def test_print_info(self) -> None:
         """Test print_info function."""
         with patch("builtins.print") as mock_print:
-            with patch("quack_core.interfaces.cli.utils.formatting.colorize") as mock_colorize:
+            with patch(
+                "quack_core.interfaces.cli.utils.formatting.colorize"
+            ) as mock_colorize:
                 mock_colorize.return_value = "COLORIZED INFO"
 
                 print_info("Test info")
@@ -238,7 +273,9 @@ class TestPrintFunctions:
 
         # Test when QUACK_DEBUG is set
         with patch("builtins.print") as mock_print:
-            with patch("quack_core.interfaces.cli.utils.formatting.colorize") as mock_colorize:
+            with patch(
+                "quack_core.interfaces.cli.utils.formatting.colorize"
+            ) as mock_colorize:
                 with patch.dict("os.environ", {"QUACK_DEBUG": "1"}):
                     mock_colorize.return_value = "COLORIZED DEBUG"
 
@@ -313,7 +350,9 @@ class TestTable:
         ]
 
         # Test with small max_width
-        with patch("quack_core.interfaces.cli.utils.formatting.get_terminal_size") as mock_get_size:
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.get_terminal_size"
+        ) as mock_get_size:
             mock_get_size.return_value = (40, 24)  # width, height
 
             result = table(headers, rows, max_width=20)
@@ -337,14 +376,16 @@ class TestTable:
         headers = ["Name", "Description"]
         rows = [["Test", "This is a very long description that should be truncated"]]
 
-        with patch("quack_core.interfaces.cli.utils.formatting.get_terminal_size") as mock_get_size:
+        with patch(
+            "quack_core.interfaces.cli.utils.formatting.get_terminal_size"
+        ) as mock_get_size:
             mock_get_size.return_value = (30, 24)  # width, height
 
-            with patch("quack_core.interfaces.cli.utils.formatting.truncate_text") as mock_truncate:
-                mock_truncate.side_effect = (
-                    lambda text, width: text[:width] + "..."
-                    if len(text) > width
-                    else text
+            with patch(
+                "quack_core.interfaces.cli.utils.formatting.truncate_text"
+            ) as mock_truncate:
+                mock_truncate.side_effect = lambda text, width: (
+                    text[:width] + "..." if len(text) > width else text
                 )
 
                 result = table(headers, rows, max_width=30)

@@ -62,11 +62,12 @@ class TestFileSystemService:
         result = service.write_text(text_file, text_content, calculate_checksum=True)
         assert result.success is True
         assert result.checksum is not None
-        assert result.bytes_written == len(text_content.encode('utf-8'))
+        assert result.bytes_written == len(text_content.encode("utf-8"))
 
         # Verify checksum
         import hashlib
-        expected_checksum = hashlib.sha256(text_content.encode('utf-8')).hexdigest()
+
+        expected_checksum = hashlib.sha256(text_content.encode("utf-8")).hexdigest()
         assert result.checksum == expected_checksum
 
         # Test binary file with checksum
@@ -266,7 +267,7 @@ class TestFileSystemService:
         # Test getting info for a non-existent file
         result = service.get_file_info(temp_dir / "nonexistent.txt")
         assert (
-                result.success is True
+            result.success is True
         )  # Note: This is true because the operation succeeded
         assert result.exists is False
 
@@ -332,7 +333,7 @@ class TestFileSystemService:
         result = service.find_files(temp_dir, "*.txt")
         assert result.success is True
         assert (
-                len(result.files) == 3
+            len(result.files) == 3
         )  # Includes subdir/subfile.txt due to recursive=True
 
         # Convert Path objects to strings for comparison
@@ -382,7 +383,10 @@ class TestFileSystemService:
         # Test reading non-existent file
         result = service.read_yaml(temp_dir / "nonexistent.yaml")
         assert result.success is False
-        assert "not found" in result.error.lower() or "no such file" in result.error.lower()
+        assert (
+            "not found" in result.error.lower()
+            or "no such file" in result.error.lower()
+        )
 
     def test_write_yaml(self, temp_dir: Path) -> None:
         """Test writing YAML files."""
@@ -426,7 +430,10 @@ class TestFileSystemService:
         # Test reading non-existent file
         result = service.read_json(temp_dir / "nonexistent.json")
         assert result.success is False
-        assert "not found" in result.error.lower() or "no such file" in result.error.lower()
+        assert (
+            "not found" in result.error.lower()
+            or "no such file" in result.error.lower()
+        )
 
     def test_write_json(self, temp_dir: Path) -> None:
         """Test writing JSON files."""
@@ -531,6 +538,7 @@ class TestFileSystemService:
 
         import os
         import platform
+
         os.symlink(
             file1, file1_link
         ) if platform.system() != "Windows" else file1_link.touch()

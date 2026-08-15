@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Base class for all QuackCore tools (doctrine-compliant).
 
@@ -82,7 +81,7 @@ class BaseQuackTool(ABC):
             >>> tool = MyTool(name="custom_name", version="2.0.0")
         """
         # Allow setting identity before freezing (Recommendation #2)
-        object.__setattr__(self, '_identity_frozen', False)
+        object.__setattr__(self, "_identity_frozen", False)
 
         # Use provided args, fall back to class attributes
         if name is not None:
@@ -104,7 +103,7 @@ class BaseQuackTool(ABC):
         # else: use class attribute (default "1.0.0" or overridden)
 
         # Freeze identity (Recommendation #2)
-        object.__setattr__(self, '_identity_frozen', True)
+        object.__setattr__(self, "_identity_frozen", True)
 
     def __setattr__(self, name: str, value: Any) -> None:
         """
@@ -113,15 +112,15 @@ class BaseQuackTool(ABC):
         Recommendation #2: Enforce identity immutability.
         """
         # Allow setting _identity_frozen itself
-        if name == '_identity_frozen':
+        if name == "_identity_frozen":
             object.__setattr__(self, name, value)
             return
 
         # Check if identity is frozen
-        frozen = getattr(self, '_identity_frozen', False)
+        frozen = getattr(self, "_identity_frozen", False)
 
         # Block identity changes if frozen (Recommendation #2)
-        if frozen and name in ('name', 'version'):
+        if frozen and name in ("name", "version"):
             raise AttributeError(
                 f"Cannot modify tool identity after initialization. "
                 f"Attempted to set '{name}' = {value!r} on {self.__class__.__name__}. "

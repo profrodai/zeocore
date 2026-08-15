@@ -77,28 +77,24 @@ class ToolEnvInitializerMixin:
         used_normalization = False
 
         # Try .success first, fall back to .ok (MIGRATION COMPAT)
-        success = getattr(result, 'success', None)
+        success = getattr(result, "success", None)
         if success is None:
-            success = getattr(result, 'ok', False)
+            success = getattr(result, "ok", False)
             used_normalization = True
 
         # Try .data first, fall back to .value (MIGRATION COMPAT)
-        data = getattr(result, 'data', None)
+        data = getattr(result, "data", None)
         if data is None:
-            data = getattr(result, 'value', None)
+            data = getattr(result, "value", None)
             used_normalization = True
 
         # Try .error
-        error = getattr(result, 'error', None)
+        error = getattr(result, "error", None)
 
         return bool(success), data, error, used_normalization
 
     def _validate_directory(
-            self,
-            path: str,
-            name: str,
-            fs: Any,
-            ctx: ToolContext | None = None
+        self, path: str, name: str, fs: Any, ctx: ToolContext | None = None
     ) -> CapabilityResult[None]:
         """
         Strictly validate a directory exists and is actually a directory.
@@ -114,11 +110,12 @@ class ToolEnvInitializerMixin:
         """
         info_result = fs.get_file_info(path)
         success, info, error, used_normalization = self._normalize_fs_result(
-            info_result)
+            info_result
+        )
 
         # Track when compat mode is used (Must-fix A - via logger only)
         if used_normalization and ctx:
-            if hasattr(ctx, 'logger') and ctx.logger:
+            if hasattr(ctx, "logger") and ctx.logger:
                 ctx.logger.debug(
                     f"FS contract compat mode used for {name} directory validation. "
                     f"Update FS implementation to use .success/.data contract. "
@@ -129,57 +126,55 @@ class ToolEnvInitializerMixin:
             return CapabilityResult.fail_from_exc(
                 msg=f"Failed to check {name} directory: {error}",
                 code=f"QC_ENV_{name.upper()}_DIR_CHECK_ERROR",
-                exc=Exception(error or "Unknown error")
+                exc=Exception(error or "Unknown error"),
             )
 
         if info is None:
             return CapabilityResult.fail_from_exc(
                 msg=f"FS returned no info for {name} directory: {path}",
                 code=f"QC_ENV_{name.upper()}_DIR_NO_INFO",
-                exc=Exception("FileInfo data is None")
+                exc=Exception("FileInfo data is None"),
             )
 
         # STRICT CONTRACT: FileInfo MUST have .exists
-        if not hasattr(info, 'exists'):
+        if not hasattr(info, "exists"):
             return CapabilityResult.fail_from_exc(
                 msg=f"FS contract breach: FileInfo missing 'exists' attribute. "
-                    f"Cannot validate {name} directory. "
-                    f"FileInfo contract requires .exists: bool attribute.",
+                f"Cannot validate {name} directory. "
+                f"FileInfo contract requires .exists: bool attribute.",
                 code="QC_ENV_FS_CONTRACT_INCOMPLETE",
-                exc=Exception("FileInfo.exists not available - FS contract breach")
+                exc=Exception("FileInfo.exists not available - FS contract breach"),
             )
 
         if not info.exists:
             return CapabilityResult.fail_from_exc(
                 msg=f"{name.capitalize()} directory does not exist: {path}. Runner must create it.",
                 code=f"QC_ENV_{name.upper()}_DIR_MISSING",
-                exc=Exception(f"{name.capitalize()} directory missing")
+                exc=Exception(f"{name.capitalize()} directory missing"),
             )
 
         # STRICT CONTRACT: FileInfo MUST have .is_dir
-        if not hasattr(info, 'is_dir'):
+        if not hasattr(info, "is_dir"):
             return CapabilityResult.fail_from_exc(
                 msg=f"FS contract breach: FileInfo missing 'is_dir' attribute. "
-                    f"Cannot validate {name} directory type. "
-                    f"FileInfo contract requires .is_dir: bool attribute.",
+                f"Cannot validate {name} directory type. "
+                f"FileInfo contract requires .is_dir: bool attribute.",
                 code="QC_ENV_FS_CONTRACT_INCOMPLETE",
-                exc=Exception("FileInfo.is_dir not available - FS contract breach")
+                exc=Exception("FileInfo.is_dir not available - FS contract breach"),
             )
 
         if not info.is_dir:
             return CapabilityResult.fail_from_exc(
                 msg=f"{name.capitalize()} path exists but is not a directory: {path}",
                 code=f"QC_ENV_{name.upper()}_DIR_NOT_DIR",
-                exc=Exception(f"{name.capitalize()} path is not a directory")
+                exc=Exception(f"{name.capitalize()} path is not a directory"),
             )
 
-        return CapabilityResult.ok(data=None,
-                                   msg=f"{name.capitalize()} directory validated")
+        return CapabilityResult.ok(
+            data=None, msg=f"{name.capitalize()} directory validated"
+        )
 
-    def initialize_environment(
-            self,
-            ctx: ToolContext
-    ) -> CapabilityResult[None]:
+    def initialize_environment(self, ctx: ToolContext) -> CapabilityResult[None]:
         """
         Validate environment for tool execution (strict validation).
 
@@ -213,7 +208,5 @@ class ToolEnvInitializerMixin:
 
         except Exception as e:
             return CapabilityResult.fail_from_exc(
-                msg="Environment validation failed",
-                code="QC_ENV_INIT_ERROR",
-                exc=e
+                msg="Environment validation failed", code="QC_ENV_INIT_ERROR", exc=e
             )

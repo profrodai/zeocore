@@ -36,7 +36,11 @@ class TestPathNoneOnFailure:
         assert result.error_info is not None
         assert result.error_info.type == "validation_error"
         # Input should be in meta, not path
-        assert result.meta is None or "input_path" not in result.meta or result.meta["input_path"] is None
+        assert (
+            result.meta is None
+            or "input_path" not in result.meta
+            or result.meta["input_path"] is None
+        )
 
     def test_write_text_invalid_path_returns_none(self):
         """Verify write_text returns path=None on invalid input."""
@@ -118,7 +122,10 @@ class TestSandboxSecurity:
             assert result.path is None
             assert result.error_info is not None
             assert result.error_info.type == "path_escape_attempt"
-            assert "escape" in result.error_info.hint.lower() or "traverse" in result.error_info.hint.lower()
+            assert (
+                "escape" in result.error_info.hint.lower()
+                or "traverse" in result.error_info.hint.lower()
+            )
 
     def test_absolute_path_outside_basedir_blocked(self):
         """Verify absolute paths outside base_dir are blocked by default."""
@@ -132,7 +139,10 @@ class TestSandboxSecurity:
             assert result.path is None
             assert result.error_info is not None
             assert result.error_info.type == "path_outside_base_dir"
-            assert "absolute" in result.error_info.hint.lower() or "outside" in result.error_info.hint.lower()
+            assert (
+                "absolute" in result.error_info.hint.lower()
+                or "outside" in result.error_info.hint.lower()
+            )
 
     def test_absolute_path_allowed_with_unsafe_flag(self):
         """Verify absolute paths work when unsafe flag is enabled."""
@@ -144,7 +154,9 @@ class TestSandboxSecurity:
             inner_dir = Path(tmpdir) / "inner"
             inner_dir.mkdir()
 
-            service = create_service(base_dir=inner_dir, unsafe_allow_absolute_paths=True)
+            service = create_service(
+                base_dir=inner_dir, unsafe_allow_absolute_paths=True
+            )
 
             # Should succeed with unsafe flag
             result = service.read_text(str(outside_file))
@@ -199,7 +211,9 @@ class TestNoRaiseContract:
                 assert result.ok is False
                 assert result.error_info is not None
             except Exception as e:
-                pytest.fail(f"read_text raised {type(e).__name__} for input {invalid_input}")
+                pytest.fail(
+                    f"read_text raised {type(e).__name__} for input {invalid_input}"
+                )
 
     def test_write_text_never_raises(self):
         """Verify write_text never raises, even with invalid inputs."""
@@ -227,7 +241,7 @@ class TestNoRaiseContract:
         for op in operations:
             try:
                 result = op()
-                assert result.ok is False or hasattr(result, 'value')
+                assert result.ok is False or hasattr(result, "value")
             except Exception as e:
                 pytest.fail(f"Operation raised {type(e).__name__}")
 

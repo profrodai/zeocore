@@ -341,9 +341,9 @@ def test_find_output_directory(tmp_path, path_service):
     with patch.object(
         path_service._resolver,
         "_find_output_directory",
-        side_effect=lambda start_dir, create: str(output_dir)
-        if create
-        else ValueError("Not found"),
+        side_effect=lambda start_dir, create: (
+            str(output_dir) if create else ValueError("Not found")
+        ),
     ):
         # Without create flag (should fail)
         result = path_service.find_output_directory(str(tmp_path), create=False)

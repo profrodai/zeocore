@@ -41,7 +41,7 @@ def test_file_info_initialization():
         format="markdown",
         size=1024,
         modified=123456789.0,
-        extra_args=["--strip-comments"]
+        extra_args=["--strip-comments"],
     )
     assert file_info.path == "/path/to/file.md"
     assert file_info.format == "markdown"
@@ -56,19 +56,14 @@ def test_conversion_task_initialization():
 
     # With output path
     task = ConversionTask(
-        source=file_info,
-        target_format="markdown",
-        output_path="/path/to/output.md"
+        source=file_info, target_format="markdown", output_path="/path/to/output.md"
     )
     assert task.source == file_info
     assert task.target_format == "markdown"
     assert task.output_path == "/path/to/output.md"
 
     # Without output path
-    task = ConversionTask(
-        source=file_info,
-        target_format="markdown"
-    )
+    task = ConversionTask(source=file_info, target_format="markdown")
     assert task.source == file_info
     assert task.target_format == "markdown"
     assert task.output_path is None
@@ -92,7 +87,7 @@ def test_conversion_metrics_initialization():
         start_time=custom_time,
         total_attempts=5,
         successful_conversions=3,
-        failed_conversions=2
+        failed_conversions=2,
     )
     assert metrics.start_time == custom_time
     assert metrics.total_attempts == 5
@@ -118,7 +113,7 @@ def test_conversion_details_initialization():
         conversion_time=1.5,
         output_size=800,
         input_size=1000,
-        validation_errors=["Warning: missing header"]
+        validation_errors=["Warning: missing header"],
     )
     assert details.source_format == "html"
     assert details.target_format == "markdown"

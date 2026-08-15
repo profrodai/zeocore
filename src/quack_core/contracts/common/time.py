@@ -46,4 +46,4 @@ def utcnow_iso() -> str:
         True
     """
     # Use replace to normalize +00:00 to Z for consistency
-    return utcnow().isoformat().replace('+00:00', 'Z')
+    return utcnow().isoformat().replace("+00:00", "Z")

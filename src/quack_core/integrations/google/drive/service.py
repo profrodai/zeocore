@@ -69,11 +69,12 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         """
         config_provider = GoogleConfigProvider("drive", log_level)
         super().__init__(
-            config_provider = config_provider,
-            auth_provider = None,
-            config = None,
-            config_path = config_path,
-            log_level = log_level)
+            config_provider=config_provider,
+            auth_provider=None,
+            config=None,
+            config_path=config_path,
+            log_level=log_level,
+        )
 
         self.config: dict[str, Any] = self._initialize_config(
             client_secrets_file, credentials_file, shared_folder_id
@@ -192,7 +193,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
     # --- Helper Methods for Refactoring ---
 
     def _resolve_file_details(
-            self, file_path: str, remote_path: str | None, parent_folder_id: str | None
+        self, file_path: str, remote_path: str | None, parent_folder_id: str | None
     ) -> tuple[Any, str, str | None, str]:
         """Resolve file details for upload."""
         from quack_core.core.fs.service import standalone
@@ -201,7 +202,8 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         path_obj_result = paths_service.resolve_project_path(file_path)
         if not path_obj_result.success:
             raise QuackIntegrationError(
-                f"Failed to resolve path: {path_obj_result.error}")
+                f"Failed to resolve path: {path_obj_result.error}"
+            )
 
         # Extract the clean path as a string from the path_obj_result
         path_obj = standalone.extract_path_from_result(path_obj_result)
@@ -223,7 +225,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         return path_obj, filename, folder_id, mime_type
 
     def _resolve_download_path(
-            self, file_metadata: dict[str, Any], local_path: str | None
+        self, file_metadata: dict[str, Any], local_path: str | None
     ) -> str:
         """
         Resolve the local path for file download.
@@ -239,19 +241,28 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
 
         if local_path is None:
             # Create a temp directory using fs.create_temp_directory
-            temp_dir_result = standalone.create_temp_directory(prefix="quackcore_gdrive_")
-            temp_dir = temp_dir_result.data if hasattr(temp_dir_result,
-                                                       "data") else temp_dir_result
+            temp_dir_result = standalone.create_temp_directory(
+                prefix="quackcore_gdrive_"
+            )
+            temp_dir = (
+                temp_dir_result.data
+                if hasattr(temp_dir_result, "data")
+                else temp_dir_result
+            )
             # Use fs.join_path for path joining
             joined_path_result = standalone.join_path(temp_dir, file_name)
-            return str(joined_path_result.data if hasattr(joined_path_result,
-                                                          "data") else joined_path_result)
+            return str(
+                joined_path_result.data
+                if hasattr(joined_path_result, "data")
+                else joined_path_result
+            )
 
         # Resolve the local path
         local_path_obj_result = paths_service.resolve_project_path(local_path)
         if not local_path_obj_result.success:
             raise QuackIntegrationError(
-                f"Failed to resolve local path: {local_path_obj_result.error}")
+                f"Failed to resolve local path: {local_path_obj_result.error}"
+            )
         local_path_obj = local_path_obj_result.path
 
         file_info = standalone.get_file_info(local_path_obj)
@@ -261,8 +272,11 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             if file_info.is_dir:
                 # If it's a directory, join the file name to it
                 joined_path_result = standalone.join_path(local_path_obj, file_name)
-                return str(joined_path_result.data if hasattr(joined_path_result,
-                                                              "data") else joined_path_result)
+                return str(
+                    joined_path_result.data
+                    if hasattr(joined_path_result, "data")
+                    else joined_path_result
+                )
             else:
                 # If it's a file, use the path as is
                 return str(local_path_obj)
@@ -723,7 +737,6 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             return IntegrationResult.error_result(
                 f"Failed to retrieve file metadata: {api_error}"
             )
-
 
     # --- End of Helper Methods ---
 

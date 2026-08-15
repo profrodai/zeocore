@@ -26,14 +26,24 @@ from quack_core.core.fs.results import (
 class FileOperationsMixin:
     operations: FileSystemOperations
     logger: Any
-    def _normalize_input_path(self, path: FsPathLike) -> Path: raise NotImplementedError
-    def _map_error(self, e: Exception) -> ErrorInfo: raise NotImplementedError
+
+    def _normalize_input_path(self, path: FsPathLike) -> Path:
+        raise NotImplementedError
+
+    def _map_error(self, e: Exception) -> ErrorInfo:
+        raise NotImplementedError
 
     def read_text(self, path: FsPathLike, encoding: str = "utf-8") -> ReadResult[str]:
         try:
             norm_path = self._normalize_input_path(path)
             content = self.operations._read_text(norm_path, encoding)
-            return ReadResult(ok=True, path=norm_path, content=content, encoding=encoding, message=f"Read {len(content)} chars")
+            return ReadResult(
+                ok=True,
+                path=norm_path,
+                content=content,
+                encoding=encoding,
+                message=f"Read {len(content)} chars",
+            )
         except Exception as e:
             s = safe_path_str(path)
             return ReadResult(
@@ -44,18 +54,33 @@ class FileOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to read file",
-                meta={"input_path": s} if s else None
+                meta={"input_path": s} if s else None,
             )
 
-    def write_text(self, path: FsPathLike, content: str, encoding: str = "utf-8", atomic: bool = True, calculate_checksum: bool = False) -> WriteResult:
+    def write_text(
+        self,
+        path: FsPathLike,
+        content: str,
+        encoding: str = "utf-8",
+        atomic: bool = True,
+        calculate_checksum: bool = False,
+    ) -> WriteResult:
         try:
             norm_path = self._normalize_input_path(path)
-            result_path = self.operations._write_text(norm_path, content, encoding, atomic)
+            result_path = self.operations._write_text(
+                norm_path, content, encoding, atomic
+            )
             bytes_written = len(content.encode(encoding))
             checksum = None
             if calculate_checksum:
                 checksum = self.operations._compute_checksum(result_path, "sha256")
-            return WriteResult(ok=True, path=result_path, bytes_written=bytes_written, checksum=checksum, message=f"Wrote {bytes_written} bytes")
+            return WriteResult(
+                ok=True,
+                path=result_path,
+                bytes_written=bytes_written,
+                checksum=checksum,
+                message=f"Wrote {bytes_written} bytes",
+            )
         except Exception as e:
             s = safe_path_str(path)
             return WriteResult(
@@ -64,14 +89,20 @@ class FileOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to write file",
-                meta={"input_path": s} if s else None
+                meta={"input_path": s} if s else None,
             )
 
     def read_bytes(self, path: FsPathLike) -> ReadResult[bytes]:
         try:
             norm_path = self._normalize_input_path(path)
             content = self.operations._read_binary(norm_path)
-            return ReadResult(ok=True, path=norm_path, content=content, encoding=None, message=f"Read {len(content)} bytes")
+            return ReadResult(
+                ok=True,
+                path=norm_path,
+                content=content,
+                encoding=None,
+                message=f"Read {len(content)} bytes",
+            )
         except Exception as e:
             s = safe_path_str(path)
             return ReadResult(
@@ -82,10 +113,16 @@ class FileOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to read binary file",
-                meta={"input_path": s} if s else None
+                meta={"input_path": s} if s else None,
             )
 
-    def write_bytes(self, path: FsPathLike, content: bytes, atomic: bool = True, calculate_checksum: bool = False) -> WriteResult:
+    def write_bytes(
+        self,
+        path: FsPathLike,
+        content: bytes,
+        atomic: bool = True,
+        calculate_checksum: bool = False,
+    ) -> WriteResult:
         try:
             norm_path = self._normalize_input_path(path)
             result_path = self.operations._write_binary(norm_path, content, atomic)
@@ -93,7 +130,13 @@ class FileOperationsMixin:
             checksum = None
             if calculate_checksum:
                 checksum = self.operations._compute_checksum(result_path, "sha256")
-            return WriteResult(ok=True, path=result_path, bytes_written=bytes_written, checksum=checksum, message=f"Wrote {bytes_written} bytes")
+            return WriteResult(
+                ok=True,
+                path=result_path,
+                bytes_written=bytes_written,
+                checksum=checksum,
+                message=f"Wrote {bytes_written} bytes",
+            )
         except Exception as e:
             s = safe_path_str(path)
             return WriteResult(
@@ -102,15 +145,23 @@ class FileOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to write binary file",
-                meta={"input_path": s} if s else None
+                meta={"input_path": s} if s else None,
             )
 
-    def read_lines(self, path: FsPathLike, encoding: str = "utf-8") -> ReadResult[list[str]]:
+    def read_lines(
+        self, path: FsPathLike, encoding: str = "utf-8"
+    ) -> ReadResult[list[str]]:
         try:
             norm_path = self._normalize_input_path(path)
             content_str = self.operations._read_text(norm_path, encoding)
             lines = content_str.splitlines()
-            return ReadResult(ok=True, path=norm_path, content=lines, encoding=encoding, message=f"Read {len(lines)} lines")
+            return ReadResult(
+                ok=True,
+                path=norm_path,
+                content=lines,
+                encoding=encoding,
+                message=f"Read {len(lines)} lines",
+            )
         except Exception as e:
             s = safe_path_str(path)
             return ReadResult(
@@ -121,21 +172,37 @@ class FileOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to read lines",
-                meta={"input_path": s} if s else None
+                meta={"input_path": s} if s else None,
             )
 
-    def write_lines(self, path: FsPathLike, lines: list[str], encoding: str = "utf-8", atomic: bool = True, line_ending: str = "\n") -> WriteResult:
+    def write_lines(
+        self,
+        path: FsPathLike,
+        lines: list[str],
+        encoding: str = "utf-8",
+        atomic: bool = True,
+        line_ending: str = "\n",
+    ) -> WriteResult:
         try:
             norm_path = self._normalize_input_path(path)
             content = line_ending.join(lines)
             if line_ending != "\n":
                 b_content = content.encode(encoding)
-                result_path = self.operations._write_binary(norm_path, b_content, atomic)
+                result_path = self.operations._write_binary(
+                    norm_path, b_content, atomic
+                )
                 size = len(b_content)
             else:
-                result_path = self.operations._write_text(norm_path, content, encoding, atomic)
+                result_path = self.operations._write_text(
+                    norm_path, content, encoding, atomic
+                )
                 size = len(content.encode(encoding))
-            return WriteResult(ok=True, path=result_path, bytes_written=size, message=f"Wrote {len(lines)} lines")
+            return WriteResult(
+                ok=True,
+                path=result_path,
+                bytes_written=size,
+                message=f"Wrote {len(lines)} lines",
+            )
         except Exception as e:
             s = safe_path_str(path)
             return WriteResult(
@@ -144,10 +211,12 @@ class FileOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Failed to write lines",
-                meta={"input_path": s} if s else None
+                meta={"input_path": s} if s else None,
             )
 
-    def copy(self, src: FsPathLike, dst: FsPathLike, overwrite: bool = False) -> WriteResult:
+    def copy(
+        self, src: FsPathLike, dst: FsPathLike, overwrite: bool = False
+    ) -> WriteResult:
         try:
             norm_src = self._normalize_input_path(src)
             norm_dst = self._normalize_input_path(dst)
@@ -155,7 +224,13 @@ class FileOperationsMixin:
             size = 0
             if result_path.is_file():
                 size = result_path.stat().st_size
-            return WriteResult(ok=True, path=result_path, original_path=norm_src, bytes_written=size, message=f"Copied to {result_path}")
+            return WriteResult(
+                ok=True,
+                path=result_path,
+                original_path=norm_src,
+                bytes_written=size,
+                message=f"Copied to {result_path}",
+            )
         except Exception as e:
             # For copy/move, return None for path since we may have failed before normalizing both paths
             src_str = safe_path_str(src)
@@ -167,15 +242,24 @@ class FileOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Copy failed",
-                meta={"input_src": src_str, "input_dst": dst_str} if (src_str or dst_str) else None
+                meta={"input_src": src_str, "input_dst": dst_str}
+                if (src_str or dst_str)
+                else None,
             )
 
-    def move(self, src: FsPathLike, dst: FsPathLike, overwrite: bool = False) -> WriteResult:
+    def move(
+        self, src: FsPathLike, dst: FsPathLike, overwrite: bool = False
+    ) -> WriteResult:
         try:
             norm_src = self._normalize_input_path(src)
             norm_dst = self._normalize_input_path(dst)
             result_path = self.operations._move(norm_src, norm_dst, overwrite)
-            return WriteResult(ok=True, path=result_path, original_path=norm_src, message=f"Moved to {result_path}")
+            return WriteResult(
+                ok=True,
+                path=result_path,
+                original_path=norm_src,
+                message=f"Moved to {result_path}",
+            )
         except Exception as e:
             src_str = safe_path_str(src)
             dst_str = safe_path_str(dst)
@@ -186,14 +270,20 @@ class FileOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Move failed",
-                meta={"input_src": src_str, "input_dst": dst_str} if (src_str or dst_str) else None
+                meta={"input_src": src_str, "input_dst": dst_str}
+                if (src_str or dst_str)
+                else None,
             )
 
     def delete(self, path: FsPathLike, missing_ok: bool = True) -> OperationResult:
         try:
             norm_path = self._normalize_input_path(path)
             deleted = self.operations._delete(norm_path, missing_ok)
-            return OperationResult(ok=True, path=norm_path, message="Deleted" if deleted else "Not found (ignored)")
+            return OperationResult(
+                ok=True,
+                path=norm_path,
+                message="Deleted" if deleted else "Not found (ignored)",
+            )
         except Exception as e:
             s = safe_path_str(path)
             return OperationResult(
@@ -202,5 +292,5 @@ class FileOperationsMixin:
                 error_info=self._map_error(e),
                 error=str(e),
                 message="Delete failed",
-                meta={"input_path": s} if s else None
+                meta={"input_path": s} if s else None,
             )

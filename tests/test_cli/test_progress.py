@@ -153,7 +153,9 @@ class TestProgressReporter:
         # The test is expecting to find this exact message in the output
         message = "Half done"
 
-        with patch("quack_core.interfaces.cli.utils.terminal.get_terminal_size") as mock_get_size:
+        with patch(
+            "quack_core.interfaces.cli.utils.terminal.get_terminal_size"
+        ) as mock_get_size:
             # Use a wider terminal width to ensure message fits
             mock_get_size.return_value = (200, 24)
 
@@ -177,7 +179,9 @@ class TestProgressReporter:
         reporter = ProgressReporter(file=file_obj)
         reporter.current = 10
 
-        with patch("quack_core.interfaces.cli.utils.terminal.get_terminal_size") as mock_get_size:
+        with patch(
+            "quack_core.interfaces.cli.utils.terminal.get_terminal_size"
+        ) as mock_get_size:
             with patch.object(
                 itertools, "cycle", return_value=iter(["-", "\\", "|", "/"])
             ):
@@ -198,7 +202,10 @@ class TestProgressReporter:
         reporter = ProgressReporter(file=file_obj)
 
         # Ensure mocking is done correctly
-        with patch("quack_core.interfaces.cli.utils.terminal.get_terminal_size", return_value=(80, 24)):
+        with patch(
+            "quack_core.interfaces.cli.utils.terminal.get_terminal_size",
+            return_value=(80, 24),
+        ):
             reporter._draw()
             # Should still write something
             file_obj.write.assert_called_once()

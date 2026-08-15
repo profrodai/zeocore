@@ -9,8 +9,13 @@
 """
 DEPRECATED: Use quack_core.core.fs.service.standalone for utility functions.
 """
+
 import warnings
 
 from quack_core.core.fs.service.standalone import *
 
-warnings.warn("quack_core.core.fs.utils is deprecated. Use quack_core.core.fs.service.standalone instead.", DeprecationWarning, stacklevel=2)
+warnings.warn(
+    "quack_core.core.fs.utils is deprecated. Use quack_core.core.fs.service.standalone instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)

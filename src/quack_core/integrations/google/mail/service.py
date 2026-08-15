@@ -67,7 +67,8 @@ class GoogleMailService(BaseIntegrationService):
             auth_provider=None,
             config=None,
             config_path=config_path,
-            log_level=log_level)
+            log_level=log_level,
+        )
 
         # If explicit parameters are provided, override configuration from file.
         self.custom_config: dict[str, object] = {}

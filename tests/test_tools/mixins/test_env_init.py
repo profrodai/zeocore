@@ -129,6 +129,7 @@ class TestToolEnvInitializerMixin(unittest.TestCase):
 
 # Pytest-style tests
 
+
 @pytest.fixture
 def tool_env_initializer_mixin() -> ToolEnvInitializerMixin:
     """Fixture that creates a ToolEnvInitializerMixin."""
@@ -141,7 +142,11 @@ class TestToolEnvInitializerMixinWithPytest:
     """
 
     @patch("importlib.import_module")
-    def test_initialize_environment_success_pytest(self, mock_import: MagicMock, tool_env_initializer_mixin: ToolEnvInitializerMixin) -> None:
+    def test_initialize_environment_success_pytest(
+        self,
+        mock_import: MagicMock,
+        tool_env_initializer_mixin: ToolEnvInitializerMixin,
+    ) -> None:
         """Test that _initialize_environment correctly initializes the environment."""
         # Setup
         mock_module = MagicMock()
@@ -158,7 +163,11 @@ class TestToolEnvInitializerMixinWithPytest:
         mock_module.initialize.assert_called_once()
 
     @patch("importlib.import_module")
-    def test_initialize_environment_with_result_pytest(self, mock_import: MagicMock, tool_env_initializer_mixin: ToolEnvInitializerMixin) -> None:
+    def test_initialize_environment_with_result_pytest(
+        self,
+        mock_import: MagicMock,
+        tool_env_initializer_mixin: ToolEnvInitializerMixin,
+    ) -> None:
         """Test that _initialize_environment returns IntegrationResult from initialize."""
         # Setup
         mock_module = MagicMock()
@@ -180,7 +189,11 @@ class TestToolEnvInitializerMixinWithPytest:
         mock_module.initialize.assert_called_once()
 
     @patch("importlib.import_module")
-    def test_initialize_environment_no_initialize_pytest(self, mock_import: MagicMock, tool_env_initializer_mixin: ToolEnvInitializerMixin) -> None:
+    def test_initialize_environment_no_initialize_pytest(
+        self,
+        mock_import: MagicMock,
+        tool_env_initializer_mixin: ToolEnvInitializerMixin,
+    ) -> None:
         """Test that _initialize_environment handles modules without initialize."""
         # Setup
         mock_module = MagicMock(spec=[])  # No initialize method
@@ -195,7 +208,11 @@ class TestToolEnvInitializerMixinWithPytest:
         mock_import.assert_called_once_with("test_tool")
 
     @patch("importlib.import_module")
-    def test_initialize_environment_import_error_pytest(self, mock_import: MagicMock, tool_env_initializer_mixin: ToolEnvInitializerMixin) -> None:
+    def test_initialize_environment_import_error_pytest(
+        self,
+        mock_import: MagicMock,
+        tool_env_initializer_mixin: ToolEnvInitializerMixin,
+    ) -> None:
         """Test that _initialize_environment handles import errors."""
         # Setup
         mock_import.side_effect = ImportError("Module not found")
@@ -210,7 +227,11 @@ class TestToolEnvInitializerMixinWithPytest:
         mock_import.assert_called_once_with("test_tool")
 
     @patch("importlib.import_module")
-    def test_initialize_environment_other_error_pytest(self, mock_import: MagicMock, tool_env_initializer_mixin: ToolEnvInitializerMixin) -> None:
+    def test_initialize_environment_other_error_pytest(
+        self,
+        mock_import: MagicMock,
+        tool_env_initializer_mixin: ToolEnvInitializerMixin,
+    ) -> None:
         """Test that _initialize_environment handles general exceptions during initialization."""
         # Setup
         mock_module = MagicMock()

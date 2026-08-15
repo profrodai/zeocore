@@ -28,7 +28,9 @@ class TestGoogleAuthProvider:
     """Tests for the GoogleAuthProvider class."""
 
     def test_init(self) -> None:
-        with patch("quack_core.integrations.google.auth.standalone.get_file_info") as mock_info:
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
 
@@ -37,19 +39,25 @@ class TestGoogleAuthProvider:
             assert provider.scopes == []
 
     def test_verify_client_secrets_file(self) -> None:
-        with patch("quack_core.integrations.google.auth.standalone.get_file_info") as mock_info:
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
             GoogleAuthProvider(client_secrets_file="/path/to/secrets.json")
 
-        with patch("quack_core.integrations.google.auth.standalone.get_file_info") as mock_info:
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = False
             with pytest.raises(QuackIntegrationError):
                 GoogleAuthProvider(client_secrets_file="/nonexistent/secrets.json")
 
     def test_authenticate_new_flow(self) -> None:
-        with patch("quack_core.integrations.google.auth.standalone.get_file_info") as mock_info:
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
             provider = GoogleAuthProvider(
@@ -59,7 +67,9 @@ class TestGoogleAuthProvider:
 
         with (
             patch("google.oauth2.credentials.Credentials") as mock_creds_class,
-            patch("quack_core.integrations.google.auth.standalone.read_json") as mock_read,
+            patch(
+                "quack_core.integrations.google.auth.standalone.read_json"
+            ) as mock_read,
             patch(
                 "quack_core.integrations.google.auth.InstalledAppFlow"
             ) as mock_flow_class,
@@ -85,7 +95,9 @@ class TestGoogleAuthProvider:
                 assert provider.auth == new_creds
 
     def test_authenticate_with_expired_credentials(self) -> None:
-        with patch("quack_core.integrations.google.auth.standalone.get_file_info") as mock_info:
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
             provider = GoogleAuthProvider(
@@ -101,7 +113,9 @@ class TestGoogleAuthProvider:
         )
 
         with (
-            patch("quack_core.integrations.google.auth.standalone.read_json") as mock_read,
+            patch(
+                "quack_core.integrations.google.auth.standalone.read_json"
+            ) as mock_read,
             patch("google.oauth2.credentials.Credentials") as mock_creds_class,
             patch("quack_core.integrations.google.auth.Request"),
             patch.object(provider, "_save_credentials_to_file") as mock_save,
@@ -127,7 +141,9 @@ class TestGoogleAuthProvider:
             assert provider.auth == refreshed_creds
 
     def test_refresh_credentials(self) -> None:
-        with patch("quack_core.integrations.google.auth.standalone.get_file_info") as mock_info:
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
             provider = GoogleAuthProvider(
@@ -171,7 +187,9 @@ class TestGoogleAuthProvider:
         assert "Failed to refresh" in result.error
 
     def test_get_credentials(self) -> None:
-        with patch("quack_core.integrations.google.auth.standalone.get_file_info") as mock_info:
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
             provider = GoogleAuthProvider(
@@ -200,7 +218,9 @@ class TestGoogleAuthProvider:
             assert provider.get_credentials() == new_creds
 
     def test_save_credentials(self) -> None:
-        with patch("quack_core.integrations.google.auth.standalone.get_file_info") as mock_info:
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
             provider = GoogleAuthProvider(
@@ -217,7 +237,9 @@ class TestGoogleAuthProvider:
             assert provider.save_credentials()
 
     def test_save_credentials_to_file(self) -> None:
-        with patch("quack_core.integrations.google.auth.standalone.get_file_info") as mock_info:
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
             provider = GoogleAuthProvider(
@@ -230,9 +252,15 @@ class TestGoogleAuthProvider:
 
         provider.credentials_file = "/path/to/credentials.json"
         with (
-            patch("quack_core.integrations.google.auth.standalone.split_path") as mock_split,
-            patch("quack_core.integrations.google.auth.standalone.join_path") as mock_join,
-            patch("quack_core.integrations.google.auth.standalone.create_directory") as mock_mkdir,
+            patch(
+                "quack_core.integrations.google.auth.standalone.split_path"
+            ) as mock_split,
+            patch(
+                "quack_core.integrations.google.auth.standalone.join_path"
+            ) as mock_join,
+            patch(
+                "quack_core.integrations.google.auth.standalone.create_directory"
+            ) as mock_mkdir,
         ):
             split_result = MagicMock()
             split_result.success = True
@@ -249,10 +277,18 @@ class TestGoogleAuthProvider:
 
         creds = mock_credentials(token="test_token", expiry_timestamp=1234567890)
         with (
-            patch("quack_core.integrations.google.auth.standalone.split_path") as mock_split,
-            patch("quack_core.integrations.google.auth.standalone.join_path") as mock_join,
-            patch("quack_core.integrations.google.auth.standalone.create_directory") as mock_mkdir,
-            patch("quack_core.integrations.google.auth.standalone.write_json") as mock_write_json,
+            patch(
+                "quack_core.integrations.google.auth.standalone.split_path"
+            ) as mock_split,
+            patch(
+                "quack_core.integrations.google.auth.standalone.join_path"
+            ) as mock_join,
+            patch(
+                "quack_core.integrations.google.auth.standalone.create_directory"
+            ) as mock_mkdir,
+            patch(
+                "quack_core.integrations.google.auth.standalone.write_json"
+            ) as mock_write_json,
         ):
             split_result = MagicMock()
             split_result.success = True
