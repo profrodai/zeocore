@@ -53,7 +53,9 @@ class TestDriveOperationsDownload:
             mock_fs.join_path.return_value = Path("/tmp/test_file.txt")  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
             mock_fs.create_directory.return_value = OperationResult(
-                success=True, path=Path("/tmp"), message="Directory created"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
+                success=True,
+                path=Path("/tmp"),  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
+                message="Directory created",
             )
             mock_execute.return_value = {
                 "name": "test_file.txt",
@@ -88,7 +90,9 @@ class TestDriveOperationsDownload:
 
             # Call download function
             result = download.download_file(
-                mock_drive_service, "file123", "/tmp/test_file.txt"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
+                mock_drive_service,
+                "file123",
+                "/tmp/test_file.txt",  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
             )
 
             # Assertions
@@ -234,7 +238,9 @@ class TestDriveOperationsDownload:
 
             mock_fs.join_path.return_value = Path("/tmp/test_file.txt")  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
             mock_fs.create_directory.return_value = OperationResult(
-                success=True, path=Path("/tmp"), message="Directory created"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
+                success=True,
+                path=Path("/tmp"),  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
+                message="Directory created",
             )
             mock_execute.return_value = {
                 "name": "test_file.txt",

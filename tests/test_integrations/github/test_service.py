@@ -183,7 +183,8 @@ class TestGitHubIntegration:
             # Simulate that get_credentials returns no token.
             mock_auth_provider.get_credentials.return_value = {"token": None}
             mock_auth_provider.authenticate.return_value = AuthResult.success_result(
-                token="auth_token", message="Successfully authenticated"  # noqa: S106 -- test fixture, fake credential value, not a real secret
+                token="auth_token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
+                message="Successfully authenticated",
             )
 
             with patch(
