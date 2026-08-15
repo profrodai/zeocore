@@ -34,7 +34,7 @@ class TestCapabilityError:
         error = CapabilityError(
             code="QC_IO_NOT_FOUND",
             message="File not found",
-            details={"path": "/data/missing.mp4"}
+            details={"path": "/data/missing.mp4"},
         )
 
         assert error.code == "QC_IO_NOT_FOUND"
@@ -44,10 +44,7 @@ class TestCapabilityError:
     def test_error_code_must_start_with_qc(self):
         """Test that error codes must follow QC_* convention."""
         with pytest.raises(ValidationError) as exc_info:
-            CapabilityError(
-                code="INVALID_CODE",
-                message="Test error"
-            )
+            CapabilityError(code="INVALID_CODE", message="Test error")
 
         # Check validation error structure, not message text
         errors = exc_info.value.errors()
@@ -60,7 +57,7 @@ class TestCapabilityError:
         error = CapabilityError(
             code="QC_NET_TIMEOUT",
             message="Network timeout",
-            details={"timeout_sec": 30}
+            details={"timeout_sec": 30},
         )
 
         data = error.model_dump()
@@ -76,7 +73,7 @@ class TestCapabilityLogEvent:
         log = CapabilityLogEvent(
             level=LogLevel.INFO,
             message="Processing started",
-            context={"tool": "slice_video"}
+            context={"tool": "slice_video"},
         )
 
         assert log.level == LogLevel.INFO
@@ -86,9 +83,7 @@ class TestCapabilityLogEvent:
 
     def test_log_default_timestamp(self):
         """Test that timestamp defaults to UTC now."""
-        log = CapabilityLogEvent(
-            message="Test message"
-        )
+        log = CapabilityLogEvent(message="Test message")
 
         # Check timestamp properties (not exact value to avoid flakiness)
         assert isinstance(log.timestamp, datetime)
@@ -106,9 +101,7 @@ class TestCapabilityResult:
     def test_ok_result(self):
         """Test successful result creation."""
         result = CapabilityResult.ok(
-            data={"count": 5},
-            msg="Processing complete",
-            metadata={"tool": "test"}
+            data={"count": 5}, msg="Processing complete", metadata={"tool": "test"}
         )
 
         assert result.status == CapabilityStatus.success
@@ -120,8 +113,7 @@ class TestCapabilityResult:
     def test_skip_result(self):
         """Test skip result creation."""
         result = CapabilityResult.skip(
-            reason="Video too short",
-            code="QC_VAL_TOO_SHORT"
+            reason="Video too short", code="QC_VAL_TOO_SHORT"
         )
 
         assert result.status == CapabilityStatus.skipped
@@ -131,10 +123,7 @@ class TestCapabilityResult:
 
     def test_fail_result(self):
         """Test error result creation."""
-        result = CapabilityResult.fail(
-            msg="Processing failed",
-            code="QC_IO_ERROR"
-        )
+        result = CapabilityResult.fail(msg="Processing failed", code="QC_IO_ERROR")
 
         assert result.status == CapabilityStatus.error
         assert result.human_message == "Processing failed"
@@ -146,9 +135,7 @@ class TestCapabilityResult:
         """Test error result from exception."""
         exc = ValueError("Invalid input")
         result = CapabilityResult.fail_from_exc(
-            msg="Validation failed",
-            code="QC_VAL_ERROR",
-            exc=exc
+            msg="Validation failed", code="QC_VAL_ERROR", exc=exc
         )
 
         assert result.status == CapabilityStatus.error
@@ -162,7 +149,7 @@ class TestCapabilityResult:
             CapabilityResult(
                 status=CapabilityStatus.error,
                 human_message="Something failed",
-                machine_message="QC_ERROR"
+                machine_message="QC_ERROR",
                 # Missing error field
             )
 
@@ -180,15 +167,15 @@ class TestCapabilityResult:
             CapabilityResult(
                 status=CapabilityStatus.error,
                 human_message="Something failed",
-                error=CapabilityError(code="QC_ERROR", message="Error")
+                error=CapabilityError(code="QC_ERROR", message="Error"),
                 # Missing machine_message
             )
 
         # Check error structure
         errors = exc_info.value.errors()
         assert any(
-            "machine_message" in str(err.get("loc", [])) or
-            "machine_message" in err.get("msg", "").lower()
+            "machine_message" in str(err.get("loc", []))
+            or "machine_message" in err.get("msg", "").lower()
             for err in errors
         )
 
@@ -199,14 +186,13 @@ class TestCapabilityResult:
                 status=CapabilityStatus.success,
                 human_message="Success",
                 data={"result": "ok"},
-                error=CapabilityError(code="QC_ERROR", message="Error")
+                error=CapabilityError(code="QC_ERROR", message="Error"),
             )
 
         # Check error structure
         errors = exc_info.value.errors()
         assert any(
-            "error" in str(err.get("loc", [])) or
-            "error" in err.get("msg", "").lower()
+            "error" in str(err.get("loc", [])) or "error" in err.get("msg", "").lower()
             for err in errors
         )
 
@@ -214,24 +200,17 @@ class TestCapabilityResult:
         """Test result with log events."""
         logs = [
             CapabilityLogEvent(level=LogLevel.INFO, message="Started"),
-            CapabilityLogEvent(level=LogLevel.INFO, message="Completed")
+            CapabilityLogEvent(level=LogLevel.INFO, message="Completed"),
         ]
 
-        result = CapabilityResult.ok(
-            data={"status": "done"},
-            msg="Success",
-            logs=logs
-        )
+        result = CapabilityResult.ok(data={"status": "done"}, msg="Success", logs=logs)
 
         assert len(result.logs) == 2
         assert result.logs[0].message == "Started"
 
     def test_result_serialization(self):
         """Test result serialization to JSON."""
-        result = CapabilityResult.ok(
-            data={"value": 42},
-            msg="Success"
-        )
+        result = CapabilityResult.ok(data={"value": 42}, msg="Success")
 
         data = result.model_dump()
         assert data["status"] == "success"

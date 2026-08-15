@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Shared JSON serialization utilities.
 
@@ -25,11 +24,11 @@ from typing import Any
 
 
 def normalize_for_json(
-        data: Any,
-        path: str = "value",
-        allow_pydantic: bool = True,
-        allow_string_fallback: bool = False,
-        logger: Any | None = None
+    data: Any,
+    path: str = "value",
+    allow_pydantic: bool = True,
+    allow_string_fallback: bool = False,
+    logger: Any | None = None,
 ) -> Any:
     """
     Normalize data to JSON-serializable form.
@@ -71,6 +70,7 @@ def normalize_for_json(
         # Import here to avoid circular dependency
         try:
             from pydantic import BaseModel
+
             if isinstance(data, BaseModel):
                 return data.model_dump()
         except ImportError:
@@ -94,15 +94,21 @@ def normalize_for_json(
     if isinstance(data, set):
         if logger:
             logger.debug(f"Converting set to list at {path}")
-        return [normalize_for_json(item, f"{path}[{i}]", allow_pydantic,
-                                   allow_string_fallback, logger)
-                for i, item in enumerate(data)]
+        return [
+            normalize_for_json(
+                item, f"{path}[{i}]", allow_pydantic, allow_string_fallback, logger
+            )
+            for i, item in enumerate(data)
+        ]
 
     # Lists/tuples - recurse
     if isinstance(data, (list, tuple)):
-        return [normalize_for_json(item, f"{path}[{i}]", allow_pydantic,
-                                   allow_string_fallback, logger)
-                for i, item in enumerate(data)]
+        return [
+            normalize_for_json(
+                item, f"{path}[{i}]", allow_pydantic, allow_string_fallback, logger
+            )
+            for i, item in enumerate(data)
+        ]
 
     # Dicts - enforce string keys and recurse
     if isinstance(data, dict):
@@ -120,8 +126,9 @@ def normalize_for_json(
                         f"Dict key at {path}[{k!r}] must be string, got {type(k).__name__}. "
                         f"JSON requires string keys."
                     )
-            result[k] = normalize_for_json(v, f"{path}.{k}", allow_pydantic,
-                                           allow_string_fallback, logger)
+            result[k] = normalize_for_json(
+                v, f"{path}.{k}", allow_pydantic, allow_string_fallback, logger
+            )
         return result
 
     # Unknown type - reject or stringify
@@ -169,8 +176,9 @@ def is_json_safe(data: Any, allow_pydantic: bool = True) -> bool:
         False
     """
     try:
-        normalize_for_json(data, allow_pydantic=allow_pydantic,
-                           allow_string_fallback=False)
+        normalize_for_json(
+            data, allow_pydantic=allow_pydantic, allow_string_fallback=False
+        )
         return True
     except (TypeError, ValueError):
         return False

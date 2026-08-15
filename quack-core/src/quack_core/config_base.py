@@ -12,6 +12,7 @@
 Configuration resolution engine with Deep Merge.
 Handles the merge logic: Request > Preset > Policy > Defaults.
 """
+
 import os
 from typing import Any, TypeVar
 
@@ -21,13 +22,18 @@ from pydantic import BaseModel
 T_Policy = TypeVar("T_Policy", bound=BaseModel)
 T_Request = TypeVar("T_Request", bound=BaseModel)
 
+
 class BasePolicy(BaseModel):
     """Base class for organization-wide defaults."""
+
     pass
+
 
 class ConfigError(Exception):
     """Raised when config resolution fails (e.g. missing preset)."""
+
     pass
+
 
 def deep_merge(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
     """Recursively merge two dictionaries."""
@@ -38,6 +44,7 @@ def deep_merge(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
         else:
             out[k] = v
     return out
+
 
 class ConfigResolver:
     """
@@ -61,7 +68,7 @@ class ConfigResolver:
         request: T_Request,
         policy_class: type[T_Policy],
         tool_name: str,
-        policy_path: str = "quack_policy.yaml"
+        policy_path: str = "quack_policy.yaml",
     ) -> T_Policy:
         """
         Merges configuration in strict precedence order:
@@ -79,15 +86,17 @@ class ConfigResolver:
         merged = deep_merge(merged, tool_policy)
 
         # 3. Handle Presets (if request specifies one)
-        if hasattr(request, 'preset') and request.preset:
+        if hasattr(request, "preset") and request.preset:
             preset_name = request.preset
             # Presets are stored under 'presets' key in policy file
             # Format: presets: { video: { shorts: { ... } } }
-            all_presets = full_policy_dict.get('presets', {}).get(tool_name, {})
+            all_presets = full_policy_dict.get("presets", {}).get(tool_name, {})
 
             if preset_name not in all_presets:
                 # We raise here to let the Interface layer handle the error mapping
-                raise ConfigError(f"Preset '{preset_name}' not found for tool '{tool_name}'")
+                raise ConfigError(
+                    f"Preset '{preset_name}' not found for tool '{tool_name}'"
+                )
 
             preset_dict = all_presets[preset_name]
             merged = deep_merge(merged, preset_dict)

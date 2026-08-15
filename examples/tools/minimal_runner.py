@@ -8,7 +8,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Minimal local runner example.
 
@@ -55,7 +54,7 @@ def run_tool_locally(tool_class, request):
     ctx = ToolContext(
         tool_name=tool.name,
         tool_version=tool.version,
-        metadata={"environment": "local_dev"}
+        metadata={"environment": "local_dev"},
     )
 
     # 3. Initialize tool
@@ -84,9 +83,7 @@ def main():
 
     # Create request
     request = EchoRequest(
-        text="QuackCore",
-        preset="friendly",
-        override_greeting="Greetings"
+        text="QuackCore", preset="friendly", override_greeting="Greetings"
     )
 
     print(f"Request: {request.model_dump_json(indent=2)}")

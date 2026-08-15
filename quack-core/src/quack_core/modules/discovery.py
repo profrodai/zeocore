@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Plugin discovery and loading for quack_core.
 
@@ -122,7 +121,7 @@ class PluginLoader:
         self.logger.setLevel(log_level)
 
     def _validate_plugin(
-            self, plugin: QuackPluginProtocol, module_path: str
+        self, plugin: QuackPluginProtocol, module_path: str
     ) -> QuackPluginProtocol:
         """
         Validate that the plugin has the required attributes using pydantic.
@@ -150,9 +149,7 @@ class PluginLoader:
                 raise AttributeError("Plugin has no 'name' attribute")
 
             # Validate the get_metadata method and its return value
-            if not hasattr(plugin, "get_metadata") or not callable(
-                    plugin.get_metadata
-            ):
+            if not hasattr(plugin, "get_metadata") or not callable(plugin.get_metadata):
                 # For backward compatibility, create minimal metadata
                 metadata = QuackPluginMetadata(
                     plugin_id=plugin.plugin_id,
@@ -192,7 +189,7 @@ class PluginLoader:
         return plugin
 
     def _load_from_factory(
-            self, module: object, module_path: str
+        self, module: object, module_path: str
     ) -> QuackPluginProtocol | None:
         """
         Attempt to load a plugin using factory functions defined in the module.
@@ -229,7 +226,7 @@ class PluginLoader:
         return None
 
     def _load_from_class(
-            self, module: object, module_path: str
+        self, module: object, module_path: str
     ) -> QuackPluginProtocol | None:
         """
         Attempt to load a plugin by searching for specific classes in the module.
@@ -263,7 +260,7 @@ class PluginLoader:
         return None
 
     def _load_from_dict(
-            self, module: object, module_path: str
+        self, module: object, module_path: str
     ) -> QuackPluginProtocol | None:
         """
         As a fallback, attempt to load a plugin by checking the module's __dict__.
@@ -375,7 +372,7 @@ class PluginLoader:
         return plugins
 
     def load_entry_points(
-            self, group: str = "quack_core.modules"
+        self, group: str = "quack_core.modules"
     ) -> list[QuackPluginProtocol]:
         """
         Load modules from entry points.
@@ -398,7 +395,7 @@ class PluginLoader:
             List of loaded plugin instances
         """
         # Log deprecation warning on first use
-        if not hasattr(self, '_load_entry_points_warned'):
+        if not hasattr(self, "_load_entry_points_warned"):
             self.logger.warning(
                 "load_entry_points() is a legacy method. "
                 "Prefer list_available_entry_points() for discovery or "
@@ -426,9 +423,7 @@ class PluginLoader:
 
             for ep in discovered_eps:
                 try:
-                    self.logger.debug(
-                        f"Loading entry point: {ep.name} from {ep.value}"
-                    )
+                    self.logger.debug(f"Loading entry point: {ep.name} from {ep.value}")
                     factory = ep.load()
                     if callable(factory):
                         plugin = factory()
@@ -447,7 +442,7 @@ class PluginLoader:
         return plugins
 
     def list_available_entry_points(
-            self, group: str = "quack_core.modules"
+        self, group: str = "quack_core.modules"
     ) -> list[PluginEntryPoint]:
         """
         List available entry points WITHOUT instantiating them.
@@ -484,11 +479,11 @@ class PluginLoader:
         return available
 
     def load_enabled_entry_points(
-            self,
-            enabled: list[str],
-            group: str = "quack_core.modules",
-            strict: bool = True,
-            auto_register: bool = True,
+        self,
+        enabled: list[str],
+        group: str = "quack_core.modules",
+        strict: bool = True,
+        auto_register: bool = True,
     ) -> LoadResult:
         """
         Load and optionally register only the specified modules from entry points.
@@ -642,10 +637,10 @@ class PluginLoader:
         return result
 
     def load_enabled_modules(
-            self,
-            modules: list[str],
-            strict: bool = True,
-            auto_register: bool = True,
+        self,
+        modules: list[str],
+        strict: bool = True,
+        auto_register: bool = True,
     ) -> LoadResult:
         """
         Load and optionally register modules from explicit module paths.
@@ -744,9 +739,9 @@ class PluginLoader:
         return result
 
     def discover_plugins(
-            self,
-            entry_point_group: str = "quack_core.modules",
-            additional_modules: list[str] | None = None,
+        self,
+        entry_point_group: str = "quack_core.modules",
+        additional_modules: list[str] | None = None,
     ) -> list[QuackPluginProtocol]:
         """
         Discover modules from entry points and additional modules.
@@ -782,7 +777,7 @@ loader = PluginLoader()
 
 # Top-level convenience functions for explicit loading
 def list_available_entry_points(
-        group: str = "quack_core.modules",
+    group: str = "quack_core.modules",
 ) -> list[PluginEntryPoint]:
     """
     List available plugin entry points without instantiating them.
@@ -800,10 +795,10 @@ def list_available_entry_points(
 
 
 def load_enabled_entry_points(
-        enabled: list[str],
-        group: str = "quack_core.modules",
-        strict: bool = True,
-        auto_register: bool = True,
+    enabled: list[str],
+    group: str = "quack_core.modules",
+    strict: bool = True,
+    auto_register: bool = True,
 ) -> LoadResult:
     """
     Load and optionally register only the specified modules.
@@ -827,9 +822,9 @@ def load_enabled_entry_points(
 
 
 def load_enabled_modules(
-        modules: list[str],
-        strict: bool = True,
-        auto_register: bool = True,
+    modules: list[str],
+    strict: bool = True,
+    auto_register: bool = True,
 ) -> LoadResult:
     """
     Load and optionally register modules from explicit module paths.

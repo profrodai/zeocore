@@ -157,8 +157,8 @@ class TestConfigUtils:
         # Test with default value
         assert get_config_value(sample_config, "nonexistent", "default") == "default"
         assert (
-                get_config_value(sample_config, "general.nonexistent", "default")
-                == "default"
+            get_config_value(sample_config, "general.nonexistent", "default")
+            == "default"
         )
 
         # Test getting nested values

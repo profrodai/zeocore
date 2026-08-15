@@ -20,6 +20,7 @@ from quack_core.core.fs._internal.directory_ops import (
 @dataclass
 class _DirectoryInfo:
     """Internal DTO for directory stats. Not a public Result."""
+
     path: Path
     files: list[Path]
     directories: list[Path]
@@ -33,8 +34,13 @@ class DirectoryOperationsMixin:
     def _ensure_directory(self, path: Path, exist_ok: bool = True) -> Path:
         return _ensure_directory(path, exist_ok)
 
-    def _list_directory(self, path: Path, pattern: str | None = None, recursive: bool = False,
-                        include_hidden: bool = False) -> _DirectoryInfo:
+    def _list_directory(
+        self,
+        path: Path,
+        pattern: str | None = None,
+        recursive: bool = False,
+        include_hidden: bool = False,
+    ) -> _DirectoryInfo:
         stats = _scan_directory(path, pattern, recursive, include_hidden)
 
         return _DirectoryInfo(
@@ -44,5 +50,5 @@ class DirectoryOperationsMixin:
             total_size=stats.total_size,
             is_empty=(len(stats.files) == 0 and len(stats.directories) == 0),
             total_files=len(stats.files),
-            total_directories=len(stats.directories)
+            total_directories=len(stats.directories),
         )

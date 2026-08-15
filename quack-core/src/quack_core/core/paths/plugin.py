@@ -97,5 +97,3 @@ class QuackPathsPlugin:
 def create_plugin() -> PathsPlugin:
     """Create a new instance of the paths plugin."""
     return QuackPathsPlugin()
-
-

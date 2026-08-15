@@ -28,7 +28,7 @@ from quack_core.integrations.google.drive.utils.api import execute_api_request
 
 
 def resolve_download_path(
-        file_metadata: Mapping[str, object], local_path: str | None = None
+    file_metadata: Mapping[str, object], local_path: str | None = None
 ) -> str:
     """
     Resolve the local path for file download with enhanced path handling.
@@ -45,8 +45,11 @@ def resolve_download_path(
     if local_path is None:
         # Create a temp directory
         temp_dir_result = standalone.create_temp_directory(prefix="gdrive_download_")
-        temp_dir = temp_dir_result.data if hasattr(temp_dir_result,
-                                                   "data") else temp_dir_result
+        temp_dir = (
+            temp_dir_result.data
+            if hasattr(temp_dir_result, "data")
+            else temp_dir_result
+        )
         # Join Paths
         join_result = standalone.join_path(temp_dir, file_name)
         joined_path = join_result.data if hasattr(join_result, "data") else join_result
@@ -67,8 +70,9 @@ def resolve_download_path(
         if file_info.is_dir:
             # If it's a directory, join the file name to it
             join_result = standalone.join_path(local_path_obj, file_name)
-            joined_path = join_result.data if hasattr(join_result,
-                                                      "data") else join_result
+            joined_path = (
+                join_result.data if hasattr(join_result, "data") else join_result
+            )
             return str(joined_path)
         else:
             # If it's a file, use the path as is
@@ -79,10 +83,10 @@ def resolve_download_path(
 
 
 def download_file(
-        drive_service: DriveService,
-        remote_id: str,
-        local_path: str | None = None,
-        logger: logging.Logger | None = None,
+    drive_service: DriveService,
+    remote_id: str,
+    local_path: str | None = None,
+    logger: logging.Logger | None = None,
 ) -> IntegrationResult[str]:
     """
     Download a file from Google Drive.

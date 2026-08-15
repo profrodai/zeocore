@@ -296,9 +296,7 @@ class TestGmailEmailOperations:
                 assert mock_sleep.call_count == 1  # Only 1 sleep between the 2 attempts
 
     @patch("quack_core.integrations.google.mail._ops.email.process_message_parts")
-    @patch(
-        "quack_core.integrations.google.mail._ops.email._get_message_with_retry"
-    )
+    @patch("quack_core.integrations.google.mail._ops.email._get_message_with_retry")
     def test_download_email(
         self,
         mock_get_message: MagicMock,
@@ -332,13 +330,13 @@ class TestGmailEmailOperations:
 
         # Patch the filesystem write operation to avoid real filesystem access
         with (
-            patch(
-                "quack_core.integrations.google.mail._ops.email.datetime"
-            ) as mock_dt,
+            patch("quack_core.integrations.google.mail._ops.email.datetime") as mock_dt,
             patch(
                 "quack_core.integrations.google.mail._ops.email.clean_filename"
             ) as mock_clean,
-            patch("quack_core.integrations.google.mail._ops.email.standalone") as mock_fs,
+            patch(
+                "quack_core.integrations.google.mail._ops.email.standalone"
+            ) as mock_fs,
         ):
             # Set up date/time to ensure consistent filename generation
             mock_dt.now.return_value = datetime(2023, 1, 15, 10, 30, 0)

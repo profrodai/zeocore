@@ -31,10 +31,16 @@ def _ensure_directory(path: Path, exist_ok: bool = True) -> Path:
         raise OSError(f"Failed to create directory: {e}") from e
 
 
-def _scan_directory(path: Path, pattern: str | None = None, recursive: bool = False,
-                    include_hidden: bool = False) -> DirectoryScanStats:
-    if not path.exists(): raise FileNotFoundError(f"Directory not found: {path}")
-    if not path.is_dir(): raise NotADirectoryError(f"Not a directory: {path}")
+def _scan_directory(
+    path: Path,
+    pattern: str | None = None,
+    recursive: bool = False,
+    include_hidden: bool = False,
+) -> DirectoryScanStats:
+    if not path.exists():
+        raise FileNotFoundError(f"Directory not found: {path}")
+    if not path.is_dir():
+        raise NotADirectoryError(f"Not a directory: {path}")
 
     files = []
     directories = []
@@ -45,7 +51,7 @@ def _scan_directory(path: Path, pattern: str | None = None, recursive: bool = Fa
 
     for item in iterator:
         # Handle hidden files
-        if not include_hidden and item.name.startswith('.'):
+        if not include_hidden and item.name.startswith("."):
             continue
 
         # Handle pattern matching (fnmatch style)
@@ -61,4 +67,6 @@ def _scan_directory(path: Path, pattern: str | None = None, recursive: bool = Fa
         elif item.is_dir():
             directories.append(item)
 
-    return DirectoryScanStats(files=files, directories=directories, total_size=total_size)
+    return DirectoryScanStats(
+        files=files, directories=directories, total_size=total_size
+    )

@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Plugin system for quack_core.
 

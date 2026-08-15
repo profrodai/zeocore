@@ -25,18 +25,18 @@ def fs_stub(monkeypatch):
     import types
 
     # Create a module structure if it doesn't exist
-    if 'quack_core.core.fs.service' not in sys.modules:
+    if "quack_core.core.fs.service" not in sys.modules:
         # Create the module hierarchy
-        if 'quack-core' not in sys.modules:
-            quackcore_mod = types.ModuleType('quack-core')
-            sys.modules['quack-core'] = quackcore_mod
+        if "quack-core" not in sys.modules:
+            quackcore_mod = types.ModuleType("quack-core")
+            sys.modules["quack-core"] = quackcore_mod
 
-        if 'quack_core.core.fs' not in sys.modules:
-            fs_mod = types.ModuleType('quack_core.core.fs')
-            sys.modules['quack_core.core.fs'] = fs_mod
+        if "quack_core.core.fs" not in sys.modules:
+            fs_mod = types.ModuleType("quack_core.core.fs")
+            sys.modules["quack_core.core.fs"] = fs_mod
 
-        service_mod = types.ModuleType('quack_core.core.fs.service')
-        sys.modules['quack_core.core.fs.service'] = service_mod
+        service_mod = types.ModuleType("quack_core.core.fs.service")
+        sys.modules["quack_core.core.fs.service"] = service_mod
 
     # Create the stub with all necessary methods
     stub = SimpleNamespace()
@@ -52,14 +52,17 @@ def fs_stub(monkeypatch):
         success=True, bytes_written=len(content)
     )
     stub.read_text = lambda path, encoding=None: SimpleNamespace(
-        success=True, content="<html><body><h1>Title</h1><p>Content</p></body></html>"
-        if path.endswith('.html') else "# Title\n\nContent"
+        success=True,
+        content="<html><body><h1>Title</h1><p>Content</p></body></html>"
+        if path.endswith(".html")
+        else "# Title\n\nContent",
     )
-    stub.get_extension = lambda path: SimpleNamespace(data=path.split('.')[-1])
+    stub.get_extension = lambda path: SimpleNamespace(data=path.split(".")[-1])
     stub.get_path_info = lambda path: SimpleNamespace(success=True)
     stub.is_valid_path = lambda path: True
-    stub.normalize_path = lambda p: SimpleNamespace(success=True,
-                                                    path=os.path.abspath(p))
+    stub.normalize_path = lambda p: SimpleNamespace(
+        success=True, path=os.path.abspath(p)
+    )
     stub.normalize_path_with_info = stub.normalize_path
     stub.get_file_size_str = lambda size: f"{size}B"
     stub.find_files = lambda dir_path, pattern, recursive=False: SimpleNamespace(
@@ -67,7 +70,7 @@ def fs_stub(monkeypatch):
     )
 
     # Set the standalone attribute directly in the sys.modules
-    sys.modules['quack_core.core.fs.service'].standalone = stub
+    sys.modules["quack_core.core.fs.service"].standalone = stub
 
     return stub
 
@@ -81,7 +84,7 @@ def mock_pypandoc(monkeypatch):
     mock = MagicMock()
     mock.get_pandoc_version.return_value = "2.11.0"
     mock.convert_file.return_value = "# Converted Content\n\nThis is markdown."
-    monkeypatch.setitem(pytest.importorskip("sys").modules, 'pypandoc', mock)
+    monkeypatch.setitem(pytest.importorskip("sys").modules, "pypandoc", mock)
     return mock
 
 
@@ -95,13 +98,14 @@ def mock_paths_service(monkeypatch):
     mock.resolve_project_path = lambda path: path  # Just return the path unchanged
 
     # Create a temp module if it doesn't exist
-    if 'quack_core.core.paths' not in pytest.importorskip("sys").modules:
+    if "quack_core.core.paths" not in pytest.importorskip("sys").modules:
         import types
-        temp_module = types.ModuleType('quack_core.core.paths')
-        pytest.importorskip("sys").modules['quack_core.core.paths'] = temp_module
+
+        temp_module = types.ModuleType("quack_core.core.paths")
+        pytest.importorskip("sys").modules["quack_core.core.paths"] = temp_module
         temp_module.service = mock
     else:
-        monkeypatch.setattr('quack_core.core.paths.service', mock)
+        monkeypatch.setattr("quack_core.core.paths.service", mock)
 
     return mock
 
@@ -119,7 +123,7 @@ def mock_bs4(monkeypatch):
     mock_bs = MagicMock()
     mock_bs.BeautifulSoup.return_value = mock_soup
 
-    monkeypatch.setitem(pytest.importorskip("sys").modules, 'bs4', mock_bs)
+    monkeypatch.setitem(pytest.importorskip("sys").modules, "bs4", mock_bs)
     return mock_bs
 
 
@@ -138,5 +142,5 @@ def mock_docx(monkeypatch):
     mock_docx_module = MagicMock()
     mock_docx_module.Document.return_value = mock_doc
 
-    monkeypatch.setitem(pytest.importorskip("sys").modules, 'docx', mock_docx_module)
+    monkeypatch.setitem(pytest.importorskip("sys").modules, "docx", mock_docx_module)
     return mock_docx_module

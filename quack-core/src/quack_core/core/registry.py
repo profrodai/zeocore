@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 Operation registry for QuackCore.
 
@@ -75,13 +74,13 @@ class OperationRegistry:
         logger.debug("OperationRegistry initialized")
 
     def register(
-            self,
-            name: str,
-            callable: Callable[[TRequest], TResponse],
-            request_model: type[TRequest],
-            response_model: type[TResponse] | None = None,
-            description: str = "",
-            tags: list[str] | None = None,
+        self,
+        name: str,
+        callable: Callable[[TRequest], TResponse],
+        request_model: type[TRequest],
+        response_model: type[TResponse] | None = None,
+        description: str = "",
+        tags: list[str] | None = None,
     ) -> None:
         """
         Register an operation.
@@ -218,8 +217,9 @@ def reset_registry() -> None:
     _registry = None
 
 
-async def invoke_operation(op: Operation[Any, Any], params: dict[str, Any]) -> dict[
-    str, Any]:
+async def invoke_operation(
+    op: Operation[Any, Any], params: dict[str, Any]
+) -> dict[str, Any]:
     """
     Invoke an operation with consistent semantics.
 
@@ -256,11 +256,16 @@ async def invoke_operation(op: Operation[Any, Any], params: dict[str, Any]) -> d
             result = response_obj.model_dump()
         else:
             # If result is not a dict, try to validate it directly
-            response_obj = op.response_model(result) if not isinstance(result,
-                                                                       op.response_model) else result
-            result = response_obj.model_dump() if hasattr(response_obj,
-                                                          'model_dump') else {
-                "value": result}
+            response_obj = (
+                op.response_model(result)
+                if not isinstance(result, op.response_model)
+                else result
+            )
+            result = (
+                response_obj.model_dump()
+                if hasattr(response_obj, "model_dump")
+                else {"value": result}
+            )
 
     # Normalize return to dict
     if isinstance(result, dict):

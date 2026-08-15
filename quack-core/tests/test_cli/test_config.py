@@ -94,21 +94,26 @@ class TestLoadConfig:
     def test_load_with_explicit_path(self):
         """Test loading with an explicit config path."""
         # Patch the internal helper function directly
-        with patch("quack_core.interfaces.cli.legacy.config._get_core_config") as mock_get_core_config:
+        with patch(
+            "quack_core.interfaces.cli.legacy.config._get_core_config"
+        ) as mock_get_core_config:
             # Set up mock
             mock_config = MockConfig()
             mock_get_core_config.return_value = mock_config
 
             # Patch utility functions
             with patch(
-                "quack_core.interfaces.cli.legacy.config.normalize_paths", return_value=mock_config
+                "quack_core.interfaces.cli.legacy.config.normalize_paths",
+                return_value=mock_config,
             ):
                 with patch(
-                    "quack_core.interfaces.cli.legacy.config.load_env_config", return_value=mock_config
+                    "quack_core.interfaces.cli.legacy.config.load_env_config",
+                    return_value=mock_config,
                 ):
                     # Override _is_test_path for this test to return False
                     with patch(
-                        "quack_core.interfaces.cli.legacy.config._is_test_path", return_value=False
+                        "quack_core.interfaces.cli.legacy.config._is_test_path",
+                        return_value=False,
                     ):
                         # Call the function under test
                         config = load_config("/path/to/config.yaml")
@@ -121,8 +126,12 @@ class TestLoadConfig:
 
     def test_load_with_cli_overrides(self):
         """Test loading with CLI argument overrides."""
-        with patch("quack_core.interfaces.cli.legacy.config._get_core_config") as mock_get_core_config:
-            with patch("quack_core.interfaces.cli.legacy.config._merge_cli_overrides") as mock_merge:
+        with patch(
+            "quack_core.interfaces.cli.legacy.config._get_core_config"
+        ) as mock_get_core_config:
+            with patch(
+                "quack_core.interfaces.cli.legacy.config._merge_cli_overrides"
+            ) as mock_merge:
                 # Set up mocks
                 mock_config = MockConfig()
                 mock_merged_config = MockConfig()
@@ -135,7 +144,8 @@ class TestLoadConfig:
                     return_value=mock_merged_config,
                 ):
                     with patch(
-                        "quack_core.interfaces.cli.legacy.config.load_env_config", return_value=mock_config
+                        "quack_core.interfaces.cli.legacy.config.load_env_config",
+                        return_value=mock_config,
                     ):
                         # Call with CLI overrides
                         cli_args = {"debug": True, "log_level": "DEBUG"}
@@ -147,17 +157,21 @@ class TestLoadConfig:
 
     def test_load_with_environment(self):
         """Test loading with environment override."""
-        with patch("quack_core.interfaces.cli.legacy.config._get_core_config") as mock_get_core_config:
+        with patch(
+            "quack_core.interfaces.cli.legacy.config._get_core_config"
+        ) as mock_get_core_config:
             # Set up mock
             mock_config = MockConfig()
             mock_get_core_config.return_value = mock_config
 
             # Patch normalize_paths to return the mock
             with patch(
-                "quack_core.interfaces.cli.legacy.config.normalize_paths", return_value=mock_config
+                "quack_core.interfaces.cli.legacy.config.normalize_paths",
+                return_value=mock_config,
             ):
                 with patch(
-                    "quack_core.interfaces.cli.legacy.config.load_env_config", return_value=mock_config
+                    "quack_core.interfaces.cli.legacy.config.load_env_config",
+                    return_value=mock_config,
                 ):
                     # Call with environment
                     with patch.dict("os.environ", {}, clear=True):
@@ -170,12 +184,17 @@ class TestLoadConfig:
 
     def test_load_with_config_error(self):
         """Test handling configuration errors."""
-        with patch("quack_core.interfaces.cli.legacy.config._get_core_config") as mock_get_core_config:
+        with patch(
+            "quack_core.interfaces.cli.legacy.config._get_core_config"
+        ) as mock_get_core_config:
             # Set up mock to raise error
             mock_get_core_config.side_effect = QuackConfigurationError("Config error")
 
             # Force non-test mode to ensure error is re-raised
-            with patch("quack_core.interfaces.cli.legacy.config._is_test_path", return_value=False):
+            with patch(
+                "quack_core.interfaces.cli.legacy.config._is_test_path",
+                return_value=False,
+            ):
                 with patch("quack_core.interfaces.cli.legacy.config.is_test", False):
                     # Test when config_path is given but raises an error
                     with pytest.raises(QuackConfigurationError):
@@ -198,7 +217,9 @@ class TestLoadConfig:
                         "quack_core.interfaces.cli.legacy.config.load_env_config",
                         return_value=mock_default_config,
                     ):
-                        with patch("quack_core.interfaces.cli.legacy.config.is_test", True):
+                        with patch(
+                            "quack_core.interfaces.cli.legacy.config.is_test", True
+                        ):
                             config = load_config()
 
                             # Should return the default config
@@ -206,8 +227,12 @@ class TestLoadConfig:
 
     def test_normalize_paths(self):
         """Test that paths are normalized in the configuration."""
-        with patch("quack_core.interfaces.cli.legacy.config._get_core_config") as mock_get_core_config:
-            with patch("quack_core.interfaces.cli.legacy.config.normalize_paths") as mock_normalize:
+        with patch(
+            "quack_core.interfaces.cli.legacy.config._get_core_config"
+        ) as mock_get_core_config:
+            with patch(
+                "quack_core.interfaces.cli.legacy.config.normalize_paths"
+            ) as mock_normalize:
                 # Set up mocks
                 mock_config = MockConfig()
                 mock_normalized_config = MockConfig()
@@ -216,7 +241,8 @@ class TestLoadConfig:
 
                 # Patch load_env_config to return the same mock_config
                 with patch(
-                    "quack_core.interfaces.cli.legacy.config.load_env_config", return_value=mock_config
+                    "quack_core.interfaces.cli.legacy.config.load_env_config",
+                    return_value=mock_config,
                 ):
                     # Call the function
                     config = load_config()

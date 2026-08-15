@@ -176,9 +176,7 @@ class TestGoogleMailService:
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch("quack_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
-    @patch(
-        "quack_core.integrations.google.mail._ops.auth.initialize_gmail_service"
-    )
+    @patch("quack_core.integrations.google.mail._ops.auth.initialize_gmail_service")
     @patch("quack_core.integrations.core.base.BaseIntegrationService.initialize")
     def test_initialize(
         self,

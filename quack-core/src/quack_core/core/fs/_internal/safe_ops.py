@@ -12,14 +12,18 @@ from pathlib import Path
 
 
 def _safe_copy(src: Path, dst: Path, overwrite: bool = False) -> Path:
-    if not src.exists(): raise FileNotFoundError(str(src))
-    if dst.exists() and not overwrite: raise FileExistsError(str(dst))
+    if not src.exists():
+        raise FileNotFoundError(str(src))
+    if dst.exists() and not overwrite:
+        raise FileExistsError(str(dst))
     try:
         if src.is_dir():
-            if dst.exists() and overwrite: shutil.rmtree(dst)
+            if dst.exists() and overwrite:
+                shutil.rmtree(dst)
             shutil.copytree(src, dst)
         else:
-            if not dst.parent.exists(): dst.parent.mkdir(parents=True, exist_ok=True)
+            if not dst.parent.exists():
+                dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
         return dst
     except PermissionError as e:
@@ -27,14 +31,20 @@ def _safe_copy(src: Path, dst: Path, overwrite: bool = False) -> Path:
     except Exception as e:
         raise OSError(f"Copy failed: {e}") from e
 
+
 def _safe_move(src: Path, dst: Path, overwrite: bool = False) -> Path:
-    if not src.exists(): raise FileNotFoundError(str(src))
-    if dst.exists() and not overwrite: raise FileExistsError(str(dst))
+    if not src.exists():
+        raise FileNotFoundError(str(src))
+    if dst.exists() and not overwrite:
+        raise FileExistsError(str(dst))
     try:
-        if not dst.parent.exists(): dst.parent.mkdir(parents=True, exist_ok=True)
+        if not dst.parent.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
         if dst.exists() and overwrite:
-            if dst.is_dir(): shutil.rmtree(dst)
-            else: dst.unlink()
+            if dst.is_dir():
+                shutil.rmtree(dst)
+            else:
+                dst.unlink()
         shutil.move(str(src), str(dst))
         return dst
     except PermissionError as e:
@@ -42,13 +52,17 @@ def _safe_move(src: Path, dst: Path, overwrite: bool = False) -> Path:
     except Exception as e:
         raise OSError(f"Move failed: {e}") from e
 
+
 def _safe_delete(path: Path, missing_ok: bool = True) -> bool:
     if not path.exists():
-        if missing_ok: return False
+        if missing_ok:
+            return False
         raise FileNotFoundError(str(path))
     try:
-        if path.is_dir(): shutil.rmtree(path)
-        else: path.unlink()
+        if path.is_dir():
+            shutil.rmtree(path)
+        else:
+            path.unlink()
         return True
     except PermissionError as e:
         raise PermissionError(f"Permission denied deleting {path}") from e

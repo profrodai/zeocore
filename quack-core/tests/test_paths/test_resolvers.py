@@ -98,8 +98,9 @@ class TestPathResolver:
         # Test creating output directory
         no_output_dir = mock_project_structure / "no_output"
         no_output_dir.mkdir()
-        created_output = resolver._find_output_directory(str(no_output_dir),
-                                                         create=True)
+        created_output = resolver._find_output_directory(
+            str(no_output_dir), create=True
+        )
         assert created_output == str(no_output_dir / "output")
         assert Path(created_output).exists()
 
@@ -108,8 +109,9 @@ class TestPathResolver:
         # that does not contain an output folder.
         non_existent_dir = mock_project_structure / "non_existent_dir"
         non_existent_dir.mkdir()
-        with patch.object(resolver, "_get_project_root",
-                          return_value=str(non_existent_dir)):
+        with patch.object(
+            resolver, "_get_project_root", return_value=str(non_existent_dir)
+        ):
             with pytest.raises(QuackFileNotFoundError):
                 resolver._find_output_directory(str(non_existent_dir), create=False)
 
@@ -125,13 +127,14 @@ class TestPathResolver:
 
         # Test resolving an absolute path (should remain unchanged)
         abs_path = Path("/absolute/path/file.txt")
-        resolved = resolver._resolve_project_path(str(abs_path),
-                                                  str(mock_project_structure))
+        resolved = resolver._resolve_project_path(
+            str(abs_path), str(mock_project_structure)
+        )
         assert resolved == str(abs_path)
 
         # Test resolving without explicit project root
         with patch.object(
-                resolver, "_get_project_root", return_value=str(mock_project_structure)
+            resolver, "_get_project_root", return_value=str(mock_project_structure)
         ):
             resolved = resolver._resolve_project_path("src/file.txt")
             assert resolved == str(mock_project_structure / "src" / "file.txt")
@@ -139,7 +142,7 @@ class TestPathResolver:
         # Test when project root cannot be found
         # IMPORTANT: This test actually expects the exception since the internal method does raise it
         with patch.object(
-                resolver, "_get_project_root", side_effect=QuackFileNotFoundError("")
+            resolver, "_get_project_root", side_effect=QuackFileNotFoundError("")
         ):
             # The internal method is designed to raise the exception
             with pytest.raises(QuackFileNotFoundError):
@@ -153,27 +156,31 @@ class TestPathResolver:
         # vs when it is the real module.
         # If it is a lambda (from other tests patching imports), we can't test real logic.
         if isinstance(paths, SimpleNamespace) or isinstance(paths, MagicMock):
-             # Skip this test if we are running in a constrained environment where paths is stubbed
-             return
+            # Skip this test if we are running in a constrained environment where paths is stubbed
+            return
 
         # Test resolving a relative path
         # If paths is mocked in conftest, we need to ensure it handles the call
-        if hasattr(paths, 'resolve_project_path') and not callable(paths.resolve_project_path):
-             # It's a mock property that wasn't set up as a method
-             pass
+        if hasattr(paths, "resolve_project_path") and not callable(
+            paths.resolve_project_path
+        ):
+            # It's a mock property that wasn't set up as a method
+            pass
         else:
-             resolved_result = paths.resolve_project_path("src/file.txt")
-             # assert resolved_result.success # Function returns string, not Result object
-             # assert resolved_result.path == str(mock_project_structure / "src" / "file.txt")
+            resolved_result = paths.resolve_project_path("src/file.txt")
+            # assert resolved_result.success # Function returns string, not Result object
+            # assert resolved_result.path == str(mock_project_structure / "src" / "file.txt")
 
         # Test resolving an absolute path (should remain unchanged)
         abs_path = Path("/absolute/path/file.txt")
         # Check signature to see if we can pass project root
         try:
-             resolved_result = paths.resolve_project_path(abs_path, mock_project_structure)
+            resolved_result = paths.resolve_project_path(
+                abs_path, mock_project_structure
+            )
         except TypeError:
-             # Fallback if signature doesn't match or if it's a mock with strict side_effect
-             resolved_result = paths.resolve_project_path(abs_path)
+            # Fallback if signature doesn't match or if it's a mock with strict side_effect
+            resolved_result = paths.resolve_project_path(abs_path)
 
         # For these tests, we need to patch the correct location
         # Use the service object directly instead of trying to access PathService class
@@ -183,19 +190,19 @@ class TestPathResolver:
             resolved_result = paths.resolve_project_path("src/file.txt")
             # assert resolved_result.success
             # Note: The result object type depends on implementation, adjusting assertion
-            if hasattr(resolved_result, 'path'):
-                 assert resolved_result.path == "src/file.txt"
+            if hasattr(resolved_result, "path"):
+                assert resolved_result.path == "src/file.txt"
             else:
-                 assert resolved_result == "src/file.txt"
+                assert resolved_result == "src/file.txt"
 
         # Test handling errors
         with patch.object(paths._resolver, "_resolve_project_path") as mock_resolve:
             mock_resolve.side_effect = Exception("Test error")
             resolved_result = paths.resolve_project_path("file.txt")
             # Result should be an object with .success=False and .error
-            assert not getattr(resolved_result, 'success', True)
-            assert getattr(resolved_result, 'error', None) is not None
-            assert "Test error" in str(getattr(resolved_result, 'error', ''))
+            assert not getattr(resolved_result, "success", True)
+            assert getattr(resolved_result, "error", None) is not None
+            assert "Test error" in str(getattr(resolved_result, "error", ""))
 
     def test_detect_project_context(self, mock_project_structure: Path) -> None:
         """Test detecting project context from a directory."""
@@ -256,13 +263,15 @@ class TestPathResolver:
         assert context.content_dir == str(content_dir / "example")
 
         # Test with explicit content type
-        context = resolver._detect_content_context(str(example_dir),
-                                                   content_type="manual")
+        context = resolver._detect_content_context(
+            str(example_dir), content_type="manual"
+        )
         assert context.content_type == "manual"
 
         # Test with non-content directory
         context = resolver._detect_content_context(
-            str(mock_project_structure / "tests"))
+            str(mock_project_structure / "tests")
+        )
         assert context.content_type is None
         assert context.content_name is None
 

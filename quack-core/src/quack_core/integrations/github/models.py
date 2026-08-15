@@ -31,13 +31,9 @@ class GitHubUser(BaseModel):
 
     username: str = Field(description="GitHub username")
     url: HttpUrl = Field(description="GitHub profile URL")
-    name: str | None = Field(
-        default=None, description="User's full name if available"
-    )
+    name: str | None = Field(default=None, description="User's full name if available")
     email: str | None = Field(default=None, description="User's email if available")
-    avatar_url: HttpUrl | None = Field(
-        default=None, description="URL to user's avatar"
-    )
+    avatar_url: HttpUrl | None = Field(default=None, description="URL to user's avatar")
 
     def __str__(self) -> str:
         """String representation of the user."""
@@ -63,9 +59,7 @@ class GitHubRepo(BaseModel):
     url: HttpUrl = Field(description="Repository URL")
     clone_url: HttpUrl = Field(description="Git clone URL")
     default_branch: str = Field(default="main", description="Default branch")
-    description: str | None = Field(
-        default=None, description="Repository description"
-    )
+    description: str | None = Field(default=None, description="Repository description")
     fork: bool = Field(default=False, description="Whether this repo is a fork")
     forks_count: int = Field(default=0, description="Number of forks")
     stargazers_count: int = Field(default=0, description="Number of stars")
@@ -98,9 +92,7 @@ class PullRequest(BaseModel):
     body: str | None = Field(default=None, description="Pull request body")
     created_at: datetime = Field(description="Pull request creation date")
     updated_at: datetime = Field(description="Last update date")
-    merged_at: datetime | None = Field(
-        default=None, description="Merge date if merged"
-    )
+    merged_at: datetime | None = Field(default=None, description="Merge date if merged")
     base_repo: str = Field(description="Base repository full name")
     head_repo: str = Field(description="Head repository full name")
     base_branch: str = Field(description="Base branch")

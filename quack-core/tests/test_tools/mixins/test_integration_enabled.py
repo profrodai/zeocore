@@ -102,8 +102,9 @@ class TestIntegrationEnabledMixin(unittest.TestCase):
         mock_get_integration.assert_called_once_with(MockIntegrationService)
 
     @patch.object(quack_core.integrations.core, "get_integration_service")
-    def test_resolve_integration_no_initialize(self,
-                                               mock_get_integration: MagicMock) -> None:
+    def test_resolve_integration_no_initialize(
+        self, mock_get_integration: MagicMock
+    ) -> None:
         """
         Test that resolve_integration works with a service that doesn't have initialize.
         """
@@ -153,7 +154,8 @@ class TestIntegrationEnabledMixin(unittest.TestCase):
 
 @pytest.fixture
 def integration_enabled_mixin() -> Generator[
-    IntegrationEnabledMixin[MockIntegrationService], None, None]:
+    IntegrationEnabledMixin[MockIntegrationService], None, None
+]:
     """Fixture that creates an IntegrationEnabledMixin."""
 
     class TestMixin(IntegrationEnabledMixin[MockIntegrationService]):
@@ -164,8 +166,11 @@ def integration_enabled_mixin() -> Generator[
     mock_service.initialize()  # Initialize it
 
     # Start a patch that will affect all code in this context
-    with patch.object(quack_core.integrations.core, "get_integration_service",
-                      return_value=mock_service) as mock_get_integration:
+    with patch.object(
+        quack_core.integrations.core,
+        "get_integration_service",
+        return_value=mock_service,
+    ) as mock_get_integration:
         # Initialize the mixin
         mixin = TestMixin()
 
@@ -181,20 +186,21 @@ class TestIntegrationEnabledMixinWithPytest:
     """
 
     def test_integration_mixin_resolve(
-            self,
-            integration_enabled_mixin: IntegrationEnabledMixin[MockIntegrationService]
+        self, integration_enabled_mixin: IntegrationEnabledMixin[MockIntegrationService]
     ) -> None:
         """Test resolving an integration service."""
         # Patch the get_integration_service function before the test
-        with patch.object(quack_core.integrations.core,
-                          "get_integration_service") as mock_get_integration:
+        with patch.object(
+            quack_core.integrations.core, "get_integration_service"
+        ) as mock_get_integration:
             # Setup
             mock_service = MockIntegrationService()
             mock_get_integration.return_value = mock_service
 
             # Test - calling resolve again
             result = integration_enabled_mixin.resolve_integration(
-                MockIntegrationService)
+                MockIntegrationService
+            )
 
             # Assertions
             assert result == mock_service
@@ -202,8 +208,7 @@ class TestIntegrationEnabledMixinWithPytest:
             mock_get_integration.assert_called_once_with(MockIntegrationService)
 
     def test_integration_mixin_property(
-            self,
-            integration_enabled_mixin: IntegrationEnabledMixin[MockIntegrationService]
+        self, integration_enabled_mixin: IntegrationEnabledMixin[MockIntegrationService]
     ) -> None:
         """Test the integration property."""
         # Get the service from the integration property

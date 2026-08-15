@@ -52,7 +52,7 @@ def _is_path_syntax_valid(path_str: str) -> bool:
     """
     try:
         # Basic check for null bytes which are invalid in file paths
-        if '\0' in path_str:
+        if "\0" in path_str:
             return False
 
         # Try to instantiate Path to catch system-level syntax errors

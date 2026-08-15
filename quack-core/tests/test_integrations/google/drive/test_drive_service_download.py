@@ -28,15 +28,17 @@ class TestGoogleDriveServiceDownload:
     def drive_service(self) -> GoogleDriveService:
         """Set up a Google Drive service with mocked dependencies."""
         with patch(
-                "quack_core.integrations.google.drive.service.paths_service"
+            "quack_core.integrations.google.drive.service.paths_service"
         ) as mock_paths:
             # Setup mock to return predictable PathResult objects with string paths
             mock_paths.resolve_project_path.return_value = PathResult(
                 success=True,
-                path="/fake/test/dir/mock_path"  # Use string path
+                path="/fake/test/dir/mock_path",  # Use string path
             )
 
-            with patch("quack_core.core.fs.service.standalone.get_file_info") as mock_file_info:
+            with patch(
+                "quack_core.core.fs.service.standalone.get_file_info"
+            ) as mock_file_info:
                 # All file info checks should return that files exist
                 file_info_result = FileInfoResult(
                     success=True,
@@ -49,7 +51,7 @@ class TestGoogleDriveServiceDownload:
 
                 # Create the service with a mocked configuration
                 with patch.object(
-                        GoogleDriveService, "_initialize_config"
+                    GoogleDriveService, "_initialize_config"
                 ) as mock_init_config:
                     mock_init_config.return_value = {
                         "client_secrets_file": "/fake/test/dir/mock_secrets.json",
@@ -58,14 +60,15 @@ class TestGoogleDriveServiceDownload:
 
                     # Patch fs module
                     with patch(
-                            "quack_core.integrations.google.drive.service.standalone") as mock_fs:
+                        "quack_core.integrations.google.drive.service.standalone"
+                    ) as mock_fs:
                         # Configure join_path to return a Path object directly
                         joined_path = Path("/fake/test/dir/joined_path")
                         mock_fs.join_path.return_value = joined_path
 
                         # Disable verification of the client secrets file
                         with patch(
-                                "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+                            "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
                         ):
                             service = GoogleDriveService()
                             # Mark as initialized to skip the actual initialization logic
@@ -73,18 +76,14 @@ class TestGoogleDriveServiceDownload:
                             service.drive_service = MagicMock()
                             yield service
 
-    def test_download_file(
-            self, drive_service: GoogleDriveService
-    ) -> None:
+    def test_download_file(self, drive_service: GoogleDriveService) -> None:
         """Test downloading a file."""
         # --- Setup for the test ---
 
         # We'll completely replace the download_file method with a mock implementation
         # that returns what we expect
         with patch.object(
-                drive_service,
-                "download_file",
-                autospec=True
+            drive_service, "download_file", autospec=True
         ) as mock_download:
             # Configure the mock to return success
             mock_download.return_value = IntegrationResult.success_result(
@@ -104,9 +103,7 @@ class TestGoogleDriveServiceDownload:
 
         # --- Test API error ---
         with patch.object(
-                drive_service,
-                "download_file",
-                autospec=True
+            drive_service, "download_file", autospec=True
         ) as mock_download:
             # Configure the mock to return an error
             mock_download.return_value = IntegrationResult.error_result("API error")
@@ -120,13 +117,12 @@ class TestGoogleDriveServiceDownload:
 
         # --- Test download error ---
         with patch.object(
-                drive_service,
-                "download_file",
-                autospec=True
+            drive_service, "download_file", autospec=True
         ) as mock_download:
             # Configure the mock to return a download error
             mock_download.return_value = IntegrationResult.error_result(
-                "Download error")
+                "Download error"
+            )
 
             # Call the download_file method
             result = drive_service.download_file("file123")
@@ -137,9 +133,7 @@ class TestGoogleDriveServiceDownload:
 
         # --- Test write error ---
         with patch.object(
-                drive_service,
-                "download_file",
-                autospec=True
+            drive_service, "download_file", autospec=True
         ) as mock_download:
             # Configure the mock to return a write error
             mock_download.return_value = IntegrationResult.error_result("Write error")

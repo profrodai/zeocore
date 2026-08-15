@@ -96,6 +96,7 @@ class TestQuackToolLifecycleMixin(unittest.TestCase):
 
 # Pytest-style tests
 
+
 @pytest.fixture
 def lifecycle_mixin() -> QuackToolLifecycleMixin:
     """Fixture that creates a QuackToolLifecycleMixin."""
@@ -125,8 +126,9 @@ class TestQuackToolLifecycleMixinWithPytest:
         assert result.success
         assert "not implemented" in result.message
 
-    def test_lifecycle_run_with_options(self,
-                                        lifecycle_mixin: QuackToolLifecycleMixin) -> None:
+    def test_lifecycle_run_with_options(
+        self, lifecycle_mixin: QuackToolLifecycleMixin
+    ) -> None:
         """Test run method with options using pytest fixture."""
         options = {"test_option": "value"}
         result = lifecycle_mixin.run(options)
@@ -139,8 +141,9 @@ class TestQuackToolLifecycleMixinWithPytest:
         assert result.success
         assert "not implemented" in result.message
 
-    def test_lifecycle_validate_with_paths(self,
-                                           lifecycle_mixin: QuackToolLifecycleMixin) -> None:
+    def test_lifecycle_validate_with_paths(
+        self, lifecycle_mixin: QuackToolLifecycleMixin
+    ) -> None:
         """Test validate method with paths using pytest fixture."""
         result = lifecycle_mixin.validate("input.txt", "output.txt")
         assert result.success
@@ -152,8 +155,9 @@ class TestQuackToolLifecycleMixinWithPytest:
         assert result.success
         assert "not implemented" in result.message
 
-    def test_lifecycle_upload_with_destination(self,
-                                               lifecycle_mixin: QuackToolLifecycleMixin) -> None:
+    def test_lifecycle_upload_with_destination(
+        self, lifecycle_mixin: QuackToolLifecycleMixin
+    ) -> None:
         """Test upload method with destination using pytest fixture."""
         result = lifecycle_mixin.upload("test.txt", "remote_destination")
         assert result.success

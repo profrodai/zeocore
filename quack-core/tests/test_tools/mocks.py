@@ -89,7 +89,7 @@ def mock_data_result(data: Any, success: bool = True) -> DataResult:
         data=data,
         success=success,
         path=str(data) if data is not None else None,
-        format="path"
+        format="path",
     )
 
 
@@ -105,15 +105,16 @@ def mock_operation_result(data: Any, success: bool = True) -> OperationResult:
         OperationResult: A properly constructed OperationResult
     """
     return OperationResult(
-        data=data,
-        success=success,
-        path=str(data) if data is not None else None
+        data=data, success=success, path=str(data) if data is not None else None
     )
 
 
-def mock_integration_result(success: bool = True, message: str = "Success",
-                            content: Any = None,
-                            error: str = None) -> IntegrationResult:
+def mock_integration_result(
+    success: bool = True,
+    message: str = "Success",
+    content: Any = None,
+    error: str = None,
+) -> IntegrationResult:
     """
     Create a mock IntegrationResult.
 
@@ -129,8 +130,9 @@ def mock_integration_result(success: bool = True, message: str = "Success",
     if success:
         return IntegrationResult.success_result(message=message, content=content)
     else:
-        return IntegrationResult.error_result(message=message,
-                                              error=error or "Unknown error")
+        return IntegrationResult.error_result(
+            message=message, error=error or "Unknown error"
+        )
 
 
 class MockIntegrationService(BaseIntegrationService):
@@ -152,28 +154,31 @@ class MockIntegrationService(BaseIntegrationService):
         self.initialized = True
         self.called_methods.append("initialize")
 
-    def process(self, data: Any,
-                options: dict[str, Any] | None = None) -> IntegrationResult:
+    def process(
+        self, data: Any, options: dict[str, Any] | None = None
+    ) -> IntegrationResult:
         """Process data with the mock service."""
         self.called_methods.append("process")
         self.call_args["process"] = [data, options]
-        return mock_integration_result(success=True, message="Processed successfully",
-                                       content=data)
+        return mock_integration_result(
+            success=True, message="Processed successfully", content=data
+        )
 
     def upload(self, data: Any, path: str | None = None) -> IntegrationResult:
         """Mock uploading data to the service."""
         self.called_methods.append("upload")
         self.call_args["upload"] = [data, path]
-        return mock_integration_result(success=True,
-                                       message=f"Uploaded to {path or 'default location'}")
+        return mock_integration_result(
+            success=True, message=f"Uploaded to {path or 'default location'}"
+        )
 
-    def download(self, resource_id: str,
-                 path: str | None = None) -> IntegrationResult:
+    def download(self, resource_id: str, path: str | None = None) -> IntegrationResult:
         """Mock downloading data from the service."""
         self.called_methods.append("download")
         self.call_args["download"] = [resource_id, path]
-        return mock_integration_result(success=True,
-                                       message=f"Downloaded {resource_id}")
+        return mock_integration_result(
+            success=True, message=f"Downloaded {resource_id}"
+        )
 
 
 class MockLogger:
@@ -185,7 +190,7 @@ class MockLogger:
             "info": [],
             "warning": [],
             "error": [],
-            "critical": []
+            "critical": [],
         }
 
     def debug(self, msg: str) -> None:
@@ -210,8 +215,12 @@ class MockLogger:
 class MockWorkflowRunner:
     """Mock for the FileWorkflowRunner."""
 
-    def __init__(self, processor: Any = None, remote_handler: Any = None,
-                 output_writer: Any = None) -> None:
+    def __init__(
+        self,
+        processor: Any = None,
+        remote_handler: Any = None,
+        output_writer: Any = None,
+    ) -> None:
         self.processor = processor
         self.remote_handler = remote_handler
         self.output_writer = output_writer
@@ -222,8 +231,9 @@ class MockWorkflowRunner:
         """Mock running the workflow."""
         self.run_called = True
         self.run_args = [file_path, options]
-        return mock_integration_result(success=True,
-                                       message="File processed successfully")
+        return mock_integration_result(
+            success=True, message="File processed successfully"
+        )
 
 
 class BaseMockTool(BaseQuackToolPlugin):
@@ -248,18 +258,23 @@ class BaseMockTool(BaseQuackToolPlugin):
             ("quack_core.core.fs.service.get_service", create_mock_fs()),
             # Logging
             ("quack_core.config.tooling.logger.setup_tool_logging", MagicMock()),
-            ("quack_core.config.tooling.logger.get_logger",
-             MagicMock(return_value=MockLogger())),
+            (
+                "quack_core.config.tooling.logger.get_logger",
+                MagicMock(return_value=MockLogger()),
+            ),
             # OS
             ("os.getcwd", MagicMock(return_value=tempfile.gettempdir())),
             # FileWorkflowRunner
-            ("quack_core.workflow.runners.file_runner.FileWorkflowRunner",
-             MockWorkflowRunner),
+            (
+                "quack_core.workflow.runners.file_runner.FileWorkflowRunner",
+                MockWorkflowRunner,
+            ),
         ]
 
         # Apply all patches
-        patchers = [patch(target, return_value=value) for target, value in
-                    patch_targets]
+        patchers = [
+            patch(target, return_value=value) for target, value in patch_targets
+        ]
 
         # Start all patchers
         for patcher in patchers:
@@ -284,8 +299,13 @@ class BaseMockToolWithIntegration(BaseMockTool):
     This class adds support for mocking integration services.
     """
 
-    def __init__(self, name: str, version: str, service_class: type[T],
-                 service_instance: T | None = None) -> None:
+    def __init__(
+        self,
+        name: str,
+        version: str,
+        service_class: type[T],
+        service_instance: T | None = None,
+    ) -> None:
         """
         Initialize with mocked dependencies including integration service.
 
@@ -299,14 +319,17 @@ class BaseMockToolWithIntegration(BaseMockTool):
         self.mock_service = service_instance or cast(T, MockIntegrationService())
 
         # Patch the integration service
-        with patch("quack_core.integrations.core.get_integration_service",
-                   return_value=self.mock_service):
+        with patch(
+            "quack_core.integrations.core.get_integration_service",
+            return_value=self.mock_service,
+        ):
             # Initialize the base class
             super().__init__(name, version)
 
 
-def create_patched_base_tool(name: str = "dummy_tool",
-                             version: str = "1.0.0") -> MagicMock:
+def create_patched_base_tool(
+    name: str = "dummy_tool", version: str = "1.0.0"
+) -> MagicMock:
     """
     Create a properly patched BaseQuackToolPlugin for tests.
 

@@ -42,7 +42,7 @@ def test_custom_config():
         public_base_url="https://api.example.com",
         job_ttl_seconds=1800,
         max_workers=8,
-        request_timeout_seconds=600
+        request_timeout_seconds=600,
     )
 
     assert config.host == "127.0.0.1"
@@ -64,10 +64,7 @@ def test_invalid_url():
 
 def test_config_serialization():
     """Test config can be serialized/deserialized."""
-    config = HttpAdapterConfig(
-        auth_token="test",
-        max_workers=2
-    )
+    config = HttpAdapterConfig(auth_token="test", max_workers=2)
 
     # Test model_dump
     data = config.model_dump()

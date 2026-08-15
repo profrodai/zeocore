@@ -31,10 +31,17 @@ class FSPlugin(Protocol):
     @property
     def name(self) -> str: ...
 
-    def read_text(self, path: FsPathLike, encoding: str = "utf-8") -> ReadResult[str]: ...
+    def read_text(
+        self, path: FsPathLike, encoding: str = "utf-8"
+    ) -> ReadResult[str]: ...
 
-    def write_text(self, path: FsPathLike, content: str, encoding: str = "utf-8",
-                   atomic: bool = True) -> WriteResult: ...
+    def write_text(
+        self,
+        path: FsPathLike,
+        content: str,
+        encoding: str = "utf-8",
+        atomic: bool = True,
+    ) -> WriteResult: ...
 
     def read_yaml(self, path: FsPathLike) -> DataResult[dict[str, Any]]: ...
 
@@ -42,7 +49,9 @@ class FSPlugin(Protocol):
         self, path: FsPathLike, data: dict[str, Any], atomic: bool = True
     ) -> WriteResult: ...
 
-    def create_directory(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult: ...
+    def create_directory(
+        self, path: FsPathLike, exist_ok: bool = True
+    ) -> OperationResult: ...
 
 
 class QuackFSPlugin:
@@ -61,7 +70,13 @@ class QuackFSPlugin:
     def read_text(self, path: FsPathLike, encoding: str = "utf-8") -> ReadResult[str]:
         return self._service.read_text(path, encoding)
 
-    def write_text(self, path: FsPathLike, content: str, encoding: str = "utf-8", atomic: bool = True) -> WriteResult:
+    def write_text(
+        self,
+        path: FsPathLike,
+        content: str,
+        encoding: str = "utf-8",
+        atomic: bool = True,
+    ) -> WriteResult:
         return self._service.write_text(path, content, encoding, atomic)
 
     def read_yaml(self, path: FsPathLike) -> DataResult[dict[str, Any]]:
@@ -72,7 +87,9 @@ class QuackFSPlugin:
     ) -> WriteResult:
         return self._service.write_yaml(path, data, atomic)
 
-    def create_directory(self, path: FsPathLike, exist_ok: bool = True) -> OperationResult:
+    def create_directory(
+        self, path: FsPathLike, exist_ok: bool = True
+    ) -> OperationResult:
         return self._service.create_directory(path, exist_ok)
 
 

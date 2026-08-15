@@ -25,13 +25,19 @@ class DependencyChecker:
 
     # Allowed modules for contracts
     ALLOWED_STDLIB = {
-        "enum", "typing", "datetime", "uuid", "json", "pathlib",
-        "collections", "dataclasses", "functools", "itertools"
+        "enum",
+        "typing",
+        "datetime",
+        "uuid",
+        "json",
+        "pathlib",
+        "collections",
+        "dataclasses",
+        "functools",
+        "itertools",
     }
 
-    ALLOWED_THIRD_PARTY = {
-        "pydantic"
-    }
+    ALLOWED_THIRD_PARTY = {"pydantic"}
 
     # Forbidden modules (from other QuackCore rings)
     FORBIDDEN_MODULES = {
@@ -103,7 +109,8 @@ class DependencyChecker:
             # Check for forbidden QuackCore modules (Ring B/C/D)
             for forbidden in self.FORBIDDEN_MODULES:
                 if imported_module == forbidden or imported_module.startswith(
-                        f"{forbidden}."):
+                    f"{forbidden}."
+                ):
                     violations.append(
                         f"{filepath.relative_to(self.contracts_root)}: "
                         f"Forbidden import '{imported_module}' (Ring A must not import Ring B/C/D)"
@@ -112,14 +119,17 @@ class DependencyChecker:
 
             # Check for unknown third-party modules (strict stdlib+pydantic enforcement)
             # Extract root package name for stdlib/third-party check
-            root_package = imported_module.split('.')[0]
+            root_package = imported_module.split(".")[0]
 
             # Allow quack_core.contracts internal imports
             if imported_module.startswith("quack_core.contracts"):
                 continue
 
             # Check if it's allowed
-            if root_package not in self.ALLOWED_STDLIB and root_package not in self.ALLOWED_THIRD_PARTY:
+            if (
+                root_package not in self.ALLOWED_STDLIB
+                and root_package not in self.ALLOWED_THIRD_PARTY
+            ):
                 violations.append(
                     f"{filepath.relative_to(self.contracts_root)}: "
                     f"Unknown third-party import '{imported_module}' "
@@ -209,8 +219,9 @@ class TestImportPatterns:
         """Test that we can import the contracts module successfully."""
         try:
             import quack_core.contracts as contracts
-            assert hasattr(contracts, 'CapabilityResult')
-            assert hasattr(contracts, 'ArtifactRef')
-            assert hasattr(contracts, 'RunManifest')
+
+            assert hasattr(contracts, "CapabilityResult")
+            assert hasattr(contracts, "ArtifactRef")
+            assert hasattr(contracts, "RunManifest")
         except ImportError as e:
             pytest.fail(f"Failed to import contracts module: {e}")

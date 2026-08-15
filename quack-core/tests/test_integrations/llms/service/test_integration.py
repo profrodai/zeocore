@@ -92,7 +92,9 @@ class TestLLMIntegrationComprehensive:
             mock_file_info.return_value = file_info_result
 
             # Also patch resolve_path
-            with patch("quack_core.core.fs.service.standalone.resolve_path") as mock_resolve_path:
+            with patch(
+                "quack_core.core.fs.service.standalone.resolve_path"
+            ) as mock_resolve_path:
                 # Create a mock path string directly
                 mock_path = "/Users/rodrivera/custom_config.yaml"
                 mock_result = MagicMock()

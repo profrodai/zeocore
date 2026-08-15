@@ -153,10 +153,7 @@ class GoogleAuthProvider(BaseAuthProvider):
                     return redirect_uris[0]
 
             # Try installed client configuration
-            if (
-                    "installed" in data
-                    and "redirect_uris" in data["installed"]
-            ):
+            if "installed" in data and "redirect_uris" in data["installed"]:
                 redirect_uris = data["installed"]["redirect_uris"]
                 if redirect_uris and len(redirect_uris) > 0:
                     return redirect_uris[0]
@@ -258,10 +255,11 @@ class GoogleAuthProvider(BaseAuthProvider):
 
             # Handle both cases: join_path returning string directly or a DataResult
             directory_path = join_result
-            if hasattr(join_result, 'success'):
+            if hasattr(join_result, "success"):
                 if not join_result.success:
                     self.logger.error(
-                        f"Failed to join directory path: {join_result.error}")
+                        f"Failed to join directory path: {join_result.error}"
+                    )
                     return False
                 directory_path = join_result.data
 

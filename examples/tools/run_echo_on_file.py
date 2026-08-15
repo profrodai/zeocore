@@ -8,7 +8,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 File-based tool execution example.
 
@@ -80,7 +79,7 @@ def main():
         fs=fs,
         work_dir=str(work_dir),
         output_dir=str(output_dir),
-        metadata={"example": "file_based_execution"}
+        metadata={"example": "file_based_execution"},
     )
 
     print("🎯 Built ToolContext:")
@@ -102,10 +101,7 @@ def main():
     content = input_file.read_text()
 
     # Build request from file content (runner responsibility)
-    request = EchoRequest(
-        text=content,
-        preset="professional"
-    )
+    request = EchoRequest(text=content, preset="professional")
 
     print("📋 Built request:")
     print(request.model_dump_json(indent=2))
@@ -131,7 +127,7 @@ def main():
         fs.write_json(
             str(output_file),
             {"output": result.data, "metadata": result.metadata},
-            indent=2
+            indent=2,
         )
         print(f"💾 Wrote output to: {output_file}")
         print()
@@ -150,9 +146,8 @@ def main():
             kind=ArtifactKind.intermediate,
             content_type="text/plain",
             storage=StorageRef(
-                scheme=StorageScheme.local,
-                uri=f"file://{input_file.absolute()}"
-            )
+                scheme=StorageScheme.local, uri=f"file://{input_file.absolute()}"
+            ),
         )
 
         output_artifact = ArtifactRef(
@@ -160,32 +155,25 @@ def main():
             kind=ArtifactKind.final,
             content_type="application/json",
             storage=StorageRef(
-                scheme=StorageScheme.local,
-                uri=f"file://{output_file.absolute()}"
-            )
+                scheme=StorageScheme.local, uri=f"file://{output_file.absolute()}"
+            ),
         )
 
         manifest = RunManifest(
             run_id=ctx.run_id,
             tool=ToolInfo(
-                name=tool.name,
-                version=tool.version,
-                metadata=result.metadata
+                name=tool.name, version=tool.version, metadata=result.metadata
             ),
             started_at=started_at,
             finished_at=finished_at,
             duration_sec=(finished_at - started_at).total_seconds(),
             status=result.status,
             inputs=[
-                ManifestInput(
-                    name="source",
-                    artifact=input_artifact,
-                    required=True
-                )
+                ManifestInput(name="source", artifact=input_artifact, required=True)
             ],
             outputs=[output_artifact],
             logs=result.logs,
-            metadata=result.metadata
+            metadata=result.metadata,
         )
 
         # Write manifest (runner responsibility)

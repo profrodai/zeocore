@@ -55,12 +55,12 @@ def _get_default_level() -> int:
 
 
 def configure_logger(
-        name: str,
-        level: int | None = None,
-        log_file: str | None = None,
-        teaching_to_stdout: bool = True,
-        propagate: bool = False,
-        force: bool = False,
+    name: str,
+    level: int | None = None,
+    log_file: str | None = None,
+    teaching_to_stdout: bool = True,
+    propagate: bool = False,
+    force: bool = False,
 ) -> logging.Logger:
     """
     Configure and return a logger with the specified name.

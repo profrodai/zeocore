@@ -138,14 +138,14 @@ class TestConfigLoader:
         """Test getting configuration from environment variables."""
         # Set up test environment variables
         with patch.dict(
-                os.environ,
-                {
-                    "QUACK_GENERAL__PROJECT_NAME": "EnvProject",
-                    "QUACK_LOGGING__LEVEL": "DEBUG",
-                    "QUACK_PATHS__BASE_DIR": "/env/path",
-                    "QUACK_DEBUG": "true",  # Invalid format (no section)
-                    "OTHER_VAR": "ignored",  # Non-QUACK variable
-                },
+            os.environ,
+            {
+                "QUACK_GENERAL__PROJECT_NAME": "EnvProject",
+                "QUACK_LOGGING__LEVEL": "DEBUG",
+                "QUACK_PATHS__BASE_DIR": "/env/path",
+                "QUACK_DEBUG": "true",  # Invalid format (no section)
+                "OTHER_VAR": "ignored",  # Non-QUACK variable
+            },
         ):
             config = _get_env_config()
 
@@ -188,8 +188,8 @@ class TestConfigLoader:
                 with patch("os.path.exists", return_value=True):
                     # Mock load_yaml_config to return our test data
                     with patch(
-                            "quack_core.config.loader.load_yaml_config",
-                            return_value=config_data,
+                        "quack_core.config.loader.load_yaml_config",
+                        return_value=config_data,
                     ):
                         # Load the config
                         config = load_config(config_path)
@@ -217,21 +217,21 @@ class TestConfigLoader:
                 with patch("os.path.exists", return_value=True):
                     # Mock load_yaml_config to return our test data
                     with patch(
-                            "quack_core.config.loader.load_yaml_config",
-                            return_value=base_config,
+                        "quack_core.config.loader.load_yaml_config",
+                        return_value=base_config,
                     ):
                         # Set environment variables for override
                         with patch.dict(
-                                os.environ,
-                                {
-                                    "QUACK_GENERAL__PROJECT_NAME": "EnvProject",
-                                    "QUACK_LOGGING__LEVEL": "DEBUG",
-                                },
+                            os.environ,
+                            {
+                                "QUACK_GENERAL__PROJECT_NAME": "EnvProject",
+                                "QUACK_LOGGING__LEVEL": "DEBUG",
+                            },
                         ):
                             # Load with merge_env=True
                             config = load_config(config_path, merge_env=True)
                             assert (
-                                    config.general.project_name == "EnvProject"
+                                config.general.project_name == "EnvProject"
                             )  # From env
                             assert config.general.debug is False  # From file
                             assert config.logging.level == "DEBUG"  # From env
@@ -239,7 +239,7 @@ class TestConfigLoader:
                             # Load with merge_env=False
                             config = load_config(config_path, merge_env=False)
                             assert (
-                                    config.general.project_name == "BaseProject"
+                                config.general.project_name == "BaseProject"
                             )  # From file
                             assert config.logging.level == "INFO"  # From file
 
@@ -258,30 +258,30 @@ class TestConfigLoader:
                 with patch("os.path.exists", return_value=True):
                     # Mock load_yaml_config to return our test data
                     with patch(
-                            "quack_core.config.loader.load_yaml_config",
-                            return_value=partial_config,
+                        "quack_core.config.loader.load_yaml_config",
+                        return_value=partial_config,
                     ):
                         # Load with merge_defaults=True
                         config = load_config(config_path, merge_defaults=True)
                         assert (
-                                config.general.project_name == "PartialProject"
+                            config.general.project_name == "PartialProject"
                         )  # From file
                         assert (
-                                config.logging.level
-                                == DEFAULT_CONFIG_VALUES["logging"]["level"]
+                            config.logging.level
+                            == DEFAULT_CONFIG_VALUES["logging"]["level"]
                         )  # From defaults
 
                         # Load with merge_defaults=False
                         config = load_config(config_path, merge_defaults=False)
                         assert (
-                                config.general.project_name == "PartialProject"
+                            config.general.project_name == "PartialProject"
                         )  # From file
                         assert config.logging.level == "INFO"  # Default from model
 
         # Test with non-existent config file
         with patch(
-                "os.path.expanduser",
-                return_value="/nonexistent/path/config.yaml",
+            "os.path.expanduser",
+            return_value="/nonexistent/path/config.yaml",
         ):
             with patch("os.path.exists", return_value=False):
                 with pytest.raises(QuackConfigurationError):
@@ -320,7 +320,7 @@ class TestConfigLoader:
 
         # Verify merged values
         assert (
-                merged.general.project_name == sample_config.general.project_name
+            merged.general.project_name == sample_config.general.project_name
         )  # Unchanged
         assert merged.general.debug is True  # Overridden
         assert merged.logging.level == "DEBUG"  # Overridden

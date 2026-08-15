@@ -16,9 +16,9 @@ from quack_core.core.logging import LOG_LEVELS, LogLevel
 
 
 def create_service(
-        base_dir: str | Path | None = None,
-        log_level: int = LOG_LEVELS[LogLevel.INFO],
-        unsafe_allow_absolute_paths: bool = False,  # ← MUST MATCH base.py __init__
+    base_dir: str | Path | None = None,
+    log_level: int = LOG_LEVELS[LogLevel.INFO],
+    unsafe_allow_absolute_paths: bool = False,  # ← MUST MATCH base.py __init__
 ) -> FileSystemService:
     """
     Factory to create a FileSystemService instance.
@@ -35,5 +35,5 @@ def create_service(
     return FileSystemService(
         base_dir=base_dir,
         log_level=log_level,
-        unsafe_allow_absolute_paths=unsafe_allow_absolute_paths  # ← MUST MATCH
+        unsafe_allow_absolute_paths=unsafe_allow_absolute_paths,  # ← MUST MATCH
     )

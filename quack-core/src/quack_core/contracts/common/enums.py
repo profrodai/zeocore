@@ -24,6 +24,7 @@ class CapabilityStatus(str, Enum):
 
     Used in CapabilityResult to enable machine branching in orchestrators.
     """
+
     success = "success"  # Capability completed successfully
     skipped = "skipped"  # Capability was intentionally skipped (policy decision)
     error = "error"  # Capability failed with an error
@@ -35,6 +36,7 @@ class LogLevel(str, Enum):
 
     Used in structured logging for audit trails.
     """
+
     DEBUG = "DEBUG"  # Detailed debug information
     INFO = "INFO"  # General informational messages
     WARN = "WARN"  # Warning messages (non-critical issues)
@@ -51,6 +53,7 @@ class ArtifactKind(str, Enum):
     - debug: Diagnostic artifacts, optional retention
     - report: Summary/analysis artifacts
     """
+
     intermediate = "intermediate"
     final = "final"
     debug = "debug"
@@ -64,6 +67,7 @@ class StorageScheme(str, Enum):
     Core schemes are well-known and blessed.
     For custom backends, use 'custom' and specify the scheme in StorageRef.scheme_custom.
     """
+
     # Core schemes (always supported)
     local = "local"  # Local filesystem
     http = "http"  # HTTP URL (commonly used for read-only access)
@@ -87,5 +91,6 @@ class ChecksumAlgorithm(str, Enum):
     SHA256 is the only blessed algorithm. For custom algorithms,
     use the 'custom' value and specify the algorithm name in metadata.
     """
+
     sha256 = "sha256"
     custom = "custom"  # For future extensibility

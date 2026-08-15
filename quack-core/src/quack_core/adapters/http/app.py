@@ -9,7 +9,6 @@
 # === QV-LLM:END ===
 
 
-
 """
 FastAPI application factory with dependency injection.
 """
@@ -99,10 +98,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 def create_app(
-        cfg: HttpAdapterConfig | None = None,
-        registry: OperationRegistry | None = None,
-        job_store: InMemoryJobStore | None = None,
-        job_runner: ThreadPoolJobRunner | None = None,
+    cfg: HttpAdapterConfig | None = None,
+    registry: OperationRegistry | None = None,
+    job_store: InMemoryJobStore | None = None,
+    job_runner: ThreadPoolJobRunner | None = None,
 ) -> FastAPI:
     """
     Create FastAPI application with dependency injection.
