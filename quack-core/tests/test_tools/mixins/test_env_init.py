@@ -1,22 +1,79 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_tools/mixins/test_env_init.py
 # role: tests
-# neighbors: __init__.py, test_integration_enabled.py, test_lifecycle.py, test_output_handler.py
-# exports: TestToolEnvInitializerMixin, TestToolEnvInitializerMixinWithPytest, tool_env_initializer_mixin
+# neighbors: __init__.py, test_integration_enabled.py, test_lifecycle.py
+# exports: TestToolEnvInitializerMixin, TestToolEnvInitializerMixinWithPytest
 # git_branch: main
 # git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """
 Tests for the ToolEnvInitializerMixin.
+
+NOTE: this file previously tested a pre-doctrine shape of this mixin --
+a `_initialize_environment(tool_name: str)` method that dynamically
+`importlib.import_module`'d a tool's own module and called its module-level
+`initialize()` hook, returning an `IntegrationResult`. That method and that
+whole "dynamic module init hook" behavior do not exist anywhere in the
+current `quack_core.tools.mixins.env_init.ToolEnvInitializerMixin` (read in
+full from src/ before writing this file): the current mixin's public method
+is `initialize_environment(ctx: ToolContext) -> CapabilityResult[None]`, and
+it does something entirely different -- strict validation that `ctx.work_dir`
+/`ctx.output_dir` exist and are directories, via `ctx.require_fs().
+get_file_info(path)`. This is a redesign, not a rename: the old behavior has
+no current equivalent to "rework a method name onto," so every test in this
+file below exercises the real current method with its real current
+signature and real current contract objects (CapabilityResult/
+CapabilityStatus, FileInfoResult), rather than assuming a mechanical rename
+of `_initialize_environment` -> `initialize_environment` would still make
+sense against the old assertions (it would not -- the old assertions target
+IntegrationResult.success/.message and importlib patching, neither of which
+this method touches at all).
+
+RESTAUFWAND (named here, not fixed -- out of this stream's charter to touch
+src/): `_normalize_fs_result()`'s MIGRATION COMPAT fallback reads
+`getattr(result, "data", None)` then `getattr(result, "value", None)` to
+populate `info`, but the real return type of `fs.get_file_info()` is
+`FileInfoResult` (quack_core.core.fs.results), which carries `.exists`/
+`.is_dir` directly on itself and has neither a `.data` nor a `.value`
+attribute anywhere in its class hierarchy (only the unrelated `DataResult`
+subclass has `.data`). Confirmed behaviorally: constructing a real, valid,
+existing-directory `FileInfoResult(ok=True, exists=True, is_dir=True, ...)`
+and passing it through `_validate_directory` still fails with "FS returned
+no info for <name> directory" -- `initialize_environment()` can never
+succeed against a real `fs.get_file_info()` call, for ANY directory state,
+existing or missing. This looks like a genuine source bug (`info` should
+most likely just be `result` itself, not `result.data`), not a test-staleness
+issue -- but fixing mixins/env_init.py's source is outside this stream's
+five-file test-only charter (RULING-226 SS3), so it is named here rather
+than silently fixed or silently glossed over. The tests below assert the
+REAL current behavior, bug included: a valid, existing, real-shaped
+FileInfoResult still yields a `CapabilityStatus.error` result. Whoever picks
+up this restaufwand item can flip that one assertion once the source bug is
+fixed.
 """
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
-from quack_core.integrations.core import IntegrationResult
+from quack_core.contracts.common.enums import CapabilityStatus
+from quack_core.core.fs.results import FileInfoResult
+from quack_core.tools.context import ToolContext
 from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
+
+
+def _make_tool_context(fs: MagicMock) -> ToolContext:
+    """Build a minimal valid ToolContext wrapping the given mock fs service."""
+    return ToolContext(
+        run_id="test-run-id",
+        tool_name="test-tool",
+        tool_version="0.0.0",
+        logger=None,
+        fs=fs,
+        work_dir="/tmp/work",  # noqa: S108 -- path only used inside a pydantic model construction, never touches real filesystem
+        output_dir="/tmp/output",  # noqa: S108 -- path only used inside a pydantic model construction, never touches real filesystem
+    )
 
 
 class TestToolEnvInitializerMixin(unittest.TestCase):
@@ -24,107 +81,95 @@ class TestToolEnvInitializerMixin(unittest.TestCase):
     Test cases for ToolEnvInitializerMixin using unittest.
     """
 
-    @patch("importlib.import_module")
-    def test_initialize_environment_success(self, mock_import: MagicMock) -> None:
-        """
-        Test that _initialize_environment correctly initializes the environment.
-        """
-        # Setup
-        mixin = ToolEnvInitializerMixin()
-        mock_module = MagicMock()
-        mock_module.initialize.return_value = None
-        mock_import.return_value = mock_module
+    def setUp(self) -> None:
+        self.mixin = ToolEnvInitializerMixin()
 
-        # Test
-        result = mixin._initialize_environment("test_tool")
-
-        # Assertions
-        self.assertTrue(result.success)
-        self.assertIn("Successfully initialized test_tool", result.message)
-        mock_import.assert_called_once_with("test_tool")
-        mock_module.initialize.assert_called_once()
-
-    @patch("importlib.import_module")
-    def test_initialize_environment_with_result(self, mock_import: MagicMock) -> None:
+    def test_initialize_environment_real_fileinforesult_still_errors(self) -> None:
         """
-        Test that _initialize_environment returns IntegrationResult from initialize.
+        Documents the current (buggy) real-contract behavior: even a valid,
+        existing, real-shaped FileInfoResult trips the .data/.value
+        MIGRATION COMPAT fallback (see module docstring RESTAUFWAND) and
+        yields an error, not success.
         """
-        # Setup
-        mixin = ToolEnvInitializerMixin()
-        mock_module = MagicMock()
+        fs = MagicMock()
+        fs.get_file_info.return_value = FileInfoResult(
+            ok=True,
+            exists=True,
+            is_dir=True,
+            path="/tmp/work",  # noqa: S108
+        )
+        ctx = _make_tool_context(fs)
 
-        custom_result = IntegrationResult.success_result(
-            message="Custom initialization message"
+        result = self.mixin.initialize_environment(ctx)
+
+        self.assertEqual(result.status, CapabilityStatus.error)
+        self.assertIn("FS returned no info", result.human_message)
+        fs.get_file_info.assert_called_with("/tmp/work")  # noqa: S108
+
+    def test_initialize_environment_missing_directory(self) -> None:
+        """A FileInfoResult reporting exists=False also surfaces as an error
+        (currently masked by the same .data/.value fallback -- the 'no info'
+        message fires before the exists check is ever reached)."""
+        fs = MagicMock()
+        fs.get_file_info.return_value = FileInfoResult(
+            ok=True,
+            exists=False,
+            is_dir=False,
+            path="/tmp/work",  # noqa: S108
+        )
+        ctx = _make_tool_context(fs)
+
+        result = self.mixin.initialize_environment(ctx)
+
+        self.assertEqual(result.status, CapabilityStatus.error)
+
+    def test_initialize_environment_fs_raises(self) -> None:
+        """A raising fs.get_file_info is caught and reported as validation failure."""
+        fs = MagicMock()
+        fs.get_file_info.side_effect = Exception("boom")
+        ctx = _make_tool_context(fs)
+
+        result = self.mixin.initialize_environment(ctx)
+
+        self.assertEqual(result.status, CapabilityStatus.error)
+        self.assertIn("Environment validation failed", result.human_message)
+
+    def test_initialize_environment_empty_dirs_skips_validation(self) -> None:
+        """Falsy work_dir/output_dir short-circuit validation entirely (no fs
+        call at all) and the overall result is success."""
+        fs = MagicMock()
+        ctx = ToolContext(
+            run_id="test-run-id",
+            tool_name="test-tool",
+            tool_version="0.0.0",
+            logger=None,
+            fs=fs,
+            work_dir="",
+            output_dir="",
         )
 
-        mock_module.initialize.return_value = custom_result
-        mock_import.return_value = mock_module
+        result = self.mixin.initialize_environment(ctx)
 
-        # Test
-        result = mixin._initialize_environment("test_tool")
+        self.assertEqual(result.status, CapabilityStatus.success)
+        fs.get_file_info.assert_not_called()
 
-        # Assertions
-        self.assertTrue(result.success)
-        self.assertEqual(result.message, "Custom initialization message")
-        mock_import.assert_called_once_with("test_tool")
-        mock_module.initialize.assert_called_once()
+    def test_validate_directory_missing_exists_attribute_reports_contract_breach(
+        self,
+    ) -> None:
+        """A result missing .exists entirely (once past the .data/.value
+        fallback) is reported as a distinct FS-contract-breach error, not
+        conflated with a generic failure."""
+        fs = MagicMock()
+        bare_result = MagicMock(spec=["success", "data"])
+        bare_result.success = True
+        bare_result.data = MagicMock(spec=[])  # no .exists at all
+        fs.get_file_info.return_value = bare_result
+        ctx = _make_tool_context(fs)
 
-    @patch("importlib.import_module")
-    def test_initialize_environment_no_initialize(self, mock_import: MagicMock) -> None:
-        """
-        Test that _initialize_environment handles modules without initialize.
-        """
-        # Setup
-        mixin = ToolEnvInitializerMixin()
-        mock_module = MagicMock(spec=[])  # No initialize method
-        mock_import.return_value = mock_module
+        result = self.mixin.initialize_environment(ctx)
 
-        # Test
-        result = mixin._initialize_environment("test_tool")
-
-        # Assertions
-        self.assertTrue(result.success)
-        self.assertIn("no initialize function found", result.message)
-        mock_import.assert_called_once_with("test_tool")
-
-    @patch("importlib.import_module")
-    def test_initialize_environment_import_error(self, mock_import: MagicMock) -> None:
-        """
-        Test that _initialize_environment handles import errors.
-        """
-        # Setup
-        mixin = ToolEnvInitializerMixin()
-        mock_import.side_effect = ImportError("Module not found")
-
-        # Test
-        result = mixin._initialize_environment("test_tool")
-
-        # Assertions
-        self.assertFalse(result.success)
-        self.assertEqual(result.error, "Module not found")
-        self.assertIn("Failed to import test_tool", result.message)
-        mock_import.assert_called_once_with("test_tool")
-
-    @patch("importlib.import_module")
-    def test_initialize_environment_other_error(self, mock_import: MagicMock) -> None:
-        """
-        Test that _initialize_environment handles general exceptions during initialization.
-        """
-        # Setup
-        mixin = ToolEnvInitializerMixin()
-        mock_module = MagicMock()
-        mock_module.initialize.side_effect = Exception("Initialization failed")
-        mock_import.return_value = mock_module
-
-        # Test
-        result = mixin._initialize_environment("test_tool")
-
-        # Assertions
-        self.assertFalse(result.success)
-        self.assertEqual(result.error, "Initialization failed")
-        self.assertIn("Error initializing test_tool", result.message)
-        mock_import.assert_called_once_with("test_tool")
-        mock_module.initialize.assert_called_once()
+        self.assertEqual(result.status, CapabilityStatus.error)
+        self.assertIn("FileInfo missing 'exists' attribute", result.human_message)
 
 
 # Pytest-style tests
@@ -141,109 +186,57 @@ class TestToolEnvInitializerMixinWithPytest:
     Test cases for ToolEnvInitializerMixin using pytest fixtures.
     """
 
-    @patch("importlib.import_module")
-    def test_initialize_environment_success_pytest(
-        self,
-        mock_import: MagicMock,
-        tool_env_initializer_mixin: ToolEnvInitializerMixin,
+    def test_initialize_environment_real_fileinforesult_still_errors_pytest(
+        self, tool_env_initializer_mixin: ToolEnvInitializerMixin
     ) -> None:
-        """Test that _initialize_environment correctly initializes the environment."""
-        # Setup
-        mock_module = MagicMock()
-        mock_module.initialize.return_value = None
-        mock_import.return_value = mock_module
+        """Pytest-style mirror of the unittest real-contract case above."""
+        fs = MagicMock()
+        fs.get_file_info.return_value = FileInfoResult(
+            ok=True,
+            exists=True,
+            is_dir=True,
+            path="/tmp/work",  # noqa: S108
+        )
+        ctx = _make_tool_context(fs)
 
-        # Test
-        result = tool_env_initializer_mixin._initialize_environment("test_tool")
+        result = tool_env_initializer_mixin.initialize_environment(ctx)
 
-        # Assertions
-        assert result.success
-        assert "Successfully initialized test_tool" in result.message
-        mock_import.assert_called_once_with("test_tool")
-        mock_module.initialize.assert_called_once()
+        assert result.status == CapabilityStatus.error
+        assert "FS returned no info" in result.human_message
 
-    @patch("importlib.import_module")
-    def test_initialize_environment_with_result_pytest(
-        self,
-        mock_import: MagicMock,
-        tool_env_initializer_mixin: ToolEnvInitializerMixin,
+    def test_initialize_environment_fs_raises_pytest(
+        self, tool_env_initializer_mixin: ToolEnvInitializerMixin
     ) -> None:
-        """Test that _initialize_environment returns IntegrationResult from initialize."""
-        # Setup
-        mock_module = MagicMock()
+        """Pytest-style mirror of the exception-handling case above."""
+        fs = MagicMock()
+        fs.get_file_info.side_effect = Exception("boom")
+        ctx = _make_tool_context(fs)
 
-        custom_result = IntegrationResult.success_result(
-            message="Custom initialization message"
+        result = tool_env_initializer_mixin.initialize_environment(ctx)
+
+        assert result.status == CapabilityStatus.error
+        assert "Environment validation failed" in result.human_message
+
+    def test_initialize_environment_empty_dirs_skips_validation_pytest(
+        self, tool_env_initializer_mixin: ToolEnvInitializerMixin
+    ) -> None:
+        """Pytest-style mirror of the empty-dirs short-circuit case above."""
+        fs = MagicMock()
+        ctx = ToolContext(
+            run_id="test-run-id",
+            tool_name="test-tool",
+            tool_version="0.0.0",
+            logger=None,
+            fs=fs,
+            work_dir="",
+            output_dir="",
         )
 
-        mock_module.initialize.return_value = custom_result
-        mock_import.return_value = mock_module
+        result = tool_env_initializer_mixin.initialize_environment(ctx)
 
-        # Test
-        result = tool_env_initializer_mixin._initialize_environment("test_tool")
+        assert result.status == CapabilityStatus.success
+        fs.get_file_info.assert_not_called()
 
-        # Assertions
-        assert result.success
-        assert result.message == "Custom initialization message"
-        mock_import.assert_called_once_with("test_tool")
-        mock_module.initialize.assert_called_once()
 
-    @patch("importlib.import_module")
-    def test_initialize_environment_no_initialize_pytest(
-        self,
-        mock_import: MagicMock,
-        tool_env_initializer_mixin: ToolEnvInitializerMixin,
-    ) -> None:
-        """Test that _initialize_environment handles modules without initialize."""
-        # Setup
-        mock_module = MagicMock(spec=[])  # No initialize method
-        mock_import.return_value = mock_module
-
-        # Test
-        result = tool_env_initializer_mixin._initialize_environment("test_tool")
-
-        # Assertions
-        assert result.success
-        assert "no initialize function found" in result.message
-        mock_import.assert_called_once_with("test_tool")
-
-    @patch("importlib.import_module")
-    def test_initialize_environment_import_error_pytest(
-        self,
-        mock_import: MagicMock,
-        tool_env_initializer_mixin: ToolEnvInitializerMixin,
-    ) -> None:
-        """Test that _initialize_environment handles import errors."""
-        # Setup
-        mock_import.side_effect = ImportError("Module not found")
-
-        # Test
-        result = tool_env_initializer_mixin._initialize_environment("test_tool")
-
-        # Assertions
-        assert not result.success
-        assert result.error == "Module not found"
-        assert "Failed to import test_tool" in result.message
-        mock_import.assert_called_once_with("test_tool")
-
-    @patch("importlib.import_module")
-    def test_initialize_environment_other_error_pytest(
-        self,
-        mock_import: MagicMock,
-        tool_env_initializer_mixin: ToolEnvInitializerMixin,
-    ) -> None:
-        """Test that _initialize_environment handles general exceptions during initialization."""
-        # Setup
-        mock_module = MagicMock()
-        mock_module.initialize.side_effect = Exception("Initialization failed")
-        mock_import.return_value = mock_module
-
-        # Test
-        result = tool_env_initializer_mixin._initialize_environment("test_tool")
-
-        # Assertions
-        assert not result.success
-        assert result.error == "Initialization failed"
-        assert "Error initializing test_tool" in result.message
-        mock_import.assert_called_once_with("test_tool")
-        mock_module.initialize.assert_called_once()
+if __name__ == "__main__":
+    unittest.main()
