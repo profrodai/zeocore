@@ -1,25 +1,58 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_tools/mixins/test_lifecycle.py
 # role: tests
-# neighbors: __init__.py, test_env_init.py, test_integration_enabled.py, test_output_handler.py
-# exports: TestQuackToolLifecycleMixin, TestQuackToolLifecycleMixinWithPytest, lifecycle_mixin
+# neighbors: __init__.py, test_env_init.py, test_integration_enabled.py (+1 more)
+# exports: TestLifecycleMixin, TestLifecycleMixinWithPytest, lifecycle_mixin,
+#   tool_context
 # git_branch: main
-# git_commit: f0715f0c
+# git_commit: dd3d8757
 # === QV-LLM:END ===
 
 """
-Tests for the QuackToolLifecycleMixin.
+Tests for the LifecycleMixin (aliased QuackToolLifecycleMixin).
+
+NOTE: this file previously tested a pre-doctrine shape of this mixin --
+no-arg pre_run()/post_run()/validate(), plus run()/upload() methods and an
+IntegrationResult(.success/.message) return type. None of that shape has
+existed on quack_core.tools.mixins.lifecycle.LifecycleMixin since the module
+was introduced into this history (commit 21a4e25a, 2025-12-29) -- the test
+file itself was added earlier (commit 59e3eb9a, 2025-04-26, "adding tests to
+quackcore.toolkit") and was never reconciled against the doctrine-compliant
+rewrite. These tests were unreachable (masked by conftest.py's
+OutputFormatMixin collection-abort) until a prior stream fixed that collection
+break, at which point they surfaced as 16 failures -- confirmed pre-existing,
+not a regression. Rewritten here to match the CURRENT mixin: pre_run/post_run/
+validate take (request, ctx) [post_run also takes result], return
+CapabilityResult (status=CapabilityStatus.success, human_message=...), and
+there is no run() or upload() method on this mixin at all (run() lives on
+BaseQuackTool per this mixin's own docstring; there is no upload hook).
 """
 
 import unittest
 
 import pytest
+from quack_core.contracts import CapabilityResult
+from quack_core.contracts.common.enums import CapabilityStatus
+from quack_core.tools.context import ToolContext
 from quack_core.tools.mixins.lifecycle import QuackToolLifecycleMixin
 
 
-class TestQuackToolLifecycleMixin(unittest.TestCase):
+def _make_tool_context() -> ToolContext:
+    """Build a minimal valid ToolContext for exercising lifecycle hooks."""
+    return ToolContext(
+        run_id="test-run-id",
+        tool_name="test-tool",
+        tool_version="0.0.0",
+        logger=None,
+        fs=None,
+        work_dir="/tmp/work",  # noqa: S108 -- path used only inside a pydantic model construction, never touches real filesystem
+        output_dir="/tmp/output",  # noqa: S108 -- path used only inside a pydantic model construction, never touches real filesystem
+    )
+
+
+class TestLifecycleMixin(unittest.TestCase):
     """
-    Test cases for QuackToolLifecycleMixin using unittest.
+    Test cases for LifecycleMixin using unittest.
     """
 
     def setUp(self) -> None:
@@ -27,71 +60,40 @@ class TestQuackToolLifecycleMixin(unittest.TestCase):
         Set up test fixtures.
         """
         self.mixin = QuackToolLifecycleMixin()
+        self.ctx = _make_tool_context()
 
     def test_pre_run(self) -> None:
         """
         Test that pre_run returns a success result.
         """
-        result = self.mixin.pre_run()
-        self.assertTrue(result.success)
-        self.assertIn("Pre-run completed", result.message)
+        result = self.mixin.pre_run(request=None, ctx=self.ctx)
+        self.assertEqual(result.status, CapabilityStatus.success)
+        self.assertIn("Pre-run", result.human_message)
 
     def test_post_run(self) -> None:
         """
-        Test that post_run returns a success result.
+        Test that post_run passes the inner result through unchanged.
         """
-        result = self.mixin.post_run()
-        self.assertTrue(result.success)
-        self.assertIn("Post-run completed", result.message)
-
-    def test_run(self) -> None:
-        """
-        Test that run returns a success result.
-        """
-        result = self.mixin.run()
-        self.assertTrue(result.success)
-        self.assertIn("not implemented", result.message)
-
-    def test_run_with_options(self) -> None:
-        """
-        Test that run accepts options parameter.
-        """
-        options = {"test_option": "value"}
-        result = self.mixin.run(options)
-        self.assertTrue(result.success)
-        self.assertIn("not implemented", result.message)
+        inner = CapabilityResult.ok(data=None, msg="Run completed")
+        result = self.mixin.post_run(request=None, result=inner, ctx=self.ctx)
+        self.assertIs(result, inner)
+        self.assertEqual(result.status, CapabilityStatus.success)
 
     def test_validate(self) -> None:
         """
         Test that validate returns a success result.
         """
-        result = self.mixin.validate()
-        self.assertTrue(result.success)
-        self.assertIn("not implemented", result.message)
+        result = self.mixin.validate(request=None, ctx=self.ctx)
+        self.assertEqual(result.status, CapabilityStatus.success)
+        self.assertIn("Validation", result.human_message)
 
-    def test_validate_with_paths(self) -> None:
+    def test_cleanup(self) -> None:
         """
-        Test that validate accepts path parameters.
+        Test that cleanup returns a success result.
         """
-        result = self.mixin.validate("input.txt", "output.txt")
-        self.assertTrue(result.success)
-        self.assertIn("not implemented", result.message)
-
-    def test_upload(self) -> None:
-        """
-        Test that upload returns a success result.
-        """
-        result = self.mixin.upload("test.txt")
-        self.assertTrue(result.success)
-        self.assertIn("not implemented", result.message)
-
-    def test_upload_with_destination(self) -> None:
-        """
-        Test that upload accepts destination parameter.
-        """
-        result = self.mixin.upload("test.txt", "remote_destination")
-        self.assertTrue(result.success)
-        self.assertIn("not implemented", result.message)
+        result = self.mixin.cleanup(ctx=self.ctx)
+        self.assertEqual(result.status, CapabilityStatus.success)
+        self.assertIn("Cleanup", result.human_message)
 
 
 # Pytest-style tests
@@ -103,62 +105,46 @@ def lifecycle_mixin() -> QuackToolLifecycleMixin:
     return QuackToolLifecycleMixin()
 
 
-class TestQuackToolLifecycleMixinWithPytest:
+@pytest.fixture
+def tool_context() -> ToolContext:
+    """Fixture that creates a minimal valid ToolContext."""
+    return _make_tool_context()
+
+
+class TestLifecycleMixinWithPytest:
     """
-    Test cases for QuackToolLifecycleMixin using pytest fixtures.
+    Test cases for LifecycleMixin using pytest fixtures.
     """
 
-    def test_lifecycle_pre_run(self, lifecycle_mixin: QuackToolLifecycleMixin) -> None:
-        """Test pre_run with pytest fixture."""
-        result = lifecycle_mixin.pre_run()
-        assert result.success
-        assert "Pre-run completed" in result.message
-
-    def test_lifecycle_post_run(self, lifecycle_mixin: QuackToolLifecycleMixin) -> None:
-        """Test post_run with pytest fixture."""
-        result = lifecycle_mixin.post_run()
-        assert result.success
-        assert "Post-run completed" in result.message
-
-    def test_lifecycle_run(self, lifecycle_mixin: QuackToolLifecycleMixin) -> None:
-        """Test run method with pytest fixture."""
-        result = lifecycle_mixin.run()
-        assert result.success
-        assert "not implemented" in result.message
-
-    def test_lifecycle_run_with_options(
-        self, lifecycle_mixin: QuackToolLifecycleMixin
+    def test_lifecycle_pre_run(
+        self, lifecycle_mixin: QuackToolLifecycleMixin, tool_context: ToolContext
     ) -> None:
-        """Test run method with options using pytest fixture."""
-        options = {"test_option": "value"}
-        result = lifecycle_mixin.run(options)
-        assert result.success
-        assert "not implemented" in result.message
+        """Test pre_run with pytest fixtures."""
+        result = lifecycle_mixin.pre_run(request=None, ctx=tool_context)
+        assert result.status == CapabilityStatus.success
+        assert "Pre-run" in result.human_message
 
-    def test_lifecycle_validate(self, lifecycle_mixin: QuackToolLifecycleMixin) -> None:
-        """Test validate method with pytest fixture."""
-        result = lifecycle_mixin.validate()
-        assert result.success
-        assert "not implemented" in result.message
-
-    def test_lifecycle_validate_with_paths(
-        self, lifecycle_mixin: QuackToolLifecycleMixin
+    def test_lifecycle_post_run(
+        self, lifecycle_mixin: QuackToolLifecycleMixin, tool_context: ToolContext
     ) -> None:
-        """Test validate method with paths using pytest fixture."""
-        result = lifecycle_mixin.validate("input.txt", "output.txt")
-        assert result.success
-        assert "not implemented" in result.message
+        """Test post_run with pytest fixtures passes the inner result through."""
+        inner = CapabilityResult.ok(data=None, msg="Run completed")
+        result = lifecycle_mixin.post_run(request=None, result=inner, ctx=tool_context)
+        assert result is inner
+        assert result.status == CapabilityStatus.success
 
-    def test_lifecycle_upload(self, lifecycle_mixin: QuackToolLifecycleMixin) -> None:
-        """Test upload method with pytest fixture."""
-        result = lifecycle_mixin.upload("test.txt")
-        assert result.success
-        assert "not implemented" in result.message
-
-    def test_lifecycle_upload_with_destination(
-        self, lifecycle_mixin: QuackToolLifecycleMixin
+    def test_lifecycle_validate(
+        self, lifecycle_mixin: QuackToolLifecycleMixin, tool_context: ToolContext
     ) -> None:
-        """Test upload method with destination using pytest fixture."""
-        result = lifecycle_mixin.upload("test.txt", "remote_destination")
-        assert result.success
-        assert "not implemented" in result.message
+        """Test validate method with pytest fixtures."""
+        result = lifecycle_mixin.validate(request=None, ctx=tool_context)
+        assert result.status == CapabilityStatus.success
+        assert "Validation" in result.human_message
+
+    def test_lifecycle_cleanup(
+        self, lifecycle_mixin: QuackToolLifecycleMixin, tool_context: ToolContext
+    ) -> None:
+        """Test cleanup method with pytest fixtures."""
+        result = lifecycle_mixin.cleanup(ctx=tool_context)
+        assert result.status == CapabilityStatus.success
+        assert "Cleanup" in result.human_message
