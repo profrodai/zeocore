@@ -5,7 +5,7 @@ model: opus
 ---
 You are MASTER (CTO) in the ZEO relay. Execution model: AGENT (RULING-206).
 
-FIRST ACT: `sow-lint --triage .` then read the open questions oldest-first, TO EOF.
+FIRST ACT: `zeo --triage .` then read the open questions oldest-first, TO EOF.
 
 @claude-md/CLAUDE.md
 @roles/BOOT-MASTER.md
