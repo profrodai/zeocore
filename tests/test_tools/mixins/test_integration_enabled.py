@@ -1,57 +1,69 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_tools/mixins/test_integration_enabled.py
 # role: tests
-# neighbors: __init__.py, test_env_init.py, test_lifecycle.py, test_output_handler.py
-# exports: MockIntegrationService, AnotherMockService, TestIntegrationEnabledMixin, TestIntegrationEnabledMixinWithPytest, integration_enabled_mixin
+# neighbors: __init__.py, test_env_init.py, test_lifecycle.py
+# exports: TestIntegrationEnabledMixin, TestIntegrationEnabledMixinWithPytest
 # git_branch: main
 # git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """
 Tests for the IntegrationEnabledMixin.
+
+NOTE: this file previously tested a pre-doctrine shape of this mixin --
+Generic[T]-subscriptable, resolve_integration()/`.integration` property,
+backed by module-level quack_core.integrations.core.get_integration_service().
+That shape does not exist on quack_core.tools.mixins.integration_enabled.
+IntegrationEnabledMixin in this codebase's current history: the module's own
+docstring ("Services come from ToolContext.services (runner-provided)")
+and its two methods (get_service/require_service, both taking an explicit
+ctx: ToolContext) show a deliberate redesign, not a rename -- services are
+now read from ToolContext.services rather than resolved from a global
+registry, and the class is no longer Generic (collection previously aborted
+here with `TypeError: type 'IntegrationEnabledMixin' is not subscriptable`).
+Rewritten to exercise the mixin's actual current API: get_service(name, ctx,
+expected_type=None) and require_service(name, ctx, expected_type=None),
+both reading from ctx.services (confirmed via quack_core.tools.context.
+ToolContext.get_service/require_service, read in full before writing these
+assertions).
 """
 
 import unittest
-from collections.abc import Generator
-from typing import TypeVar
-from unittest.mock import MagicMock, patch
 
 import pytest
-
-# Import the module directly to allow correct patching
-import quack_core.integrations.core
-from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.tools.context import ToolContext
 from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 
 
-class MockIntegrationService(BaseIntegrationService):
-    """
-    Mock implementation of BaseIntegrationService for testing.
-    """
+class _DummyService:
+    """A minimal stand-in service object -- no BaseIntegrationService coupling
+    is needed since the current mixin has no integration-service-specific
+    behavior at all, it just reads arbitrary objects out of ctx.services."""
 
-    @property
-    def name(self) -> str:
-        return "mock_service"
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.initialized = False
-
-    def initialize(self) -> None:
-        self.initialized = True
+    def __init__(self, label: str) -> None:
+        self.label = label
 
 
-class AnotherMockService(BaseIntegrationService):
-    """
-    Another mock implementation of BaseIntegrationService for testing.
-    """
-
-    @property
-    def name(self) -> str:
-        return "another_service"
+class _AnotherService:
+    """A second, unrelated type -- used to exercise expected_type mismatches."""
 
 
-T = TypeVar("T", bound=BaseIntegrationService)
+def _make_tool_context(services: dict[str, object] | None = None) -> ToolContext:
+    """Build a minimal valid ToolContext, optionally carrying services."""
+    return ToolContext(
+        run_id="test-run-id",
+        tool_name="test-tool",
+        tool_version="0.0.0",
+        logger=None,
+        fs=None,
+        work_dir="/tmp/work",  # noqa: S108 -- path only used inside a pydantic model construction, never touches real filesystem
+        output_dir="/tmp/output",  # noqa: S108 -- path only used inside a pydantic model construction, never touches real filesystem
+        services=services or {},
+    )
+
+
+class MyTool(IntegrationEnabledMixin):
+    """A trivial class combining the mixin, matching how tools actually use it."""
 
 
 class TestIntegrationEnabledMixin(unittest.TestCase):
@@ -59,125 +71,57 @@ class TestIntegrationEnabledMixin(unittest.TestCase):
     Test cases for IntegrationEnabledMixin using unittest.
     """
 
-    @patch.object(quack_core.integrations.core, "get_integration_service")
-    def test_resolve_integration(self, mock_get_integration: MagicMock) -> None:
-        """
-        Test that resolve_integration correctly resolves the integration service.
-        """
+    def setUp(self) -> None:
+        self.tool = MyTool()
+        self.service = _DummyService("mock_service")
+        self.ctx = _make_tool_context({"mock_service": self.service})
 
-        # Setup
-        class TestMixin(IntegrationEnabledMixin[MockIntegrationService]):
-            pass
+    def test_get_service_found(self) -> None:
+        """get_service returns the service registered under that name."""
+        result = self.tool.get_service("mock_service", self.ctx)
+        self.assertIs(result, self.service)
 
-        mixin = TestMixin()
-        mock_service = MockIntegrationService()
-        mock_get_integration.return_value = mock_service
-
-        # Test
-        result = mixin.resolve_integration(MockIntegrationService)
-
-        # Assertions
-        self.assertEqual(result, mock_service)
-        self.assertTrue(mock_service.initialized)
-        mock_get_integration.assert_called_once_with(MockIntegrationService)
-
-    @patch.object(quack_core.integrations.core, "get_integration_service")
-    def test_resolve_integration_none(self, mock_get_integration: MagicMock) -> None:
-        """
-        Test that resolve_integration handles None return from get_integration_service.
-        """
-
-        # Setup
-        class TestMixin(IntegrationEnabledMixin[MockIntegrationService]):
-            pass
-
-        mixin = TestMixin()
-        mock_get_integration.return_value = None
-
-        # Test
-        result = mixin.resolve_integration(MockIntegrationService)
-
-        # Assertions
+    def test_get_service_missing_returns_none(self) -> None:
+        """get_service returns None (does not raise) when the name isn't registered."""
+        result = self.tool.get_service("absent_service", self.ctx)
         self.assertIsNone(result)
-        mock_get_integration.assert_called_once_with(MockIntegrationService)
 
-    @patch.object(quack_core.integrations.core, "get_integration_service")
-    def test_resolve_integration_no_initialize(
-        self, mock_get_integration: MagicMock
-    ) -> None:
-        """
-        Test that resolve_integration works with a service that doesn't have initialize.
-        """
+    def test_get_service_type_check_pass(self) -> None:
+        """get_service returns the service when it matches expected_type."""
+        result = self.tool.get_service(
+            "mock_service", self.ctx, expected_type=_DummyService
+        )
+        self.assertIs(result, self.service)
 
-        # Setup
-        class TestMixin(IntegrationEnabledMixin[AnotherMockService]):
-            pass
+    def test_get_service_type_check_fail(self) -> None:
+        """get_service raises TypeError when the service doesn't match expected_type."""
+        with self.assertRaises(TypeError):
+            self.tool.get_service(
+                "mock_service", self.ctx, expected_type=_AnotherService
+            )
 
-        mixin = TestMixin()
-        mock_service = AnotherMockService()
-        mock_get_integration.return_value = mock_service
+    def test_require_service_found(self) -> None:
+        """require_service returns the service registered under that name."""
+        result = self.tool.require_service("mock_service", self.ctx)
+        self.assertIs(result, self.service)
 
-        # Test
-        result = mixin.resolve_integration(AnotherMockService)
+    def test_require_service_missing_raises(self) -> None:
+        """require_service raises ValueError (not None) when name isn't registered."""
+        with self.assertRaises(ValueError):
+            self.tool.require_service("absent_service", self.ctx)
 
-        # Assertions
-        self.assertEqual(result, mock_service)
-        mock_get_integration.assert_called_once_with(AnotherMockService)
-
-    @patch.object(quack_core.integrations.core, "get_integration_service")
-    def test_integration_property(self, mock_get_integration: MagicMock) -> None:
-        """
-        Test that the integration property works correctly.
-        """
-
-        # Setup
-        class TestMixin(IntegrationEnabledMixin[MockIntegrationService]):
-            pass
-
-        mixin = TestMixin()
-        mock_service = MockIntegrationService()
-        mock_get_integration.return_value = mock_service
-
-        # First call resolve_integration to properly set up the integration service
-        mixin.resolve_integration(MockIntegrationService)
-
-        # Reset mock to test if integration property uses the cached service
-        mock_get_integration.reset_mock()
-
-        # Test - access should use cached value
-        result = mixin.integration
-
-        # Assertions
-        self.assertEqual(result, mock_service)
-        mock_get_integration.assert_not_called()  # Should use cached value
+    def test_require_service_type_check_fail(self) -> None:
+        """require_service raises TypeError when the service type mismatches."""
+        with self.assertRaises(TypeError):
+            self.tool.require_service(
+                "mock_service", self.ctx, expected_type=_AnotherService
+            )
 
 
 @pytest.fixture
-def integration_enabled_mixin() -> Generator[
-    IntegrationEnabledMixin[MockIntegrationService], None, None
-]:
-    """Fixture that creates an IntegrationEnabledMixin."""
-
-    class TestMixin(IntegrationEnabledMixin[MockIntegrationService]):
-        pass
-
-    # Create the service instance before patching
-    mock_service = MockIntegrationService()
-    mock_service.initialize()  # Initialize it
-
-    # Start a patch that will affect all code in this context
-    with patch.object(
-        quack_core.integrations.core,
-        "get_integration_service",
-        return_value=mock_service,
-    ) as mock_get_integration:
-        # Initialize the mixin
-        mixin = TestMixin()
-
-        # Call resolve_integration to ensure the service is set
-        mixin.resolve_integration(MockIntegrationService)
-
-        yield mixin
+def integration_enabled_tool() -> MyTool:
+    """Fixture that creates a tool combining IntegrationEnabledMixin."""
+    return MyTool()
 
 
 class TestIntegrationEnabledMixinWithPytest:
@@ -185,36 +129,38 @@ class TestIntegrationEnabledMixinWithPytest:
     Test cases for IntegrationEnabledMixin using pytest fixtures.
     """
 
-    def test_integration_mixin_resolve(
-        self, integration_enabled_mixin: IntegrationEnabledMixin[MockIntegrationService]
+    def test_get_service_resolves_from_context(
+        self, integration_enabled_tool: MyTool
     ) -> None:
-        """Test resolving an integration service."""
-        # Patch the get_integration_service function before the test
-        with patch.object(
-            quack_core.integrations.core, "get_integration_service"
-        ) as mock_get_integration:
-            # Setup
-            mock_service = MockIntegrationService()
-            mock_get_integration.return_value = mock_service
+        """get_service reads the service straight out of ctx.services."""
+        service = _DummyService("another_service")
+        ctx = _make_tool_context({"another_service": service})
 
-            # Test - calling resolve again
-            result = integration_enabled_mixin.resolve_integration(
-                MockIntegrationService
-            )
+        result = integration_enabled_tool.get_service("another_service", ctx)
 
-            # Assertions
-            assert result == mock_service
-            assert mock_service.initialized
-            mock_get_integration.assert_called_once_with(MockIntegrationService)
+        assert result is service
 
-    def test_integration_mixin_property(
-        self, integration_enabled_mixin: IntegrationEnabledMixin[MockIntegrationService]
+    def test_require_service_resolves_from_context(
+        self, integration_enabled_tool: MyTool
     ) -> None:
-        """Test the integration property."""
-        # Get the service from the integration property
-        result = integration_enabled_mixin.integration
+        """require_service reads the service straight out of ctx.services."""
+        service = _DummyService("another_service")
+        ctx = _make_tool_context({"another_service": service})
 
-        # Assertions - it should not be None because we called resolve_integration in the fixture
-        assert result is not None
-        assert isinstance(result, MockIntegrationService)
-        assert result.initialized
+        result = integration_enabled_tool.require_service("another_service", ctx)
+
+        assert result is service
+
+    def test_get_service_no_services_registered(
+        self, integration_enabled_tool: MyTool
+    ) -> None:
+        """get_service returns None against an empty services mapping."""
+        ctx = _make_tool_context()
+
+        result = integration_enabled_tool.get_service("anything", ctx)
+
+        assert result is None
+
+
+if __name__ == "__main__":
+    unittest.main()
