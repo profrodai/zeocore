@@ -228,7 +228,7 @@ class FallbackLLMClient(LLMClient):
                 f"Failed to initialize {provider} client: {e}",
                 context={"provider": provider},
                 original_error=e,
-            )
+            ) from e
 
     def _is_auth_error(self, error: Exception) -> bool:
         """

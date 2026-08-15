@@ -122,7 +122,7 @@ class TestOllamaClient:
         ]
         mock_response.raise_for_status = MagicMock()
 
-        with patch("requests.post", return_value=mock_response) as mock_post:
+        with patch("requests.post", return_value=mock_response):
             # Set up callback
             callback = MagicMock()
 
@@ -231,7 +231,7 @@ class TestOllamaClient:
         with patch(
             "requests.post",
             side_effect=requests.exceptions.RequestException("API error"),
-        ) as mock_post:
+        ):
             # Set up messages
             messages = [
                 ChatMessage(role=RoleType.USER, content="Count my tokens"),

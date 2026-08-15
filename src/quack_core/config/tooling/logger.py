@@ -19,6 +19,7 @@ It does NOT auto-create directories unless explicitly told to do so via setup.
 import atexit
 import logging
 import os
+import sys
 from typing import Any
 
 from quack_core.core.logging import LOG_LEVELS, LogLevel, configure_logger
@@ -74,8 +75,15 @@ def setup_tool_logging(
                 h.close()
                 if h in logger.handlers:
                     logger.removeHandler(h)
-            except Exception:
-                pass
+            except Exception as e:
+                # Best-effort at interpreter shutdown: the logging system
+                # itself may already be partially torn down here, so we
+                # cannot rely on `logging` to report a failure -- write
+                # directly to stderr instead of silently swallowing it.
+                print(
+                    f"Warning: failed to clean up log handler at exit: {e}",
+                    file=sys.stderr,
+                )
 
 
 def get_logger(tool_name: str) -> logging.Logger:

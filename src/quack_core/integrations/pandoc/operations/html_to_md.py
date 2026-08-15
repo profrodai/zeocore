@@ -150,7 +150,9 @@ def _attempt_conversion(html_path: str, config: PandocConfig) -> str:
     try:
         pypandoc = importlib.import_module("pypandoc")
     except ImportError as e:
-        raise QuackIntegrationError(f"pypandoc module is not installed: {str(e)}")
+        raise QuackIntegrationError(
+            f"pypandoc module is not installed: {str(e)}"
+        ) from e
 
     extra_args = prepare_pandoc_args(
         config, "html", "markdown", config.html_to_md_extra_args

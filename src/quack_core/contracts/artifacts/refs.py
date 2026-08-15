@@ -195,7 +195,9 @@ class Checksum(BaseModel):
         try:
             int(v, 16)
         except ValueError:
-            raise ValueError(f"Checksum value must be valid hexadecimal, got: {v}")
+            raise ValueError(
+                f"Checksum value must be valid hexadecimal, got: {v}"
+            ) from None
         return v.lower()
 
     @model_validator(mode="after")

@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/pandoc/conftest.py
 # role: tests
-# neighbors: __init__.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py, test_models.py (+4 more)
+# neighbors: __init__.py, mocks.py, test_pandoc_integration_full.py, test_config.py, test_converter.py, test_models.py (+4 more)
 # exports: fs_stub, mock_pypandoc, mock_paths_service, mock_bs4, mock_docx
 # git_branch: main
 # git_commit: f0715f0c

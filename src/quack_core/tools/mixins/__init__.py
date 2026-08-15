@@ -80,9 +80,14 @@ if warn_mode:
 # Use linter rules instead (see docstring for examples).
 
 # INTERNAL IMPORTS: Always import specific modules, not package
-from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
-from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
-from quack_core.tools.mixins.lifecycle import LifecycleMixin
+# These sit below the warn_mode check above deliberately: the deprecation
+# warning must fire as a consequence of importing this module, so the
+# check-then-import ordering is load-bearing, not accidental placement.
+from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin  # noqa: E402
+from quack_core.tools.mixins.integration_enabled import (  # noqa: E402
+    IntegrationEnabledMixin,
+)
+from quack_core.tools.mixins.lifecycle import LifecycleMixin  # noqa: E402
 
 __all__ = [
     "IntegrationEnabledMixin",

@@ -1,7 +1,7 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/pandoc/test_pandoc_utils.py
 # role: tests
-# neighbors: __init__.py, conftest.py, mocks.py, test-pandoc-integration-full.py, test_config.py, test_converter.py (+4 more)
+# neighbors: __init__.py, conftest.py, mocks.py, test_pandoc_integration_full.py, test_config.py, test_converter.py (+4 more)
 # exports: test_conversion_metrics_initialization, test_file_info_initialization, test_conversion_task_initialization, test_conversion_details_initialization, test_get_file_info_edge_cases, test_check_file_size_edge_cases, test_check_conversion_ratio_edge_cases, test_track_metrics_logging (+5 more)
 # git_branch: main
 # git_commit: f0715f0c

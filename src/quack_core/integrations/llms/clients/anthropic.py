@@ -73,14 +73,14 @@ class AnthropicClient(LLMClient):
         """
         try:
             # Import directly instead of using find_spec to avoid issues with mocks
-            import anthropic
+            import anthropic  # noqa: F401 -- presence check only, ImportError is the signal
 
             self.logger.debug("Anthropic package is available")
         except ImportError:
             self.logger.error("Anthropic package not installed")
             raise QuackIntegrationError(
                 "Anthropic package not installed. Please install it with: pip install anthropic"
-            )
+            ) from None
 
     def _get_client(self) -> Any:
         """
@@ -235,7 +235,7 @@ class AnthropicClient(LLMClient):
             return "".join(collected_content)
         except Exception as e:
             # Convert Anthropic errors to QuackApiError
-            raise self._convert_error(e)
+            raise self._convert_error(e) from e
 
     def _convert_error(self, error: Exception) -> QuackApiError:
         """
@@ -311,7 +311,9 @@ class AnthropicClient(LLMClient):
         # This ensures we raise QuackIntegrationError for import issues
         # before entering the try block where we'd convert to QuackApiError
         try:
-            from anthropic import Anthropic as _  # Just checking import, not using
+            from anthropic import (
+                Anthropic as _,  # noqa: F401 -- Just checking import, not using
+            )
         except ImportError as e:
             self.logger.error(f"Failed to import Anthropic package: {e}")
             raise QuackIntegrationError(
@@ -381,7 +383,7 @@ class AnthropicClient(LLMClient):
 
         except Exception as e:
             # Convert Anthropic errors to QuackApiError
-            raise self._convert_error(e)
+            raise self._convert_error(e) from e
 
     def _count_tokens_with_provider(
         self, messages: list[ChatMessage]

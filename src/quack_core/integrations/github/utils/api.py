@@ -107,7 +107,7 @@ def make_request(
                     f"GitHub API authentication failed: {e.response.text}",
                     service="GitHub",
                     original_error=e,
-                )
+                ) from e
 
             # Handle rate limiting again - in case it wasn't caught above
             if status_code == 429 or (
@@ -132,7 +132,7 @@ def make_request(
                         service="GitHub",
                         resource=url,
                         original_error=e,
-                    )
+                    ) from e
 
             # For server errors, retry
             if status_code >= 500 and attempt < max_retries:
@@ -159,7 +159,7 @@ def make_request(
                 status_code=status_code,
                 api_method=url,
                 original_error=e,
-            )
+            ) from e
 
         except requests.exceptions.ConnectionError as e:
             # Retry connection errors
@@ -176,7 +176,7 @@ def make_request(
                 service="GitHub",
                 api_method=url,
                 original_error=e,
-            )
+            ) from e
 
         except requests.exceptions.Timeout as e:
             # Retry timeouts
@@ -193,7 +193,7 @@ def make_request(
                 service="GitHub",
                 api_method=url,
                 original_error=e,
-            )
+            ) from e
 
         except Exception as e:
             # For other unexpected errors, don't try to catch our own exceptions
@@ -208,4 +208,4 @@ def make_request(
                 service="GitHub",
                 api_method=url,
                 original_error=e,
-            )
+            ) from e

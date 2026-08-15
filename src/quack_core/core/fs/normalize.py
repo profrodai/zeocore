@@ -107,7 +107,7 @@ def coerce_path(
                 except ValueError:
                     raise QuackPathOutsideBaseDirError(
                         f"Path '{path}' is outside base directory '{base_dir}' (allow_absolute=False)"
-                    )
+                    ) from None
 
             # 2. Handle Relative Paths (Anchor to base_dir)
             resolved_path = (base_dir / path).resolve()
@@ -118,7 +118,7 @@ def coerce_path(
             except ValueError:
                 raise QuackPathEscapeError(
                     f"Path '{path}' attempts to escape base directory '{base_dir}'"
-                )
+                ) from None
 
             return resolved_path
 

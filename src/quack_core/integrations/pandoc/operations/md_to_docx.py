@@ -199,7 +199,7 @@ def _convert_markdown_to_docx_once(
         raise QuackIntegrationError(
             "pypandoc module is not installed",
             {"module": "pypandoc", "path": markdown_path},
-        )
+        ) from None
     except Exception as e:
         if isinstance(e, QuackIntegrationError):
             raise

@@ -60,7 +60,7 @@ def test_full_job_workflow(integration_client, integration_headers):
 
     # Poll for completion
     max_attempts = 20
-    for attempt in range(max_attempts):
+    for _attempt in range(max_attempts):
         status_response = integration_client.get(
             f"/jobs/{job_id}", headers=integration_headers
         )
