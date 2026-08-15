@@ -92,7 +92,7 @@ class OpenAIClient(LLMClient):
                         f"OpenAI package not installed or cannot be imported: {e}. "
                         "Please install it with: pip install openai",
                         original_error=e,
-                    )
+                    ) from e
 
                 # Get API key from provided value or from environment variable
                 if not self._api_key:
@@ -207,7 +207,7 @@ class OpenAIClient(LLMClient):
                 original_error=e,
             ) from e
         except Exception as e:
-            raise self._convert_error(e)
+            raise self._convert_error(e) from e
 
     def _handle_streaming(
         self,
@@ -260,7 +260,7 @@ class OpenAIClient(LLMClient):
             return "".join(collected_content)
         except Exception as e:
             # Convert OpenAI errors to QuackApiError
-            raise self._convert_error(e)
+            raise self._convert_error(e) from e
 
     def _convert_message_to_openai(self, message: ChatMessage) -> dict:
         """

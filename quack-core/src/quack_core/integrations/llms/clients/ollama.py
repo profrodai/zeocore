@@ -88,14 +88,14 @@ class OllamaClient(LLMClient):
             bool: True if installed, raises exception otherwise
         """
         try:
-            import requests
+            import requests  # noqa: F401 -- presence check only, ImportError is the signal
 
             return True
         except ImportError as e:
             raise QuackIntegrationError(
                 f"Failed to import required package: {e}. Please install requests: pip install requests",
                 original_error=e,
-            )
+            ) from e
 
     def _chat_with_provider(
         self,
@@ -175,20 +175,20 @@ class OllamaClient(LLMClient):
                     service="Ollama",
                     api_method="chat",
                     original_error=e,
-                )
+                ) from e
 
         except ImportError as e:
             raise QuackIntegrationError(
                 f"Failed to import required package: {e}. Please install requests: pip install requests",
                 original_error=e,
-            )
+            ) from e
         except Exception as e:
             raise QuackApiError(
                 f"Ollama API error: {e}",
                 service="Ollama",
                 api_method="chat",
                 original_error=e,
-            )
+            ) from e
 
     def _handle_streaming(
         self,
@@ -251,7 +251,7 @@ class OllamaClient(LLMClient):
                 service="Ollama",
                 api_method="chat",
                 original_error=e,
-            )
+            ) from e
 
     def _convert_messages_to_ollama(self, messages: list[ChatMessage]) -> list[dict]:
         """

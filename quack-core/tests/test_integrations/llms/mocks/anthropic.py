@@ -157,7 +157,7 @@ class MockAnthropicStreamingResponse(MockStreamingGenerator):
             mock_chunk.message.stop_reason = "end_turn"
 
             # Re-raise StopIteration to end the stream
-            raise StopIteration
+            raise StopIteration from None
 
     def __enter__(self) -> "MockAnthropicStreamingResponse":
         """Context manager enter method."""

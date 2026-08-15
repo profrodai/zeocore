@@ -177,8 +177,11 @@ def test_validate_conversion_html_to_md():
     )
 
     # Configure check functions to return valid results
-    patched_file_size_check = lambda *args: (True, [])
-    patched_ratio_check = lambda *args: (True, [])
+    def patched_file_size_check(*args):
+        return (True, [])
+
+    def patched_ratio_check(*args):
+        return (True, [])
 
     # Configure PandocConfig for testing
     config = PandocConfig()

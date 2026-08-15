@@ -28,6 +28,8 @@ def _compute_relative_path(path: str, root: str) -> str | None:
             rel = path[len(root) :]
             return rel.lstrip("/\\")
     except Exception:
+        # Best-effort: pure string ops on str inputs essentially never raise;
+        # if they somehow do, None (not-relative) is a safe, harmless fallback.
         pass
     return None
 

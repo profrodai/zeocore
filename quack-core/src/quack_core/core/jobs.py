@@ -127,12 +127,12 @@ class JobStore(ABC):
         pass
 
     @abstractmethod
-    def find_by_idempotency_hash(self, hash: str) -> JobData | None:
+    def find_by_idempotency_hash(self, hash_value: str) -> JobData | None:
         """
         Find a job by idempotency hash.
 
         Args:
-            hash: Idempotency hash
+            hash_value: Idempotency hash
 
         Returns:
             Job data if found, None otherwise
@@ -235,11 +235,11 @@ class InMemoryJobStore(JobStore):
                 raise KeyError(f"Job not found: {job_data.job_id}")
             self._jobs[job_data.job_id] = job_data
 
-    def find_by_idempotency_hash(self, hash: str) -> JobData | None:
+    def find_by_idempotency_hash(self, hash_value: str) -> JobData | None:
         """Find a job by idempotency hash."""
         with self._lock:
             for job_data in self._jobs.values():
-                if job_data.idempotency_hash == hash:
+                if job_data.idempotency_hash == hash_value:
                     return job_data
             return None
 
