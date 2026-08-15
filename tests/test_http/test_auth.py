@@ -33,7 +33,7 @@ def test_require_bearer_no_auth_configured():
 
 def test_require_bearer_missing_header():
     """Test auth failure when header missing."""
-    cfg = HttpAdapterConfig(auth_token="secret")
+    cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
     class MockRequest:
         def __init__(self):
@@ -49,7 +49,7 @@ def test_require_bearer_missing_header():
 
 def test_require_bearer_wrong_scheme():
     """Test auth failure with wrong scheme."""
-    cfg = HttpAdapterConfig(auth_token="secret")
+    cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
     class MockRequest:
         def __init__(self):
@@ -65,7 +65,7 @@ def test_require_bearer_wrong_scheme():
 
 def test_require_bearer_wrong_token():
     """Test auth failure with wrong token."""
-    cfg = HttpAdapterConfig(auth_token="secret")
+    cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
     class MockRequest:
         def __init__(self):
@@ -81,7 +81,7 @@ def test_require_bearer_wrong_token():
 
 def test_require_bearer_success():
     """Test successful auth."""
-    cfg = HttpAdapterConfig(auth_token="secret")
+    cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
     class MockRequest:
         def __init__(self):
@@ -96,7 +96,7 @@ def test_require_bearer_success():
 def test_sign_payload():
     """Test payload signing."""
     payload = {"job_id": "123", "status": "done"}
-    secret = "test-secret"
+    secret = "test-secret"  # noqa: S105 -- test fixture, fake credential value, not a real secret
 
     signature = sign_payload(payload, secret)
 

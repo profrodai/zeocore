@@ -89,7 +89,7 @@ class MockDriveService(DriveService):
 
             # Set default download path if not provided
             if not local_path:
-                local_path = f"/tmp/{file_metadata.get('name', 'downloaded_file')}"
+                local_path = f"/tmp/{file_metadata.get('name', 'downloaded_file')}"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
             # For mock implementation, just return success with the path
             return IntegrationResult.success_result(
@@ -116,7 +116,7 @@ class MockDriveService(DriveService):
 
         if not local_path:
             # Create a fake temp directory path
-            return f"/tmp/{file_name}"
+            return f"/tmp/{file_name}"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
         # Simple path resolution for testing
         return f"{local_path}/{file_name}" if "/" in local_path else local_path
