@@ -155,7 +155,9 @@ class TestGoogleAuthProvider:
         assert not result.success
 
         provider.auth = mock_credentials(
-            token="valid_token", expired=False, expiry_timestamp=1234567890  # noqa: S106 -- test fixture, fake credential value, not a real secret
+            token="valid_token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
+            expired=False,
+            expiry_timestamp=1234567890,
         )
         provider.authenticated = True
 
