@@ -3,7 +3,7 @@
 # module: quack_core.core.paths.__init__
 # role: module
 # neighbors: service.py, models.py, plugin.py
-# exports: PathService, get_path_service, ProjectContext, ContentContext, ProjectDirectory, PathResult, StringResult, ContextResult
+# exports: PathService, PathResolver, get_path_service, ProjectContext (+5 more)
 # git_branch: main
 # git_commit: f0715f0c
 # === QV-LLM:END ===
@@ -19,6 +19,7 @@ NOTE: This module does NOT expose low-level path manipulation (join/split).
 Use `quack_core.core.fs` for filesystem primitives.
 """
 
+from quack_core.core.paths._internal.resolver import PathResolver
 from quack_core.core.paths.api.public.results import (
     ContextResult,
     PathResult,
@@ -46,6 +47,7 @@ def get_path_service() -> PathService:
 __all__ = [
     # Service Access
     "PathService",
+    "PathResolver",
     "get_path_service",
     # Models
     "ProjectContext",
