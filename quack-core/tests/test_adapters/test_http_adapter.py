@@ -68,8 +68,8 @@ def config():
     return HttpAdapterConfig(
         host="0.0.0.0",
         port=8080,
-        auth_token="test-token-123",
-        hmac_secret="test-secret",
+        auth_token="test-token-123",  # noqa: S106 -- test fixture, fake credential value, not a real secret
+        hmac_secret="test-secret",  # noqa: S106 -- test fixture, fake credential value, not a real secret
         max_workers=2,
     )
 

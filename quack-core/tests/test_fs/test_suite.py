@@ -279,7 +279,7 @@ class TestInternalLayerDoctrine:
         from quack_core.core.fs._internal.path_ops import _resolve_path, _split_path
 
         # Should work with Path
-        path = Path("/tmp/test")
+        path = Path("/tmp/test")  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
         parts = _split_path(path)
         assert isinstance(parts, list)
 

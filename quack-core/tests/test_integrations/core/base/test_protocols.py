@@ -54,7 +54,7 @@ class SampleAuthProvider:
         return "sample_auth"
 
     def authenticate(self) -> AuthResult:
-        return AuthResult.success_result(token="test_token")
+        return AuthResult.success_result(token="test_token")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
     def refresh_credentials(self) -> AuthResult:
         return AuthResult.success_result(message="Refreshed")
@@ -220,7 +220,7 @@ class TestAuthProviderProtocol:
         # Test authenticate method
         result = provider.authenticate()
         assert result.success is True
-        assert result.token == "test_token"
+        assert result.token == "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
 
         # Test refresh_credentials method
         result = provider.refresh_credentials()

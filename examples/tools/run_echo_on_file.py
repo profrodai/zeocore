@@ -45,7 +45,7 @@ def main():
     print()
 
     # Setup paths
-    work_dir = Path("/tmp/quack_example")
+    work_dir = Path("/tmp/quack_example")  # noqa: S108 -- example script, illustrative path only, not shipped runtime code
     work_dir.mkdir(exist_ok=True)
 
     input_file = work_dir / "input.txt"

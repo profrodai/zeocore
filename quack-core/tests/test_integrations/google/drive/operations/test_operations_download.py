@@ -49,11 +49,11 @@ class TestDriveOperationsDownload:
             ) as mock_execute,
         ):
             # Configure fs module mocks
-            mock_fs.create_temp_directory.return_value = Path("/tmp")
-            mock_fs.join_path.return_value = Path("/tmp/test_file.txt")
+            mock_fs.create_temp_directory.return_value = Path("/tmp")  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
+            mock_fs.join_path.return_value = Path("/tmp/test_file.txt")  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
             mock_fs.create_directory.return_value = OperationResult(
-                success=True, path=Path("/tmp"), message="Directory created"
+                success=True, path=Path("/tmp"), message="Directory created"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
             )
             mock_execute.return_value = {
                 "name": "test_file.txt",
@@ -62,7 +62,8 @@ class TestDriveOperationsDownload:
 
             # Configure paths_service mock
             mock_paths_service.resolve_project_path.return_value = PathResult(
-                success=True, path="/tmp/test_file.txt"
+                success=True,
+                path="/tmp/test_file.txt",  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
             )
 
             # Configure downloader mock
@@ -80,14 +81,14 @@ class TestDriveOperationsDownload:
             # Configure write_binary mock
             mock_fs.write_binary.return_value = WriteResult(
                 success=True,
-                path=Path("/tmp/test_file.txt"),
+                path=Path("/tmp/test_file.txt"),  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
                 bytes_written=12,
                 message="File written",
             )
 
             # Call download function
             result = download.download_file(
-                mock_drive_service, "file123", "/tmp/test_file.txt"
+                mock_drive_service, "file123", "/tmp/test_file.txt"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
             )
 
             # Assertions
@@ -227,12 +228,13 @@ class TestDriveOperationsDownload:
             # Configure mocks
             mock_paths_service.resolve_project_path.return_value = PathResult(
                 success=True,
-                path="/tmp/test_file.txt",  # Use string, not Path
+                # Use string, not Path; mocked, no real I/O.
+                path="/tmp/test_file.txt",  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
             )
 
-            mock_fs.join_path.return_value = Path("/tmp/test_file.txt")
+            mock_fs.join_path.return_value = Path("/tmp/test_file.txt")  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
             mock_fs.create_directory.return_value = OperationResult(
-                success=True, path=Path("/tmp"), message="Directory created"
+                success=True, path=Path("/tmp"), message="Directory created"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
             )
             mock_execute.return_value = {
                 "name": "test_file.txt",
@@ -242,7 +244,7 @@ class TestDriveOperationsDownload:
             # Configure write_binary to fail
             mock_fs.write_binary.return_value = WriteResult(
                 success=False,
-                path=Path("/tmp/test_file.txt"),
+                path=Path("/tmp/test_file.txt"),  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
                 error="Write error",
                 bytes_written=0,
             )
@@ -263,7 +265,7 @@ class TestDriveOperationsDownload:
             result = download.download_file(
                 mock_drive_service,
                 "file123",
-                "/tmp/test_file.txt",
+                "/tmp/test_file.txt",  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
             )
 
             # Verify the result is as expected

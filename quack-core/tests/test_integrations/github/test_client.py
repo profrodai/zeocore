@@ -20,7 +20,7 @@ from quack_core.integrations.github.models import GitHubRepo, GitHubUser, PullRe
 def github_client():
     """Create a GitHub client for testing."""
     return GitHubClient(
-        token="test_token",
+        token="test_token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
         api_url="https://api.github.com",
         timeout=30,
         max_retries=3,
@@ -33,7 +33,7 @@ class TestGitHubClient:
 
     def test_init(self, github_client):
         """Test client initialization."""
-        assert github_client.token == "test_token"
+        assert github_client.token == "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         assert github_client.api_url == "https://api.github.com"
         assert github_client.timeout == 30
         assert github_client.max_retries == 3

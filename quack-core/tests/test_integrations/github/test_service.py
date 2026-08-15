@@ -105,7 +105,7 @@ class TestGitHubIntegration:
             assert github_service._initialized is True
 
             cast(MagicMock, mock_client_class).assert_called_once_with(
-                token="test_token",
+                token="test_token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
                 api_url="https://api.github.com",
                 timeout=30,
                 max_retries=3,
@@ -183,7 +183,7 @@ class TestGitHubIntegration:
             # Simulate that get_credentials returns no token.
             mock_auth_provider.get_credentials.return_value = {"token": None}
             mock_auth_provider.authenticate.return_value = AuthResult.success_result(
-                token="auth_token", message="Successfully authenticated"
+                token="auth_token", message="Successfully authenticated"  # noqa: S106 -- test fixture, fake credential value, not a real secret
             )
 
             with patch(

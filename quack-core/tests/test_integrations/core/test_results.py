@@ -136,7 +136,7 @@ class TestAuthResult:
 
     def test_complete_auth_result(self) -> None:
         """Test creating a complete authentication result."""
-        token = "test_token"
+        token = "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         expiry = 1234567890
         credentials_path = "/path/to/credentials"
         content = {"user_id": "test_user"}
@@ -158,7 +158,7 @@ class TestAuthResult:
 
     def test_auth_success_result_factory(self) -> None:
         """Test the success_result factory method for AuthResult."""
-        token = "test_token"
+        token = "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         expiry = 1234567890
         credentials_path = "/path/to/credentials"
         content = {"user_id": "test_user"}
