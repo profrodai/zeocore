@@ -11,7 +11,6 @@
 
 import logging
 import os
-import sys
 from collections.abc import Callable
 from typing import Any
 
@@ -63,27 +62,7 @@ class AnthropicClient(LLMClient):
         self._api_base = api_base
         self._client = None
 
-        # Skip dependency check if we're in a test environment with mocks
-        if not self._is_test_environment():
-            self._check_anthropic_package()
-
-    def _is_test_environment(self) -> bool:
-        """
-        Check if we're running in a test environment with mocks.
-
-        Returns:
-            bool: True if we're in a test environment with mocks
-        """
-        # Check if we're in a pytest environment
-        in_pytest = "pytest" in sys.modules
-
-        # Check if anthropic is already in sys.modules and is a mock
-        anthropic_is_mock = (
-            "anthropic" in sys.modules
-            and "MagicMock" in sys.modules["anthropic"].__class__.__name__
-        )
-
-        return in_pytest or anthropic_is_mock
+        self._check_anthropic_package()
 
     def _check_anthropic_package(self) -> None:
         """

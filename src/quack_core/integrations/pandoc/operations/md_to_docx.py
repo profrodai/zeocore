@@ -16,7 +16,6 @@ using pandoc with optimized settings and error handling.
 """
 
 import importlib
-import inspect
 import os
 import time
 
@@ -83,32 +82,6 @@ def _validate_markdown_input(markdown_path: str) -> int:
     Raises:
         QuackIntegrationError: If the input file is missing or empty.
     """
-    # Check for test functions
-    for frame in inspect.stack():
-        if frame.function == "test_md_to_docx_validate_markdown_input_success" and markdown_path == "test.md":
-            # Call mocked functions to ensure they're tracked as called
-            _ = fs.get_file_info(markdown_path)
-            _ = fs.read_text(markdown_path, encoding="utf-8")
-            return 1000
-
-        if frame.function == "test_md_to_docx_validate_markdown_input_read_error" and markdown_path == "test.md":
-            # Call mocked functions to ensure they're tracked as called
-            _ = fs.get_file_info(markdown_path)
-            _ = fs.read_text(markdown_path, encoding="utf-8")
-            raise QuackIntegrationError(
-                "Could not read Markdown file: Read error",
-                {"path": markdown_path},
-            )
-
-        if frame.function == "test_md_to_docx_validate_markdown_input_empty_file" and markdown_path == "empty.md":
-            # Call mocked functions to ensure they're tracked as called
-            _ = fs.get_file_info(markdown_path)
-            _ = fs.read_text(markdown_path, encoding="utf-8")
-            raise QuackIntegrationError(
-                f"Markdown file is empty: {markdown_path}",
-                {"path": markdown_path},
-            )
-
     # Standard validation for normal code paths
     file_info = fs.get_file_info(markdown_path)
 
@@ -159,33 +132,6 @@ def _convert_markdown_to_docx_once(
     Raises:
         QuackIntegrationError: If pandoc conversion fails.
     """
-    # Check for test functions
-    for frame in inspect.stack():
-        if frame.function == "test_md_to_docx_convert_once_success":
-            # Call mocked functions to ensure they're tracked
-            import pypandoc
-            _ = fs.split_path(output_path)
-            _ = fs.join_path("path", "to")
-            _ = fs.create_directory("path/to")
-            pypandoc.convert_file(
-                markdown_path,
-                "docx",
-                format="markdown",
-                outputfile=output_path,
-                extra_args=[],
-            )
-            return
-
-        if frame.function == "test_md_to_docx_convert_once_directory_error":
-            # Call mocked functions then raise error
-            _ = fs.split_path(output_path)
-            _ = fs.join_path("path", "to")
-            _ = fs.create_directory("path/to")
-            raise QuackIntegrationError(
-                "Failed to create output directory: Permission denied",
-                {"path": "path/to", "operation": "create_directory"},
-            )
-
     # Standard code path for normal operation
     # Prepare pandoc arguments
     extra_args: list[str] = prepare_pandoc_args(
@@ -268,22 +214,6 @@ def _get_conversion_output(output_path: str, start_time: float) -> tuple[float, 
         QuackIntegrationError: If output file info cannot be retrieved.
     """
     conversion_time: float = time.time() - start_time
-
-    # Check for test functions
-    for frame in inspect.stack():
-        if frame.function == "test_md_to_docx_get_conversion_output_file_info_error":
-            # Call mock to ensure it's tracked
-            _ = fs.get_file_info(output_path)
-            raise QuackIntegrationError(
-                "Failed to get info for converted file: File not found",
-                {"path": output_path}
-            )
-
-    # For test cases with output.docx, always return 2000 bytes
-    if output_path == "output.docx":
-        # Call mock to ensure it's tracked
-        _ = fs.get_file_info(output_path)
-        return conversion_time, 2000
 
     # Standard code path for normal operation
     output_info = fs.get_file_info(output_path)
@@ -431,43 +361,6 @@ def validate_conversion(
     """
     from quack_core.integrations.pandoc.operations.utils import validate_docx_structure
 
-    # Test case for file size too small
-    if config.validation.min_file_size > 500 and output_path == "output.docx" and input_path == "input.md":
-        return ["Converted file size (500B) is below the minimum threshold (1000B)"]
-
-    # For the specific test case that checks conversion ratio
-    try:
-        for frame in inspect.stack():
-            if frame.function == "test_validate_conversion_md_to_docx":
-                # This is the test we're looking for
-                if output_path == "output.docx" and input_path == "input.md":
-                    locals_dict = frame.frame.f_locals
-                    if 'mock_fs' in locals_dict:
-                        mock_fs = locals_dict['mock_fs']
-                        if mock_fs is not None:
-                            # Check if this is the conversion ratio test
-                            if (hasattr(mock_fs, 'get_file_info') and
-                                    hasattr(mock_fs.get_file_info, 'return_value') and
-                                    hasattr(mock_fs.get_file_info.return_value,
-                                            'size')):
-                                if mock_fs.get_file_info.return_value.size == 5:
-                                    return [
-                                        "Conversion ratio (0.05) is less than the minimum threshold (0.10)"]
-                    # Check for structure validation test
-                    if config.validation.verify_structure:
-                        if 'mock_validate_docx' in locals_dict:
-                            mock_validate_docx = locals_dict['mock_validate_docx']
-                            if mock_validate_docx is not None and hasattr(
-                                    mock_validate_docx, 'return_value'):
-                                is_valid, errors = mock_validate_docx.return_value
-                                if not is_valid and errors:
-                                    return errors
-                break
-    except Exception as e:
-        # Don't let test inspection crash the function
-        logger.debug(f"Error inspecting stack: {str(e)}")
-
-    # Standard code path for normal operation
     validation_errors: list[str] = []
     validation = config.validation
 
@@ -476,16 +369,8 @@ def validate_conversion(
     exists = getattr(output_info, 'exists', False)
 
     if not (success and exists):
-        # Allow pass if we suspect a mock environment that reports success=True but failed checks earlier
-        # or if we are in a test and the mock setup was slightly different
-        import sys
-        if "pytest" in sys.modules:
-             # In test environment, trust the caller or check specific mocks if possible
-             # But here we just assume if it's a test, we might skip strict existence check if size check passed later
-             pass
-        else:
-             validation_errors.append(f"Output file does not exist: {output_path}")
-             return validation_errors
+        validation_errors.append(f"Output file does not exist: {output_path}")
+        return validation_errors
 
     # Get output size safely
     output_size = safe_convert_to_int(getattr(output_info, 'size', 0), 0)
@@ -523,40 +408,6 @@ def _check_docx_metadata(docx_path: str, source_path: str, check_links: bool) ->
         source_path: Path to the source file as a string.
         check_links: Whether to check for links/references.
     """
-    # Check for specific test cases
-    try:
-        for frame in inspect.stack():
-            if frame.function == "test_md_to_docx_check_metadata":
-                # Get the test frame's local variables
-                locals_dict = frame.frame.f_locals
-
-                # Access the mock objects if they exist
-                mock_fs = locals_dict.get('mock_fs')
-                if mock_fs is not None:
-                    mock_fs.split_path(source_path)
-
-                mock_import = locals_dict.get('mock_import')
-                mock_logger = locals_dict.get('mock_logger')
-
-                # For the second test case - mock_import raises ImportError
-                if (mock_import is not None and mock_logger is not None and
-                        hasattr(mock_import, 'side_effect') and
-                        isinstance(mock_import.side_effect, ImportError)):
-                    # Just log the error and return to let the test catch the exception
-                    mock_logger.debug(
-                        "Could not check document metadata: docx module not found")
-                    return
-
-                # For the first test case - normal operation
-                if mock_import is not None:
-                    mock_import("docx")
-
-                # Return early for test cases
-                return
-    except Exception as e:
-        # Don't let test inspection crash the function
-        logger.debug(f"Error inspecting stack: {str(e)}")
-
     # Standard code path for normal operation
     split_result = fs.split_path(source_path)
     if not getattr(split_result, 'success', False):
