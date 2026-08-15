@@ -443,7 +443,7 @@ class TestOpenAIClient:
         # Configure encode method to return a token array of specific length
         def mock_encode(text):
             # Return an array with one "token" per character for simplicity
-            return [i for i in range(len(text))]
+            return list(range(len(text)))
 
         mock_encoding.encode.side_effect = mock_encode
 

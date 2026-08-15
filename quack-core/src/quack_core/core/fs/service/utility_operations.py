@@ -344,13 +344,13 @@ class UtilityOperationsMixin:
     def is_file_locked(self, path: FsPathLike) -> DataResult[bool]:
         try:
             norm_path = self._normalize_input_path(path)
-            l = self.operations._is_file_locked(norm_path)
+            is_locked = self.operations._is_file_locked(norm_path)
             return DataResult(
                 ok=True,
                 path=norm_path,
-                data=l,
+                data=is_locked,
                 format="boolean",
-                message=f"Locked: {l}",
+                message=f"Locked: {is_locked}",
             )
         except Exception as e:
             s = safe_path_str(path)

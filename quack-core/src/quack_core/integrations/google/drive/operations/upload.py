@@ -164,12 +164,12 @@ def upload_file(
         )
 
         # Convert file ID to string
-        fileId = str(file["id"])
+        file_id = str(file["id"])
 
         # Set file permissions if requested
         if make_public:
             perm_result = permissions.set_file_permissions(
-                drive_service, fileId, "reader", "anyone", logger
+                drive_service, file_id, "reader", "anyone", logger
             )
             if not perm_result.success:
                 logger.warning(f"Failed to set permissions: {perm_result.error}")
@@ -178,12 +178,12 @@ def upload_file(
         link: str = (
             str(file.get("webViewLink", ""))
             or str(file.get("webContentLink", ""))
-            or f"https://drive.google.com/file/d/{fileId}/view"
+            or f"https://drive.google.com/file/d/{file_id}/view"
         )
 
         return IntegrationResult.success_result(
             content=link,
-            message=f"File uploaded successfully with ID: {fileId}",
+            message=f"File uploaded successfully with ID: {file_id}",
         )
 
     except QuackApiError as e:
