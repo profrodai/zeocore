@@ -384,32 +384,11 @@ def get_file_info(path: str, format_hint: str | None = None) -> FileInfo:
     """
     file_info = fs.get_file_info(path)
 
-    # Check if this is a mock object
-    is_mocked = hasattr(file_info, '_mock_name') or str(type(file_info).__name__) == 'MagicMock'
-
-    if is_mocked and hasattr(file_info, 'success') and file_info.success:
-        # Extract info from mock
-        size = getattr(file_info, 'size', 1024)
-        modified = getattr(file_info, 'modified', None)
-        ext = Path(path).suffix.lstrip('.')
-        return FileInfo(
-            path=path,
-            format=format_hint or ext or "html",
-            size=size,
-            modified=modified,
-            extra_args=[],
-        )
-
-    # Check if file exists - handle both MagicMock and SimpleNamespace
     exists = False
     if hasattr(file_info, 'exists'):
         exists = file_info.exists
 
-    # Check for test environment to be more lenient with mocks
-    import sys
-    is_test = "pytest" in sys.modules
-
-    if (not getattr(file_info, 'success', True) or not exists) and not is_test:
+    if not getattr(file_info, 'success', True) or not exists:
         raise QuackIntegrationError(f"File not found: {path}")
 
     # Convert file size to integer safely

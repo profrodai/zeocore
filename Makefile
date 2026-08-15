@@ -230,16 +230,23 @@ typecheck: ## Run mypy in strict mode (the closest thing to tsc)
 	MYPYPATH="$(REPO_ROOT)/quack-core" $(PYTHON) -m mypy --explicit-package-bases $(SRC) $(TESTS) examples/
 
 .PHONY: hygiene-check
-hygiene-check: ## Fail if production code detects that it is under test
+hygiene-check: ## Fail if production code detects that it is under test (RULING-111 s2/s2a: widened)
 	@echo "${BLUE}Checking for test-detection in production code...${RESET}"
-	@offenders=$$(grep -rEn 'inspect\.stack\(\)|["'"'"']pytest["'"'"'] +in +sys\.modules|_is_test_environment' $(PKG_SRC) 2>/dev/null || true); \
+	@offenders=$$(grep -rEn 'inspect\.stack\(\)|["'"'"']pytest["'"'"'] +in +sys\.modules|_is_test_environment|f_locals|_mock_name|__name__ *== *["'"'"']MagicMock["'"'"']' $(PKG_SRC) 2>/dev/null || true); \
 	if [ -n "$$offenders" ]; then \
 	  echo "${RED}✗ Production code must not detect tests (green instrument, wrong render):${RESET}"; \
 	  echo "$$offenders" | sed 's/^/    /'; \
 	  echo "${YELLOW}  Move the behavior into the test, or inject it. See WORK-POLICY handout.${RESET}"; \
 	  exit 1; \
 	fi
-	@echo "${GREEN}✓ hygiene OK — no test-detection in production paths${RESET}"
+	@echo "${GREEN}✓ hygiene OK — no mechanism-based or mock-duck-typed test-detection in production paths${RESET}"
+	@echo "${YELLOW}  BLIND SPOT (RULING-111 s2a-2, by design, not a gap in this gate): arbitrary${RESET}"
+	@echo "${YELLOW}  VALUE-BASED fakery (e.g. \`if path == \"test.md\": return fake_result\`) is NOT${RESET}"
+	@echo "${YELLOW}  mechanically detectable -- a pattern broad enough to catch every literal fires${RESET}"
+	@echo "${YELLOW}  on legitimate value handling too. This gate catches MECHANISM (stack/frame${RESET}"
+	@echo "${YELLOW}  introspection, sys.modules test-env checks) and MOCK DUCK-TYPING (_mock_name,${RESET}"
+	@echo "${YELLOW}  MagicMock type checks). Value-based fakery needs human review. GREEN HERE means${RESET}"
+	@echo "${YELLOW}  clean of what this instrument can see, not clean absolutely.${RESET}"
 
 .PHONY: test
 test: ## Run tests with coverage (ONCE — fixed from the old doubled run)
