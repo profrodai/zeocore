@@ -285,6 +285,16 @@ def build_block(
     return lines
 
 
+def build_strip_block(*, relpath: str) -> list[str]:
+    """
+    Minimal replacement for a full QV-LLM block: path only, still bounded by
+    BEGIN/END so it stays machine-detectable and re-annotatable later, but
+    costs the least possible tokens for a little-Claude that doesn't want the
+    full metadata (module/role/neighbors/exports/git_branch/git_commit).
+    """
+    return [BEGIN, f"# path: {relpath}", END]
+
+
 def insert_or_replace_header(
     text: str,
     header_lines: list[str],
@@ -324,6 +334,35 @@ def insert_or_replace_header(
     return "\n".join(new_lines) + ("\n" if text.endswith("\n") else "")
 
 
+def remove_header_block(text: str) -> str:
+    """
+    Delete the first real QV-LLM header block entirely (BEGIN..END inclusive),
+    plus a single following blank separator line if one was left by
+    insert_or_replace_header's insertion path. No-op (returns text unchanged)
+    if no real header block is present.
+    """
+    lines = text.splitlines()
+
+    if not has_real_header_block(lines, search_first_n=160):
+        return text
+
+    limit = min(len(lines), 160)
+    begin_i = next(i for i in range(limit) if lines[i].strip() == BEGIN)
+
+    end_i = begin_i + 1
+    while end_i < len(lines) and lines[end_i].strip() != END:
+        end_i += 1
+    if end_i < len(lines):
+        end_i += 1  # skip END line too
+
+    # also drop one blank separator line immediately after the block, if present
+    if end_i < len(lines) and lines[end_i].strip() == "":
+        end_i += 1
+
+    new_lines = lines[:begin_i] + lines[end_i:]
+    return "\n".join(new_lines) + ("\n" if text.endswith("\n") else "")
+
+
 # -----------------------------
 # CLI
 # -----------------------------
@@ -348,6 +387,21 @@ def main() -> int:
         action="store_true",
         help="Remove legacy '# <relpath>' single-line comments (Python only).",
     )
+    ap.add_argument(
+        "--mode",
+        choices=["full", "strip", "remove"],
+        default="full",
+        help=(
+            "full: write the complete QV-LLM block (path/module/role/neighbors/"
+            "exports/git_branch/git_commit) -- the existing behavior. "
+            "strip: reduce an existing block down to BEGIN/# path: <relpath>/END "
+            "only -- keeps the file machine-anchored for a later 'full' pass but "
+            "costs the fewest tokens for a little-Claude reading the file. "
+            "remove: delete the QV-LLM block entirely, no trace left. "
+            "Each little-Claude session can choose whichever mode suits it; this "
+            "is a per-run choice, not a repo-wide policy baked into one file."
+        ),
+    )
     args = ap.parse_args()
 
     scope = Path(args.scope).resolve()
@@ -371,38 +425,62 @@ def main() -> int:
         is_python = f.suffix == ".py"
         original = f.read_text(encoding="utf-8", errors="replace")
 
-        module = compute_module(rel) if is_python else None
-        role = infer_role(rel)
-        neighbors = compute_neighbors(f, max_items=args.max_neighbors) if is_python else None
-        exports = extract_exports_from_python(original, max_items=args.max_exports) if is_python else None
+        if args.mode == "remove":
+            updated = remove_header_block(original)
+        elif args.mode == "strip":
+            # Only touches files that already carry a real header block --
+            # nothing to strip down if there's nothing there yet, and "strip"
+            # should never be the thing that introduces a block into a file
+            # that doesn't have one.
+            lines = original.splitlines()
+            if not has_real_header_block(lines, search_first_n=160):
+                total += 1
+                skipped += 1
+                continue
+            header = build_strip_block(relpath=rel)
+            updated = insert_or_replace_header(
+                original,
+                header,
+                relpath=rel,
+                is_python=is_python,
+                remove_legacy=args.remove_legacy_path_line,
+            )
+        else:  # "full", the existing behavior
+            module = compute_module(rel) if is_python else None
+            role = infer_role(rel)
+            neighbors = compute_neighbors(f, max_items=args.max_neighbors) if is_python else None
+            exports = extract_exports_from_python(original, max_items=args.max_exports) if is_python else None
 
-        header = build_block(
-            relpath=rel,
-            module=module,
-            git_meta=git_meta,
-            role=role,
-            neighbors=neighbors,
-            exports=exports,
-        )
+            header = build_block(
+                relpath=rel,
+                module=module,
+                git_meta=git_meta,
+                role=role,
+                neighbors=neighbors,
+                exports=exports,
+            )
 
-        updated = insert_or_replace_header(
-            original,
-            header,
-            relpath=rel,
-            is_python=is_python,
-            remove_legacy=args.remove_legacy_path_line,
-        )
+            updated = insert_or_replace_header(
+                original,
+                header,
+                relpath=rel,
+                is_python=is_python,
+                remove_legacy=args.remove_legacy_path_line,
+            )
 
         total += 1
         if updated != original:
             changed += 1
             if args.dry_run:
-                print(f"[DRY] would update: {rel}")
+                print(f"[DRY] would {args.mode}: {rel}")
             else:
                 f.write_text(updated, encoding="utf-8")
-                print(f"updated: {rel}")
+                print(f"{args.mode}: {rel}")
 
-    print(f"done: {changed}/{total} files updated, {skipped} skipped (extensions: {exts})")
+    print(
+        f"done ({args.mode}): {changed}/{total} files updated, "
+        f"{skipped} skipped (extensions: {exts})"
+    )
     return 0
 
 
