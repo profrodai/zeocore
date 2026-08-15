@@ -10,10 +10,17 @@
 
 from pathlib import Path
 from typing import Any
+
 from quack_core.core.fs._ops.base import FileSystemOperations
-from quack_core.core.fs.results import DirectoryInfoResult, FindResult, OperationResult, ErrorInfo
-from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.normalize import safe_path_str
+from quack_core.core.fs.protocols import FsPathLike
+from quack_core.core.fs.results import (
+    DirectoryInfoResult,
+    ErrorInfo,
+    FindResult,
+    OperationResult,
+)
+
 
 class DirectoryOperationsMixin:
     operations: FileSystemOperations

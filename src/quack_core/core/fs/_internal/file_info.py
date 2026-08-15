@@ -11,6 +11,7 @@ import mimetypes
 from datetime import datetime, timezone
 from pathlib import Path
 
+
 def _get_file_timestamp(path: Path) -> float:
     return path.stat().st_mtime
 

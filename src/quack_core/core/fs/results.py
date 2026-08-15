@@ -9,9 +9,14 @@
 # === QV-LLM:END ===
 
 from pathlib import Path
-from typing import Any, Generic, TypeVar, Optional
+from typing import Any, Generic, TypeVar
+
 from pydantic import (
-    BaseModel, Field, FieldSerializationInfo, field_serializer, computed_field,
+    BaseModel,
+    Field,
+    FieldSerializationInfo,
+    computed_field,
+    field_serializer,
 )
 
 T = TypeVar("T")
@@ -21,10 +26,10 @@ class ErrorInfo(BaseModel):
     """Structured error information."""
     type: str = Field(description="Error type identifier (e.g. 'file_not_found')")
     message: str = Field(description="Original exception message")
-    hint: Optional[str] = Field(default=None, description="User-friendly resolution hint")
-    exception: Optional[str] = Field(default=None, description="Exception class name")
-    trace_id: Optional[str] = Field(default=None, description="Tracing identifier for debugging")
-    details: Optional[dict[str, Any]] = Field(
+    hint: str | None = Field(default=None, description="User-friendly resolution hint")
+    exception: str | None = Field(default=None, description="Exception class name")
+    trace_id: str | None = Field(default=None, description="Tracing identifier for debugging")
+    details: dict[str, Any] | None = Field(
         default=None, description="Structured context (path, errno, etc)"
     )
 

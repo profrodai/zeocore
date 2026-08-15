@@ -119,3 +119,7 @@ class LifecycleMixin:
         """
         # Fix #5: explicit data=None for honest typing
         return CapabilityResult.ok(data=None, msg="Cleanup completed")
+
+
+# Backward compatibility alias
+QuackToolLifecycleMixin = LifecycleMixin

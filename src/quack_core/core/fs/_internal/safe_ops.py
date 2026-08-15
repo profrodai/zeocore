@@ -10,6 +10,7 @@
 import shutil
 from pathlib import Path
 
+
 def _safe_copy(src: Path, dst: Path, overwrite: bool = False) -> Path:
     if not src.exists(): raise FileNotFoundError(str(src))
     if dst.exists() and not overwrite: raise FileExistsError(str(dst))
@@ -24,7 +25,7 @@ def _safe_copy(src: Path, dst: Path, overwrite: bool = False) -> Path:
     except PermissionError as e:
         raise PermissionError(f"Permission denied copying to {dst}") from e
     except Exception as e:
-        raise IOError(f"Copy failed: {e}") from e
+        raise OSError(f"Copy failed: {e}") from e
 
 def _safe_move(src: Path, dst: Path, overwrite: bool = False) -> Path:
     if not src.exists(): raise FileNotFoundError(str(src))
@@ -39,7 +40,7 @@ def _safe_move(src: Path, dst: Path, overwrite: bool = False) -> Path:
     except PermissionError as e:
         raise PermissionError(f"Permission denied moving to {dst}") from e
     except Exception as e:
-        raise IOError(f"Move failed: {e}") from e
+        raise OSError(f"Move failed: {e}") from e
 
 def _safe_delete(path: Path, missing_ok: bool = True) -> bool:
     if not path.exists():
@@ -52,4 +53,4 @@ def _safe_delete(path: Path, missing_ok: bool = True) -> bool:
     except PermissionError as e:
         raise PermissionError(f"Permission denied deleting {path}") from e
     except Exception as e:
-        raise IOError(f"Delete failed: {e}") from e
+        raise OSError(f"Delete failed: {e}") from e

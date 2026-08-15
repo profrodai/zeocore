@@ -19,7 +19,7 @@ It matches BaseQuackTool exactly for structural typing.
 FIXED: Types match BaseQuackTool reality (name can be None before init).
 """
 
-from typing import Protocol, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
     from quack_core.contracts import CapabilityResult

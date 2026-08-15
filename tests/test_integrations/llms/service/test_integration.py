@@ -17,11 +17,11 @@ which contains the main LLMIntegration class implementation.
 from unittest.mock import MagicMock, patch
 
 import pytest
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.integrations.core.results import ConfigResult, IntegrationResult
 from quack_core.integrations.llms.config import LLMConfigProvider
 from quack_core.integrations.llms.fallback import FallbackConfig
 from quack_core.integrations.llms.service.integration import LLMIntegration
-from quack_core.core.errors import QuackIntegrationError
 
 
 class TestLLMIntegrationComprehensive:

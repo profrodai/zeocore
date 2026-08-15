@@ -8,17 +8,19 @@
 # === QV-LLM:END ===
 
 
-from pathlib import Path
-from typing import Any, Optional
 import uuid
+from pathlib import Path
 
-from quack_core.core.fs._ops.base import FileSystemOperations
-from quack_core.core.fs.protocols import FsPathLike
-from quack_core.core.fs.normalize import coerce_path
-from quack_core.core.fs.results import ErrorInfo
-from quack_core.core.fs.exceptions import QuackPathEscapeError, QuackPathOutsideBaseDirError
-from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.core.errors import QuackValidationError
+from quack_core.core.fs._ops.base import FileSystemOperations
+from quack_core.core.fs.exceptions import (
+    QuackPathEscapeError,
+    QuackPathOutsideBaseDirError,
+)
+from quack_core.core.fs.normalize import coerce_path
+from quack_core.core.fs.protocols import FsPathLike
+from quack_core.core.fs.results import ErrorInfo
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 
 
 class _BaseFileSystemService:

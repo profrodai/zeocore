@@ -20,12 +20,6 @@ import logging
 from collections.abc import Mapping
 from typing import Any, TypeVar
 
-from quack_core.integrations.core.base import BaseIntegrationService
-from quack_core.integrations.core.protocols import StorageIntegrationProtocol
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.google.auth import GoogleAuthProvider
-from quack_core.integrations.google.config import GoogleConfigProvider
-from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
 from quack_core.core.errors import (
     QuackApiError,
     QuackBaseAuthError,
@@ -33,6 +27,12 @@ from quack_core.core.errors import (
 )
 from quack_core.core.fs.service import standalone
 from quack_core.core.paths import service as paths_service
+from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.integrations.core.protocols import StorageIntegrationProtocol
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.auth import GoogleAuthProvider
+from quack_core.integrations.google.config import GoogleConfigProvider
+from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
 
 NoneType = type(None)
 T = TypeVar("T")  # Generic type for result content

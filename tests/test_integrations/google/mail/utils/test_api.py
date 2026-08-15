@@ -19,12 +19,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from googleapiclient.errors import HttpError
+from quack_core.core.errors import QuackApiError
 from quack_core.integrations.google.mail.protocols import GmailRequest
 from quack_core.integrations.google.mail.utils.api import (
     execute_api_request,
     with_exponential_backoff,
 )
-from quack_core.core.errors import QuackApiError
 
 R = TypeVar("R")  # Generic type for return values
 

@@ -16,13 +16,11 @@ Verifies all fixes from the feedback:
 4. No-raise contract
 """
 
-import pytest
-from pathlib import Path
 import tempfile
-import shutil
+from pathlib import Path
 
+import pytest
 from quack_core.core.fs.service import create_service
-from quack_core.core.fs.exceptions import QuackPathEscapeError, QuackPathOutsideBaseDirError
 
 
 class TestPathNoneOnFailure:
@@ -264,7 +262,7 @@ class TestInternalLayerDoctrine:
 
     def test_internal_path_ops_accepts_path_only(self):
         """Verify _internal path operations work with Path objects."""
-        from quack_core.core.fs._internal.path_ops import _split_path, _resolve_path
+        from quack_core.core.fs._internal.path_ops import _resolve_path, _split_path
 
         # Should work with Path
         path = Path("/tmp/test")

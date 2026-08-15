@@ -18,11 +18,11 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.integrations.core.protocols import IntegrationProtocol
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc import create_integration
 from quack_core.integrations.pandoc.service import PandocIntegration
-from quack_core.core.errors import QuackIntegrationError
 
 # --- Shared Test Fixtures ---
 

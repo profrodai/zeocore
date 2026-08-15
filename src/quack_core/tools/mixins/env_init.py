@@ -98,7 +98,7 @@ class ToolEnvInitializerMixin:
             path: str,
             name: str,
             fs: Any,
-            ctx: "ToolContext | None" = None
+            ctx: ToolContext | None = None
     ) -> CapabilityResult[None]:
         """
         Strictly validate a directory exists and is actually a directory.

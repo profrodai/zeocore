@@ -8,9 +8,13 @@
 # git_commit: f4879df3
 # === QV-LLM:END ===
 
-from pathlib import Path
 from dataclasses import dataclass
-from quack_core.core.fs._internal.directory_ops import _ensure_directory, _scan_directory
+from pathlib import Path
+
+from quack_core.core.fs._internal.directory_ops import (
+    _ensure_directory,
+    _scan_directory,
+)
 
 
 @dataclass

@@ -16,13 +16,13 @@ from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
+from quack_core.core.errors import QuackError
 from quack_core.interfaces.cli.utils.error import (
     ensure_single_instance,
     format_cli_error,
     get_cli_info,
     handle_errors,
 )
-from quack_core.core.errors import QuackError
 
 
 class TestFormatCliError:

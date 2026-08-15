@@ -11,6 +11,7 @@ import os
 import re
 import tempfile
 from pathlib import Path
+
 from quack_core.core.fs._internal.directory_ops import _ensure_directory
 
 
@@ -35,7 +36,7 @@ def _get_unique_filename(directory: Path, filename: str, raise_if_exists: bool =
 
 
 def _read_file_text(path: Path, encoding: str = "utf-8") -> str:
-    with open(path, "r", encoding=encoding) as f:
+    with open(path, encoding=encoding) as f:
         return f.read()
 
 
@@ -86,7 +87,7 @@ def _atomic_write(path: Path, content: bytes) -> Path:
                 temp_file.unlink()
             except OSError:
                 pass
-        raise IOError(f"Atomic write failed: {e}") from e
+        raise OSError(f"Atomic write failed: {e}") from e
 
 
 def _find_files_by_content(directory: Path, text_pattern: str, recursive: bool = True) -> list[Path]:
@@ -105,7 +106,7 @@ def _find_files_by_content(directory: Path, text_pattern: str, recursive: bool =
     for p in iterator:
         if not p.is_file(): continue
         try:
-            with open(p, "r", encoding="utf-8", errors="ignore") as f:
+            with open(p, encoding="utf-8", errors="ignore") as f:
                 if regex.search(f.read()):
                     matches.append(p)
         except OSError:

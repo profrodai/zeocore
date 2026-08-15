@@ -15,10 +15,10 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.google.drive.service import GoogleDriveService
 from quack_core.core.fs import FileInfoResult
 from quack_core.core.paths.api.public.results import PathResult
+from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.google.drive.service import GoogleDriveService
 
 
 class TestGoogleDriveServiceDownload:

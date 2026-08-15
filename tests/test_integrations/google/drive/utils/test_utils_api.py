@@ -15,9 +15,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from googleapiclient.errors import HttpError
-from quack_core.integrations.google.drive.utils import api
 from quack_core.core.errors import QuackApiError
-
+from quack_core.integrations.google.drive.utils import api
 from tests.test_integrations.google.drive.mocks import (
     MockDriveRequest,
     create_mock_drive_service,

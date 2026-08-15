@@ -10,7 +10,8 @@
 
 from os import PathLike
 from pathlib import Path
-from typing import Any, Protocol, TypeAlias, runtime_checkable, Optional
+from typing import Any, Protocol, TypeAlias, runtime_checkable
+
 
 @runtime_checkable
 class HasValue(Protocol):

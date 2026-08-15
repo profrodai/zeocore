@@ -21,6 +21,7 @@ from quack_core.contracts.capabilities.demo.models import (
     EchoRequest,
     VideoRefRequest,
 )
+
 '''
 from quack_core.contracts.capabilities.media import (
     SlicedClipData,

@@ -15,11 +15,11 @@ This module provides functions for authenticating with the Gmail API
 and initializing the service.
 """
 
+from quack_core.core.errors import QuackApiError
 from quack_core.integrations.google.mail.protocols import (
     GmailService,
     GoogleCredentials,
 )
-from quack_core.core.errors import QuackApiError
 
 
 def initialize_gmail_service(credentials: GoogleCredentials) -> GmailService:

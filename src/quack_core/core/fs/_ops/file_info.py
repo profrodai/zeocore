@@ -11,8 +11,9 @@
 import mimetypes
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+
 from quack_core.core.fs._internal.file_info import _get_iso_timestamps
+
 
 @dataclass
 class _FileInfo:
@@ -24,11 +25,11 @@ class _FileInfo:
     size: int = 0
     modified: float = 0.0
     created: float = 0.0
-    modified_iso: Optional[str] = None
-    created_iso: Optional[str] = None
-    owner: Optional[str] = None
+    modified_iso: str | None = None
+    created_iso: str | None = None
+    owner: str | None = None
     permissions: int = 0
-    mime_type: Optional[str] = None
+    mime_type: str | None = None
 
 class FileInfoOperationsMixin:
     def _path_exists(self, path: Path) -> bool:

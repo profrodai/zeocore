@@ -13,11 +13,20 @@ Standalone wrappers that delegate to the singleton service.
 Ensures consistent configuration and state.
 """
 from typing import Any
-from quack_core.core.fs.service import get_service
+
 from quack_core.core.fs.results import (
-    DataResult, DirectoryInfoResult, FileInfoResult, FindResult,
-    OperationResult, PathResult, ReadResult, WriteResult, BoolResult
+    BoolResult,
+    DataResult,
+    DirectoryInfoResult,
+    FileInfoResult,
+    FindResult,
+    OperationResult,
+    PathResult,
+    ReadResult,
+    WriteResult,
 )
+from quack_core.core.fs.service import get_service
+
 
 def read_text(path: Any, encoding: str = "utf-8") -> ReadResult[str]:
     return get_service().read_text(path, encoding)

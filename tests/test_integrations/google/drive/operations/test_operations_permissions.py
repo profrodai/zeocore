@@ -13,9 +13,8 @@ Tests for Google Drive _ops permissions module.
 
 from unittest.mock import patch
 
-from quack_core.integrations.google.drive.operations import permissions
 from quack_core.core.errors import QuackApiError
-
+from quack_core.integrations.google.drive.operations import permissions
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
     MockDrivePermissionsResource,

@@ -19,6 +19,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
+from quack_core.core.errors import QuackQuotaExceededError
 from quack_core.integrations.core import (
     AuthProviderProtocol,
     AuthResult,
@@ -34,7 +35,6 @@ from quack_core.integrations.github.models import (
     PullRequestStatus,
 )
 from quack_core.integrations.github.service import GitHubIntegration
-from quack_core.core.errors import QuackQuotaExceededError
 
 # ------------------------------
 # Environment & HTTP Client Fixtures

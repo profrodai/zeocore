@@ -23,7 +23,6 @@ from dataclasses import dataclass, field
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
-
 from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)

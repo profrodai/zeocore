@@ -27,8 +27,8 @@ Use FileSystemService for all filesystem operations.
 from functools import lru_cache
 from typing import Any, TypeVar
 
-from quack_core.core.fs.service.full_class import FileSystemService
 from quack_core.core.fs.service.factory import create_service
+from quack_core.core.fs.service.full_class import FileSystemService
 
 T = TypeVar("T")
 

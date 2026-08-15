@@ -14,6 +14,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
+from quack_core.core.errors import QuackApiError
 from quack_core.integrations.github.models import (
     GitHubRepo,
     GitHubUser,
@@ -39,7 +40,6 @@ from quack_core.integrations.github.operations import (
     unstar_repo,
     update_repository_file,
 )
-from quack_core.core.errors import QuackApiError
 
 
 @pytest.fixture

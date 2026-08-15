@@ -11,6 +11,7 @@ import time
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc import (
     ConversionMetrics,
@@ -19,7 +20,6 @@ from quack_core.integrations.pandoc import (
     FileInfo,
     PandocConfig,
 )
-from quack_core.core.errors import QuackIntegrationError
 
 # --- Tests for DocumentConverter ---
 

@@ -16,11 +16,12 @@ ToolContext: Immutable dependency container for tool execution.
 TOP-LEVEL IMMUTABILITY: Uses MappingProxyType for services/metadata.
 """
 
-from typing import Any, Mapping
+from collections.abc import Mapping
 from pathlib import Path
 from types import MappingProxyType
-from pydantic import BaseModel, ConfigDict, Field, field_validator, field_serializer
+from typing import Any
 
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 from quack_core.core.serialization import normalize_for_json
 
 

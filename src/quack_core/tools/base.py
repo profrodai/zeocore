@@ -17,7 +17,7 @@ IDENTITY IMMUTABILITY (Recommendation #2): name/version frozen after __init__.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from quack_core.contracts import CapabilityResult
 

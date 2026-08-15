@@ -14,6 +14,7 @@ import types
 from types import SimpleNamespace
 
 import pytest
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import (
     PandocConfig,
@@ -36,7 +37,6 @@ from quack_core.integrations.pandoc.operations.utils import (
     verify_pandoc,
 )
 from quack_core.integrations.pandoc.service import PandocIntegration
-from quack_core.core.errors import QuackIntegrationError
 
 
 # Fixtures for monkeypatching filesystem service

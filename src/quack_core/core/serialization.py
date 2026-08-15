@@ -17,11 +17,11 @@ Fix #2: Single source of truth for JSON-safe validation and normalization.
 Prevents drift between ToolContext metadata validation and ToolRunner output serialization.
 """
 
-from typing import Any
-from pathlib import Path
+from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from enum import Enum
-from dataclasses import is_dataclass, asdict
+from pathlib import Path
+from typing import Any
 
 
 def normalize_for_json(

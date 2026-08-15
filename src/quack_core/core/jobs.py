@@ -393,8 +393,8 @@ class ThreadPoolJobRunner(JobRunner):
             callback_url: str,
     ) -> None:
         """Send callback for job completion."""
-        from quack_core.adapters.http.util import post_callback
         from quack_core.adapters.http.auth import sign_payload
+        from quack_core.adapters.http.util import post_callback
 
         callback_data = {
             "job_id": job_id,

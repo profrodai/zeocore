@@ -8,9 +8,8 @@
 # git_commit: f4879df3
 # === QV-LLM:END ===
 
-import os
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -29,7 +28,7 @@ def _ensure_directory(path: Path, exist_ok: bool = True) -> Path:
     except PermissionError as e:
         raise PermissionError(f"Permission denied creating directory: {path}") from e
     except Exception as e:
-        raise IOError(f"Failed to create directory: {e}") from e
+        raise OSError(f"Failed to create directory: {e}") from e
 
 
 def _scan_directory(path: Path, pattern: str | None = None, recursive: bool = False,

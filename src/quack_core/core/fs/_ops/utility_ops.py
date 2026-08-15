@@ -9,12 +9,23 @@
 # === QV-LLM:END ===
 
 from pathlib import Path
+
 from quack_core.core.fs._internal.checksums import _compute_checksum
-from quack_core.core.fs._internal.temp import _create_temp_file, _create_temp_directory
-from quack_core.core.fs._internal.file_ops import _get_unique_filename, _find_files_by_content
 from quack_core.core.fs._internal.directory_ops import _ensure_directory
 from quack_core.core.fs._internal.disk import _get_disk_usage, _probe_path_writeable
-from quack_core.core.fs._internal.file_info import _get_file_size_str, _get_file_timestamp, _get_file_type, _get_mime_type, _is_file_locked
+from quack_core.core.fs._internal.file_info import (
+    _get_file_size_str,
+    _get_file_timestamp,
+    _get_file_type,
+    _get_mime_type,
+    _is_file_locked,
+)
+from quack_core.core.fs._internal.file_ops import (
+    _find_files_by_content,
+    _get_unique_filename,
+)
+from quack_core.core.fs._internal.temp import _create_temp_directory, _create_temp_file
+
 
 class UtilityOperationsMixin:
     def _compute_checksum(self, path: Path, algorithm: str = "sha256") -> str:
