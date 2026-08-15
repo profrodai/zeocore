@@ -88,19 +88,19 @@ class TestGoogleDriveServiceDownload:
         ) as mock_download:
             # Configure the mock to return success
             mock_download.return_value = IntegrationResult.success_result(
-                content="/tmp/test_file.txt",
+                content="/tmp/test_file.txt",  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
                 message="File downloaded successfully to /tmp/test_file.txt",
             )
 
             # Call the download_file method
-            result = drive_service.download_file("file123", "/tmp/test_file.txt")
+            result = drive_service.download_file("file123", "/tmp/test_file.txt")  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
             # Verify the result
             assert result.success is True
-            assert result.content == "/tmp/test_file.txt"
+            assert result.content == "/tmp/test_file.txt"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
             # Verify that our mock was called with the correct arguments
-            mock_download.assert_called_once_with("file123", "/tmp/test_file.txt")
+            mock_download.assert_called_once_with("file123", "/tmp/test_file.txt")  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
         # --- Test API error ---
         with patch.object(

@@ -261,11 +261,11 @@ class MockGoogleCredentials(GoogleCredentials):
 
     def __init__(
         self,
-        token: str = "test_token",
-        refresh_token: str = "refresh_token",
-        token_uri: str = "https://oauth2.googleapis.com/token",
+        token: str = "test_token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
+        refresh_token: str = "refresh_token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
+        token_uri: str = "https://oauth2.googleapis.com/token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
         client_id: str = "client_id",
-        client_secret: str = "client_secret",
+        client_secret: str = "client_secret",  # noqa: S107 -- mock class default, fake credential value, not a real secret
         scopes: list[str] | None = None,
     ):
         """

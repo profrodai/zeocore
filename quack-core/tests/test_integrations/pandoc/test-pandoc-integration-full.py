@@ -313,10 +313,10 @@ def test_pandoc_config_validate_output_dir(monkeypatch):
 def test_config_provider_validate_config(monkeypatch):
     provider = PandocConfigProvider()
     # valid schema
-    assert provider.validate_config({'output_dir': '/tmp'}) is not False
+    assert provider.validate_config({'output_dir': '/tmp'}) is not False  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
     # test invalid path
     quack_core.core.fs.service.standalone.is_valid_path = lambda p: False
-    assert not provider.validate_config({'output_dir': '/tmp'})
+    assert not provider.validate_config({'output_dir': '/tmp'})  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
 
 def test_config_provider_get_default_and_env(monkeypatch, tmp_path):

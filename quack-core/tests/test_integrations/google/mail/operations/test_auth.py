@@ -30,11 +30,11 @@ class TestGmailAuthOperations:
 
         # Create a mock that conforms to the GoogleCredentials protocol
         class MockCredentials:
-            token = "test_token"
-            refresh_token = "refresh_token"
-            token_uri = "https://oauth2.googleapis.com/token"
+            token = "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+            refresh_token = "refresh_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+            token_uri = "https://oauth2.googleapis.com/token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
             client_id = "client_id"
-            client_secret = "client_secret"
+            client_secret = "client_secret"  # noqa: S105 -- test fixture, fake credential value, not a real secret
             scopes = ["https://www.googleapis.com/auth/gmail.readonly"]
 
         # Create an instance of our protocol-compatible mock
@@ -66,11 +66,11 @@ class TestGmailAuthOperations:
 
         # Create a minimal credentials object that conforms to the protocol
         class MockCredentials:
-            token = "test_token"
-            refresh_token = "refresh_token"
-            token_uri = "https://oauth2.googleapis.com/token"
+            token = "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+            refresh_token = "refresh_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+            token_uri = "https://oauth2.googleapis.com/token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
             client_id = "client_id"
-            client_secret = "client_secret"
+            client_secret = "client_secret"  # noqa: S105 -- test fixture, fake credential value, not a real secret
             scopes = ["https://www.googleapis.com/auth/gmail.readonly"]
 
         creds = MockCredentials()
@@ -95,7 +95,7 @@ class TestGmailAuthOperations:
 
         # Test with incomplete credentials that don't match the protocol
         class IncompleteCredentials:
-            token = "test_token"
+            token = "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
             # Missing other required attributes
 
         incomplete_creds = IncompleteCredentials()

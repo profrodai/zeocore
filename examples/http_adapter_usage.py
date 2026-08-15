@@ -178,7 +178,7 @@ async def demo():
 
     client = QuackCoreHTTPClient(
         base_url="http://localhost:8080",
-        auth_token="development-token-change-in-production",
+        auth_token="development-token-change-in-production",  # noqa: S106 -- demo placeholder, self-documenting, not a real credential
     )
 
     print("Testing HTTP adapter...")
@@ -262,7 +262,7 @@ from fastapi import FastAPI, HTTPException, Request
 app = FastAPI(title="QuackCore Webhook Server")
 
 # Configure this to match your HMAC secret
-HMAC_SECRET = "webhook-signing-secret"
+HMAC_SECRET = "webhook-signing-secret"  # noqa: S105 -- demo placeholder, self-documenting, not a real credential
 
 
 def verify_signature(body: bytes, signature: str, secret: str) -> bool:

@@ -57,7 +57,7 @@ def clear_job_state(job_store):
 def test_config():
     """Create test configuration."""
     return HttpAdapterConfig(
-        auth_token="test-token",
+        auth_token="test-token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
         job_ttl_seconds=60,
         max_workers=2,
         request_timeout_seconds=30

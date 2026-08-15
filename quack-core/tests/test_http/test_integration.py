@@ -23,7 +23,7 @@ from quack_core.adapters.http.config import HttpAdapterConfig
 def integration_client():
     """Create client for integration testing."""
     config = HttpAdapterConfig(
-        auth_token="integration-test-token",
+        auth_token="integration-test-token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
         max_workers=1,
         job_ttl_seconds=30
     )

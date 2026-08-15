@@ -37,7 +37,7 @@ def mock_download_file(
         IntegrationResult with the local file path.
     """
     # Default path if not provided
-    result_path = local_path or f"/tmp/mock_file_{remote_id}.txt"
+    result_path = local_path or f"/tmp/mock_file_{remote_id}.txt"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
     # Return success result
     return IntegrationResult.success_result(
@@ -71,7 +71,7 @@ class MockDownloadOperations:
         file_name = file_metadata.get("name", "mock_file.txt")
 
         if local_path is None:
-            return f"/tmp/{file_name}"
+            return f"/tmp/{file_name}"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
         return f"{local_path}/{file_name}" if local_path.endswith("/") else local_path
 
@@ -95,7 +95,7 @@ class MockDownloadOperations:
             IntegrationResult with the local file path.
         """
         # Default path if not provided
-        result_path = local_path or f"/tmp/mock_file_{remote_id}.txt"
+        result_path = local_path or f"/tmp/mock_file_{remote_id}.txt"  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
         # Return success result
         return IntegrationResult.success_result(

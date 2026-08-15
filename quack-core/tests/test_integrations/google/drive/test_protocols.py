@@ -175,16 +175,16 @@ class TestDriveProtocols:
         assert isinstance(mock_credentials, GoogleCredentials)
 
         # Verify attributes
-        assert mock_credentials.token == "test_token"
-        assert mock_credentials.refresh_token == "refresh_token"
-        assert mock_credentials.token_uri == "https://oauth2.googleapis.com/token"
+        assert mock_credentials.token == "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert mock_credentials.refresh_token == "refresh_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert mock_credentials.token_uri == "https://oauth2.googleapis.com/token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         assert mock_credentials.client_id == "client_id"
-        assert mock_credentials.client_secret == "client_secret"
+        assert mock_credentials.client_secret == "client_secret"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         assert mock_credentials.scopes == ["https://www.googleapis.com/auth/drive.file"]
 
         # Test with an object missing required attributes
         incomplete_mock = MagicMock()
-        incomplete_mock.token = "token123"
+        incomplete_mock.token = "token123"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         # Missing other required attributes
         assert not isinstance(incomplete_mock, GoogleCredentials)
 
