@@ -1,26 +1,37 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_tools/conftest.py
 # role: tests
-# neighbors: __init__.py, mocks.py, test_base.py, test_imports.py, test_mixins_integration.py, test_protocol.py (+2 more)
-# exports: MockIntegrationService, AnotherMockService, CustomOutputFormatMixin, output_format_mixin, custom_output_format_mixin, tool_env_initializer_mixin, lifecycle_mixin, integration_enabled_mixin
+# neighbors: __init__.py, mocks.py, test_base.py, test_imports.py (+3 more)
+# exports: MockIntegrationService, AnotherMockService, tool_env_initializer_mixin,
+#   lifecycle_mixin
 # git_branch: main
 # git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """
 Shared fixtures for QuackTool mixin tests.
+
+NOTE: OutputFormatMixin fixtures/mocks were removed here — output_handler.py
+documents its own retirement (Ring C / runner now owns output persistence;
+tools return CapabilityResult). See
+quack-core/src/quack_core/tools/mixins/output_handler.py's module docstring.
+
+NOTE: the integration_enabled_mixin fixture (built around
+IntegrationEnabledMixin[T].resolve_integration()) was also removed. The
+current quack_core.tools.mixins.integration_enabled.IntegrationEnabledMixin
+is a different, non-generic design (get_service/require_service reading
+from ToolContext.services, runner-provided) with no resolve_integration or
+.integration property at all -- the old fixture's pattern has no live
+equivalent to fall back to here without inventing a ToolContext mock, which
+is a design decision, not a rename (see this stream's SOW for the escalation).
 """
 
-from collections.abc import Generator
 from typing import TypeVar
-from unittest.mock import patch
 
 import pytest
 from quack_core.integrations.core.base import BaseIntegrationService
 from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
-from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 from quack_core.tools.mixins.lifecycle import QuackToolLifecycleMixin
-from quack_core.tools.mixins.output_handler import OutputFormatMixin
 
 
 class MockIntegrationService(BaseIntegrationService):
@@ -50,26 +61,7 @@ class AnotherMockService(BaseIntegrationService):
         return "another_service"
 
 
-class CustomOutputFormatMixin(OutputFormatMixin):
-    """Custom implementation of OutputFormatMixin for testing."""
-
-    def _get_output_extension(self) -> str:
-        return ".csv"
-
-
 T = TypeVar("T", bound=BaseIntegrationService)
-
-
-@pytest.fixture
-def output_format_mixin() -> OutputFormatMixin:
-    """Fixture that creates an OutputFormatMixin."""
-    return OutputFormatMixin()
-
-
-@pytest.fixture
-def custom_output_format_mixin() -> CustomOutputFormatMixin:
-    """Fixture that creates a CustomOutputFormatMixin."""
-    return CustomOutputFormatMixin()
 
 
 @pytest.fixture
@@ -82,25 +74,3 @@ def tool_env_initializer_mixin() -> ToolEnvInitializerMixin:
 def lifecycle_mixin() -> QuackToolLifecycleMixin:
     """Fixture that creates a QuackToolLifecycleMixin."""
     return QuackToolLifecycleMixin()
-
-
-@pytest.fixture
-def integration_enabled_mixin() -> Generator[
-    IntegrationEnabledMixin[MockIntegrationService], None, None]:
-    """Fixture that creates an IntegrationEnabledMixin."""
-
-    class TestMixin(IntegrationEnabledMixin[MockIntegrationService]):
-        pass
-
-    with patch(
-            "quack_core.integrations.core.get_integration_service") as mock_get_integration:
-        # Set up the mock to return a MockIntegrationService
-        mock_service = MockIntegrationService()
-        mock_get_integration.return_value = mock_service
-
-        mixin = TestMixin()
-        # Now we need to manually call resolve_integration since the mixin
-        # doesn't do this automatically in its __init__
-        mixin.resolve_integration(MockIntegrationService)
-
-        yield mixin
