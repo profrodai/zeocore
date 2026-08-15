@@ -2,7 +2,7 @@
 # path: quack-core/tests/test_errors/test_handlers.py
 # role: tests
 # neighbors: __init__.py, test_base.py
-# exports: TestErrorHandler, TestHandleErrorsDecorator, TestGlobalErrorHandler
+# exports: TestErrorHandler, TestHandleErrorsDecorator, TestFileNotFoundFormatting
 # git_branch: main
 # git_commit: f0715f0c
 # === QV-LLM:END ===
@@ -19,7 +19,6 @@ import pytest
 from quack_core.core.errors import QuackError, QuackFileNotFoundError
 from quack_core.core.errors.handlers import (
     ErrorHandler,
-    global_error_handler,
     handle_errors,
 )
 
@@ -205,18 +204,24 @@ class TestHandleErrorsDecorator:
             assert args[3] == 2
 
 
-class TestGlobalErrorHandler:
-    """Tests for the global error handler."""
+class TestFileNotFoundFormatting:
+    """Tests for formatting a QuackFileNotFoundError.
 
-    def test_global_handler_exists(self) -> None:
-        """Test that the global error handler exists."""
-        assert global_error_handler is not None
-        assert isinstance(global_error_handler, ErrorHandler)
+    Salvaged from the retired TestGlobalErrorHandler class: the module-level
+    `global_error_handler` singleton was intentionally removed (see
+    handlers.py's `handle_errors` docstring: "Instantiates a transient
+    ErrorHandler to avoid global state") in favor of transient instances.
+    The behavior this test pins - that ErrorHandler.format_error() renders a
+    QuackFileNotFoundError with its message and path - still holds and is
+    still worth covering; it is exercised here against a local instance
+    instead of the retired global one.
+    """
 
-    def test_global_handler_format_error(self) -> None:
-        """Test formatting an error with the global handler."""
+    def test_format_error_file_not_found(self) -> None:
+        """Test formatting a QuackFileNotFoundError."""
+        handler = ErrorHandler()
         error = QuackFileNotFoundError("/path/to/file")
-        formatted = global_error_handler.format_error(error)
+        formatted = handler.format_error(error)
 
         assert "File or directory not found" in formatted
         assert "/path/to/file" in formatted
