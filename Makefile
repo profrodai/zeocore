@@ -216,7 +216,18 @@ lint: ## Run ruff lint + format-check
 .PHONY: typecheck
 typecheck: ## Run mypy in strict mode (the closest thing to tsc)
 	@echo "${BLUE}Running mypy (strict)...${RESET}"
-	$(PYTHON) -m mypy $(SRC) $(TESTS) examples/
+	# RULING-111 s1: quack-core is a HYPHENATED directory, not a legal Python package
+	# name, so a plain path-mode mypy target beneath it (tests/, examples/) walks up and
+	# aborts "quack-core is not a valid Python package name". Option A (-p quack_core,
+	# src-only) was the ruled INTERIM fix, narrowing the gate and filing tests/examples
+	# coverage as a debt. Ruling authorized exactly ONE recon block to test Option D
+	# (explicit_package_bases + mypy_path including quack-core) as a config-only way to
+	# keep full scope. D's falsifier (a walk-up "not a valid Python package name" abort
+	# on quack-core/tests or examples/) did NOT fire -- see quackverse-repo-hygiene chain,
+	# rev 34/n:35, for the verbatim recon output. Per s1 ("if it resolves, D supersedes A
+	# before A is even committed"), D is what ships: full three-target scope restored,
+	# config only, no restructure, no deletion.
+	MYPYPATH="$(REPO_ROOT)/quack-core" $(PYTHON) -m mypy --explicit-package-bases $(SRC) $(TESTS) examples/
 
 .PHONY: hygiene-check
 hygiene-check: ## Fail if production code detects that it is under test
