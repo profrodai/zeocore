@@ -116,5 +116,5 @@ def test_config_provider_load_from_environment(monkeypatch):
     env_config = provider.load_from_environment()
 
     assert env_config.get("output_dir") is not None
-    assert env_config.get("standalone") == False
+    assert not env_config.get("standalone")
     assert env_config.get("wrap") == "auto"

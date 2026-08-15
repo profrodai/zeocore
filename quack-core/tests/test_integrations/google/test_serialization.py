@@ -40,6 +40,6 @@ def mock_credentials(
     else:
         creds.expiry = None
 
-    creds.to_json.return_value = '{"token": "%s"}' % token
+    creds.to_json.return_value = f'{{"token": "{token}"}}'
 
     return creds
