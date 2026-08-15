@@ -4,8 +4,8 @@
 # role: _ops
 # neighbors: __init__.py, core.py, directory_ops.py, file_info.py, find_ops.py, path_ops.py (+4 more)
 # exports: FileSystemOperations
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from quack_core.core.fs._ops.core import _initialize_mime_types

@@ -3,8 +3,8 @@
 # module: quack_core.tools.mixins.output_handler
 # role: module
 # neighbors: __init__.py, env_init.py, integration_enabled.py, lifecycle.py
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

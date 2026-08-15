@@ -4,8 +4,8 @@
 # role: adapters
 # neighbors: __init__.py, jobs.py, operations.py
 # exports: health_live, health_ready
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

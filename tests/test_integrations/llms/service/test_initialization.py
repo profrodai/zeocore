@@ -3,8 +3,8 @@
 # role: service
 # neighbors: __init__.py, test_dependencies.py, test_integration.py, test_operations.py
 # exports: TestInitialization
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

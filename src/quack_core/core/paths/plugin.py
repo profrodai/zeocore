@@ -4,8 +4,8 @@
 # role: plugin
 # neighbors: __init__.py, service.py, models.py
 # exports: PathsPlugin, QuackPathsPlugin, create_plugin
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 
