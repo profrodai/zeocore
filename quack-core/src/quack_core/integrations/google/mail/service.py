@@ -13,6 +13,9 @@ from collections.abc import Iterable, Mapping, Sequence
 from types import NoneType
 from typing import cast
 
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.fs import service as fs
+from quack_core.core.paths import service as paths
 from quack_core.integrations.core.base import BaseIntegrationService
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.auth import GoogleAuthProvider
@@ -23,9 +26,6 @@ from quack_core.integrations.google.mail.protocols import (
     GmailService,
     GoogleCredentials,
 )
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.core.fs import service as fs
-from quack_core.core.paths import service as paths
 
 
 class GoogleMailService(BaseIntegrationService):

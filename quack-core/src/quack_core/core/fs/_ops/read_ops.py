@@ -9,7 +9,9 @@
 # === QV-LLM:END ===
 
 from pathlib import Path
-from quack_core.core.fs._internal.file_ops import _read_file_text, _read_file_bytes
+
+from quack_core.core.fs._internal.file_ops import _read_file_bytes, _read_file_text
+
 
 class ReadOperationsMixin:
     def _read_text(self, path: Path, encoding: str = "utf-8") -> str:

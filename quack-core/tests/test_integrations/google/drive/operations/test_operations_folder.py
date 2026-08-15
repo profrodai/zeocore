@@ -14,9 +14,8 @@ Tests for Google Drive _ops folder module.
 import logging
 from unittest.mock import patch
 
-from quack_core.integrations.google.drive.operations import folder
 from quack_core.core.errors import QuackApiError
-
+from quack_core.integrations.google.drive.operations import folder
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
     MockDriveService,

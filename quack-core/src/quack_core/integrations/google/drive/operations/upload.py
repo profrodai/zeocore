@@ -21,6 +21,9 @@ import logging
 
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaInMemoryUpload
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.fs.service import standalone
+from quack_core.core.paths import service as paths_service
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.operations import permissions
 from quack_core.integrations.google.drive.protocols import (
@@ -28,9 +31,6 @@ from quack_core.integrations.google.drive.protocols import (
     GoogleCredentials,
 )
 from quack_core.integrations.google.drive.utils.api import execute_api_request
-from quack_core.core.errors import QuackApiError, QuackIntegrationError
-from quack_core.core.fs.service import standalone
-from quack_core.core.paths import service as paths_service
 
 
 def initialize_drive_service(credentials: GoogleCredentials) -> DriveService:

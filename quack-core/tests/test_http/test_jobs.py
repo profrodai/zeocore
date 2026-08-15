@@ -18,10 +18,9 @@ import pytest
 from quack_core.core.jobs import (
     JobData,
     JobStatus,
-    InMemoryJobStore,
     ThreadPoolJobRunner,
 )
-from quack_core.core.registry import OperationRegistry, Operation
+from quack_core.core.registry import Operation, OperationRegistry
 
 
 def test_job_store_create_and_get(job_store):

@@ -11,12 +11,13 @@ import os
 import shutil
 from pathlib import Path
 
+
 def _get_disk_usage(path: Path) -> dict[str, int]:
     try:
         total, used, free = shutil.disk_usage(str(path))
         return {"total": total, "used": used, "free": free}
     except Exception as e:
-        raise IOError(f"Error getting disk usage: {e}") from e
+        raise OSError(f"Error getting disk usage: {e}") from e
 
 def _probe_path_writeable(path: Path) -> bool:
     """

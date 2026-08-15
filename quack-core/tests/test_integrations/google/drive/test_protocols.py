@@ -20,7 +20,6 @@ from quack_core.integrations.google.drive.protocols import (
     DriveService,
     GoogleCredentials,
 )
-
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
     MockDrivePermissionsResource,

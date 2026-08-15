@@ -20,7 +20,7 @@ import os
 import sys
 from enum import Enum
 
-from .formatter import TeachingAwareFormatter, TEACHING_EXTRA_KEY
+from .formatter import TEACHING_EXTRA_KEY, TeachingAwareFormatter
 
 
 class LogLevel(str, Enum):

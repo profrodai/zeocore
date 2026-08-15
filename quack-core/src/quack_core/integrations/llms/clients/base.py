@@ -21,10 +21,10 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Sequence
 from typing import Any
 
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions
 from quack_core.integrations.llms.protocols import LLMProviderProtocol
-from quack_core.core.errors import QuackApiError, QuackIntegrationError
 
 
 class LLMClient(ABC, LLMProviderProtocol):

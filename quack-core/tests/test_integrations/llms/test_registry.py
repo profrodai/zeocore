@@ -17,6 +17,7 @@ and management of LLM client implementations.
 from unittest.mock import MagicMock, patch
 
 import pytest
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.integrations.llms.clients.base import LLMClient
 from quack_core.integrations.llms.clients.mock import MockLLMClient
 from quack_core.integrations.llms.registry import (
@@ -24,7 +25,6 @@ from quack_core.integrations.llms.registry import (
     get_llm_client,
     register_llm_client,
 )
-from quack_core.core.errors import QuackIntegrationError
 
 
 class TestLLMRegistry:

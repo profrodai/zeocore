@@ -21,11 +21,11 @@ from collections.abc import Sequence
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.fs.service import standalone
 from quack_core.integrations.core.base import BaseAuthProvider
 from quack_core.integrations.core.results import AuthResult
 from quack_core.integrations.google.serialization import serialize_credentials
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.core.fs.service import standalone
 
 
 class GoogleAuthProvider(BaseAuthProvider):

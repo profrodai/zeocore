@@ -17,9 +17,9 @@ token management, and credential handling.
 from unittest.mock import MagicMock, patch
 
 import pytest
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.integrations.core.results import AuthResult
 from quack_core.integrations.google.auth import GoogleAuthProvider
-from quack_core.core.errors import QuackIntegrationError
 
 from .mocks import mock_credentials
 

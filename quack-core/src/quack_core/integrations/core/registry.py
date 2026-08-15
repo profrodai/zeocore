@@ -19,9 +19,9 @@ auto-discovery logic or side effects.
 from collections.abc import Iterable
 from typing import TypeVar
 
-from quack_core.integrations.core.protocols import IntegrationProtocol
 from quack_core.core.errors import QuackError
 from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
+from quack_core.integrations.core.protocols import IntegrationProtocol
 
 T = TypeVar("T", bound=IntegrationProtocol)
 

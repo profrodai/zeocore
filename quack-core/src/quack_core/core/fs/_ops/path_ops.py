@@ -9,9 +9,16 @@
 # === QV-LLM:END ===
 
 from pathlib import Path
-from quack_core.core.fs._internal.path_ops import _expand_user_vars, _split_path, _resolve_path, _is_path_syntax_valid
+
 from quack_core.core.fs._internal.common import _get_extension
 from quack_core.core.fs._internal.comparison import _is_same_file, _is_subdirectory
+from quack_core.core.fs._internal.path_ops import (
+    _expand_user_vars,
+    _is_path_syntax_valid,
+    _resolve_path,
+    _split_path,
+)
+
 
 class PathOperationsMixin:
     def _split_path(self, path: Path) -> list[str]:

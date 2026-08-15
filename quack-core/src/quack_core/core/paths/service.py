@@ -25,11 +25,14 @@ from quack_core.core.paths._internal.resolver import PathResolver
 from quack_core.core.paths._internal.utils import (
     _find_nearest_directory,
     _infer_module_from_path,
-    _resolve_relative_to_project,
     _normalize_path_param,
+    _resolve_relative_to_project,
 )
-from quack_core.core.paths.api.public.results import ContextResult, PathResult, \
-    StringResult
+from quack_core.core.paths.api.public.results import (
+    ContextResult,
+    PathResult,
+    StringResult,
+)
 
 
 class PathService:

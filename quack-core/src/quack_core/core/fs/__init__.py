@@ -23,27 +23,22 @@ Internal modules (_internal, _ops) are not exported.
 """
 
 from typing import Any
-from quack_core.core.fs.service import (
-    FileSystemService,
-    get_service,
-    create_service
-)
 
 from quack_core.core.fs.results import (
-    # Base results
-    OperationResult,
-    ErrorInfo,
-
     # Typed results
     BoolResult,
+    DataResult,
+    DirectoryInfoResult,
+    ErrorInfo,
+    FileInfoResult,
+    FindResult,
+    # Base results
+    OperationResult,
+    PathResult,
     ReadResult,
     WriteResult,
-    FileInfoResult,
-    DirectoryInfoResult,
-    FindResult,
-    DataResult,
-    PathResult,
 )
+from quack_core.core.fs.service import FileSystemService, create_service, get_service
 
 # Public API - explicitly defined
 __all__ = [

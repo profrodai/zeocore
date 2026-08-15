@@ -18,14 +18,13 @@ import time
 from unittest.mock import MagicMock, patch
 
 import pytest
+from quack_core.core.errors import QuackApiError, QuackIntegrationError
 from quack_core.integrations.llms.fallback import (
     FallbackConfig,
     FallbackLLMClient,
     ProviderStatus,
 )
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from quack_core.core.errors import QuackApiError, QuackIntegrationError
-
 from tests.test_integrations.llms.mocks.clients import MockClient
 
 

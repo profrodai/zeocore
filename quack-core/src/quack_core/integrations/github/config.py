@@ -13,8 +13,8 @@
 import os
 from typing import Any
 
-from quack_core.integrations.core import BaseConfigProvider, ConfigResult
 from quack_core.core.logging import get_logger
+from quack_core.integrations.core import BaseConfigProvider, ConfigResult
 
 logger = get_logger(__name__)
 

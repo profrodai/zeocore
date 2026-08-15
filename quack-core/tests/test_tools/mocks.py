@@ -20,9 +20,9 @@ import tempfile
 from typing import Any, TypeVar, cast
 from unittest.mock import MagicMock, patch
 
+from quack_core.core.fs import DataResult, OperationResult
 from quack_core.integrations.core import IntegrationResult
 from quack_core.integrations.core.base import BaseIntegrationService
-from quack_core.core.fs import DataResult, OperationResult
 from quack_core.tools.base import BaseQuackToolPlugin
 
 

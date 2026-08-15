@@ -21,19 +21,19 @@ class TestHardenedAPIExports:
     def test_public_exports_available(self):
         """Verify all public exports are available from main module."""
         from quack_core.core.fs import (
-            FileSystemService,
-            get_service,
-            create_service,
-            OperationResult,
-            ErrorInfo,
             BoolResult,
+            DataResult,
+            DirectoryInfoResult,
+            ErrorInfo,
+            FileInfoResult,
+            FileSystemService,
+            FindResult,
+            OperationResult,
+            PathResult,
             ReadResult,
             WriteResult,
-            FileInfoResult,
-            DirectoryInfoResult,
-            FindResult,
-            DataResult,
-            PathResult,
+            create_service,
+            get_service,
         )
 
         # All should be imported successfully
@@ -78,8 +78,8 @@ class TestHardenedAPIExports:
         """Verify service module only exports service, get_service, create_service."""
         from quack_core.core.fs.service import (
             FileSystemService,
-            get_service,
             create_service,
+            get_service,
         )
 
         assert FileSystemService is not None
@@ -139,7 +139,7 @@ class TestPublicAPIUsability:
 
     def test_can_create_service_and_use_operations(self):
         """Verify service creation and basic operations work."""
-        from quack_core.core.fs import create_service, FileSystemService
+        from quack_core.core.fs import FileSystemService, create_service
 
         service = create_service()
         assert isinstance(service, FileSystemService)
@@ -163,9 +163,9 @@ class TestPublicAPIUsability:
     def test_can_use_result_types_for_type_hints(self):
         """Verify result types can be imported for type hints."""
         from quack_core.core.fs import (
+            OperationResult,
             ReadResult,
             WriteResult,
-            OperationResult,
         )
 
         # Should be usable in type hints

@@ -16,8 +16,12 @@ It does NOT depend on _internal or service.
 import os
 from pathlib import Path
 from typing import Any, TypeVar
+
+from quack_core.core.fs.exceptions import (
+    QuackPathEscapeError,
+    QuackPathOutsideBaseDirError,
+)
 from quack_core.core.fs.protocols import FsPathLike
-from quack_core.core.fs.exceptions import QuackPathEscapeError, QuackPathOutsideBaseDirError
 
 T = TypeVar("T")
 

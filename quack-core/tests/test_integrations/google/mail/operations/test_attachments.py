@@ -16,9 +16,8 @@ import logging
 import os
 from unittest.mock import MagicMock, patch
 
-from quack_core.integrations.google.mail.operations import attachments
 from quack_core.core.fs import FileInfoResult, OperationResult, WriteResult
-
+from quack_core.integrations.google.mail.operations import attachments
 from tests.test_integrations.google.mail.mocks import (
     create_mock_gmail_service,
 )

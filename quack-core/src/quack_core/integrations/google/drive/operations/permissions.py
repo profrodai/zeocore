@@ -18,12 +18,12 @@ including setting permissions and retrieving sharing links.
 import logging
 from typing import Any
 
+from quack_core.core.errors import QuackApiError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.protocols import DriveService
 
 # Import the api.api module itself, not just the function
 from quack_core.integrations.google.drive.utils import api
-from quack_core.core.errors import QuackApiError
 
 
 def set_file_permissions(

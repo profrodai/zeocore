@@ -17,9 +17,9 @@ including initializing the Gmail service.
 from unittest.mock import MagicMock, patch
 
 import pytest
+from quack_core.core.errors import QuackApiError
 from quack_core.integrations.google.mail.operations import auth
 from quack_core.integrations.google.mail.protocols import GoogleCredentials
-from quack_core.core.errors import QuackApiError
 
 
 class TestGmailAuthOperations:

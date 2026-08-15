@@ -20,6 +20,9 @@ import os
 from abc import ABC, abstractmethod
 from typing import Any
 
+from quack_core.core.errors import QuackConfigurationError
+from quack_core.core.fs.normalize import coerce_path, coerce_path_str
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.integrations.core.protocols import (
     AuthProviderProtocol,
     ConfigProviderProtocol,
@@ -30,9 +33,6 @@ from quack_core.integrations.core.results import (
     ConfigResult,
     IntegrationResult,
 )
-from quack_core.core.errors import QuackConfigurationError
-from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
-from quack_core.core.fs.normalize import coerce_path, coerce_path_str
 
 
 class BaseAuthProvider(ABC, AuthProviderProtocol):

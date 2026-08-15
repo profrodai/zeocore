@@ -14,9 +14,9 @@ Tests for Google Drive service upload _ops.
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+from quack_core.core.errors import QuackApiError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.service import GoogleDriveService
-from quack_core.core.errors import QuackApiError
 
 
 class TestGoogleDriveServiceUpload:

@@ -20,6 +20,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.integrations.pandoc import (
     ConversionMetrics,
     PandocConfig,
@@ -28,7 +29,6 @@ from quack_core.integrations.pandoc.operations import (
     convert_markdown_to_docx,
     validate_docx_conversion,
 )
-from quack_core.core.errors import QuackIntegrationError
 
 # Import patched utilities to avoid DataResult validation issues
 from .test_utils_fix import (

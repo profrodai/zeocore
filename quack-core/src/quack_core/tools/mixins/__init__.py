@@ -80,9 +80,9 @@ if warn_mode:
 # Use linter rules instead (see docstring for examples).
 
 # INTERNAL IMPORTS: Always import specific modules, not package
+from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 from quack_core.tools.mixins.lifecycle import LifecycleMixin
-from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 
 __all__ = [
     'IntegrationEnabledMixin',

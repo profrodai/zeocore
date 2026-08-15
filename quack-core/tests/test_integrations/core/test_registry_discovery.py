@@ -19,11 +19,11 @@ from importlib.metadata import EntryPoint
 from unittest.mock import MagicMock, patch
 
 import pytest
+from quack_core.core.errors import QuackError
 from quack_core.integrations.core.registry import (
     IntegrationRegistry,
     PluginLoaderProtocol,
 )
-from quack_core.core.errors import QuackError
 
 
 class MockIntegration:

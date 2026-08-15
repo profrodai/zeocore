@@ -10,6 +10,7 @@
 import ast
 import os
 from pathlib import Path
+
 import pytest
 
 # Define the package root relative to this test file
@@ -18,7 +19,7 @@ PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 
 def get_imports(file_path):
     """Parses a python file and returns a set of imported module names."""
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         try:
             tree = ast.parse(f.read())
         except SyntaxError:

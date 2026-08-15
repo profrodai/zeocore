@@ -16,12 +16,12 @@ from unittest.mock import patch
 
 import pytest
 from quack_core.config.models import QuackConfig
+from quack_core.core.errors import QuackConfigurationError, QuackFileNotFoundError
 from quack_core.interfaces.cli.legacy.config import (
     _merge_cli_overrides,
     find_project_root,
     load_config,
 )
-from quack_core.core.errors import QuackConfigurationError, QuackFileNotFoundError
 
 from .mocks import MockConfig
 

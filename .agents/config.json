@@ -1,0 +1,5 @@
+{
+  "seat": "SUBAGENT",
+  "default_model": "Gemini 3.6 Flash",
+  "effort": "medium"
+}

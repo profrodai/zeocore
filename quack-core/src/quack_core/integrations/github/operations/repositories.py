@@ -14,9 +14,9 @@ import base64
 from typing import Any
 
 import requests
+from quack_core.core.errors import QuackApiError
 from quack_core.integrations.github.models import GitHubRepo, GitHubUser
 from quack_core.integrations.github.utils.api import make_request
-from quack_core.core.errors import QuackApiError
 
 
 def get_repo(

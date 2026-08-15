@@ -11,9 +11,10 @@ Example of how to use the HTTP adapter with QuackCore's config system.
 """
 
 import asyncio
-from quack_core.config.tooling import load_tool_config, setup_tool_logging
+
 from quack_core.adapters.http.config import HttpAdapterConfig
 from quack_core.adapters.http.service import run
+from quack_core.config.tooling import load_tool_config, setup_tool_logging
 
 
 def main():
@@ -79,22 +80,22 @@ request_timeout_seconds: 600
 Example client for testing the HTTP adapter.
 """
 
-import asyncio
-import httpx
 import time
-from typing import Dict, Any, Optional
+from typing import Any
+
+import httpx
 
 
 class QuackCoreHTTPClient:
     """Simple client for QuackCore HTTP adapter."""
 
-    def __init__(self, base_url: str, auth_token: Optional[str] = None):
+    def __init__(self, base_url: str, auth_token: str | None = None):
         self.base_url = base_url.rstrip("/")
         self.headers = {}
         if auth_token:
             self.headers["Authorization"] = f"Bearer {auth_token}"
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check if the API is healthy."""
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health/live")
@@ -104,9 +105,9 @@ class QuackCoreHTTPClient:
     async def create_job(
         self,
         op: str,
-        params: Dict[str, Any],
-        callback_url: Optional[str] = None,
-        idempotency_key: Optional[str] = None,
+        params: dict[str, Any],
+        callback_url: str | None = None,
+        idempotency_key: str | None = None,
     ) -> str:
         """Create a new job."""
         payload = {"op": op, "params": params}
@@ -122,7 +123,7 @@ class QuackCoreHTTPClient:
             response.raise_for_status()
             return response.json()["job_id"]
 
-    async def get_job_status(self, job_id: str) -> Dict[str, Any]:
+    async def get_job_status(self, job_id: str) -> dict[str, Any]:
         """Get job status."""
         async with httpx.AsyncClient() as client:
             response = await client.get(
@@ -133,7 +134,7 @@ class QuackCoreHTTPClient:
 
     async def wait_for_completion(
         self, job_id: str, timeout: int = 300, poll_interval: float = 1.0
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Wait for job completion."""
         start_time = time.time()
 
@@ -154,7 +155,7 @@ class QuackCoreHTTPClient:
         start: str,
         end: str,
         overwrite: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Slice video synchronously."""
         params = {
             "input_path": input_path,
@@ -252,11 +253,11 @@ if __name__ == "__main__":
 Example webhook server for receiving QuackCore job completion callbacks.
 """
 
-import hmac
 import hashlib
+import hmac
 import json
-from fastapi import FastAPI, Request, HTTPException
-from typing import Optional
+
+from fastapi import FastAPI, HTTPException, Request
 
 app = FastAPI(title="QuackCore Webhook Server")
 

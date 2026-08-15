@@ -8,11 +8,15 @@
 # git_commit: f4879df3
 # === QV-LLM:END ===
 
-from pathlib import Path
 from typing import Any, Protocol, TypeVar
 
 from quack_core.core.fs.protocols import FsPathLike
-from quack_core.core.fs.results import DataResult, OperationResult, ReadResult, WriteResult
+from quack_core.core.fs.results import (
+    DataResult,
+    OperationResult,
+    ReadResult,
+    WriteResult,
+)
 from quack_core.core.fs.service import FileSystemService, get_service
 
 T = TypeVar("T")

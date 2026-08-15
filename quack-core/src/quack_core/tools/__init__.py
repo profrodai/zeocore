@@ -61,15 +61,16 @@ Example: EchoTool is a tool that provides the "echo" capability,
 # Core classes
 from quack_core.tools.base import BaseQuackTool
 from quack_core.tools.context import ToolContext
-from quack_core.tools.protocol import QuackToolProtocol
+from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 
 # Mixins (all exported at top level for single import path)
 from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 from quack_core.tools.mixins.lifecycle import LifecycleMixin
-from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
+from quack_core.tools.protocol import QuackToolProtocol
 
 # Backward compatibility alias
 BaseQuackToolPlugin = BaseQuackTool
+QuackToolLifecycleMixin = LifecycleMixin
 
 __all__ = [
     # Core
@@ -84,6 +85,7 @@ __all__ = [
 
     # Backward compatibility
     'BaseQuackToolPlugin',
+    'QuackToolLifecycleMixin',
 ]
 
 # Tool Author Guidelines

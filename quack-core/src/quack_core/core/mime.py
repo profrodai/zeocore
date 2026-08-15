@@ -16,11 +16,10 @@ Fix #4: Centralized binary extension list for consistency and testability.
 Single source of truth for "is this file binary?" logic.
 """
 
-from typing import Set
 
 # Binary extensions (non-UTF8-safe files) - Fix #4: Centralized constant
 # This is the canonical list used throughout QuackCore
-BINARY_EXTENSIONS: Set[str] = {
+BINARY_EXTENSIONS: set[str] = {
     # Archives
     "bin", "zip", "tar", "gz", "bz2", "xz", "7z", "rar",
 
@@ -45,7 +44,7 @@ BINARY_EXTENSIONS: Set[str] = {
 }
 
 # Text extensions (UTF8-safe files) - for explicit checking
-TEXT_EXTENSIONS: Set[str] = {
+TEXT_EXTENSIONS: set[str] = {
     # Plain text
     "txt", "text", "log",
 

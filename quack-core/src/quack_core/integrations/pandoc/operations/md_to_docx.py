@@ -20,6 +20,8 @@ import inspect
 import os
 import time
 
+from quack_core.core.errors import QuackIntegrationError
+from quack_core.core.logging import get_logger
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import PandocConfig
 from quack_core.integrations.pandoc.models import ConversionDetails, ConversionMetrics
@@ -30,8 +32,6 @@ from quack_core.integrations.pandoc.operations.utils import (
     safe_convert_to_int,
     track_metrics,
 )
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 
