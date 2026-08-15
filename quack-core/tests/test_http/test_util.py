@@ -2,46 +2,24 @@
 # path: quack-core/tests/test_http/test_util.py
 # role: tests
 # neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py (+2 more)
-# exports: test_new_id, test_stable_hash, test_post_callback_mock
+# exports: test_post_callback_mock
 # git_branch: main
 # git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """
 Tests for utility functions.
+
+NOTE: test_new_id/test_stable_hash were retired here (not renamed elsewhere).
+`new_id`/`stable_hash` were deleted from adapters/http/util.py in commit
+175956c8 ("updating the adapter http and also the prompt module") along with
+their hashlib/json/uuid imports, and grep across the whole src tree finds
+zero callers of either name, before or since - they were unused utility code
+removed in a cleanup pass, not relocated. Re-adding them here would resurrect
+dead code solely to satisfy a stale test, not restore a used symbol.
 """
 
-from quack_core.adapters.http.util import new_id, post_callback, stable_hash
-
-
-def test_new_id():
-    """Test UUID generation."""
-    id1 = new_id()
-    id2 = new_id()
-
-    assert len(id1) == 36  # UUID4 format
-    assert len(id2) == 36
-    assert id1 != id2  # Should be unique
-
-
-def test_stable_hash():
-    """Test stable hashing."""
-    payload1 = {"key": "value", "number": 42}
-    payload2 = {"number": 42, "key": "value"}  # Different order
-    payload3 = {"key": "different", "number": 42}
-
-    hash1 = stable_hash(payload1)
-    hash2 = stable_hash(payload2)
-    hash3 = stable_hash(payload3)
-
-    # Same content should produce same hash regardless of order
-    assert hash1 == hash2
-    # Different content should produce different hash
-    assert hash1 != hash3
-
-    # Should be hex string
-    assert len(hash1) == 64
-    assert all(c in "0123456789abcdef" for c in hash1)
+from quack_core.adapters.http.util import post_callback
 
 
 # Remove async tests that require pytest-asyncio
