@@ -37,8 +37,8 @@ def test_custom_config():
         host="127.0.0.1",
         port=9000,
         cors_origins=["http://localhost:3000"],
-        auth_token="secret",
-        hmac_secret="hmac-secret",
+        auth_token="secret",  # noqa: S106 -- test fixture, fake credential value, not a real secret
+        hmac_secret="hmac-secret",  # noqa: S106 -- test fixture, fake credential value, not a real secret
         public_base_url="https://api.example.com",
         job_ttl_seconds=1800,
         max_workers=8,
@@ -48,8 +48,8 @@ def test_custom_config():
     assert config.host == "127.0.0.1"
     assert config.port == 9000
     assert config.cors_origins == ["http://localhost:3000"]
-    assert config.auth_token == "secret"
-    assert config.hmac_secret == "hmac-secret"
+    assert config.auth_token == "secret"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+    assert config.hmac_secret == "hmac-secret"  # noqa: S105 -- test fixture, fake credential value, not a real secret
     assert str(config.public_base_url) == "https://api.example.com/"
     assert config.job_ttl_seconds == 1800
     assert config.max_workers == 8
@@ -64,14 +64,14 @@ def test_invalid_url():
 
 def test_config_serialization():
     """Test config can be serialized/deserialized."""
-    config = HttpAdapterConfig(auth_token="test", max_workers=2)
+    config = HttpAdapterConfig(auth_token="test", max_workers=2)  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
     # Test model_dump
     data = config.model_dump()
-    assert data["auth_token"] == "test"
+    assert data["auth_token"] == "test"  # noqa: S105 -- test fixture, fake credential value, not a real secret
     assert data["max_workers"] == 2
 
     # Test reconstruction
     config2 = HttpAdapterConfig(**data)
-    assert config2.auth_token == "test"
+    assert config2.auth_token == "test"  # noqa: S105 -- test fixture, fake credential value, not a real secret
     assert config2.max_workers == 2

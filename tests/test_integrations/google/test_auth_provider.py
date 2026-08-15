@@ -81,7 +81,7 @@ class TestGoogleAuthProvider:
             mock_creds_class.from_authorized_user_info.return_value = expired_creds
 
             flow_instance = MagicMock()
-            new_creds = mock_credentials(token="new_token", expiry_timestamp=1234567890)
+            new_creds = mock_credentials(token="new_token", expiry_timestamp=1234567890)  # noqa: S106 -- test fixture, fake credential value, not a real secret
             flow_instance.run_local_server.return_value = new_creds
             mock_flow_class.from_client_secrets_file.return_value = flow_instance
 
@@ -90,7 +90,7 @@ class TestGoogleAuthProvider:
                 result = provider.authenticate()
 
                 assert result.success
-                assert result.token == "new_token"
+                assert result.token == "new_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
                 assert provider.authenticated
                 assert provider.auth == new_creds
 
@@ -106,9 +106,9 @@ class TestGoogleAuthProvider:
             )
 
         refreshed_creds = mock_credentials(
-            token="refreshed_token",
+            token="refreshed_token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
             expired=True,
-            refresh_token="refresh_token",
+            refresh_token="refresh_token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
             expiry_timestamp=1234567890,
         )
 
@@ -137,7 +137,7 @@ class TestGoogleAuthProvider:
             result = provider.authenticate()
 
             assert result.success
-            assert result.token == "refreshed_token"
+            assert result.token == "refreshed_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
             assert provider.auth == refreshed_creds
 
     def test_refresh_credentials(self) -> None:
@@ -155,19 +155,19 @@ class TestGoogleAuthProvider:
         assert not result.success
 
         provider.auth = mock_credentials(
-            token="valid_token", expired=False, expiry_timestamp=1234567890
+            token="valid_token", expired=False, expiry_timestamp=1234567890  # noqa: S106 -- test fixture, fake credential value, not a real secret
         )
         provider.authenticated = True
 
         result = provider.refresh_credentials()
         assert result.success
         assert result.message == "Credentials are valid, no refresh needed"
-        assert result.token == "valid_token"
+        assert result.token == "valid_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
 
         provider.auth = mock_credentials(
-            token="refreshed",
+            token="refreshed",  # noqa: S106 -- test fixture, fake credential value, not a real secret
             expired=True,
-            refresh_token="yes",
+            refresh_token="yes",  # noqa: S106 -- test fixture, fake credential value, not a real secret
             expiry_timestamp=1234567890,
         )
 
@@ -176,9 +176,9 @@ class TestGoogleAuthProvider:
             result = provider.refresh_credentials()
             assert result.success
             assert result.message == "Successfully refreshed credentials"
-            assert result.token == "refreshed"
+            assert result.token == "refreshed"  # noqa: S105 -- test fixture, fake credential value, not a real secret
 
-        broken_creds = mock_credentials(expired=True, refresh_token="yes")
+        broken_creds = mock_credentials(expired=True, refresh_token="yes")  # noqa: S106 -- test fixture, fake credential value, not a real secret
         broken_creds.refresh.side_effect = Exception("refresh error")
         provider.auth = broken_creds
 
@@ -202,7 +202,7 @@ class TestGoogleAuthProvider:
             with pytest.raises(QuackIntegrationError):
                 provider.get_credentials()
 
-        valid_creds = mock_credentials(token="X")
+        valid_creds = mock_credentials(token="X")  # noqa: S106 -- test fixture, fake credential value, not a real secret
         provider.auth = valid_creds
         provider.authenticated = True
         assert provider.get_credentials() == valid_creds
@@ -211,10 +211,10 @@ class TestGoogleAuthProvider:
         provider.authenticated = False
 
         with patch.object(provider, "authenticate") as mock_auth:
-            new_creds = mock_credentials(token="new")
+            new_creds = mock_credentials(token="new")  # noqa: S106 -- test fixture, fake credential value, not a real secret
             provider.auth = new_creds
             provider.authenticated = True
-            mock_auth.return_value = AuthResult(success=True, token="new")
+            mock_auth.return_value = AuthResult(success=True, token="new")  # noqa: S106 -- test fixture, fake credential value, not a real secret
             assert provider.get_credentials() == new_creds
 
     def test_save_credentials(self) -> None:
@@ -231,7 +231,7 @@ class TestGoogleAuthProvider:
         provider.auth = None
         assert not provider.save_credentials()
 
-        provider.auth = mock_credentials(token="x")
+        provider.auth = mock_credentials(token="x")  # noqa: S106 -- test fixture, fake credential value, not a real secret
         with patch.object(provider, "_save_credentials_to_file") as mock_save:
             mock_save.return_value = True
             assert provider.save_credentials()
@@ -275,7 +275,7 @@ class TestGoogleAuthProvider:
             mock_mkdir.return_value.success = False
             assert not provider._save_credentials_to_file(mock_credentials())
 
-        creds = mock_credentials(token="test_token", expiry_timestamp=1234567890)
+        creds = mock_credentials(token="test_token", expiry_timestamp=1234567890)  # noqa: S106 -- test fixture, fake credential value, not a real secret
         with (
             patch(
                 "quack_core.integrations.google.auth.standalone.split_path"

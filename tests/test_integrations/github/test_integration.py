@@ -157,7 +157,7 @@ class TestGitHubMockedIntegration:
             "email": "mock@example.com",
             "avatar_url": "https://github.com/mock_user.png",
         }
-        auth_provider.token = "mock_token"
+        auth_provider.token = "mock_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         auth_provider.authenticated = True
 
         # Create a test-specific subclass of GitHubIntegration that overrides initialize
@@ -173,7 +173,7 @@ class TestGitHubMockedIntegration:
                 }
                 self._initialized = True
                 self.client = GitHubClient(
-                    token="mock_token",
+                    token="mock_token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
                     api_url="https://api.github.com",
                     timeout=30,
                     max_retries=3,

@@ -106,10 +106,10 @@ class TestGitHubConfigProvider:
         # Test with environment variable
         with patch.dict(os.environ, {"GITHUB_TOKEN": "env_token"}):
             result = config_provider._extract_config({})
-            assert result["token"] == "env_token"
+            assert result["token"] == "env_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
             # Should match default config with token added
             default_config = config_provider.get_default_config()
-            default_config["token"] = "env_token"
+            default_config["token"] = "env_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
             for key in default_config:
                 if key != "token":  # We already checked token
                     assert result[key] == default_config[key]
@@ -145,7 +145,7 @@ class TestGitHubConfigProvider:
                 result = config_provider.load_config()
 
                 assert result.success is True
-                assert result.content["token"] == "env_token"
+                assert result.content["token"] == "env_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
 
     def test_load_config_existing_token(self, config_provider):
         """Test loading config with existing token."""
@@ -164,4 +164,4 @@ class TestGitHubConfigProvider:
 
                 assert result.success is True
                 # Should keep existing token, not override with env var
-                assert result.content["token"] == "config_token"
+                assert result.content["token"] == "config_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret

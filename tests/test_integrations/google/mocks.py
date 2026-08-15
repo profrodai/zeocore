@@ -12,11 +12,11 @@ from unittest.mock import MagicMock
 
 
 def mock_credentials(
-    token="mock_token",
-    refresh_token="mock_refresh_token",
+    token="mock_token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
+    refresh_token="mock_refresh_token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
     client_id="mock_client_id",
-    client_secret="mock_client_secret",
-    token_uri="https://oauth2.googleapis.com/token",
+    client_secret="mock_client_secret",  # noqa: S107 -- mock class default, fake credential value, not a real secret
+    token_uri="https://oauth2.googleapis.com/token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
     scopes=None,
     expired=False,
     valid=True,

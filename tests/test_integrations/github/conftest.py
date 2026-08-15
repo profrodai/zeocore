@@ -45,7 +45,7 @@ from quack_core.integrations.github.service import GitHubIntegration
 def mock_environment_token() -> None:
     """Fixture to provide a mock GitHub token in the environment."""
     original = os.environ.get("GITHUB_TOKEN")
-    os.environ["GITHUB_TOKEN"] = "mock-github-token"
+    os.environ["GITHUB_TOKEN"] = "mock-github-token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
     yield
     if original is None:
         del os.environ["GITHUB_TOKEN"]
@@ -193,7 +193,7 @@ def mock_github_auth_provider() -> AuthProviderProtocol:
     # Create a successful auth result.
     auth_result = MagicMock(spec=AuthResult)
     auth_result.success = True
-    auth_result.token = "test_token"
+    auth_result.token = "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
     auth_result.message = "Successfully authenticated with GitHub"
     auth_result.error = None
 

@@ -179,7 +179,7 @@ class TestEnsureSingleInstance:
             mock_socket_instance = MagicMock()
             mock_socket.return_value = mock_socket_instance
 
-            with patch("os.path.join", return_value="/tmp/test_app.lock") as mock_join:
+            with patch("os.path.join", return_value="/tmp/test_app.lock") as mock_join:  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
                 # Fix: Patch builtins.open instead of just "open"
                 with patch("builtins.open", create=True) as mock_open:
                     mock_file = MagicMock()
@@ -217,7 +217,7 @@ class TestEnsureSingleInstance:
             mock_socket_instance = MagicMock()
             mock_socket.return_value = mock_socket_instance
 
-            with patch("os.path.join", return_value="/tmp/test_app.lock") as mock_join:
+            with patch("os.path.join", return_value="/tmp/test_app.lock") as mock_join:  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
                 # Fix: Patch builtins.open instead of just "open"
                 with patch("builtins.open", create=True) as mock_open:
                     mock_file = MagicMock()
@@ -243,7 +243,7 @@ class TestEnsureSingleInstance:
 
                             # Verify socket was closed and lock file was deleted
                             mock_socket_instance.close.assert_called_once()
-                            mock_remove.assert_called_once_with("/tmp/test_app.lock")
+                            mock_remove.assert_called_once_with("/tmp/test_app.lock")  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
     def test_port_calculation(self) -> None:
         """Test that port is calculated from app name."""
@@ -260,7 +260,7 @@ class TestEnsureSingleInstance:
             mock_socket_instance.bind.side_effect = record_port
             mock_socket.return_value = mock_socket_instance
 
-            with patch("os.path.join", return_value="/tmp/test_app.lock"):
+            with patch("os.path.join", return_value="/tmp/test_app.lock"):  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
                 # Fix: Patch builtins.open instead of just "open"
                 with patch("builtins.open", create=True):
                     with patch("atexit.register"):

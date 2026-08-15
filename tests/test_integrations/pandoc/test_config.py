@@ -93,7 +93,7 @@ def test_config_provider_validation():
     provider = PandocConfigProvider()
 
     # Valid config
-    valid_config = {"output_dir": "/tmp", "pandoc_options": {"wrap": "none"}}
+    valid_config = {"output_dir": "/tmp", "pandoc_options": {"wrap": "none"}}  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
     assert provider.validate_config(valid_config) is not False
 
     # Invalid path (mocked in the test)
