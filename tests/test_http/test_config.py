@@ -20,7 +20,7 @@ def test_default_config():
     """Test default configuration values."""
     config = HttpAdapterConfig()
 
-    assert config.host == "0.0.0.0"
+    assert config.host == "0.0.0.0"  # noqa: S104 -- asserting the class's own documented default, no real uvicorn bind occurs in this test
     assert config.port == 8080
     assert config.cors_origins == []
     assert config.auth_token is None
