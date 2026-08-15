@@ -2,9 +2,9 @@
 # path: quack-core/tests/test_http/test_jobs.py
 # role: tests
 # neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_routes_jobs.py (+2 more)
-# exports: test_job_store_create_and_get, test_job_store_update, test_job_store_idempotency, test_job_store_cleanup_expired, test_job_runner_execution, test_job_runner_error_handling, test_job_runner_callback
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# exports: test_job_store_create_and_get, test_job_store_update, test_job_store_update_nonexistent, test_job_store_idempotency, test_job_store_cleanup_expired, test_job_runner_execution, test_job_runner_error_handling, test_job_runner_async_operation (+1 more)
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

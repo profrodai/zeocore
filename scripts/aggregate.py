@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+# === QV-LLM:BEGIN ===
+# path: scripts/aggregate.py
+# role: module
+# neighbors: annotate_headers.py, fix_imports.py, fix_remaining_tests.py, flatten.py, prune_branches.py, verify_installation.py
+# exports: resolve_path, git_available, is_git_ignored, already_added, collect_files, main
+# git_branch: main
+# git_commit: f0715f0c
+# === QV-LLM:END ===
+
 """
 scripts/aggregate.py
 

@@ -1,3 +1,12 @@
+# === QV-LLM:BEGIN ===
+# path: quack-runner/tests/test_forward_fixes.py
+# role: tests
+# neighbors: __init__.py
+# exports: test_item1_normalize_path_resolves_from_loader, test_item1_normalize_path_single_positional_arg, test_item2_toolrunner_imports_without_path_hack, test_item2_quack_runner_is_installed_distribution
+# git_branch: main
+# git_commit: f0715f0c
+# === QV-LLM:END ===
+
 """Regression tests for Track B forward-fixes.
 
 Locks the two fixes so they cannot silently regress:

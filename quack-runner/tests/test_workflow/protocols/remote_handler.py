@@ -3,8 +3,8 @@
 # role: protocols
 # neighbors: __init__.py
 # exports: Good, Bad, test_protocol_runtime_checkable
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from pathlib import Path

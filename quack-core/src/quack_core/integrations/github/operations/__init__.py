@@ -4,8 +4,8 @@
 # role: module
 # neighbors: issues.py, pull_requests.py, repositories.py, users.py
 # exports: get_repo, star_repo, unstar_repo, is_repo_starred, fork_repo, check_repository_exists, get_repository_file_content, update_repository_file (+9 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """GitHub API _ops."""

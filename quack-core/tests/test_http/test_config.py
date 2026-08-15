@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, test_auth.py, test_integration.py, test_jobs.py, test_routes_jobs.py (+2 more)
 # exports: test_default_config, test_custom_config, test_invalid_url, test_config_serialization
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

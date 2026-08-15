@@ -3,9 +3,9 @@
 # module: quack_core.tools.__init__
 # role: module
 # neighbors: base.py, context.py, protocol.py
-# exports: BaseQuackTool, ToolContext, QuackToolProtocol, IntegrationEnabledMixin, LifecycleMixin, ToolEnvInitializerMixin, BaseQuackToolPlugin
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# exports: BaseQuackTool, ToolContext, QuackToolProtocol, IntegrationEnabledMixin, LifecycleMixin, ToolEnvInitializerMixin, BaseQuackToolPlugin, QuackToolLifecycleMixin
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

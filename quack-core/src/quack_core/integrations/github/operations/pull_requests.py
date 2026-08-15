@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, issues.py, repositories.py, users.py
 # exports: create_pull_request, list_pull_requests, get_pull_request, merge_pull_request, get_pull_request_files, add_pull_request_review, get_pull_requests_by_user
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """GitHub pull request _ops."""

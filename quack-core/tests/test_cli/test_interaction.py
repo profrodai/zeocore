@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, mocks.py, test_bootstrap.py, test_config.py, test_context.py, test_error.py (+5 more)
 # exports: TestConfirm, TestAsk, TestAskChoice, TestWithSpinner
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

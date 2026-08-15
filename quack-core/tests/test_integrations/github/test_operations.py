@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, test_api.py, test_auth.py, test_client.py, test_config.py (+5 more)
 # exports: TestUserOperations, TestRepositoryOperations, TestPullRequestOperations, TestIssueOperations, mock_session, mock_response
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """Tests for GitHub API _ops."""

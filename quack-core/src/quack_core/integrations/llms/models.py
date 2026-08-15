@@ -4,8 +4,8 @@
 # role: models
 # neighbors: __init__.py, protocols.py, config.py, registry.py, fallback.py
 # exports: RoleType, ChatMessage, FunctionParameter, FunctionDefinition, ToolDefinition, FunctionCall, ToolCall, LLMOptions (+1 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

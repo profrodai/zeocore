@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_results.py
 # exports: dummy_processor, test_file_runner_with_local_file, test_runner_returns_failure_on_missing_file, test_runner_with_dry_run_option, test_runner_with_processor_failure
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from pathlib import Path

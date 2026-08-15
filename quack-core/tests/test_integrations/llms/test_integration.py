@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_config.py, test_config_provider.py, test_fallback.py, test_llms.py, test_models.py (+3 more)
 # exports: TestLLMIntegration
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

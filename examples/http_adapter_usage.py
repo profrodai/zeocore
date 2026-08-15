@@ -2,8 +2,9 @@
 # path: examples/http_adapter_usage.py
 # role: module
 # neighbors: config_tooling_test.py, explicit_plugin_loading_example.py, toolkit_usage.py
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# exports: QuackCoreHTTPClient, main, verify_signature
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

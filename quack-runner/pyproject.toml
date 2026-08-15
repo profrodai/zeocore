@@ -1,3 +1,10 @@
+# === QV-LLM:BEGIN ===
+# path: quack-runner/pyproject.toml
+# role: module
+# git_branch: main
+# git_commit: f0715f0c
+# === QV-LLM:END ===
+
 # quack-runner/pyproject.toml
 [build-system]
 requires = ["hatchling"]

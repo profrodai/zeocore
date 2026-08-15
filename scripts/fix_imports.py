@@ -1,10 +1,10 @@
 # === QV-LLM:BEGIN ===
 # path: scripts/fix_imports.py
 # role: module
-# neighbors: annotate_headers.py, fix_remaining_tests.py, flatten.py, verify_installation.py
+# neighbors: aggregate.py, annotate_headers.py, fix_remaining_tests.py, flatten.py, prune_branches.py, verify_installation.py
 # exports: fix_imports, find_and_fix_test_files
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 # fix_imports.py

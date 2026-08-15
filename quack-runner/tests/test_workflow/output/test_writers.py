@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, test_base.py
 # exports: StubFS, patch_fs_service, test_default_writer_basics, test_default_writer_write_wrapper, test_yaml_writer
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from pathlib import Path

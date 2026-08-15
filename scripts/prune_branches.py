@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+# === QV-LLM:BEGIN ===
+# path: scripts/prune_branches.py
+# role: module
+# neighbors: aggregate.py, annotate_headers.py, fix_imports.py, fix_remaining_tests.py, flatten.py, verify_installation.py
+# exports: run, fetch_prune, current_branch, gone_branches, delete_branch, main
+# git_branch: main
+# git_commit: f0715f0c
+# === QV-LLM:END ===
+
 """
 scripts/prune_branches.py
 

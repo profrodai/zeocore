@@ -4,8 +4,8 @@
 # role: service
 # neighbors: __init__.py, dependencies.py, initialization.py, integration.py
 # exports: chat, count_tokens, get_provider_status, reset_provider_status
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

@@ -3,8 +3,8 @@
 # role: module
 # neighbors: minimal_runner.py, run_echo_on_file.py
 # exports: EchoRequest, EchoTool
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

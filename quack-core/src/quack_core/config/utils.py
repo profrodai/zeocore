@@ -4,8 +4,8 @@
 # role: utils
 # neighbors: __init__.py, models.py, plugin.py, loader.py
 # exports: get_env, get_config_value, validate_required_config, find_project_root
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

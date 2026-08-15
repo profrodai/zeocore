@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, auth_provider_impl.py, config_provider_impl.py, integration_service_impl.py, test_auth_provider.py, test_base.py (+3 more)
 # exports: SampleIntegration, SampleAuthProvider, SampleConfigProvider, MinimalStorageProtocol, SampleStorageIntegration, TestIntegrationProtocol, TestAuthProviderProtocol, TestConfigProviderProtocol (+2 more)
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

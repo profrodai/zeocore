@@ -4,8 +4,8 @@
 # role: module
 # neighbors: __init__.py, checksums.py, common.py, comparison.py, disk.py, file_info.py (+4 more)
 # exports: DirectoryScanStats
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from dataclasses import dataclass

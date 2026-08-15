@@ -3,8 +3,8 @@
 # role: tests
 # neighbors: __init__.py, conftest.py, test_booster.py, test_enhancer.py, test_integration.py, test_plugin.py (+2 more)
 # exports: setup_teardown, test_zero_shot_cot_rendering, test_task_decomposition_rendering, test_multi_shot_structured_rendering, test_single_shot_structured_rendering, test_react_agentic_rendering, test_system_prompt_engineer
-# git_branch: feat/9-make-setup-work
-# git_commit: f4879df3
+# git_branch: main
+# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """
