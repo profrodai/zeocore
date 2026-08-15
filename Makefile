@@ -216,19 +216,37 @@ lint: ## Run ruff lint + format-check
 .PHONY: typecheck
 typecheck: ## Run mypy in strict mode (the closest thing to tsc)
 	@echo "${BLUE}Running mypy (strict)...${RESET}"
-	$(PYTHON) -m mypy $(SRC) $(TESTS) examples/
+	# RULING-111 s1: quack-core is a HYPHENATED directory, not a legal Python package
+	# name, so a plain path-mode mypy target beneath it (tests/, examples/) walks up and
+	# aborts "quack-core is not a valid Python package name". Option A (-p quack_core,
+	# src-only) was the ruled INTERIM fix, narrowing the gate and filing tests/examples
+	# coverage as a debt. Ruling authorized exactly ONE recon block to test Option D
+	# (explicit_package_bases + mypy_path including quack-core) as a config-only way to
+	# keep full scope. D's falsifier (a walk-up "not a valid Python package name" abort
+	# on quack-core/tests or examples/) did NOT fire -- see quackverse-repo-hygiene chain,
+	# rev 34/n:35, for the verbatim recon output. Per s1 ("if it resolves, D supersedes A
+	# before A is even committed"), D is what ships: full three-target scope restored,
+	# config only, no restructure, no deletion.
+	MYPYPATH="$(REPO_ROOT)/quack-core" $(PYTHON) -m mypy --explicit-package-bases $(SRC) $(TESTS) examples/
 
 .PHONY: hygiene-check
-hygiene-check: ## Fail if production code detects that it is under test
+hygiene-check: ## Fail if production code detects that it is under test (RULING-111 s2/s2a: widened)
 	@echo "${BLUE}Checking for test-detection in production code...${RESET}"
-	@offenders=$$(grep -rEn 'inspect\.stack\(\)|["'"'"']pytest["'"'"'] +in +sys\.modules|_is_test_environment' $(PKG_SRC) 2>/dev/null || true); \
+	@offenders=$$(grep -rEn 'inspect\.stack\(\)|["'"'"']pytest["'"'"'] +in +sys\.modules|_is_test_environment|f_locals|_mock_name|__name__ *== *["'"'"']MagicMock["'"'"']' $(PKG_SRC) 2>/dev/null || true); \
 	if [ -n "$$offenders" ]; then \
 	  echo "${RED}✗ Production code must not detect tests (green instrument, wrong render):${RESET}"; \
 	  echo "$$offenders" | sed 's/^/    /'; \
 	  echo "${YELLOW}  Move the behavior into the test, or inject it. See WORK-POLICY handout.${RESET}"; \
 	  exit 1; \
 	fi
-	@echo "${GREEN}✓ hygiene OK — no test-detection in production paths${RESET}"
+	@echo "${GREEN}✓ hygiene OK — no mechanism-based or mock-duck-typed test-detection in production paths${RESET}"
+	@echo "${YELLOW}  BLIND SPOT (RULING-111 s2a-2, by design, not a gap in this gate): arbitrary${RESET}"
+	@echo "${YELLOW}  VALUE-BASED fakery (e.g. \`if path == \"test.md\": return fake_result\`) is NOT${RESET}"
+	@echo "${YELLOW}  mechanically detectable -- a pattern broad enough to catch every literal fires${RESET}"
+	@echo "${YELLOW}  on legitimate value handling too. This gate catches MECHANISM (stack/frame${RESET}"
+	@echo "${YELLOW}  introspection, sys.modules test-env checks) and MOCK DUCK-TYPING (_mock_name,${RESET}"
+	@echo "${YELLOW}  MagicMock type checks). Value-based fakery needs human review. GREEN HERE means${RESET}"
+	@echo "${YELLOW}  clean of what this instrument can see, not clean absolutely.${RESET}"
 
 .PHONY: test
 test: ## Run tests with coverage (ONCE — fixed from the old doubled run)
