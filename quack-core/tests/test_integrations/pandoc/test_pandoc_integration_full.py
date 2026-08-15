@@ -14,6 +14,7 @@ import types
 from types import SimpleNamespace
 
 import pytest
+import quack_core.core.fs.service.standalone
 from quack_core.core.errors import QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import (

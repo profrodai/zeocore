@@ -66,7 +66,7 @@ def registry():
 def config():
     """Provide test configuration."""
     return HttpAdapterConfig(
-        host="0.0.0.0",
+        host="0.0.0.0",  # noqa: S104 -- test fixture, config object only, no real uvicorn bind occurs in this test
         port=8080,
         auth_token="test-token-123",  # noqa: S106 -- test fixture, fake credential value, not a real secret
         hmac_secret="test-secret",  # noqa: S106 -- test fixture, fake credential value, not a real secret

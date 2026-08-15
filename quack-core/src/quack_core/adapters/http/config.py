@@ -20,7 +20,7 @@ from quack_core.config.tooling.base import QuackToolConfigModel
 class HttpAdapterConfig(QuackToolConfigModel):
     """Configuration for the HTTP adapter."""
 
-    host: str = "0.0.0.0"
+    host: str = "0.0.0.0"  # noqa: S104 -- configurable default (Pydantic field, overridable at construction), not a hardcoded bind; operator chooses reachability
     port: int = 8080
     cors_origins: list[str] = Field(default_factory=list)
     auth_token: str | None = None
