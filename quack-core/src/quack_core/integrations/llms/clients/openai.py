@@ -85,7 +85,7 @@ class OpenAIClient(LLMClient):
             try:
                 # More robust way to check if openai module is available
                 try:
-                    import openai
+                    import openai  # noqa: F401 -- presence check only, ImportError is the signal
                     from openai import OpenAI
                 except ImportError as e:
                     raise QuackIntegrationError(
