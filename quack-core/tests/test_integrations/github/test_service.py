@@ -35,7 +35,7 @@ def mock_config_provider() -> GitHubConfigProvider:
     config_provider = cast(
         GitHubConfigProvider, create_autospec(GitHubConfigProvider, instance=True)
     )
-    config_provider.get_default_config.return_value = {
+    config_provider.get_default_config.return_value = {  # type: ignore[attr-defined]
         "token": "test_token",
         "api_url": "https://api.github.com",
         "timeout_seconds": 30,
@@ -80,7 +80,7 @@ class TestGitHubIntegration:
     ) -> None:
         """Test successful initialization."""
         # Mock configuration with token.
-        mock_config_provider.load_config.return_value = MagicMock(
+        mock_config_provider.load_config.return_value = MagicMock(  # type: ignore[attr-defined]
             success=True,
             content={"token": "test_token", "api_url": "https://api.github.com"},
         )
@@ -94,7 +94,9 @@ class TestGitHubIntegration:
         github_service.auth_provider = mock_auth_provider
 
         # Mock auth provider to return token.
-        mock_auth_provider.get_credentials.return_value = {"token": "test_token"}
+        mock_auth_provider.get_credentials.return_value = {  # type: ignore[attr-defined]
+            "token": "test_token"
+        }
 
         with patch(
             "quack_core.integrations.github.service.GitHubClient"
@@ -164,7 +166,9 @@ class TestGitHubIntegration:
             github_service.auth_provider = mock_auth_provider
 
             # Mock auth provider to return token.
-            mock_auth_provider.get_credentials.return_value = {"token": "auth_token"}
+            mock_auth_provider.get_credentials.return_value = {  # type: ignore[attr-defined]
+                "token": "auth_token"
+            }
 
             with patch(
                 "quack_core.integrations.github.service.GitHubClient"
@@ -193,8 +197,10 @@ class TestGitHubIntegration:
             github_service.auth_provider = mock_auth_provider
 
             # Simulate that get_credentials returns no token.
-            mock_auth_provider.get_credentials.return_value = {"token": None}
-            mock_auth_provider.authenticate.return_value = AuthResult.success_result(
+            mock_auth_provider.get_credentials.return_value = {  # type: ignore[attr-defined]
+                "token": None
+            }
+            mock_auth_provider.authenticate.return_value = AuthResult.success_result(  # type: ignore[attr-defined]
                 token="auth_token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
                 message="Successfully authenticated",
             )
@@ -227,8 +233,10 @@ class TestGitHubIntegration:
             github_service.auth_provider = mock_auth_provider
 
             # Simulate auth provider returns no token and then fails to authenticate.
-            mock_auth_provider.get_credentials.return_value = {"token": None}
-            mock_auth_provider.authenticate.return_value = AuthResult.error_result(
+            mock_auth_provider.get_credentials.return_value = {  # type: ignore[attr-defined]
+                "token": None
+            }
+            mock_auth_provider.authenticate.return_value = AuthResult.error_result(  # type: ignore[attr-defined]
                 error="Authentication failed", message="Invalid token"
             )
 
@@ -282,7 +290,7 @@ class TestGitHubIntegration:
                 github_service.auth_provider = (
                     github_service.auth_provider or MagicMock()
                 )
-                github_service.auth_provider.get_credentials = MagicMock(
+                github_service.auth_provider.get_credentials = MagicMock(  # type: ignore[method-assign]
                     return_value={"token": "test_token"}
                 )
 

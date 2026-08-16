@@ -7,7 +7,7 @@
 import os
 from typing import Any
 
-from quack_core.core.logging import get_logger
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.integrations.core import BaseConfigProvider, ConfigResult
 
 logger = get_logger(__name__)
@@ -18,16 +18,14 @@ class GitHubConfigProvider(BaseConfigProvider):
 
     def __init__(
         self,
-        log_level: int | str | None = None,
-        # Added constructor with log_level parameter
+        log_level: int = LOG_LEVELS[LogLevel.INFO],
     ) -> None:
         """Initialize the GitHub configuration provider.
 
         Args:
             log_level: Logging level
         """
-        # Default to INFO level if None is provided
-        super().__init__(log_level=log_level or "INFO")
+        super().__init__(log_level=log_level)
 
     @property
     def name(self) -> str:
@@ -114,7 +112,8 @@ class GitHubConfigProvider(BaseConfigProvider):
             found = self._lookup_dotted_or_direct_key(config_data, key)
             if found is not None:
                 logger.debug(f"Found GitHub config using key: {key}")
-                return found
+                found_section: dict[str, Any] = found
+                return found_section
 
         if "integrations" in config_data and isinstance(
             config_data["integrations"], dict
@@ -124,7 +123,10 @@ class GitHubConfigProvider(BaseConfigProvider):
                     logger.debug(
                         f"Found GitHub config in integrations section with key: {key}"
                     )
-                    return config_data["integrations"][key]
+                    integrations_section: dict[str, Any] = config_data[
+                        "integrations"
+                    ][key]
+                    return integrations_section
 
         return None
 

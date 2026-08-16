@@ -38,7 +38,7 @@ from quack_core.integrations.github.service import GitHubIntegration
 
 
 @pytest.fixture
-def mock_environment_token() -> None:
+def mock_environment_token() -> Generator[None, None, None]:
     """Fixture to provide a mock GitHub token in the environment."""
     original = os.environ.get("GITHUB_TOKEN")
     os.environ["GITHUB_TOKEN"] = "mock-github-token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
@@ -107,7 +107,7 @@ def mock_rate_limited_client() -> MagicMock:
 
 
 @pytest.fixture
-def patch_integration_registry() -> MagicMock:
+def patch_integration_registry() -> Generator[MagicMock, None, None]:
     """Patch the integration registry for testing."""
     mock_registry = MagicMock()
     mock_registry.integrations = []
@@ -120,7 +120,7 @@ def patch_integration_registry() -> MagicMock:
 
 
 @pytest.fixture
-def patch_registry_register() -> MagicMock:
+def patch_registry_register() -> Generator[MagicMock, None, None]:
     """Patch the registry register method."""
     # Create a mock registry that has the register method
     mock_registry = MagicMock()

@@ -10,7 +10,7 @@ from typing import Any, Protocol
 
 import requests
 from quack_core.core.fs.service import standalone as fs
-from quack_core.core.logging import get_logger
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.integrations.core import AuthResult, BaseAuthProvider
 
 logger = get_logger(__name__)
@@ -32,7 +32,7 @@ class GitHubAuthProvider(BaseAuthProvider):
     def __init__(
         self,
         credentials_file: str | None = None,
-        log_level: int | str | None = None,
+        log_level: int = LOG_LEVELS[LogLevel.INFO],
         http_client: _HTTPClient | None = None,  # injectable for testing
     ) -> None:
         """Initialize the GitHub authentication provider.
@@ -42,10 +42,7 @@ class GitHubAuthProvider(BaseAuthProvider):
             log_level: Logging level
             http_client: Optional HTTP client for testing
         """
-        # Default to INFO level if None is provided
-        super().__init__(
-            credentials_file=credentials_file, log_level=log_level or "INFO"
-        )
+        super().__init__(credentials_file=credentials_file, log_level=log_level)
         self.token = None
         self._user_info: dict[str, Any] | None = None
         self._http_client = http_client or requests
