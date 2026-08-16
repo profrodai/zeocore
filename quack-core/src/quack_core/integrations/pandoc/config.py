@@ -24,7 +24,12 @@ from quack_core.integrations.core.base import BaseConfigProvider
 
 logger = get_logger(__name__)
 
-# Import fs module with error handling
+# Import fs module with error handling. `fs` is deliberately duck-typed here: the
+# except branch swaps in a SimpleNamespace whose lambda attributes mimic the real
+# module's callable surface (same success/data/path shape) but not its precise
+# per-function return types -- annotated `Any` at the declaration site rather than
+# per-call-site ignores, matching operations/utils.py's own fs-stub precedent.
+fs: Any
 try:
     from quack_core.core.fs.service import standalone as fs
 except ImportError:
@@ -159,16 +164,19 @@ class PandocConfig(BaseModel):
 class PandocConfigProvider(BaseConfigProvider):
     """Configuration provider for Pandoc integration."""
 
-    # Class variables defining default configuration file locations (as strings)
-    DEFAULT_CONFIG_LOCATIONS: ClassVar[list[str]] = [
+    # Class variables defining default configuration file locations (as strings).
+    # Deliberately unannotated (matches BaseConfigProvider's own declaration style,
+    # and the google/llms sibling config providers) -- an explicit ClassVar[...]
+    # here conflicts with mypy's view of the base class's un-annotated attribute
+    # of the same name ("Cannot override instance variable ... with class
+    # variable"), even though both are genuinely class-level in both classes.
+    DEFAULT_CONFIG_LOCATIONS = [
         "./config/pandoc_config.yaml",
         "./config/quack_config.yaml",
         "./quack_config.yaml",
         "~/.quack/pandoc_config.yaml",
     ]
     ENV_PREFIX: ClassVar[str] = "QUACK_PANDOC_"
-
-    logger = get_logger(__name__)
 
     def __init__(self, log_level: int = LOG_LEVELS[LogLevel.INFO]) -> None:
         """
@@ -194,9 +202,11 @@ class PandocConfigProvider(BaseConfigProvider):
         Returns:
             dict[str, Any]: Pandoc-specific configuration.
         """
-        if "pandoc" in config_data:
+        if "pandoc" in config_data and isinstance(config_data["pandoc"], dict):
             return config_data["pandoc"]
-        if "conversion" in config_data:
+        if "conversion" in config_data and isinstance(
+            config_data["conversion"], dict
+        ):
             return config_data["conversion"]
         return config_data
 
