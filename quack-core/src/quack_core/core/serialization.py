@@ -7,7 +7,8 @@
 Shared JSON serialization utilities.
 
 Fix #2: Single source of truth for JSON-safe validation and normalization.
-Prevents drift between ToolContext metadata validation and ToolRunner output serialization.
+Prevents drift between ToolContext metadata validation and ToolRunner output
+serialization.
 """
 
 from dataclasses import asdict, is_dataclass
@@ -112,12 +113,14 @@ def normalize_for_json(
                 if allow_string_fallback:
                     if logger:
                         logger.warning(
-                            f"Dict key {k!r} at {path} is not a string. Converting to string."
+                            f"Dict key {k!r} at {path} is not a string. "
+                            f"Converting to string."
                         )
                     k = str(k)
                 else:
                     raise TypeError(
-                        f"Dict key at {path}[{k!r}] must be string, got {type(k).__name__}. "
+                        f"Dict key at {path}[{k!r}] must be string, "
+                        f"got {type(k).__name__}. "
                         f"JSON requires string keys."
                     )
             result[k] = normalize_for_json(
@@ -138,7 +141,8 @@ def normalize_for_json(
     # Fallback: stringify (only if explicitly allowed)
     if logger:
         logger.warning(
-            f"Serializing {type(data).__name__} at {path} to string (may lose structure)"
+            f"Serializing {type(data).__name__} at {path} to string "
+            f"(may lose structure)"
         )
     try:
         return str(data)

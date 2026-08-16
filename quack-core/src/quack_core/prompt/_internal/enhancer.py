@@ -39,7 +39,8 @@ def enhance_with_llm_safe(
         # Construct Meta-Prompt
         system_prompt = (
             "You are an expert prompt engineer. "
-            "Rewrite the following task prompt to be production-ready, precise, and effective. "
+            "Rewrite the following task prompt to be production-ready, "
+            "precise, and effective. "
             "ONLY output the rewritten prompt."
         )
 

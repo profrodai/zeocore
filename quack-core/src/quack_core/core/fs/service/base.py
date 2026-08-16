@@ -48,12 +48,14 @@ class _BaseFileSystemService:
         if self.unsafe_allow_absolute_paths:
             self.logger.warning(
                 "⚠️  SECURITY WARNING: unsafe_allow_absolute_paths=True - "
-                "Absolute paths outside base_dir are permitted. Operations can access paths "
-                "outside the sandbox root. Relative-path escape via '..' remains BLOCKED "
-                "(this flag does not disable the '..' traversal check). "
-                "NOTE: This does NOT protect against symlink-based TOCTOU attacks or symlinks "
-                "inside base_dir that point outside. For maximum security, use a dedicated "
-                "filesystem namespace or container-level isolation. "
+                "Absolute paths outside base_dir are permitted. Operations can "
+                "access paths outside the sandbox root. Relative-path escape via "
+                "'..' remains BLOCKED (this flag does not disable the '..' "
+                "traversal check). "
+                "NOTE: This does NOT protect against symlink-based TOCTOU "
+                "attacks or symlinks inside base_dir that point outside. For "
+                "maximum security, use a dedicated filesystem namespace or "
+                "container-level isolation. "
                 "Only enable this in fully trusted environments."
             )
 
@@ -107,10 +109,16 @@ class _BaseFileSystemService:
         # SECURITY ERRORS FIRST (most specific)
         if isinstance(e, QuackPathEscapeError):
             err_type = "path_escape_attempt"
-            hint = "Path attempted to traverse above the base directory using '..' or similar."
+            hint = (
+                "Path attempted to traverse above the base directory using "
+                "'..' or similar."
+            )
         elif isinstance(e, QuackPathOutsideBaseDirError):
             err_type = "path_outside_base_dir"
-            hint = "Absolute paths outside the configured base directory are not allowed (unsafe_allow_absolute_paths=False)."
+            hint = (
+                "Absolute paths outside the configured base directory are not "
+                "allowed (unsafe_allow_absolute_paths=False)."
+            )
 
         # VALIDATION ERRORS
         elif isinstance(e, QuackValidationError):
@@ -155,7 +163,10 @@ class _BaseFileSystemService:
                 "is not a dict" in msg_lower
             ):  # Catching yaml/json parsing errors from ops
                 err_type = "invalid_data_format"
-                hint = "The file content structure does not match the expected format (e.g. dict)."
+                hint = (
+                    "The file content structure does not match the expected "
+                    "format (e.g. dict)."
+                )
             else:
                 err_type = "validation_error"
                 hint = "Input validation failed."

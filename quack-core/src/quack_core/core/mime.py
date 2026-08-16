@@ -207,9 +207,13 @@ def get_content_type(extension: str) -> str:
         "toml": "application/toml",
         # Documents
         "pdf": "application/pdf",
-        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "docx": (
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ),
         "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "pptx": (
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        ),
         # Images
         "png": "image/png",
         "jpg": "image/jpeg",
@@ -256,7 +260,8 @@ def is_text_extension(extension: str) -> bool:
 
     Note:
         This is NOT just "not binary" - some extensions may be unknown.
-        For explicit text checking, use this. For binary detection, use is_binary_extension().
+        For explicit text checking, use this. For binary detection, use
+        is_binary_extension().
     """
     normalized = extension.lower().lstrip(".")
     return normalized in TEXT_EXTENSIONS

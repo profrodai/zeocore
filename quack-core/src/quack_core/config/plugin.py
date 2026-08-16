@@ -80,7 +80,8 @@ class QuackConfigPlugin:
             # we should raise or return default if not initialized.
             # For developer experience, we'll raise to indicate setup order issues.
             raise RuntimeError(
-                "ConfigPlugin: Config has not been loaded yet. Call load_config() first."
+                "ConfigPlugin: Config has not been loaded yet. "
+                "Call load_config() first."
             )
         return get_config_value(self._config, path, default)
 

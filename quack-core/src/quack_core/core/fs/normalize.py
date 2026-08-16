@@ -100,7 +100,8 @@ def coerce_path(
                     return resolved
                 except ValueError:
                     raise QuackPathOutsideBaseDirError(
-                        f"Path '{path}' is outside base directory '{base_dir}' (allow_absolute=False)"
+                        f"Path '{path}' is outside base directory '{base_dir}' "
+                        f"(allow_absolute=False)"
                     ) from None
 
             # 2. Handle Relative Paths (Anchor to base_dir)

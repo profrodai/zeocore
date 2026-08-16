@@ -110,7 +110,8 @@ class StorageRef(BaseModel):
     )
 
     bucket: str | None = Field(
-        None, description="Bucket name (for object storage schemes like s3, gcs, azure)"
+        None,
+        description="Bucket name (for object storage schemes like s3, gcs, azure)",
     )
 
     key: str | None = Field(None, description="Object key/path within bucket")
@@ -173,7 +174,9 @@ class Checksum(BaseModel):
 
     algorithm_custom: str | None = Field(
         None,
-        description="Custom algorithm name when algorithm=custom (e.g., 'blake2b', 'md5')",
+        description=(
+            "Custom algorithm name when algorithm=custom (e.g., 'blake2b', 'md5')"
+        ),
     )
 
     value: str = Field(
@@ -267,7 +270,10 @@ class ArtifactRef(BaseModel):
                     "size_bytes": 2048,
                     "checksum": {
                         "algorithm": "sha256",
-                        "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                        "value": (
+                            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934"
+                            "ca495991b7852b855"
+                        ),
                     },
                     "created_at": "2025-01-15T10:30:00Z",
                     "tags": {"language": "en"},
@@ -284,7 +290,9 @@ class ArtifactRef(BaseModel):
 
     role: ArtifactRole = Field(
         ...,
-        description="Semantic role in workflow (e.g., media.transcript_txt, text.summary_md)",
+        description=(
+            "Semantic role in workflow (e.g., media.transcript_txt, text.summary_md)"
+        ),
         examples=[
             "media.video_source",
             "media.transcript_txt",

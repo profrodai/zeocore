@@ -77,7 +77,8 @@ class ErrorHandler:
         if show_traceback and error.__traceback__:
             # Attempt to use Rich's beautiful traceback
             tb = Traceback.from_exception(type(error), error, error.__traceback__)
-            # Note: We can't easily concatenate string + Traceback object in one panel content string.
+            # Note: We can't easily concatenate string + Traceback object in
+            # one panel content string.
             # We print them separately or use a RenderGroup/Group.
             # For simplicity in this kernel utility, we rely on printing directly.
 
