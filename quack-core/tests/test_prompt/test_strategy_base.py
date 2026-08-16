@@ -9,7 +9,7 @@ Tests for the PromptStrategy base class in strategy_base.py.
 from quack_core.prompt.models import PromptStrategy
 
 
-def test_prompt_strategy_creation():
+def test_prompt_strategy_creation() -> None:
     """Test creating a PromptStrategy with valid parameters."""
 
     # Define a simple render function
@@ -39,7 +39,7 @@ def test_prompt_strategy_creation():
     assert strategy.origin == "Unit tests"
 
 
-def test_prompt_strategy_rendering():
+def test_prompt_strategy_rendering() -> None:
     """Test that a PromptStrategy correctly renders a prompt."""
 
     # Define a simple render function
@@ -68,7 +68,7 @@ def test_prompt_strategy_rendering():
     assert result2 == "PROMPT: List items\n\nEXAMPLES:\nItem 1\nItem 2"
 
 
-def test_prompt_strategy_arbitrary_types():
+def test_prompt_strategy_arbitrary_types() -> None:
     """Test that PromptStrategy allows arbitrary types like callables."""
 
     # Define a simple render function
@@ -95,7 +95,7 @@ def test_prompt_strategy_arbitrary_types():
     assert strategy.render_fn(5) == "5"
 
 
-def test_prompt_strategy_without_optional_fields():
+def test_prompt_strategy_without_optional_fields() -> None:
     """Test creating a PromptStrategy without optional fields."""
 
     def render_fn(prompt: str) -> str:

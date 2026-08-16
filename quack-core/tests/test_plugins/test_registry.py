@@ -799,7 +799,7 @@ class TestPluginRegistry:
         # Mock a proper plugin factory function that returns a plugin with metadata
         mock_plugin = BasicPlugin()
 
-        def mock_factory():
+        def mock_factory() -> BasicPlugin:
             return mock_plugin
 
         # Create a proper mock entry point
@@ -833,7 +833,7 @@ class TestPluginRegistry:
         # Mock a proper plugin factory function that returns a plugin with metadata
         mock_plugin = BasicPlugin()
 
-        def mock_factory():
+        def mock_factory() -> BasicPlugin:
             return mock_plugin
 
         # Create a proper mock entry point

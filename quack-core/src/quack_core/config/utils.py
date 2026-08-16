@@ -28,7 +28,11 @@ def get_env() -> str:
     return os.environ.get("QUACK_ENV", "development").lower()
 
 
-def get_config_value(config: Any, path: str, default: T | None = None) -> T | None:
+def get_config_value(
+    config: Any,  # noqa: ANN401 -- genuinely dynamic: accepts a QuackConfig (Pydantic model) or a plain dict/Mapping, dispatched via hasattr/isinstance below
+    path: str,
+    default: T | None = None,
+) -> T | None:
     """
     Get a configuration value by dot-separated path from a config object or dict.
 
@@ -56,7 +60,10 @@ def get_config_value(config: Any, path: str, default: T | None = None) -> T | No
     return current
 
 
-def validate_required_config(config: Any, required_keys: list[str]) -> list[str]:
+def validate_required_config(
+    config: Any,  # noqa: ANN401 -- genuinely dynamic: same config-or-dict shape as get_config_value, which it delegates to
+    required_keys: list[str],
+) -> list[str]:
     """
     Validate that the configuration contains all required keys.
 
