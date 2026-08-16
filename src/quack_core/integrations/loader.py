@@ -11,7 +11,7 @@ into a registry. It ensures no side effects occur unless explicitly requested.
 """
 
 import logging
-from importlib.metadata import entry_points
+from importlib.metadata import EntryPoint, entry_points
 
 from quack_core.integrations.core.protocols import IntegrationProtocol
 from quack_core.integrations.core.registry import IntegrationRegistry
@@ -46,6 +46,81 @@ def list_available_entry_points(
             }
         )
     return results
+
+
+def _load_one_entry_point(
+    integration_id: str,
+    entry_point: EntryPoint,
+    registry: IntegrationRegistry,
+    report: IntegrationLoadReport,
+    strict: bool,
+    initialize: bool,
+) -> bool:
+    """
+    Load, validate, optionally initialize, and register a single integration
+    from its entry point, mutating `report` in place. Extracted from
+    load_enabled_entry_points to keep its own branch count under the C901
+    threshold; behavior/order/messages unchanged from the original inline
+    loop body.
+
+    Returns False if the caller should ABORT the whole loop (return report
+    immediately - only happens in strict mode on an initialization failure
+    or an unexpected exception), True otherwise (caller continues the loop).
+    """
+    try:
+        logger.debug(f"Loading integration: {integration_id}")
+        factory = entry_point.load()
+
+        if not callable(factory):
+            error_msg = f"Entry point {integration_id} is not callable."
+            report.errors.append(error_msg)
+            report.success = False
+            return True
+
+        instance = factory()
+
+        if not isinstance(instance, IntegrationProtocol):
+            # Duck-typing check if isinstance fails due to import quirks
+            if not (hasattr(instance, "initialize") and hasattr(instance, "name")):
+                error_msg = (
+                    f"Instance for {integration_id} does not satisfy "
+                    f"IntegrationProtocol."
+                )
+                report.errors.append(error_msg)
+                report.success = False
+                return True
+
+        # Initialize if requested
+        if initialize:
+            init_result = instance.initialize()
+            if not init_result.success:
+                error_msg = (
+                    f"Failed to initialize {integration_id}: {init_result.error}"
+                )
+                report.errors.append(error_msg)
+                report.success = False
+
+                if strict:
+                    logger.error(
+                        f"Strict mode enabled: Aborting after "
+                        f"initialization failure of {integration_id}"
+                    )
+                    return False
+
+                return True
+
+        # Register
+        registry.register(instance)
+        report.loaded.append(integration_id)
+        return True
+
+    except Exception as e:
+        error_msg = f"Unexpected error loading {integration_id}: {str(e)}"
+        report.errors.append(error_msg)
+        report.success = False
+        logger.exception(error_msg)
+
+        return not strict
 
 
 def load_enabled_entry_points(
@@ -89,61 +164,10 @@ def load_enabled_entry_points(
                 logger.warning(msg)
                 continue
 
-        # Load the integration
-        entry_point = ep_map[integration_id]
-        try:
-            logger.debug(f"Loading integration: {integration_id}")
-            factory = entry_point.load()
-
-            if not callable(factory):
-                error_msg = f"Entry point {integration_id} is not callable."
-                report.errors.append(error_msg)
-                report.success = False
-                continue
-
-            instance = factory()
-
-            if not isinstance(instance, IntegrationProtocol):
-                # Duck-typing check if isinstance fails due to import quirks
-                if not (hasattr(instance, "initialize") and hasattr(instance, "name")):
-                    error_msg = (
-                        f"Instance for {integration_id} does not satisfy "
-                        f"IntegrationProtocol."
-                    )
-                    report.errors.append(error_msg)
-                    report.success = False
-                    continue
-
-            # Initialize if requested
-            if initialize:
-                init_result = instance.initialize()
-                if not init_result.success:
-                    error_msg = (
-                        f"Failed to initialize {integration_id}: {init_result.error}"
-                    )
-                    report.errors.append(error_msg)
-                    report.success = False
-
-                    if strict:
-                        logger.error(
-                            f"Strict mode enabled: Aborting after "
-                            f"initialization failure of {integration_id}"
-                        )
-                        return report
-
-                    continue
-
-            # Register
-            registry.register(instance)
-            report.loaded.append(integration_id)
-
-        except Exception as e:
-            error_msg = f"Unexpected error loading {integration_id}: {str(e)}"
-            report.errors.append(error_msg)
-            report.success = False
-            logger.exception(error_msg)
-
-            if strict:
-                return report
+        keep_going = _load_one_entry_point(
+            integration_id, ep_map[integration_id], registry, report, strict, initialize
+        )
+        if not keep_going:
+            return report
 
     return report
