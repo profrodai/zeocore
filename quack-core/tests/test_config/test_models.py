@@ -174,20 +174,40 @@ class TestConfigModels:
         assert config.database_ids == {"projects": "db1", "tasks": "db2"}
 
     def test_integrations_config(self) -> None:
-        """Test the IntegrationsConfig model."""
+        """Test the IntegrationsConfig model.
+
+        quack_core.integrations.config.IntegrationsConfig is deliberately generic
+        (settings: dict[str, dict[str, Any]] keyed by integration id) rather than
+        carrying named per-integration fields like `google`/`notion` - its own
+        docstring states this explicitly ("remains agnostic of specific
+        integration implementations to strictly verify core purity doctrine"),
+        matching the taxonomy rule that core/producer packages never import
+        consumer (per-integration) code. Assert the real, documented contract.
+        """
         # Test default values
         config = IntegrationsConfig()
-        assert isinstance(config.google, GoogleConfig)
-        assert isinstance(config.notion, NotionConfig)
+        assert config.enabled == []
+        assert config.settings == {}
+        assert config.strict_loading is True
 
-        # Test with custom values
+        # Test with custom, per-integration settings under the generic mapping
         secrets_path = "/test/secrets.json"
         config = IntegrationsConfig(
-            google=GoogleConfig(client_secrets_file=secrets_path),
-            notion=NotionConfig(api_key="test_api_key"),
+            enabled=["google", "notion"],
+            settings={
+                "google": {"client_secrets_file": secrets_path},
+                "notion": {"api_key": "test_api_key"},
+            },
         )
-        assert config.google.client_secrets_file == secrets_path
-        assert config.notion.api_key == "test_api_key"
+        assert config.settings["google"]["client_secrets_file"] == secrets_path
+        assert config.settings["notion"]["api_key"] == "test_api_key"
+
+        # The concrete per-integration models still work standalone - the core
+        # config just does not reference them by name.
+        google_config = GoogleConfig(client_secrets_file=secrets_path)
+        notion_config = NotionConfig(api_key="test_api_key")
+        assert google_config.client_secrets_file == secrets_path
+        assert notion_config.api_key == "test_api_key"
 
     def test_general_config(self) -> None:
         """Test the GeneralConfig model."""
@@ -231,13 +251,19 @@ class TestConfigModels:
         assert config.paths == [plugins_path, more_plugins_path]
 
     def test_quack_config(self) -> None:
-        """Test the QuackConfig model."""
+        """Test the QuackConfig model.
+
+        QuackConfig.integrations is a plain dict[str, Any] field (config/models.py),
+        not typed as integrations/config.py's IntegrationsConfig - core/config
+        never imports the integrations package (same core-purity boundary as
+        test_integrations_config above). Assert the real field type.
+        """
         # Test default values
         config = QuackConfig()
         assert isinstance(config.general, GeneralConfig)
         assert isinstance(config.paths, PathsConfig)
         assert isinstance(config.logging, LoggingConfig)
-        assert isinstance(config.integrations, IntegrationsConfig)
+        assert isinstance(config.integrations, dict)
         assert isinstance(config.plugins, PluginsConfig)
         assert config.custom == {}
 
@@ -272,14 +298,15 @@ class TestConfigModels:
         # Remove the temporary method to clean up
         delattr(QuackConfig, "setup_logging")
 
-        # Test to_dict method
+        # Test to_dict method. The plugin-settings field is named "plugins"
+        # (models.py) - "modules" was never a real QuackConfig field name.
         config_dict = config.to_dict()
         assert isinstance(config_dict, dict)
         assert "general" in config_dict
         assert "paths" in config_dict
         assert "logging" in config_dict
         assert "integrations" in config_dict
-        assert "modules" in config_dict
+        assert "plugins" in config_dict
         assert "custom" in config_dict
 
         # Test get_plugin_enabled method
