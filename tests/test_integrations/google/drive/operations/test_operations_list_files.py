@@ -6,6 +6,7 @@
 Tests for Google Drive _ops list_files module.
 """
 
+from typing import Any
 from unittest.mock import patch
 
 from quack_core.core.errors import QuackApiError
@@ -24,7 +25,7 @@ class TestDriveOperationsListFiles:
     def test_list_files(self) -> None:
         """Test listing files from Google Drive."""
         # Create mock file list for the service
-        mock_file_list = [
+        mock_file_list: list[dict[str, Any]] = [
             {
                 "id": "file1",
                 "name": "test.txt",
@@ -62,6 +63,7 @@ class TestDriveOperationsListFiles:
 
                 # Verify result
                 assert result.success is True
+                assert result.content is not None
                 assert len(result.content) == 2
 
                 # Check that the first item is a file
@@ -104,7 +106,7 @@ class TestDriveOperationsListFiles:
         mock_drive_service = create_mock_drive_service(file_list=[])
 
         # Mock empty response
-        mock_response = {}
+        mock_response: dict[str, Any] = {}
 
         # Setup mock execute_api_request with correct path
         with patch(
@@ -123,7 +125,9 @@ class TestDriveOperationsListFiles:
 
                 # Verify result
                 assert result.success is True
+                assert result.content is not None
                 assert len(result.content) == 0
+                assert result.message is not None
                 assert "Listed 0 files" in result.message
 
                 # Verify mock service usage
@@ -161,6 +165,7 @@ class TestDriveOperationsListFiles:
 
                 # Verify result
                 assert result.success is False
+                assert result.error is not None
                 assert "API error" in result.error
 
     def test_list_files_invalid_response(self) -> None:
@@ -190,13 +195,14 @@ class TestDriveOperationsListFiles:
 
                 # Verify result
                 assert result.success is True
+                assert result.content is not None
                 assert len(result.content) == 0  # Should handle gracefully
 
     def test_list_files_with_model_conversion(self) -> None:
         """Test that list_files correctly converts API responses to
         DriveFile and DriveFolder models."""
         # Create a customized mock service with detailed file list
-        file_list = [
+        file_list: list[dict[str, Any]] = [
             {
                 "id": "file1",
                 "name": "document.pdf",
@@ -233,6 +239,7 @@ class TestDriveOperationsListFiles:
 
                 # Verify model conversion
                 assert result.success is True
+                assert result.content is not None
                 assert len(result.content) == 2
 
                 # Check file properties
