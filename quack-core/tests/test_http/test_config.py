@@ -11,7 +11,7 @@ from pydantic import ValidationError
 from quack_core.adapters.http.config import HttpAdapterConfig
 
 
-def test_default_config():
+def test_default_config() -> None:
     """Test default configuration values."""
     config = HttpAdapterConfig()
 
@@ -26,7 +26,7 @@ def test_default_config():
     assert config.request_timeout_seconds == 900
 
 
-def test_custom_config():
+def test_custom_config() -> None:
     """Test custom configuration values."""
     config = HttpAdapterConfig(
         host="127.0.0.1",
@@ -51,13 +51,13 @@ def test_custom_config():
     assert config.request_timeout_seconds == 600
 
 
-def test_invalid_url():
+def test_invalid_url() -> None:
     """Test validation of invalid URL."""
     with pytest.raises(ValidationError):
         HttpAdapterConfig(public_base_url="not-a-valid-url")
 
 
-def test_config_serialization():
+def test_config_serialization() -> None:
     """Test config can be serialized/deserialized."""
     config = HttpAdapterConfig(auth_token="test", max_workers=2)  # noqa: S106 -- test fixture, fake credential value, not a real secret
 

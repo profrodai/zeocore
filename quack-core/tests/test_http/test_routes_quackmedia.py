@@ -7,9 +7,10 @@ Tests for QuackMedia routes.
 """
 
 import pytest
+from fastapi.testclient import TestClient
 
 
-def test_slice_video_no_auth(test_client):
+def test_slice_video_no_auth(test_client: TestClient) -> None:
     """Test slice endpoint fails without auth."""
     response = test_client.post(
         "/quack-media/slice",
@@ -23,7 +24,9 @@ def test_slice_video_no_auth(test_client):
     assert response.status_code == 401
 
 
-def test_slice_video_success(test_client, auth_headers):
+def test_slice_video_success(
+    test_client: TestClient, auth_headers: dict[str, str]
+) -> None:
     """Test successful video slicing."""
     response = test_client.post(
         "/quack-media/slice",
@@ -43,7 +46,9 @@ def test_slice_video_success(test_client, auth_headers):
     assert data["operation"] == "quack-media.slice_video"
 
 
-def test_transcribe_audio_success(test_client, auth_headers):
+def test_transcribe_audio_success(
+    test_client: TestClient, auth_headers: dict[str, str]
+) -> None:
     """Test successful audio transcription."""
     response = test_client.post(
         "/quack-media/transcribe",
@@ -62,7 +67,9 @@ def test_transcribe_audio_success(test_client, auth_headers):
     assert data["operation"] == "quack-media.transcribe_audio"
 
 
-def test_extract_frames_success(test_client, auth_headers):
+def test_extract_frames_success(
+    test_client: TestClient, auth_headers: dict[str, str]
+) -> None:
     """Test successful frame extraction."""
     response = test_client.post(
         "/quack-media/frames",
@@ -82,7 +89,9 @@ def test_extract_frames_success(test_client, auth_headers):
     assert data["operation"] == "quack-media.extract_frames"
 
 
-def test_invalid_operation_params(test_client, auth_headers):
+def test_invalid_operation_params(
+    test_client: TestClient, auth_headers: dict[str, str]
+) -> None:
     """Test handling of invalid parameters."""
     response = test_client.post(
         "/quack-media/slice", json={"invalid_param": "value"}, headers=auth_headers
@@ -100,7 +109,12 @@ def test_invalid_operation_params(test_client, auth_headers):
         ("/quack-media/frames", "quack-media.extract_frames"),
     ],
 )
-def test_all_quackmedia_endpoints(test_client, auth_headers, endpoint, operation):
+def test_all_quackmedia_endpoints(
+    test_client: TestClient,
+    auth_headers: dict[str, str],
+    endpoint: str,
+    operation: str,
+) -> None:
     """Test all QuackMedia endpoints return consistent structure."""
     response = test_client.post(
         endpoint, json={"test_param": "test_value"}, headers=auth_headers
