@@ -33,7 +33,7 @@ class LLMClient(ABC, LLMProviderProtocol):
         initial_retry_delay: float = 1.0,
         max_retry_delay: float = 30.0,
         log_level: int = logging.INFO,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401 -- provider-specific kwargs passed through to concrete subclass SDK constructors
     ) -> None:
         """
         Initialize the LLM client.

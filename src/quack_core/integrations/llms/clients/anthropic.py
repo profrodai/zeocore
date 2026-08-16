@@ -27,7 +27,7 @@ class AnthropicClient(LLMClient):
         initial_retry_delay: float = 1.0,
         max_retry_delay: float = 30.0,
         log_level: int = logging.INFO,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401 -- provider-specific kwargs passed through to the anthropic SDK constructor
     ) -> None:
         """
         Initialize the Anthropic client.
@@ -76,7 +76,7 @@ class AnthropicClient(LLMClient):
                 "Anthropic package not installed. Please install it with: pip install anthropic"
             ) from None
 
-    def _get_client(self) -> Any:
+    def _get_client(self) -> Any:  # noqa: ANN401 -- returns the third-party anthropic.Anthropic SDK object; no local protocol exists for it
         """
         Get the Anthropic client instance.
 
@@ -166,7 +166,7 @@ class AnthropicClient(LLMClient):
 
     def _handle_streaming(
         self,
-        client: Any,
+        client: Any,  # noqa: ANN401 -- the third-party anthropic.Anthropic SDK client object; no local protocol exists for it
         model: str,
         system: str | None,
         messages: list[dict],
