@@ -79,7 +79,11 @@ class TestDriveOperationsUpload:
         with patch(
             "quack_core.integrations.google.drive.operations.upload.paths_service"
         ) as mock_paths_service:
-            mock_paths_service.resolve_project_path.return_value = PathResult(
+            # resolve_project_path is a PathService INSTANCE method
+            # (RULING-245) -- configure the PathService() instance mock,
+            # not the module-level attribute directly.
+            mock_path_service_instance = mock_paths_service.PathService.return_value
+            mock_path_service_instance.resolve_project_path.return_value = PathResult(
                 success=True,
                 path=str(test_file),  # Use string, not Path
             )
@@ -128,7 +132,11 @@ class TestDriveOperationsUpload:
         with patch(
             "quack_core.integrations.google.drive.operations.upload.paths_service"
         ) as mock_paths_service:
-            mock_paths_service.resolve_project_path.return_value = PathResult(
+            # resolve_project_path is a PathService INSTANCE method
+            # (RULING-245) -- configure the PathService() instance mock,
+            # not the module-level attribute directly.
+            mock_path_service_instance = mock_paths_service.PathService.return_value
+            mock_path_service_instance.resolve_project_path.return_value = PathResult(
                 success=True,
                 path=str(test_file),  # Use string, not Path
             )

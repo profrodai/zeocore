@@ -49,9 +49,15 @@ def resolve_download_path(
         joined_path = join_result.data if hasattr(join_result, "data") else join_result
         return str(joined_path)
 
-    # Resolve the local path
-    local_path_result = paths_service.resolve_project_path(local_path)
-    if not local_path_result.success:
+    # Resolve the local path.
+    # resolve_project_path is a PathService INSTANCE method, not a
+    # module-level free function (RULING-238/240's trap, fixed identically
+    # in drive/service.py's _resolve_file_details/_resolve_download_path;
+    # this call site was missed by that earlier fix -- RULING-245) --
+    # instantiate PathService explicitly rather than calling the bare module.
+    path_service = paths_service.PathService()
+    local_path_result = path_service.resolve_project_path(local_path)
+    if not local_path_result.success or local_path_result.path is None:
         # Just use the provided path if resolution fails
         local_path_obj = local_path
     else:
