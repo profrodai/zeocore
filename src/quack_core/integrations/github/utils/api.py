@@ -29,7 +29,7 @@ def make_request(
     retry_delay: float = 1.0,
     params: dict[str, Any] | None = None,
     json: dict[str, Any] | None = None,
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request; kwargs are genuinely heterogeneous (headers, verify, cert, ...)
 ) -> requests.Response:
     """Make an HTTP request to the GitHub API with retries.
 

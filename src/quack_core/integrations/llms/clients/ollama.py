@@ -32,7 +32,7 @@ class OllamaClient(LLMClient):
         initial_retry_delay: float = 1.0,
         max_retry_delay: float = 30.0,
         log_level: int = LOG_LEVELS[LogLevel.INFO],
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401 -- provider-specific kwargs passed through to the Ollama SDK constructor
     ) -> None:
         """
         Initialize the Ollama client.

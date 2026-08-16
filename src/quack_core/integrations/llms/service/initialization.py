@@ -8,12 +8,17 @@ Provider initialization logic for LLM integration.
 This module provides functions for initializing single providers and fallback configurations.
 """
 
+from typing import TYPE_CHECKING
+
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms.fallback import FallbackConfig
 
+if TYPE_CHECKING:
+    from quack_core.integrations.llms.service.integration import LLMIntegration
+
 
 def initialize_single_provider(
-    self, llm_config: dict, available_providers: list[str]
+    self: "LLMIntegration", llm_config: dict, available_providers: list[str]
 ) -> IntegrationResult:
     """
     Initialize with a single provider.
@@ -100,7 +105,7 @@ def initialize_single_provider(
 
 
 def initialize_with_fallback(
-    self,
+    self: "LLMIntegration",
     llm_config: dict,
     fallback_config: FallbackConfig,
     available_providers: list[str],
@@ -133,9 +138,9 @@ def initialize_with_fallback(
     self._using_mock = len(fallback_providers) == 1 and fallback_providers[0] == "mock"
 
     # Prepare model and API key maps
-    model_map = {}
-    api_key_map = {}
-    provider_args = {}
+    model_map: dict[str, str] = {}
+    api_key_map: dict[str, str] = {}
+    provider_args: dict[str, dict[str, str | None]] = {}
 
     for provider in fallback_providers:
         provider_config = llm_config.get(provider, {})
