@@ -208,10 +208,19 @@ class TestPathUtilities:
         """
 
         class _Host(PathOperationsMixin):
-            operations = None  # unused by join_path; see NOTE above
+            # Minimal test double: join_path never touches operations (see NOTE
+            # above), so a real FileSystemOperations instance is deliberately
+            # not constructed here.
+            operations = None  # type: ignore[assignment]
             logger = None
 
-            def _normalize_input_path(self, path: str | Path) -> Path:
+            # Narrower than the mixin's declared FsPathLike param: this stub only
+            # ever needs to serve join_path, which itself only ever passes
+            # str | Path (see NOTE above) -- a deliberate, reasoned narrowing of
+            # the test double, not a real LSP-safe override.
+            def _normalize_input_path(  # type: ignore[override]
+                self, path: str | Path
+            ) -> Path:
                 # No base_dir anchoring for this unit test -- absolutize only
                 # (not .resolve(), which touches the filesystem and can raise
                 # if the ambient cwd was deleted by an earlier test's
@@ -219,7 +228,9 @@ class TestPathUtilities:
                 # composition and cannot fail this way).
                 return Path(path).absolute()
 
-            def _map_error(self, e: Exception) -> None:
+            def _map_error(self, e: Exception) -> None:  # type: ignore[override]
+                # join_path never calls _map_error (see NOTE above); this stub
+                # exists only to satisfy the mixin's abstract-ish interface.
                 return None
 
         host = _Host()
@@ -227,6 +238,7 @@ class TestPathUtilities:
         # Test with string paths
         result = host.join_path("dir1", "dir2", "file.txt")
         assert result.ok is True
+        assert result.data is not None
         assert result.data.endswith("dir1/dir2/file.txt")
 
         # Test with absolute base

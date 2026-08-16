@@ -53,6 +53,7 @@ class TestFileSystemService:
         result = service.read_text(test_file.parent / "nonexistent.txt")
         assert result.success is False
         # Updated to check for part of the error message that will be consistent
+        assert result.error is not None
         assert "No such file or directory" in result.error
 
     def test_checksum_and_byte_counting(self, temp_dir: Path) -> None:
@@ -98,6 +99,7 @@ class TestFileSystemService:
         result = service.read_bytes(test_binary_file.parent / "nonexistent.bin")
         assert result.success is False
         # Updated to check for part of the error message that will be consistent
+        assert result.error is not None
         assert "No such file or directory" in result.error
 
     def test_read_lines(self, temp_dir: Path) -> None:
@@ -117,6 +119,7 @@ class TestFileSystemService:
         result = service.read_lines(temp_dir / "nonexistent.txt")
         assert result.success is False
         # Updated to check for part of the error message that will be consistent
+        assert result.error is not None
         assert "No such file or directory" in result.error
 
     def test_write_text(self, temp_dir: Path) -> None:
@@ -269,6 +272,7 @@ class TestFileSystemService:
         assert result.exists is True
         assert result.is_file is True
         assert result.is_dir is False
+        assert result.size is not None
         assert result.size > 0
         assert result.modified is not None
 
@@ -408,6 +412,7 @@ class TestFileSystemService:
         # Test reading non-existent file
         result = service.read_yaml(temp_dir / "nonexistent.yaml")
         assert result.success is False
+        assert result.error is not None
         assert (
             "not found" in result.error.lower()
             or "no such file" in result.error.lower()
@@ -455,6 +460,7 @@ class TestFileSystemService:
         # Test reading non-existent file
         result = service.read_json(temp_dir / "nonexistent.json")
         assert result.success is False
+        assert result.error is not None
         assert (
             "not found" in result.error.lower()
             or "no such file" in result.error.lower()
@@ -523,6 +529,7 @@ class TestFileSystemService:
         existing_file.touch()
         unique_name = service.get_unique_filename(temp_dir, "existing.txt")
         assert unique_name.success is True
+        assert unique_name.data is not None
         assert unique_name.data != "existing.txt"
         assert str(unique_name.data).startswith("existing")
         assert "_1" in str(unique_name.data)
@@ -545,6 +552,7 @@ class TestFileSystemService:
         # Test split_path
         split = service.split_path(temp_dir / "subdir" / "file.txt")
         assert split.success is True
+        assert split.data is not None
         assert len(split.data) >= 3
         assert split.data[-1] == "file.txt"
         assert split.data[-2] == "subdir"
@@ -552,6 +560,7 @@ class TestFileSystemService:
         # Test normalize_path
         normalized = service.normalize_path("./test/../test")
         assert normalized.success is True
+        assert normalized.path is not None
         assert normalized.path.name == "test"
 
         # Test get_extension
@@ -617,6 +626,7 @@ class TestFileSystemService:
             # Read content
             read_result = service.read_text(file_path)
             assert read_result.success is True
+            assert read_result.content is not None
             # Use normalized comparison for line endings
             assert read_result.content.replace("\r\n", "\n").replace(
                 "\r", "\n"
@@ -630,6 +640,7 @@ class TestFileSystemService:
             # Verify copied content
             copy_read_result = service.read_text(copy_path)
             assert copy_read_result.success is True
+            assert copy_read_result.content is not None
             # Compare after normalizing line endings
             normalized_read = copy_read_result.content.replace("\r\n", "\n").replace(
                 "\r", "\n"

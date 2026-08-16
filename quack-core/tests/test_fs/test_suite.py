@@ -24,7 +24,7 @@ class TestPathNoneOnFailure:
     def test_read_text_invalid_path_returns_none(self) -> None:
         """Verify read_text returns path=None on invalid input."""
         service = create_service()
-        result = service.read_text(None)  # Invalid input
+        result = service.read_text(None)  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
 
         assert result.ok is False
         assert result.path is None
@@ -40,7 +40,7 @@ class TestPathNoneOnFailure:
     def test_write_text_invalid_path_returns_none(self) -> None:
         """Verify write_text returns path=None on invalid input."""
         service = create_service()
-        result = service.write_text(None, "test")
+        result = service.write_text(None, "test")  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
 
         assert result.ok is False
         assert result.path is None
@@ -63,7 +63,7 @@ class TestPathNoneOnFailure:
     def test_delete_invalid_path_returns_none(self) -> None:
         """Verify delete returns path=None on invalid input."""
         service = create_service()
-        result = service.delete(12345)  # Invalid type
+        result = service.delete(12345)  # type: ignore[arg-type]  # deliberate invalid type, testing the no-raise contract
 
         assert result.ok is False
         assert result.path is None
@@ -87,19 +87,19 @@ class TestPathNoneOnFailure:
         service = create_service()
 
         # split_path with invalid input
-        result = service.split_path(None)
-        assert result.ok is False
-        assert result.path is None
+        split_result = service.split_path(None)  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
+        assert split_result.ok is False
+        assert split_result.path is None
 
         # normalize_path with invalid input
-        result = service.normalize_path(12345)
-        assert result.ok is False
-        assert result.path is None
+        normalize_result = service.normalize_path(12345)  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
+        assert normalize_result.ok is False
+        assert normalize_result.path is None
 
         # get_extension with invalid input
-        result = service.get_extension(None)
-        assert result.ok is False
-        assert result.path is None
+        extension_result = service.get_extension(None)  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
+        assert extension_result.ok is False
+        assert extension_result.path is None
 
 
 class TestSandboxSecurity:
@@ -117,6 +117,7 @@ class TestSandboxSecurity:
             assert result.path is None
             assert result.error_info is not None
             assert result.error_info.type == "path_escape_attempt"
+            assert result.error_info.hint is not None
             assert (
                 "escape" in result.error_info.hint.lower()
                 or "traverse" in result.error_info.hint.lower()
@@ -134,6 +135,7 @@ class TestSandboxSecurity:
             assert result.path is None
             assert result.error_info is not None
             assert result.error_info.type == "path_outside_base_dir"
+            assert result.error_info.hint is not None
             assert (
                 "absolute" in result.error_info.hint.lower()
                 or "outside" in result.error_info.hint.lower()
@@ -159,6 +161,7 @@ class TestSandboxSecurity:
             # Note: This may still fail if the path doesn't exist or other reasons,
             # but it should NOT fail with path_outside_base_dir error
             if not result.ok:
+                assert result.error_info is not None
                 assert result.error_info.type != "path_outside_base_dir"
 
 
@@ -174,6 +177,7 @@ class TestErrorMappingOrder:
             result = service.read_text("../../../etc/passwd")
 
             assert result.ok is False
+            assert result.error_info is not None
             assert result.error_info.type == "path_escape_attempt"
             # Should NOT be mapped as generic validation_error
             assert result.error_info.type != "validation_error"
@@ -185,6 +189,7 @@ class TestErrorMappingOrder:
             result = service.read_text("nonexistent.txt")
 
             assert result.ok is False
+            assert result.error_info is not None
             assert result.error_info.type == "file_not_found"
             # Should NOT be mapped as generic io_error
             assert result.error_info.type != "io_error"
@@ -202,7 +207,7 @@ class TestNoRaiseContract:
 
         for invalid_input in invalid_inputs:
             try:
-                result = service.read_text(invalid_input)
+                result = service.read_text(invalid_input)  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
                 assert result.ok is False
                 assert result.error_info is not None
             except Exception as e:
@@ -215,7 +220,7 @@ class TestNoRaiseContract:
         service = create_service()
 
         try:
-            result = service.write_text(None, "content")
+            result = service.write_text(None, "content")  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
             assert result.ok is False
         except Exception as e:
             pytest.fail(f"write_text raised {type(e).__name__}")
@@ -225,12 +230,12 @@ class TestNoRaiseContract:
         service = create_service()
 
         operations = [
-            lambda: service.exists(None),
-            lambda: service.is_file(None),
-            lambda: service.is_dir(None),
-            lambda: service.resolve(None),
-            lambda: service.split_path(None),
-            lambda: service.normalize_path(None),
+            lambda: service.exists(None),  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
+            lambda: service.is_file(None),  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
+            lambda: service.is_dir(None),  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
+            lambda: service.resolve(None),  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
+            lambda: service.split_path(None),  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
+            lambda: service.normalize_path(None),  # type: ignore[arg-type]  # deliberate invalid input, testing the no-raise contract
         ]
 
         for op in operations:
