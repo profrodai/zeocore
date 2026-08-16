@@ -35,7 +35,7 @@ class TestDriveOperationsUpload:
 
         # Patch the build function where it's imported in upload.py
         with patch(
-            "quack_core.integrations.google.drive._ops.upload.build"
+            "quack_core.integrations.google.drive.operations.upload.build"
         ) as mock_build:
             # Configure the mock to return our mock service
             mock_build.return_value = mock_drive_service
@@ -56,7 +56,7 @@ class TestDriveOperationsUpload:
 
         # Patch the build function where it's imported in upload.py
         with patch(
-            "quack_core.integrations.google.drive._ops.upload.build"
+            "quack_core.integrations.google.drive.operations.upload.build"
         ) as mock_build:
             # Configure the mock to raise an exception
             mock_build.side_effect = Exception("API error")
@@ -77,7 +77,7 @@ class TestDriveOperationsUpload:
 
         # Mock resolver
         with patch(
-            "quack_core.integrations.google.drive._ops.upload.paths_service"
+            "quack_core.integrations.google.drive.operations.upload.paths_service"
         ) as mock_paths_service:
             mock_paths_service.resolve_project_path.return_value = PathResult(
                 success=True,
@@ -126,7 +126,7 @@ class TestDriveOperationsUpload:
 
         # Mock resolver
         with patch(
-            "quack_core.integrations.google.drive._ops.upload.paths_service"
+            "quack_core.integrations.google.drive.operations.upload.paths_service"
         ) as mock_paths_service:
             mock_paths_service.resolve_project_path.return_value = PathResult(
                 success=True,
@@ -173,20 +173,20 @@ class TestDriveOperationsUpload:
 
             # Mock standalone _ops
             with patch(
-                "quack_core.integrations.google.drive._ops.upload.standalone"
+                "quack_core.integrations.google.drive.operations.upload.standalone"
             ) as mock_fs:
                 mock_fs.read_binary.return_value.success = True
                 mock_fs.read_binary.return_value.content = b"test content"
 
                 # Mock the MediaInMemoryUpload
                 with patch(
-                    "quack_core.integrations.google.drive._ops.upload.MediaInMemoryUpload"
+                    "quack_core.integrations.google.drive.operations.upload.MediaInMemoryUpload"
                 ) as mock_media:
                     mock_media.return_value = MagicMock()
 
                     # Mock the execute_api_request to avoid API calls
                     with patch(
-                        "quack_core.integrations.google.drive._ops.upload.execute_api_request"
+                        "quack_core.integrations.google.drive.operations.upload.execute_api_request"
                     ) as mock_execute:
                         # Set up our mock to return expected data
                         mock_execute.return_value = {
@@ -196,7 +196,7 @@ class TestDriveOperationsUpload:
 
                         # Mock permissions to avoid that call
                         with patch(
-                            "quack_core.integrations.google.drive._ops.permissions.set_file_permissions"
+                            "quack_core.integrations.google.drive.operations.permissions.set_file_permissions"
                         ) as mock_perm:
                             mock_perm.return_value = IntegrationResult(success=True)
 
@@ -239,7 +239,7 @@ class TestDriveOperationsUpload:
 
             # Mock read_binary to fail using the correct import path
             with patch(
-                "quack_core.integrations.google.drive._ops.upload.standalone"
+                "quack_core.integrations.google.drive.operations.upload.standalone"
             ) as mock_fs:
                 mock_fs.read_binary.return_value.success = False
                 mock_fs.read_binary.return_value.error = "Read error"
@@ -270,7 +270,7 @@ class TestDriveOperationsUpload:
 
             # Mock read_binary
             with patch(
-                "quack_core.integrations.google.drive._ops.upload.standalone"
+                "quack_core.integrations.google.drive.operations.upload.standalone"
             ) as mock_fs:
                 mock_fs.read_binary.return_value.success = True
                 mock_fs.read_binary.return_value.content = b"test content"
@@ -280,12 +280,12 @@ class TestDriveOperationsUpload:
 
                 # Patch MediaInMemoryUpload with our mock
                 with patch(
-                    "quack_core.integrations.google.drive._ops.upload.MediaInMemoryUpload",
+                    "quack_core.integrations.google.drive.operations.upload.MediaInMemoryUpload",
                     return_value=media_mock,
                 ):
                     # Mock execute_api_request to raise an error
                     with patch(
-                        "quack_core.integrations.google.drive._ops.upload.execute_api_request"
+                        "quack_core.integrations.google.drive.operations.upload.execute_api_request"
                     ) as mock_execute:
                         mock_execute.side_effect = QuackApiError(
                             "API error",
@@ -328,7 +328,7 @@ class TestDriveOperationsUpload:
 
             # Mock read_binary
             with patch(
-                "quack_core.integrations.google.drive._ops.upload.standalone"
+                "quack_core.integrations.google.drive.operations.upload.standalone"
             ) as mock_fs:
                 mock_fs.read_binary.return_value.success = True
                 mock_fs.read_binary.return_value.content = b"PDF content"
@@ -338,12 +338,12 @@ class TestDriveOperationsUpload:
 
                 # Patch MediaInMemoryUpload with our mock
                 with patch(
-                    "quack_core.integrations.google.drive._ops.upload.MediaInMemoryUpload",
+                    "quack_core.integrations.google.drive.operations.upload.MediaInMemoryUpload",
                     return_value=media_mock,
                 ):
                     # Mock execute_api_request
                     with patch(
-                        "quack_core.integrations.google.drive._ops.upload.execute_api_request"
+                        "quack_core.integrations.google.drive.operations.upload.execute_api_request"
                     ) as mock_execute:
                         mock_execute.return_value = {
                             "id": "doc123",
@@ -355,7 +355,7 @@ class TestDriveOperationsUpload:
 
                         # Mock permissions but disable public sharing
                         with patch(
-                            "quack_core.integrations.google.drive._ops.permissions.set_file_permissions"
+                            "quack_core.integrations.google.drive.operations.permissions.set_file_permissions"
                         ):
                             # Test upload with specific metadata
                             result = upload.upload_file(
