@@ -6,6 +6,8 @@
 Implementation classes for testing config providers.
 """
 
+from typing import Any
+
 from quack_core.integrations.core.base import BaseConfigProvider
 
 
@@ -16,11 +18,12 @@ class MockConfigProvider(BaseConfigProvider):
     def name(self) -> str:
         return "test_config"
 
-    def validate_config(self, config: dict) -> bool:
+    def validate_config(self, config: dict[str, Any]) -> bool:
         return "test_key" in config
 
-    def get_default_config(self) -> dict:
+    def get_default_config(self) -> dict[str, Any]:
         return {"test_key": "default_value"}
 
-    def _extract_config(self, config_data: dict) -> dict:
-        return config_data.get("test_section", {})
+    def _extract_config(self, config_data: dict[str, Any]) -> dict[str, Any]:
+        section: dict[str, Any] = config_data.get("test_section", {})
+        return section

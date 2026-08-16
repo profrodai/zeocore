@@ -319,6 +319,7 @@ class TestStorageIntegrationProtocol:
 
         list_result = integration.list_files()
         assert list_result.success is True
+        assert list_result.content is not None
         assert len(list_result.content) == 2
         assert list_result.content[0]["name"] == "file1"
 
