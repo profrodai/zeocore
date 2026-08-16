@@ -12,7 +12,7 @@ ensuring proper typing throughout the codebase and avoiding the use of Any.
 from typing import Protocol, TypeVar, runtime_checkable
 
 T = TypeVar("T")  # Generic type for result content
-R = TypeVar("R")  # Generic type for return values
+R = TypeVar("R", covariant=True)  # Generic type for return values
 
 
 @runtime_checkable
