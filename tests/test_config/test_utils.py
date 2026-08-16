@@ -7,15 +7,10 @@ Tests for configuration utility functions.
 """
 
 import os
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-import yaml
-from quack_core.config.models import (
-    LoggingConfig,
-    QuackConfig,
-)
+from quack_core.config.models import QuackConfig
 from quack_core.config.utils import (
     get_config_value,
     get_env,
@@ -40,104 +35,21 @@ class TestConfigUtils:
         with patch.dict(os.environ, clear=True):
             assert get_env() == "development"
 
-    def test_load_env_config(self, temp_dir: Path, sample_config: QuackConfig) -> None:
-        """Test loading environment-specific configuration."""
-        # Create environment config files
-        dev_config = {"general": {"debug": True}, "logging": {"level": "DEBUG"}}
-        prod_config = {"general": {"debug": False}, "logging": {"level": "INFO"}}
-
-        # Convert Path to string for file paths
-        temp_dir_str = str(temp_dir)
-        dev_file = os.path.join(temp_dir_str, "development.yaml")
-        prod_file = os.path.join(temp_dir_str, "production.yaml")
-        test_file = os.path.join(temp_dir_str, "test.yml")  # Test with .yml extension
-
-        with open(dev_file, "w") as f:
-            yaml.dump(dev_config, f)
-
-        with open(prod_file, "w") as f:
-            yaml.dump(prod_config, f)
-
-        with open(test_file, "w") as f:
-            yaml.dump({"general": {"environment": "test"}}, f)
-
-        # Skip actual test implementation - just test the basic functionality
-        dev_result = QuackConfig(
-            general={
-                "project_name": sample_config.general.project_name,
-                "environment": sample_config.general.environment,
-                "debug": True,  # This is from dev_config
-                "verbose": sample_config.general.verbose,
-            },
-            paths=sample_config.paths,
-            logging=LoggingConfig(
-                level="DEBUG",  # This is from dev_config
-                file=sample_config.logging.file,
-                console=sample_config.logging.console,
-            ),
-            integrations=sample_config.integrations,
-            plugins=sample_config.plugins,
-            custom=sample_config.custom,
-        )
-
-        # Patch so test actually calls the original function but we replace the result
-        with patch("quack_core.config.utils.load_env_config", return_value=dev_result):
-            # Test Dev config
-            with patch("quack_core.config.utils.get_env", return_value="development"):
-                config = dev_result  # Directly use our mock result
-                assert config.general.debug is True
-                assert config.logging.level == "DEBUG"
-
-            # Test Prod config
-            prod_result = QuackConfig(
-                general={
-                    "project_name": sample_config.general.project_name,
-                    "environment": sample_config.general.environment,
-                    "debug": False,  # This is from prod_config
-                    "verbose": sample_config.general.verbose,
-                },
-                paths=sample_config.paths,
-                logging=LoggingConfig(
-                    level="INFO",  # This is from prod_config
-                    file=sample_config.logging.file,
-                    console=sample_config.logging.console,
-                ),
-                integrations=sample_config.integrations,
-                plugins=sample_config.plugins,
-                custom=sample_config.custom,
-            )
-            with patch("quack_core.config.utils.get_env", return_value="production"):
-                config = prod_result  # Directly use our mock result
-                assert config.general.debug is False
-                assert config.logging.level == "INFO"
-
-            # Test .yml extension
-            test_result = QuackConfig(
-                general={
-                    "project_name": sample_config.general.project_name,
-                    "environment": "test",  # This is from test_config
-                    "debug": sample_config.general.debug,
-                    "verbose": sample_config.general.verbose,
-                },
-                paths=sample_config.paths,
-                logging=sample_config.logging,
-                integrations=sample_config.integrations,
-                plugins=sample_config.plugins,
-                custom=sample_config.custom,
-            )
-            with patch("quack_core.config.utils.get_env", return_value="test"):
-                config = test_result  # Directly use our mock result
-                assert config.general.environment == "test"
-
-            # Test non-existent environment (return original)
-            with patch("quack_core.config.utils.get_env", return_value="nonexistent"):
-                # Return the original config directly
-                assert sample_config is sample_config
-
-            # Test error loading environment config (return original)
-            with patch("quack_core.config.utils.get_env", return_value="error"):
-                # Return the original config directly
-                assert sample_config is sample_config
+    # NOTE (test-fix-paths-plugins): test_load_env_config patched
+    # "quack_core.config.utils.load_env_config", a function that does not exist in
+    # quack_core/config/utils.py's current, real function list (get_env,
+    # get_config_value, validate_required_config, find_project_root) - it existed
+    # in this repo's early history (07a259e8, 3ad23a74) and was removed since, not
+    # a regression against current HEAD. Beyond the missing attribute, the test
+    # body never actually called the function under test at all: every assertion
+    # ran against a QuackConfig object built by hand in the test itself
+    # ("config = dev_result  # Directly use our mock result"), so even before the
+    # AttributeError this test asserted nothing about real load_env_config
+    # behavior - a hollow test per CLAUDE.md s6 (a prior author's own comment,
+    # "Skip actual test implementation - just test the basic functionality",
+    # already flagged this). Removed rather than resurrected against a removed
+    # function; escalate to Master if per-environment config loading should be
+    # rebuilt as new, chartered work.
 
     def test_get_config_value(self, sample_config: QuackConfig) -> None:
         """Test getting a configuration value by path."""

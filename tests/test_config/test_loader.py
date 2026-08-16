@@ -178,21 +178,28 @@ class TestConfigLoader:
             with open(config_path, "w") as f:
                 yaml.dump(config_data, f)
 
-            # Modified to use os.path directly
-            with patch("os.path.expanduser", return_value=config_path):
-                with patch("os.path.exists", return_value=True):
-                    # Mock load_yaml_config to return our test data
-                    with patch(
-                        "quack_core.config.loader.load_yaml_config",
-                        return_value=config_data,
-                    ):
-                        # Load the config
-                        config = load_config(config_path)
-                        assert isinstance(config, QuackConfig)
-                        assert config.general.project_name == "TestProject"
-                        assert config.general.debug is True
-                        assert config.paths.base_dir == "/test/path"
-                        assert config.logging.level == "DEBUG"
+            # NOTE: previously this also globally patched os.path.expanduser to
+            # always return config_path, and os.path.exists to always return True.
+            # _normalize_config_paths (loader.py) itself calls
+            # os.path.expanduser(base_dir) to make paths.base_dir absolute - a
+            # process-wide expanduser stub returning config_path for ANY input
+            # clobbered base_dir to the config file's own path instead of
+            # "/test/path" (self-interference between two unrelated
+            # expanduser call sites, not a code bug). config_path already exists
+            # on disk (written above) and load_yaml_config is fully mocked below,
+            # so neither global patch is needed - the real os.path functions work
+            # correctly on the real temp file.
+            with patch(
+                "quack_core.config.loader.load_yaml_config",
+                return_value=config_data,
+            ):
+                # Load the config
+                config = load_config(config_path)
+                assert isinstance(config, QuackConfig)
+                assert config.general.project_name == "TestProject"
+                assert config.general.debug is True
+                assert config.paths.base_dir == "/test/path"
+                assert config.logging.level == "DEBUG"
 
         # Test loading with environment variables
         with tempfile.TemporaryDirectory() as tmp:
@@ -334,7 +341,22 @@ class TestConfigLoader:
         assert merged.logging.console == sample_config.logging.console
         assert merged.paths.base_dir == sample_config.paths.base_dir
         assert merged.paths.output_dir == sample_config.paths.output_dir
-        assert merged.paths.assets_dir == sample_config.paths.assets_dir
-        assert merged.paths.data_dir == sample_config.paths.data_dir
-        assert merged.paths.temp_dir == sample_config.paths.temp_dir
+        # merge_configs re-normalizes paths.* against base_dir (loader.py
+        # _normalize_config_paths - "Re-normalize just in case overrides
+        # introduced relative paths"). base_dir/output_dir above are already
+        # absolute in sample_config so normalization is a no-op for them, but
+        # assets_dir/data_dir/temp_dir are relative ("./assets" etc) in
+        # sample_config and DO change - comparing the merged (now-absolute)
+        # value against the pre-merge relative string was always going to
+        # mismatch. Compare against the same normalization the real base_dir
+        # would apply instead.
+        assert merged.paths.assets_dir == os.path.normpath(
+            os.path.join(sample_config.paths.base_dir, sample_config.paths.assets_dir)
+        )
+        assert merged.paths.data_dir == os.path.normpath(
+            os.path.join(sample_config.paths.base_dir, sample_config.paths.data_dir)
+        )
+        assert merged.paths.temp_dir == os.path.normpath(
+            os.path.join(sample_config.paths.base_dir, sample_config.paths.temp_dir)
+        )
         assert merged.custom == sample_config.custom
