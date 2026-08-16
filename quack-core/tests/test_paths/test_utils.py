@@ -9,18 +9,20 @@ Tests for path utility functions.
 import os
 import tempfile
 from pathlib import Path
-from typing import Any
 from unittest.mock import patch
 
 import pytest
 from quack_core.core.errors import QuackFileNotFoundError
+from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.service import standalone as fs_standalone
 from quack_core.core.paths import service as paths
 
 
 # Create mock DataResult for fs _ops
 class MockDataResult:
-    def __init__(self, success: bool, data: Any, error: str | None = None) -> None:
+    def __init__(
+        self, success: bool, data: str | list[str], error: str | None = None
+    ) -> None:
         self.success = success
         self.data = data
         self.error = error
@@ -30,24 +32,24 @@ class MockDataResult:
 @pytest.fixture(autouse=True)
 def mock_fs_methods(monkeypatch: pytest.MonkeyPatch) -> None:
     # Mock join_path to return MockDataResult
-    def mock_join_path(*args: Any) -> MockDataResult:
+    def mock_join_path(*args: FsPathLike) -> MockDataResult:
         path_str = str(Path(*[str(arg) for arg in args]))
         return MockDataResult(True, path_str)
 
     # Mock split_path to return MockDataResult
-    def mock_split_path(path: Any) -> MockDataResult:
+    def mock_split_path(path: str | Path) -> MockDataResult:
         parts = Path(path).parts
         return MockDataResult(True, list(parts))
 
     # Mock get_extension to return MockDataResult
-    def mock_get_extension(path: Any) -> MockDataResult:
+    def mock_get_extension(path: str | Path) -> MockDataResult:
         suffix = Path(path).suffix
         if suffix.startswith("."):
             suffix = suffix[1:]
         return MockDataResult(True, suffix)
 
     # Mock normalize_path to return Path
-    def mock_normalize(path: Any) -> Path:
+    def mock_normalize(path: FsPathLike) -> Path:
         # Skip filesystem checks to avoid FileNotFoundError
         return Path(os.path.normpath(os.path.join(os.getcwd(), str(path)))).absolute()
 

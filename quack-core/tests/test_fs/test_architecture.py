@@ -27,7 +27,7 @@ PACKAGE_ROOT = Path(_fs_pkg.__file__).resolve().parent
 TESTS_ROOT = Path(__file__).resolve().parent
 
 
-def get_imports(file_path):
+def get_imports(file_path: Path) -> set[str]:
     """Parses a python file and returns a set of imported module names."""
     with open(file_path, encoding="utf-8") as f:
         try:
@@ -46,7 +46,7 @@ def get_imports(file_path):
     return imports
 
 
-def test_internal_import_boundary():
+def test_internal_import_boundary() -> None:
     """
     Enforce doctrine: _internal modules should NOT be imported outside of
     quack_core.core.fs._ops and quack_core.core.fs._internal itself.
@@ -80,7 +80,7 @@ def test_internal_import_boundary():
                         )
 
 
-def test_ops_import_boundary():
+def test_ops_import_boundary() -> None:
     """
     Enforce doctrine: _ops modules should NOT be imported outside of
     quack_core.core.fs.service.
