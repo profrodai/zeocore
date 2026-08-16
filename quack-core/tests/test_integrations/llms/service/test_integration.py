@@ -9,6 +9,7 @@ This module provides complete test coverage for the service/integration.py file,
 which contains the main LLMIntegration class implementation.
 """
 
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -78,7 +79,9 @@ class TestLLMIntegrationComprehensive:
 
     def test_init_custom(self) -> None:
         """Test initializing with custom parameters."""
-        with patch("quack_core.core.fs.service.get_file_info") as mock_file_info:
+        with patch(
+            "quack_core.core.fs.service.standalone.get_file_info"
+        ) as mock_file_info:
             # Create a proper FileInfoResult
             file_info_result = MagicMock()
             file_info_result.success = True
@@ -90,10 +93,13 @@ class TestLLMIntegrationComprehensive:
             with patch(
                 "quack_core.core.fs.service.standalone.resolve_path"
             ) as mock_resolve_path:
-                # Create a mock path string directly
+                # Create a mock path string directly. A plain SimpleNamespace
+                # (not a bare MagicMock) is required here: coerce_path_str's
+                # duck-typing checks .value()/.unwrap() before .path, and a
+                # bare MagicMock auto-vivifies both as callables, so it never
+                # reaches the real .path attribute.
                 mock_path = "/Users/rodrivera/custom_config.yaml"
-                mock_result = MagicMock()
-                mock_result.path = mock_path
+                mock_result = SimpleNamespace(path=mock_path)
                 mock_resolve_path.return_value = mock_result
 
                 # Mock os.getcwd to prevent FileNotFoundError
