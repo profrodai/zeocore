@@ -9,6 +9,10 @@
           {
             "type": "command",
             "command": "jq -r '.tool_input.command // empty' | { read -r c; if echo \"$c\" | grep -qE '(^|[;&|]|\\s)git\\s+stash(\\s|$)'; then echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"git stash is blocked in this repo: refs/stash is shared across git worktrees sharing one .git dir, and this chain has hit stash-collision risk multiple times. Use git worktree add <scratch-path> <sha> for before/after comparisons instead - proven safe by every round in the lint-mypy-backlog chain.\"}}'; fi; }"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/check-trunk-push.sh"
           }
         ]
       }
