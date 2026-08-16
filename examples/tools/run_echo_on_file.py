@@ -57,6 +57,8 @@ def main() -> None:
     # Import ToolRunner (this would normally be in quack_runner)
     # For this example, we'll create a simplified version inline
 
+    import logging
+
     from quack_core.contracts import RunManifest, ToolInfo, generate_run_id, utcnow
     from quack_core.core.fs.service import standalone as fs
     from quack_core.tools import ToolContext
@@ -71,6 +73,7 @@ def main() -> None:
         run_id=generate_run_id(),
         tool_name=tool.name,
         tool_version=tool.version,
+        logger=logging.getLogger(tool.name),
         fs=fs,
         work_dir=str(work_dir),
         output_dir=str(output_dir),

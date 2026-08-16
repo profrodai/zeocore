@@ -13,21 +13,16 @@ Demonstrates:
 - Proper CapabilityResult returns
 """
 
-from pydantic import BaseModel
-
-# ✅ CORRECT: Import contracts
-from quack_core.contracts import CapabilityResult
+# ✅ CORRECT: Import contracts, including the real EchoRequest -- it already
+# lives in quack_core.contracts.capabilities.demo.models (re-exported at
+# quack_core.contracts), so this file no longer duplicates it locally with a
+# stale, narrower shape (the duplicate was missing the real model's `preset`
+# field, causing a genuine type mismatch against every caller that -- like
+# this codebase's own examples -- correctly imports the real one).
+from quack_core.contracts import CapabilityResult, EchoRequest
 
 # ✅ CORRECT: Import from quack_core.tools (canonical path)
 from quack_core.tools import BaseQuackTool, ToolContext
-
-
-# Request model (in contracts in production)
-class EchoRequest(BaseModel):
-    """Request for echo tool."""
-
-    text: str
-    override_greeting: str | None = None
 
 
 class EchoTool(BaseQuackTool):

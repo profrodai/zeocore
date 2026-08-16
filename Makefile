@@ -241,7 +241,18 @@ typecheck: ## Run mypy in strict mode (the closest thing to tsc)
 	# the module name -- both routes now agree on "quack_core.*". Verified: no abort,
 	# 413 files still checked (unchanged), RULING-111's own falsifier (the
 	# "quack-core is not a valid Python package name" walk-up abort) does not fire.
-	MYPYPATH="$(REPO_ROOT)/quack-core:$(REPO_ROOT)/quack-core/src" $(PYTHON) -m mypy --explicit-package-bases $(SRC) $(TESTS) examples/
+	#
+	# lint-mypy-backlog round 15: examples/tools/*.py has no __init__.py (by design --
+	# these are standalone teaching scripts, each run directly via
+	# `sys.path.insert(0, str(Path(__file__).parent))` at runtime, not a real package).
+	# mypy's --explicit-package-bases walk therefore treats each examples/tools/*.py
+	# file as its own top-level module with no package relationship to its siblings,
+	# so `from echo_tool import EchoTool` (a script-relative sibling import that works
+	# at runtime) can't be resolved: "Cannot find implementation or library stub for
+	# module named echo_tool". Adding examples/tools to MYPYPATH, same mechanism as
+	# the quack-core/src line above, makes it an explicit package base mypy's own
+	# resolver can see -- config only, no __init__.py added, no restructure.
+	MYPYPATH="$(REPO_ROOT)/quack-core:$(REPO_ROOT)/quack-core/src:$(REPO_ROOT)/examples/tools" $(PYTHON) -m mypy --explicit-package-bases $(SRC) $(TESTS) examples/
 
 .PHONY: hygiene-check
 hygiene-check: ## Fail if production code detects that it is under test (RULING-111 s2/s2a: widened)
