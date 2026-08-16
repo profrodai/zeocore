@@ -6,6 +6,7 @@
 Mock Anthropic classes for LLM testing.
 """
 
+from collections.abc import Generator
 from types import TracebackType
 from typing import Any
 from unittest.mock import MagicMock
@@ -59,8 +60,17 @@ class MockAnthropicResponse(MockLLMResponse):
         self.stop_reason = stop_reason or finish_reason
         self.stop_sequence = stop_sequence
 
-        # Create Anthropic-style structure
-        self.content = [MagicMock(type="text", text=content)]
+        # Create Anthropic-style structure. Deliberately widens
+        # MockLLMResponse.content (str) to the real Anthropic SDK's
+        # response.content shape -- a list of content blocks with .text
+        # (see AnthropicClient._chat_with_provider reading
+        # response.content[0].text, integrations/llms/clients/anthropic.py).
+        # The instance is used as an Anthropic SDK response stand-in, not
+        # via the base class's own get_content()/to_dict(), so the widened
+        # type is the intended, exercised shape -- scoped ignore, not a bug.
+        self.content: list[MagicMock] = [  # type: ignore[assignment]
+            MagicMock(type="text", text=content)
+        ]
 
     def to_anthropic_format(self) -> dict[str, Any]:
         """Convert to Anthropic API format."""
@@ -113,7 +123,7 @@ class MockAnthropicStreamingResponse(MockStreamingGenerator):
             error_after=error_after,
         )
         self.id = id_
-        self.chunks_iter = None
+        self.chunks_iter: Generator[str] | None = None
 
     def __iter__(self) -> "MockAnthropicStreamingResponse":
         """Return self as iterator."""
@@ -132,6 +142,11 @@ class MockAnthropicStreamingResponse(MockStreamingGenerator):
             Exception: If error is set and error_after chunks have been yielded
         """
         try:
+            # __iter__ always runs before __next__ in the iteration protocol
+            # and sets chunks_iter, so it is never actually None here; mypy
+            # cannot see that ordering guarantee across dunder methods.
+            if self.chunks_iter is None:
+                self.chunks_iter = self.generate_chunks()
             chunk_text = next(self.chunks_iter)
 
             # Create a mock chunk in Anthropic format
@@ -213,10 +228,15 @@ class MockAnthropicErrorResponse:
             }
         }
 
-        # Create an exception with Anthropic-like attributes
+        # Create an exception with Anthropic-like attributes. Real Anthropic
+        # SDK exceptions carry .response/.error; a bare Exception does not,
+        # so this is deliberate dynamic attribute injection to mimic the
+        # real SDK's error shape for tests -- scoped ignore, same precedent
+        # as round 10/11's InvalidPlugin/InvalidProvider deliberate-shape
+        # ignores.
         exception = Exception(f"Anthropic API error: {self.message}")
-        exception.response = response
-        exception.error = error
+        exception.response = response  # type: ignore[attr-defined]
+        exception.error = error  # type: ignore[attr-defined]
 
         return exception
 
@@ -226,10 +246,10 @@ class MockAnthropicClient(MockClient):
 
     def __init__(
         self,
-        responses: list[str] = None,
-        token_counts: list[int] = None,
+        responses: list[str] | None = None,
+        token_counts: list[int] | None = None,
         model: str = "claude-3-opus-20240229",
-        errors: list[Exception] = None,
+        errors: list[Exception] | None = None,
         **kwargs: Any,  # noqa: ANN401 -- passthrough to MockClient/LLMClient's own **kwargs
     ) -> None:
         """
@@ -251,7 +271,7 @@ class MockAnthropicClient(MockClient):
         )
 
         # Track Anthropic-specific data
-        self.anthropic_requests = []
+        self.anthropic_requests: list[dict[str, Any]] = []
 
     def messages_create(
         self,
