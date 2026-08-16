@@ -9,7 +9,7 @@ This module tests the API utilities for the Google Mail integration,
 including request execution and exponential backoff.
 """
 
-from typing import TypeVar
+from typing import TypeVar, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -32,7 +32,11 @@ class TestGmailApiUtils:
 
         # Create a mock that conforms to the GmailRequest protocol
         class MockGmailRequest(GmailRequest[dict[str, object]]):
-            def __init__(self, return_value=None, side_effect=None) -> None:
+            def __init__(
+                self,
+                return_value: dict[str, object] | None = None,
+                side_effect: BaseException | None = None,
+            ) -> None:
                 self.return_value = return_value
                 self.side_effect = side_effect
                 self.call_count = 0
@@ -41,7 +45,7 @@ class TestGmailApiUtils:
                 self.call_count += 1
                 if self.side_effect:
                     raise self.side_effect
-                return self.return_value
+                return cast(dict[str, object], self.return_value)
 
         # Test successful execution
         mock_request = MockGmailRequest(return_value={"id": "msg1", "payload": {}})

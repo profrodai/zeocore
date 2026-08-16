@@ -30,15 +30,22 @@ class TestGmailEmailOperations:
     """Tests for Gmail email _ops."""
 
     @pytest.fixture
-    def mock_gmail_service(self):
-        """Create a protocol-compatible mock Gmail service."""
+    def mock_gmail_service(
+        self,
+    ) -> Any:  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        """Create a protocol-compatible mock Gmail service.
+
+        Typed as Any (not GmailService) because tests below reach through
+        to mock-only attributes (e.g. list_return, last_user_id) that are
+        not part of the GmailService protocol surface.
+        """
 
         # Create a proper mock hierarchy that matches the protocol structure
         class MockRequest(GmailRequest):
-            def __init__(self, return_value) -> None:
+            def __init__(self, return_value: object) -> None:
                 self.return_value = return_value
 
-            def execute(self):
+            def execute(self) -> object:
                 return self.return_value
 
         class MockAttachmentsResource(GmailAttachmentsResource):
@@ -180,7 +187,10 @@ class TestGmailEmailOperations:
         clean = email.clean_filename("")
         assert clean == ""
 
-    def test_list_emails(self, mock_gmail_service) -> None:
+    def test_list_emails(
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+    ) -> None:
         """Test listing emails."""
         logger = logging.getLogger("test_gmail")
 
@@ -224,7 +234,10 @@ class TestGmailEmailOperations:
             assert result.success is False
             assert "Failed to list emails" in result.error
 
-    def test_get_message_with_retry(self, mock_gmail_service) -> None:
+    def test_get_message_with_retry(
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+    ) -> None:
         """Test getting a message with retry logic."""
         logger = logging.getLogger("test_gmail")
 
@@ -268,7 +281,10 @@ class TestGmailEmailOperations:
         error_resp.status = 500
 
         # Create a function that always raises HTTPError with our mock response
-        def raise_http_error(*args: Any, **kwargs: Any) -> None:
+        def raise_http_error(
+            *args: Any,  # noqa: ANN401 -- simulates arbitrary API call signature
+            **kwargs: Any,  # noqa: ANN401 -- simulates arbitrary API call signature
+        ) -> None:
             raise HttpError(resp=error_resp, content=b"Server error")
 
         # Create a mock with this side effect
@@ -299,7 +315,7 @@ class TestGmailEmailOperations:
         self,
         mock_get_message: MagicMock,
         mock_process_parts: MagicMock,
-        mock_gmail_service,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
     ) -> None:
         """Test downloading an email."""
         logger = logging.getLogger("test_gmail")

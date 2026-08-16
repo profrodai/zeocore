@@ -20,7 +20,9 @@ class TestGoogleDriveServiceFolders:
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
-    def test_create_folder(self, mock_init_config, mock_verify) -> None:
+    def test_create_folder(
+        self, mock_init_config: MagicMock, mock_verify: MagicMock
+    ) -> None:
         """Test creating a folder."""
         # Bypass verification
         mock_verify.return_value = None
@@ -88,7 +90,9 @@ class TestGoogleDriveServiceFolders:
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
-    def test_delete_file(self, mock_init_config, mock_verify) -> None:
+    def test_delete_file(
+        self, mock_init_config: MagicMock, mock_verify: MagicMock
+    ) -> None:
         """Test deleting a file or folder."""
         # Bypass verification
         mock_verify.return_value = None

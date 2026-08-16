@@ -6,6 +6,7 @@
 Tests for Google Drive service file _ops.
 """
 
+from collections.abc import Generator
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -20,7 +21,7 @@ class TestGoogleDriveServiceFiles:
     """Tests for the GoogleDriveService file _ops."""
 
     @pytest.fixture
-    def drive_service(self):
+    def drive_service(self) -> Generator[GoogleDriveService, None, None]:
         """Set up a Google Drive service with mocked dependencies."""
         # Mock the paths service
         with patch(
@@ -55,7 +56,9 @@ class TestGoogleDriveServiceFiles:
                     # Yield the service to the test
                     yield service
 
-    def test_resolve_file_details(self, drive_service, tmp_path: Path) -> None:
+    def test_resolve_file_details(
+        self, drive_service: GoogleDriveService, tmp_path: Path
+    ) -> None:
         """Test resolving file details."""
         # Create a test file
         test_file = tmp_path / "test_file.txt"
@@ -171,7 +174,9 @@ class TestGoogleDriveServiceFiles:
                             "nonexistent.txt", None, None
                         )
 
-    def test_resolve_download_path(self, drive_service, tmp_path: Path) -> None:
+    def test_resolve_download_path(
+        self, drive_service: GoogleDriveService, tmp_path: Path
+    ) -> None:
         """Test resolving download path."""
         # Test with no local path specified (should create temp dir)
         file_metadata = {"name": "test_file.txt"}
@@ -274,7 +279,7 @@ class TestGoogleDriveServiceFiles:
                     # Test we get the expected result
                     assert result == str(mapped_file)
 
-    def test_build_query(self, drive_service) -> None:
+    def test_build_query(self, drive_service: GoogleDriveService) -> None:
         """Test building query string for listing files."""
         # Test with folder ID
         query = drive_service._build_query("folder123", None)
