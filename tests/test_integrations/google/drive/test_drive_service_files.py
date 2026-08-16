@@ -78,7 +78,7 @@ class TestGoogleDriveServiceFiles:
                 "quack_core.integrations.google.drive.service.standalone"
             ) as mock_fs:
                 mock_fs.get_file_info.return_value = FileInfoResult(
-                    success=True, path=test_file, exists=True, is_file=True
+                    ok=True, path=test_file, exists=True, is_file=True
                 )
                 # Mock get_mime_type
                 mock_fs.get_mime_type.return_value = "text/plain"
@@ -119,7 +119,7 @@ class TestGoogleDriveServiceFiles:
                 "quack_core.integrations.google.drive.service.standalone"
             ) as mock_fs:
                 mock_fs.get_file_info.return_value = FileInfoResult(
-                    success=True, path=test_file, exists=True, is_file=True
+                    ok=True, path=test_file, exists=True, is_file=True
                 )
                 mock_fs.get_mime_type.return_value = "text/plain"
 
@@ -160,7 +160,7 @@ class TestGoogleDriveServiceFiles:
             ) as mock_fs:
                 # Configure the mock to raise QuackFileNotFoundError
                 mock_fs.get_file_info.return_value = FileInfoResult(
-                    success=False, path=test_file, exists=False
+                    ok=False, path=test_file, exists=False
                 )
 
                 # Make the method raise the exception when file info shows not exists
@@ -221,7 +221,7 @@ class TestGoogleDriveServiceFiles:
             ) as mock_fs:
                 # Setup mock to return expected values for all called methods
                 mock_fs.get_file_info.return_value = FileInfoResult(
-                    success=True, path=mapped_dir, exists=True, is_dir=True
+                    ok=True, path=mapped_dir, exists=True, is_dir=True
                 )
                 joined_path = mapped_dir / "test_file.txt"
                 mock_fs.join_path.return_value = joined_path
@@ -258,7 +258,7 @@ class TestGoogleDriveServiceFiles:
             ) as mock_fs:
                 # Setup mock to return a file
                 mock_fs.get_file_info.return_value = FileInfoResult(
-                    success=True,
+                    ok=True,
                     path=mapped_file,
                     exists=True,
                     is_file=True,
