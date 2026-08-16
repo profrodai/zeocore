@@ -31,18 +31,22 @@ class TestLLMService:
         service = LLMIntegration()
 
         # Mock the file _ops using our fs module
-        with patch("quack_core.core.fs.service.get_file_info") as mock_file_info:
+        with patch(
+            "quack_core.core.fs.service.standalone.get_file_info"
+        ) as mock_file_info:
             file_info_result = FileInfoResult(
-                success=True,
+                ok=True,
                 path="./config/llm_config.yaml",
                 exists=True,
                 is_file=True,
             )
             mock_file_info.return_value = file_info_result
 
-            with patch("quack_core.core.fs.service.read_yaml") as mock_read_yaml:
+            with patch(
+                "quack_core.core.fs.service.standalone.read_yaml"
+            ) as mock_read_yaml:
                 yaml_result = DataResult(
-                    success=True,
+                    ok=True,
                     path="./config/llm_config.yaml",
                     data={
                         "default_provider": "openai",
@@ -79,10 +83,12 @@ class TestLLMService:
         assert service._initialized is False
 
         # Test with custom parameters
-        with patch("quack_core.core.fs.service.get_file_info") as mock_file_info:
+        with patch(
+            "quack_core.core.fs.service.standalone.get_file_info"
+        ) as mock_file_info:
             # Create a proper FileInfoResult
             file_info_result = FileInfoResult(
-                success=True,
+                ok=True,
                 path="config.yaml",
                 exists=True,
                 is_file=True,
@@ -90,7 +96,9 @@ class TestLLMService:
             mock_file_info.return_value = file_info_result
 
             # Also patch normalize_path to handle the config path
-            with patch("quack_core.core.fs.api.normalize_path") as mock_normalize_path:
+            with patch(
+                "quack_core.core.fs.service.standalone.normalize_path"
+            ) as mock_normalize_path:
                 # Create a mock Path object instead of using absolute()
                 mock_path = "/Users/rodrivera/config.yaml"
                 mock_normalize_path.return_value = mock_path
