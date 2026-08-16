@@ -20,6 +20,34 @@ from quack_core.core.logging import get_logger
 logger = get_logger(__name__)
 
 
+def _require_response(e: requests.exceptions.HTTPError) -> requests.Response:
+    """
+    Narrow `HTTPError.response` from `Response | None` to `Response`.
+
+    `requests`' own stubs type `response` as `Response | None` because the
+    attribute is genuinely optional at the library level (confirmed via
+    `RequestException.__init__`'s own signature). In this codebase the
+    invariant holds in practice: the one real call path
+    (`response.raise_for_status()`, confirmed via
+    `Response.raise_for_status`'s own source) always sets `response=self` on
+    the raised error before either `_is_rate_limited_response` or
+    `_handle_http_error` ever see it. Rather than assert past the type
+    checker with an unchecked `e.response` access (or a blanket
+    `# type: ignore`) for an invariant resting partly on an external
+    library, fail loudly and specifically if it is ever violated -- the
+    same "don't trust, verify" posture as the rest of this module's error
+    handling, and shared by both call sites so the guard shape is defined
+    once.
+    """
+    if e.response is None:
+        raise QuackApiError(
+            "GitHub API error: HTTPError raised with no response object",
+            service="GitHub",
+            original_error=e,
+        ) from e
+    return e.response
+
+
 def _handle_rate_limit(
     headers: Mapping[str, str],
     url: str,
@@ -65,10 +93,11 @@ def _handle_rate_limit(
 
 def _is_rate_limited_response(e: requests.exceptions.HTTPError) -> bool:
     """True if an HTTPError's response indicates GitHub rate limiting."""
-    return e.response.status_code == 429 or (
-        hasattr(e.response, "headers")
-        and "X-RateLimit-Remaining" in e.response.headers
-        and int(e.response.headers["X-RateLimit-Remaining"]) == 0
+    response = _require_response(e)
+    return response.status_code == 429 or (
+        hasattr(response, "headers")
+        and "X-RateLimit-Remaining" in response.headers
+        and int(response.headers["X-RateLimit-Remaining"]) == 0
     )
 
 
@@ -88,17 +117,18 @@ def _handle_http_error(
     Returns normally (meaning: sleep happened, caller should `continue`) or
     raises. Never returns without either raising or having slept.
     """
-    status_code = e.response.status_code
+    response = _require_response(e)
+    status_code = response.status_code
 
     if status_code in (401, 403):
         raise QuackAuthenticationError(
-            f"GitHub API authentication failed: {e.response.text}",
+            f"GitHub API authentication failed: {response.text}",
             service="GitHub",
             original_error=e,
         ) from e
 
     if _is_rate_limited_response(e):
-        _handle_rate_limit(e.response.headers, url, attempt, max_retries, e)
+        _handle_rate_limit(response.headers, url, attempt, max_retries, e)
         return
 
     if status_code >= 500 and attempt < max_retries:
@@ -112,7 +142,7 @@ def _handle_http_error(
 
     error_message = str(e)
     try:
-        error_data = e.response.json()
+        error_data = response.json()
         if "message" in error_data:
             error_message = error_data["message"]
     except (ValueError, KeyError, AttributeError):
@@ -191,6 +221,14 @@ def make_request(
         QuackQuotaExceededError: If rate limit is exceeded
         QuackApiError: For other API errors
     """
+    if max_retries < 1:
+        raise QuackApiError(
+            f"GitHub API error: make_request called with max_retries="
+            f"{max_retries} (must be >= 1)",
+            service="GitHub",
+            api_method=url,
+        )
+
     full_url = f"{api_url}{url}"
     kwargs.setdefault("timeout", timeout)
 
@@ -245,3 +283,18 @@ def make_request(
                 api_method=url,
                 original_error=e,
             ) from e
+
+    # Structurally unreachable: every branch above either returns or raises,
+    # and max_retries < 1 is rejected before the loop starts, so the loop
+    # always executes at least one iteration. mypy's flow analysis cannot
+    # see that (it does not reason about range()'s bounds or about whether
+    # a called function always raises), so it flags this function as
+    # possibly falling off the end. Close the gap explicitly rather than
+    # silence the checker -- this also documents the invariant and would
+    # fail loudly if a future edit ever actually broke it.
+    raise QuackApiError(
+        "GitHub API error: retry loop exited without returning a response "
+        "or raising",
+        service="GitHub",
+        api_method=url,
+    )
