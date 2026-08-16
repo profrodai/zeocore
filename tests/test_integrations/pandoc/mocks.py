@@ -5,6 +5,7 @@
 import os
 import time
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -66,7 +67,11 @@ def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
     )
 
     # Set the standalone attribute directly in the sys.modules
-    sys.modules["quack_core.core.fs.service"].standalone = stub
+    # sys.modules[...] is typed ModuleType, no static `standalone` attribute --
+    # a deliberate dynamic monkeypatch, bound through one Any-typed local
+    # rather than per-access ignored (same shape as conftest.py's fs_stub).
+    fs_service_mod: Any = sys.modules["quack_core.core.fs.service"]
+    fs_service_mod.standalone = stub
 
     return stub
 
@@ -99,7 +104,10 @@ def mock_paths_service(monkeypatch: MonkeyPatch) -> MagicMock:
 
         temp_module = types.ModuleType("quack_core.core.paths")
         pytest.importorskip("sys").modules["quack_core.core.paths"] = temp_module
-        temp_module.service = mock
+        # `service` is not a static attribute of ModuleType -- deliberate
+        # dynamic monkeypatch, same shape as fs_service_mod above.
+        temp_module_any: Any = temp_module
+        temp_module_any.service = mock
     else:
         monkeypatch.setattr("quack_core.core.paths.service", mock)
 
