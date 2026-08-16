@@ -50,7 +50,10 @@ def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
         def __init__(
             self,
             success: bool = True,
-            data: Any = None,
+            data: Any = None,  # noqa: ANN401 -- mirrors the real DataResult's
+            # deliberately heterogeneous data field (str, dict, list, model,
+            # depending on the operation); a mock stub for it is correctly
+            # just as loose.
             error: str | None = None,
             path: str = "/dummy/path",
             message: str | None = None,
