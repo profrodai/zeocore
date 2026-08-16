@@ -101,7 +101,7 @@ class BaseQuackTool(ABC):
         # Freeze identity (Recommendation #2)
         object.__setattr__(self, "_identity_frozen", True)
 
-    def __setattr__(self, name: str, value: Any) -> None:
+    def __setattr__(self, name: str, value: Any) -> None:  # noqa: ANN401 -- dunder hook accepts any attribute value being assigned
         """
         Prevent mutation of identity fields after initialization.
 
@@ -146,7 +146,11 @@ class BaseQuackTool(ABC):
         return True
 
     @abstractmethod
-    def run(self, request: Any, ctx: "ToolContext") -> CapabilityResult[Any]:
+    def run(
+        self,
+        request: Any,  # noqa: ANN401 -- request type is per-tool (subclasses narrow to their own Pydantic request model)
+        ctx: "ToolContext",
+    ) -> CapabilityResult[Any]:
         """
         Execute the tool capability.
 

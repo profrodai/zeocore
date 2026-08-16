@@ -59,7 +59,9 @@ class ToolEnvInitializerMixin:
     """
 
     @staticmethod
-    def _normalize_fs_result(result: Any) -> tuple[bool, Any, str | None, bool]:
+    def _normalize_fs_result(
+        result: Any,  # noqa: ANN401 -- result is a duck-typed FS response object; this method exists specifically to tolerate the varying .success/.ok, .data/.value contract shapes (see MIGRATION COMPAT docstring above)
+    ) -> tuple[bool, Any, str | None, bool]:
         """
         Normalize FS result to common pattern (MIGRATION COMPAT MODE).
 
@@ -88,7 +90,11 @@ class ToolEnvInitializerMixin:
         return bool(success), data, error, used_normalization
 
     def _validate_directory(
-        self, path: str, name: str, fs: Any, ctx: ToolContext | None = None
+        self,
+        path: str,
+        name: str,
+        fs: Any,  # noqa: ANN401 -- fs is the runner-provided duck-typed filesystem service (no fixed protocol exists; see class docstring FS CONTRACT)
+        ctx: ToolContext | None = None,
     ) -> CapabilityResult[None]:
         """
         Strictly validate a directory exists and is actually a directory.
