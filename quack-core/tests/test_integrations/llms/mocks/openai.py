@@ -28,7 +28,7 @@ class MockOpenAIResponse(MockLLMResponse):
         finish_reason: str = "stop",
         error: Exception | None = None,
         object_type: str = "chat.completion",
-        id: str = "chatcmpl-123",
+        id_: str = "chatcmpl-123",
         created: int = 1677858242,
     ) -> None:
         """
@@ -41,7 +41,7 @@ class MockOpenAIResponse(MockLLMResponse):
             finish_reason: Reason the generation finished
             error: Optional error to raise instead of returning a response
             object_type: Type of OpenAI object
-            id: The ID of the completion
+            id_: The ID of the completion
             created: Unix timestamp for when the completion was created
         """
         super().__init__(
@@ -52,7 +52,7 @@ class MockOpenAIResponse(MockLLMResponse):
             error=error,
         )
 
-        self.id = id
+        self.id = id_
         self.object = object_type
         self.created = created
 
@@ -156,7 +156,7 @@ class MockOpenAIErrorResponse:
         self,
         message: str = "OpenAI API error",
         code: str = "rate_limit_exceeded",
-        type: str = "server_error",
+        type_: str = "server_error",
         param: str | None = None,
         status_code: int = 429,
     ) -> None:
@@ -166,13 +166,13 @@ class MockOpenAIErrorResponse:
         Args:
             message: Error message
             code: Error code
-            type: Error type
+            type_: Error type
             param: Parameter that caused the error
             status_code: HTTP status code
         """
         self.message = message
         self.code = code
-        self.type = type
+        self.type = type_
         self.param = param
         self.status_code = status_code
 
