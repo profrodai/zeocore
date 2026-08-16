@@ -209,6 +209,7 @@ class TestFallbackLLMClient:
             # Check the provider status was updated
             status = fallback_client._provider_status["openai"]
             assert status.available is False
+            assert status.last_error is not None
             assert "Failed to initialize" in status.last_error
             assert status.fail_count == 1
 
@@ -242,6 +243,7 @@ class TestFallbackLLMClient:
 
                 assert result.success is True
                 assert result.content == "OpenAI response"
+                assert result.message is not None
                 assert "via openai" in result.message
                 assert fallback_client._last_successful_provider == "openai"
 
@@ -282,12 +284,14 @@ class TestFallbackLLMClient:
 
                 assert result.success is True
                 assert result.content == "Anthropic response"
+                assert result.message is not None
                 assert "via anthropic" in result.message
                 assert fallback_client._last_successful_provider == "anthropic"
 
                 # Check provider status
                 openai_status = fallback_client._provider_status["openai"]
                 assert openai_status.fail_count >= 1  # Changed from "== 1" to ">= 1"
+                assert openai_status.last_error is not None
                 assert "Rate limit exceeded" in openai_status.last_error
 
                 anthropic_status = fallback_client._provider_status["anthropic"]
@@ -312,4 +316,5 @@ class TestFallbackLLMClient:
 
             assert result.success is True
             assert result.content == 42
+            assert result.message is not None
             assert "via openai" in result.message

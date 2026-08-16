@@ -80,4 +80,5 @@ class TestGoogleDriveServiceList:
         )
         result = service.list_files()
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error

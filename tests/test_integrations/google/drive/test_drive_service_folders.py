@@ -84,6 +84,7 @@ class TestGoogleDriveServiceFolders:
         )
         result = service.create_folder("Error Folder")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
 
     @patch(
@@ -138,4 +139,5 @@ class TestGoogleDriveServiceFolders:
         )
         result = service.delete_file("error_fileId")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error

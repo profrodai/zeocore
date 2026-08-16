@@ -259,6 +259,7 @@ class TestDriveOperationsUpload:
                 result = upload.upload_file(mock_drive_service, str(test_file))
 
                 assert result.success is False
+                assert result.error is not None
                 assert "Failed to read file: Read error" in result.error
 
     def test_upload_file_api_error(self, tmp_path: Path) -> None:
@@ -308,6 +309,7 @@ class TestDriveOperationsUpload:
                         result = upload.upload_file(mock_drive_service, str(test_file))
 
                         assert result.success is False
+                        assert result.error is not None
                         assert "API error" in result.error
 
     def test_upload_file_with_specific_metadata(self, tmp_path: Path) -> None:

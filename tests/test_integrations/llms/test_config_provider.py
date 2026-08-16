@@ -138,6 +138,7 @@ class TestLLMConfigProvider:
 
             # Verify the result
             assert result.success is True
+            assert result.content is not None
             assert "default_provider" in result.content
             assert result.content["default_provider"] == "anthropic"
         finally:

@@ -72,6 +72,7 @@ class TestGoogleDriveServicePermissions:
         )
         result = service.set_file_permissions("file123")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
 
     @patch(
@@ -138,4 +139,5 @@ class TestGoogleDriveServicePermissions:
         )
         result = service.get_sharing_link("file123")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error

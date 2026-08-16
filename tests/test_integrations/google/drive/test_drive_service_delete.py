@@ -61,6 +61,7 @@ class TestGoogleDriveServiceDelete:
         )
         result = service.delete_file("file123", permanent=True)
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
 
         # Test API error (update)
@@ -69,4 +70,5 @@ class TestGoogleDriveServiceDelete:
         )
         result = service.delete_file("file123")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
