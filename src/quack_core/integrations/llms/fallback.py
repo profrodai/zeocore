@@ -254,6 +254,140 @@ class FallbackLLMClient(LLMClient):
             ]
         )
 
+    def _resolve_providers_to_try(self) -> list[str]:
+        """
+        Determine the provider order to attempt, preferring the last success.
+
+        Returns:
+            list[str]: Providers in the order they should be tried.
+        """
+        # If we have a successful provider and config says to use it, try it first
+        if (
+            self._last_successful_provider
+            and self._fallback_config.stop_on_successful_provider
+        ):
+            return [
+                self._last_successful_provider,
+                *[
+                    p
+                    for p in self._fallback_config.providers
+                    if p != self._last_successful_provider
+                ],
+            ]
+        return self._fallback_config.providers
+
+    def _try_chat_attempt(
+        self,
+        provider: str,
+        provider_status: ProviderStatus,
+        client: LLMClient,
+        messages: list[ChatMessage],
+        options: LLMOptions,
+        callback: Callable[[str], None] | None,
+        attempt: int,
+        max_attempts: int,
+    ) -> tuple[IntegrationResult[str] | None, Exception | None, bool]:
+        """
+        Perform a single chat attempt against a provider.
+
+        Args:
+            provider: Provider name being attempted.
+            provider_status: Mutable status record for the provider.
+            client: LLM client for the provider.
+            messages: List of messages for the conversation.
+            options: Options for the completion request, may be replaced
+                with a copy carrying a provider-specific model.
+            callback: Optional streaming callback.
+            attempt: Current attempt number, 1-indexed.
+            max_attempts: Maximum attempts configured for this provider.
+
+        Returns:
+            Tuple of (result, error, stop_retrying). If result is not None,
+            the request succeeded and the caller should return it
+            immediately. Otherwise error holds the last error to record and
+            stop_retrying indicates whether the caller should break out of
+            the attempt loop (True) or continue to the next attempt
+            (False).
+        """
+        try:
+            # Start the request
+            self.logger.debug(
+                f"Sending request to {provider} (attempt {attempt}/{max_attempts})"
+            )
+
+            # Set the model in options if not already set
+            if options.model is None:
+                provider_model = self._model_map.get(provider)
+                if provider_model:
+                    # Create a copy to avoid modifying the original
+                    options = LLMOptions(**options.model_dump())
+                    options.model = provider_model
+
+            # Send the request
+            start_time = time.time()
+            result = client.chat(messages, options, callback)
+            elapsed_time = time.time() - start_time
+
+            # If successful, update status and return
+            if result.success:
+                self.logger.info(
+                    f"Request to {provider} succeeded in {elapsed_time:.2f}s"
+                )
+                provider_status.success_count += 1
+                provider_status.last_attempt_time = time.time()
+                self._last_successful_provider = provider
+
+                # Add provider info to result
+                if result.message:
+                    result.message = f"{result.message} (via {provider})"
+                else:
+                    result.message = f"Success (via {provider})"
+
+                return result, None, True
+
+            return None, None, False
+
+        except QuackApiError as e:
+            # Handle API errors
+            error_time = time.time()
+            provider_status.last_attempt_time = error_time
+            provider_status.last_error = str(e)
+            provider_status.fail_count += 1
+
+            # Check if it's an auth error and we should fail fast
+            if self._fallback_config.fail_fast_on_auth_errors and self._is_auth_error(
+                e
+            ):
+                self.logger.warning(
+                    f"Authentication error with {provider}, "
+                    f"skipping remaining attempts: {e}"
+                )
+                return None, e, True
+
+            # If it's the last attempt for this provider, log and
+            # continue to next
+            if attempt == max_attempts:
+                self.logger.warning(f"All attempts failed for provider {provider}: {e}")
+                return None, e, True
+
+            # Otherwise retry
+            retry_delay = min(2 ** (attempt - 1), 30)  # Exponential backoff
+            self.logger.warning(
+                f"Attempt {attempt}/{max_attempts} failed for {provider}, "
+                f"retrying in {retry_delay}s: {e}"
+            )
+            time.sleep(retry_delay)
+            return None, None, False
+
+        except Exception as e:
+            # Handle other exceptions
+            provider_status.last_attempt_time = time.time()
+            provider_status.last_error = str(e)
+            provider_status.fail_count += 1
+
+            self.logger.error(f"Unexpected error with provider {provider}: {e}")
+            return None, e, True  # Don't retry on unexpected errors
+
     def _chat_with_provider(
         self,
         messages: list[ChatMessage],
@@ -274,21 +408,7 @@ class FallbackLLMClient(LLMClient):
         Returns:
             IntegrationResult[str]: Result of the chat completion request
         """
-        # If we have a successful provider and config says to use it, try it first
-        if (
-            self._last_successful_provider
-            and self._fallback_config.stop_on_successful_provider
-        ):
-            providers_to_try = [
-                self._last_successful_provider,
-                *[
-                    p
-                    for p in self._fallback_config.providers
-                    if p != self._last_successful_provider
-                ],
-            ]
-        else:
-            providers_to_try = self._fallback_config.providers
+        providers_to_try = self._resolve_providers_to_try()
 
         last_error = None
 
@@ -322,87 +442,22 @@ class FallbackLLMClient(LLMClient):
             max_attempts = self._fallback_config.max_attempts_per_provider
 
             for attempt in range(1, max_attempts + 1):
-                try:
-                    # Start the request
-                    self.logger.debug(
-                        f"Sending request to {provider} "
-                        f"(attempt {attempt}/{max_attempts})"
-                    )
-
-                    # Set the model in options if not already set
-                    if options.model is None:
-                        provider_model = self._model_map.get(provider)
-                        if provider_model:
-                            # Create a copy to avoid modifying the original
-                            options = LLMOptions(**options.model_dump())
-                            options.model = provider_model
-
-                    # Send the request
-                    start_time = time.time()
-                    result = client.chat(messages, options, callback)
-                    elapsed_time = time.time() - start_time
-
-                    # If successful, update status and return
-                    if result.success:
-                        self.logger.info(
-                            f"Request to {provider} succeeded in {elapsed_time:.2f}s"
-                        )
-                        provider_status.success_count += 1
-                        provider_status.last_attempt_time = time.time()
-                        self._last_successful_provider = provider
-
-                        # Add provider info to result
-                        if result.message:
-                            result.message = f"{result.message} (via {provider})"
-                        else:
-                            result.message = f"Success (via {provider})"
-
-                        return result
-
-                except QuackApiError as e:
-                    # Handle API errors
-                    error_time = time.time()
-                    provider_status.last_attempt_time = error_time
-                    provider_status.last_error = str(e)
-                    provider_status.fail_count += 1
-
-                    # Check if it's an auth error and we should fail fast
-                    if (
-                        self._fallback_config.fail_fast_on_auth_errors
-                        and self._is_auth_error(e)
-                    ):
-                        self.logger.warning(
-                            f"Authentication error with {provider}, "
-                            f"skipping remaining attempts: {e}"
-                        )
-                        last_error = e
-                        break
-
-                    # If it's the last attempt for this provider, log and
-                    # continue to next
-                    if attempt == max_attempts:
-                        self.logger.warning(
-                            f"All attempts failed for provider {provider}: {e}"
-                        )
-                        last_error = e
-                    else:
-                        # Otherwise retry
-                        retry_delay = min(2 ** (attempt - 1), 30)  # Exponential backoff
-                        self.logger.warning(
-                            f"Attempt {attempt}/{max_attempts} failed for {provider}, "
-                            f"retrying in {retry_delay}s: {e}"
-                        )
-                        time.sleep(retry_delay)
-
-                except Exception as e:
-                    # Handle other exceptions
-                    provider_status.last_attempt_time = time.time()
-                    provider_status.last_error = str(e)
-                    provider_status.fail_count += 1
-
-                    self.logger.error(f"Unexpected error with provider {provider}: {e}")
-                    last_error = e
-                    break  # Don't retry on unexpected errors
+                result, error, stop_retrying = self._try_chat_attempt(
+                    provider,
+                    provider_status,
+                    client,
+                    messages,
+                    options,
+                    callback,
+                    attempt,
+                    max_attempts,
+                )
+                if result is not None:
+                    return result
+                if error is not None:
+                    last_error = error
+                if stop_retrying:
+                    break
 
         # If we get here, all providers failed
         error_message = f"All LLM providers failed. Last error: {last_error}"
@@ -424,21 +479,7 @@ class FallbackLLMClient(LLMClient):
             IntegrationResult[int]: Result containing the token count
         """
         # Similar fallback logic as _chat_with_provider, but for token counting
-        # If we have a successful provider and config says to use it, try it first
-        if (
-            self._last_successful_provider
-            and self._fallback_config.stop_on_successful_provider
-        ):
-            providers_to_try = [
-                self._last_successful_provider,
-                *[
-                    p
-                    for p in self._fallback_config.providers
-                    if p != self._last_successful_provider
-                ],
-            ]
-        else:
-            providers_to_try = self._fallback_config.providers
+        providers_to_try = self._resolve_providers_to_try()
 
         last_error = None
 
