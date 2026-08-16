@@ -75,7 +75,8 @@ class PandocIntegration(BaseIntegrationService):
         # Store service instances
         self.paths_service = paths_service or PathService()
 
-        # Use /tmp as fallback base_dir to avoid issues when cwd is deleted (common in tests)
+        # Use /tmp as fallback base_dir to avoid issues when cwd is deleted
+        # (common in tests)
         try:
             self.fs_service = fs_service or FileSystemService()
         except (FileNotFoundError, OSError):
@@ -113,9 +114,12 @@ class PandocIntegration(BaseIntegrationService):
         """
         if not self._initialized:
             logger.error("Pandoc integration is not initialized")
+            not_initialized_msg = (
+                "Pandoc integration is not initialized. Call initialize() first."
+            )
             return IntegrationResult.error_result(
-                error="Pandoc integration is not initialized. Call initialize() first.",
-                message="Pandoc integration is not initialized. Call initialize() first.",
+                error=not_initialized_msg,
+                message=not_initialized_msg,
             )
         return None
 
@@ -286,7 +290,8 @@ class PandocIntegration(BaseIntegrationService):
                     output_result.path if output_result.success else output_path
                 )
 
-            # Use converter - signature is: convert_file(input_path, output_path, output_format)
+            # Use converter - signature is:
+            # convert_file(input_path, output_path, output_format)
             return self.converter.convert_file(input_path, output_path, "markdown")
 
         except Exception as e:
@@ -323,7 +328,8 @@ class PandocIntegration(BaseIntegrationService):
                     output_result.path if output_result.success else output_path
                 )
 
-            # Use converter - signature is: convert_file(input_path, output_path, output_format)
+            # Use converter - signature is:
+            # convert_file(input_path, output_path, output_format)
             return self.converter.convert_file(input_path, output_path, "docx")
 
         except Exception as e:
