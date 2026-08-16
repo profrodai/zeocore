@@ -46,7 +46,7 @@ def get_llm_client(
     provider: str = "openai",
     model: str | None = None,
     api_key: str | None = None,
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401 -- provider-specific kwargs forwarded to the resolved LLMClient subclass constructor
 ) -> LLMClient:
     """
     Get an LLM client instance.

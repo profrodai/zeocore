@@ -27,7 +27,7 @@ class MockLLMClient(LLMClient):
         script: list[str] | None = None,
         model: str = "mock-model",
         log_level: int = logging.INFO,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401 -- accepted for constructor-signature parity with real LLMClient subclasses, unused
     ) -> None:
         """
         Initialize the mock LLM client.

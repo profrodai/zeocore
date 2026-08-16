@@ -71,7 +71,7 @@ class FallbackLLMClient(LLMClient):
         model_map: dict[str, str] | None = None,
         api_key_map: dict[str, str] | None = None,
         log_level: int = LOG_LEVELS[LogLevel.INFO],
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401 -- provider-specific kwargs forwarded to each underlying provider client's constructor
     ) -> None:
         """
         Initialize the fallback LLM client.

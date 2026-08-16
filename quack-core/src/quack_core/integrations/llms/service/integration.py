@@ -18,7 +18,7 @@ from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms import ChatMessage, LLMOptions
 from quack_core.integrations.llms.clients import LLMClient
 from quack_core.integrations.llms.config import LLMConfigProvider
-from quack_core.integrations.llms.fallback import FallbackConfig
+from quack_core.integrations.llms.fallback import FallbackConfig, FallbackLLMClient
 from quack_core.integrations.llms.service.dependencies import check_llm_dependencies
 
 
@@ -64,7 +64,7 @@ class LLMIntegration(BaseIntegrationService):
         self.client: LLMClient | None = None
         self._using_mock = False
         self._enable_fallback = enable_fallback
-        self._fallback_client = None  # Type hint removed to avoid circular imports
+        self._fallback_client: FallbackLLMClient | None = None
 
     @property
     def name(self) -> str:
