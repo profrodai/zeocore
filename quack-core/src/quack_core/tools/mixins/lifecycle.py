@@ -38,7 +38,11 @@ class LifecycleMixin:
         ...         return CapabilityResult.ok(data=result)
     """
 
-    def pre_run(self, request: Any, ctx: ToolContext) -> CapabilityResult[None]:
+    def pre_run(
+        self,
+        request: Any,  # noqa: ANN401 -- request type is per-tool (subclasses override with their own Pydantic request model)
+        ctx: ToolContext,
+    ) -> CapabilityResult[None]:
         """
         Hook called before run().
 
@@ -55,7 +59,10 @@ class LifecycleMixin:
         return CapabilityResult.ok(data=None, msg="Pre-run checks passed")
 
     def post_run(
-        self, request: Any, result: CapabilityResult, ctx: ToolContext
+        self,
+        request: Any,  # noqa: ANN401 -- request type is per-tool (subclasses override with their own Pydantic request model)
+        result: CapabilityResult,
+        ctx: ToolContext,
     ) -> CapabilityResult:
         """
         Hook called after run().
@@ -72,7 +79,11 @@ class LifecycleMixin:
         """
         return result
 
-    def validate(self, request: Any, ctx: ToolContext) -> CapabilityResult[None]:
+    def validate(
+        self,
+        request: Any,  # noqa: ANN401 -- request type is per-tool (subclasses override with their own Pydantic request model)
+        ctx: ToolContext,
+    ) -> CapabilityResult[None]:
         """
         Validation hook.
 
