@@ -164,7 +164,7 @@ def test_job_runner_execution(job_store: InMemoryJobStore) -> None:
 
     registry.register(
         name="test.add",
-        callable=test_operation,
+        callable_=test_operation,
         request_model=AddRequest,
     )
 
@@ -226,7 +226,7 @@ def test_job_runner_error_handling(job_store: InMemoryJobStore) -> None:
 
     registry.register(
         name="test.fail",
-        callable=failing_operation,
+        callable_=failing_operation,
         request_model=EmptyRequest,
     )
 
@@ -292,7 +292,7 @@ def test_job_runner_async_operation(job_store: InMemoryJobStore) -> None:
 
     registry.register(
         name="test.async",
-        callable=async_operation,
+        callable_=async_operation,
         request_model=EchoRequest,
     )
 

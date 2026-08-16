@@ -59,7 +59,7 @@ def integration_client() -> TestClient:
     registry = OperationRegistry()
     registry.register(
         name="quack-media.slice_video",
-        callable=_make_quackmedia_operation("quack-media.slice_video"),
+        callable_=_make_quackmedia_operation("quack-media.slice_video"),
         request_model=_QuackMediaRequest,
     )
     job_store = InMemoryJobStore()
