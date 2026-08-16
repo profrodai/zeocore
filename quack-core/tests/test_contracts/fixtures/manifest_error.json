@@ -1,0 +1,19 @@
+{
+  "manifest_version": "1.0",
+  "run_id": "d4e5f678-90ab-4cde-f012-3456789abcde",
+  "tool": {"name": "transcribe_audio", "version": "1.0.0"},
+  "started_at": "2025-01-15T11:00:00Z",
+  "finished_at": "2025-01-15T11:00:05Z",
+  "duration_sec": 5.0,
+  "status": "error",
+  "inputs": [],
+  "outputs": [],
+  "intermediates": [],
+  "logs": [],
+  "metadata": {},
+  "error": {
+    "code": "QC_IO_DECODE_ERROR",
+    "message": "Failed to decode audio file: unsupported codec",
+    "details": {"path": "/data/input.wav", "codec": "unknown"}
+  }
+}
