@@ -21,7 +21,7 @@ Following Python 3.13 best practices:
 
 import sys
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from quack_core.core.errors import QuackPluginError
 from quack_core.modules.protocols import QuackPluginMetadata
@@ -30,7 +30,7 @@ from quack_core.modules.protocols import QuackPluginMetadata
 class TestImportSideEffects(unittest.TestCase):
     """Test that importing quack_core.modules has no side effects."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Clean up any existing plugin state before each test."""
         # Remove modules module from sys.modules to force fresh import
         modules_to_remove = [
@@ -39,7 +39,7 @@ class TestImportSideEffects(unittest.TestCase):
         for module in modules_to_remove:
             del sys.modules[module]
 
-    def test_import_does_not_register_plugins(self):
+    def test_import_does_not_register_plugins(self) -> None:
         """
         Test A: Import has no side effects.
 
@@ -67,7 +67,7 @@ class TestImportSideEffects(unittest.TestCase):
         self.assertEqual(len(quack_core.modules.registry.list_commands()), 0)
         self.assertEqual(len(quack_core.modules.registry.list_workflows()), 0)
 
-    def test_import_exports_expected_api(self):
+    def test_import_exports_expected_api(self) -> None:
         """Verify the module exports the expected public API."""
         import quack_core.modules
 
@@ -115,20 +115,22 @@ class MockTestPlugin:
 class TestExplicitLoading(unittest.TestCase):
     """Test explicit plugin loading behavior."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Clean registry before each test."""
         from quack_core.modules import registry
 
         registry.clear()
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Clean registry after each test."""
         from quack_core.modules import registry
 
         registry.clear()
 
     @patch("quack_core.modules.discovery.entry_points")
-    def test_explicit_load_loads_only_requested_plugins(self, mock_entry_points):
+    def test_explicit_load_loads_only_requested_plugins(
+        self, mock_entry_points: MagicMock
+    ) -> None:
         """
         Test B: Explicit load loads only requested modules.
 
@@ -179,10 +181,13 @@ class TestExplicitLoading(unittest.TestCase):
         # Verify we can retrieve the plugin
         fs = registry.get_plugin("fs")
         self.assertIsNotNone(fs)
+        assert fs is not None  # narrow for mypy; assertIsNotNone doesn't
         self.assertEqual(fs.plugin_id, "fs")
 
     @patch("quack_core.modules.discovery.entry_points")
-    def test_strict_missing_plugin_fails_and_loads_nothing(self, mock_entry_points):
+    def test_strict_missing_plugin_fails_and_loads_nothing(
+        self, mock_entry_points: MagicMock
+    ) -> None:
         """
         Test C: Strict missing plugin fails and loads nothing.
 
@@ -223,7 +228,9 @@ class TestExplicitLoading(unittest.TestCase):
         fs_ep.load.assert_not_called()
 
     @patch("quack_core.modules.discovery.entry_points")
-    def test_non_strict_missing_plugin_continues(self, mock_entry_points):
+    def test_non_strict_missing_plugin_continues(
+        self, mock_entry_points: MagicMock
+    ) -> None:
         """
         Test D: Non-strict missing plugin continues.
 
@@ -261,7 +268,7 @@ class TestExplicitLoading(unittest.TestCase):
         self.assertIn("fs", registered_ids)
 
     @patch("quack_core.modules.discovery.entry_points")
-    def test_load_preserves_order(self, mock_entry_points):
+    def test_load_preserves_order(self, mock_entry_points: MagicMock) -> None:
         """Verify that modules are loaded in the order specified."""
         from quack_core.modules import load_enabled_entry_points
 
@@ -290,7 +297,9 @@ class TestExplicitLoading(unittest.TestCase):
         self.assertEqual(result.loaded, ["gamma", "alpha", "beta"])
 
     @patch("quack_core.modules.discovery.entry_points")
-    def test_auto_register_false_does_not_register(self, mock_entry_points):
+    def test_auto_register_false_does_not_register(
+        self, mock_entry_points: MagicMock
+    ) -> None:
         """Test that auto_register=False prevents automatic registration."""
         from quack_core.modules import load_enabled_entry_points, registry
 
@@ -318,7 +327,9 @@ class TestExplicitLoading(unittest.TestCase):
         self.assertEqual(len(registry.list_ids()), 0)
 
     @patch("quack_core.modules.discovery.entry_points")
-    def test_plugin_id_must_match_entry_point_name(self, mock_entry_points):
+    def test_plugin_id_must_match_entry_point_name(
+        self, mock_entry_points: MagicMock
+    ) -> None:
         """Test that plugin_id must match entry point name for deterministic behavior."""
         from quack_core.modules import load_enabled_entry_points, registry
 
@@ -352,19 +363,19 @@ class TestExplicitLoading(unittest.TestCase):
 class TestPluginIdStability(unittest.TestCase):
     """Test that plugin_id is used as the stable identifier."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Clean registry before each test."""
         from quack_core.modules import registry
 
         registry.clear()
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Clean registry after each test."""
         from quack_core.modules import registry
 
         registry.clear()
 
-    def test_registry_uses_plugin_id_not_name(self):
+    def test_registry_uses_plugin_id_not_name(self) -> None:
         """Verify that registry keys on plugin_id, not name."""
         from quack_core.modules import registry
 
@@ -377,6 +388,7 @@ class TestPluginIdStability(unittest.TestCase):
         # Verify we can retrieve by plugin_id
         retrieved = registry.get_plugin("my_plugin_id")
         self.assertIsNotNone(retrieved)
+        assert retrieved is not None  # narrow for mypy; assertIsNotNone doesn't
         self.assertEqual(retrieved.plugin_id, "my_plugin_id")
         self.assertEqual(retrieved.name, "Different Display Name")
 
@@ -384,7 +396,7 @@ class TestPluginIdStability(unittest.TestCase):
         by_name = registry.get_plugin("Different Display Name")
         self.assertIsNone(by_name)
 
-    def test_registry_list_ids_returns_plugin_ids(self):
+    def test_registry_list_ids_returns_plugin_ids(self) -> None:
         """Verify that list_ids returns plugin_id values, not names."""
         from quack_core.modules import registry
 
@@ -402,7 +414,7 @@ class TestPluginIdStability(unittest.TestCase):
         self.assertNotIn("Name One", ids)
         self.assertNotIn("Name Two", ids)
 
-    def test_duplicate_plugin_id_raises_error(self):
+    def test_duplicate_plugin_id_raises_error(self) -> None:
         """Verify that registering duplicate plugin_id raises error."""
         from quack_core.modules import registry
 
@@ -420,7 +432,7 @@ class TestPluginIdStability(unittest.TestCase):
 class TestRegistryClear(unittest.TestCase):
     """Test the registry clear() method."""
 
-    def test_clear_removes_all_plugins(self):
+    def test_clear_removes_all_plugins(self) -> None:
         """Verify that clear() removes all modules from registry."""
         from quack_core.modules import registry
 
@@ -442,7 +454,7 @@ class TestRegistryClear(unittest.TestCase):
         self.assertEqual(len(registry.list_extension_plugins()), 0)
         self.assertEqual(len(registry.list_provider_plugins()), 0)
 
-    def test_clear_allows_re_registration(self):
+    def test_clear_allows_re_registration(self) -> None:
         """Verify that clear() allows re-registering previously registered modules."""
         from quack_core.modules import registry
 
@@ -464,20 +476,20 @@ class TestRegistryClear(unittest.TestCase):
 class TestLoadEnabledModules(unittest.TestCase):
     """Test load_enabled_modules function."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Clean registry before each test."""
         from quack_core.modules import registry
 
         registry.clear()
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Clean registry after each test."""
         from quack_core.modules import registry
 
         registry.clear()
 
     @patch("quack_core.modules.discovery.importlib.import_module")
-    def test_load_enabled_modules_succeeds(self, mock_import):
+    def test_load_enabled_modules_succeeds(self, mock_import: MagicMock) -> None:
         """Test successful loading of modules from module paths."""
         from quack_core.modules import load_enabled_modules, registry
 
@@ -504,7 +516,7 @@ class TestLoadEnabledModules(unittest.TestCase):
         self.assertIn("test_module", registry.list_ids())
 
     @patch("quack_core.modules.discovery.importlib.import_module")
-    def test_load_enabled_modules_strict_failure(self, mock_import):
+    def test_load_enabled_modules_strict_failure(self, mock_import: MagicMock) -> None:
         """Test that strict mode fails on first error."""
         from quack_core.modules import load_enabled_modules, registry
 
@@ -531,7 +543,9 @@ class TestListAvailableEntryPoints(unittest.TestCase):
     """Test list_available_entry_points function."""
 
     @patch("quack_core.modules.discovery.entry_points")
-    def test_list_available_does_not_instantiate(self, mock_entry_points):
+    def test_list_available_does_not_instantiate(
+        self, mock_entry_points: MagicMock
+    ) -> None:
         """Verify that listing entry points does not instantiate modules."""
         from quack_core.modules import list_available_entry_points
 

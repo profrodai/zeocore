@@ -165,7 +165,7 @@ class TestDependencyBoundaries:
         repo_root = test_dir.parent.parent  # quack-core/
         return repo_root / "src" / "quack_core" / "contracts"
 
-    def test_no_forbidden_imports(self, contracts_root: Path):
+    def test_no_forbidden_imports(self, contracts_root: Path) -> None:
         """
         Test that contracts module does not import from other QuackCore rings.
 
@@ -184,12 +184,12 @@ class TestDependencyBoundaries:
                 f"Allowed: stdlib + pydantic only."
             )
 
-    def test_contracts_root_exists(self, contracts_root: Path):
+    def test_contracts_root_exists(self, contracts_root: Path) -> None:
         """Sanity check that contracts root exists."""
         assert contracts_root.exists(), f"Contracts root not found: {contracts_root}"
         assert contracts_root.is_dir()
 
-    def test_has_python_files(self, contracts_root: Path):
+    def test_has_python_files(self, contracts_root: Path) -> None:
         """Sanity check that we found Python files to check."""
         checker = DependencyChecker(contracts_root)
         py_files = checker.get_python_files()
@@ -210,7 +210,7 @@ class TestImportPatterns:
         repo_root = test_dir.parent.parent
         return repo_root / "src" / "quack_core" / "contracts"
 
-    def test_can_import_contracts_module(self):
+    def test_can_import_contracts_module(self) -> None:
         """Test that we can import the contracts module successfully."""
         try:
             import quack_core.contracts as contracts

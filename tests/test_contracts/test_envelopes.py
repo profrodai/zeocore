@@ -24,7 +24,7 @@ from quack_core.contracts import (
 class TestCapabilityError:
     """Tests for CapabilityError model."""
 
-    def test_basic_error_creation(self):
+    def test_basic_error_creation(self) -> None:
         """Test creating a basic error."""
         error = CapabilityError(
             code="QC_IO_NOT_FOUND",
@@ -36,7 +36,7 @@ class TestCapabilityError:
         assert error.message == "File not found"
         assert error.details["path"] == "/data/missing.mp4"
 
-    def test_error_code_must_start_with_qc(self):
+    def test_error_code_must_start_with_qc(self) -> None:
         """Test that error codes must follow QC_* convention."""
         with pytest.raises(ValidationError) as exc_info:
             CapabilityError(code="INVALID_CODE", message="Test error")
@@ -47,7 +47,7 @@ class TestCapabilityError:
         assert errors[0]["loc"] == ("code",)
         assert errors[0]["type"] == "value_error"
 
-    def test_error_serialization(self):
+    def test_error_serialization(self) -> None:
         """Test error serialization to JSON."""
         error = CapabilityError(
             code="QC_NET_TIMEOUT",
@@ -63,7 +63,7 @@ class TestCapabilityError:
 class TestCapabilityLogEvent:
     """Tests for CapabilityLogEvent model."""
 
-    def test_basic_log_creation(self):
+    def test_basic_log_creation(self) -> None:
         """Test creating a basic log event."""
         log = CapabilityLogEvent(
             level=LogLevel.INFO,
@@ -76,7 +76,7 @@ class TestCapabilityLogEvent:
         assert log.context["tool"] == "slice_video"
         assert isinstance(log.timestamp, datetime)
 
-    def test_log_default_timestamp(self):
+    def test_log_default_timestamp(self) -> None:
         """Test that timestamp defaults to UTC now."""
         log = CapabilityLogEvent(message="Test message")
 
@@ -93,7 +93,7 @@ class TestCapabilityLogEvent:
 class TestCapabilityResult:
     """Tests for CapabilityResult envelope."""
 
-    def test_ok_result(self):
+    def test_ok_result(self) -> None:
         """Test successful result creation."""
         result = CapabilityResult.ok(
             data={"count": 5}, msg="Processing complete", metadata={"tool": "test"}
@@ -105,7 +105,7 @@ class TestCapabilityResult:
         assert result.metadata["tool"] == "test"
         assert result.error is None
 
-    def test_skip_result(self):
+    def test_skip_result(self) -> None:
         """Test skip result creation."""
         result = CapabilityResult.skip(
             reason="Video too short", code="QC_VAL_TOO_SHORT"
@@ -116,7 +116,7 @@ class TestCapabilityResult:
         assert result.human_message == "Video too short"
         assert result.machine_message == "QC_VAL_TOO_SHORT"
 
-    def test_fail_result(self):
+    def test_fail_result(self) -> None:
         """Test error result creation."""
         result = CapabilityResult.fail(msg="Processing failed", code="QC_IO_ERROR")
 
@@ -126,7 +126,7 @@ class TestCapabilityResult:
         assert result.error is not None
         assert result.error.code == "QC_IO_ERROR"
 
-    def test_fail_from_exception(self):
+    def test_fail_from_exception(self) -> None:
         """Test error result from exception."""
         exc = ValueError("Invalid input")
         result = CapabilityResult.fail_from_exc(
@@ -138,7 +138,7 @@ class TestCapabilityResult:
         assert result.error.details["type"] == "ValueError"
         assert result.error.details["str"] == "Invalid input"
 
-    def test_error_status_requires_error_field(self):
+    def test_error_status_requires_error_field(self) -> None:
         """Test that error status requires error field."""
         with pytest.raises(ValidationError) as exc_info:
             CapabilityResult(
@@ -156,7 +156,7 @@ class TestCapabilityResult:
             for err in errors
         )
 
-    def test_error_status_requires_machine_message(self):
+    def test_error_status_requires_machine_message(self) -> None:
         """Test that error status requires machine_message."""
         with pytest.raises(ValidationError) as exc_info:
             CapabilityResult(
@@ -174,7 +174,7 @@ class TestCapabilityResult:
             for err in errors
         )
 
-    def test_success_status_forbids_error_field(self):
+    def test_success_status_forbids_error_field(self) -> None:
         """Test that success status cannot have error field."""
         with pytest.raises(ValidationError) as exc_info:
             CapabilityResult(
@@ -191,7 +191,7 @@ class TestCapabilityResult:
             for err in errors
         )
 
-    def test_result_with_logs(self):
+    def test_result_with_logs(self) -> None:
         """Test result with log events."""
         logs = [
             CapabilityLogEvent(level=LogLevel.INFO, message="Started"),
@@ -203,7 +203,7 @@ class TestCapabilityResult:
         assert len(result.logs) == 2
         assert result.logs[0].message == "Started"
 
-    def test_result_serialization(self):
+    def test_result_serialization(self) -> None:
         """Test result serialization to JSON."""
         result = CapabilityResult.ok(data={"value": 42}, msg="Success")
 

@@ -43,7 +43,7 @@ class TestDemoCapabilities:
     of the public API. They demonstrate contract usage patterns only.
     """
 
-    def test_echo_text_basic(self):
+    def test_echo_text_basic(self) -> None:
         """Test basic echo functionality."""
         request = EchoRequest(text="World")
         result = echo_text(request)
@@ -51,7 +51,7 @@ class TestDemoCapabilities:
         assert result.status == CapabilityStatus.success
         assert result.data == "Hello World"
 
-    def test_echo_text_custom_greeting(self):
+    def test_echo_text_custom_greeting(self) -> None:
         """Test echo with custom greeting."""
         request = EchoRequest(text="QuackCore", override_greeting="Welcome to")
         result = echo_text(request)
@@ -59,7 +59,7 @@ class TestDemoCapabilities:
         assert result.data == "Welcome to QuackCore"
         assert result.metadata["greeting"] == "Welcome to"
 
-    def test_validate_video_ref_supported(self):
+    def test_validate_video_ref_supported(self) -> None:
         """Test video ref validation with supported provider."""
         request = VideoRefRequest(url="https://youtube.com/watch?v=abc123")
         result = validate_video_ref(request)
@@ -67,7 +67,7 @@ class TestDemoCapabilities:
         assert result.status == CapabilityStatus.success
         assert result.data is True
 
-    def test_validate_video_ref_unsupported(self):
+    def test_validate_video_ref_unsupported(self) -> None:
         """Test video ref validation with unsupported provider."""
         request = VideoRefRequest(url="https://example.com/video.mp4")
         result = validate_video_ref(request)

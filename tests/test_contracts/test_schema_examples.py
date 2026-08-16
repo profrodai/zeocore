@@ -11,9 +11,10 @@ for forward compatibility across Pydantic versions.
 """
 
 from datetime import datetime
+from typing import Any
 
 import pytest
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 from quack_core.contracts import (
     ArtifactRef,
     RunManifest,
@@ -22,7 +23,7 @@ from quack_core.contracts import (
 from quack_core.contracts.common.ids import is_valid_uuid
 
 
-def _get_schema_examples(model):
+def _get_schema_examples(model: type[BaseModel]) -> list[Any]:
     """
     Extract examples from a Pydantic model's JSON schema.
 
@@ -30,10 +31,11 @@ def _get_schema_examples(model):
     accessing model_config directly.
     """
     schema = model.model_json_schema()
-    return schema.get("examples", [])
+    examples: list[Any] = schema.get("examples", [])
+    return examples
 
 
-def _assert_examples_validate(model):
+def _assert_examples_validate(model: type[BaseModel]) -> None:
     """
     Assert that all examples in a model's schema validate successfully.
 
@@ -57,15 +59,15 @@ def _assert_examples_validate(model):
 class TestSchemaExamples:
     """Test that all schema examples can be validated successfully."""
 
-    def test_storage_ref_examples_validate(self):
+    def test_storage_ref_examples_validate(self) -> None:
         """Test that StorageRef examples are valid."""
         _assert_examples_validate(StorageRef)
 
-    def test_artifact_ref_examples_validate(self):
+    def test_artifact_ref_examples_validate(self) -> None:
         """Test that ArtifactRef examples are valid."""
         _assert_examples_validate(ArtifactRef)
 
-    def test_run_manifest_examples_validate(self):
+    def test_run_manifest_examples_validate(self) -> None:
         """Test that RunManifest examples are valid."""
         examples = _get_schema_examples(RunManifest)
         assert len(examples) >= 3, (
@@ -73,7 +75,7 @@ class TestSchemaExamples:
         )
         _assert_examples_validate(RunManifest)
 
-    def test_run_manifest_examples_represent_diverse_domains(self):
+    def test_run_manifest_examples_represent_diverse_domains(self) -> None:
         """Test that RunManifest examples demonstrate different capability domains."""
         examples = _get_schema_examples(RunManifest)
 
@@ -86,7 +88,7 @@ class TestSchemaExamples:
             f"RunManifest examples should represent diverse domains, got: {tool_names}"
         )
 
-    def test_run_manifest_examples_use_namespaced_naming(self):
+    def test_run_manifest_examples_use_namespaced_naming(self) -> None:
         """
         Test that manifest examples use namespaced tool names and artifact roles.
 
@@ -115,7 +117,7 @@ class TestSchemaExamples:
                     f"Example {i}, output {output_idx}: role '{role}' must be namespaced (e.g., 'domain.role')"
                 )
 
-    def test_run_manifest_examples_have_valid_uuids(self):
+    def test_run_manifest_examples_have_valid_uuids(self) -> None:
         """
         Test that all UUIDs in manifest examples are valid format.
 
@@ -144,7 +146,7 @@ class TestSchemaExamples:
                     f"Example {i}, output {output_idx}: artifact_id '{artifact_id}' is not a valid UUID"
                 )
 
-    def test_run_manifest_examples_have_valid_timestamps(self):
+    def test_run_manifest_examples_have_valid_timestamps(self) -> None:
         """
         Test that timestamps in examples are ISO format with Z suffix and parseable.
 
@@ -180,7 +182,7 @@ class TestSchemaExamples:
                         f"Example {i}: finished_at '{finished_at}' is not valid ISO 8601: {e}"
                     )
 
-    def test_run_manifest_examples_enforce_status_invariants(self):
+    def test_run_manifest_examples_enforce_status_invariants(self) -> None:
         """
         Test that manifest examples demonstrate proper status invariants.
 
@@ -220,7 +222,7 @@ class TestSchemaExamples:
                     f"Example {i}: skipped status must have empty intermediates"
                 )
 
-    def test_run_manifest_examples_keep_intermediates_empty(self):
+    def test_run_manifest_examples_keep_intermediates_empty(self) -> None:
         """
         Test that examples use empty intermediates for clarity.
 
