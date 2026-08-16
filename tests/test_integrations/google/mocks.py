@@ -8,17 +8,17 @@ from unittest.mock import MagicMock
 
 
 def mock_credentials(
-    token="mock_token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
-    refresh_token="mock_refresh_token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
-    client_id="mock_client_id",
-    client_secret="mock_client_secret",  # noqa: S107 -- mock class default, fake credential value, not a real secret
-    token_uri="https://oauth2.googleapis.com/token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
-    scopes=None,
-    expired=False,
-    valid=True,
-    expiry_timestamp=1893456000,  # 2030-01-01
-    **kwargs: Any,
-):
+    token: str = "mock_token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
+    refresh_token: str = "mock_refresh_token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
+    client_id: str = "mock_client_id",
+    client_secret: str = "mock_client_secret",  # noqa: S107 -- mock class default, fake credential value, not a real secret
+    token_uri: str = "https://oauth2.googleapis.com/token",  # noqa: S107 -- mock class default, fake credential value, not a real secret
+    scopes: list[str] | None = None,
+    expired: bool = False,
+    valid: bool = True,
+    expiry_timestamp: int = 1893456000,  # 2030-01-01
+    **kwargs: Any,  # noqa: ANN401 -- accepts/discards arbitrary extra test-call kwargs
+) -> MagicMock:
     creds = MagicMock()
 
     # Required auth fields

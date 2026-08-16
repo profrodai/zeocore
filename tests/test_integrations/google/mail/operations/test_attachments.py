@@ -9,6 +9,7 @@ Tests for Gmail attachment _ops.
 import base64
 import logging
 import os
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from quack_core.core.fs import FileInfoResult, OperationResult, WriteResult
@@ -21,7 +22,7 @@ from tests.test_integrations.google.mail.mocks import (
 class TestGmailAttachmentOperations:
     """Test cases for Gmail attachment _ops."""
 
-    def test_process_message_parts(self, tmp_path) -> None:
+    def test_process_message_parts(self, tmp_path: Path) -> None:
         """Test processing message parts."""
         # Get mock Gmail service
         gmail_service = create_mock_gmail_service()

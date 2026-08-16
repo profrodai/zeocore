@@ -19,7 +19,9 @@ class TestGoogleDriveServicePermissions:
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
-    def test_set_file_permissions(self, mock_init_config, mock_verify) -> None:
+    def test_set_file_permissions(
+        self, mock_init_config: MagicMock, mock_verify: MagicMock
+    ) -> None:
         """Test setting file permissions."""
         # Bypass verification
         mock_verify.return_value = None
@@ -76,7 +78,9 @@ class TestGoogleDriveServicePermissions:
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
-    def test_get_sharing_link(self, mock_init_config, mock_verify) -> None:
+    def test_get_sharing_link(
+        self, mock_init_config: MagicMock, mock_verify: MagicMock
+    ) -> None:
         """Test getting a sharing link."""
         # Bypass verification
         mock_verify.return_value = None

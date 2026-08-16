@@ -67,7 +67,7 @@ class TestGoogleMailService:
         )
 
         # Create a custom _initialize_config method to override the real one
-        def mock_initialize_config(self):
+        def mock_initialize_config(self: GoogleMailService) -> dict[str, object]:
             config = {
                 "client_secrets_file": self.custom_config.get("client_secrets_file"),
                 "credentials_file": self.custom_config.get("credentials_file"),
@@ -103,7 +103,7 @@ class TestGoogleMailService:
         service = GoogleMailService(config_path="/path/to/config.yaml")
 
         # Create a custom _initialize_config method for this test case
-        def mock_initialize_with_config(self):
+        def mock_initialize_with_config(self: GoogleMailService) -> dict[str, object]:
             # Get config values from the mock
             config = mock_load_config.return_value.content
             # Simulate the resolver behavior
@@ -126,7 +126,7 @@ class TestGoogleMailService:
         service = GoogleMailService(config_path="/path/to/config.yaml")
 
         # Create a custom _initialize_config method that logs a warning
-        def mock_initialize_with_warning(self):
+        def mock_initialize_with_warning(self: GoogleMailService) -> dict[str, object]:
             # Get config values from the mock
             config = mock_load_config.return_value.content
             # Simulate the resolver behavior
@@ -158,7 +158,7 @@ class TestGoogleMailService:
         mock_load_config.return_value.content = {}
 
         # Replace the method with one that raises an exception
-        def mock_initialize_with_error(self):
+        def mock_initialize_with_error(self: GoogleMailService) -> dict[str, object]:
             raise QuackIntegrationError("Storage path is required")
 
         with patch.object(

@@ -304,7 +304,9 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         return " and ".join(query_parts)
 
     def _execute_upload(
-        self, file_metadata: dict[str, Any], media: Any
+        self,
+        file_metadata: dict[str, Any],
+        media: Any,  # noqa: ANN401 -- googleapiclient MediaUpload has no type stubs
     ) -> dict[str, Any]:
         """
         Execute the file upload to Google Drive.

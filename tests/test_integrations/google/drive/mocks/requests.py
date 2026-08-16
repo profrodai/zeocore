@@ -40,7 +40,11 @@ class MockDriveRequest(DriveRequest[R]):
 
         # Add HTTP-related attributes
         class MockHttp:
-            def request(self, *args: Any, **kwargs: Any) -> tuple[Mock, Mock]:
+            def request(
+                self,
+                *args: Any,  # noqa: ANN401 -- simulates arbitrary Drive API call signatures
+                **kwargs: Any,  # noqa: ANN401 -- simulates arbitrary Drive API call signatures
+            ) -> tuple[Mock, Mock]:
                 return mock, mock
 
         mock.http = MockHttp()
@@ -50,7 +54,10 @@ class MockDriveRequest(DriveRequest[R]):
         mock._body = {}
 
         # Ensure all protocol methods are present
-        def default_method(*args: Any, **kwargs: Any) -> Mock:
+        def default_method(
+            *args: Any,  # noqa: ANN401 -- simulates arbitrary Drive API call signatures
+            **kwargs: Any,  # noqa: ANN401 -- simulates arbitrary Drive API call signatures
+        ) -> Mock:
             return mock
 
         # Add fallback methods to prevent attribute errors
@@ -67,7 +74,7 @@ class MockDriveRequest(DriveRequest[R]):
         self.error = error
         self.call_count = 0
 
-    def __getattr__(self, name) -> Any:
+    def __getattr__(self, name: str) -> Any:  # noqa: ANN401 -- forwards to an arbitrary Mock attribute
         """
         Dynamically add attributes as needed.
 
