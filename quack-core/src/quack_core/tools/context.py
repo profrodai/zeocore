@@ -169,19 +169,19 @@ class ToolContext(BaseModel):
 
     # Accessor methods (pure - no side effects)
 
-    def require_logger(self) -> Any:
+    def require_logger(self) -> Any:  # noqa: ANN401 -- logger is a runner-provided duck-typed service, no fixed protocol exists in this codebase
         """Get logger (guaranteed non-None by runner)."""
         return self.logger
 
-    def require_fs(self) -> Any:
+    def require_fs(self) -> Any:  # noqa: ANN401 -- fs service is duck-typed by runner (see mixins/env_init.py MIGRATION COMPAT for the varying .success/.ok, .data/.value contracts it must tolerate)
         """Get filesystem service (guaranteed non-None by runner)."""
         return self.fs
 
-    def get_service(self, name: str) -> Any | None:
+    def get_service(self, name: str) -> Any | None:  # noqa: ANN401 -- services is a heterogeneous registry (Mapping[str, Any]) of arbitrary runner-provided integration instances, looked up dynamically by name
         """Get a service by name (if runner provided it)."""
         return self.services.get(name)
 
-    def require_service(self, name: str) -> Any:
+    def require_service(self, name: str) -> Any:  # noqa: ANN401 -- same rationale as get_service: arbitrary integration instance from the heterogeneous services registry
         """
         Get a service by name (raises if missing).
 

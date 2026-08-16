@@ -6,6 +6,8 @@
 Mock credential objects for Google Drive testing.
 """
 
+from typing import Any
+
 from quack_core.integrations.google.drive.protocols import GoogleCredentials
 
 
@@ -39,7 +41,10 @@ class MockGoogleCredentials(GoogleCredentials):
         self.client_secret = client_secret
         self.scopes = scopes or ["https://www.googleapis.com/auth/drive.file"]
 
-    def authorize(self, http):
+    def authorize(
+        self,
+        http: Any,  # noqa: ANN401 -- httplib2.Http has no type stubs installed
+    ) -> Any:  # noqa: ANN401 -- httplib2.Http has no type stubs installed
         """
         Authorize an httplib2.Http instance with these credentials.
 

@@ -26,7 +26,7 @@ class IntegrationEnabledMixin:
 
     def get_service(
         self, name: str, ctx: ToolContext, expected_type: type[T] | None = None
-    ) -> T | Any | None:
+    ) -> T | Any | None:  # noqa: ANN401 -- return is an arbitrary integration instance from the heterogeneous services registry; isinstance() narrows the runtime class but cannot prove T for the type checker
         """Get a service from the context (if runner provided it)."""
         svc = ctx.get_service(name)
         if svc is None:
@@ -42,7 +42,7 @@ class IntegrationEnabledMixin:
 
     def require_service(
         self, name: str, ctx: ToolContext, expected_type: type[T] | None = None
-    ) -> T | Any:
+    ) -> T | Any:  # noqa: ANN401 -- same rationale as get_service: arbitrary integration instance, isinstance() cannot prove T for the type checker
         """Get a service from context (raises if missing)."""
         svc = ctx.require_service(name)
 

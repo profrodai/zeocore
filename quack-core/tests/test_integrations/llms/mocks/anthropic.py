@@ -6,6 +6,7 @@
 Mock Anthropic classes for LLM testing.
 """
 
+from types import TracebackType
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -119,7 +120,7 @@ class MockAnthropicStreamingResponse(MockStreamingGenerator):
         self.chunks_iter = self.generate_chunks()
         return self
 
-    def __next__(self) -> Any:
+    def __next__(self) -> MagicMock:
         """
         Get the next chunk in Anthropic streaming format.
 
@@ -158,7 +159,12 @@ class MockAnthropicStreamingResponse(MockStreamingGenerator):
         """Context manager enter method."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         """Context manager exit method."""
         pass
 
@@ -224,7 +230,7 @@ class MockAnthropicClient(MockClient):
         token_counts: list[int] = None,
         model: str = "claude-3-opus-20240229",
         errors: list[Exception] = None,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401 -- passthrough to MockClient/LLMClient's own **kwargs
     ) -> None:
         """
         Initialize a mock Anthropic client.
@@ -247,7 +253,11 @@ class MockAnthropicClient(MockClient):
         # Track Anthropic-specific data
         self.anthropic_requests = []
 
-    def messages_create(self, *args: Any, **kwargs: Any):
+    def messages_create(
+        self,
+        *args: Any,  # noqa: ANN401 -- stands in for Anthropic SDK's arbitrary call signature
+        **kwargs: Any,  # noqa: ANN401 -- stands in for Anthropic SDK's arbitrary call signature
+    ) -> "MockAnthropicResponse | MockAnthropicStreamingResponse":
         """
         Mock Anthropic's messages.create method.
 
@@ -282,7 +292,11 @@ class MockAnthropicClient(MockClient):
         # Return a normal response
         return MockAnthropicResponse(content=response_text, model=self.model)
 
-    def count_tokens(self, *args: Any, **kwargs: Any):
+    def count_tokens(
+        self,
+        *args: Any,  # noqa: ANN401 -- stands in for Anthropic SDK's arbitrary call signature
+        **kwargs: Any,  # noqa: ANN401 -- stands in for Anthropic SDK's arbitrary call signature
+    ) -> MagicMock:
         """
         Mock Anthropic's count_tokens method.
 

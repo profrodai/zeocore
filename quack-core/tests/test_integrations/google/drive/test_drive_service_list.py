@@ -19,7 +19,9 @@ class TestGoogleDriveServiceList:
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
-    def test_list_files(self, mock_init_config, mock_verify) -> None:
+    def test_list_files(
+        self, mock_init_config: MagicMock, mock_verify: MagicMock
+    ) -> None:
         """Test listing files."""
         # Bypass verification
         mock_verify.return_value = None

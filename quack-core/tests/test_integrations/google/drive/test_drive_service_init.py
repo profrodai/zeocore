@@ -18,7 +18,7 @@ class TestGoogleDriveServiceInit:
     @patch(
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
-    def test_init(self, mock_verify) -> None:
+    def test_init(self, mock_verify: MagicMock) -> None:
         """Test initializing the drive service."""
         # Bypass verification
         mock_verify.return_value = None
@@ -51,7 +51,9 @@ class TestGoogleDriveServiceInit:
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
-    def test_is_storage_integration(self, mock_init_config, mock_verify) -> None:
+    def test_is_storage_integration(
+        self, mock_init_config: MagicMock, mock_verify: MagicMock
+    ) -> None:
         """Test that service implements StorageIntegrationProtocol."""
         # Bypass verification
         mock_verify.return_value = None
@@ -70,7 +72,9 @@ class TestGoogleDriveServiceInit:
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch("quack_core.integrations.google.config.GoogleConfigProvider.load_config")
-    def test_initialize_config(self, mock_load_config, mock_verify) -> None:
+    def test_initialize_config(
+        self, mock_load_config: MagicMock, mock_verify: MagicMock
+    ) -> None:
         """Test initializing the service configuration."""
         # Bypass verification
         mock_verify.return_value = None
@@ -121,7 +125,11 @@ class TestGoogleDriveServiceInit:
     @patch("quack_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
     @patch("googleapiclient.discovery.build")
     def test_initialize(
-        self, mock_build, mock_get_credentials, mock_authenticate, mock_verify
+        self,
+        mock_build: MagicMock,
+        mock_get_credentials: MagicMock,
+        mock_authenticate: MagicMock,
+        mock_verify: MagicMock,
     ) -> None:
         """Test initializing the drive service."""
         # Bypass verification

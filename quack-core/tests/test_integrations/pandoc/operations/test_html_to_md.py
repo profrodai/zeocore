@@ -185,10 +185,14 @@ def test_validate_conversion_html_to_md() -> None:
     )
 
     # Configure check functions to return valid results
-    def patched_file_size_check(*args: Any) -> tuple[bool, list[str]]:
+    def patched_file_size_check(
+        *args: Any,  # noqa: ANN401 -- stand-in patch matching check_file_size's call signature
+    ) -> tuple[bool, list[str]]:
         return (True, [])
 
-    def patched_ratio_check(*args: Any) -> tuple[bool, list[str]]:
+    def patched_ratio_check(
+        *args: Any,  # noqa: ANN401 -- stand-in patch matching check_conversion_ratio's call signature
+    ) -> tuple[bool, list[str]]:
         return (True, [])
 
     # Configure PandocConfig for testing
