@@ -170,6 +170,7 @@ def test_convert_batch_all_success(mock_pypandoc: MagicMock) -> None:
         # Verify
         assert result.success
         assert mock_convert.call_count == 2
+        assert result.content is not None
         assert len(result.content) == 2
 
 
@@ -222,6 +223,7 @@ def test_convert_batch_partial_failure(mock_pypandoc: MagicMock) -> None:
         assert result.success  # Still success overall
         assert result.message is not None
         assert "Partially successful" in result.message
+        assert result.content is not None
         assert len(result.content) == 1
         assert result.content[0] == "output1.md"
 
