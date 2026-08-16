@@ -50,7 +50,12 @@ class LLMIntegration(BaseIntegrationService):
 
         # Initialize configuration provider and base service
         config_provider = LLMConfigProvider(log_level)
-        super().__init__(config_provider, None, config_path, str(log_level))
+        super().__init__(
+            config_provider=config_provider,
+            auth_provider=None,
+            config_path=config_path,
+            log_level=log_level,
+        )
 
         # Retain provided log level
         self.log_level = log_level
