@@ -10,6 +10,7 @@ which contains the main LLMIntegration class implementation.
 """
 
 from types import SimpleNamespace
+from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -18,6 +19,17 @@ from quack_core.integrations.core.results import ConfigResult, IntegrationResult
 from quack_core.integrations.llms.config import LLMConfigProvider
 from quack_core.integrations.llms.fallback import FallbackConfig
 from quack_core.integrations.llms.service.integration import LLMIntegration
+
+
+def _mock_provider(integration: LLMIntegration) -> MagicMock:
+    """Narrow integration.config_provider (typed ConfigProviderProtocol | None
+    in production, since a real caller may not pass one) to the MagicMock the
+    `integration` fixture below always installs, so tests can assert on mock
+    call history without every call site re-asserting non-None. The cast is
+    honest, not a suppression: the fixture's own body (below) guarantees this
+    at construction time, mypy just can't see across the fixture boundary."""
+    assert integration.config_provider is not None
+    return cast(MagicMock, integration.config_provider)
 
 
 class TestLLMIntegrationComprehensive:
@@ -135,8 +147,9 @@ class TestLLMIntegrationComprehensive:
 
         # Should return existing config without calling provider methods
         assert result == test_config
-        integration.config_provider.load_config.assert_not_called()
-        integration.config_provider.get_default_config.assert_not_called()
+        provider = _mock_provider(integration)
+        provider.load_config.assert_not_called()
+        provider.get_default_config.assert_not_called()
 
     def test_extract_config_from_provider(self, integration: LLMIntegration) -> None:
         """Test extracting config from the config provider."""
@@ -152,15 +165,16 @@ class TestLLMIntegrationComprehensive:
             "timeout": 60,
             "openai": {"api_key": "mock-key", "default_model": "gpt-4o"},
         }
-        integration.config_provider.load_config.assert_called_once()
+        _mock_provider(integration).load_config.assert_called_once()
 
     def test_extract_config_provider_failure(self, integration: LLMIntegration) -> None:
         """Test extracting config when provider fails."""
         # Clear existing config
         integration.config = None
+        provider = _mock_provider(integration)
 
         # Make load_config return failure
-        integration.config_provider.load_config.return_value = ConfigResult(
+        provider.load_config.return_value = ConfigResult(
             success=False, error="Failed to load config"
         )
 
@@ -168,25 +182,26 @@ class TestLLMIntegrationComprehensive:
         result = integration._extract_config()
 
         # Should use default config
-        assert result == integration.config_provider.get_default_config.return_value
-        integration.config_provider.load_config.assert_called_once()
-        integration.config_provider.get_default_config.assert_called_once()
+        assert result == provider.get_default_config.return_value
+        provider.load_config.assert_called_once()
+        provider.get_default_config.assert_called_once()
 
     def test_extract_config_load_exception(self, integration: LLMIntegration) -> None:
         """Test extracting config when provider raises an exception."""
         # Clear existing config
         integration.config = None
+        provider = _mock_provider(integration)
 
         # Make load_config raise an exception
-        integration.config_provider.load_config.side_effect = Exception("Load error")
+        provider.load_config.side_effect = Exception("Load error")
 
         # Extract config - should handle exception and fall back to default
         result = integration._extract_config()
 
         # Should use default config
-        assert result == integration.config_provider.get_default_config.return_value
-        integration.config_provider.load_config.assert_called_once()
-        integration.config_provider.get_default_config.assert_called_once()
+        assert result == provider.get_default_config.return_value
+        provider.load_config.assert_called_once()
+        provider.get_default_config.assert_called_once()
 
     def test_extract_config_invalid(self, integration: LLMIntegration) -> None:
         """Test extracting invalid config."""
@@ -220,7 +235,7 @@ class TestLLMIntegrationComprehensive:
             assert result.error == "Base initialization failed"
 
             # Shouldn't proceed to further initialization steps
-            integration.config_provider.load_config.assert_not_called()
+            _mock_provider(integration).load_config.assert_not_called()
 
     def test_initialize_complete(self, integration: LLMIntegration) -> None:
         """Test complete initialization process."""
@@ -248,7 +263,7 @@ class TestLLMIntegrationComprehensive:
                     return_value={"default_provider": "openai"},
                 ) as mock_extract:
                     # Mock single provider initialization
-                    success_result = IntegrationResult(
+                    success_result: IntegrationResult[Any] = IntegrationResult(
                         success=True, message="Initialized"
                     )
                     with patch(
@@ -306,7 +321,7 @@ class TestLLMIntegrationComprehensive:
                         )
 
                         # Mock fallback initialization
-                        success_result = IntegrationResult(
+                        success_result: IntegrationResult[Any] = IntegrationResult(
                             success=True, message="Initialized with fallback"
                         )
                         with patch(
@@ -343,7 +358,7 @@ class TestLLMIntegrationComprehensive:
                 assert "Integration error" == result.error
 
                 # Logger should record the error
-                integration.logger.error.assert_called()
+                cast(MagicMock, integration.logger).error.assert_called()
 
     def test_initialize_generic_error(self, integration: LLMIntegration) -> None:
         """Test handling generic exceptions during initialization."""
@@ -361,10 +376,11 @@ class TestLLMIntegrationComprehensive:
                 result = integration.initialize()
 
                 assert result.success is False
+                assert result.error is not None
                 assert "Failed to initialize LLM integration" in result.error
 
                 # Logger should record the error
-                integration.logger.error.assert_called()
+                cast(MagicMock, integration.logger).error.assert_called()
 
     def test_get_client_not_initialized(self, integration: LLMIntegration) -> None:
         """Test get_client when not initialized."""
