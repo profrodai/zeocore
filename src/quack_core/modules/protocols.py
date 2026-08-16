@@ -16,11 +16,9 @@ Following Python 3.13 best practices:
 """
 
 from collections.abc import Callable
-from typing import Any, Protocol, TypeVar, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from pydantic import BaseModel, Field
-
-T = TypeVar("T")  # Generic return type
 
 
 class QuackPluginMetadata(BaseModel):
@@ -247,7 +245,7 @@ class CommandPluginProtocol(QuackPluginProtocol, Protocol):
         """
         ...
 
-    def execute_command(self, name: str, *args: object, **kwargs: object) -> T:
+    def execute_command(self, name: str, *args: object, **kwargs: object) -> object:
         """
         Execute a command.
 
@@ -292,7 +290,7 @@ class WorkflowPluginProtocol(QuackPluginProtocol, Protocol):
         """
         ...
 
-    def execute_workflow(self, name: str, *args: object, **kwargs: object) -> T:
+    def execute_workflow(self, name: str, *args: object, **kwargs: object) -> object:
         """
         Execute a workflow.
 
@@ -352,7 +350,7 @@ class ProviderPluginProtocol(QuackPluginProtocol, Protocol):
         """
         ...
 
-    def get_service(self, name: str) -> T | None:
+    def get_service(self, name: str) -> object | None:
         """
         Get a specific service by name.
 
