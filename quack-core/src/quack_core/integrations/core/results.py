@@ -102,7 +102,10 @@ class AuthResult(BaseModel):
 
     @field_validator("token")
     @classmethod
-    def _validate_token(cls, v: Any) -> str | None:
+    def _validate_token(
+        cls,
+        v: Any,  # noqa: ANN401 -- genuinely dynamic: pydantic field_validator receives the raw pre-validation input (str, Mock, etc), stringified below to prevent object leakage
+    ) -> str | None:
         """
         Validate that token is a string if provided.
         Ensures strict serialization and prevents object leakage (e.g. Mocks).

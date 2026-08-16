@@ -127,7 +127,10 @@ class QuackConfig(BaseModel):
         """Set up logging based on configuration."""
         self.logging.setup_logging()
 
-    def to_dict(self, **kwargs: Any) -> dict[str, Any]:
+    def to_dict(
+        self,
+        **kwargs: Any,  # noqa: ANN401 -- genuinely dynamic: forwarded verbatim to Pydantic's model_dump(**kwargs), whose own kwargs are unconstrained
+    ) -> dict[str, Any]:
         """
         Convert the configuration to a dictionary.
 

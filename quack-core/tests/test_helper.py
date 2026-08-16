@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 
-def setup_python_path():
+def setup_python_path() -> None:
     """
     Adds the necessary directories to the Python path.
     """

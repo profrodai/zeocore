@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 from quack_core.contracts.capabilities.demo import EchoRequest, echo_text
 
 
-def run_flow():
+def run_flow() -> None:
     print("--- Step 1: Echo with Default Policy ---")
     res1 = echo_text(EchoRequest(text="World"))
     print(f"Status: {res1.status}")
