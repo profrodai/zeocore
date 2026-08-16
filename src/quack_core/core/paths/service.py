@@ -89,6 +89,20 @@ class PathService:
             self.logger.error(f"Failed to detect project context: {e}")
             return ContextResult(success=False, error=str(e))
 
+    def detect_content_context(
+        self,
+        start_dir: str | Path | DataResult | OperationResult | None = None,
+        content_type: str | None = None,
+    ) -> ContextResult:
+        """Detect content context from a directory."""
+        try:
+            start = None if start_dir is None else self._norm(start_dir)
+            ctx = self._resolver._detect_content_context(start, content_type)
+            return ContextResult(success=True, context=ctx)
+        except Exception as e:
+            self.logger.error(f"Failed to detect content context: {e}")
+            return ContextResult(success=False, error=str(e))
+
     def get_known_directory(
         self,
         name: str,

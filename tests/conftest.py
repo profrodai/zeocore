@@ -22,7 +22,7 @@ from _pytest.monkeypatch import MonkeyPatch
 # Now try to import the quack-core modules
 try:
     from quack_core.config.models import QuackConfig
-    from quack_core.core.fs import DataResult, OperationResult
+    from quack_core.core.fs import DataResult, OperationResult, PathResult
     from quack_core.core.fs.service import standalone as fs_standalone
     from quack_core.modules.protocols import QuackPluginProtocol
 except ImportError as e:
@@ -32,7 +32,7 @@ except ImportError as e:
 
     sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
     from quack_core.config.models import QuackConfig
-    from quack_core.core.fs import DataResult, OperationResult
+    from quack_core.core.fs import DataResult, OperationResult, PathResult
     from quack_core.core.fs.service import standalone as fs_standalone
     from quack_core.modules.protocols import QuackPluginProtocol
 
@@ -49,8 +49,21 @@ def mock_fs_standalone():
     with patch(
         "quack_core.core.fs.service.standalone.normalize_path"
     ) as mock_normalize:
-        # Make normalize_path return Path objects for consistent behavior
-        mock_normalize.side_effect = lambda p: Path(os.path.abspath(str(p)))
+        # Return a real PathResult (ok/path contract, core/fs SERVICE-CONTRACT) so
+        # callers that check `.ok`/`.path` on the result see a well-formed object,
+        # not a bare Path (which has neither attribute).
+        def _mock_normalize(p: Any) -> "PathResult":
+            resolved = Path(os.path.abspath(str(p)))
+            return PathResult(
+                ok=True,
+                path=resolved,
+                is_absolute=resolved.is_absolute(),
+                is_valid=True,
+                exists=resolved.exists(),
+                message=f"Mock-normalized: {resolved}",
+            )
+
+        mock_normalize.side_effect = _mock_normalize
         yield
 
 
@@ -238,7 +251,19 @@ def mock_normalize_path(monkeypatch):
     """Mock the normalize_path function to avoid filesystem access."""
 
     def mock_normalize(path):
-        return Path(os.path.abspath(str(path)))
+        # Return a real PathResult (ok/path contract, core/fs SERVICE-CONTRACT) so
+        # callers that check `.ok`/`.path` on the result see a well-formed object,
+        # not a bare Path (which has neither attribute) - PosixPath-has-no-attribute
+        # 'ok' was exactly this fixture handing production code a bare Path.
+        resolved = Path(os.path.abspath(str(path)))
+        return PathResult(
+            ok=True,
+            path=resolved,
+            is_absolute=resolved.is_absolute(),
+            is_valid=True,
+            exists=resolved.exists(),
+            message=f"Mock-normalized: {resolved}",
+        )
 
     # Fix: Use the correct import path for normalize_path
     monkeypatch.setattr(fs_standalone, "normalize_path", mock_normalize)
