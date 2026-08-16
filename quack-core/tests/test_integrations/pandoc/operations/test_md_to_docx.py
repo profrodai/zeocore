@@ -45,8 +45,11 @@ from .test_utils_fix import (
     patched_track_metrics,
 )
 def test_convert_markdown_to_docx_success(
-    mock_validate, mock_get_output, mock_convert, mock_validate_input
-):
+    mock_validate: MagicMock,
+    mock_get_output: MagicMock,
+    mock_convert: MagicMock,
+    mock_validate_input: MagicMock,
+) -> None:
     """Test successful Markdown to DOCX conversion."""
     # Setup mocks
     mock_validate_input.return_value = 100  # Original size
@@ -67,7 +70,7 @@ def test_convert_markdown_to_docx_success(
 
 
 @patch("quack_core.integrations.pandoc._ops.md_to_docx._validate_markdown_input")
-def test_convert_markdown_to_docx_validation_error(mock_validate):
+def test_convert_markdown_to_docx_validation_error(mock_validate: MagicMock) -> None:
     """Test Markdown to DOCX conversion with validation error."""
     # Setup mock to raise error
     mock_validate.side_effect = QuackIntegrationError("Invalid Markdown", {})
@@ -79,6 +82,7 @@ def test_convert_markdown_to_docx_validation_error(mock_validate):
 
     # Verify
     assert not result.success
+    assert result.error is not None
     assert "Invalid Markdown" in result.error
     assert metrics.failed_conversions == 1
     assert "input.md" in metrics.errors
@@ -86,7 +90,9 @@ def test_convert_markdown_to_docx_validation_error(mock_validate):
 
 @patch("quack_core.integrations.pandoc._ops.md_to_docx._validate_markdown_input")
 @patch("quack_core.integrations.pandoc._ops.md_to_docx._convert_markdown_to_docx_once")
-def test_convert_markdown_to_docx_conversion_failure(mock_convert, mock_validate):
+def test_convert_markdown_to_docx_conversion_failure(
+    mock_convert: MagicMock, mock_validate: MagicMock
+) -> None:
     """Test Markdown to DOCX conversion with pandoc failure."""
     # Setup mocks
     mock_validate.return_value = 100
@@ -99,6 +105,7 @@ def test_convert_markdown_to_docx_conversion_failure(mock_convert, mock_validate
 
     # Verify
     assert not result.success
+    assert result.error is not None
     assert "Pandoc failed" in result.error
     assert metrics.failed_conversions == 1
 
@@ -112,8 +119,11 @@ def test_convert_markdown_to_docx_conversion_failure(mock_convert, mock_validate
     patched_track_metrics,
 )
 def test_convert_markdown_to_docx_validation_failure(
-    mock_validate, mock_get_output, mock_convert, mock_validate_input
-):
+    mock_validate: MagicMock,
+    mock_get_output: MagicMock,
+    mock_convert: MagicMock,
+    mock_validate_input: MagicMock,
+) -> None:
     """Test Markdown to DOCX conversion with output validation failure."""
     # Setup mocks
     mock_validate_input.return_value = 100
@@ -130,6 +140,7 @@ def test_convert_markdown_to_docx_validation_failure(
 
     # Verify
     assert not result.success
+    assert result.error is not None
     assert "validation failed" in result.error.lower()
     assert mock_convert.call_count == 2  # Called twice due to retry
     assert metrics.failed_conversions == 1
@@ -143,11 +154,11 @@ def test_convert_markdown_to_docx_validation_failure(
     "quack_core.integrations.pandoc._ops.utils.check_conversion_ratio",
     patched_check_conversion_ratio,
 )
-def test_validate_conversion_md_to_docx(mock_fs):
+def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
     """Test validation of Markdown to DOCX conversion results."""
 
     # Setup the mock file system
-    def side_effect(path, *args: Any, **kwargs: Any):
+    def side_effect(path: Any, *args: Any, **kwargs: Any) -> SimpleNamespace:
         if "output" in str(path):
             return SimpleNamespace(success=True, exists=True, size=500, path=str(path))
         return SimpleNamespace(success=True, exists=True, size=100, path=str(path))
@@ -196,7 +207,7 @@ def test_validate_conversion_md_to_docx(mock_fs):
 
 
 @patch("quack_core.core.fs.service.standalone")
-def test_md_to_docx_validate_markdown_input_success(mock_fs):
+def test_md_to_docx_validate_markdown_input_success(mock_fs: MagicMock) -> None:
     """Test successful validation of Markdown input."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(
@@ -219,7 +230,7 @@ def test_md_to_docx_validate_markdown_input_success(mock_fs):
 
 
 @patch("quack_core.core.fs.service.standalone")
-def test_md_to_docx_validate_markdown_input_file_not_found(mock_fs):
+def test_md_to_docx_validate_markdown_input_file_not_found(mock_fs: MagicMock) -> None:
     """Test validation of Markdown input when file is not found."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(success=True, exists=False)
@@ -236,7 +247,7 @@ def test_md_to_docx_validate_markdown_input_file_not_found(mock_fs):
 
 
 @patch("quack_core.core.fs.service.standalone")
-def test_md_to_docx_validate_markdown_input_read_error(mock_fs):
+def test_md_to_docx_validate_markdown_input_read_error(mock_fs: MagicMock) -> None:
     """Test validation of Markdown input with read error."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(
@@ -256,7 +267,7 @@ def test_md_to_docx_validate_markdown_input_read_error(mock_fs):
 
 
 @patch("quack_core.core.fs.service.standalone")
-def test_md_to_docx_validate_markdown_input_empty_file(mock_fs):
+def test_md_to_docx_validate_markdown_input_empty_file(mock_fs: MagicMock) -> None:
     """Test validation of empty Markdown input."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(
@@ -275,7 +286,7 @@ def test_md_to_docx_validate_markdown_input_empty_file(mock_fs):
     assert "Markdown file is empty" in str(excinfo.value)
 
 
-def test_md_to_docx_convert_once_success():
+def test_md_to_docx_convert_once_success() -> None:
     """Test successful single conversion of Markdown to DOCX."""
     # Mock fs and pypandoc
     with (
@@ -301,7 +312,7 @@ def test_md_to_docx_convert_once_success():
         # assert mock_fs.create_directory.called
 
 
-def test_md_to_docx_convert_once_directory_error():
+def test_md_to_docx_convert_once_directory_error() -> None:
     """Test Markdown to DOCX conversion with directory creation error."""
     # Mock fs
     with patch("quack_core.core.fs.service.standalone") as mock_fs:
@@ -328,7 +339,9 @@ def test_md_to_docx_convert_once_directory_error():
 
 @patch("quack_core.core.fs.service.standalone")
 @patch("quack_core.integrations.pandoc._ops.md_to_docx.time")
-def test_md_to_docx_get_conversion_output_success(mock_time, mock_fs):
+def test_md_to_docx_get_conversion_output_success(
+    mock_time: MagicMock, mock_fs: MagicMock
+) -> None:
     """Test successful retrieval of conversion output metrics."""
     # Setup mocks
     mock_time.time.return_value = 1000.0
@@ -347,7 +360,7 @@ def test_md_to_docx_get_conversion_output_success(mock_time, mock_fs):
 
 
 @patch("quack_core.core.fs.service.standalone")
-def test_md_to_docx_get_conversion_output_file_info_error(mock_fs):
+def test_md_to_docx_get_conversion_output_file_info_error(mock_fs: MagicMock) -> None:
     """Test get conversion output with file info error."""
     # Setup mock to fail getting file info
     mock_fs.get_file_info.return_value = SimpleNamespace(
@@ -374,8 +387,11 @@ def test_md_to_docx_get_conversion_output_file_info_error(mock_fs):
     patched_track_metrics,
 )
 def test_convert_markdown_to_docx_full_success(
-    mock_validate, mock_get_output, mock_convert, mock_validate_input
-):
+    mock_validate: MagicMock,
+    mock_get_output: MagicMock,
+    mock_convert: MagicMock,
+    mock_validate_input: MagicMock,
+) -> None:
     """Test full successful Markdown to DOCX conversion workflow."""
     # Setup mocks
     mock_validate_input.return_value = 1000  # Original size
@@ -408,8 +424,8 @@ def test_convert_markdown_to_docx_full_success(
 @patch("quack_core.integrations.pandoc._ops.md_to_docx._check_docx_metadata")
 @patch("quack_core.integrations.pandoc._ops.utils.validate_docx_structure")
 def test_md_to_docx_validate_conversion_docx_structure(
-    mock_validate_docx, mock_check_metadata
-):
+    mock_validate_docx: MagicMock, mock_check_metadata: MagicMock
+) -> None:
     """Test validation of converted DOCX document."""
     # Setup mocks for structure validation
     mock_validate_docx.return_value = (True, [])
@@ -437,7 +453,7 @@ def test_md_to_docx_validate_conversion_docx_structure(
         assert mock_check_metadata.called, "check_docx_metadata was not called"
 
 
-def test_md_to_docx_check_metadata():
+def test_md_to_docx_check_metadata() -> None:
     """Test checking DOCX metadata."""
     # Import _check_docx_metadata directly
     from quack_core.integrations.pandoc.operations.md_to_docx import (
