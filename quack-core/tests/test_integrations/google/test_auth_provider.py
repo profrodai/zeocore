@@ -519,13 +519,34 @@ class TestGoogleAuthProviderCoverageGaps:
     def test_extract_redirect_uri_exception_returns_none(self) -> None:
         """Covers auth.py:157-161 -- an unexpected exception (e.g. malformed
         data shape raising on subscript/containment checks) is caught,
-        logged, and swallowed to None rather than propagating."""
+        logged, and swallowed to None rather than propagating.
+
+        Uses data=42 (not None) so this exercises the try/except's own
+        catch-all, distinct from test_extract_redirect_uri_data_none_returns_none
+        below which covers the explicit `data is None` guard added in the
+        lint-mypy-backlog round18 google/auth.py cluster fix -- that guard
+        now intercepts the None case before it ever reaches `"web" in data`.
+        """
+        provider = self._make_provider()
+        with patch(
+            "quack_core.integrations.google.auth.standalone.read_json"
+        ) as mock_read:
+            mock_read.return_value = MagicMock(success=True, data=42)
+            # `"web" in data` raises TypeError when data is a non-iterable int.
+            uri = provider._extract_redirect_uri_from_secrets()
+            assert uri is None
+
+    def test_extract_redirect_uri_data_none_returns_none(self) -> None:
+        """Covers auth.py's `_extract_redirect_uri_from_secrets` data-is-None
+        guard, added in the lint-mypy-backlog round18 google/auth.py cluster
+        fix: read_json() can report success=True while data is None
+        (DataResult.data is itself Optional at the model level), which must
+        short-circuit to None rather than reach `"web" in data`."""
         provider = self._make_provider()
         with patch(
             "quack_core.integrations.google.auth.standalone.read_json"
         ) as mock_read:
             mock_read.return_value = MagicMock(success=True, data=None)
-            # `"web" in data` raises TypeError when data is None.
             uri = provider._extract_redirect_uri_from_secrets()
             assert uri is None
 
@@ -687,3 +708,64 @@ class TestGoogleAuthProviderCoverageGaps:
             mock_serialize.side_effect = RuntimeError("serialize boom")
 
             assert not provider._save_credentials_to_file(mock_credentials())
+
+    def test_load_existing_credentials_no_credentials_file_returns_none(self) -> None:
+        """Covers auth.py's `_load_existing_credentials` credentials_file
+        None guard, added in the lint-mypy-backlog round18 google/auth.py
+        cluster fix (Response | None-shaped narrowing, applied here to
+        self.credentials_file: str | None). A provider constructed without
+        a credentials_file must short-circuit to None rather than pass
+        None into standalone.get_file_info/read_json."""
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
+            mock_info.return_value.success = True
+            mock_info.return_value.exists = True
+            provider = GoogleAuthProvider(client_secrets_file="/path/to/secrets.json")
+
+        assert provider.credentials_file is None
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
+            assert provider._load_existing_credentials() is None
+            mock_info.assert_not_called()
+
+    def test_load_existing_credentials_data_none_returns_none(self) -> None:
+        """Covers auth.py's `_load_existing_credentials` credential_data
+        None guard: read_json() can report success=True while data is None
+        (DataResult.data is itself Optional at the model level) -- this
+        must be treated the same as a read failure, not passed into
+        Credentials.from_authorized_user_info untyped."""
+        provider = self._make_provider()
+        with (
+            patch(
+                "quack_core.integrations.google.auth.standalone.get_file_info"
+            ) as mock_info,
+            patch(
+                "quack_core.integrations.google.auth.standalone.read_json"
+            ) as mock_read,
+        ):
+            mock_info.return_value = MagicMock(exists=True)
+            mock_read.return_value = MagicMock(success=True, data=None)
+            assert provider._load_existing_credentials() is None
+
+    def test_get_credentials_raises_when_auth_still_none_after_authenticate(
+        self,
+    ) -> None:
+        """Covers get_credentials()'s defensive backstop: authenticate()
+        reporting success=True is expected to have set self.auth as a side
+        effect (both its refresh and fresh-flow branches do), but if that
+        invariant is ever violated, get_credentials() must raise rather
+        than return None from a function typed to return Credentials
+        (the source of the [return-value] mypy finding this cluster
+        fixed). Directly exercised by patching authenticate() to report
+        success without setting self.auth, which real callers cannot do
+        but the type system cannot rule out."""
+        provider = self._make_provider()
+        provider.auth = None
+        provider.authenticated = False
+
+        with patch.object(provider, "authenticate") as mock_auth:
+            mock_auth.return_value = AuthResult(success=True, token="x")  # noqa: S106 -- fake test value
+            with pytest.raises(QuackIntegrationError, match="no credentials were set"):
+                provider.get_credentials()
