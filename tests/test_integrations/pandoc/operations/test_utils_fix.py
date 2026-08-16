@@ -10,12 +10,16 @@ that can be used to avoid DataResult validation issues during testing.
 """
 
 import time
+from typing import Any
 from unittest.mock import patch
 
+from quack_core.integrations.pandoc import ConversionMetrics, PandocConfig
 from quack_core.integrations.pandoc.operations.utils import safe_convert_to_int
 
 
-def patched_check_file_size(file_size, min_size=50):
+def patched_check_file_size(
+    file_size: Any, min_size: Any = 50
+) -> tuple[bool, list[str]]:
     """
     Patched version of check_file_size that avoids DataResult validation issues.
 
@@ -42,7 +46,9 @@ def patched_check_file_size(file_size, min_size=50):
     return is_valid, errors
 
 
-def patched_check_conversion_ratio(output_size, original_size, min_ratio=0.05):
+def patched_check_conversion_ratio(
+    output_size: Any, original_size: Any, min_ratio: Any = 0.05
+) -> tuple[bool, list[str]]:
     """
     Patched version of check_conversion_ratio that avoids DataResult validation issues.
 
@@ -87,8 +93,13 @@ def patched_check_conversion_ratio(output_size, original_size, min_ratio=0.05):
 
 
 def patched_track_metrics(
-    filename, start_time, original_size, converted_size, metrics, config
-):
+    filename: str,
+    start_time: float,
+    original_size: Any,
+    converted_size: Any,
+    metrics: ConversionMetrics,
+    config: PandocConfig,
+) -> None:
     """
     Patched version of track_metrics that avoids DataResult validation issues.
 
@@ -145,14 +156,14 @@ def patched_track_metrics(
             }
 
 
-def apply_utils_patches():
+def apply_utils_patches() -> list[Any]:
     """
     Apply all utility function patches to fix validation issues.
 
     Returns:
         list: List of context managers that should be entered
     """
-    patches = [
+    patches: list[Any] = [
         patch(
             "quack_core.integrations.pandoc._ops.utils.check_file_size",
             patched_check_file_size,

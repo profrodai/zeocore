@@ -38,7 +38,7 @@ from .test_utils_fix import (
 # --- Tests for _ops.utils ---
 
 
-def test_verify_pandoc_success(mock_pypandoc):
+def test_verify_pandoc_success(mock_pypandoc: MagicMock) -> None:
     """Test successful verification of pandoc."""
     version = verify_pandoc()
     assert version == "2.11.0"
@@ -46,7 +46,7 @@ def test_verify_pandoc_success(mock_pypandoc):
 
 
 @patch("importlib.import_module")
-def test_verify_pandoc_import_error(mock_import_module):
+def test_verify_pandoc_import_error(mock_import_module: MagicMock) -> None:
     """Test handling of ImportError during pandoc verification."""
     # Make import_module raise ImportError
     mock_import_module.side_effect = ImportError("No module named 'pypandoc'")
@@ -58,7 +58,7 @@ def test_verify_pandoc_import_error(mock_import_module):
 
 
 @patch("pypandoc.get_pandoc_version")
-def test_verify_pandoc_os_error(mock_get_version):
+def test_verify_pandoc_os_error(mock_get_version: MagicMock) -> None:
     """Test handling of OSError during pandoc verification."""
     mock_get_version.side_effect = OSError("Pandoc not found")
 
@@ -68,7 +68,7 @@ def test_verify_pandoc_os_error(mock_get_version):
     assert "Pandoc is not installed" in str(exc_info.value)
 
 
-def test_prepare_pandoc_args():
+def test_prepare_pandoc_args() -> None:
     """Test preparation of pandoc conversion arguments."""
     config = PandocConfig()
 
@@ -91,7 +91,7 @@ def test_prepare_pandoc_args():
 
 
 @patch("quack_core.core.fs.service.standalone")
-def test_get_file_info(mock_fs):
+def test_get_file_info(mock_fs: MagicMock) -> None:
     """Test getting file information for conversion."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(
@@ -122,7 +122,7 @@ def test_get_file_info(mock_fs):
 
 
 @patch("bs4.BeautifulSoup")
-def test_validate_html_structure(mock_soup_class):
+def test_validate_html_structure(mock_soup_class: MagicMock) -> None:
     """Test validation of HTML document structure."""
     # Create a mock BeautifulSoup instance
     mock_soup = MagicMock()
@@ -154,7 +154,7 @@ def test_validate_html_structure(mock_soup_class):
 
 
 @patch("docx.Document")
-def test_validate_docx_structure(mock_document):
+def test_validate_docx_structure(mock_document: MagicMock) -> None:
     """Test validation of DOCX document structure."""
     # Create mock Document instance
     mock_doc = MagicMock()
@@ -179,7 +179,7 @@ def test_validate_docx_structure(mock_document):
         assert not errors
 
 
-def test_check_file_size():
+def test_check_file_size() -> None:
     """Test validation of file size."""
     # Use the patched version to avoid DataResult validation issues
 
@@ -194,7 +194,7 @@ def test_check_file_size():
     assert "below the minimum threshold" in errors[0]
 
 
-def test_check_conversion_ratio():
+def test_check_conversion_ratio() -> None:
     """Test validation of conversion ratio."""
     # Use the patched version to avoid DataResult validation issues
 
@@ -210,7 +210,7 @@ def test_check_conversion_ratio():
 
 
 @patch("quack_core.integrations.pandoc._ops.utils.logger")
-def test_track_metrics(mock_logger):
+def test_track_metrics(mock_logger: MagicMock) -> None:
     """Test tracking of conversion metrics."""
     metrics = ConversionMetrics()
     config = PandocConfig()
