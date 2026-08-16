@@ -85,6 +85,7 @@ class TestDriveOperationsFolder:
                 files_resource = mock_service.files()
                 assert isinstance(files_resource, MockDriveFilesResource)
                 assert files_resource.create_call_count == 1
+                assert files_resource.last_create_body is not None
                 assert files_resource.last_create_body["name"] == "Test Folder"
                 assert (
                     files_resource.last_create_body["mimeType"]

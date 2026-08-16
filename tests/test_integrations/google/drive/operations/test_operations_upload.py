@@ -393,6 +393,7 @@ class TestDriveOperationsUpload:
 
                             # Check the body passed to create
                             assert files_resource.create_call_count == 1
+                            assert files_resource.last_create_body is not None
                             assert (
                                 files_resource.last_create_body["name"]
                                 == "document.pdf"
