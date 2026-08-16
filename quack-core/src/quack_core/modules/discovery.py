@@ -131,28 +131,37 @@ class PluginLoader:
             QuackPluginError: If validation fails
         """
         try:
-            # Check for plugin_id (required for new modules)
-            if not hasattr(plugin, "plugin_id"):
-                raise AttributeError(
-                    "Plugin must implement plugin_id property. "
-                    "This is required for stable plugin identity."
-                )
-
-            # Check for name (backward compatibility)
+            # Check for name (backward compatibility) - required in all cases
             if not hasattr(plugin, "name"):
                 raise AttributeError("Plugin has no 'name' attribute")
 
             # Validate the get_metadata method and its return value
             if not hasattr(plugin, "get_metadata") or not callable(plugin.get_metadata):
-                # For backward compatibility, create minimal metadata
+                # For backward compatibility, create minimal metadata. A legacy
+                # plugin predating the plugin_id requirement may have no
+                # plugin_id attribute at all - fall back to module_path, itself a
+                # stable, deterministic identifier, rather than hard-requiring an
+                # attribute this exact branch exists to accommodate the absence
+                # of. (A plugin_id-bearing Protocol subclass that simply never
+                # overrode the property still returns None via getattr, so that
+                # case also falls back to module_path here.)
+                plugin_id = getattr(plugin, "plugin_id", None) or module_path
                 metadata = QuackPluginMetadata(
-                    plugin_id=plugin.plugin_id,
+                    plugin_id=plugin_id,
                     name=plugin.name,
                     version="0.1.0",
                     description=f"Plugin from {module_path}",
                     capabilities=[],
                 )
             else:
+                # Check for plugin_id (required for new modules that DO implement
+                # get_metadata - the structured-metadata path is the "new module"
+                # contract this requirement targets, per this method's docstring).
+                if not hasattr(plugin, "plugin_id"):
+                    raise AttributeError(
+                        "Plugin must implement plugin_id property. "
+                        "This is required for stable plugin identity."
+                    )
                 metadata = plugin.get_metadata()
 
                 # Validate metadata type
@@ -167,9 +176,13 @@ class PluginLoader:
 
             # Validate using stricter PluginInfo model
             validation_dict = metadata.model_dump()
-            # Ensure plugin_id is set from the plugin instance if not in metadata
+            # Ensure plugin_id is set from the plugin instance if not in metadata.
+            # getattr (not direct access): a legacy plugin may have no plugin_id
+            # attribute at all, same reasoning as the backward-compat branch above.
             if not validation_dict.get("plugin_id"):
-                validation_dict["plugin_id"] = plugin.plugin_id
+                validation_dict["plugin_id"] = (
+                    getattr(plugin, "plugin_id", None) or module_path
+                )
 
             PluginInfo(**validation_dict)
 

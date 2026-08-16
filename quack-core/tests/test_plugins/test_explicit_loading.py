@@ -31,13 +31,50 @@ class TestImportSideEffects(unittest.TestCase):
     """Test that importing quack_core.modules has no side effects."""
 
     def setUp(self) -> None:
-        """Clean up any existing plugin state before each test."""
-        # Remove modules module from sys.modules to force fresh import
+        """Clean up any existing plugin state before each test.
+
+        Purging quack_core.modules* from sys.modules forces the next `import` to
+        build FRESH class objects (QuackPluginMetadata, PluginRegistry, etc.) -
+        genuinely distinct from whatever any OTHER already-imported module (e.g.
+        quack_core.core.fs.plugin, or discovery.py's own already-bound reference)
+        is holding onto. Without a restore, that split leaks into every test that
+        runs afterward in the same process: a plugin's get_metadata() can return
+        an instance of the reloaded class while validation code elsewhere still
+        checks isinstance() against the pre-purge class, producing
+        "got <class '...QuackPluginMetadata'>" errors that look like the classes
+        differ even though they print identically (paid: TestExplicitLoading's
+        entry-point tests failed exactly this way only when this file's full
+        suite ran, never in isolation - the missing teardown was the reason).
+        Save the pre-purge modules and restore them in tearDown so the purge
+        does not survive past this class's own tests.
+        """
+        self._saved_modules = {
+            key: sys.modules[key]
+            for key in sys.modules
+            if key.startswith("quack_core.modules")
+        }
         modules_to_remove = [
             key for key in sys.modules.keys() if key.startswith("quack_core.modules")
         ]
         for module in modules_to_remove:
             del sys.modules[module]
+
+    def tearDown(self) -> None:
+        """Restore the pre-purge quack_core.modules* sys.modules entries.
+
+        Undoes setUp's purge so later test classes in this process see the
+        SAME class objects they started with, instead of inheriting whatever
+        fresh reload test_import_does_not_register_plugins/
+        test_import_exports_expected_api triggered.
+        """
+        # Drop whatever got (re)imported during the test
+        reimported = [
+            key for key in sys.modules.keys() if key.startswith("quack_core.modules")
+        ]
+        for module in reimported:
+            del sys.modules[module]
+        # Restore exactly what was there before setUp ran
+        sys.modules.update(self._saved_modules)
 
     def test_import_does_not_register_plugins(self) -> None:
         """
@@ -432,6 +469,25 @@ class TestPluginIdStability(unittest.TestCase):
 class TestRegistryClear(unittest.TestCase):
     """Test the registry clear() method."""
 
+    def setUp(self) -> None:
+        """Clean registry before each test.
+
+        registry is a module-level singleton shared across the whole test
+        session (every test class in this file imports the same object) - this
+        class was the only one missing the isolation every sibling class already
+        has (TestExplicitLoading, TestPluginIdStability), so it silently counted
+        whatever a preceding test happened to leave registered.
+        """
+        from quack_core.modules import registry
+
+        registry.clear()
+
+    def tearDown(self) -> None:
+        """Clean registry after each test."""
+        from quack_core.modules import registry
+
+        registry.clear()
+
     def test_clear_removes_all_plugins(self) -> None:
         """Verify that clear() removes all modules from registry."""
         from quack_core.modules import registry
@@ -491,13 +547,22 @@ class TestLoadEnabledModules(unittest.TestCase):
     @patch("quack_core.modules.discovery.importlib.import_module")
     def test_load_enabled_modules_succeeds(self, mock_import: MagicMock) -> None:
         """Test successful loading of modules from module paths."""
+        import types
+
         from quack_core.modules import load_enabled_modules, registry
 
-        # Create a mock module with a create_plugin factory
-        mock_module = Mock()
+        # Create a real (not Mock) module-like object with a create_plugin
+        # factory. Assigning directly to a Mock's __dict__ (the prior version of
+        # this test did `mock_module.__dict__ = {...}`) wipes out Mock's own
+        # internal bookkeeping attributes that live in that same __dict__
+        # (_mock_methods, _mock_name, ...), corrupting the object so even a later,
+        # unrelated attribute assignment on it raises AttributeError:
+        # _mock_methods. types.ModuleType has no such internal state to corrupt -
+        # same pattern already used correctly in
+        # test_discovery.py::test_load_plugin.
         plugin = MockTestPlugin(plugin_id="test_module", name="Test Module")
-        mock_module.create_plugin = lambda: plugin
-        mock_module.__dict__ = {"create_plugin": mock_module.create_plugin}
+        mock_module = types.ModuleType("test.module.plugin")
+        mock_module.create_plugin = lambda: plugin  # type: ignore[attr-defined]
 
         mock_import.return_value = mock_module
 
