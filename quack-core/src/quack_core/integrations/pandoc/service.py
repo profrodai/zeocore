@@ -12,9 +12,12 @@ specialized converters.
 import logging
 from typing import Any
 
+from quack_core.core.errors import QuackIntegrationError
 from quack_core.core.fs.service import FileSystemService
+from quack_core.core.logging import LOG_LEVELS, LogLevel
 from quack_core.core.paths.service import PathService
 from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.integrations.core.protocols import ConfigProviderProtocol
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import PandocConfig, PandocConfigProvider
 from quack_core.integrations.pandoc.converter import DocumentConverter
@@ -43,7 +46,7 @@ class PandocIntegration(BaseIntegrationService):
         config_provider: PandocConfigProvider | None = None,
         paths_service: PathService | None = None,
         fs_service: FileSystemService | None = None,
-        log_level: int | str | None = None,
+        log_level: int = LOG_LEVELS[LogLevel.INFO],
     ) -> None:
         """Initialize the Pandoc integration service.
 
@@ -55,13 +58,9 @@ class PandocIntegration(BaseIntegrationService):
             fs_service: Optional filesystem service instance
             log_level: Logging level
         """
-        # Define a default log level for when None is provided
-        default_log_level = "INFO"
-        effective_log_level = log_level or default_log_level
-
         # Initialize config provider
         if config_provider is None:
-            config_provider = PandocConfigProvider(log_level=effective_log_level)
+            config_provider = PandocConfigProvider(log_level=log_level)
 
         # Initialize base with proper parameters
         super().__init__(
@@ -69,7 +68,7 @@ class PandocIntegration(BaseIntegrationService):
             auth_provider=None,
             config=None,
             config_path=config_path,
-            log_level=effective_log_level,
+            log_level=log_level,
         )
 
         # Store service instances
@@ -123,6 +122,37 @@ class PandocIntegration(BaseIntegrationService):
             )
         return None
 
+    def _resolve_path_str(self, path: str) -> str:
+        """Resolve a path to the project root, falling back to the original string.
+
+        `PathService.resolve_project_path` returns a `PathResult` whose `.path` is
+        `Path | None` even on success (the model's general contract); this coerces
+        to `str` and falls back to the original input on failure or a missing path.
+
+        Args:
+            path: Path to resolve.
+
+        Returns:
+            str: The resolved path as a string, or the original `path` unchanged.
+        """
+        result = self.paths_service.resolve_project_path(path)
+        if result.success and result.path is not None:
+            return str(result.path)
+        return path
+
+    def _require_config_provider(self) -> ConfigProviderProtocol:
+        """Return `self.config_provider`, narrowed to non-None.
+
+        `__init__` always sets a concrete `PandocConfigProvider` (never `None`) --
+        the base class types `config_provider` nullable for the general integration
+        case. Raises if that invariant is ever violated (defensive, not expected).
+        """
+        if self.config_provider is None:
+            raise QuackIntegrationError(
+                "PandocIntegration.config_provider is unexpectedly None"
+            )
+        return self.config_provider
+
     def initialize(self) -> IntegrationResult:
         """Initialize the Pandoc integration.
 
@@ -150,7 +180,8 @@ class PandocIntegration(BaseIntegrationService):
 
         # 2. Load Configuration
         try:
-            config_result = self.config_provider.load_config(
+            config_provider = self._require_config_provider()
+            config_result = config_provider.load_config(
                 config_path=self._config_path
             )
 
@@ -168,8 +199,10 @@ class PandocIntegration(BaseIntegrationService):
             conversion_config = PandocConfig(**config_dict)
             self._config_loaded = True
 
-            # Store config in self.config for compatibility
-            self.config = conversion_config
+            # Store config in self.config for compatibility. Base class types this
+            # dict[str, Any] | None for the general integration case; this subclass
+            # deliberately stores the validated PandocConfig object instead.
+            self.config = conversion_config  # type: ignore[assignment]
 
         except Exception as e:
             error_msg = f"Invalid configuration: {str(e)}"
@@ -281,17 +314,17 @@ class PandocIntegration(BaseIntegrationService):
 
         try:
             # Resolve paths
-            input_result = self.paths_service.resolve_project_path(input_path)
-            input_path = input_result.path if input_result.success else input_path
-
+            input_path = self._resolve_path_str(input_path)
             if output_path:
-                output_result = self.paths_service.resolve_project_path(output_path)
-                output_path = (
-                    output_result.path if output_result.success else output_path
-                )
+                output_path = self._resolve_path_str(output_path)
 
             # Use converter - signature is:
             # convert_file(input_path, output_path, output_format)
+            if self.converter is None:
+                raise QuackIntegrationError(
+                    "PandocIntegration.converter is unexpectedly None after "
+                    "_ensure_initialized() passed"
+                )
             return self.converter.convert_file(input_path, output_path, "markdown")
 
         except Exception as e:
@@ -319,17 +352,17 @@ class PandocIntegration(BaseIntegrationService):
 
         try:
             # Resolve paths
-            input_result = self.paths_service.resolve_project_path(input_path)
-            input_path = input_result.path if input_result.success else input_path
-
+            input_path = self._resolve_path_str(input_path)
             if output_path:
-                output_result = self.paths_service.resolve_project_path(output_path)
-                output_path = (
-                    output_result.path if output_result.success else output_path
-                )
+                output_path = self._resolve_path_str(output_path)
 
             # Use converter - signature is:
             # convert_file(input_path, output_path, output_format)
+            if self.converter is None:
+                raise QuackIntegrationError(
+                    "PandocIntegration.converter is unexpectedly None after "
+                    "_ensure_initialized() passed"
+                )
             return self.converter.convert_file(input_path, output_path, "docx")
 
         except Exception as e:
@@ -349,12 +382,9 @@ class PandocIntegration(BaseIntegrationService):
         Returns:
             Tuple of (resolved_input_dir, resolved_output_dir).
         """
-        input_result = self.paths_service.resolve_project_path(input_dir)
-        input_dir = input_result.path if input_result.success else input_dir
-
+        input_dir = self._resolve_path_str(input_dir)
         if output_dir:
-            output_result = self.paths_service.resolve_project_path(output_dir)
-            output_dir = output_result.path if output_result.success else output_dir
+            output_dir = self._resolve_path_str(output_dir)
 
         return input_dir, output_dir
 
