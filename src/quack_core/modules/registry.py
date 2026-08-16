@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/modules/registry.py
-# module: quack_core.modules.registry
-# role: module
-# neighbors: __init__.py, protocols.py, discovery.py
-# exports: PluginRegistry
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

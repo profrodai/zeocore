@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/tools/protocol.py
-# module: quack_core.tools.protocol
-# role: module
-# neighbors: __init__.py, base.py, context.py
-# exports: QuackToolProtocol
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

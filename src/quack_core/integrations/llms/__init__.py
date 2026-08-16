@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/llms/__init__.py
-# module: quack_core.integrations.llms.__init__
-# role: module
-# neighbors: models.py, protocols.py, config.py, registry.py, fallback.py
-# exports: LLMClient, OpenAIClient, AnthropicClient, OllamaClient, MockLLMClient, FallbackLLMClient, LLMConfig, LLMConfigProvider (+11 more)
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

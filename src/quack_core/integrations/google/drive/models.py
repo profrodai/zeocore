@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/google/drive/models.py
-# module: quack_core.integrations.google.drive.models
-# role: models
-# neighbors: __init__.py, service.py, protocols.py
-# exports: DrivePermission, DriveFile, DriveFolder
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

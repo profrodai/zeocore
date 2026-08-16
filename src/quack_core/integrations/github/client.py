@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/github/client.py
-# module: quack_core.integrations.github.client
-# role: module
-# neighbors: __init__.py, service.py, models.py, protocols.py, config.py, auth.py
-# exports: GitHubClient
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """GitHub API client for quack_core."""

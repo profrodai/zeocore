@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/_dev/run_local.py
-# module: quack_core._dev.run_local
-# role: module
-# neighbors: __init__.py
-# exports: run_flow
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

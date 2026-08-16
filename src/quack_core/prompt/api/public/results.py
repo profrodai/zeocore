@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/prompt/api/public/results.py
-# module: quack_core.prompt.api.public.results
-# role: api
-# neighbors: __init__.py
-# exports: PromptRenderResult, RegisterStrategyResult, GetStrategyResult, StrategyListResult, LoadPackResult
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from typing import Any

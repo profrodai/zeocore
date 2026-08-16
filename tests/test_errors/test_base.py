@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_errors/test_base.py
-# role: tests
-# neighbors: __init__.py, test_handlers.py
-# exports: TestQuackError, TestQuackIOError, TestSpecificErrors, TestWrapIOErrors
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

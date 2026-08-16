@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/config/loader.py
-# module: quack_core.config.loader
-# role: module
-# neighbors: __init__.py, models.py, plugin.py, utils.py
-# exports: load_yaml_config, find_config_file, load_config, merge_configs
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

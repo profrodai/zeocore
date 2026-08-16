@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/github/conftest.py
-# role: tests
-# neighbors: __init__.py, test_api.py, test_auth.py, test_client.py, test_config.py, test_github_init.py (+5 more)
-# exports: mock_environment_token, mock_http_client, mock_rate_limited_client, patch_integration_registry, patch_registry_register, github_credentials_file, github_config_file, mock_github_auth_provider (+13 more)
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """Shared fixtures for GitHub integration tests."""

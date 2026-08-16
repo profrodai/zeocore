@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_contracts/test_envelopes.py
-# role: tests
-# neighbors: __init__.py, test_artifacts.py, test_capabilities.py, test_dependency_boundaries.py, test_schema_examples.py
-# exports: TestCapabilityError, TestCapabilityLogEvent, TestCapabilityResult
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

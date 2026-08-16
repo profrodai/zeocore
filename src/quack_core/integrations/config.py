@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/config.py
-# module: quack_core.integrations.config
-# role: module
-# neighbors: __init__.py, boot.py, loader.py
-# exports: IntegrationsConfig
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

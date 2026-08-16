@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/github/models.py
-# module: quack_core.integrations.github.models
-# role: models
-# neighbors: __init__.py, service.py, protocols.py, config.py, auth.py, client.py
-# exports: PullRequestStatus, GitHubUser, GitHubRepo, PullRequest
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """GitHub integration data models for quack_core."""

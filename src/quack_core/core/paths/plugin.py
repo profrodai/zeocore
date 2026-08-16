@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/paths/plugin.py
-# module: quack_core.core.paths.plugin
-# role: plugin
-# neighbors: __init__.py, service.py, models.py
-# exports: PathsPlugin, QuackPathsPlugin, create_plugin
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

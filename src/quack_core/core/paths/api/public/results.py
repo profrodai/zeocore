@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/paths/api/public/results.py
-# module: quack_core.core.paths.api.public.results
-# role: api
-# neighbors: __init__.py, path_utils.py
-# exports: PathResult, StringResult, ContextResult
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

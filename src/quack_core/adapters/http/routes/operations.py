@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/adapters/http/routes/operations.py
-# module: quack_core.adapters.http.routes.operations
-# role: adapters
-# neighbors: __init__.py, health.py, jobs.py
-# exports: list_operations
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

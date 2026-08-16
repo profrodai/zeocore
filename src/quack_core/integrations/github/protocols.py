@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/github/protocols.py
-# module: quack_core.integrations.github.protocols
-# role: protocols
-# neighbors: __init__.py, service.py, models.py, config.py, auth.py, client.py
-# exports: GitHubIntegrationProtocol
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """Protocols for GitHub integration."""

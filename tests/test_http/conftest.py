@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_http/conftest.py
-# role: tests
-# neighbors: __init__.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py, test_routes_jobs.py (+2 more)
-# exports: job_store, test_registry, job_runner, clear_job_state, test_config, test_app, test_client, auth_headers (+2 more)
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

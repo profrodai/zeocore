@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/fs/service/full_class.py
-# module: quack_core.core.fs.service.full_class
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, factory.py, file_info_operations.py, file_operations.py (+5 more)
-# exports: FileSystemService
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from quack_core.core.fs.protocols import FsPathLike

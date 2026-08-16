@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/llms/service/dependencies.py
-# module: quack_core.integrations.llms.service.dependencies
-# role: service
-# neighbors: __init__.py, initialization.py, integration.py, operations.py
-# exports: check_llm_dependencies
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

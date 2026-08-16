@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_errors/test_handlers.py
-# role: tests
-# neighbors: __init__.py, test_base.py
-# exports: TestErrorHandler, TestHandleErrorsDecorator, TestFileNotFoundFormatting
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

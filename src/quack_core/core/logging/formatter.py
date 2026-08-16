@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/logging/formatter.py
-# module: quack_core.core.logging.formatter
-# role: module
-# neighbors: __init__.py, config.py, logger.py
-# exports: Colors, VerbosityLevel, TeachingProvider, DefaultTeachingProvider, TeachingAwareFormatter, set_teaching_provider, reset_teaching_provider
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

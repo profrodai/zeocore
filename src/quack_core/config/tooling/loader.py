@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/config/tooling/loader.py
-# module: quack_core.config.tooling.loader
-# role: module
-# neighbors: __init__.py, base.py, logger.py
-# exports: load_tool_config, update_tool_config
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

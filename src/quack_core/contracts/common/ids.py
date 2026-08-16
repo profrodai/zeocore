@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/contracts/common/ids.py
-# module: quack_core.contracts.common.ids
-# role: module
-# neighbors: __init__.py, enums.py, time.py, typing.py, versions.py
-# exports: generate_run_id, generate_artifact_id, is_valid_uuid
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

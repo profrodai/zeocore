@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/google/mail/utils/test_api.py
-# role: utils
-# neighbors: __init__.py
-# exports: TestGmailApiUtils
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

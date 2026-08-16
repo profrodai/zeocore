@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/llms/clients/ollama.py
-# module: quack_core.integrations.llms.clients.ollama
-# role: module
-# neighbors: __init__.py, anthropic.py, base.py, mock.py, openai.py
-# exports: OllamaClient
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

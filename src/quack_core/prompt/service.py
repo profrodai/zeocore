@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/prompt/service.py
-# module: quack_core.prompt.service
-# role: service
-# neighbors: __init__.py, models.py, plugin.py
-# exports: PromptService
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

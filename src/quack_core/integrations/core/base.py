@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/core/base.py
-# module: quack_core.integrations.core.base
-# role: module
-# neighbors: __init__.py, protocols.py, registry.py, results.py
-# exports: BaseAuthProvider, BaseConfigProvider, BaseIntegrationService
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

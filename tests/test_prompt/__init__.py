@@ -1,9 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_prompt/__init__.py
-# role: tests
-# neighbors: conftest.py, test_booster.py, test_enhancer.py, test_integration.py, test_plugin.py, test_registry.py (+2 more)
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

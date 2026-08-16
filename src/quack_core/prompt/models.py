@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/prompt/models.py
-# module: quack_core.prompt.models
-# role: models
-# neighbors: __init__.py, service.py, plugin.py
-# exports: PromptStrategy, StrategyInfo
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from collections.abc import Callable

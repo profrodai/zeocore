@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/llms/models.py
-# module: quack_core.integrations.llms.models
-# role: models
-# neighbors: __init__.py, protocols.py, config.py, registry.py, fallback.py
-# exports: RoleType, ChatMessage, FunctionParameter, FunctionDefinition, ToolDefinition, FunctionCall, ToolCall, LLMOptions (+1 more)
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """
