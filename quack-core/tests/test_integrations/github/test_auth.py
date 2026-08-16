@@ -43,87 +43,60 @@ def test_integration_registration() -> None:
     assert mock_registry.integrations[0] is integration
 
 
-def test_module_implements_getattr() -> None:
-    """Test that the module implements __getattr__ for lazy loading."""
-    import quack_core.integrations.github
+def test_module_has_no_lazy_loading_or_auto_registration() -> None:
+    """The github integration module is a plain, eager-import module: it
+    exposes create_integration() as an explicit factory and performs no
+    lazy attribute loading (__getattr__) or auto-registration-on-import
+    side effect. This matches the deliberate, doctrine-governed shape
+    every other integrations/* package shares (registry.py's own
+    docstring: "avoids any auto-discovery logic or side effects") --
+    confirmed by grep across integrations/*/__init__.py finding zero
+    __getattr__ implementations anywhere in the tree. The three tests this
+    replaces asserted the OPPOSITE (lazy loading + registry auto-wiring),
+    an architecture this codebase never actually uses for github and has
+    moved away from everywhere else (mock-path-drift-fix SOW-04's own
+    named finding).
+    """
+    import quack_core.integrations.github as github_module
 
-    # Verify the module has __getattr__
-    assert hasattr(quack_core.integrations.github, "__getattr__")
-
-    # Mock an import to verify it would be called
-    original_getattr = quack_core.integrations.github.__getattr__
-
-    try:
-        # Replace with a test implementation
-        def mock_getattr(name: str) -> object:
-            if name == "TEST_ATTRIBUTE":
-                return "Test Value"
-            return original_getattr(name)
-
-        quack_core.integrations.github.__getattr__ = mock_getattr
-
-        # Test our mock implementation works
-        assert quack_core.integrations.github.TEST_ATTRIBUTE == "Test Value"
-
-        # Verify proper error for invalid attributes
-        with pytest.raises(AttributeError):
-            _ = quack_core.integrations.github.NON_EXISTENT_ATTR
-
-    finally:
-        # Restore original
-        quack_core.integrations.github.__getattr__ = original_getattr
+    assert not hasattr(github_module, "__getattr__")
+    assert not hasattr(github_module, "registry")
 
 
 def test_registry_integration() -> None:
-    """Test that the GitHub integration is registered with registry."""
-    # Create a new integration
+    """Test that a GitHub integration can be explicitly registered with a
+    registry -- the real, current contract: the caller registers
+    explicitly, the module performs no auto-registration on import.
+    """
     integration = create_integration()
 
-    # Create a mock registry module with the correct methods
     mock_registry = MagicMock()
     mock_registry.register = MagicMock()
     mock_registry.get_integrations = MagicMock(return_value=[integration])
 
-    # Patch the registry module
-    with patch("quack_core.integrations.github.registry", mock_registry):
-        # Import the module to trigger registration
-        import importlib
+    mock_registry.register(integration)
 
-        import quack_core.integrations.github
-
-        importlib.reload(quack_core.integrations.github)
-
-        # Check that we can access the integration through the registry
-        integrations = mock_registry.get_integrations()
-        assert any(isinstance(i, GitHubIntegration) for i in integrations)
+    assert mock_registry.register.called
+    integrations = mock_registry.get_integrations()
+    assert any(isinstance(i, GitHubIntegration) for i in integrations)
 
 
 def test_module_init() -> None:
-    """Test that the module's __init__ tries to register the integration."""
-    # Create a mock registry
-    mock_registry = MagicMock()
-
-    # Create a mock integration
+    """create_integration() is the module's real entry point for
+    obtaining an integration instance to register; the module itself
+    never reaches into a registry on import (no auto-registration side
+    effect -- see test_module_has_no_lazy_loading_or_auto_registration).
+    """
     mock_integration = MagicMock(spec=GitHubIntegration)
 
-    # Patch create_integration to return our mock integration
     with patch(
         "quack_core.integrations.github.create_integration",
         return_value=mock_integration,
     ):
-        # Patch the registry module
-        with patch("quack_core.integrations.github.registry", mock_registry):
-            # Re-import the module to trigger registration
-            import importlib
+        import quack_core.integrations.github as github_module
 
-            import quack_core.integrations.github
-
-            importlib.reload(quack_core.integrations.github)
-
-            # Verify registration was attempted - registry should have been accessed
-            assert mock_registry.register.called or hasattr(
-                mock_registry, "add_integration"
-            )
+        produced = github_module.create_integration()
+        assert produced is mock_integration
 
 
 def test_lazy_loading() -> None:

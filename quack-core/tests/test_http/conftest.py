@@ -6,11 +6,13 @@
 Test configuration for HTTP adapter tests.
 """
 
-from collections.abc import Generator
+from collections.abc import Callable, Generator
+from typing import Any
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from pydantic import BaseModel
 from quack_core.adapters.http.app import create_app
 from quack_core.adapters.http.config import HttpAdapterConfig
 from quack_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
@@ -25,10 +27,55 @@ def job_store() -> Generator[InMemoryJobStore, None, None]:
     store.clear()
 
 
+class _QuackMediaRequest(BaseModel):
+    """Request model for the test-only quack-media.* operations registered
+    below. Accepts arbitrary extra params so the various route tests that
+    post different param shapes (idempotency, callback_url, slice/
+    transcribe/frame-extract params) all validate -- these stand in for
+    the real quack-media operations the tests exercise via the generic
+    /jobs and /ops surfaces (the concrete quack-media.* ROUTES were
+    retired in favor of that generic interface, per operations.py's own
+    docstring; there was never a real production quack-media operation
+    implementation to fall back on -- grep across quack-core/src finds
+    zero references to transcribe_audio/extract_frames outside tests)."""
+
+    model_config = {"extra": "allow"}
+
+
+def _make_quackmedia_operation(
+    op_name: str,
+) -> Callable[[_QuackMediaRequest], dict[str, Any]]:
+    """Build a test-only stand-in operation body for `op_name`: reports
+    success, the operation name, and echoes back the submitted params
+    without doing any real file I/O, matching what test_job_lifecycle /
+    test_full_job_workflow / test_routes_quackmedia.py assert."""
+
+    def _op(req: _QuackMediaRequest) -> dict[str, Any]:
+        return {"success": True, "operation": op_name, "params": req.model_dump()}
+
+    return _op
+
+
+_QUACKMEDIA_OPERATIONS = (
+    "quack-media.slice_video",
+    "quack-media.transcribe_audio",
+    "quack-media.extract_frames",
+)
+
+
 @pytest.fixture
 def test_registry() -> OperationRegistry:
-    """Create a test operation registry."""
-    return OperationRegistry()
+    """Create a test operation registry, pre-populated with the
+    quack-media.* operations the /jobs and /ops route tests submit
+    against."""
+    registry = OperationRegistry()
+    for op_name in _QUACKMEDIA_OPERATIONS:
+        registry.register(
+            name=op_name,
+            callable_=_make_quackmedia_operation(op_name),
+            request_model=_QuackMediaRequest,
+        )
+    return registry
 
 
 @pytest.fixture
@@ -61,9 +108,29 @@ def test_config() -> HttpAdapterConfig:
 
 
 @pytest.fixture
-def test_app(test_config: HttpAdapterConfig) -> FastAPI:
-    """Create test FastAPI app."""
-    return create_app(test_config)
+def test_app(
+    test_config: HttpAdapterConfig,
+    test_registry: OperationRegistry,
+    job_store: InMemoryJobStore,
+    job_runner: ThreadPoolJobRunner,
+) -> FastAPI:
+    """Create test FastAPI app.
+
+    Passes registry/job_store/job_runner explicitly via create_app's own
+    documented DI parameters ("Optional registry override (for testing)").
+    This is required, not cosmetic: FastAPI's lifespan handler only runs
+    when TestClient is entered as a context manager (`with TestClient(...)`);
+    bare `TestClient(app)` (what test_client below does) never triggers it,
+    so app.state.registry/job_store/job_runner are never populated by the
+    app's own startup path in tests. Injecting them here bypasses lifespan
+    entirely and gives each test isolated, real state instead.
+    """
+    return create_app(
+        test_config,
+        registry=test_registry,
+        job_store=job_store,
+        job_runner=job_runner,
+    )
 
 
 @pytest.fixture

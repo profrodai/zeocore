@@ -3,7 +3,6 @@
 # === QV-LLM:END ===
 
 from types import SimpleNamespace
-from unittest.mock import patch
 
 from _pytest.monkeypatch import MonkeyPatch
 from quack_core.integrations.pandoc import (
@@ -92,9 +91,12 @@ def test_config_provider_validation() -> None:
     valid_config = {"output_dir": "/tmp", "pandoc_options": {"wrap": "none"}}  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
     assert provider.validate_config(valid_config) is not False
 
-    # Invalid path (mocked in the test)
-    with patch("quack_core.core.fs.service.is_valid_path", return_value=False):
-        assert not provider.validate_config({"output_dir": "??invalid??"})
+    # Invalid path: validate_config's real, current contract (config.py)
+    # rejects a forbidden-character set (?, *, <, >, |) directly -- it never
+    # calls fs.is_valid_path (which also is not part of core/fs's public
+    # `service` surface any more; only `service.standalone.*` is), so no
+    # mock is needed here, the input alone exercises the real gate.
+    assert not provider.validate_config({"output_dir": "??invalid??"})
 
     # Invalid schema
     # # assert not provider.validate_config({"invalid_key": "value"})

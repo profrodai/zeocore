@@ -286,7 +286,13 @@ class GoogleConfigProvider(BaseConfigProvider):
         Returns:
             dict[str, Any]: Configuration with resolved paths
         """
-        from quack_core.core.paths import service as paths  # Direct import
+        from quack_core.core.paths import service as paths_module
+
+        # resolve_project_path is a PathService INSTANCE method, not a
+        # module-level free function (the module never had free functions --
+        # see the sibling test_paths chain's own conftest note, which
+        # established this same fact for core/paths/_internal callers).
+        path_service = paths_module.PathService()
 
         resolved_config = config.copy()
 
@@ -294,10 +300,20 @@ class GoogleConfigProvider(BaseConfigProvider):
         for key in ["client_secrets_file", "credentials_file"]:
             if key in resolved_config and resolved_config[key]:
                 try:
-                    resolved_path = paths.resolve_project_path(
+                    result = path_service.resolve_project_path(
                         resolved_config[key]
-                    )  # Direct call
-                    resolved_config[key] = str(resolved_path)
+                    )
+                    if isinstance(result, str):
+                        # Some callers (e.g. mocked in tests) may return a
+                        # bare string rather than a PathResult; accept both.
+                        resolved_config[key] = result
+                    elif getattr(result, "success", False):
+                        resolved_config[key] = str(result.path)
+                    else:
+                        self.logger.warning(
+                            f"Could not resolve path for {key}: "
+                            f"{getattr(result, 'error', 'unknown error')}"
+                        )
                 except Exception as e:
                     self.logger.warning(f"Could not resolve path for {key}: {e}")
 

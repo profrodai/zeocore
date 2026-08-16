@@ -31,6 +31,10 @@ class MinimalIntegration:
     """Minimal implementation of IntegrationProtocol."""
 
     @property
+    def integration_id(self) -> str:
+        return "minimal_integration"
+
+    @property
     def name(self) -> str:
         return "minimal_integration"
 
@@ -84,6 +88,10 @@ class MinimalConfigProvider:
 
 class MinimalStorageIntegration:
     """Minimal implementation of StorageIntegrationProtocol."""
+
+    @property
+    def integration_id(self) -> str:
+        return "minimal_storage"
 
     @property
     def name(self) -> str:
@@ -202,6 +210,10 @@ class TestProtocolInheritance:
 
         # Partial StorageIntegrationProtocol (implements IntegrationProtocol but not storage methods)
         class PartialStorage:
+            @property
+            def integration_id(self) -> str:
+                return "partial_storage"
+
             @property
             def name(self) -> str:
                 return "partial_storage"
@@ -337,6 +349,10 @@ class TestProtocolInheritance:
         # Create a duck-typed implementation without inheriting
         class DuckTypedIntegration:
             @property
+            def integration_id(self) -> str:
+                return "duck_typed"
+
+            @property
             def name(self) -> str:
                 return "duck_typed"
 
@@ -355,6 +371,10 @@ class TestProtocolInheritance:
 
         # Duck-typed storage implementation
         class DuckTypedStorage:
+            @property
+            def integration_id(self) -> str:
+                return "duck_storage"
+
             @property
             def name(self) -> str:
                 return "duck_storage"
