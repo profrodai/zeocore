@@ -106,9 +106,20 @@ def configure_logger(
         # Lazy import of filesystem service to avoid circular dependency
         from quack_core.core.fs.service import standalone
 
-        # Resolve parent directory safely
-        parts = standalone.split_path(log_file)
-        parent_parts = parts[:-1]
+        # Resolve parent directory safely. split_path returns a DataResult
+        # wrapping the real list[str] at .data -- it is NOT itself
+        # subscriptable (RULING-242: 'DataResult' object is not
+        # subscriptable, confirmed 100% reproducing whenever log_file is
+        # set). Check .ok before trusting .data; on failure, skip parent-dir
+        # creation rather than raise -- this module IS the logging config,
+        # so a split_path failure here should degrade to "no parent dir
+        # pre-created" (FileHandler below will still raise its own clear
+        # error if the directory genuinely doesn't exist), not crash the
+        # entire logger setup for every caller.
+        split_result = standalone.split_path(log_file)
+        parent_parts = (
+            split_result.data[:-1] if split_result.ok and split_result.data else []
+        )
 
         # Only attempt to create directory if a parent path exists
         if parent_parts:

@@ -50,6 +50,36 @@ class TestGoogleDriveServiceInit:
     @patch(
         "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
+    def test_init_always_constructs_real_config_and_auth_providers(
+        self, mock_verify: MagicMock
+    ) -> None:
+        """config_provider and auth_provider are never None after __init__.
+
+        Regression coverage for the None-narrowing added to
+        _initialize_config and initialize(): both attributes are typed
+        ConfigProviderProtocol | None / AuthProviderProtocol | None on the
+        base class, but GoogleDriveService.__init__ always constructs and
+        assigns real instances before either is used. This asserts that
+        contract directly (not mocked) so the narrowing's "unreachable for
+        this concrete class" claim is a checked fact, not an assumption.
+        """
+        mock_verify.return_value = None
+
+        service = GoogleDriveService(
+            client_secrets_file="/path/to/secrets.json",
+            credentials_file="/path/to/credentials.json",
+        )
+
+        assert service.config_provider is not None
+        assert service.auth_provider is not None
+        # Real object identity, not a stub -- confirms these are genuine
+        # GoogleConfigProvider/GoogleAuthProvider instances, not sentinels.
+        assert type(service.config_provider).__name__ == "GoogleConfigProvider"
+        assert type(service.auth_provider).__name__ == "GoogleAuthProvider"
+
+    @patch(
+        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+    )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_is_storage_integration(
         self, mock_init_config: MagicMock, mock_verify: MagicMock

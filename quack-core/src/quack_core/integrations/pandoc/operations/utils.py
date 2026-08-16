@@ -22,7 +22,12 @@ from quack_core.integrations.pandoc.models import ConversionMetrics, FileInfo
 
 logger = get_logger(__name__)
 
-# Import fs service
+# Import fs service. `fs` is deliberately duck-typed here: the except branch below
+# swaps in a SimpleNamespace whose lambda attributes mimic the real module's callable
+# surface (same success/data/content shape) but not its precise per-function return
+# types -- annotated `Any` at the declaration site rather than per-call-site ignores,
+# since every attribute access on `fs` below is meant to work against EITHER shape.
+fs: Any
 try:
     from quack_core.core.fs.service import standalone as fs
 except ImportError:
@@ -68,7 +73,7 @@ def verify_pandoc() -> str:
         import importlib
 
         pypandoc = importlib.import_module("pypandoc")
-        version = pypandoc.get_pandoc_version()
+        version = str(pypandoc.get_pandoc_version())
         logger.info(f"Found pandoc version: {version}")
         return version
     except ImportError as err:
@@ -162,7 +167,9 @@ def validate_html_structure(
         if check_links:
             links = soup.find_all("a")
             empty_links = [
-                str(link) for link in links if not (link.get("href") or "").strip()
+                str(link)
+                for link in links
+                if not str(link.get("href") or "").strip()
             ]
             if empty_links:
                 errors.append(f"Found {len(empty_links)} empty links in document")
@@ -261,8 +268,9 @@ def get_size_str_wrapper(size: int) -> str:
                 hasattr(result, "success")
                 and result.success
                 and hasattr(result, "data")
+                and result.data is not None
             ):
-                return result.data
+                return str(result.data)
         # Fallback if fs service doesn't have the method or result is invalid
         return f"{size}B"
     except Exception as e:

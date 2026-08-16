@@ -10,6 +10,7 @@ import asyncio
 
 from quack_core.adapters.http.config import HttpAdapterConfig
 from quack_core.adapters.http.service import run
+from quack_core.config import load_config
 from quack_core.config.tooling import load_tool_config, setup_tool_logging
 
 
@@ -19,11 +20,14 @@ def main() -> None:
     # Set up logging for the HTTP adapter
     setup_tool_logging("http-adapter", "DEBUG")
 
-    # Load configuration using QuackCore's config system
-    quack_config, http_config = load_tool_config(
+    # Load configuration using QuackCore's config system. load_config(None)
+    # uses default config locations; load_tool_config extracts and validates
+    # the "http" tool's section against HttpAdapterConfig.
+    quack_config = load_config(None)
+    http_config = load_tool_config(
+        config=quack_config,
         tool_name="http",
         config_model=HttpAdapterConfig,
-        config_path=None,  # Uses default config locations
     )
 
     print(f"Starting HTTP adapter on {http_config.host}:{http_config.port}")
@@ -77,7 +81,7 @@ Example client for testing the HTTP adapter.
 """
 
 import time
-from typing import Any
+from typing import Any, cast
 
 import httpx
 
@@ -96,7 +100,7 @@ class QuackCoreHTTPClient:
         async with httpx.AsyncClient() as client:
             response = await client.get(f"{self.base_url}/health/live")
             response.raise_for_status()
-            return response.json()
+            return cast(dict[str, Any], response.json())
 
     async def create_job(
         self,
@@ -117,7 +121,7 @@ class QuackCoreHTTPClient:
                 f"{self.base_url}/jobs", json=payload, headers=self.headers
             )
             response.raise_for_status()
-            return response.json()["job_id"]
+            return cast(str, response.json()["job_id"])
 
     async def get_job_status(self, job_id: str) -> dict[str, Any]:
         """Get job status."""
@@ -126,7 +130,7 @@ class QuackCoreHTTPClient:
                 f"{self.base_url}/jobs/{job_id}", headers=self.headers
             )
             response.raise_for_status()
-            return response.json()
+            return cast(dict[str, Any], response.json())
 
     async def wait_for_completion(
         self, job_id: str, timeout: int = 300, poll_interval: float = 1.0
@@ -166,7 +170,7 @@ class QuackCoreHTTPClient:
                 f"{self.base_url}/quack-media/slice", json=params, headers=self.headers
             )
             response.raise_for_status()
-            return response.json()
+            return cast(dict[str, Any], response.json())
 
 
 async def demo() -> None:

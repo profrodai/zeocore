@@ -16,6 +16,8 @@ This is NOT production code - it's a teaching example.
 Production code should use ToolRunner from quack_runner.workflow.
 """
 
+import logging
+import tempfile
 from typing import Any
 
 # Import the example tool
@@ -23,6 +25,7 @@ from echo_tool import EchoTool
 from quack_core.contracts import (
     CapabilityResult,
     EchoRequest,
+    generate_run_id,
 )
 from quack_core.tools import ToolContext
 from quack_core.tools.base import BaseQuackTool
@@ -52,10 +55,21 @@ def run_tool_locally(
     # 1. Instantiate tool
     tool = tool_class()
 
-    # 2. Build ToolContext (minimal - no filesystem, no dirs)
+    # 2. Build ToolContext. "Minimal" here means no real filesystem service
+    # (fs=None; EchoTool never touches it) and a throwaway tempdir for the
+    # required work_dir/output_dir fields -- ToolContext's identity and
+    # core-services fields (run_id, logger, fs, work_dir, output_dir) are
+    # all required by the model, so a genuinely field-free construction
+    # (as this example originally showed) is no longer possible.
+    tmp_dir = tempfile.mkdtemp(prefix="quack_minimal_runner_")
     ctx = ToolContext(
+        run_id=generate_run_id(),
         tool_name=tool.name,
         tool_version=tool.version,
+        logger=logging.getLogger(tool.name),
+        fs=None,
+        work_dir=tmp_dir,
+        output_dir=tmp_dir,
         metadata={"environment": "local_dev"},
     )
 

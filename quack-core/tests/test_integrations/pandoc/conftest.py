@@ -134,7 +134,12 @@ def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
 
     # Set the standalone attribute directly in the module
     # This is the critical change - we need to directly set the attribute on the module
-    sys.modules["quack_core.core.fs.service"].standalone = stub
+    # sys.modules[...] is typed ModuleType, which has no static `standalone`
+    # attribute -- this is a deliberate dynamic monkeypatch of a real (or
+    # synthetic) module object, not a typo, so the lookup is bound through an
+    # Any-typed local once rather than per-attribute-access ignored.
+    fs_service_mod: Any = sys.modules["quack_core.core.fs.service"]
+    fs_service_mod.standalone = stub
 
     # The line above alone does NOT reach every consumer: each pandoc module
     # binds its own local `fs` name at import time via
@@ -191,16 +196,21 @@ def mock_paths_service(monkeypatch: MonkeyPatch) -> MagicMock:
         sys.modules["quack_core.core.paths"] = paths_mod
 
     # Add necessary functions directly to the module
-    sys.modules["quack_core.core.paths"].service = mock
-    sys.modules["quack_core.core.paths"].resolve_path = lambda path: (
+    # Same shape as fs_service_mod above: a deliberate dynamic monkeypatch of
+    # a real (or synthetic) module object, bound through one Any-typed local
+    # (renamed from the `paths_mod` ModuleType local above to avoid a mypy
+    # redefinition-with-different-type conflict on the same name).
+    paths_mod_any: Any = sys.modules["quack_core.core.paths"]
+    paths_mod_any.service = mock
+    paths_mod_any.resolve_path = lambda path: (
         os.path.abspath(path) if path else "/dummy/path"
     )
-    sys.modules["quack_core.core.paths"].expand_user_vars = lambda path: (
+    paths_mod_any.expand_user_vars = lambda path: (
         os.path.expanduser(path)
         if path and isinstance(path, str) and path.startswith("~")
         else path
     )
-    sys.modules["quack_core.core.paths"].read_yaml = lambda path: SimpleNamespace(
+    paths_mod_any.read_yaml = lambda path: SimpleNamespace(
         success=True, data={}
     )
 

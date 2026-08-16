@@ -116,6 +116,18 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
                 "shared_folder_id": shared_folder_id,
             }
 
+        # self.config_provider is typed ConfigProviderProtocol | None on the
+        # base class, but __init__ (a few lines above this call) always
+        # constructs and passes a real GoogleConfigProvider before
+        # _initialize_config runs -- never None for this concrete class.
+        # Narrow explicitly (matching base.py's own `if self.config_provider:`
+        # precedent) rather than assert, since a None here really would be a
+        # genuine misconfiguration worth a clear error, not a silent crash.
+        if self.config_provider is None:
+            raise QuackIntegrationError(
+                "GoogleDriveService has no config_provider configured"
+            )
+
         config_result = self.config_provider.load_config(self.config_path)
         if not config_result.success or not config_result.content:
             default_config = self.config_provider.get_default_config()
@@ -146,6 +158,17 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             init_result = super().initialize()
             if not init_result.success:
                 return init_result
+
+            # self.auth_provider is typed AuthProviderProtocol | None on the
+            # base class, but __init__ always constructs and assigns a real
+            # GoogleAuthProvider before initialize() can run -- never None
+            # for this concrete class. Narrow explicitly rather than assert,
+            # same reasoning as the config_provider check in
+            # _initialize_config above.
+            if self.auth_provider is None:
+                return IntegrationResult.error_result(
+                    "GoogleDriveService has no auth_provider configured"
+                )
 
             try:
                 credentials = self.auth_provider.get_credentials()
