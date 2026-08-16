@@ -22,7 +22,7 @@ from quack_core.integrations.google.drive.utils import api
 
 def set_file_permissions(
     drive_service: DriveService,
-    fileId: str,
+    file_id: str,
     role: str = "reader",
     type_: str = "anyone",
     logger: logging.Logger | None = None,
@@ -32,7 +32,7 @@ def set_file_permissions(
 
     Args:
         drive_service: Google Drive service object.
-        fileId: ID of the file or folder.
+        file_id: ID of the file or folder.
         role: Permission role (e.g., "reader", "writer").
         type_: Permission type (e.g., "anyone", "user").
         logger: Optional logger instance.
@@ -54,7 +54,7 @@ def set_file_permissions(
         request = (
             drive_service.files()
             .permissions()
-            .create(fileId=fileId, body=permission, fields="id")
+            .create(fileId=file_id, body=permission, fields="id")
         )
 
         # Use the module import to call the function - this should make patching work
@@ -80,7 +80,7 @@ def set_file_permissions(
 
 def get_sharing_link(
     drive_service: DriveService,
-    fileId: str,
+    file_id: str,
     logger: logging.Logger | None = None,
 ) -> IntegrationResult[str]:
     """
@@ -88,7 +88,7 @@ def get_sharing_link(
 
     Args:
         drive_service: Google Drive service object.
-        fileId: ID of the file.
+        file_id: ID of the file.
         logger: Optional logger instance.
 
     Returns:
@@ -100,7 +100,7 @@ def get_sharing_link(
         # Get file metadata with link information
         file_metadata = api.execute_api_request(
             drive_service.files().get(
-                fileId=fileId, fields="webViewLink, webContentLink"
+                fileId=file_id, fields="webViewLink, webContentLink"
             ),
             "Failed to get file metadata from Google Drive",
             "files.get",
@@ -110,7 +110,7 @@ def get_sharing_link(
         link: str = (
             str(file_metadata.get("webViewLink", ""))
             or str(file_metadata.get("webContentLink", ""))
-            or f"https://drive.google.com/file/d/{fileId}/view"
+            or f"https://drive.google.com/file/d/{file_id}/view"
         )
 
         return IntegrationResult.success_result(
