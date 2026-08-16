@@ -77,11 +77,13 @@ class TestGitHubFullIntegration:
         # Test getting authenticated user.
         user_result = integration.get_current_user()
         assert user_result.success is True
+        assert user_result.content is not None
         assert user_result.content.username is not None
 
         # Test getting a public repository.
         repo_result = integration.get_repo("Microsoft/vscode")
         assert repo_result.success is True
+        assert repo_result.content is not None
         # Compare names in a case-insensitive way
         assert repo_result.content.name.lower() == "vscode"
         assert repo_result.content.full_name.lower() == "microsoft/vscode"
@@ -253,6 +255,7 @@ class TestGitHubMockedIntegration:
         }
 
         # Make sure we're patching the right object - integration.client.session
+        assert integration.client is not None
         with patch.object(integration.client.session, "request") as mock_request:
             # Configure mock to handle different requests
             def mock_request_side_effect(
@@ -270,10 +273,12 @@ class TestGitHubMockedIntegration:
             # Test getting authenticated user.
             user_result = integration.get_current_user()
             assert user_result.success is True
+            assert user_result.content is not None
             assert user_result.content.username == "mock_user"
 
             # Test getting a repository.
             repo_result = integration.get_repo("mock_owner/mock-repo")
             assert repo_result.success is True
+            assert repo_result.content is not None
             assert repo_result.content.name == "mock-repo"
             assert repo_result.content.full_name == "mock_owner/mock-repo"

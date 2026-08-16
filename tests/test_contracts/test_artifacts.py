@@ -184,6 +184,7 @@ class TestArtifactRef:
         )
 
         assert artifact.size_bytes == 1024
+        assert artifact.checksum is not None
         assert (
             artifact.checksum.value
             == "60303ae22b998861bce3b28f33eec1be758a213c86c93c076dbe9f558c11c752"
@@ -341,6 +342,7 @@ class TestRunManifest:
             ),
         )
 
+        assert manifest.provenance is not None
         assert manifest.provenance.git_commit == "abc123"
         assert manifest.provenance.runner == "n8n"
 
@@ -365,6 +367,7 @@ class TestManifestFixtures:
         assert manifest.status == CapabilityStatus.success
         assert manifest.tool.name == "slice_video"
         assert len(manifest.outputs) == 2
+        assert manifest.provenance is not None
         assert manifest.provenance.runner == "n8n"
 
     def test_load_manifest_error_fixture(self, fixtures_dir: Path) -> None:
