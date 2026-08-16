@@ -36,7 +36,7 @@ class TestGoogleDriveServiceDownload:
             ) as mock_file_info:
                 # All file info checks should return that files exist
                 file_info_result = FileInfoResult(
-                    success=True,
+                    ok=True,
                     path=Path("/fake/test/dir/mock_credentials.json"),
                     exists=True,
                     is_file=True,
