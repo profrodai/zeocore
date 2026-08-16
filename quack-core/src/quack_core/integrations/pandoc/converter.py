@@ -121,8 +121,9 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
 
                 dir_result = fs.create_directory(output_dir, exist_ok=True)
                 if not getattr(dir_result, "success", False):
+                    dir_error = getattr(dir_result, "error", "Unknown error")
                     return IntegrationResult.error_result(
-                        f"Failed to create output directory: {getattr(dir_result, 'error', 'Unknown error')}"
+                        f"Failed to create output directory: {dir_error}"
                     )
             except Exception as e:
                 logger.error(f"Failed to create output directory: {e}")
@@ -205,7 +206,8 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
                         If not provided, the value from the configuration is used.
 
         Returns:
-            IntegrationResult containing a list of successfully converted file paths (as strings).
+            IntegrationResult containing a list of successfully converted file
+            paths (as strings).
         """
         # Use the provided output_dir, or fallback to the config value
         batch_output_dir: str = (
@@ -216,8 +218,9 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
         try:
             dir_result = fs.create_directory(batch_output_dir, exist_ok=True)
             if not getattr(dir_result, "success", False):
+                dir_error = getattr(dir_result, "error", "Unknown error")
                 return IntegrationResult.error_result(
-                    f"Failed to create output directory: {getattr(dir_result, 'error', 'Unknown error')}"
+                    f"Failed to create output directory: {dir_error}"
                 )
         except Exception as e:
             logger.error(f"Failed to create output directory: {e}")
@@ -241,9 +244,10 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
                     try:
                         split_result = fs.split_path(task.source.path)
                         if not getattr(split_result, "success", False):
-                            logger.error(
-                                f"Failed to split path: {getattr(split_result, 'error', 'Unknown error')}"
+                            split_error = getattr(
+                                split_result, "error", "Unknown error"
                             )
+                            logger.error(f"Failed to split path: {split_error}")
                             failed_files.append(task.source.path)
                             continue
 
@@ -274,7 +278,8 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
                 else:
                     failed_files.append(task.source.path)
                     logger.error(
-                        f"Failed to convert {task.source.path} to {task.target_format}: {result.error}"
+                        f"Failed to convert {task.source.path} to "
+                        f"{task.target_format}: {result.error}"
                     )
                     self.metrics.failed_conversions += 1
                     self.metrics.errors[task.source.path] = (
@@ -295,7 +300,10 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
         elif successful_files:
             return IntegrationResult.success_result(
                 successful_files,
-                message=f"Partially successful: converted {len(successful_files)} files, failed to convert {len(failed_files)} files",
+                message=(
+                    f"Partially successful: converted {len(successful_files)} "
+                    f"files, failed to convert {len(failed_files)} files"
+                ),
             )
         else:
             failed_files_str: str = ", ".join(failed_files[:5])
@@ -306,7 +314,10 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
             )
             return IntegrationResult.error_result(
                 error=error_msg,
-                message=f"All {len(failed_files)} conversion tasks failed. See logs for details.",
+                message=(
+                    f"All {len(failed_files)} conversion tasks failed. "
+                    "See logs for details."
+                ),
             )
 
     def validate_conversion(self, output_path: str, input_path: str) -> bool:
@@ -347,7 +358,8 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
                 (output_size / input_size * 100) if input_size > 0 else 0
             )
             logger.debug(
-                f"Conversion size change: {input_size} → {output_size} bytes ({size_change_percentage:.1f}%)"
+                f"Conversion size change: {input_size} → {output_size} bytes "
+                f"({size_change_percentage:.1f}%)"
             )
 
             # Get file extension
@@ -367,9 +379,8 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
                 try:
                     read_result = fs.read_text(output_path, encoding="utf-8")
                     if not getattr(read_result, "success", False):
-                        logger.error(
-                            f"Failed to read markdown file: {getattr(read_result, 'error', 'Unknown error')}"
-                        )
+                        read_error = getattr(read_result, "error", "Unknown error")
+                        logger.error(f"Failed to read markdown file: {read_error}")
                         return False
                     return len(getattr(read_result, "content", "").strip()) > 0
                 except Exception as e:
