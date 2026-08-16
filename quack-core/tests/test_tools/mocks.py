@@ -69,7 +69,10 @@ def create_mock_fs() -> MagicMock:
     return mock_fs
 
 
-def mock_data_result(data: Any, success: bool = True) -> DataResult:
+def mock_data_result(
+    data: Any,  # noqa: ANN401 -- genuinely dynamic: arbitrary test payload wrapped in DataResult.data, no fixed shape
+    success: bool = True,
+) -> DataResult:
     """
     Create a mock DataResult with the required fields.
 
@@ -88,7 +91,10 @@ def mock_data_result(data: Any, success: bool = True) -> DataResult:
     )
 
 
-def mock_operation_result(data: Any, success: bool = True) -> OperationResult:
+def mock_operation_result(
+    data: Any,  # noqa: ANN401 -- genuinely dynamic: arbitrary test payload wrapped in OperationResult.data, no fixed shape
+    success: bool = True,
+) -> OperationResult:
     """
     Create a mock OperationResult with the required fields.
 
@@ -107,7 +113,7 @@ def mock_operation_result(data: Any, success: bool = True) -> OperationResult:
 def mock_integration_result(
     success: bool = True,
     message: str = "Success",
-    content: Any = None,
+    content: Any = None,  # noqa: ANN401 -- genuinely dynamic: mirrors IntegrationResult.content's own unconstrained type
     error: str = None,
 ) -> IntegrationResult:
     """
@@ -150,7 +156,9 @@ class MockIntegrationService(BaseIntegrationService):
         self.called_methods.append("initialize")
 
     def process(
-        self, data: Any, options: dict[str, Any] | None = None
+        self,
+        data: Any,  # noqa: ANN401 -- genuinely dynamic: arbitrary test payload, mirrors mock_integration_result's content
+        options: dict[str, Any] | None = None,
     ) -> IntegrationResult:
         """Process data with the mock service."""
         self.called_methods.append("process")
@@ -159,7 +167,11 @@ class MockIntegrationService(BaseIntegrationService):
             success=True, message="Processed successfully", content=data
         )
 
-    def upload(self, data: Any, path: str | None = None) -> IntegrationResult:
+    def upload(
+        self,
+        data: Any,  # noqa: ANN401 -- genuinely dynamic: arbitrary test payload, mirrors mock_integration_result's content
+        path: str | None = None,
+    ) -> IntegrationResult:
         """Mock uploading data to the service."""
         self.called_methods.append("upload")
         self.call_args["upload"] = [data, path]
@@ -212,9 +224,9 @@ class MockWorkflowRunner:
 
     def __init__(
         self,
-        processor: Any = None,
-        remote_handler: Any = None,
-        output_writer: Any = None,
+        processor: Any = None,  # noqa: ANN401 -- genuinely dynamic: pluggable mock collaborator, no fixed protocol enforced in tests
+        remote_handler: Any = None,  # noqa: ANN401 -- genuinely dynamic: pluggable mock collaborator, no fixed protocol enforced in tests
+        output_writer: Any = None,  # noqa: ANN401 -- genuinely dynamic: pluggable mock collaborator, no fixed protocol enforced in tests
     ) -> None:
         self.processor = processor
         self.remote_handler = remote_handler
