@@ -12,6 +12,7 @@ consistent behavior.
 
 import os
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Any
 
 from quack_core.core.errors import QuackConfigurationError
@@ -151,10 +152,14 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
         integration_name = self.name.lower().replace(" ", "_")
         return config_data.get(integration_name, {})
 
-    def _find_config_file(self) -> str | None:
+    def _config_path_from_env_var(self) -> str | None:
+        """
+        Step 1 of _find_config_file: check the QUACK_<NAME>_CONFIG env var.
+        Extracted to keep _find_config_file's own branch count under the
+        C901 threshold; behavior/order unchanged.
+        """
         from quack_core.core.fs.service import standalone
 
-        # 1. Check Environment Variable
         env_var = f"QUACK_{self.name.upper()}_CONFIG"
         if config_path := os.environ.get(env_var):
             expanded_path = standalone.expand_user_vars(config_path)
@@ -162,9 +167,13 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
             file_info = standalone.get_file_info(path_str)
             if file_info.success and file_info.exists:
                 return path_str
+        return None
 
-        # 2. Determine Project Root
-        project_root = None
+    def _resolve_project_root_for_config(self) -> Path | None:
+        """
+        Step 2 of _find_config_file: best-effort project root lookup.
+        Extracted for the same C901 reason as _config_path_from_env_var.
+        """
         try:
             from quack_core.core.paths import service as paths
 
@@ -172,13 +181,23 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
                 root_result = paths.get_project_root()
                 if root_result.success:
                     # Explicitly use .path from result for strict correctness
-                    project_root = coerce_path(root_result.path)
+                    return coerce_path(root_result.path)
         except Exception as e:
             self.logger.debug(
                 f"Project root lookup failed, checking only direct paths: {e}"
             )
+        return None
 
-        # 3. Check Default Locations
+    def _config_path_from_default_locations(
+        self, project_root: Path | None
+    ) -> str | None:
+        """
+        Step 3 of _find_config_file: check DEFAULT_CONFIG_LOCATIONS, anchoring
+        relative candidates to project_root when available. Extracted for the
+        same C901 reason as _config_path_from_env_var.
+        """
+        from quack_core.core.fs.service import standalone
+
         for location in self.DEFAULT_CONFIG_LOCATIONS:
             expanded = standalone.expand_user_vars(location)
             candidate_path = coerce_path(expanded)
@@ -190,16 +209,35 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
             file_info = standalone.get_file_info(candidate_str)
             if file_info.success and file_info.exists:
                 return candidate_str
+        return None
 
-        # 4. Fallback: check project root default file
+    def _config_path_from_project_root_fallback(
+        self, project_root: Path | None
+    ) -> str | None:
+        """
+        Step 4 of _find_config_file: project_root/quack_config.yaml fallback.
+        Extracted for the same C901 reason as _config_path_from_env_var.
+        """
+        from quack_core.core.fs.service import standalone
+
         if project_root:
             fallback = project_root / "quack_config.yaml"
             fallback_str = coerce_path_str(fallback)
             file_info = standalone.get_file_info(fallback_str)
             if file_info.success and file_info.exists:
                 return fallback_str
-
         return None
+
+    def _find_config_file(self) -> str | None:
+        if path := self._config_path_from_env_var():
+            return path
+
+        project_root = self._resolve_project_root_for_config()
+
+        if path := self._config_path_from_default_locations(project_root):
+            return path
+
+        return self._config_path_from_project_root_fallback(project_root)
 
     def _resolve_path(self, file_path: str) -> str:
         try:
