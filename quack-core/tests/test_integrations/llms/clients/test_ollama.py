@@ -122,7 +122,11 @@ class TestOllamaClient:
             callback = MagicMock()
 
             # Create a modified version of _handle_streaming that returns a success result directly
-            def mock_handle_streaming(api_url, request_data, callback):
+            def mock_handle_streaming(
+                api_url: str,
+                request_data: dict[str, object],
+                callback: MagicMock,
+            ) -> IntegrationResult[str]:
                 collected_content = []
                 for line in mock_response.iter_lines():
                     if not line:

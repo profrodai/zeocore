@@ -25,7 +25,7 @@ class MockClient(LLMClient):
         model: str = "mock-model",
         errors: list[Exception] = None,
         log_level: int = logging.INFO,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401 -- passthrough to LLMClient.__init__'s own **kwargs
     ) -> None:
         """
         Initialize a mock LLM client.
@@ -136,7 +136,7 @@ def create_mock_client(
     token_counts: list[int] = None,
     model: str = "mock-model",
     errors: list[Exception] = None,
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401 -- passthrough to client_type's own constructor kwargs
 ) -> LLMClient:
     """
     Create a mock LLM client of the specified type.

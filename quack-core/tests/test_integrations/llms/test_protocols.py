@@ -9,6 +9,7 @@ This module tests the runtime protocol implementations for LLMs, ensuring
 all required methods are present and correctly implemented.
 """
 
+from collections.abc import Callable, Sequence
 from unittest.mock import MagicMock
 
 from quack_core.integrations.core import IntegrationResult
@@ -52,7 +53,7 @@ class TestLLMProtocols:
         # Test with a more specific implementation that has properties but not all methods
         class PartialImpl:
             @property
-            def model(self):
+            def model(self) -> str:
                 return "test-model"
 
         partial = PartialImpl()
@@ -60,14 +61,21 @@ class TestLLMProtocols:
 
         # Test with a complete implementation
         class CompleteImpl:
-            def chat(self, messages, options=None, callback=None):
+            def chat(
+                self,
+                messages: Sequence[ChatMessage] | Sequence[dict],
+                options: LLMOptions | None = None,
+                callback: Callable[[str], None] | None = None,
+            ) -> IntegrationResult[str]:
                 return IntegrationResult.success_result("test")
 
-            def count_tokens(self, messages):
+            def count_tokens(
+                self, messages: Sequence[ChatMessage] | Sequence[dict]
+            ) -> IntegrationResult[int]:
                 return IntegrationResult.success_result(42)
 
             @property
-            def model(self):
+            def model(self) -> str:
                 return "test-model"
 
         complete = CompleteImpl()
