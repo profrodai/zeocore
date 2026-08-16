@@ -73,7 +73,8 @@ class AnthropicClient(LLMClient):
         except ImportError:
             self.logger.error("Anthropic package not installed")
             raise QuackIntegrationError(
-                "Anthropic package not installed. Please install it with: pip install anthropic"
+                "Anthropic package not installed. "
+                "Please install it with: pip install anthropic"
             ) from None
 
     def _get_client(self) -> Any:
@@ -124,14 +125,15 @@ class AnthropicClient(LLMClient):
             str: Anthropic API key
 
         Raises:
-            QuackIntegrationError: If API key is not provided or available in environment
+            QuackIntegrationError: If API key is not provided or available in
+                environment
         """
         api_key = os.environ.get("ANTHROPIC_API_KEY")
         if not api_key:
             self.logger.error("Anthropic API key not provided in environment")
             raise QuackIntegrationError(
-                "Anthropic API key not provided. "
-                "Please provide it as an argument or set the ANTHROPIC_API_KEY environment variable."
+                "Anthropic API key not provided. Please provide it as an "
+                "argument or set the ANTHROPIC_API_KEY environment variable."
             )
         return api_key
 
@@ -311,7 +313,8 @@ class AnthropicClient(LLMClient):
         except ImportError as e:
             self.logger.error(f"Failed to import Anthropic package: {e}")
             raise QuackIntegrationError(
-                f"Failed to import Anthropic package: {e}. Please install it with: pip install anthropic",
+                f"Failed to import Anthropic package: {e}. "
+                "Please install it with: pip install anthropic",
                 original_error=e,
             ) from e
 
@@ -425,9 +428,11 @@ class AnthropicClient(LLMClient):
                 return IntegrationResult.success_result(token_count)
 
             except (ImportError, AttributeError) as e:
-                # Fall back to a simple estimation if anthropic package doesn't support token counting
+                # Fall back to a simple estimation if anthropic package doesn't
+                # support token counting
                 self.logger.warning(
-                    f"Anthropic token counting API not available: {e}. Using simple token estimation."
+                    f"Anthropic token counting API not available: {e}. "
+                    "Using simple token estimation."
                 )
 
                 # Simple estimation based on words (very rough approximation)

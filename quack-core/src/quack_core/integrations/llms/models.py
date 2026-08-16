@@ -169,7 +169,8 @@ class LLMOptions(BaseModel):
             "frequency_penalty": self.frequency_penalty,
             "presence_penalty": self.presence_penalty,
         }
-        # Use 'max_completion_tokens' if the model belongs to the "o" family, otherwise 'max_tokens'
+        # Use 'max_completion_tokens' if the model belongs to the "o" family,
+        # otherwise 'max_tokens'
         token_param_name = "max_tokens"  # noqa: S105 -- API param NAME, not a credential value
         if model and model.lower().startswith("o"):
             token_param_name = "max_completion_tokens"  # noqa: S105 -- same: a param name
