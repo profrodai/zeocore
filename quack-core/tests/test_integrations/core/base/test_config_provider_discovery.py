@@ -104,7 +104,7 @@ class TestBaseConfigProviderDiscovery:
                         result = provider._find_config_file()
                         assert result == "/env/config.yaml"
                         mock_expand.assert_called_once_with("/env/config.yaml")
-                        mock_file_info.assert_called_once_with(Path("/env/config.yaml"))
+                        mock_file_info.assert_called_once_with("/env/config.yaml")
                         mock_get_root.assert_not_called()
 
         # Test with default locations

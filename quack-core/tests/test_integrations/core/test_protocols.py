@@ -26,6 +26,10 @@ class SampleIntegration:
     """Test implementation of IntegrationProtocol."""
 
     @property
+    def integration_id(self) -> str:
+        return "sample_integration"
+
+    @property
     def name(self) -> str:
         return "sample_integration"
 
@@ -79,6 +83,10 @@ class SampleConfigProvider:
 
 class SampleStorageIntegration:
     """Test implementation of StorageIntegrationProtocol."""
+
+    @property
+    def integration_id(self) -> str:
+        return "sample_storage"
 
     @property
     def name(self) -> str:
@@ -149,6 +157,10 @@ class TestIntegrationProtocol:
 
         # Create an object with the required attributes and methods
         class DynamicIntegration:
+            @property
+            def integration_id(self) -> str:
+                return "dynamic"
+
             @property
             def name(self) -> str:
                 return "dynamic"
@@ -288,6 +300,10 @@ class TestStorageIntegrationProtocol:
         # A class that implements IntegrationProtocol but not StorageIntegrationProtocol
         class BasicIntegration:
             @property
+            def integration_id(self) -> str:
+                return "basic"
+
+            @property
             def name(self) -> str:
                 return "basic"
 
@@ -316,6 +332,10 @@ class TestProtocolInheritance:
 
         # Create a minimal viable implementation
         class MinimalStorage:
+            @property
+            def integration_id(self) -> str:
+                return "minimal"
+
             @property
             def name(self) -> str:
                 return "minimal"

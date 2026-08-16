@@ -38,12 +38,13 @@ class TestGetIntegrationService(unittest.TestCase):
     Test cases for get_integration_service.
     """
 
-    @patch("quack_core.integrations.core.registry")
-    def test_get_integration_service_found(self, mock_registry):
+    @patch("quack_core.integrations.core.get_global_registry")
+    def test_get_integration_service_found(self, mock_get_global_registry):
         """
         Test that get_integration_service returns the correct service when found.
         """
-        # Setup mock registry
+        # Setup mock registry returned by get_global_registry()
+        mock_registry = mock_get_global_registry.return_value
         mock_drive_service = MockDriveService()
         mock_registry.get_integration_by_type.return_value = [mock_drive_service]
 
@@ -54,12 +55,13 @@ class TestGetIntegrationService(unittest.TestCase):
         self.assertEqual(result, mock_drive_service)
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
-    @patch("quack_core.integrations.core.registry")
-    def test_get_integration_service_not_found(self, mock_registry):
+    @patch("quack_core.integrations.core.get_global_registry")
+    def test_get_integration_service_not_found(self, mock_get_global_registry):
         """
         Test that get_integration_service returns None when no matching service is found.
         """
-        # Setup mock registry
+        # Setup mock registry returned by get_global_registry()
+        mock_registry = mock_get_global_registry.return_value
         mock_registry.get_integration_by_type.return_value = []
 
         # Call the function
@@ -69,8 +71,10 @@ class TestGetIntegrationService(unittest.TestCase):
         self.assertIsNone(result)
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
-    @patch("quack_core.integrations.core.registry")
-    def test_get_integration_service_returns_first_match(self, mock_registry):
+    @patch("quack_core.integrations.core.get_global_registry")
+    def test_get_integration_service_returns_first_match(
+        self, mock_get_global_registry
+    ):
         """
         Test that get_integration_service returns the first matching service when multiple are found.
         """
@@ -89,6 +93,7 @@ class TestGetIntegrationService(unittest.TestCase):
         mock_drive_service1 = DriveService1()
         mock_drive_service2 = DriveService2()
 
+        mock_registry = mock_get_global_registry.return_value
         mock_registry.get_integration_by_type.return_value = [
             mock_drive_service1,
             mock_drive_service2,
@@ -101,12 +106,13 @@ class TestGetIntegrationService(unittest.TestCase):
         self.assertEqual(result, mock_drive_service1)
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
-    @patch("quack_core.integrations.core.registry")
-    def test_get_integration_service_type_mismatch(self, mock_registry):
+    @patch("quack_core.integrations.core.get_global_registry")
+    def test_get_integration_service_type_mismatch(self, mock_get_global_registry):
         """
         Test that get_integration_service correctly filters by type.
         """
         # Setup mock registry
+        mock_registry = mock_get_global_registry.return_value
         mock_mail_service = MockMailService()
         mock_registry.get_integration_by_type.return_value = [mock_mail_service]
 
