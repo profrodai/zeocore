@@ -94,7 +94,11 @@ class TestIntegrationResult:
         ),
     )
     def test_integration_result_properties(
-        self, success: bool, message: str | None, error: str | None, content: Any
+        self,
+        success: bool,
+        message: str | None,
+        error: str | None,
+        content: Any,  # noqa: ANN401 -- genuinely dynamic: hypothesis st.one_of fans out none/int/text/dict, no single narrower type covers the strategy
     ) -> None:
         """Test IntegrationResult properties with hypothesis generated values."""
         if not success and error is None:
