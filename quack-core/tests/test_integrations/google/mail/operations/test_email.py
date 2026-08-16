@@ -26,6 +26,86 @@ from quack_core.integrations.google.mail.protocols import (
 )
 
 
+class _MockRequest(GmailRequest):
+    """Protocol-compatible mock of a Gmail API request."""
+
+    def __init__(self, return_value) -> None:
+        self.return_value = return_value
+
+    def execute(self):
+        return self.return_value
+
+
+class _MockAttachmentsResource(GmailAttachmentsResource):
+    """Protocol-compatible mock of the Gmail attachments resource."""
+
+    def __init__(self) -> None:
+        self.get_return: dict | None = None
+        # Initialize instance attributes in __init__
+        self.last_user_id: str | None = None
+        self.last_message_id: str | None = None
+        self.last_attachment_id: str | None = None
+
+    def get(self, user_id: str, message_id: str, attachment_id: str) -> GmailRequest:
+        # Store the parameters for test assertions
+        self.last_user_id = user_id
+        self.last_message_id = message_id
+        self.last_attachment_id = attachment_id
+        return _MockRequest(self.get_return)
+
+
+class _MockMessagesResource(GmailMessagesResource):
+    """Protocol-compatible mock of the Gmail messages resource."""
+
+    def __init__(self) -> None:
+        self.attachments_resource = _MockAttachmentsResource()
+        self.list_return: dict = {}
+        self.get_return: dict = {}
+        # Initialize attributes for test assertions
+        self.last_user_id: str | None = None
+        self.last_query: str | None = None
+        self.last_max_results: int | None = None
+        self.last_message_id: str | None = None
+        self.last_format: str | None = None
+
+    def list(self, user_id: str, q: str, max_results: int) -> GmailRequest:
+        # Store parameters for test assertions
+        self.last_user_id = user_id
+        self.last_query = q
+        self.last_max_results = max_results
+        return _MockRequest(self.list_return)
+
+    def get(self, user_id: str, message_id: str, message_format: str) -> GmailRequest:
+        # Store parameters for test assertions
+        self.last_user_id = user_id
+        self.last_message_id = message_id
+        self.last_format = message_format
+        return _MockRequest(self.get_return)
+
+    def attachments(self) -> GmailAttachmentsResource:
+        return self.attachments_resource
+
+
+class _MockUsersResource(GmailUsersResource):
+    """Protocol-compatible mock of the Gmail users resource."""
+
+    def __init__(self) -> None:
+        self.messages_resource = _MockMessagesResource()
+
+    def messages(self) -> GmailMessagesResource:
+        return self.messages_resource
+
+
+class _MockGmailService(GmailService):
+    """Protocol-compatible mock of the top-level Gmail service."""
+
+    def __init__(self) -> None:
+        self.users_resource = _MockUsersResource()
+
+    def users(self) -> GmailUsersResource:
+        return self.users_resource
+
+
 class TestGmailEmailOperations:
     """Tests for Gmail email _ops."""
 
@@ -37,81 +117,14 @@ class TestGmailEmailOperations:
 
         Typed as Any (not GmailService) because tests below reach through
         to mock-only attributes (e.g. list_return, last_user_id) that are
-        not part of the GmailService protocol surface.
+        not part of the GmailService protocol surface. The mock class
+        hierarchy itself lives at module level (_MockRequest,
+        _MockAttachmentsResource, _MockMessagesResource, _MockUsersResource,
+        _MockGmailService above) rather than nested here, to keep this
+        fixture's own cyclomatic complexity down (C901).
         """
-
-        # Create a proper mock hierarchy that matches the protocol structure
-        class MockRequest(GmailRequest):
-            def __init__(self, return_value: object) -> None:
-                self.return_value = return_value
-
-            def execute(self) -> object:
-                return self.return_value
-
-        class MockAttachmentsResource(GmailAttachmentsResource):
-            def __init__(self) -> None:
-                self.get_return: dict | None = None
-                # Initialize instance attributes in __init__
-                self.last_user_id: str | None = None
-                self.last_message_id: str | None = None
-                self.last_attachment_id: str | None = None
-
-            def get(
-                self, user_id: str, message_id: str, attachment_id: str
-            ) -> GmailRequest:
-                # Store the parameters for test assertions
-                self.last_user_id = user_id
-                self.last_message_id = message_id
-                self.last_attachment_id = attachment_id
-                return MockRequest(self.get_return)
-
-        class MockMessagesResource(GmailMessagesResource):
-            def __init__(self) -> None:
-                self.attachments_resource = MockAttachmentsResource()
-                self.list_return: dict = {}
-                self.get_return: dict = {}
-                # Initialize attributes for test assertions
-                self.last_user_id: str | None = None
-                self.last_query: str | None = None
-                self.last_max_results: int | None = None
-                self.last_message_id: str | None = None
-                self.last_format: str | None = None
-
-            def list(self, user_id: str, q: str, max_results: int) -> GmailRequest:
-                # Store parameters for test assertions
-                self.last_user_id = user_id
-                self.last_query = q
-                self.last_max_results = max_results
-                return MockRequest(self.list_return)
-
-            def get(
-                self, user_id: str, message_id: str, message_format: str
-            ) -> GmailRequest:
-                # Store parameters for test assertions
-                self.last_user_id = user_id
-                self.last_message_id = message_id
-                self.last_format = message_format
-                return MockRequest(self.get_return)
-
-            def attachments(self) -> GmailAttachmentsResource:
-                return self.attachments_resource
-
-        class MockUsersResource(GmailUsersResource):
-            def __init__(self) -> None:
-                self.messages_resource = MockMessagesResource()
-
-            def messages(self) -> GmailMessagesResource:
-                return self.messages_resource
-
-        class MockGmailService(GmailService):
-            def __init__(self) -> None:
-                self.users_resource = MockUsersResource()
-
-            def users(self) -> GmailUsersResource:
-                return self.users_resource
-
         # Create an instance of our protocol-compatible mock
-        return MockGmailService()
+        return _MockGmailService()
 
     def test_build_query(self) -> None:
         """Test building Gmail search query."""
