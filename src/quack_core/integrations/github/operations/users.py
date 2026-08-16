@@ -15,7 +15,7 @@ def get_user(
     session: requests.Session,
     api_url: str,
     username: str | None = None,
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> GitHubUser:
     """Get information about a GitHub user.
 
