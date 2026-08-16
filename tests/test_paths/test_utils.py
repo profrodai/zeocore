@@ -245,6 +245,7 @@ class TestPathUtils:
         parts_result = fs_standalone.split_path("/dir1/dir2/file.txt")
         assert parts_result.success
         parts = parts_result.data
+        assert parts is not None
         assert parts[0] == "/"
         assert "dir1" in parts
         assert "dir2" in parts
@@ -254,6 +255,7 @@ class TestPathUtils:
         parts_result = fs_standalone.split_path("dir1/dir2/file.txt")
         assert parts_result.success
         parts = parts_result.data
+        assert parts is not None
         assert parts[0] == "dir1"
         assert parts[1] == "dir2"
         assert parts[2] == "file.txt"
@@ -262,6 +264,7 @@ class TestPathUtils:
         parts_result = fs_standalone.split_path("./dir/file.txt")
         assert parts_result.success
         parts = parts_result.data
+        assert parts is not None
         # Update the test to reflect how Path handles normalization of "./dir/file.txt"
         assert parts[0] == "dir"  # Path normalization removes the './'
         assert parts[1] == "file.txt"
@@ -326,6 +329,7 @@ class TestPathUtils:
                 module_file, mock_project_structure
             )
             assert module_name_result.success
+            assert module_name_result.value is not None
             assert "test_file" in module_name_result.value
 
         # Test inferring when file is not in project: like
