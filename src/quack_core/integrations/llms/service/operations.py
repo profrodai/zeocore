@@ -87,7 +87,8 @@ def get_provider_status(self: "LLMIntegration") -> list[dict] | None:
         self: LLMIntegration instance
 
     Returns:
-        list[dict] | None: Status information for all providers or None if not using fallback
+        list[dict] | None: Status information for all providers or None if
+            not using fallback
     """
     if self._fallback_client is not None:
         return [

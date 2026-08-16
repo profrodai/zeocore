@@ -5,7 +5,8 @@
 """
 Dependency checking for LLM integration.
 
-This module provides functions to check for available LLM providers and their dependencies.
+This module provides functions to check for available LLM providers and
+their dependencies.
 """
 
 import importlib.util
@@ -16,7 +17,8 @@ def check_llm_dependencies() -> tuple[bool, str, list[str]]:
     Check if LLM dependencies are available.
 
     Returns:
-        tuple[bool, str, list[str]]: Success status, message, and list of available providers
+        tuple[bool, str, list[str]]: Success status, message, and list of
+            available providers
     """
     available_providers = []
 
@@ -55,7 +57,8 @@ def check_llm_dependencies() -> tuple[bool, str, list[str]]:
     ):
         return (
             False,
-            "No LLM providers available. Install OpenAI or Anthropic package, or run Ollama locally.",
+            "No LLM providers available. Install OpenAI or Anthropic package, "
+            "or run Ollama locally.",
             available_providers,
         )
 

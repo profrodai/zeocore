@@ -5,7 +5,8 @@
 """
 Provider initialization logic for LLM integration.
 
-This module provides functions for initializing single providers and fallback configurations.
+This module provides functions for initializing single providers and
+fallback configurations.
 """
 
 from typing import TYPE_CHECKING
@@ -203,12 +204,16 @@ def initialize_with_fallback(
 
         self._initialized = True
 
+        mock_note = (
+            " (using mock client only)"
+            if self._using_mock
+            else " (may use mock client as fallback)"
+        )
         return IntegrationResult(
             success=True,
             message=(
-                f"LLM integration initialized successfully with fallback support. "
-                f"Providers: {', '.join(fallback_providers)}"
-                f"{' (may use mock client as fallback)' if not self._using_mock else ' (using mock client only)'}"
+                "LLM integration initialized successfully with fallback "
+                f"support. Providers: {', '.join(fallback_providers)}{mock_note}"
             ),
         )
     except Exception as e:
