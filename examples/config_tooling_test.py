@@ -10,6 +10,7 @@ It is not intended to be included in the quack-core package.
 """
 
 from pydantic import Field
+from quack_core.config import load_config
 from quack_core.config.tooling import (
     QuackToolConfigModel,
     get_logger,
@@ -28,13 +29,14 @@ class MyConfig(QuackToolConfigModel):
 
 def main() -> None:
     """Test the tooling module."""
-    # Load the tool config
-    config, tool_config = load_tool_config("testtool", MyConfig)
+    # Load the base QuackConfig, then extract/validate the tool's own section
+    config = load_config(None)
+    tool_config = load_tool_config(config, "testtool", MyConfig)
     print(f"Initial tool config: {tool_config}")
 
     # Update the tool config
     update_tool_config(config, "testtool", {"name": "updated"})
-    _, updated_config = load_tool_config("testtool", MyConfig)
+    updated_config = load_tool_config(config, "testtool", MyConfig)
     print(f"Updated tool config: {updated_config}")
 
     # Set up logging
