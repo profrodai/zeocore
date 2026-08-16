@@ -14,7 +14,6 @@ this package has no external SDK/network boundary), and also assert on the
 from quack_core.prompt.models import PromptStrategy
 from quack_core.prompt.strategies import core
 
-
 # --- Zero Shot ---
 
 

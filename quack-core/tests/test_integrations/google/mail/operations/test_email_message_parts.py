@@ -1,5 +1,5 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/mail/operations/test_email_message_parts.py
+# path: quack-core/tests/test_integrations/google/mail/operations/test_email_message_parts.py  # noqa: E501
 # === QV-LLM:END ===
 
 """
@@ -127,7 +127,10 @@ class TestProcessMessageParts:
     """Tests for process_message_parts (0% covered before this file)."""
 
     def test_single_html_part_extracts_content(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         parts = [
             {
@@ -142,7 +145,10 @@ class TestProcessMessageParts:
         assert attachments == []
 
     def test_nested_parts_are_flattened_and_processed(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         parts = [
             {
@@ -158,7 +164,10 @@ class TestProcessMessageParts:
         assert attachments == []
 
     def test_first_html_part_wins_when_multiple_present(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         # process_message_parts uses a stack (pop from end), so the LAST
         # item in the input list is processed FIRST.
@@ -172,7 +181,10 @@ class TestProcessMessageParts:
         assert html == "<p>second-in-list</p>"
 
     def test_html_part_with_no_data_is_skipped(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         parts = [{"mimeType": "text/html", "body": {}}]
         html, attachments = email.process_message_parts(
@@ -182,7 +194,10 @@ class TestProcessMessageParts:
         assert attachments == []
 
     def test_attachment_part_delegates_to_handle_attachment(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         parts = [
             {
@@ -202,7 +217,10 @@ class TestProcessMessageParts:
         mock_handle.assert_called_once()
 
     def test_part_with_no_filename_and_no_html_is_ignored(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         parts = [{"mimeType": "application/octet-stream", "body": {}}]
         html, attachments = email.process_message_parts(
@@ -212,7 +230,10 @@ class TestProcessMessageParts:
         assert attachments == []
 
     def test_empty_parts_list_returns_none_and_empty(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         html, attachments = email.process_message_parts(
             mock_gmail_service, "me", [], "msg1", str(storage_dir), logger
@@ -240,7 +261,10 @@ class TestHandleAttachment:
     """
 
     def test_no_filename_returns_none(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         part = {"body": {"data": _b64("x")}}
         result = email.handle_attachment(
@@ -249,7 +273,10 @@ class TestHandleAttachment:
         assert result is None
 
     def test_no_data_and_no_attachment_id_returns_none(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         part = {"filename": "empty.bin", "body": {}}
         result = email.handle_attachment(
@@ -258,7 +285,10 @@ class TestHandleAttachment:
         assert result is None
 
     def test_undecodable_base64_returns_none(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         # base64.urlsafe_b64decode is lenient about most junk characters
         # (they're silently dropped), so a string of otherwise-valid
@@ -276,7 +306,10 @@ class TestHandleAttachment:
         assert result is None
 
     def test_fetches_attachment_by_id_when_no_inline_data(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         """No inline body.data -> falls through to the attachments().get()
         API call, decoding whatever it returns instead."""
@@ -309,7 +342,10 @@ class TestHandleAttachment:
         assert mock_write.call_args[0][1] == b"fetched-bytes"
 
     def test_happy_path_creates_directory_and_writes_once(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         part = {"filename": "photo.png", "body": {"data": _b64("png-bytes")}}
 
@@ -338,7 +374,10 @@ class TestHandleAttachment:
         assert mock_write.call_args[0][1] == b"png-bytes"
 
     def test_duplicate_filename_gets_counter_suffix(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         """get_file_info reporting exists=True once, then False, drives the
         while-loop's counter-increment branch exactly once."""
@@ -375,7 +414,10 @@ class TestHandleAttachment:
         assert mock_write.call_count == 1
 
     def test_directory_create_failure_returns_none(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         part = {"filename": "x.txt", "body": {"data": _b64("x")}}
         with (
@@ -394,7 +436,10 @@ class TestHandleAttachment:
         assert result is None
 
     def test_write_failure_returns_none(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         part = {"filename": "x.txt", "body": {"data": _b64("x")}}
         with (
@@ -417,7 +462,10 @@ class TestHandleAttachment:
         assert result is None
 
     def test_unexpected_exception_caught_and_returns_none(
-        self, mock_gmail_service: Any, logger: logging.Logger, storage_dir: Path
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
     ) -> None:
         part = {"filename": "x.txt", "body": {"data": _b64("x")}}
         with patch(
@@ -429,7 +477,7 @@ class TestHandleAttachment:
             )
         assert result is None
 
-    def test_join_path_result_is_stringified_not_unwrapped_BUG(self) -> None:
+    def test_join_path_result_is_stringified_not_unwrapped_bug(self) -> None:
         """PINS A REAL PRODUCTION BUG, found while writing this coverage
         pass -- NOT fixed here, per this stream's charter (a ruling must
         authorize any production fix).
@@ -441,7 +489,8 @@ class TestHandleAttachment:
         a pydantic BaseModel with NO custom __str__ -- so str(...) on it
         does not give the joined path, it gives pydantic's default
         field-dump repr:
-          "ok=True path=PosixPath(...) message='Joined paths' ... data='/actual/path' format='path' ..."
+          "ok=True path=PosixPath(...) message='Joined paths' ...
+          data='/actual/path' format='path' ..."
         The correct unwrap is `.data`, exactly as _resolve_download_path in
         google/drive/service.py does it (RULING-238/240's fix to this same
         disease shape -- a core/fs Result-wrapping return value handled as
@@ -455,7 +504,8 @@ class TestHandleAttachment:
 
             >>> from quack_core.core.fs.service import standalone
             >>> str(standalone.join_path("foo", "bar.txt"))
-            "ok=True path=PosixPath('.../foo/bar.txt') message='Joined paths' ... data='.../foo/bar.txt' format='path' ..."
+            "ok=True path=PosixPath('.../foo/bar.txt') message='Joined paths'
+            ... data='.../foo/bar.txt' format='path' ..."
 
         Downstream effect: handle_attachment's and download_email's
         returned "path" is this garbage repr string, not a real filesystem
@@ -497,9 +547,9 @@ class TestDownloadEmailWriteFailure:
     )
     def test_write_failure_returns_error_result(
         self,
-        mock_get_message: Any,
-        mock_process_parts: Any,
-        mock_gmail_service: Any,
+        mock_get_message: Any,  # noqa: ANN401 -- @patch-injected MagicMock, not the fixture
+        mock_process_parts: Any,  # noqa: ANN401 -- @patch-injected MagicMock, not the fixture
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
         logger: logging.Logger,
         storage_dir: Path,
     ) -> None:
@@ -536,7 +586,9 @@ class TestGetMessageWithRetryZeroRetries:
     ever entering it (max_retries=0, line 259)."""
 
     def test_zero_max_retries_returns_none_without_calling_api(
-        self, mock_gmail_service: Any, logger: logging.Logger
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
     ) -> None:
         with patch(
             "quack_core.integrations.google.mail.operations.email.execute_api_request"

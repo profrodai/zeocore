@@ -14,10 +14,11 @@ real, using small real IntegrationProtocol-shaped stub instances.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from quack_core.integrations.core.registry import IntegrationRegistry
-from quack_core.integrations.core.results import IntegrationResult
+from quack_core.integrations.core.results import (
+    IntegrationLoadReport,
+    IntegrationResult,
+)
 from quack_core.integrations.loader import (
     DEFAULT_ENTRY_GROUP,
     _load_one_entry_point,
@@ -108,9 +109,7 @@ class TestListAvailableEntryPoints:
 class TestLoadOneEntryPoint:
     """Direct tests of the extracted single-entry-point helper."""
 
-    def _report(self):
-        from quack_core.integrations.core.results import IntegrationLoadReport
-
+    def _report(self) -> IntegrationLoadReport:
         return IntegrationLoadReport(success=True)
 
     def test_success_path_registers_and_records_loaded(self) -> None:

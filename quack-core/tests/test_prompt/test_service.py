@@ -19,7 +19,6 @@ import pytest
 from quack_core.prompt.models import PromptStrategy
 from quack_core.prompt.service import PromptService
 
-
 # --- __init__ / load_pack ---
 
 
@@ -168,7 +167,9 @@ def test_list_strategies_returns_strategy_info_objects() -> None:
 
 def test_render_with_explicit_strategy_id() -> None:
     service = PromptService(load_defaults=True)
-    result = service.render("Summarize this document", strategy_id="zero-shot-prompting")
+    result = service.render(
+        "Summarize this document", strategy_id="zero-shot-prompting"
+    )
     assert result.success is True
     assert result.prompt == "Summarize this document"
     assert result.strategy_id == "zero-shot-prompting"
