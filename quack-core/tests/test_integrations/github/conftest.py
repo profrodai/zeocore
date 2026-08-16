@@ -7,6 +7,7 @@
 import json
 import os
 import time
+from collections.abc import Generator
 from datetime import datetime
 from pathlib import Path
 from typing import cast
@@ -419,7 +420,7 @@ def mock_rate_limited_response() -> MagicMock:
 
 
 @pytest.fixture
-def patch_requests_get():
+def patch_requests_get() -> Generator[MagicMock, None, None]:
     """Patch requests.get for testing."""
     with patch("requests.get") as mock_get:
         mock_response = MagicMock()
@@ -436,7 +437,7 @@ def patch_requests_get():
 
 
 @pytest.fixture
-def patch_make_request():
+def patch_make_request() -> Generator[MagicMock, None, None]:
     """Patch the make_request function for testing."""
     with patch(
         "quack_core.integrations.github.api.api.make_request"
@@ -449,7 +450,7 @@ def patch_make_request():
 
 
 @pytest.fixture
-def patch_make_request_rate_limited():
+def patch_make_request_rate_limited() -> Generator[MagicMock, None, None]:
     """Patch the make_request function to simulate rate limiting."""
     with patch(
         "quack_core.integrations.github.api.api.make_request"

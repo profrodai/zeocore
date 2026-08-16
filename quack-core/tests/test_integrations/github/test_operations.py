@@ -38,14 +38,14 @@ from quack_core.integrations.github.operations import (
 
 
 @pytest.fixture
-def mock_session():
+def mock_session() -> MagicMock:
     """Create a mock requests session."""
     session = MagicMock(spec=requests.Session)
     return session
 
 
 @pytest.fixture
-def mock_response():
+def mock_response() -> MagicMock:
     """Create a mock API response."""
     response = MagicMock()
     response.raise_for_status.return_value = None
@@ -55,7 +55,9 @@ def mock_response():
 class TestUserOperations:
     """Tests for user _ops."""
 
-    def test_get_user_authenticated(self, mock_session, mock_response):
+    def test_get_user_authenticated(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test getting the authenticated user."""
         # Mock API response
         user_data = {
@@ -92,7 +94,9 @@ class TestUserOperations:
                 api_url="https://api.github.com",
             )
 
-    def test_get_user_specific(self, mock_session, mock_response):
+    def test_get_user_specific(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test getting a specific user."""
         # Mock API response
         user_data = {
@@ -137,7 +141,7 @@ class TestUserOperations:
 class TestRepositoryOperations:
     """Tests for repository _ops."""
 
-    def test_get_repo(self, mock_session, mock_response):
+    def test_get_repo(self, mock_session: MagicMock, mock_response: MagicMock) -> None:
         """Test getting a repository."""
         # Mock API response
         repo_data = {
@@ -194,7 +198,7 @@ class TestRepositoryOperations:
                 api_url="https://api.github.com",
             )
 
-    def test_star_repo(self, mock_session, mock_response):
+    def test_star_repo(self, mock_session: MagicMock, mock_response: MagicMock) -> None:
         """Test starring a repository."""
         # Mock make_request
         with patch(
@@ -220,7 +224,9 @@ class TestRepositoryOperations:
                 api_url="https://api.github.com",
             )
 
-    def test_unstar_repo(self, mock_session, mock_response):
+    def test_unstar_repo(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test unstarring a repository."""
         # Mock make_request
         with patch(
@@ -246,7 +252,9 @@ class TestRepositoryOperations:
                 api_url="https://api.github.com",
             )
 
-    def test_is_repo_starred_true(self, mock_session, mock_response):
+    def test_is_repo_starred_true(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test checking if a repository is starred (true case)."""
         # Mock make_request
         with patch(
@@ -272,7 +280,7 @@ class TestRepositoryOperations:
                 api_url="https://api.github.com",
             )
 
-    def test_is_repo_starred_false(self, mock_session):
+    def test_is_repo_starred_false(self, mock_session: MagicMock) -> None:
         """Test checking if a repository is starred (false case)."""
         # Mock make_request to raise a 404 error
         mock_error = QuackApiError("Not found", status_code=404)
@@ -300,7 +308,7 @@ class TestRepositoryOperations:
                 api_url="https://api.github.com",
             )
 
-    def test_is_repo_starred_other_error(self, mock_session):
+    def test_is_repo_starred_other_error(self, mock_session: MagicMock) -> None:
         """Test checking if a repository is starred with a non-404 error."""
         # Mock make_request to raise a non-404 error
         mock_error = QuackApiError("API error", status_code=500)
@@ -321,7 +329,7 @@ class TestRepositoryOperations:
             # Verify error
             assert "API error" in str(excinfo.value)
 
-    def test_fork_repo(self, mock_session, mock_response):
+    def test_fork_repo(self, mock_session: MagicMock, mock_response: MagicMock) -> None:
         """Test forking a repository."""
         # Mock API response
         fork_data = {
@@ -374,7 +382,9 @@ class TestRepositoryOperations:
                 json={"organization": "test-org"},
             )
 
-    def test_check_repository_exists_true(self, mock_session, mock_response):
+    def test_check_repository_exists_true(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test checking if a repository exists (true case)."""
         # Mock make_request
         with patch(
@@ -400,7 +410,7 @@ class TestRepositoryOperations:
                 api_url="https://api.github.com",
             )
 
-    def test_check_repository_exists_false(self, mock_session):
+    def test_check_repository_exists_false(self, mock_session: MagicMock) -> None:
         """Test checking if a repository exists (false case)."""
         # Mock make_request to raise a 404 error
         mock_error = QuackApiError("Not found", status_code=404)
@@ -428,7 +438,9 @@ class TestRepositoryOperations:
                 api_url="https://api.github.com",
             )
 
-    def test_get_repository_file_content(self, mock_session, mock_response):
+    def test_get_repository_file_content(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test getting repository file content."""
         # Mock API response
         file_content = "This is the file content"
@@ -465,7 +477,9 @@ class TestRepositoryOperations:
                 params={"ref": "main"},
             )
 
-    def test_update_repository_file(self, mock_session, mock_response):
+    def test_update_repository_file(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test updating repository file."""
         # Mock make_request
         with patch(
@@ -513,7 +527,9 @@ class TestRepositoryOperations:
 class TestPullRequestOperations:
     """Tests for pull request _ops."""
 
-    def test_create_pull_request(self, mock_session, mock_response):
+    def test_create_pull_request(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test creating a pull request."""
         # Mock API response
         pr_data = {
@@ -579,7 +595,9 @@ class TestPullRequestOperations:
                 },
             )
 
-    def test_list_pull_requests(self, mock_session, mock_response):
+    def test_list_pull_requests(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test listing pull requests."""
         # Mock API response
         pr_list = [
@@ -664,7 +682,9 @@ class TestPullRequestOperations:
                 params={"state": "open"},
             )
 
-    def test_get_pull_request(self, mock_session, mock_response):
+    def test_get_pull_request(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test getting a specific pull request."""
         # Mock API response
         pr_data = {
@@ -721,7 +741,9 @@ class TestPullRequestOperations:
                 api_url="https://api.github.com",
             )
 
-    def test_get_pull_request_files(self, mock_session, mock_response):
+    def test_get_pull_request_files(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test getting files from a pull request."""
         # Mock API response
         files_data = [
@@ -776,7 +798,9 @@ class TestPullRequestOperations:
 class TestIssueOperations:
     """Tests for issue _ops."""
 
-    def test_create_issue(self, mock_session, mock_response):
+    def test_create_issue(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test creating an issue."""
         # Mock API response
         issue_data = {
@@ -824,7 +848,9 @@ class TestIssueOperations:
                 },
             )
 
-    def test_list_issues(self, mock_session, mock_response):
+    def test_list_issues(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test listing issues."""
         # Mock API response
         issues_data = [
@@ -877,7 +903,7 @@ class TestIssueOperations:
                 },
             )
 
-    def test_get_issue(self, mock_session, mock_response):
+    def test_get_issue(self, mock_session: MagicMock, mock_response: MagicMock) -> None:
         """Test getting an issue."""
         # Mock API response
         issue_data = {
@@ -915,7 +941,9 @@ class TestIssueOperations:
                 api_url="https://api.github.com",
             )
 
-    def test_add_issue_comment(self, mock_session, mock_response):
+    def test_add_issue_comment(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
         """Test adding a comment to an issue."""
         # Mock API response
         comment_data = {

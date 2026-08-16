@@ -13,7 +13,7 @@ from quack_core.integrations.github import (
 )
 
 
-def test_create_integration():
+def test_create_integration() -> None:
     """Test that create_integration returns a GitHubIntegration instance."""
     integration = create_integration()
     assert isinstance(integration, GitHubIntegration)
@@ -21,7 +21,7 @@ def test_create_integration():
     assert integration.version == "1.0.0"
 
 
-def test_integration_registration():
+def test_integration_registration() -> None:
     """Test that the GitHub integration can be registered."""
     # Create a new integration
     integration = create_integration()
@@ -31,7 +31,7 @@ def test_integration_registration():
         def __init__(self) -> None:
             self.integrations: list[GitHubIntegration] = []
 
-        def register(self, integration):
+        def register(self, integration: GitHubIntegration) -> None:
             self.integrations.append(integration)
 
     # Test that we can register the integration with this registry
@@ -43,7 +43,7 @@ def test_integration_registration():
     assert mock_registry.integrations[0] is integration
 
 
-def test_module_implements_getattr():
+def test_module_implements_getattr() -> None:
     """Test that the module implements __getattr__ for lazy loading."""
     import quack_core.integrations.github
 
@@ -55,7 +55,7 @@ def test_module_implements_getattr():
 
     try:
         # Replace with a test implementation
-        def mock_getattr(name):
+        def mock_getattr(name: str) -> object:
             if name == "TEST_ATTRIBUTE":
                 return "Test Value"
             return original_getattr(name)
@@ -74,7 +74,7 @@ def test_module_implements_getattr():
         quack_core.integrations.github.__getattr__ = original_getattr
 
 
-def test_registry_integration():
+def test_registry_integration() -> None:
     """Test that the GitHub integration is registered with registry."""
     # Create a new integration
     integration = create_integration()
@@ -98,7 +98,7 @@ def test_registry_integration():
         assert any(isinstance(i, GitHubIntegration) for i in integrations)
 
 
-def test_module_init():
+def test_module_init() -> None:
     """Test that the module's __init__ tries to register the integration."""
     # Create a mock registry
     mock_registry = MagicMock()
@@ -126,7 +126,7 @@ def test_module_init():
             )
 
 
-def test_lazy_loading():
+def test_lazy_loading() -> None:
     """Test lazy loading of quackster-related classes."""
     import quack_core.integrations.github
 
@@ -134,7 +134,7 @@ def test_lazy_loading():
     original_getattr = getattr(quack_core.integrations.github, "__getattr__", None)
 
     # Add a temporary __getattr__ function for testing
-    def mock_getattr(name):
+    def mock_getattr(name: str) -> str:
         if name == "GitHubGrader":
             return "MockGitHubGrader"
         if name == "GitHubTeachingAdapter":
@@ -161,7 +161,7 @@ def test_lazy_loading():
             delattr(quack_core.integrations.github, "__getattr__")
 
 
-def test_getattr_unknown_attribute():
+def test_getattr_unknown_attribute() -> None:
     """Test that __getattr__ raises AttributeError for unknown attributes."""
     import quack_core.integrations.github
 
@@ -169,7 +169,7 @@ def test_getattr_unknown_attribute():
     original_getattr = getattr(quack_core.integrations.github, "__getattr__", None)
 
     # Add a temporary __getattr__ function for testing
-    def mock_getattr(name):
+    def mock_getattr(name: str) -> str:
         if name == "GitHubGrader":
             return "MockGitHubGrader"
         if name == "GitHubTeachingAdapter":

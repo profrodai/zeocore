@@ -21,7 +21,7 @@ from quack_core.integrations.github.service import GitHubIntegration
 
 
 @pytest.fixture
-def mock_auth_provider():
+def mock_auth_provider() -> GitHubAuthProvider:
     """Create a mock authentication provider."""
     auth_provider = cast(
         GitHubAuthProvider, create_autospec(GitHubAuthProvider, instance=True)
@@ -30,7 +30,7 @@ def mock_auth_provider():
 
 
 @pytest.fixture
-def mock_config_provider():
+def mock_config_provider() -> GitHubConfigProvider:
     """Create a mock configuration provider."""
     config_provider = cast(
         GitHubConfigProvider, create_autospec(GitHubConfigProvider, instance=True)
@@ -46,7 +46,9 @@ def mock_config_provider():
 
 
 @pytest.fixture
-def github_service(mock_auth_provider, mock_config_provider):
+def github_service(
+    mock_auth_provider: GitHubAuthProvider, mock_config_provider: GitHubConfigProvider
+) -> GitHubIntegration:
     """Create a GitHub integration service with mocked dependencies."""
     return GitHubIntegration(
         auth_provider=mock_auth_provider,
@@ -57,7 +59,7 @@ def github_service(mock_auth_provider, mock_config_provider):
 class TestGitHubIntegration:
     """Tests for GitHubIntegration."""
 
-    def test_init_with_default_providers(self):
+    def test_init_with_default_providers(self) -> None:
         """Test initialization with default providers."""
         service = GitHubIntegration()
 
@@ -70,8 +72,11 @@ class TestGitHubIntegration:
         assert not service._initialized
 
     def test_initialize_success(
-        self, github_service, mock_auth_provider, mock_config_provider
-    ):
+        self,
+        github_service: GitHubIntegration,
+        mock_auth_provider: GitHubAuthProvider,
+        mock_config_provider: GitHubConfigProvider,
+    ) -> None:
         """Test successful initialization."""
         # Mock configuration with token.
         mock_config_provider.load_config.return_value = MagicMock(
@@ -96,6 +101,7 @@ class TestGitHubIntegration:
             result = github_service.initialize()
 
             assert result.success is True
+            assert result.message is not None
             assert "GitHub integration initialized successfully" in result.message
             assert github_service._initialized is True
 
@@ -107,7 +113,9 @@ class TestGitHubIntegration:
                 retry_delay=1.0,
             )
 
-    def test_initialize_with_base_error(self, github_service):
+    def test_initialize_with_base_error(
+        self, github_service: GitHubIntegration
+    ) -> None:
         """Test initialization when base initialization fails."""
         with patch(
             "quack_core.integrations.core.BaseIntegrationService.initialize"
@@ -120,10 +128,11 @@ class TestGitHubIntegration:
             result = github_service.initialize()
 
             assert result.success is False
+            assert result.error is not None
             assert "Base initialization failed" in result.error
             assert github_service._initialized is False
 
-    def test_initialize_no_config(self, github_service):
+    def test_initialize_no_config(self, github_service: GitHubIntegration) -> None:
         """Test initialization with no configuration."""
         with patch(
             "quack_core.integrations.core.BaseIntegrationService.initialize"
@@ -134,12 +143,15 @@ class TestGitHubIntegration:
             result = github_service.initialize()
 
             assert result.success is False
+            assert result.error is not None
             assert "GitHub configuration is not available" in result.error
             assert github_service._initialized is False
 
     def test_initialize_with_auth_provider_credentials(
-        self, github_service, mock_auth_provider
-    ):
+        self,
+        github_service: GitHubIntegration,
+        mock_auth_provider: GitHubAuthProvider,
+    ) -> None:
         """Test initialization using auth provider credentials."""
         with patch(
             "quack_core.integrations.core.BaseIntegrationService.initialize"
@@ -165,7 +177,11 @@ class TestGitHubIntegration:
                 _, kwargs = mock_client_class.call_args
                 assert kwargs.get("token") == "auth_token"
 
-    def test_initialize_with_authenticate(self, github_service, mock_auth_provider):
+    def test_initialize_with_authenticate(
+        self,
+        github_service: GitHubIntegration,
+        mock_auth_provider: GitHubAuthProvider,
+    ) -> None:
         """Test initialization by authenticating."""
         with patch(
             "quack_core.integrations.core.BaseIntegrationService.initialize"
@@ -195,7 +211,11 @@ class TestGitHubIntegration:
                 _, kwargs = mock_client_class.call_args
                 assert kwargs.get("token") == "auth_token"
 
-    def test_initialize_auth_failure(self, github_service, mock_auth_provider):
+    def test_initialize_auth_failure(
+        self,
+        github_service: GitHubIntegration,
+        mock_auth_provider: GitHubAuthProvider,
+    ) -> None:
         """Test initialization with authentication failure."""
         with patch(
             "quack_core.integrations.core.BaseIntegrationService.initialize"
@@ -214,11 +234,15 @@ class TestGitHubIntegration:
             result = github_service.initialize()
 
             assert result.success is False
+            assert result.error is not None
             assert "Failed to authenticate with GitHub" in result.error
+            assert result.message is not None
             assert "Authentication failed" in result.message
             assert github_service._initialized is False
 
-    def test_initialize_no_token_no_auth(self, github_service):
+    def test_initialize_no_token_no_auth(
+        self, github_service: GitHubIntegration
+    ) -> None:
         """Test initialization with no token and no auth provider."""
         with patch(
             "quack_core.integrations.core.BaseIntegrationService.initialize"
@@ -231,13 +255,14 @@ class TestGitHubIntegration:
             result = github_service.initialize()
 
             assert result.success is False
+            assert result.error is not None
             assert (
                 "GitHub token is not configured and no auth provider is available"
                 in result.error
             )
             assert github_service._initialized is False
 
-    def test_initialize_exception(self, github_service):
+    def test_initialize_exception(self, github_service: GitHubIntegration) -> None:
         """Test initialization with unexpected exception."""
         with patch(
             "quack_core.integrations.core.BaseIntegrationService.initialize"
@@ -266,7 +291,7 @@ class TestGitHubIntegration:
                 assert "Unexpected error" in str(result.error)
                 assert github_service._initialized is False
 
-    def test_is_available(self, github_service):
+    def test_is_available(self, github_service: GitHubIntegration) -> None:
         """Test is_available method."""
         github_service._initialized = False
         github_service.client = None
@@ -280,7 +305,7 @@ class TestGitHubIntegration:
         github_service.client = MagicMock()
         assert github_service.is_available()
 
-    def test_get_current_user(self, github_service):
+    def test_get_current_user(self, github_service: GitHubIntegration) -> None:
         """Test get_current_user method."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -299,18 +324,24 @@ class TestGitHubIntegration:
 
         assert result.success is True
         assert result.content == user
+        assert result.message is not None
         assert f"Successfully retrieved user {user.username}" in result.message
         # Cast the method to ensure the attribute is available.
         cast(MagicMock, mock_client.get_user).assert_called_once()
 
-    def test_get_current_user_not_initialized(self, github_service):
+    def test_get_current_user_not_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
         """Test get_current_user when not initialized."""
         github_service._initialized = False
         result = github_service.get_current_user()
         assert result.success is False
+        assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
-    def test_get_current_user_exception(self, github_service):
+    def test_get_current_user_exception(
+        self, github_service: GitHubIntegration
+    ) -> None:
         """Test get_current_user with exception."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -319,9 +350,10 @@ class TestGitHubIntegration:
 
         result = github_service.get_current_user()
         assert result.success is False
+        assert result.error is not None
         assert "Failed to get user: API error" in result.error
 
-    def test_get_repo(self, github_service):
+    def test_get_repo(self, github_service: GitHubIntegration) -> None:
         """Test get_repo method."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -340,19 +372,21 @@ class TestGitHubIntegration:
         result = github_service.get_repo("test_owner/test-repo")
         assert result.success is True
         assert result.content == repo
+        assert result.message is not None
         assert f"Successfully retrieved repository {repo.full_name}" in result.message
         cast(MagicMock, mock_client.get_repo).assert_called_once_with(
             "test_owner/test-repo"
         )
 
-    def test_get_repo_not_initialized(self, github_service):
+    def test_get_repo_not_initialized(self, github_service: GitHubIntegration) -> None:
         """Test get_repo when not initialized."""
         github_service._initialized = False
         result = github_service.get_repo("test_owner/test-repo")
         assert result.success is False
+        assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
-    def test_get_repo_exception(self, github_service):
+    def test_get_repo_exception(self, github_service: GitHubIntegration) -> None:
         """Test get_repo with exception."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -361,9 +395,10 @@ class TestGitHubIntegration:
 
         result = github_service.get_repo("test_owner/test-repo")
         assert result.success is False
+        assert result.error is not None
         assert "Failed to get repository: API error" in result.error
 
-    def test_star_repo(self, github_service):
+    def test_star_repo(self, github_service: GitHubIntegration) -> None:
         """Test star_repo method."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -373,19 +408,21 @@ class TestGitHubIntegration:
         result = github_service.star_repo("test_owner/test-repo")
         assert result.success is True
         assert result.content is True
+        assert result.message is not None
         assert "Successfully starred repository test_owner/test-repo" in result.message
         cast(MagicMock, mock_client.star_repo).assert_called_once_with(
             "test_owner/test-repo"
         )
 
-    def test_star_repo_not_initialized(self, github_service):
+    def test_star_repo_not_initialized(self, github_service: GitHubIntegration) -> None:
         """Test star_repo when not initialized."""
         github_service._initialized = False
         result = github_service.star_repo("test_owner/test-repo")
         assert result.success is False
+        assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
-    def test_star_repo_exception(self, github_service):
+    def test_star_repo_exception(self, github_service: GitHubIntegration) -> None:
         """Test star_repo with exception."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -394,9 +431,10 @@ class TestGitHubIntegration:
 
         result = github_service.star_repo("test_owner/test-repo")
         assert result.success is False
+        assert result.error is not None
         assert "Failed to star repository: API error" in result.error
 
-    def test_fork_repo(self, github_service):
+    def test_fork_repo(self, github_service: GitHubIntegration) -> None:
         """Test fork_repo method."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -416,6 +454,7 @@ class TestGitHubIntegration:
         result = github_service.fork_repo("test_owner/test-repo")
         assert result.success is True
         assert result.content == forked_repo
+        assert result.message is not None
         assert (
             f"Successfully forked repository test_owner/test-repo to {forked_repo.full_name}"
             in result.message
@@ -424,14 +463,15 @@ class TestGitHubIntegration:
             "test_owner/test-repo"
         )
 
-    def test_fork_repo_not_initialized(self, github_service):
+    def test_fork_repo_not_initialized(self, github_service: GitHubIntegration) -> None:
         """Test fork_repo when not initialized."""
         github_service._initialized = False
         result = github_service.fork_repo("test_owner/test-repo")
         assert result.success is False
+        assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
-    def test_fork_repo_exception(self, github_service):
+    def test_fork_repo_exception(self, github_service: GitHubIntegration) -> None:
         """Test fork_repo with exception."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -440,9 +480,10 @@ class TestGitHubIntegration:
 
         result = github_service.fork_repo("test_owner/test-repo")
         assert result.success is False
+        assert result.error is not None
         assert "Failed to fork repository: API error" in result.error
 
-    def test_create_pull_request(self, github_service):
+    def test_create_pull_request(self, github_service: GitHubIntegration) -> None:
         """Test create_pull_request method."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -473,6 +514,7 @@ class TestGitHubIntegration:
         )
         assert result.success is True
         assert result.content == pr
+        assert result.message is not None
         assert "Successfully created pull request" in result.message
         cast(MagicMock, mock_client.create_pull_request).assert_called_once_with(
             base_repo="test_owner/test-repo",
@@ -482,16 +524,21 @@ class TestGitHubIntegration:
             base_branch="main",
         )
 
-    def test_create_pull_request_not_initialized(self, github_service):
+    def test_create_pull_request_not_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
         """Test create_pull_request when not initialized."""
         github_service._initialized = False
         result = github_service.create_pull_request(
             base_repo="test_owner/test-repo", head="test_user:feature", title="Test PR"
         )
         assert result.success is False
+        assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
-    def test_create_pull_request_exception(self, github_service):
+    def test_create_pull_request_exception(
+        self, github_service: GitHubIntegration
+    ) -> None:
         """Test create_pull_request with exception."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -502,9 +549,10 @@ class TestGitHubIntegration:
             base_repo="test_owner/test-repo", head="test_user:feature", title="Test PR"
         )
         assert result.success is False
+        assert result.error is not None
         assert "Failed to create pull request: API error" in result.error
 
-    def test_list_pull_requests(self, github_service):
+    def test_list_pull_requests(self, github_service: GitHubIntegration) -> None:
         """Test list_pull_requests method."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -543,9 +591,11 @@ class TestGitHubIntegration:
             repo="test_owner/test-repo", state="open", author="test_user"
         )
         assert result.success is True
+        assert result.content is not None
         assert len(result.content) == 2
         assert result.content[0] == pr1
         assert result.content[1] == pr2
+        assert result.message is not None
         assert (
             "Successfully retrieved 2 pull requests for test_owner/test-repo"
             in result.message
@@ -554,14 +604,19 @@ class TestGitHubIntegration:
             repo="test_owner/test-repo", state="open", author="test_user"
         )
 
-    def test_list_pull_requests_not_initialized(self, github_service):
+    def test_list_pull_requests_not_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
         """Test list_pull_requests when not initialized."""
         github_service._initialized = False
         result = github_service.list_pull_requests(repo="test_owner/test-repo")
         assert result.success is False
+        assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
-    def test_list_pull_requests_exception(self, github_service):
+    def test_list_pull_requests_exception(
+        self, github_service: GitHubIntegration
+    ) -> None:
         """Test list_pull_requests with exception."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -570,9 +625,10 @@ class TestGitHubIntegration:
 
         result = github_service.list_pull_requests(repo="test_owner/test-repo")
         assert result.success is False
+        assert result.error is not None
         assert "Failed to list pull requests: API error" in result.error
 
-    def test_get_pull_request(self, github_service):
+    def test_get_pull_request(self, github_service: GitHubIntegration) -> None:
         """Test get_pull_request method."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -599,6 +655,7 @@ class TestGitHubIntegration:
         )
         assert result.success is True
         assert result.content == pr
+        assert result.message is not None
         assert (
             "Successfully retrieved pull request #123 from test_owner/test-repo"
             in result.message
@@ -607,16 +664,21 @@ class TestGitHubIntegration:
             "test_owner/test-repo", 123
         )
 
-    def test_get_pull_request_not_initialized(self, github_service):
+    def test_get_pull_request_not_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
         """Test get_pull_request when not initialized."""
         github_service._initialized = False
         result = github_service.get_pull_request(
             repo="test_owner/test-repo", number=123
         )
         assert result.success is False
+        assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
-    def test_get_pull_request_exception(self, github_service):
+    def test_get_pull_request_exception(
+        self, github_service: GitHubIntegration
+    ) -> None:
         """Test get_pull_request with exception."""
         mock_client = MagicMock()
         github_service.client = mock_client
@@ -627,10 +689,11 @@ class TestGitHubIntegration:
             repo="test_owner/test-repo", number=123
         )
         assert result.success is False
+        assert result.error is not None
         assert "Failed to get pull request: API error" in result.error
 
     @staticmethod
-    def setup_mock_auth_provider(auth_success=True) -> MagicMock:
+    def setup_mock_auth_provider(auth_success: bool = True) -> MagicMock:
         """Set up a mock auth provider for tests."""
         from quack_core.integrations.github.auth import GitHubAuthProvider
 
@@ -646,7 +709,7 @@ class TestGitHubIntegration:
         return mock_auth
 
     @staticmethod
-    def setup_mock_config_provider(with_token=True) -> MagicMock:
+    def setup_mock_config_provider(with_token: bool = True) -> MagicMock:
         """Set up a mock config provider for tests."""
         from quack_core.integrations.github.config import GitHubConfigProvider
 
@@ -664,7 +727,7 @@ class TestGitHubIntegration:
         mock_config.get_config = MagicMock(return_value=config_result.content)
         return mock_config
 
-    def test_initialize_handles_exceptions(self):
+    def test_initialize_handles_exceptions(self) -> None:
         """Test that initialize properly handles exceptions."""
         mock_auth = MagicMock()
         mock_auth.authenticate.side_effect = Exception("Unexpected auth error")
@@ -696,6 +759,8 @@ class TestGitHubIntegration:
             result = service.initialize()
 
             assert result.success is False
+            assert result.error is not None
             assert "Failed to initialize GitHub integration" in result.error
+            assert result.error is not None
             assert "Unexpected auth error" in result.error
             assert service._initialized is False
