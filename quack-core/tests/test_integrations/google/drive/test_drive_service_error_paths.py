@@ -107,7 +107,9 @@ class TestListFilesErrorPaths:
         result = real_drive_service.list_files()
         assert result.success is False
         # This is the ACTUAL (buggy) behavior, not the intended one.
+        assert result.error is not None
         assert "API error" in result.error
+        assert result.error is not None
         assert "Authentication error" not in result.error
 
     def test_list_files_generic_error_from_malformed_response_item(
@@ -129,6 +131,7 @@ class TestListFilesErrorPaths:
         result = real_drive_service.list_files()
 
         assert result.success is False
+        assert result.error is not None
         assert "Failed to list files from Google Drive" in result.error
 
 
@@ -154,7 +157,9 @@ class TestCreateFolderErrorPaths:
         )
         result = real_drive_service.create_folder("New Folder")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
+        assert result.error is not None
         assert "Authentication error" not in result.error
 
     def test_create_folder_generic_error_from_malformed_response(
@@ -173,6 +178,7 @@ class TestCreateFolderErrorPaths:
         result = real_drive_service.create_folder("New Folder")
 
         assert result.success is False
+        assert result.error is not None
         assert "Failed to create folder in Google Drive" in result.error
 
     def test_create_folder_permission_failure_logs_warning(
@@ -226,7 +232,9 @@ class TestSetFilePermissionsErrorPaths:
         )
         result = real_drive_service.set_file_permissions("file123")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
+        assert result.error is not None
         assert "Authentication error" not in result.error
 
     def test_set_file_permissions_error_is_reported_as_api_error(
@@ -241,6 +249,7 @@ class TestSetFilePermissionsErrorPaths:
         real_drive_service.drive_service.permissions.side_effect = ValueError("boom")
         result = real_drive_service.set_file_permissions("file123")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
 
 
@@ -265,7 +274,9 @@ class TestGetSharingLinkErrorPaths:
         )
         result = real_drive_service.get_sharing_link("file123")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
+        assert result.error is not None
         assert "Authentication error" not in result.error
 
     def test_get_sharing_link_generic_error_from_malformed_response(
@@ -285,6 +296,7 @@ class TestGetSharingLinkErrorPaths:
         result = real_drive_service.get_sharing_link("file123")
 
         assert result.success is False
+        assert result.error is not None
         assert "Failed to get sharing link from Google Drive" in result.error
 
 
@@ -308,7 +320,9 @@ class TestDeleteFileErrorPaths:
         )
         result = real_drive_service.delete_file("file123")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
+        assert result.error is not None
         assert "Authentication error" not in result.error
 
     def test_delete_file_error_is_reported_as_api_error(
@@ -320,6 +334,7 @@ class TestDeleteFileErrorPaths:
         real_drive_service.drive_service.files.side_effect = ValueError("boom")
         result = real_drive_service.delete_file("file123")
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
 
 
@@ -356,7 +371,9 @@ class TestUploadFileErrorPaths:
             )
             result = real_drive_service.upload_file(rel_name)
             assert result.success is False
+            assert result.error is not None
             assert "API error" in result.error
+            assert result.error is not None
             assert "Authentication error" not in result.error
         finally:
             real_file.unlink(missing_ok=True)
@@ -382,6 +399,7 @@ class TestUploadFileErrorPaths:
             }
             result = real_drive_service.upload_file(rel_name)
             assert result.success is False
+            assert result.error is not None
             assert "Failed to upload file to Google Drive" in result.error
         finally:
             real_file.unlink(missing_ok=True)
@@ -485,6 +503,7 @@ class TestGetFileInfo:
             )
             result = real_drive_service.get_file_info("file123")
         assert result.success is False
+        assert result.error is not None
         assert "Not initialized" in result.error
 
     def test_get_file_info_error(self, real_drive_service: GoogleDriveService) -> None:
@@ -499,6 +518,7 @@ class TestGetFileInfo:
         result = real_drive_service.get_file_info("file123")
 
         assert result.success is False
+        assert result.error is not None
         assert "Failed to retrieve file metadata" in result.error
 
 
@@ -734,6 +754,7 @@ class TestInitializeEdgeBranches:
             result = service.initialize()
 
         assert result.success is False
+        assert result.error is not None
         assert "no auth_provider configured" in result.error
 
     @patch("quack_core.integrations.google.auth.GoogleAuthProvider.authenticate")
@@ -762,7 +783,9 @@ class TestInitializeEdgeBranches:
             result = service.initialize()
 
         assert result.success is False
+        assert result.error is not None
         assert "Failed to authenticate with Google Drive" in result.error
+        assert result.error is not None
         assert "Bad credentials" in result.error
 
 
@@ -882,6 +905,7 @@ class TestDownloadFileRealPath:
             )
             result = real_drive_service.download_file("file123")
         assert result.success is False
+        assert result.error is not None
         assert "Not initialized" in result.error
 
     def test_download_file_metadata_error(
@@ -899,6 +923,7 @@ class TestDownloadFileRealPath:
         )
         result = real_drive_service.download_file("file123")
         assert result.success is False
+        assert result.error is not None
         assert "Failed to get file metadata from Google Drive" in result.error
 
     def test_download_file_join_path_parent_bug_blocks_every_successful_call(
@@ -926,6 +951,7 @@ class TestDownloadFileRealPath:
         result = real_drive_service.download_file("file123", target)
 
         assert result.success is False
+        assert result.error is not None
         assert "'DataResult' object has no attribute 'parent'" in result.error
         # Confirms the file was never even attempted to be written --
         # the crash happens before get_media()/MediaIoBaseDownload is
@@ -959,7 +985,9 @@ class TestDownloadFileRealPath:
         result = real_drive_service.download_file("file123", target)
 
         assert result.success is False
+        assert result.error is not None
         assert "Failed to create directory" not in result.error
+        assert result.error is not None
         assert "'DataResult' object has no attribute 'parent'" in result.error
 
 
@@ -998,6 +1026,7 @@ class TestEnsureInitializedGuards:
     ) -> None:
         result = uninitialized_service.list_files()
         assert result.success is False
+        assert result.error is not None
         assert "Not initialized" in result.error
 
     def test_create_folder_not_initialized(
@@ -1005,6 +1034,7 @@ class TestEnsureInitializedGuards:
     ) -> None:
         result = uninitialized_service.create_folder("New Folder")
         assert result.success is False
+        assert result.error is not None
         assert "Not initialized" in result.error
 
     def test_set_file_permissions_not_initialized(
@@ -1012,6 +1042,7 @@ class TestEnsureInitializedGuards:
     ) -> None:
         result = uninitialized_service.set_file_permissions("file123")
         assert result.success is False
+        assert result.error is not None
         assert "Not initialized" in result.error
 
     def test_get_sharing_link_not_initialized(
@@ -1019,6 +1050,7 @@ class TestEnsureInitializedGuards:
     ) -> None:
         result = uninitialized_service.get_sharing_link("file123")
         assert result.success is False
+        assert result.error is not None
         assert "Not initialized" in result.error
 
     def test_delete_file_not_initialized(
@@ -1026,6 +1058,7 @@ class TestEnsureInitializedGuards:
     ) -> None:
         result = uninitialized_service.delete_file("file123")
         assert result.success is False
+        assert result.error is not None
         assert "Not initialized" in result.error
 
 
@@ -1071,5 +1104,6 @@ class TestUploadHelperBranches:
             "coverage90_upload_nonexistent_probe.txt"
         )
         assert result.success is False
+        assert result.error is not None
         assert "File not found" in result.error
         real_drive_service.drive_service.files.assert_not_called()
