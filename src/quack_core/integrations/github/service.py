@@ -193,6 +193,17 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
         Returns:
             Tuple of (token, error_result). error_result is None on success.
         """
+        # self.config is always non-None here in practice: initialize()
+        # calls _check_config_available() (which validates this exact
+        # invariant) and returns early on failure before ever reaching
+        # this method -- mypy cannot see that across the call boundary.
+        # Explicit guard, not a behavior change.
+        if self.config is None:
+            return None, IntegrationResult.error_result(
+                error="GitHub configuration is not available",
+                message="GitHub configuration is not available",
+            )
+
         # Get authentication token from config
         token = self.config.get("token")
 
@@ -216,6 +227,15 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
             Success result on success, error result on failure
         """
         try:
+            # See _resolve_auth_token's own comment: self.config is always
+            # non-None here in practice (initialize()'s own call order
+            # guarantees it), mypy just can't see across the call
+            # boundary. Explicit guard, not a behavior change.
+            if self.config is None:
+                return IntegrationResult.error_result(
+                    error="GitHub configuration is not available",
+                    message="GitHub configuration is not available",
+                )
             self.client = GitHubClient(
                 token=token,
                 api_url=self.config.get("api_url", "https://api.github.com"),
@@ -300,6 +320,17 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
         init_error = self._ensure_initialized()
         if init_error:
             return init_error
+        # self.client is always set together with _initialized=True in
+        # _create_github_client -- this can never actually be None here,
+        # but mypy cannot narrow self.client across the _ensure_initialized
+        # call boundary (confirmed: a helper method's own internal None
+        # check does not propagate narrowing to the caller). Explicit
+        # guard, not a behavior change.
+        if self.client is None:
+            return IntegrationResult.error_result(
+                error="GitHub client is not initialized",
+                message="GitHub client is not initialized",
+            )
 
         try:
             user = self.client.get_user()
@@ -325,6 +356,14 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
         init_error = self._ensure_initialized()
         if init_error:
             return init_error
+        # See get_current_user's own comment: self.client is always set
+        # together with _initialized=True, mypy just can't see across the
+        # helper call boundary. Explicit guard, not a behavior change.
+        if self.client is None:
+            return IntegrationResult.error_result(
+                error="GitHub client is not initialized",
+                message="GitHub client is not initialized",
+            )
 
         try:
             repo = self.client.get_repo(full_name)
@@ -351,6 +390,14 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
         init_error = self._ensure_initialized()
         if init_error:
             return init_error
+        # See get_current_user's own comment: self.client is always set
+        # together with _initialized=True, mypy just can't see across the
+        # helper call boundary. Explicit guard, not a behavior change.
+        if self.client is None:
+            return IntegrationResult.error_result(
+                error="GitHub client is not initialized",
+                message="GitHub client is not initialized",
+            )
 
         try:
             self.client.star_repo(full_name)
@@ -376,6 +423,14 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
         init_error = self._ensure_initialized()
         if init_error:
             return init_error
+        # See get_current_user's own comment: self.client is always set
+        # together with _initialized=True, mypy just can't see across the
+        # helper call boundary. Explicit guard, not a behavior change.
+        if self.client is None:
+            return IntegrationResult.error_result(
+                error="GitHub client is not initialized",
+                message="GitHub client is not initialized",
+            )
 
         try:
             fork = self.client.fork_repo(full_name)
@@ -417,6 +472,14 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
         init_error = self._ensure_initialized()
         if init_error:
             return init_error
+        # See get_current_user's own comment: self.client is always set
+        # together with _initialized=True, mypy just can't see across the
+        # helper call boundary. Explicit guard, not a behavior change.
+        if self.client is None:
+            return IntegrationResult.error_result(
+                error="GitHub client is not initialized",
+                message="GitHub client is not initialized",
+            )
 
         try:
             pr = self.client.create_pull_request(
@@ -452,9 +515,32 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
         init_error = self._ensure_initialized()
         if init_error:
             return init_error
+        # See get_current_user's own comment: self.client is always set
+        # together with _initialized=True, mypy just can't see across the
+        # helper call boundary. Explicit guard, not a behavior change.
+        if self.client is None:
+            return IntegrationResult.error_result(
+                error="GitHub client is not initialized",
+                message="GitHub client is not initialized",
+            )
 
         try:
-            prs = self.client.list_pull_requests(repo=repo, state=state, author=author)
+            # GitHubClient.list_pull_requests declares state as
+            # Literal["open", "closed", "all"] (a real GitHub API
+            # constraint); this service method's own signature stays the
+            # wider `str` to match GitHubIntegrationProtocol (narrowing it
+            # here would violate Liskov substitution against that protocol
+            # -- confirmed live via mypy's own [override] error when
+            # attempted). No new validation added here -- an invalid
+            # string was already passed through to the real API
+            # unvalidated before this round touched this file, and this
+            # ignore keeps that pre-existing behavior byte-identical
+            # rather than introduce a new rejection branch unilaterally.
+            prs = self.client.list_pull_requests(
+                repo=repo,
+                state=state,  # type: ignore[arg-type]
+                author=author,
+            )
             return IntegrationResult.success_result(
                 content=prs,
                 message=f"Successfully retrieved {len(prs)} pull requests for {repo}",
@@ -481,6 +567,14 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
         init_error = self._ensure_initialized()
         if init_error:
             return init_error
+        # See get_current_user's own comment: self.client is always set
+        # together with _initialized=True, mypy just can't see across the
+        # helper call boundary. Explicit guard, not a behavior change.
+        if self.client is None:
+            return IntegrationResult.error_result(
+                error="GitHub client is not initialized",
+                message="GitHub client is not initialized",
+            )
 
         try:
             pr = self.client.get_pull_request(repo, number)
