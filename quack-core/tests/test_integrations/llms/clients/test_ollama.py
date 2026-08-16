@@ -242,5 +242,7 @@ class TestOllamaClient:
 
             # Should still succeed with estimation
             assert result.success is True
+            assert result.content is not None
             assert result.content > 0
+            assert result.message is not None
             assert "estimation" in result.message

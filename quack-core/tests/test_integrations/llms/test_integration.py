@@ -90,6 +90,7 @@ class TestLLMIntegration:
 
         # Verify token count
         assert token_result.success is True
+        assert token_result.content is not None
         assert token_result.content > 0
 
     @pytest.mark.integration

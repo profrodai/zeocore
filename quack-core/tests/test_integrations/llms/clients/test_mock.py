@@ -79,6 +79,7 @@ class TestMockLLMClient:
         client = MockLLMClient(script=[])
         result = client._chat_with_provider(messages, options)
         assert result.success is False
+        assert result.error is not None
         assert "No mock responses available" in result.error
 
     def test_chat_with_streaming(self) -> None:
@@ -124,6 +125,7 @@ class TestMockLLMClient:
 
         result = client._count_tokens_with_provider(messages)
         assert result.success is True
+        assert result.content is not None
         assert result.content > 0
 
         # Test with longer message
@@ -140,11 +142,12 @@ class TestMockLLMClient:
 
         result = client._count_tokens_with_provider(messages)
         assert result.success is True
+        assert result.content is not None
         assert result.content > 0
         # Should have more tokens than the short message
-        assert (
-            result.content > client._count_tokens_with_provider([messages[0]]).content
-        )
+        shorter_result = client._count_tokens_with_provider([messages[0]])
+        assert shorter_result.content is not None
+        assert result.content > shorter_result.content
 
     def test_set_responses(self) -> None:
         """Test setting custom responses."""

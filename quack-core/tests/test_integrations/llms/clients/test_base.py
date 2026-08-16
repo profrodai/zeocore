@@ -106,6 +106,7 @@ class TestLLMClient:
         invalid_messages = cast(list[dict], ["invalid message"])
         result = mock_client.chat(invalid_messages)
         assert result.success is False
+        assert result.error is not None
         assert "Unsupported message type" in result.error
 
     def test_chat_default_options(self, mock_client: MockClient) -> None:
@@ -157,6 +158,7 @@ class TestLLMClient:
         """Test the chat method with empty messages."""
         result = mock_client.chat([])
         assert result.success is False
+        assert result.error is not None
         assert "No messages provided for chat request" in result.error
 
     def test_chat_error_handling(self, mock_client: MockClient) -> None:
@@ -170,6 +172,7 @@ class TestLLMClient:
             mock_chat.side_effect = QuackApiError("API error", "TestService")
             result = mock_client.chat(messages)
             assert result.success is False
+            assert result.error is not None
             assert "API error" in result.error
 
         # Test with integration error
@@ -177,6 +180,7 @@ class TestLLMClient:
             mock_chat.side_effect = QuackIntegrationError("Integration error")
             result = mock_client.chat(messages)
             assert result.success is False
+            assert result.error is not None
             assert "Integration error" in result.error
 
         # Test with generic error
@@ -184,6 +188,7 @@ class TestLLMClient:
             mock_chat.side_effect = Exception("Unexpected error")
             result = mock_client.chat(messages)
             assert result.success is False
+            assert result.error is not None
             assert "Unexpected error" in result.error
 
     def test_chat_retry_logic(self) -> None:
@@ -253,6 +258,7 @@ class TestLLMClient:
 
                 # Result should be an error
                 assert result.success is False
+                assert result.error is not None
                 assert "Rate limit exceeded" in result.error
 
     def test_count_tokens(self, mock_client: MockClient) -> None:
@@ -279,6 +285,7 @@ class TestLLMClient:
         # Test with empty messages
         result = mock_client.count_tokens([])
         assert result.success is False
+        assert result.error is not None
         assert "No messages provided for token counting" in result.error
 
         # Test with error
@@ -286,6 +293,7 @@ class TestLLMClient:
             mock_count.side_effect = Exception("Counting error")
             result = mock_client.count_tokens(messages)
             assert result.success is False
+            assert result.error is not None
             assert "Error counting tokens: Counting error" in result.error
 
     def test_normalize_messages(self, mock_client: MockClient) -> None:

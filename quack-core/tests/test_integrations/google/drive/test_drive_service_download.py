@@ -109,6 +109,7 @@ class TestGoogleDriveServiceDownload:
 
             # Verify the result
             assert result.success is False
+            assert result.error is not None
             assert "API error" in result.error
 
         # --- Test download error ---
@@ -125,6 +126,7 @@ class TestGoogleDriveServiceDownload:
 
             # Verify the result
             assert result.success is False
+            assert result.error is not None
             assert "Download error" in result.error
 
         # --- Test write error ---
@@ -139,4 +141,5 @@ class TestGoogleDriveServiceDownload:
 
             # Verify the result
             assert result.success is False
+            assert result.error is not None
             assert "Write error" in result.error

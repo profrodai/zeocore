@@ -236,6 +236,7 @@ class TestGmailEmailOperations:
         ):
             result = email.list_emails(mock_gmail_service, "me", "is:unread", logger)
             assert result.success is False
+            assert result.error is not None
             assert "Gmail API error" in result.error
 
         # Test with generic exception
@@ -245,6 +246,7 @@ class TestGmailEmailOperations:
         ):
             result = email.list_emails(mock_gmail_service, "me", "is:unread", logger)
             assert result.success is False
+            assert result.error is not None
             assert "Failed to list emails" in result.error
 
     def test_get_message_with_retry(
@@ -407,6 +409,7 @@ class TestGmailEmailOperations:
             # Verify results
             assert result.success is True
             assert expected_file_path == result.content
+            assert result.message is not None
             assert "Email downloaded successfully" in result.message
 
             # Verify correct calls were made
@@ -440,6 +443,7 @@ class TestGmailEmailOperations:
             logger,
         )
         assert result.success is False
+        assert result.error is not None
         assert "Message msg1 could not be retrieved" in result.error
 
         # Test with no HTML content
@@ -477,6 +481,7 @@ class TestGmailEmailOperations:
                 logger,
             )
         assert result.success is False
+        assert result.error is not None
         assert "No HTML content found in message msg1" in result.error
 
         # Test with exception
@@ -494,4 +499,5 @@ class TestGmailEmailOperations:
             logger,
         )
         assert result.success is False
+        assert result.error is not None
         assert "Failed to download email msg1" in result.error
