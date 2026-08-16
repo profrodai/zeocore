@@ -1,5 +1,5 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/test_drive_service_error_paths.py
+# path: quack-core/tests/test_integrations/google/drive/test_drive_service_error_paths.py  # noqa: E501
 # === QV-LLM:END ===
 
 """
@@ -347,7 +347,11 @@ class TestUploadFileErrorPaths:
         real_file = Path(rel_name)
         real_file.write_text("probe content")
         try:
-            real_drive_service.drive_service.files.return_value.create.return_value.execute.side_effect = QuackBaseAuthError(
+            mock_execute = (
+                real_drive_service.drive_service.files.return_value
+                .create.return_value.execute
+            )
+            mock_execute.side_effect = QuackBaseAuthError(
                 "Auth failed", service="drive"
             )
             result = real_drive_service.upload_file(rel_name)
@@ -369,7 +373,11 @@ class TestUploadFileErrorPaths:
         real_file = Path(rel_name)
         real_file.write_text("probe content")
         try:
-            real_drive_service.drive_service.files.return_value.create.return_value.execute.return_value = {
+            mock_execute = (
+                real_drive_service.drive_service.files.return_value
+                .create.return_value.execute
+            )
+            mock_execute.return_value = {
                 "webViewLink": "https://example.com"
             }
             result = real_drive_service.upload_file(rel_name)
@@ -387,7 +395,11 @@ class TestExecuteUploadErrorWrapping:
     def test_execute_upload_wraps_api_exception(
         self, real_drive_service: GoogleDriveService
     ) -> None:
-        real_drive_service.drive_service.files.return_value.create.return_value.execute.side_effect = RuntimeError(
+        mock_execute = (
+            real_drive_service.drive_service.files.return_value
+            .create.return_value.execute
+        )
+        mock_execute.side_effect = RuntimeError(
             "network exploded"
         )
 
@@ -399,7 +411,11 @@ class TestExecuteUploadErrorWrapping:
     def test_execute_upload_success(
         self, real_drive_service: GoogleDriveService
     ) -> None:
-        real_drive_service.drive_service.files.return_value.create.return_value.execute.return_value = {
+        mock_execute = (
+            real_drive_service.drive_service.files.return_value
+            .create.return_value.execute
+        )
+        mock_execute.return_value = {
             "id": "abc123",
             "webViewLink": "https://drive.google.com/file/d/abc123/view",
             "webContentLink": "https://drive.google.com/uc?id=abc123",
@@ -421,7 +437,11 @@ class TestGetFileInfo:
             "name": "test.txt",
             "mimeType": "text/plain",
         }
-        real_drive_service.drive_service.files.return_value.get.return_value.execute.return_value = expected_metadata
+        mock_execute = (
+            real_drive_service.drive_service.files.return_value
+            .get.return_value.execute
+        )
+        mock_execute.return_value = expected_metadata
 
         result = real_drive_service.get_file_info("file123")
 
@@ -438,7 +458,11 @@ class TestGetFileInfo:
     def test_get_file_info_success_custom_fields(
         self, real_drive_service: GoogleDriveService
     ) -> None:
-        real_drive_service.drive_service.files.return_value.get.return_value.execute.return_value = {
+        mock_execute = (
+            real_drive_service.drive_service.files.return_value
+            .get.return_value.execute
+        )
+        mock_execute.return_value = {
             "id": "file123"
         }
 
@@ -464,7 +488,11 @@ class TestGetFileInfo:
         assert "Not initialized" in result.error
 
     def test_get_file_info_error(self, real_drive_service: GoogleDriveService) -> None:
-        real_drive_service.drive_service.files.return_value.get.return_value.execute.side_effect = RuntimeError(
+        mock_execute = (
+            real_drive_service.drive_service.files.return_value
+            .get.return_value.execute
+        )
+        mock_execute.side_effect = RuntimeError(
             "network exploded"
         )
 
@@ -862,7 +890,11 @@ class TestDownloadFileRealPath:
         """Lines 406-408: get() for metadata raising is caught and
         reported directly -- also reachable, runs before the
         join_path(...).parent bug (metadata fetch happens first)."""
-        real_drive_service.drive_service.files.return_value.get.return_value.execute.side_effect = RuntimeError(
+        mock_execute = (
+            real_drive_service.drive_service.files.return_value
+            .get.return_value.execute
+        )
+        mock_execute.side_effect = RuntimeError(
             "metadata fetch failed"
         )
         result = real_drive_service.download_file("file123")
@@ -881,7 +913,11 @@ class TestDownloadFileRealPath:
         request was otherwise wrong: valid metadata, a fully mockable SDK
         download that a correctly-implemented method would have
         completed successfully."""
-        real_drive_service.drive_service.files.return_value.get.return_value.execute.return_value = {
+        mock_execute = (
+            real_drive_service.drive_service.files.return_value
+            .get.return_value.execute
+        )
+        mock_execute.return_value = {
             "name": "downloaded.txt",
             "mimeType": "text/plain",
         }
@@ -908,7 +944,11 @@ class TestDownloadFileRealPath:
         message is the same generic AttributeError, not a
         "Failed to create directory" message -- confirming
         create_directory is never actually invoked."""
-        real_drive_service.drive_service.files.return_value.get.return_value.execute.return_value = {
+        mock_execute = (
+            real_drive_service.drive_service.files.return_value
+            .get.return_value.execute
+        )
+        mock_execute.return_value = {
             "name": "downloaded.txt",
             "mimeType": "text/plain",
         }

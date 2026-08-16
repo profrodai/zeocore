@@ -43,7 +43,7 @@ import pytest
 
 
 class TestRunLocalModuleImportBug:
-    def test_module_import_raises_import_error_BUG(self) -> None:
+    def test_module_import_raises_import_error_bug(self) -> None:
         """PINS the current (broken) behavior. Once a ruling authorizes
         fixing run_local.py's import to pull echo_text from
         quack_core.contracts.capabilities.demo._impl (matching the

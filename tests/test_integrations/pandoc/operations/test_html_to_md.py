@@ -820,7 +820,7 @@ def test_write_and_validate_output_bytes_written_unconvertible_falls_back(
     mock_validate.return_value = []
 
     result = _write_and_validate_output(
-        "# content", "output.md", "input.html", 100, config := PandocConfig(), 999.5
+        "# content", "output.md", "input.html", 100, PandocConfig(), 999.5
     )
 
     # bytes_written was unconvertible -> falls back to output_info.size (777)

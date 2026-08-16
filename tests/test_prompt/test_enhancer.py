@@ -88,7 +88,7 @@ def test_enhance_with_llm_safe_chat_failure_returns_original() -> None:
     assert result == "My prompt"
 
 
-def test_enhance_with_llm_safe_chat_success_but_empty_content_returns_original() -> None:
+def test_enhance_with_llm_safe_chat_success_empty_content_returns_original() -> None:
     mock_init_result = MagicMock(success=True)
     mock_chat_result = MagicMock(success=True, content="")
     mock_service = MagicMock()
