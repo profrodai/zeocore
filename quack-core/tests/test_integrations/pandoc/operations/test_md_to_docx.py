@@ -152,13 +152,13 @@ def test_convert_markdown_to_docx_validation_failure(
     assert metrics.failed_conversions == 1
 
 
-@patch("quack_core.core.fs.service.standalone")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
 @patch(
-    "quack_core.integrations.pandoc.operations.utils.check_file_size",
+    "quack_core.integrations.pandoc.operations.md_to_docx.check_file_size",
     patched_check_file_size,
 )
 @patch(
-    "quack_core.integrations.pandoc.operations.utils.check_conversion_ratio",
+    "quack_core.integrations.pandoc.operations.md_to_docx.check_conversion_ratio",
     patched_check_conversion_ratio,
 )
 def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
@@ -193,8 +193,13 @@ def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
     assert errors
     assert any("below the minimum threshold" in error for error in errors)
 
-    # Test conversion ratio too small
+    # Test conversion ratio too small.
+    # side_effect (set above) takes precedence over return_value in
+    # unittest.mock -- it must be cleared or the earlier side_effect keeps
+    # driving get_file_info's return, and this return_value override is
+    # silently ignored.
     config.validation.min_file_size = 50
+    mock_fs.get_file_info.side_effect = None
     mock_fs.get_file_info.return_value = SimpleNamespace(
         success=True, exists=True, size=5
     )
@@ -217,7 +222,7 @@ def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
 # --- Markdown to DOCX Operation Tests ---
 
 
-@patch("quack_core.core.fs.service.standalone")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
 def test_md_to_docx_validate_markdown_input_success(mock_fs: MagicMock) -> None:
     """Test successful validation of Markdown input."""
     # Setup mock fs
@@ -240,7 +245,7 @@ def test_md_to_docx_validate_markdown_input_success(mock_fs: MagicMock) -> None:
     # assert mock_fs.read_text.called
 
 
-@patch("quack_core.core.fs.service.standalone")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
 def test_md_to_docx_validate_markdown_input_file_not_found(mock_fs: MagicMock) -> None:
     """Test validation of Markdown input when file is not found."""
     # Setup mock fs
@@ -257,7 +262,7 @@ def test_md_to_docx_validate_markdown_input_file_not_found(mock_fs: MagicMock) -
     assert "Input file not found" in str(excinfo.value)
 
 
-@patch("quack_core.core.fs.service.standalone")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
 def test_md_to_docx_validate_markdown_input_read_error(mock_fs: MagicMock) -> None:
     """Test validation of Markdown input with read error."""
     # Setup mock fs
@@ -277,7 +282,7 @@ def test_md_to_docx_validate_markdown_input_read_error(mock_fs: MagicMock) -> No
     assert "Could not read Markdown file" in str(excinfo.value)
 
 
-@patch("quack_core.core.fs.service.standalone")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
 def test_md_to_docx_validate_markdown_input_empty_file(mock_fs: MagicMock) -> None:
     """Test validation of empty Markdown input."""
     # Setup mock fs
@@ -301,7 +306,7 @@ def test_md_to_docx_convert_once_success() -> None:
     """Test successful single conversion of Markdown to DOCX."""
     # Mock fs and pypandoc
     with (
-        patch("quack_core.core.fs.service.standalone") as mock_fs,
+        patch("quack_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs,
         patch("pypandoc.convert_file") as mock_convert,
     ):
         # Setup mocks
@@ -326,7 +331,7 @@ def test_md_to_docx_convert_once_success() -> None:
 def test_md_to_docx_convert_once_directory_error() -> None:
     """Test Markdown to DOCX conversion with directory creation error."""
     # Mock fs
-    with patch("quack_core.core.fs.service.standalone") as mock_fs:
+    with patch("quack_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs:
         # Setup mock to fail directory creation
         mock_fs.split_path.return_value = SimpleNamespace(
             success=True, data=["path", "to", "file.md"]
@@ -348,7 +353,7 @@ def test_md_to_docx_convert_once_directory_error() -> None:
         assert "Failed to create output directory" in str(excinfo.value)
 
 
-@patch("quack_core.core.fs.service.standalone")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
 @patch("quack_core.integrations.pandoc.operations.md_to_docx.time")
 def test_md_to_docx_get_conversion_output_success(
     mock_time: MagicMock, mock_fs: MagicMock
@@ -370,7 +375,7 @@ def test_md_to_docx_get_conversion_output_success(
     assert output_size == 2000
 
 
-@patch("quack_core.core.fs.service.standalone")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
 def test_md_to_docx_get_conversion_output_file_info_error(mock_fs: MagicMock) -> None:
     """Test get conversion output with file info error."""
     # Setup mock to fail getting file info
@@ -476,7 +481,7 @@ def test_md_to_docx_check_metadata() -> None:
 
     # Test with docx module available
     with (
-        patch("quack_core.core.fs.service.standalone") as mock_fs,
+        patch("quack_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs,
         patch("importlib.import_module") as mock_import,
     ):
         mock_fs.split_path.return_value = SimpleNamespace(
@@ -494,13 +499,22 @@ def test_md_to_docx_check_metadata() -> None:
         assert mock_import.called
         assert mock_fs.split_path.called
 
-    # Test with import error
+    # Test with import error.
+    # NOTE: patch("importlib.import_module") must be entered LAST here.
+    # unittest.mock.patch resolves a dotted-string target via
+    # pkgutil.resolve_name, which itself calls importlib.import_module()
+    # internally -- so once the importlib.import_module patch is active,
+    # any subsequent string-target patch() call in the same combined
+    # `with (...)` silently resolves against the mocked import_module
+    # instead of the real one, and never attaches to the real module
+    # attribute (mock_logger.debug.called stays False even though the
+    # code path runs).
     with (
-        patch("quack_core.core.fs.service.standalone") as mock_fs,
-        patch("importlib.import_module") as mock_import,
+        patch("quack_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs,
         patch(
             "quack_core.integrations.pandoc.operations.md_to_docx.logger"
         ) as mock_logger,
+        patch("importlib.import_module") as mock_import,
     ):
         mock_import.side_effect = ImportError("docx module not found")
 
