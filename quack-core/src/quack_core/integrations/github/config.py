@@ -78,11 +78,58 @@ class GitHubConfigProvider(BaseConfigProvider):
 
         return True
 
+    @staticmethod
+    def _lookup_dotted_or_direct_key(
+        config_data: dict[str, Any], key: str
+    ) -> Any | None:
+        """
+        Resolve a single candidate key against config_data, handling both a
+        dotted path (e.g. "integrations.github") and a direct key. Extracted
+        from _extract_config to keep its own branch count under the C901
+        threshold; behavior/order unchanged from the original inline loop.
+        """
+        if "." in key:
+            parts = key.split(".")
+            current: Any = config_data
+            for part in parts:
+                if isinstance(current, dict) and part in current:
+                    current = current[part]
+                else:
+                    return None
+            return current
+        if key in config_data:
+            return config_data[key]
+        return None
+
+    def _find_github_config_section(
+        self, config_data: dict[str, Any]
+    ) -> dict[str, Any] | None:
+        """
+        Look for the GitHub config section under the direct/dotted candidate
+        keys, then under the "integrations" section as a fallback. Extracted
+        from _extract_config for the same C901 reason as
+        _lookup_dotted_or_direct_key.
+        """
+        for key in ["github", "GitHub", "integrations.github", "integrations.GitHub"]:
+            found = self._lookup_dotted_or_direct_key(config_data, key)
+            if found is not None:
+                logger.debug(f"Found GitHub config using key: {key}")
+                return found
+
+        if "integrations" in config_data and isinstance(
+            config_data["integrations"], dict
+        ):
+            for key in ["github", "GitHub"]:
+                if key in config_data["integrations"]:
+                    logger.debug(
+                        f"Found GitHub config in integrations section with key: {key}"
+                    )
+                    return config_data["integrations"][key]
+
+        return None
+
     def _extract_config(self, config_data: dict[str, Any]) -> dict[str, Any]:
         """Extract GitHub-specific configuration from the full config."""
-        # Look for GitHub configuration in various possible locations
-        extracted_config = None
-
         # If config_data is None, return a default config with env token if available
         if config_data is None:
             logger.debug("No config data provided, using defaults")
@@ -93,40 +140,7 @@ class GitHubConfigProvider(BaseConfigProvider):
                 logger.debug("Added token from environment to default config")
             return default_config
 
-        for key in ["github", "GitHub", "integrations.github", "integrations.GitHub"]:
-            # Handle the case of dotted path
-            if "." in key:
-                parts = key.split(".")
-                current = config_data
-                for part in parts:
-                    if part in current:
-                        current = current[part]
-                    else:
-                        current = None
-                        break
-                if current is not None:
-                    logger.debug(f"Found GitHub config using dotted path: {key}")
-                    extracted_config = current
-                    break
-            # Handle direct key
-            elif key in config_data:
-                logger.debug(f"Found GitHub config using direct key: {key}")
-                extracted_config = config_data[key]
-                break
-
-        # If no GitHub-specific section is found, try the "integrations" section
-        if (
-            extracted_config is None
-            and "integrations" in config_data
-            and isinstance(config_data["integrations"], dict)
-        ):
-            for key in ["github", "GitHub"]:
-                if key in config_data["integrations"]:
-                    logger.debug(
-                        f"Found GitHub config in integrations section with key: {key}"
-                    )
-                    extracted_config = config_data["integrations"][key]
-                    break
+        extracted_config = self._find_github_config_section(config_data)
 
         # If we found a config but it doesn't have a token, check environment
         if extracted_config is not None and (not extracted_config.get("token")):
