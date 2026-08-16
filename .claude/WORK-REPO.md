@@ -21,3 +21,20 @@ convention.
 **But your SOWs do not live here.** `sow_repo` is where you REPORT and `work_repo` is where you
 CHANGE CODE - two fields for a reason (s15). Find your chain with `zeo --locate <stream>
 <path-to-corpus>`; file there; commit the work here on YOUR OWN BRANCH.
+
+## NEVER `git stash` IN A WORKTREE - `refs/stash` IS SHARED ACROSS ALL OF THEM
+
+Confirmed twice in one session (2026-08-16, `quackverse-lint-mypy-backlog` rounds 8
+`paths-adapters` and `contracts-plugins`, filed independently, same failure): every worktree
+under this repo's ONE `.git` common dir shares the SAME `refs/stash`. A `git stash` (or
+`stash pop`) run in YOUR worktree while a SIBLING seat's worktree also happens to stash at the
+same moment can silently swap working-tree CONTENTS BETWEEN worktrees - your files revert to
+someone else's stashed state, or vice versa, with no error and no warning.
+
+**Do not use `git stash` for anything inside a `.claude/worktrees/` checkout.** For the "test
+before/after" pattern every lint-mypy-backlog round uses: build a SECOND worktree from the
+pre-edit commit instead (`git worktree add <path> <pre-edit-sha>`), or `git diff`/`git show`
+the pre-edit tree directly rather than round-tripping through the working directory. Both
+recovering streams used `git fsck --unreachable --no-reflog` to find the dangling WIP commit
+and `git checkout <sha> -- <files>` to restore - that recovery path works, but avoiding the
+hazard is cheaper than recovering from it.
