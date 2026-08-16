@@ -337,7 +337,7 @@ class PandocIntegration(BaseIntegrationService):
         output_format: str,
         output_dir: str | None = None,
         pattern: str = "*",
-        **options: Any,
+        **options: Any,  # noqa: ANN401 -- arbitrary passthrough conversion options
     ) -> IntegrationResult:
         """Convert all matching files in a directory.
 
@@ -431,7 +431,7 @@ class PandocIntegration(BaseIntegrationService):
 
 
 # Factory function for creating integration instance
-def create_integration(**kwargs: Any) -> PandocIntegration:
+def create_integration(**kwargs: Any) -> PandocIntegration:  # noqa: ANN401 -- forwarded verbatim to PandocIntegration.__init__
     """Create a new Pandoc integration instance.
 
     Args:
