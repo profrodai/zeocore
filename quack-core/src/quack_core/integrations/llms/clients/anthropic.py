@@ -54,7 +54,7 @@ class AnthropicClient(LLMClient):
             **kwargs,
         )
         self._api_base = api_base
-        self._client = None
+        self._client: Any = None
 
         self._check_anthropic_package()
 
@@ -103,7 +103,13 @@ class AnthropicClient(LLMClient):
                 # Get API key from environment variable if not provided
                 api_key = self._api_key or self._get_api_key_from_env()
 
-                kwargs = {}
+                # dict[str, Any], not the empty-literal-inferred narrower
+                # type mypy would otherwise assign -- Anthropic's own
+                # constructor has no local protocol (matches _get_client's
+                # own `-> Any` / noqa: ANN401 reasoning above), so a
+                # precisely-typed **kwargs splat against it is not
+                # achievable without vendoring the SDK's own signature.
+                kwargs: dict[str, Any] = {}
                 if self._api_base:
                     kwargs["base_url"] = self._api_base
 
@@ -331,8 +337,12 @@ class AnthropicClient(LLMClient):
                 else:
                     anthropic_messages.append(self._convert_message_to_anthropic(msg))
 
-            # Prepare parameters for Anthropic API call
-            params = {
+            # Prepare parameters for Anthropic API call. dict[str, Any],
+            # not the float-literal-inferred narrower type mypy would
+            # otherwise assign -- splatted into the third-party
+            # client.messages.create(**params) call below, same
+            # no-local-protocol reasoning as the constructor kwargs above.
+            params: dict[str, Any] = {
                 "top_p": options.top_p,
             }
 

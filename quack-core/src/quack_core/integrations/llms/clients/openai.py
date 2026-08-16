@@ -51,7 +51,7 @@ class OpenAIClient(LLMClient):
         )
         self._api_base = api_base
         self._organization = organization
-        self._client = None
+        self._client: Any = None
 
         # If API key is provided, set it in environment so the OpenAI SDK can find it
         if api_key and not os.environ.get("OPENAI_API_KEY"):
@@ -92,7 +92,16 @@ class OpenAIClient(LLMClient):
                 if not self._api_key:
                     self._api_key = self._get_api_key_from_env()
 
-                kwargs = {"api_key": self._api_key, "timeout": self._timeout}
+                # dict[str, Any], not the mixed-value-inferred narrower type
+                # mypy would otherwise assign a bare literal -- OpenAI's own
+                # constructor has no local protocol (matches _get_client's
+                # own `-> Any` / noqa: ANN401 reasoning a few lines above),
+                # so a precisely-typed **kwargs splat against it is not
+                # achievable without vendoring the SDK's own signature.
+                kwargs: dict[str, Any] = {
+                    "api_key": self._api_key,
+                    "timeout": self._timeout,
+                }
 
                 if self._api_base:
                     kwargs["base_url"] = self._api_base
@@ -261,7 +270,7 @@ class OpenAIClient(LLMClient):
         """
         Convert a ChatMessage to the format expected by OpenAI.
         """
-        openai_message = {"role": message.role.value}
+        openai_message: dict[str, Any] = {"role": message.role.value}
 
         if message.content is not None:
             openai_message["content"] = message.content

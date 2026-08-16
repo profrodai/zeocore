@@ -118,8 +118,12 @@ class OllamaClient(LLMClient):
             # Convert messages to Ollama format
             ollama_messages = self._convert_messages_to_ollama(messages)
 
-            # Prepare request data
-            request_data = {
+            # Prepare request data. dict[str, Any], not the mixed-value
+            # (str/list/bool/nested-dict) inferred narrower type mypy would
+            # otherwise assign to the literal below -- splatted as the
+            # requests.post(json=...) body, a third-party call with no
+            # local protocol for this shape.
+            request_data: dict[str, Any] = {
                 "model": options.model or self.model,
                 "messages": ollama_messages,
                 "stream": options.stream or callback is not None,
@@ -236,8 +240,12 @@ class OllamaClient(LLMClient):
                             if callback:
                                 callback(content)
                     except json.JSONDecodeError:
+                        # line is raw bytes from iter_lines() (no
+                        # decode_unicode=True) -- !r avoids f"{x}" silently
+                        # rendering as b'...' (mypy's own suggested fix for
+                        # str-bytes-safe) rather than guessing an encoding.
                         self.logger.warning(
-                            f"Failed to parse Ollama stream chunk: {line}"
+                            f"Failed to parse Ollama stream chunk: {line!r}"
                         )
 
             return IntegrationResult.success_result("".join(collected_content))
