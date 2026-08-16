@@ -6,7 +6,7 @@
 Mock request objects for Google Drive testing.
 """
 
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 from unittest.mock import Mock
 
 from quack_core.integrations.google.drive.protocols import DriveRequest
@@ -16,6 +16,13 @@ R = TypeVar("R")  # Generic type for return values
 
 class MockDriveRequest(DriveRequest[R]):
     """Mock request object with configurable response."""
+
+    # Declared here so callers (e.g. mocks/resources.py's create()/update())
+    # can assign request._body = body without tripping mypy's attr-defined
+    # check -- the attribute genuinely exists (mirrored onto the internal
+    # Mock at __init__ time below), this is just making its real shape
+    # visible statically instead of relying solely on __getattr__ forwarding.
+    _body: object
 
     def __init__(self, return_value: R, error: Exception | None = None) -> None:
         """
@@ -94,4 +101,8 @@ class MockDriveRequest(DriveRequest[R]):
             Exception: The configured error, if any
         """
         self.call_count += 1
-        return self.mock.execute()
+        # self.mock is a plain unittest.mock.Mock -- .execute() is
+        # genuinely untyped (Any) at the attribute-access level; cast to
+        # the declared return type R, which mock.execute.return_value was
+        # explicitly configured to hold in __init__ above.
+        return cast(R, self.mock.execute())

@@ -46,9 +46,9 @@ class MockDrivePermissionsResource(DrivePermissionsResource):
 
     def create(
         self,
-        fileId: str = None,
-        body: dict[str, object] = None,
-        fields: str = None,
+        fileId: str,
+        body: dict[str, object],
+        fields: str,
     ) -> DriveRequest[dict[str, object]]:
         """
         Mock create method for creating a permission.
@@ -61,14 +61,21 @@ class MockDrivePermissionsResource(DrivePermissionsResource):
         Returns:
             A mock request that will return the permission data
         """
-        # Handle parameter name differences
+        # Matches DrivePermissionsResource.create's real signature -- all
+        # three params are required there too, no caller in this codebase
+        # ever omits them (confirmed live: every real call site passes
+        # fileId/body/fields explicitly), so the previous `= None` defaults
+        # were dead and only served to trip PEP 484's implicit-Optional
+        # check under mypy strict.
 
         self.create_call_count += 1
         self.last_file_id = fileId
         self.last_permission_body = body
         self.last_fields = fields
 
-        request = MockDriveRequest({"id": self.permission_id}, self.error)
+        request: MockDriveRequest[dict[str, object]] = MockDriveRequest(
+            cast(dict[str, object], {"id": self.permission_id}), self.error
+        )
         request._body = body
         return request
 
@@ -188,7 +195,7 @@ class MockDriveFilesResource(DriveFilesResource):
         return request
 
     def get(
-        self, fileId: str = None, fields: str | None = None
+        self, fileId: str, fields: str | None = None
     ) -> DriveRequest[dict[str, object]]:
         """
         Mock get method for retrieving a file's metadata.
@@ -208,7 +215,7 @@ class MockDriveFilesResource(DriveFilesResource):
 
         return MockDriveRequest(self.file_metadata, self.get_error)
 
-    def get_media(self, fileId: str = None) -> DriveRequest[bytes]:
+    def get_media(self, fileId: str) -> DriveRequest[bytes]:
         """
         Mock get_media method for downloading a file's content.
 
@@ -258,15 +265,20 @@ class MockDriveFilesResource(DriveFilesResource):
         self.last_list_fields = fields
         self.last_list_page_size = page_size
 
-        # Customize response based on query
-        response = {"files": self.file_list}
+        # Customize response based on query. dict is invariant in its value
+        # type (mypy note: "dict" is invariant -- consider "Mapping"), so
+        # {"files": list[dict[str, Any]]} doesn't structurally satisfy
+        # dict[str, object] without an explicit cast even though every
+        # value IS an object -- cast, not a type change, since the real
+        # runtime value is unaffected.
+        response: dict[str, object] = {"files": self.file_list}
 
         return MockDriveRequest(response, self.list_error)
 
     def update(
         self,
-        fileId: str = None,
-        body: dict[str, object] = None,
+        fileId: str,
+        body: dict[str, object],
         fields: str | None = None,
     ) -> DriveRequest[dict[str, object]]:
         """
@@ -288,13 +300,13 @@ class MockDriveFilesResource(DriveFilesResource):
 
         # Merge the update with existing metadata for the response
         updated_metadata = self.file_metadata.copy()
-        updated_metadata.update(body or {})  # type: ignore
+        updated_metadata.update(body or {})
 
         request = MockDriveRequest(updated_metadata, self.update_error)
         request._body = body
         return request
 
-    def delete(self, fileId: str = None) -> DriveRequest[None]:
+    def delete(self, fileId: str) -> DriveRequest[None]:
         """
         Mock delete method for deleting a file.
 
