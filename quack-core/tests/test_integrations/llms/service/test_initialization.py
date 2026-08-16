@@ -8,6 +8,7 @@ Tests for LLM integration initialization.
 This module tests the initialization functions for LLM integration.
 """
 
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -63,6 +64,7 @@ class TestInitialization:
                 )
 
                 assert result.success is True
+                assert result.message is not None
                 assert (
                     "initialized successfully with provider: openai" in result.message
                 )
@@ -116,6 +118,7 @@ class TestInitialization:
                 )
 
                 assert result.success is True
+                assert result.message is not None
                 assert (
                     "initialized successfully with provider: anthropic"
                     in result.message
@@ -167,6 +170,7 @@ class TestInitialization:
                 )
 
                 assert result.success is True
+                assert result.message is not None
                 assert (
                     "initialized successfully with provider: openai" in result.message
                 )
@@ -208,6 +212,7 @@ class TestInitialization:
                 )
 
                 assert result.success is True
+                assert result.message is not None
                 assert "using mock client" in result.message.lower()
                 assert mock_integration._initialized is True
                 assert mock_integration._using_mock is True
@@ -241,6 +246,7 @@ class TestInitialization:
                 )
 
                 assert result.success is True
+                assert result.message is not None
                 assert (
                     "initialized successfully with fallback support" in result.message
                 )
@@ -267,7 +273,7 @@ class TestInitialization:
     ) -> None:
         """Test initializing with fallback when only mock is available."""
         # Mock config
-        llm_config = {}
+        llm_config: dict[str, Any] = {}
         fallback_config = FallbackConfig(providers=["openai", "anthropic", "mock"])
         available_providers = ["mock"]  # Only mock is available
 
@@ -288,6 +294,7 @@ class TestInitialization:
                 )
 
                 assert result.success is True
+                assert result.message is not None
                 assert (
                     "initialized successfully with fallback support" in result.message
                 )
@@ -305,7 +312,7 @@ class TestInitialization:
     def test_initialize_with_fallback_error(self, mock_integration: MagicMock) -> None:
         """Test handling error when initializing fallback client."""
         # Mock config
-        llm_config = {}
+        llm_config: dict[str, Any] = {}
         fallback_config = FallbackConfig()
         available_providers = ["openai", "mock"]
 
@@ -315,7 +322,7 @@ class TestInitialization:
             side_effect=Exception("Fallback initialization error"),
         ):
             # Mock initialize_single_provider to succeed
-            success_result = IntegrationResult(
+            success_result: IntegrationResult[Any] = IntegrationResult(
                 success=True, message="Initialized with single provider"
             )
 
@@ -335,6 +342,11 @@ class TestInitialization:
                     self.logger.error(f"Failed to initialize fallback LLM client: {e}")
                     self.logger.warning("Falling back to single provider mode")
                     return success_result
+                # Unreachable in this test (FallbackLLMClient() above always
+                # raises via the patched side_effect), but the function's
+                # declared -> IntegrationResult | None return type requires
+                # an explicit path for the case where the try block succeeds.
+                return None
 
             # Call initialize_with_fallback directly but patched
             with patch(
