@@ -511,6 +511,22 @@ class TestGoogleMailServiceCoverageGaps:
             assert result is base_failure
             assert result.success is False
 
+    def test_require_config_provider_raises_when_none(self) -> None:
+        """RULING-274 s2 (round 25): __init__ always constructs a real
+        GoogleConfigProvider before super().__init__ runs, so
+        _require_config_provider's own `if self.config_provider is None`
+        guard can never fire in production (confirmed by reading __init__
+        in full, service.py:58-65). Directly force the
+        structurally-impossible state to exercise the guard's own raise,
+        same defensive-branch-testing discipline as the sibling
+        _initialize_config coverage above."""
+        service = GoogleMailService(config_path="/path/to/config.yaml")
+        service.config_provider = None
+        with pytest.raises(
+            QuackIntegrationError, match="no config_provider configured"
+        ):
+            service._require_config_provider()
+
     def test_initialize_config_load_from_file_failure(self) -> None:
         """Covers service.py:175-180 -- config_provider.load_config() failing
         (or returning empty content) raises QuackIntegrationError, which is
