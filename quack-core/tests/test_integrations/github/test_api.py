@@ -14,7 +14,12 @@ from quack_core.core.errors import (
     QuackAuthenticationError,
     QuackQuotaExceededError,
 )
-from quack_core.integrations.github.utils.api import make_request
+from quack_core.integrations.github.utils.api import (
+    _handle_http_error,
+    _is_rate_limited_response,
+    _require_response,
+    make_request,
+)
 
 
 @pytest.fixture
@@ -253,3 +258,91 @@ class TestApiUtils:
         assert "Unexpected error in GitHub API request" in str(excinfo.value)
         assert excinfo.value.service == "GitHub"
         assert excinfo.value.api_method == "/user"
+
+    def test_make_request_rejects_max_retries_below_one(
+        self, mock_session: MagicMock
+    ) -> None:
+        """Test that make_request refuses a non-positive max_retries up front.
+
+        Guards the [return] mypy finding fixed in this cluster: the retry
+        loop (`for attempt in range(1, max_retries + 1)`) executes zero
+        iterations when max_retries < 1, which would otherwise fall off the
+        end of the function with no return and no raise. This validates the
+        defensive check added ahead of the loop.
+        """
+        with pytest.raises(QuackApiError) as excinfo:
+            make_request(
+                session=mock_session,
+                method="GET",
+                url="/user",
+                api_url="https://api.github.com",
+                max_retries=0,
+            )
+
+        assert "max_retries=0" in str(excinfo.value)
+        assert excinfo.value.service == "GitHub"
+        mock_session.request.assert_not_called()
+
+    def test_make_request_rejects_negative_max_retries(
+        self, mock_session: MagicMock
+    ) -> None:
+        """Same guard, negative value."""
+        with pytest.raises(QuackApiError) as excinfo:
+            make_request(
+                session=mock_session,
+                method="GET",
+                url="/user",
+                api_url="https://api.github.com",
+                max_retries=-1,
+            )
+
+        assert "max_retries=-1" in str(excinfo.value)
+
+
+class TestRequireResponse:
+    """Tests for the shared `_require_response` guard (github/utils/api.py).
+
+    `requests`' own stubs type `HTTPError.response` as `Response | None`,
+    though the one real call path in this codebase always sets it via
+    `raise_for_status()`. These tests cover the defensive branch mypy's
+    union-attr findings required: what happens if that invariant is ever
+    violated, exercised directly since neither
+    `_is_rate_limited_response` nor `_handle_http_error` (both convenience
+    call sites) can be reached through `make_request`'s own real code path
+    with a None response.
+    """
+
+    def test_require_response_returns_response_when_present(self) -> None:
+        mock_response = MagicMock()
+        error = requests.exceptions.HTTPError(response=mock_response)
+        error.response = mock_response
+
+        assert _require_response(error) is mock_response
+
+    def test_require_response_raises_when_none(self) -> None:
+        error = requests.exceptions.HTTPError()
+        error.response = None
+
+        with pytest.raises(QuackApiError) as excinfo:
+            _require_response(error)
+
+        assert "no response object" in str(excinfo.value)
+        assert excinfo.value.service == "GitHub"
+
+    def test_is_rate_limited_response_raises_when_response_none(self) -> None:
+        error = requests.exceptions.HTTPError()
+        error.response = None
+
+        with pytest.raises(QuackApiError):
+            _is_rate_limited_response(error)
+
+    def test_handle_http_error_raises_when_response_none(self) -> None:
+        error = requests.exceptions.HTTPError()
+        error.response = None
+
+        with pytest.raises(QuackApiError) as excinfo:
+            _handle_http_error(
+                error, "/user", attempt=1, max_retries=3, retry_delay=1.0
+            )
+
+        assert "no response object" in str(excinfo.value)
