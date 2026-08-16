@@ -11,11 +11,13 @@ and edge cases in the pandoc integration.
 
 import sys
 import time
+from collections.abc import Sequence
 from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 from quack_core.core.errors import QuackIntegrationError
 from quack_core.integrations.pandoc.config import PandocConfig, PandocOptions
 from quack_core.integrations.pandoc.models import (
@@ -37,7 +39,7 @@ from quack_core.integrations.pandoc.operations.utils import (
 )
 
 
-def test_conversion_metrics_initialization():
+def test_conversion_metrics_initialization() -> None:
     """Test the initialization of ConversionMetrics."""
     metrics = ConversionMetrics()
 
@@ -64,7 +66,7 @@ def test_conversion_metrics_initialization():
     assert custom_metrics.failed_conversions == 2
 
 
-def test_file_info_initialization():
+def test_file_info_initialization() -> None:
     """Test the initialization of FileInfo."""
     # Minimal initialization
     file_info = FileInfo(path="/path/to/file.html", format="html")
@@ -91,7 +93,7 @@ def test_file_info_initialization():
     assert file_info.extra_args == ["--strip-comments"]
 
 
-def test_conversion_task_initialization():
+def test_conversion_task_initialization() -> None:
     """Test the initialization of ConversionTask."""
     # Create a file info object
     file_info = FileInfo(path="/path/to/file.html", format="html", size=1024)
@@ -113,7 +115,7 @@ def test_conversion_task_initialization():
     assert task.output_path is None
 
 
-def test_conversion_details_initialization():
+def test_conversion_details_initialization() -> None:
     """Test the initialization of ConversionDetails."""
     # Default initialization
     details = ConversionDetails()
@@ -143,7 +145,7 @@ def test_conversion_details_initialization():
     assert details.validation_errors == ["Warning: missing header"]
 
 
-def test_get_file_info_edge_cases(monkeypatch):
+def test_get_file_info_edge_cases(monkeypatch: MonkeyPatch) -> None:
     """Test edge cases for get_file_info utility."""
     # Create a mock standalone fs service
     mock_fs = SimpleNamespace()
@@ -184,7 +186,7 @@ def test_get_file_info_edge_cases(monkeypatch):
         assert file_info.format == expected_format, f"Failed for extension: {ext}"
 
 
-def test_check_file_size_edge_cases():
+def test_check_file_size_edge_cases() -> None:
     """Test edge cases for check_file_size utility."""
     # Test with None values
     valid, errors = check_file_size(None, 50)
@@ -206,7 +208,7 @@ def test_check_file_size_edge_cases():
     assert not errors
 
 
-def test_check_conversion_ratio_edge_cases():
+def test_check_conversion_ratio_edge_cases() -> None:
     """Test edge cases for check_conversion_ratio utility."""
     # Test with zero original size
     valid, errors = check_conversion_ratio(50, 0, 0.1)
@@ -243,7 +245,7 @@ def test_check_conversion_ratio_edge_cases():
 
 
 @patch("quack_core.integrations.pandoc.operations.utils.logger")
-def test_track_metrics_logging(mock_logger):
+def test_track_metrics_logging(mock_logger: MagicMock) -> None:
     """Test that track_metrics properly logs information."""
     metrics = ConversionMetrics()
     config = PandocConfig()
@@ -283,7 +285,7 @@ def test_track_metrics_logging(mock_logger):
     assert size_log_called
 
 
-def test_validate_html_structure_edge_cases():
+def test_validate_html_structure_edge_cases() -> None:
     """Test edge cases for validate_html_structure utility."""
     # Test with parsing error
     mock_bs = MagicMock()
@@ -312,7 +314,7 @@ def test_validate_html_structure_edge_cases():
         assert "missing body tag" in errors[0].lower()
 
 
-def test_validate_docx_structure_edge_cases(monkeypatch):
+def test_validate_docx_structure_edge_cases(monkeypatch: MonkeyPatch) -> None:
     """Test edge cases for validate_docx_structure utility."""
 
     # Test with docx module properly mocked as unavailable
@@ -320,7 +322,13 @@ def test_validate_docx_structure_edge_cases(monkeypatch):
 
     original_import = __import__
 
-    def mock_import(name, globals=None, locals=None, fromlist=(), level=0):
+    def mock_import(
+        name: str,
+        globals: dict[str, object] | None = None,
+        locals: dict[str, object] | None = None,
+        fromlist: Sequence[str] = (),
+        level: int = 0,
+    ) -> object:
         if name == "docx":
             raise ImportError("No module named 'docx'")
         return original_import(name, globals, locals, fromlist, level)
@@ -365,7 +373,7 @@ def test_validate_docx_structure_edge_cases(monkeypatch):
             assert "no paragraphs" in errors[0].lower()
 
 
-def test_prepare_pandoc_args_comprehensive():
+def test_prepare_pandoc_args_comprehensive() -> None:
     """Test comprehensive options for prepare_pandoc_args utility."""
     # Test with default config
     config = PandocConfig()
@@ -422,7 +430,7 @@ def test_prepare_pandoc_args_comprehensive():
     assert "--extra2" in args
 
 
-def test_post_process_markdown_regex_patterns():
+def test_post_process_markdown_regex_patterns() -> None:
     """Test regex patterns used in post_process_markdown."""
     # Test that the function runs without error
     result = post_process_markdown("Test content")
@@ -436,7 +444,7 @@ def test_post_process_markdown_regex_patterns():
     assert "{remove this}" not in result or len(result) < len(test_input)
 
 
-def test_verify_pandoc_with_all_errors():
+def test_verify_pandoc_with_all_errors() -> None:
     """Test verify_pandoc with all possible error conditions."""
     # Create a mock module
     mock_module = MagicMock()

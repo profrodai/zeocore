@@ -8,11 +8,12 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 
 
 # Fixtures for monkeypatching filesystem service
 @pytest.fixture(autouse=True)
-def fs_stub(monkeypatch):
+def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
     """
     Stub out the quack_core.core.fs.service.standalone methods for file _ops.
     """
@@ -72,7 +73,7 @@ def fs_stub(monkeypatch):
 
 # Fixture for mocking pypandoc
 @pytest.fixture
-def mock_pypandoc(monkeypatch):
+def mock_pypandoc(monkeypatch: MonkeyPatch) -> MagicMock:
     """
     Create a mock pypandoc module for testing.
     """
@@ -85,7 +86,7 @@ def mock_pypandoc(monkeypatch):
 
 # Fixture for path service
 @pytest.fixture
-def mock_paths_service(monkeypatch):
+def mock_paths_service(monkeypatch: MonkeyPatch) -> MagicMock:
     """
     Mock the paths service for resolving project paths.
     """
@@ -107,7 +108,7 @@ def mock_paths_service(monkeypatch):
 
 # Fixture for bs4
 @pytest.fixture
-def mock_bs4(monkeypatch):
+def mock_bs4(monkeypatch: MonkeyPatch) -> MagicMock:
     """
     Mock BeautifulSoup for HTML validation.
     """
@@ -124,7 +125,7 @@ def mock_bs4(monkeypatch):
 
 # Fixture for docx
 @pytest.fixture
-def mock_docx(monkeypatch):
+def mock_docx(monkeypatch: MonkeyPatch) -> MagicMock:
     """
     Mock python-docx for DOCX validation.
     """
