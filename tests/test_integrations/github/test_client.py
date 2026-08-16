@@ -12,7 +12,7 @@ from quack_core.integrations.github.models import GitHubRepo, GitHubUser, PullRe
 
 
 @pytest.fixture
-def github_client():
+def github_client() -> GitHubClient:
     """Create a GitHub client for testing."""
     return GitHubClient(
         token="test_token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
@@ -26,7 +26,7 @@ def github_client():
 class TestGitHubClient:
     """Tests for GitHubClient."""
 
-    def test_init(self, github_client):
+    def test_init(self, github_client: GitHubClient) -> None:
         """Test client initialization."""
         assert github_client.token == "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         assert github_client.api_url == "https://api.github.com"
@@ -44,7 +44,7 @@ class TestGitHubClient:
         for key, value in expected_headers.items():
             assert github_client.session.headers.get(key) == value
 
-    def test_get_user_authenticated(self, github_client):
+    def test_get_user_authenticated(self, github_client: GitHubClient) -> None:
         """Test getting authenticated user."""
         # Mock get_user operation
         with patch("quack_core.integrations.github.client.get_user") as mock_get_user:
@@ -80,7 +80,7 @@ class TestGitHubClient:
             assert result == user
             mock_get_user.assert_not_called()
 
-    def test_get_user_specific(self, github_client):
+    def test_get_user_specific(self, github_client: GitHubClient) -> None:
         """Test getting a specific user."""
         # Mock get_user operation
         with patch("quack_core.integrations.github.client.get_user") as mock_get_user:
@@ -110,7 +110,7 @@ class TestGitHubClient:
             # Verify user is not cached
             assert github_client._current_user != user
 
-    def test_get_repo(self, github_client):
+    def test_get_repo(self, github_client: GitHubClient) -> None:
         """Test getting a repository."""
         # Mock get_repo operation
         with patch("quack_core.integrations.github.client.get_repo") as mock_get_repo:
@@ -140,7 +140,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_star_repo(self, github_client):
+    def test_star_repo(self, github_client: GitHubClient) -> None:
         """Test starring a repository."""
         # Mock star_repo operation
         with patch("quack_core.integrations.github.client.star_repo") as mock_star_repo:
@@ -160,7 +160,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_unstar_repo(self, github_client):
+    def test_unstar_repo(self, github_client: GitHubClient) -> None:
         """Test unstarring a repository."""
         # Mock unstar_repo operation
         with patch(
@@ -182,7 +182,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_is_repo_starred(self, github_client):
+    def test_is_repo_starred(self, github_client: GitHubClient) -> None:
         """Test checking if a repository is starred."""
         # Mock is_repo_starred operation
         with patch(
@@ -204,7 +204,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_fork_repo(self, github_client):
+    def test_fork_repo(self, github_client: GitHubClient) -> None:
         """Test forking a repository."""
         # Mock fork_repo operation
         with patch("quack_core.integrations.github.client.fork_repo") as mock_fork_repo:
@@ -236,7 +236,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_create_pull_request(self, github_client):
+    def test_create_pull_request(self, github_client: GitHubClient) -> None:
         """Test creating a pull request."""
         # Mock create_pull_request operation
         with patch(
@@ -284,7 +284,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_list_pull_requests(self, github_client):
+    def test_list_pull_requests(self, github_client: GitHubClient) -> None:
         """Test listing pull requests."""
         # Mock list_pull_requests operation
         with patch(
@@ -341,7 +341,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_get_pull_request(self, github_client):
+    def test_get_pull_request(self, github_client: GitHubClient) -> None:
         """Test getting a pull request."""
         # Mock get_pull_request operation
         with patch(
@@ -382,7 +382,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_check_repository_exists(self, github_client):
+    def test_check_repository_exists(self, github_client: GitHubClient) -> None:
         """Test checking if a repository exists."""
         # Mock check_repository_exists operation
         with patch(
@@ -404,7 +404,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_get_repository_file_content(self, github_client):
+    def test_get_repository_file_content(self, github_client: GitHubClient) -> None:
         """Test getting repository file content."""
         # Mock get_repository_file_content operation
         with patch(
@@ -431,7 +431,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_update_repository_file(self, github_client):
+    def test_update_repository_file(self, github_client: GitHubClient) -> None:
         """Test updating repository file."""
         # Mock update_repository_file operation
         with patch(
@@ -465,7 +465,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_create_issue(self, github_client):
+    def test_create_issue(self, github_client: GitHubClient) -> None:
         """Test creating an issue."""
         # Mock create_issue operation
         with patch("quack_core.integrations.github.client.create_issue") as mock_create:
@@ -495,7 +495,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_list_issues(self, github_client):
+    def test_list_issues(self, github_client: GitHubClient) -> None:
         """Test listing issues."""
         # Mock list_issues operation
         with patch("quack_core.integrations.github.client.list_issues") as mock_list:
@@ -530,7 +530,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_get_issue(self, github_client):
+    def test_get_issue(self, github_client: GitHubClient) -> None:
         """Test getting an issue."""
         # Mock get_issue operation
         with patch("quack_core.integrations.github.client.get_issue") as mock_get:
@@ -553,7 +553,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_add_issue_comment(self, github_client):
+    def test_add_issue_comment(self, github_client: GitHubClient) -> None:
         """Test adding a comment to an issue."""
         # Mock add_issue_comment operation
         with patch(
@@ -579,7 +579,7 @@ class TestGitHubClient:
                 retry_delay=1.0,
             )
 
-    def test_get_pull_request_files(self, github_client):
+    def test_get_pull_request_files(self, github_client: GitHubClient) -> None:
         """Test getting files from a pull request."""
         # Mock get_pull_request_files operation
         with patch(

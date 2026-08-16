@@ -15,7 +15,7 @@ from quack_core.integrations.github.service import GitHubIntegration
 class TestGitHubProtocols:
     """Tests for GitHub protocols."""
 
-    def test_github_integration_protocol(self):
+    def test_github_integration_protocol(self) -> None:
         """Test that GitHubIntegration implements the GitHubIntegrationProtocol."""
         # Create a GitHub integration instance.
         integration = GitHubIntegration()
@@ -36,7 +36,7 @@ class TestGitHubProtocols:
         ):
             assert hasattr(integration, method)
 
-    def test_github_integration_protocol_method_signatures(self):
+    def test_github_integration_protocol_method_signatures(self) -> None:
         """Test that GitHubIntegration methods have correct return type hints."""
         # Reference the unbound methods from the class so that __annotations__ are available.
         assert (
@@ -68,7 +68,7 @@ class TestGitHubProtocols:
             == IntegrationResult[PullRequest]
         )
 
-    def test_protocol_runtime_checkable(self):
+    def test_protocol_runtime_checkable(self) -> None:
         """Test that GitHubIntegrationProtocol is runtime checkable."""
         # Create a mock object that implements the protocol methods.
         mock_impl = MagicMock(spec=GitHubIntegrationProtocol)
