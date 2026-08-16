@@ -342,7 +342,7 @@ class ThreadPoolJobRunner(JobRunner):
             # Note: asyncio.run() is safe here because ThreadPoolExecutor threads
             # don't have a running event loop. If execution model changes, this
             # will raise a clear error.
-            from quack_core.lib.registry import invoke_operation
+            from quack_core.core.registry import invoke_operation
 
             try:
                 result = asyncio.run(invoke_operation(op, params))

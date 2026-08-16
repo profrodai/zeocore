@@ -26,12 +26,17 @@ class BasicPlugin(QuackPluginProtocol):
     """Basic plugin implementation for testing."""
 
     @property
+    def plugin_id(self) -> str:
+        return "basic_plugin"
+
+    @property
     def name(self) -> str:
         return "basic_plugin"
 
     def get_metadata(self) -> QuackPluginMetadata:
         """Get plugin metadata."""
         return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
             description="Basic plugin for testing",
@@ -690,14 +695,27 @@ class TestPluginRegistry:
 
         loader = PluginLoader()
 
-        # Test plugin with valid metadata
+        # Test plugin with valid metadata. plugin_id must be a real string:
+        # PluginInfo (discovery.py) extends QuackPluginMetadata to make plugin_id
+        # REQUIRED (not optional) - "This ensures that all validated modules have
+        # a stable identifier for deterministic registration." A subclass of the
+        # QuackPluginProtocol Protocol that does not override plugin_id still
+        # passes hasattr() (the base Protocol declares the property), but calling
+        # it returns None from the unimplemented base body - which then fails
+        # PluginInfo's non-optional plugin_id validation. Not a code bug; the
+        # fixture class here was simply incomplete relative to that contract.
         class ValidPlugin(QuackPluginProtocol):
+            @property
+            def plugin_id(self) -> str:
+                return "valid_plugin"
+
             @property
             def name(self) -> str:
                 return "valid_plugin"
 
             def get_metadata(self) -> QuackPluginMetadata:
                 return QuackPluginMetadata(
+                    plugin_id=self.plugin_id,
                     name=self.name,
                     version="1.0.0",
                     description="Valid plugin",
@@ -788,8 +806,14 @@ class TestPluginRegistry:
         mock_ep.value = "quack_core.builtin:create_plugin"
         mock_ep.load.return_value = mock_factory
 
-        # Test loading from entry points
-        with patch("importlib.metadata.entry_points", return_value=[mock_ep]):
+        # Test loading from entry points. Patch where entry_points is USED
+        # (quack_core.modules.discovery), not where it is defined
+        # (importlib.metadata) - discovery.py binds its own local name via
+        # `from importlib.metadata import entry_points` at import time, so
+        # patching the origin does not affect the already-bound reference and
+        # the real, genuinely-registered "quack_core.modules" entry points
+        # (config/fs/paths/prompt) would be discovered instead of this mock.
+        with patch("quack_core.modules.discovery.entry_points", return_value=[mock_ep]):
             # Patch the validate_plugin method to not actually validate
             with patch.object(loader, "_validate_plugin", return_value=mock_plugin):
                 plugins = loader.load_entry_points()
@@ -816,8 +840,9 @@ class TestPluginRegistry:
         mock_ep.value = "external_package.plugin:create_plugin"
         mock_ep.load.return_value = mock_factory
 
-        # Test loading from entry points
-        with patch("importlib.metadata.entry_points", return_value=[mock_ep]):
+        # Test loading from entry points. Same patch-target note as
+        # test_load_builtin_plugin above.
+        with patch("quack_core.modules.discovery.entry_points", return_value=[mock_ep]):
             # Patch the validate_plugin method to not actually validate
             with patch.object(loader, "_validate_plugin", return_value=mock_plugin):
                 plugins = loader.load_entry_points()

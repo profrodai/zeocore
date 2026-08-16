@@ -20,12 +20,17 @@ class MockPlugin(QuackPluginProtocol):
     """Mock plugin implementation for testing."""
 
     @property
+    def plugin_id(self) -> str:
+        return "mock_plugin"
+
+    @property
     def name(self) -> str:
         return "mock_plugin"
 
     def get_metadata(self) -> QuackPluginMetadata:
         """Get plugin metadata."""
         return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
             description="Mock plugin for testing",
@@ -42,7 +47,17 @@ class TestPluginLoader:
         assert loader.logger is not None
 
     def test_load_entry_points(self) -> None:
-        """Test loading modules from entry points."""
+        """Test loading modules from entry points.
+
+        discovery.py does `from importlib.metadata import entry_points`, binding
+        its own local name in quack_core.modules.discovery's namespace at import
+        time. Patching "importlib.metadata.entry_points" (the origin) does not
+        affect that already-bound local reference - the real entry_points() ran
+        instead, picking up this package's genuinely-registered
+        "quack_core.modules" entry points (config/fs/paths/prompt, 4 total) for
+        the default group, or nothing for a group like "test.modules" that has no
+        real registrations - either way, not the mock. Patch where it is USED.
+        """
         loader = PluginLoader()
         mock_plugin = MockPlugin()
         mock_factory = MagicMock(return_value=mock_plugin)
@@ -52,7 +67,7 @@ class TestPluginLoader:
         mock_ep1.load.return_value = mock_factory
 
         with patch(
-            "importlib.metadata.entry_points", return_value=[mock_ep1]
+            "quack_core.modules.discovery.entry_points", return_value=[mock_ep1]
         ) as mock_entry_points:
             plugins = loader.load_entry_points("test.modules")
             assert len(plugins) == 1
@@ -61,13 +76,16 @@ class TestPluginLoader:
             mock_ep1.load.assert_called_once()
             mock_factory.assert_called_once()
 
-        with patch("importlib.metadata.entry_points", return_value=[mock_ep1]):
+        with patch(
+            "quack_core.modules.discovery.entry_points", return_value=[mock_ep1]
+        ):
             mock_ep1.load.side_effect = Exception("Test error")
             plugins = loader.load_entry_points("test.modules")
             assert len(plugins) == 0
 
         with patch(
-            "importlib.metadata.entry_points", side_effect=Exception("Test error")
+            "quack_core.modules.discovery.entry_points",
+            side_effect=Exception("Test error"),
         ):
             plugins = loader.load_entry_points("test.modules")
             assert len(plugins) == 0
