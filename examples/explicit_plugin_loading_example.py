@@ -18,6 +18,7 @@ Key concepts demonstrated:
 """
 
 import logging
+from typing import Any
 
 # Configure logging to see what's happening
 logging.basicConfig(
@@ -89,6 +90,13 @@ def example_2_explicit_loading() -> None:
         print(f"✓ Successfully loaded {len(result.loaded)} modules:")
         for plugin_id in result.loaded:
             plugin = registry.get_plugin(plugin_id)
+            if plugin is None:
+                # get_plugin's return type is nullable for the general
+                # lookup-by-id case; a plugin_id fresh out of result.loaded
+                # is expected to be registered, but the API can't promise
+                # that statically, so narrow explicitly rather than assume.
+                print(f"  - {plugin_id}: (registered but lookup returned None)")
+                continue
             metadata = plugin.get_metadata()
             print(f"  - {plugin_id}: {metadata.name} v{metadata.version}")
     else:
@@ -176,8 +184,13 @@ def example_4_configuration_driven() -> None:
     # Clear previous state
     registry.clear()
 
-    # Simulated configuration (in practice, load from YAML/JSON)
-    config = {
+    # Simulated configuration (in practice, load from YAML/JSON). Explicitly
+    # typed dict[str, Any]: this dict genuinely mixes value shapes (a str, a
+    # nested dict) across its keys, so mypy's own narrower inference
+    # (Collection[str] for the nested "modules" value) isn't a bug to work
+    # around -- it's an honest reflection of an untyped, heterogeneous
+    # literal. Any is correct here, not a loophole.
+    config: dict[str, Any] = {
         "environment": "production",
         "modules": {
             "enabled": ["fs", "paths", "config"],
@@ -239,6 +252,13 @@ def example_5_plugin_metadata() -> None:
 
     for plugin_id in registry.list_ids():
         plugin = registry.get_plugin(plugin_id)
+        if plugin is None:
+            # list_ids() enumerates the registry's own keys, so a lookup by
+            # one of those ids is not expected to miss -- but get_plugin's
+            # return type is nullable for the general case, so narrow
+            # explicitly rather than assume.
+            print(f"Plugin: {plugin_id} (registered but lookup returned None)")
+            continue
         metadata = plugin.get_metadata()
 
         print(f"Plugin: {plugin_id}")
