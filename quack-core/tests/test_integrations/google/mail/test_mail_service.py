@@ -467,3 +467,285 @@ class TestGoogleMailService:
             result = service.download_email("msg1")
             assert result.success is False
             assert "Not initialized" in result.error
+
+
+class TestGoogleMailServiceCoverageGaps:
+    """Additional tests for GoogleMailService covering branches not exercised
+    by the pre-existing test classes above: trivial properties, the various
+    `_initialize_config` failure/warning paths (mocking the `paths.PathService`
+    and `fs` boundaries per RULING-235 rather than the quack_core function
+    under test), the "service/storage_path is None" guard branches in
+    `list_emails`/`download_email`, the numeric/list coercion helper edge
+    cases, and `validate_config`.
+    """
+
+    def test_version_property(self) -> None:
+        service = GoogleMailService()
+        assert service.version == "1.0.0"
+
+    def test_initialize_early_return_when_base_init_fails(self) -> None:
+        """Covers service.py:117 -- initialize() returns immediately when
+        BaseIntegrationService.initialize() itself reports failure, without
+        ever touching config/auth/gmail_service."""
+        service = GoogleMailService(
+            client_secrets_file="/path/to/secrets.json",
+            credentials_file="/path/to/credentials.json",
+            storage_path="/path/to/storage",
+        )
+        base_failure: IntegrationResult = IntegrationResult.error_result(
+            "base init failed"
+        )
+        with patch(
+            "quack_core.integrations.core.base.BaseIntegrationService.initialize",
+            return_value=base_failure,
+        ):
+            result = service.initialize()
+            assert result is base_failure
+            assert result.success is False
+
+    def test_initialize_config_load_from_file_failure(self) -> None:
+        """Covers service.py:175-180 -- config_provider.load_config() failing
+        (or returning empty content) raises QuackIntegrationError, which is
+        re-raised as-is by the `except QuackIntegrationError: raise` clause
+        (line 218-219) rather than being swallowed by the broader
+        `except Exception` branch below it."""
+        service = GoogleMailService(config_path="/path/to/config.yaml")
+        with patch.object(
+            service.config_provider, "load_config"
+        ) as mock_load_config:
+            mock_load_config.return_value = MagicMock(success=False, content=None)
+            with pytest.raises(
+                QuackIntegrationError, match="Failed to load configuration"
+            ):
+                service._initialize_config()
+
+    def test_initialize_config_storage_path_from_config_dict(self) -> None:
+        """Covers service.py:184-186 -- when self.storage_path is not set via
+        constructor, it's pulled from the loaded config dict's 'storage_path'
+        key (only if it's a str)."""
+        service = GoogleMailService(config_path="/path/to/config.yaml")
+        assert service.storage_path is None
+
+        with patch.object(
+            service.config_provider, "load_config"
+        ) as mock_load_config:
+            mock_load_config.return_value = MagicMock(
+                success=True,
+                content={
+                    "client_secrets_file": "/secrets.json",
+                    "credentials_file": "/creds.json",
+                    "storage_path": "/config/storage",
+                },
+            )
+            with (
+                patch(
+                    "quack_core.integrations.google.mail.service.paths.PathService"
+                ) as mock_path_service_cls,
+                patch(
+                    "quack_core.integrations.google.mail.service.fs.create_directory"
+                ) as mock_create_dir,
+            ):
+                mock_path_service = MagicMock()
+                mock_path_service.resolve_project_path.return_value = MagicMock(
+                    success=True, path="/resolved/config/storage", error=None
+                )
+                mock_path_service_cls.return_value = mock_path_service
+                mock_create_dir.return_value = MagicMock(success=True, error=None)
+
+                result = service._initialize_config()
+
+                assert result is not None
+                assert service.storage_path == "/resolved/config/storage"
+                mock_path_service.resolve_project_path.assert_called_once_with(
+                    "/config/storage"
+                )
+
+    def test_initialize_config_no_storage_path_raises(self) -> None:
+        """Covers service.py:189 -- if storage_path is still unset after
+        checking both constructor param and config dict, a
+        QuackIntegrationError is raised (and caught/re-raised, so
+        _initialize_config surfaces it -- but the caller `initialize()`
+        catches broad Exception, so we call _initialize_config directly)."""
+        service = GoogleMailService(config_path="/path/to/config.yaml")
+        with patch.object(
+            service.config_provider, "load_config"
+        ) as mock_load_config:
+            mock_load_config.return_value = MagicMock(
+                success=True,
+                content={
+                    "client_secrets_file": "/secrets.json",
+                    "credentials_file": "/creds.json",
+                    # no storage_path key at all
+                },
+            )
+            with pytest.raises(QuackIntegrationError, match="Storage path"):
+                service._initialize_config()
+
+    def test_initialize_config_resolve_project_path_failure(self) -> None:
+        """Covers service.py:202 -- resolve_project_path() returning a
+        failed PathResult raises QuackIntegrationError with the resolver's
+        error message embedded."""
+        service = GoogleMailService(
+            client_secrets_file="/path/to/secrets.json",
+            credentials_file="/path/to/credentials.json",
+            storage_path="/bad/storage/path",
+        )
+        with patch(
+            "quack_core.integrations.google.mail.service.paths.PathService"
+        ) as mock_path_service_cls:
+            mock_path_service = MagicMock()
+            mock_path_service.resolve_project_path.return_value = MagicMock(
+                success=False, path=None, error="resolution boom"
+            )
+            mock_path_service_cls.return_value = mock_path_service
+
+            with pytest.raises(QuackIntegrationError, match="resolution boom"):
+                service._initialize_config()
+
+    def test_initialize_config_create_directory_warning(self) -> None:
+        """Covers service.py:210 -- fs.create_directory() failing logs a
+        warning but does NOT raise; _initialize_config still succeeds."""
+        service = GoogleMailService(
+            client_secrets_file="/path/to/secrets.json",
+            credentials_file="/path/to/credentials.json",
+            storage_path="/some/storage/path",
+        )
+        with (
+            patch(
+                "quack_core.integrations.google.mail.service.paths.PathService"
+            ) as mock_path_service_cls,
+            patch(
+                "quack_core.integrations.google.mail.service.fs.create_directory"
+            ) as mock_create_dir,
+            patch.object(service.logger, "warning") as mock_warn,
+        ):
+            mock_path_service = MagicMock()
+            mock_path_service.resolve_project_path.return_value = MagicMock(
+                success=True, path="/some/storage/path", error=None
+            )
+            mock_path_service_cls.return_value = mock_path_service
+            mock_create_dir.return_value = MagicMock(
+                success=False, error="permission denied"
+            )
+
+            result = service._initialize_config()
+
+            assert result is not None
+            mock_warn.assert_called_once()
+            assert "Could not create storage directory" in mock_warn.call_args[0][0]
+
+    def test_initialize_config_unexpected_exception_returns_none(self) -> None:
+        """Covers service.py:220-222 -- a non-QuackIntegrationError exception
+        raised anywhere in the try block is logged and swallowed to None
+        (rather than propagating), distinct from the QuackIntegrationError
+        re-raise path covered by the other tests above."""
+        service = GoogleMailService(
+            client_secrets_file="/path/to/secrets.json",
+            credentials_file="/path/to/credentials.json",
+            storage_path="/some/storage/path",
+        )
+        with (
+            patch(
+                "quack_core.integrations.google.mail.service.paths.PathService"
+            ) as mock_path_service_cls,
+            patch.object(service.logger, "error") as mock_error,
+        ):
+            mock_path_service_cls.side_effect = RuntimeError("unexpected boom")
+
+            result = service._initialize_config()
+
+            assert result is None
+            mock_error.assert_called_once()
+
+    def test_list_emails_gmail_service_none(self) -> None:
+        """Covers service.py:252 -- list_emails() with gmail_service unset
+        returns an error result rather than raising AttributeError."""
+        service = GoogleMailService(storage_path="/path/to/storage")
+        service._initialized = True
+        service.gmail_service = None
+        service.config = {}
+
+        result = service.list_emails(query="subject:Test")
+        assert result.success is False
+        assert result.error is not None
+        assert "Gmail service is not initialized" in result.error
+
+    def test_download_email_gmail_service_or_storage_path_none(self) -> None:
+        """Covers service.py:302 -- download_email() with either
+        gmail_service or storage_path unset returns an error result."""
+        service = GoogleMailService(storage_path="/path/to/storage")
+        service._initialized = True
+        service.gmail_service = None
+        service.storage_path = "/path/to/storage"
+        service.config = {}
+
+        result = service.download_email("msg1")
+        assert result.success is False
+        assert result.error is not None
+        assert "Gmail service or storage path not initialized" in result.error
+
+        service.gmail_service = create_mock_gmail_service()
+        service.storage_path = None
+        result = service.download_email("msg1")
+        assert result.success is False
+        assert result.error is not None
+        assert "Gmail service or storage path not initialized" in result.error
+
+    def test_validate_and_convert_config_gmail_labels(self) -> None:
+        """Covers service.py:351-354 -- gmail_labels is converted via
+        _convert_to_string_list when present in self.config."""
+        service = GoogleMailService()
+        service.config = {"gmail_labels": ["INBOX", 123, None]}
+        service._validate_and_convert_config()
+        assert service.config["gmail_labels"] == ["INBOX", "123"]
+
+    def test_safe_cast_int_exception_path(self) -> None:
+        """Covers service.py:369-374 -- non-int, non-castable values fall
+        through to the default via the caught ValueError/TypeError."""
+        service = GoogleMailService()
+        assert service._safe_cast_int("not-a-number", 42) == 42
+        assert service._safe_cast_int(None, 7) == 7
+        assert service._safe_cast_int("10", 0) == 10
+        assert service._safe_cast_int(5, 0) == 5
+
+    def test_safe_cast_float_exception_path(self) -> None:
+        """Covers service.py:389-396 -- float casting: passthrough for
+        float/int, exception fallback to default for uncastable values."""
+        service = GoogleMailService()
+        assert service._safe_cast_float(3.5, 0.0) == 3.5
+        assert service._safe_cast_float(3, 0.0) == 3.0
+        assert service._safe_cast_float("not-a-float", 1.5) == 1.5
+        assert service._safe_cast_float(None, 2.5) == 2.5
+        assert service._safe_cast_float("2.75", 0.0) == 2.75
+
+    def test_convert_to_string_list_variants(self) -> None:
+        """Covers service.py:409, 414-417 -- None returns None, a list
+        converts each item to str dropping Nones, a non-list Iterable
+        (e.g. a tuple) converts similarly, and a bare str/bytes/other
+        non-iterable falls through to None."""
+        service = GoogleMailService()
+        assert service._convert_to_string_list(None) is None
+        assert service._convert_to_string_list(["a", 1, None]) == ["a", "1"]
+        assert service._convert_to_string_list(("x", "y")) == ["x", "y"]
+        assert service._convert_to_string_list(42) is None
+
+    def test_validate_config(self) -> None:
+        """Covers service.py:429-437 -- validate_config delegates to the
+        pydantic GmailServiceConfig model, returning (True, []) on success
+        and (False, [message]) when validation raises."""
+        service = GoogleMailService()
+
+        valid, errors = service.validate_config(
+            {
+                "client_secrets_file": "/secrets.json",
+                "credentials_file": "/creds.json",
+                "storage_path": "/storage",
+            }
+        )
+        assert valid is True
+        assert errors == []
+
+        valid, errors = service.validate_config({})
+        assert valid is False
+        assert len(errors) == 1
+        assert "Configuration validation failed" in errors[0]

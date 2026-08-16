@@ -466,20 +466,13 @@ class TestGoogleDriveServiceRealPathService:
         / real PathService (line 256's fix, unmocked) -- the Drive API
         calls and disk write are mocked at the external boundary.
 
-        NOTE (new finding, out of RULING-240's scope): download_file's own
-        line 393 -- `standalone.join_path(download_path).parent` -- calls
-        `.parent` directly on join_path's real return value, which is a
-        DataResult, not a Path (confirmed live: DataResult has no `.parent`
-        attribute). This is a THIRD, separate, pre-existing bug in
-        download_file itself, downstream of and independent from the two
-        paths_service sites RULING-240 authorizes; not one of the two named
-        call sites, so not fixed here (Chesterton's fence / circle of
-        control -- ESCALATE discipline, recorded rather than fixed
-        inline). join_path is mocked here ONLY to step over that unrelated,
-        out-of-scope line so this test can still prove what RULING-240
-        actually requires: that _resolve_download_path's real,
-        unmocked paths_service.resolve_project_path call succeeds and
-        download_file uses its real result correctly up to that point."""
+        UPDATED per RULING-243's fix: download_file's own parent-directory
+        line (`coerce_path(download_path).parent`, formerly the broken
+        `standalone.join_path(download_path).parent`) is now real quack_core
+        logic exercised unmocked, same as everything else in this test --
+        no more join_path workaround needed (the old side-effect shim that
+        stepped over the single-arg call site is gone; RULING-243's fix
+        means download_file no longer calls join_path there at all)."""
         mock_files = real_drive_service.drive_service.files.return_value
         mock_files.get.return_value.execute.return_value = {
             "name": "downloaded_e2e.txt",
@@ -493,32 +486,9 @@ class TestGoogleDriveServiceRealPathService:
         target_dir = Path("coverage90_ruling240_download_e2e_dir")
         target_file = target_dir / "downloaded_e2e.txt"
 
-        from quack_core.core.fs.service import standalone as real_standalone
-
-        real_join_path = real_standalone.join_path
-
-        def _join_path_side_effect(*parts: object) -> object:
-            # Intercept ONLY the single-arg call download_file makes at its
-            # own line 393 -- join_path(download_path).parent (the
-            # unrelated, out-of-scope bug -- see docstring). Every
-            # multi-arg call (including the ones INSIDE PathService's own
-            # resolver, which RULING-240's fix depends on -- e.g.
-            # join_path(root, path_value)) falls through to the real,
-            # unmocked join_path so this test does not corrupt the very
-            # machinery it is proving. The single-arg shape is exactly
-            # download_file's own call signature at line 393 and nowhere
-            # else in this call graph.
-            if len(parts) == 1 and isinstance(parts[0], str):
-                return Path(parts[0])
-            return real_join_path(*parts)
-
-        with (
-            patch("googleapiclient.http.MediaIoBaseDownload") as mock_downloader_cls,
-            patch(
-                "quack_core.integrations.google.drive.service.standalone.join_path",
-                side_effect=_join_path_side_effect,
-            ),
-        ):
+        with patch(
+            "googleapiclient.http.MediaIoBaseDownload"
+        ) as mock_downloader_cls:
             mock_downloader = MagicMock()
             mock_downloader.next_chunk.return_value = (_FakeStatus(), True)
             mock_downloader_cls.return_value = mock_downloader
