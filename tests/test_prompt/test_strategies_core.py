@@ -103,7 +103,7 @@ def test_render_react_agentic_with_tool_list_and_params() -> None:
 
 
 def test_render_react_agentic_tool_missing_name_and_description() -> None:
-    tools = [{"parameters": {}}]
+    tools: list[dict] = [{"parameters": {}}]
     result = core.render_react_agentic("Find info", tools)
     assert "Unnamed Tool" in result
     assert "No description" in result

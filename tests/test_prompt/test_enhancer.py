@@ -120,13 +120,21 @@ def test_enhance_with_llm_safe_import_error_returns_original() -> None:
     import fail, since we can't easily uninstall the real package.
     """
     import builtins
+    from collections.abc import Mapping, Sequence
+    from types import ModuleType
 
     real_import = builtins.__import__
 
-    def fake_import(name: str, *args: object, **kwargs: object) -> object:
+    def fake_import(
+        name: str,
+        globals: Mapping[str, object] | None = None,  # noqa: A002 -- matches __import__'s real signature
+        locals: Mapping[str, object] | None = None,  # noqa: A002 -- matches __import__'s real signature
+        fromlist: Sequence[str] = (),
+        level: int = 0,
+    ) -> ModuleType:
         if name == "quack_core.integrations.llms.service":
             raise ImportError("simulated missing dependency")
-        return real_import(name, *args, **kwargs)
+        return real_import(name, globals, locals, fromlist, level)
 
     with patch("builtins.__import__", side_effect=fake_import):
         result = enhance_with_llm_safe("My prompt")

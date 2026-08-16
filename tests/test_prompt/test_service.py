@@ -112,6 +112,7 @@ def test_register_strategy_duplicate_id_fails() -> None:
     service.register_strategy(_make_strategy())
     result = service.register_strategy(_make_strategy())
     assert result.success is False
+    assert result.error is not None
     assert "already exists" in result.error
 
 
@@ -204,6 +205,7 @@ def test_render_with_schema_and_multiple_examples_selects_multi_shot() -> None:
     )
     assert result.success is True
     assert result.strategy_id == "multi-shot-structured"
+    assert result.prompt is not None
     assert "ex1\n\nex2" in result.prompt
 
 
@@ -218,6 +220,7 @@ def test_render_with_schema_and_single_example_selects_single_shot() -> None:
     assert result.strategy_id == "single-shot-structured"
     # The service derives `example` (singular) from examples[0] for
     # single-shot-structured's `example` input var.
+    assert result.prompt is not None
     assert "only-one" in result.prompt
 
 
@@ -248,6 +251,7 @@ def test_render_missing_required_inputs_reports_missing_fields() -> None:
         "Review this PR", strategy_id="role-prompting"
     )
     assert result.success is False
+    assert result.error is not None
     assert "Missing required inputs for strategy 'role-prompting'" in result.error
     assert "role" in result.error
 
@@ -260,6 +264,7 @@ def test_render_passes_through_kwargs_for_dynamic_inputs() -> None:
         role="senior engineer",
     )
     assert result.success is True
+    assert result.prompt is not None
     assert "senior engineer" in result.prompt
     assert "Assist the user" in result.prompt
 

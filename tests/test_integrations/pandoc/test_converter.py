@@ -118,6 +118,7 @@ def test_convert_file_html_to_markdown_operation_failure_wraps_error(
         result = converter.convert_file("input.html", "output.md", "markdown")
 
         assert not result.success
+        assert result.error is not None
         assert "Pandoc blew up mid-conversion" in result.error
 
 
@@ -354,7 +355,9 @@ def test_create_output_directory_for_file_dir_creation_fails(
 
     assert result is not None
     assert not result.success
+    assert result.error is not None
     assert "Failed to create output directory" in result.error
+    assert result.error is not None
     assert "Permission denied" in result.error
 
 
@@ -374,7 +377,9 @@ def test_create_output_directory_for_file_raises(
 
     assert result is not None
     assert not result.success
+    assert result.error is not None
     assert "Failed to create output directory" in result.error
+    assert result.error is not None
     assert "disk exploded" in result.error
 
 
@@ -396,6 +401,7 @@ def test_convert_file_output_dir_creation_failure_short_circuits(
         result = converter.convert_file("input.html", "output.md", "markdown")
 
         assert not result.success
+        assert result.error is not None
         assert "Failed to create output directory" in result.error
         assert not mock_convert.called
 
@@ -419,6 +425,7 @@ def test_convert_file_integration_error_from_format_dispatch(
         result = converter.convert_file("input.html", "output.md", "markdown")
 
         assert not result.success
+        assert result.error is not None
         assert "dispatch blew up" in result.error
 
 
@@ -438,7 +445,9 @@ def test_convert_file_unexpected_exception(
         result = converter.convert_file("input.html", "output.md", "markdown")
 
         assert not result.success
+        assert result.error is not None
         assert "Conversion error" in result.error
+        assert result.error is not None
         assert "boom" in result.error
 
 
@@ -658,7 +667,9 @@ def test_convert_batch_output_dir_creation_fails(
     result = converter.convert_batch([], output_dir="batch_out")
 
     assert not result.success
+    assert result.error is not None
     assert "Failed to create output directory" in result.error
+    assert result.error is not None
     assert "Read-only filesystem" in result.error
 
 
@@ -678,7 +689,9 @@ def test_convert_batch_output_dir_creation_raises(
     result = converter.convert_batch([], output_dir="batch_out")
 
     assert not result.success
+    assert result.error is not None
     assert "Failed to create output directory" in result.error
+    assert result.error is not None
     assert "mount failure" in result.error
 
 
@@ -711,6 +724,7 @@ def test_convert_batch_all_failure_more_than_five_lists_overflow_count(
         result = converter.convert_batch(tasks)
 
     assert not result.success
+    assert result.error is not None
     assert "and 2 more" in result.error
     assert mock_convert.call_count == 7
 

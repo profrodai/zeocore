@@ -62,7 +62,7 @@ class TestFindProjectRoot:
 
     def test_data_result_start_dir_unwraps_via_normalize(self) -> None:
         plugin = QuackPathsPlugin()
-        data_result = DataResult(ok=True, data="/data/dir")
+        data_result: DataResult[str] = DataResult(ok=True, data="/data/dir")
         with patch.object(
             plugin._resolver, "_get_project_root", return_value="/root"
         ) as mock_get_root:

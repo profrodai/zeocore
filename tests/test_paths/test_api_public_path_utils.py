@@ -29,7 +29,7 @@ class TestEnsureCleanPath:
         assert ensure_clean_path(result) == "/resolved/path.txt"
 
     def test_data_result_with_data_attr(self) -> None:
-        result = DataResult(ok=True, data="/data/path.txt")
+        result: DataResult[str] = DataResult(ok=True, data="/data/path.txt")
         assert ensure_clean_path(result) == "/data/path.txt"
 
     def test_path_result_with_none_path_falls_through_to_str(self) -> None:
@@ -43,7 +43,7 @@ class TestEnsureCleanPath:
         assert isinstance(ensure_clean_path(result), str)
 
     def test_data_result_with_none_data_falls_through_to_str(self) -> None:
-        result = DataResult(ok=False, data=None)
+        result: DataResult[str | None] = DataResult(ok=False, data=None)
         assert isinstance(ensure_clean_path(result), str)
 
 

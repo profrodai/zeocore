@@ -32,6 +32,7 @@ and the Gmail-API boundary stay real/Protocol-mocked per RULING-235.
 
 import base64
 import logging
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -132,7 +133,7 @@ class TestProcessMessageParts:
         logger: logging.Logger,
         storage_dir: Path,
     ) -> None:
-        parts = [
+        parts: list[Mapping] = [
             {
                 "mimeType": "text/html",
                 "body": {"data": _b64("<html>hi</html>")},
@@ -150,7 +151,7 @@ class TestProcessMessageParts:
         logger: logging.Logger,
         storage_dir: Path,
     ) -> None:
-        parts = [
+        parts: list[Mapping] = [
             {
                 "parts": [
                     {"mimeType": "text/html", "body": {"data": _b64("<p>nested</p>")}},
@@ -171,7 +172,7 @@ class TestProcessMessageParts:
     ) -> None:
         # process_message_parts uses a stack (pop from end), so the LAST
         # item in the input list is processed FIRST.
-        parts = [
+        parts: list[Mapping] = [
             {"mimeType": "text/html", "body": {"data": _b64("<p>first-in-list</p>")}},
             {"mimeType": "text/html", "body": {"data": _b64("<p>second-in-list</p>")}},
         ]
@@ -186,7 +187,7 @@ class TestProcessMessageParts:
         logger: logging.Logger,
         storage_dir: Path,
     ) -> None:
-        parts = [{"mimeType": "text/html", "body": {}}]
+        parts: list[Mapping] = [{"mimeType": "text/html", "body": {}}]
         html, attachments = email.process_message_parts(
             mock_gmail_service, "me", parts, "msg1", str(storage_dir), logger
         )
@@ -199,7 +200,7 @@ class TestProcessMessageParts:
         logger: logging.Logger,
         storage_dir: Path,
     ) -> None:
-        parts = [
+        parts: list[Mapping] = [
             {
                 "filename": "report.pdf",
                 "body": {"data": _b64("pdf-bytes-here")},
@@ -222,7 +223,7 @@ class TestProcessMessageParts:
         logger: logging.Logger,
         storage_dir: Path,
     ) -> None:
-        parts = [{"mimeType": "application/octet-stream", "body": {}}]
+        parts: list[Mapping] = [{"mimeType": "application/octet-stream", "body": {}}]
         html, attachments = email.process_message_parts(
             mock_gmail_service, "me", parts, "msg1", str(storage_dir), logger
         )
@@ -578,6 +579,7 @@ class TestDownloadEmailWriteFailure:
             )
 
         assert result.success is False
+        assert result.error is not None
         assert "Failed to write email content" in result.error
 
 
