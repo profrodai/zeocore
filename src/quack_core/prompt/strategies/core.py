@@ -494,7 +494,11 @@ def render_react_prompting(
         )
     else:
         tools_str = tools
-    examples_section = f"\nExamples:\n{('\n\n'.join(examples))}\n" if examples else ""
+    if examples:
+        joined_examples = "\n\n".join(examples)
+        examples_section = f"\nExamples:\n{joined_examples}\n"
+    else:
+        examples_section = ""
     return f"""
 {task_description}
 
