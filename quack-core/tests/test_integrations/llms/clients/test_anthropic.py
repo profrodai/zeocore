@@ -331,7 +331,9 @@ class TestAnthropicClient:
 
                 assert result.success is True
                 # Should use simple estimation
+                assert result.content is not None
                 assert result.content > 0
+                assert result.message is not None
                 assert "Token count is an estimation" in result.message
 
                 # Should log a warning
@@ -350,6 +352,7 @@ class TestAnthropicClient:
             result = anthropic_client._count_tokens_with_provider(messages)
 
             assert result.success is False
+            assert result.error is not None
             assert "Error counting tokens" in result.error
 
     def test_handle_streaming(self) -> None:

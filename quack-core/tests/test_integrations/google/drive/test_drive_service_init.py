@@ -205,6 +205,7 @@ class TestGoogleDriveServiceInit:
         result = service.initialize()
 
         assert result.success is False
+        assert result.error is not None
         assert "Auth error" in result.error
         # The implementation doesn't set _initialized to False on error, so
         # we don't assert that
@@ -224,6 +225,7 @@ class TestGoogleDriveServiceInit:
         result = service.initialize()
 
         assert result.success is False
+        assert result.error is not None
         assert "Auth error" in result.error
         # Don't test _initialized flag as implementation varies
 
@@ -240,5 +242,6 @@ class TestGoogleDriveServiceInit:
         result = service.initialize()
 
         assert result.success is False
+        assert result.error is not None
         assert "API error" in result.error
         # Don't test _initialized flag as implementation varies

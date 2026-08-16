@@ -184,6 +184,7 @@ class TestPathHelpers:
     def test_split_path(self, tmp_path: Path) -> None:
         result = standalone.split_path(tmp_path / "a" / "b")
         assert result.success is True
+        assert result.data is not None
         assert "a" in result.data
         assert "b" in result.data
 

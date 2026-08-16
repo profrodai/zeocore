@@ -97,6 +97,7 @@ class TestDriveOperationsDownload:
 
             # Assertions
             assert result.success is True
+            assert result.message is not None
             assert "File downloaded successfully" in result.message
 
     def test_resolve_download_path(self, tmp_path: Path) -> None:
@@ -214,6 +215,7 @@ class TestDriveOperationsDownload:
 
             # Verify the result is as expected
             assert not result.success
+            assert result.error is not None
             assert "Failed to get file metadata" in result.error
 
     def test_download_file_write_error(self) -> None:
@@ -285,4 +287,5 @@ class TestDriveOperationsDownload:
 
             # Verify the result is as expected
             assert not result.success
+            assert result.error is not None
             assert "Failed to write file: Write error" in result.error

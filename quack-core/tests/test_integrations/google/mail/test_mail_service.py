@@ -301,6 +301,7 @@ class TestGoogleMailService:
 
             result = service.initialize()
             assert result.success is False
+            assert result.error is not None
             assert "Failed to initialize configuration" in result.error
             assert service._initialized is False
 
@@ -391,6 +392,7 @@ class TestGoogleMailService:
 
             result = service.list_emails()
             assert result.success is False
+            assert result.error is not None
             assert "Failed to list emails" in result.error
 
         # Test not initialized
@@ -403,6 +405,7 @@ class TestGoogleMailService:
 
             result = service.list_emails()
             assert result.success is False
+            assert result.error is not None
             assert "Not initialized" in result.error
 
     def test_download_email(self) -> None:
@@ -454,6 +457,7 @@ class TestGoogleMailService:
 
             result = service.download_email("msg1")
             assert result.success is False
+            assert result.error is not None
             assert "Failed to download email msg1" in result.error
 
         # Test not initialized
@@ -466,6 +470,7 @@ class TestGoogleMailService:
 
             result = service.download_email("msg1")
             assert result.success is False
+            assert result.error is not None
             assert "Not initialized" in result.error
 
 

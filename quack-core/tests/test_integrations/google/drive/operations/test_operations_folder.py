@@ -148,6 +148,7 @@ class TestDriveOperationsFolder:
             result = folder.create_folder(mock_drive_service, "Test Folder")
 
             assert result.success is False
+            assert result.error is not None
             assert "API error" in result.error
 
     def test_delete_file_permanent(self) -> None:
@@ -234,6 +235,7 @@ class TestDriveOperationsFolder:
             result = folder.delete_file(mock_drive_service, "file123", permanent=True)
 
             assert result.success is False
+            assert result.error is not None
             assert "API error" in result.error
 
     def test_delete_file_with_specific_mock_configuration(self) -> None:

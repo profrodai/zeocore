@@ -214,6 +214,7 @@ class TestLLMService:
             result = uninitialized_service.chat(messages)
 
             assert result.success is False
+            assert result.error is not None
             assert "not initialized" in result.error
 
     def test_count_tokens(self, llm_service: LLMIntegration) -> None:
@@ -246,6 +247,7 @@ class TestLLMService:
             result = uninitialized_service.count_tokens(messages)
 
             assert result.success is False
+            assert result.error is not None
             assert "not initialized" in result.error
 
     def test_get_client(self, llm_service: LLMIntegration) -> None:

@@ -181,6 +181,7 @@ class TestGoogleAuthProvider:
 
         result = provider.refresh_credentials()
         assert not result.success
+        assert result.error is not None
         assert "Failed to refresh" in result.error
 
     def test_get_credentials(self) -> None:
@@ -466,6 +467,7 @@ class TestGoogleAuthProviderCoverageGaps:
         ):
             result = provider.authenticate()
             assert not result.success
+            assert result.error is not None
             assert "Failed to authenticate with Google" in result.error
             assert provider.authenticated is False
 

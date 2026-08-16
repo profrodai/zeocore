@@ -131,6 +131,7 @@ class TestDriveOperationsPermissions:
             result = permissions.set_file_permissions(mock_drive_service, "file123")
 
             assert result.success is False
+            assert result.error is not None
             assert "API error" in result.error
 
     def test_get_sharing_link(self) -> None:
@@ -242,6 +243,7 @@ class TestDriveOperationsPermissions:
             result = permissions.get_sharing_link(mock_drive_service, "file123")
 
             assert result.success is False
+            assert result.error is not None
             assert "API error" in result.error
 
     def test_custom_permission_handling(self) -> None:

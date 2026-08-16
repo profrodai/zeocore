@@ -116,6 +116,7 @@ class TestGoogleDriveServiceUpload:
                 result = service.upload_file(str(test_file))
 
                 assert result.success is False
+                assert result.error is not None
                 assert "Read error" in result.error
                 mock_fs_service.read_binary.assert_called_once_with(Path(test_file))
 
@@ -145,6 +146,7 @@ class TestGoogleDriveServiceUpload:
                     result = service.upload_file(str(test_file))
 
                     assert result.success is False
+                    assert result.error is not None
                     assert "API error" in result.error
                     mock_resolve.assert_called_once_with(str(test_file), None, None)
                     mock_execute_upload.assert_called_once()
@@ -160,4 +162,5 @@ class TestGoogleDriveServiceUpload:
             result = service.upload_file(str(test_file))
 
             assert result.success is False
+            assert result.error is not None
             assert "Not initialized" in result.error

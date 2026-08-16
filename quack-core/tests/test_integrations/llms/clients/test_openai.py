@@ -396,6 +396,7 @@ class TestOpenAIClient:
         result = openai_client._chat_with_provider(messages, options, callback)
 
         assert result.success is True
+        assert result.content is not None
         assert "Streaming response" in result.content
 
         # Verify OpenAI was called with stream=True
@@ -480,7 +481,9 @@ class TestOpenAIClient:
 
                 assert result.success is True
                 # Should use simple estimation
+                assert result.content is not None
                 assert result.content > 0
+                assert result.message is not None
                 assert "using simple token estimation" in result.message.lower()
 
                 # Should log a warning
@@ -494,6 +497,7 @@ class TestOpenAIClient:
             result = openai_client._count_tokens_with_provider(messages)
 
             assert result.success is False
+            assert result.error is not None
             assert "Error counting tokens" in result.error
 
     def test_handle_streaming(self) -> None:
