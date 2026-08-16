@@ -48,7 +48,7 @@ class TestPathUtils(TestCase):
 
     def test_extract_path_str_with_data_result_path(self) -> None:
         """Test extracting a path string from a DataResult with a path-like data."""
-        result = DataResult(
+        result = DataResult[Path](
             ok=True,
             path=Path("ignored"),  # This should be ignored
             data=Path("b.txt"),  # This should be used
@@ -58,7 +58,7 @@ class TestPathUtils(TestCase):
 
     def test_extract_path_str_with_data_result_string(self) -> None:
         """Test extracting a path string from a DataResult with a string data."""
-        result = DataResult(
+        result = DataResult[str](
             ok=True,
             path=Path("ignored"),  # This should be ignored
             data="c.txt",  # This should be used
@@ -80,7 +80,7 @@ class TestPathUtils(TestCase):
         regression to work around), so the test is corrected to assert the actual
         fallback behavior instead of a raise that no longer happens.
         """
-        result = DataResult(
+        result = DataResult[int](
             ok=True, path=Path("fallback.txt"), data=42, format="integer"
         )
         assert _extract_path_str(result) == "fallback.txt"
@@ -88,7 +88,7 @@ class TestPathUtils(TestCase):
     def test_extract_path_str_with_invalid_data_result(self) -> None:
         """Test that extracting from a DataResult with neither usable `.data` nor
         `.path` raises TypeError."""
-        result = DataResult(ok=True, path=None, data=42, format="integer")
+        result = DataResult[int](ok=True, path=None, data=42, format="integer")
         with pytest.raises(TypeError):
             _extract_path_str(result)
 
@@ -107,7 +107,7 @@ class TestPathUtils(TestCase):
     def test_extract_path_str_with_invalid_object(self) -> None:
         """Test that extracting from an invalid object raises TypeError."""
         with pytest.raises(TypeError):
-            _extract_path_str(object())
+            _extract_path_str(object())  # type: ignore[arg-type]  # deliberate invalid input, testing the raise-on-invalid-type contract
 
     def test_extract_path_str_with_value_method(self) -> None:
         """Test extracting from an object with a value method."""
@@ -170,11 +170,14 @@ class TestPathUtils(TestCase):
         falls back to the default instead of raising -- still holds and is
         kept.
         """
-        assert safe_path_str(object()) is None
+        assert safe_path_str(object()) is None  # type: ignore[arg-type]  # deliberate invalid input, testing the safe-fallback contract
 
     def test_safe_path_with_custom_default(self) -> None:
         """Test safe_path_str with a custom default value."""
-        assert safe_path_str(object(), default="/fallback") == "/fallback"
+        assert (
+            safe_path_str(object(), default="/fallback")  # type: ignore[arg-type]  # deliberate invalid input, testing the safe-fallback contract
+            == "/fallback"
+        )
 
     def test_safe_path_with_failed_result(self) -> None:
         """Test safe_path_str with a failed Result (ok=False)."""
