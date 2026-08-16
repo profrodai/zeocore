@@ -190,6 +190,7 @@ class TestIntegration:
         )
         assert data_path_result.success is True
         data_path = data_path_result.path
+        assert data_path is not None
         assert Path(data_path) == test_file
 
         read_result = fs_service.read_text(data_path)
