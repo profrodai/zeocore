@@ -20,7 +20,7 @@ class MockGoogleCredentials(GoogleCredentials):
         client_id: str = "client_id",
         client_secret: str = "client_secret",  # noqa: S107 -- mock class default, fake credential value, not a real secret
         scopes: list[str] | None = None,
-    ):
+    ) -> None:
         """
         Initialize mock Google credentials.
 

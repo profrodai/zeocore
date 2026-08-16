@@ -88,7 +88,9 @@ class TestImportSideEffects(unittest.TestCase):
 class MockTestPlugin:
     """A minimal test plugin for testing."""
 
-    def __init__(self, plugin_id: str = "test_plugin", name: str = "Test Plugin"):
+    def __init__(
+        self, plugin_id: str = "test_plugin", name: str = "Test Plugin"
+    ) -> None:
         self._plugin_id = plugin_id
         self._name = name
 

@@ -12,6 +12,7 @@ functions provided by the pandoc integration.
 import time
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -146,7 +147,7 @@ def test_validate_conversion_md_to_docx(mock_fs):
     """Test validation of Markdown to DOCX conversion results."""
 
     # Setup the mock file system
-    def side_effect(path, *args, **kwargs):
+    def side_effect(path, *args: Any, **kwargs: Any):
         if "output" in str(path):
             return SimpleNamespace(success=True, exists=True, size=500, path=str(path))
         return SimpleNamespace(success=True, exists=True, size=100, path=str(path))

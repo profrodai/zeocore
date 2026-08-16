@@ -53,7 +53,7 @@ class BaseQuackTool(ABC):
     # Internal flag to track frozen state (Recommendation #2)
     _identity_frozen: bool
 
-    def __init__(self, name: str | None = None, version: str | None = None):
+    def __init__(self, name: str | None = None, version: str | None = None) -> None:
         """
         Initialize the tool.
 

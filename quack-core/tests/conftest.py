@@ -13,6 +13,7 @@ import shutil
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -65,7 +66,7 @@ def patch_filesystem_operations():
     original_path_init = Path.__init__
 
     # Patched version that handles DataResult
-    def patched_path_init(self, *args, **kwargs):
+    def patched_path_init(self, *args: Any, **kwargs: Any) -> None:
         new_args = list(args)
         for i, arg in enumerate(new_args):
             if isinstance(arg, (DataResult, OperationResult)) and hasattr(arg, "data"):

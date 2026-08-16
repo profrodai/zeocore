@@ -85,7 +85,7 @@ import httpx
 class QuackCoreHTTPClient:
     """Simple client for QuackCore HTTP adapter."""
 
-    def __init__(self, base_url: str, auth_token: str | None = None):
+    def __init__(self, base_url: str, auth_token: str | None = None) -> None:
         self.base_url = base_url.rstrip("/")
         self.headers = {}
         if auth_token:

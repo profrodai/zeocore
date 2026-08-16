@@ -630,7 +630,7 @@ class TestGitHubIntegration:
         assert "Failed to get pull request: API error" in result.error
 
     @staticmethod
-    def setup_mock_auth_provider(auth_success=True):
+    def setup_mock_auth_provider(auth_success=True) -> MagicMock:
         """Set up a mock auth provider for tests."""
         from quack_core.integrations.github.auth import GitHubAuthProvider
 
@@ -646,7 +646,7 @@ class TestGitHubIntegration:
         return mock_auth
 
     @staticmethod
-    def setup_mock_config_provider(with_token=True):
+    def setup_mock_config_provider(with_token=True) -> MagicMock:
         """Set up a mock config provider for tests."""
         from quack_core.integrations.github.config import GitHubConfigProvider
 

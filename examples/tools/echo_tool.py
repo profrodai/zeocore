@@ -41,7 +41,7 @@ class EchoTool(BaseQuackTool):
     - Uses canonical imports
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(name="echo", version="1.0.0")
 
     def run(self, request: EchoRequest, ctx: ToolContext) -> CapabilityResult[str]:

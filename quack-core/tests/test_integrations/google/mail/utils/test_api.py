@@ -32,7 +32,7 @@ class TestGmailApiUtils:
 
         # Create a mock that conforms to the GmailRequest protocol
         class MockGmailRequest(GmailRequest[dict[str, object]]):
-            def __init__(self, return_value=None, side_effect=None):
+            def __init__(self, return_value=None, side_effect=None) -> None:
                 self.return_value = return_value
                 self.side_effect = side_effect
                 self.call_count = 0

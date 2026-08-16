@@ -9,6 +9,7 @@ This module tests the registry functionality that allows dynamic loading
 and management of LLM client implementations.
 """
 
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -36,10 +37,10 @@ class TestLLMRegistry:
 
         # Create a test client class
         class TestClient(LLMClient):
-            def _chat_with_provider(self, *args, **kwargs):
+            def _chat_with_provider(self, *args: Any, **kwargs: Any):
                 return MagicMock()
 
-            def _count_tokens_with_provider(self, *args, **kwargs):
+            def _count_tokens_with_provider(self, *args: Any, **kwargs: Any):
                 return MagicMock()
 
         # Register the test client
@@ -57,10 +58,10 @@ class TestLLMRegistry:
 
         # Create a test client class
         class TestClient(LLMClient):
-            def _chat_with_provider(self, *args, **kwargs):
+            def _chat_with_provider(self, *args: Any, **kwargs: Any):
                 return MagicMock()
 
-            def _count_tokens_with_provider(self, *args, **kwargs):
+            def _count_tokens_with_provider(self, *args: Any, **kwargs: Any):
                 return MagicMock()
 
         # Register the test client with mixed case

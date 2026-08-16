@@ -2,13 +2,18 @@
 # path: quack-core/src/quack_core/prompt/_internal/enhancer.py
 # === QV-LLM:END ===
 
+from typing import Any
+
 from quack_core.core.logging import get_logger
 
 logger = get_logger(__name__)
 
 
 def enhance_with_llm_safe(
-    prompt_text: str, model: str | None = None, provider: str | None = None, **kwargs
+    prompt_text: str,
+    model: str | None = None,
+    provider: str | None = None,
+    **kwargs: Any,
 ) -> str:
     """
     Safely attempts to enhance a prompt using the LLM integration.

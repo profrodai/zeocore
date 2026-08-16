@@ -11,6 +11,7 @@ functions provided by the pandoc integration.
 
 import time
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -172,10 +173,10 @@ def test_validate_conversion_html_to_md():
     )
 
     # Configure check functions to return valid results
-    def patched_file_size_check(*args):
+    def patched_file_size_check(*args: Any):
         return (True, [])
 
-    def patched_ratio_check(*args):
+    def patched_ratio_check(*args: Any):
         return (True, [])
 
     # Configure PandocConfig for testing

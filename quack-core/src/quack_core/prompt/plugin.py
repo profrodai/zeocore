@@ -2,6 +2,8 @@
 # path: quack-core/src/quack_core/prompt/plugin.py
 # === QV-LLM:END ===
 
+from typing import Any
+
 from quack_core.prompt.api.public.results import PromptRenderResult
 from quack_core.prompt.service import PromptService
 
@@ -11,11 +13,11 @@ class PromptPlugin:
     QuackCore plugin wrapping the PromptService.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.name = "prompt"
         self._service = PromptService(load_defaults=True)
 
-    def render(self, raw_prompt: str, **kwargs) -> PromptRenderResult:
+    def render(self, raw_prompt: str, **kwargs: Any) -> PromptRenderResult:
         """
         Render a prompt using the underlying PromptService.
         """

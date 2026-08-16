@@ -6,6 +6,7 @@
 Mock OpenAI classes for LLM testing.
 """
 
+from collections.abc import Generator
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -29,7 +30,7 @@ class MockOpenAIResponse(MockLLMResponse):
         object_type: str = "chat.completion",
         id: str = "chatcmpl-123",
         created: int = 1677858242,
-    ):
+    ) -> None:
         """
         Initialize a mock OpenAI response.
 
@@ -89,7 +90,7 @@ class MockOpenAIStreamingResponse(MockStreamingGenerator):
         model: str = "mock-model",
         error: Exception | None = None,
         error_after: int | None = None,
-    ):
+    ) -> None:
         """Initialize with content to stream in chunks."""
         super().__init__(
             content=content,
@@ -102,7 +103,7 @@ class MockOpenAIStreamingResponse(MockStreamingGenerator):
         self.chunks = list(self._generate_all_chunks())
         self.current_index = 0
 
-    def _generate_all_chunks(self):
+    def _generate_all_chunks(self) -> Generator[dict[str, Any], None, None]:
         """Generate all chunks at once."""
         # Split the response into chunks
         chunks = [
@@ -134,12 +135,12 @@ class MockOpenAIStreamingResponse(MockStreamingGenerator):
             "model": self.model,
         }
 
-    def __iter__(self):
+    def __iter__(self) -> "MockOpenAIStreamingResponse":
         """Return self as iterator."""
         self.current_index = 0
         return self
 
-    def __next__(self):
+    def __next__(self) -> dict[str, Any]:
         """Get next chunk."""
         if self.current_index < len(self.chunks):
             chunk = self.chunks[self.current_index]
@@ -158,7 +159,7 @@ class MockOpenAIErrorResponse:
         type: str = "server_error",
         param: str | None = None,
         status_code: int = 429,
-    ):
+    ) -> None:
         """
         Initialize a mock OpenAI error response.
 
@@ -213,7 +214,7 @@ class MockOpenAIClient(MockClient):
         model: str = "gpt-4o",
         errors: list[Exception] = None,
         **kwargs: Any,
-    ):
+    ) -> None:
         """
         Initialize a mock OpenAI client.
 
@@ -235,7 +236,7 @@ class MockOpenAIClient(MockClient):
         # Track OpenAI-specific data
         self.openai_requests = []
 
-    def chat_completions_create(self, *args, **kwargs):
+    def chat_completions_create(self, *args: Any, **kwargs: Any):
         """
         Mock OpenAI's chat.completions.create method.
 
