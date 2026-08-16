@@ -91,7 +91,9 @@ def test_convert_markdown_to_docx_validation_error(mock_validate: MagicMock) -> 
 
 
 @patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
-@patch("quack_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once")
+@patch(
+    "quack_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
+)
 def test_convert_markdown_to_docx_conversion_failure(
     mock_convert: MagicMock, mock_validate: MagicMock
 ) -> None:
