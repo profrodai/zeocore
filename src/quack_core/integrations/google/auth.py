@@ -140,18 +140,23 @@ class GoogleAuthProvider(BaseAuthProvider):
 
             # Access the result data correctly
             data = json_result.data
+            if data is None:
+                self.logger.warning(
+                    "Client secrets file reported success but returned no data"
+                )
+                return None
 
             # Try web client configuration first (most common for installed apps)
             if "web" in data and "redirect_uris" in data["web"]:
                 redirect_uris = data["web"]["redirect_uris"]
                 if redirect_uris and len(redirect_uris) > 0:
-                    return redirect_uris[0]
+                    return str(redirect_uris[0])
 
             # Try installed client configuration
             if "installed" in data and "redirect_uris" in data["installed"]:
                 redirect_uris = data["installed"]["redirect_uris"]
                 if redirect_uris and len(redirect_uris) > 0:
-                    return redirect_uris[0]
+                    return str(redirect_uris[0])
 
             return None
         except Exception as e:
@@ -161,6 +166,9 @@ class GoogleAuthProvider(BaseAuthProvider):
             return None
 
     def _load_existing_credentials(self) -> Credentials | None:
+        if self.credentials_file is None:
+            return None
+
         file_info = standalone.get_file_info(self.credentials_file)
         if not file_info.exists:
             return None
@@ -170,22 +178,30 @@ class GoogleAuthProvider(BaseAuthProvider):
             self.logger.warning(f"Failed to load credentials: {json_result.error}")
             return None
 
+        credential_data = json_result.data
+        if credential_data is None:
+            self.logger.warning(
+                "Credentials file reported success but returned no data"
+            )
+            return None
+
         try:
             # Access the result data correctly
-            credential_data = json_result.data
-            return Credentials.from_authorized_user_info(credential_data, self.scopes)
+            creds: Credentials = Credentials.from_authorized_user_info(
+                credential_data, self.scopes
+            )
+            return creds
         except ValueError as e:
             self.logger.warning(f"Invalid credential data: {e}")
             return None
 
     def _build_auth_result(self, creds: Credentials, message: str) -> AuthResult:
+        expiry_dt = getattr(creds, "expiry", None)
         return AuthResult(
             success=True,
             message=message,
             token=str(getattr(creds, "token", None)),
-            expiry=int(creds.expiry.timestamp())
-            if getattr(creds, "expiry", None)
-            else None,
+            expiry=int(expiry_dt.timestamp()) if expiry_dt is not None else None,
             credentials_path=str(self.credentials_file),
         )
 
@@ -225,6 +241,15 @@ class GoogleAuthProvider(BaseAuthProvider):
                         "credentials_path": self.credentials_file,
                     },
                 )
+        if self.auth is None:
+            # authenticate() sets self.auth as a side effect on every success
+            # path (both the refresh and the fresh-flow branches); result.success
+            # being True above means one of those paths ran. This is a defensive
+            # backstop for that invariant, not an expected runtime path.
+            raise QuackIntegrationError(
+                "Authentication reported success but no credentials were set",
+                {"service": "Google", "credentials_path": self.credentials_file},
+            )
         return self.auth
 
     def save_credentials(self) -> bool:
@@ -238,7 +263,7 @@ class GoogleAuthProvider(BaseAuthProvider):
             return False
 
         split_result = standalone.split_path(self.credentials_file)
-        if not split_result.success:
+        if not split_result.success or split_result.data is None:
             self.logger.error(f"Failed to split path: {split_result.error}")
             return False
 
@@ -248,15 +273,12 @@ class GoogleAuthProvider(BaseAuthProvider):
             # Join them back together to get the directory path
             join_result = standalone.join_path(*path_components)
 
-            # Handle both cases: join_path returning string directly or a DataResult
-            directory_path = join_result
-            if hasattr(join_result, "success"):
-                if not join_result.success:
-                    self.logger.error(
-                        f"Failed to join directory path: {join_result.error}"
-                    )
-                    return False
-                directory_path = join_result.data
+            if not join_result.success or join_result.data is None:
+                self.logger.error(
+                    f"Failed to join directory path: {join_result.error}"
+                )
+                return False
+            directory_path: str = join_result.data
 
             # Create the directory
             result = standalone.create_directory(directory_path, exist_ok=True)
