@@ -19,7 +19,7 @@ from quack_core.integrations.github.models import (
 class TestGitHubModels:
     """Tests for GitHub models."""
 
-    def test_pull_request_status_enum(self):
+    def test_pull_request_status_enum(self) -> None:
         """Test PullRequestStatus enum."""
         assert PullRequestStatus.OPEN == "open"
         assert PullRequestStatus.CLOSED == "closed"
@@ -32,7 +32,7 @@ class TestGitHubModels:
             PullRequestStatus.MERGED,
         ]
 
-    def test_github_user_model(self):
+    def test_github_user_model(self) -> None:
         """Test GitHubUser model."""
         # Test valid model
         user = GitHubUser(
@@ -62,7 +62,7 @@ class TestGitHubModels:
         with pytest.raises(ValidationError):
             GitHubUser(username="test-user", url="invalid-url")
 
-    def test_github_repo_model(self):
+    def test_github_repo_model(self) -> None:
         """Test GitHubRepo model."""
         # Create owner
         owner = GitHubUser(username="test-owner", url="https://github.com/test-owner")
@@ -122,7 +122,7 @@ class TestGitHubModels:
                 owner=owner,
             )
 
-    def test_pull_request_model(self):
+    def test_pull_request_model(self) -> None:
         """Test PullRequest model."""
         # Create author
         author = GitHubUser(username="test-user", url="https://github.com/test-user")
@@ -207,7 +207,7 @@ class TestGitHubModels:
                 head_branch="feature",
             )
 
-    def test_url_string_equality(self):
+    def test_url_string_equality(self) -> None:
         """Test that URL objects and strings can be correctly compared."""
         from datetime import datetime
 

@@ -18,7 +18,7 @@ from quack_core.integrations.github.utils.api import make_request
 
 
 @pytest.fixture
-def mock_session():
+def mock_session() -> MagicMock:
     """Create a mock requests session."""
     session = MagicMock(spec=requests.Session)
     return session
@@ -27,7 +27,7 @@ def mock_session():
 class TestApiUtils:
     """Tests for API utilities."""
 
-    def test_make_request_success(self, mock_session):
+    def test_make_request_success(self, mock_session: MagicMock) -> None:
         """Test successful API request."""
         # Mock successful response
         mock_response = MagicMock()
@@ -49,7 +49,7 @@ class TestApiUtils:
             "GET", "https://api.github.com/user", params=None, json=None, timeout=30
         )
 
-    def test_make_request_with_params_and_body(self, mock_session):
+    def test_make_request_with_params_and_body(self, mock_session: MagicMock) -> None:
         """Test API request with parameters and body."""
         # Mock successful response
         mock_response = MagicMock()
@@ -80,7 +80,7 @@ class TestApiUtils:
             timeout=30,
         )
 
-    def test_make_request_authentication_error(self, mock_session):
+    def test_make_request_authentication_error(self, mock_session: MagicMock) -> None:
         """Test API request with authentication error."""
         # Mock 401 unauthorized response
         mock_response = MagicMock()
@@ -107,7 +107,7 @@ class TestApiUtils:
         assert "GitHub API authentication failed" in str(excinfo.value)
         assert excinfo.value.service == "GitHub"
 
-    def test_make_request_rate_limit_exceeded(self, mock_session):
+    def test_make_request_rate_limit_exceeded(self, mock_session: MagicMock) -> None:
         """Test API request with rate limit exceeded."""
         # Mock rate limit response
         mock_response = MagicMock()
@@ -144,7 +144,7 @@ class TestApiUtils:
                     excinfo.value
                 )
 
-    def test_make_request_retry_success(self, mock_session):
+    def test_make_request_retry_success(self, mock_session: MagicMock) -> None:
         """Test API request with retry ending in success."""
         # First response will fail with 500, second will succeed
         mock_error_response = MagicMock()
@@ -179,7 +179,7 @@ class TestApiUtils:
             assert result == mock_success_response
             assert mock_session.request.call_count == 2
 
-    def test_make_request_connection_error_retry(self, mock_session):
+    def test_make_request_connection_error_retry(self, mock_session: MagicMock) -> None:
         """Test API request with connection error and retry."""
         # Mock connection error
         mock_session.request.side_effect = requests.exceptions.ConnectionError(
@@ -206,7 +206,7 @@ class TestApiUtils:
             assert excinfo.value.service == "GitHub"
             assert excinfo.value.api_method == "/user"
 
-    def test_make_request_timeout_retry(self, mock_session):
+    def test_make_request_timeout_retry(self, mock_session: MagicMock) -> None:
         """Test API request with timeout and retry."""
         # Mock timeout error
         mock_session.request.side_effect = requests.exceptions.Timeout(
@@ -233,7 +233,7 @@ class TestApiUtils:
             assert excinfo.value.service == "GitHub"
             assert excinfo.value.api_method == "/user"
 
-    def test_make_request_unexpected_error(self, mock_session):
+    def test_make_request_unexpected_error(self, mock_session: MagicMock) -> None:
         """Test API request with unexpected error."""
         # Mock unexpected error
         mock_session.request.side_effect = ValueError("Unexpected error")

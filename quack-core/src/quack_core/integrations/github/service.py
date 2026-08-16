@@ -58,7 +58,7 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
             log_level=effective_log_level,
         )
 
-        self.client = None
+        self.client: GitHubClient | None = None
 
     @property
     def name(self) -> str:
