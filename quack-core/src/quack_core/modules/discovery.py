@@ -486,6 +486,111 @@ class PluginLoader:
 
         return available
 
+    def _rollback_registered_plugins(
+        self, registry: object, registered_ids: list[str]
+    ) -> None:
+        """
+        Unregister previously registered plugins after a strict-mode failure.
+
+        Args:
+            registry: The module registry to unregister plugins from.
+            registered_ids: Plugin IDs that were successfully registered
+                and must now be rolled back.
+        """
+        if not registered_ids:
+            return
+
+        self.logger.warning(
+            f"Strict mode failure - rolling back {len(registered_ids)} "
+            f"registered modules: {registered_ids}"
+        )
+        for registered_id in registered_ids:
+            try:
+                registry.unregister(registered_id)
+            except Exception as unregister_error:
+                self.logger.error(
+                    f"Failed to unregister '{registered_id}' during "
+                    f"rollback: {unregister_error}"
+                )
+
+    def _load_one_entry_point(
+        self,
+        ep_name: str,
+        ep: object,
+        registry: object,
+        result: LoadResult,
+        registered_ids: list[str],
+        strict: bool,
+        auto_register: bool,
+    ) -> bool:
+        """
+        Load, validate, and optionally register a single entry point plugin.
+
+        Mutates `result` and `registered_ids` in place. Extracted from
+        load_enabled_entry_points to keep its branch count under the C901
+        threshold; behavior, order, and messages are unchanged from the
+        original inline loop body.
+
+        Returns:
+            bool: False if the caller should abort the whole loop and
+            return `result` immediately, having already rolled back any
+            registered plugins (only happens in strict mode on failure).
+            True otherwise, meaning the caller should continue the loop.
+        """
+        try:
+            self.logger.debug(f"Loading plugin '{ep_name}' from {ep.value}")
+            factory = ep.load()
+
+            if not callable(factory):
+                raise ValueError(f"Entry point {ep_name} is not callable")
+
+            plugin = factory()
+            plugin = self._validate_plugin(plugin, ep.value)
+
+            # Get the actual plugin_id that will be used for registration
+            actual_plugin_id = getattr(plugin, "plugin_id", None) or plugin.name
+
+            # IMPORTANT: Enforce that plugin_id matches entry point name
+            if actual_plugin_id != ep_name:
+                raise ValueError(
+                    f"Plugin identity mismatch: entry point name is '{ep_name}' "
+                    f"but plugin.plugin_id is '{actual_plugin_id}'. "
+                    f"These must match for deterministic behavior."
+                )
+
+            # Register if requested
+            if auto_register:
+                registry.register(plugin)
+                registered_ids.append(actual_plugin_id)
+                self.logger.debug(
+                    f"Registered plugin '{actual_plugin_id}' (name: {plugin.name})"
+                )
+            else:
+                self.logger.debug(
+                    f"Loaded plugin '{actual_plugin_id}' (name: {plugin.name})"
+                )
+
+            result.loaded.append(actual_plugin_id)
+            return True
+
+        except Exception as e:
+            error_msg = f"Failed to load plugin '{ep_name}': {e}"
+
+            if strict:
+                result.success = False
+                result.errors.append(error_msg)
+                self.logger.error(error_msg)
+                # In strict mode, rollback all successfully registered modules
+                if auto_register:
+                    self._rollback_registered_plugins(registry, registered_ids)
+                result.loaded.clear()
+                return False
+            else:
+                # Non-strict: log as warning and continue
+                result.warnings.append(error_msg)
+                self.logger.warning(error_msg)
+                return True
+
     def load_enabled_entry_points(
         self,
         enabled: list[str],
@@ -558,70 +663,17 @@ class PluginLoader:
                 self.logger.warning(warning_msg)
                 continue
 
-            # Load the plugin
-            ep = ep_map[ep_name]
-            try:
-                self.logger.debug(f"Loading plugin '{ep_name}' from {ep.value}")
-                factory = ep.load()
-
-                if not callable(factory):
-                    raise ValueError(f"Entry point {ep_name} is not callable")
-
-                plugin = factory()
-                plugin = self._validate_plugin(plugin, ep.value)
-
-                # Get the actual plugin_id that will be used for registration
-                actual_plugin_id = getattr(plugin, "plugin_id", None) or plugin.name
-
-                # IMPORTANT: Enforce that plugin_id matches entry point name
-                if actual_plugin_id != ep_name:
-                    raise ValueError(
-                        f"Plugin identity mismatch: entry point name is '{ep_name}' "
-                        f"but plugin.plugin_id is '{actual_plugin_id}'. "
-                        f"These must match for deterministic behavior."
-                    )
-
-                # Register if requested
-                if auto_register:
-                    registry.register(plugin)
-                    registered_ids.append(actual_plugin_id)
-                    self.logger.debug(
-                        f"Registered plugin '{actual_plugin_id}' (name: {plugin.name})"
-                    )
-                else:
-                    self.logger.debug(
-                        f"Loaded plugin '{actual_plugin_id}' (name: {plugin.name})"
-                    )
-
-                result.loaded.append(actual_plugin_id)
-
-            except Exception as e:
-                error_msg = f"Failed to load plugin '{ep_name}': {e}"
-
-                if strict:
-                    result.success = False
-                    result.errors.append(error_msg)
-                    self.logger.error(error_msg)
-                    # In strict mode, rollback all successfully registered modules
-                    if auto_register and registered_ids:
-                        self.logger.warning(
-                            f"Strict mode failure - rolling back {len(registered_ids)} "
-                            f"registered modules: {registered_ids}"
-                        )
-                        for registered_id in registered_ids:
-                            try:
-                                registry.unregister(registered_id)
-                            except Exception as unregister_error:
-                                self.logger.error(
-                                    f"Failed to unregister '{registered_id}' during "
-                                    f"rollback: {unregister_error}"
-                                )
-                    result.loaded.clear()
-                    return result
-                else:
-                    # Non-strict: log as warning and continue
-                    result.warnings.append(error_msg)
-                    self.logger.warning(error_msg)
+            keep_going = self._load_one_entry_point(
+                ep_name,
+                ep_map[ep_name],
+                registry,
+                result,
+                registered_ids,
+                strict,
+                auto_register,
+            )
+            if not keep_going:
+                return result
 
         # Determine final success state
         # In non-strict mode: success if we loaded at least one plugin
@@ -643,6 +695,69 @@ class PluginLoader:
             )
 
         return result
+
+    def _load_one_module_path(
+        self,
+        module_path: str,
+        registry: object,
+        result: LoadResult,
+        registered_ids: list[str],
+        strict: bool,
+        auto_register: bool,
+    ) -> bool:
+        """
+        Load, validate, and optionally register a single plugin module path.
+
+        Mutates `result` and `registered_ids` in place. Extracted from
+        load_enabled_modules to keep its branch count under the C901
+        threshold; behavior, order, and messages are unchanged from the
+        original inline loop body.
+
+        Returns:
+            bool: False if the caller should abort the whole loop and
+            return `result` immediately, having already rolled back any
+            registered plugins (only happens in strict mode on failure).
+            True otherwise, meaning the caller should continue the loop.
+        """
+        try:
+            plugin = self.load_plugin(module_path)
+
+            # Get the actual plugin_id that will be used for registration
+            actual_plugin_id = getattr(plugin, "plugin_id", None) or plugin.name
+
+            # Register if requested
+            if auto_register:
+                registry.register(plugin)
+                registered_ids.append(actual_plugin_id)
+                self.logger.debug(
+                    f"Registered plugin from '{module_path}' "
+                    f"(id: {actual_plugin_id}, name: {plugin.name})"
+                )
+            else:
+                self.logger.debug(
+                    f"Loaded plugin from '{module_path}' "
+                    f"(id: {actual_plugin_id}, name: {plugin.name})"
+                )
+
+            result.loaded.append(actual_plugin_id)
+            return True
+
+        except Exception as e:
+            error_msg = f"Failed to load plugin from '{module_path}': {e}"
+
+            if strict:
+                result.success = False
+                result.errors.append(error_msg)
+                self.logger.error(error_msg)
+                # In strict mode, rollback all successfully registered modules
+                if auto_register:
+                    self._rollback_registered_plugins(registry, registered_ids)
+                result.loaded.clear()
+                return False
+            else:
+                result.warnings.append(error_msg)
+                self.logger.warning(error_msg)
+                return True
 
     def load_enabled_modules(
         self,
@@ -676,54 +791,11 @@ class PluginLoader:
         registered_ids: list[str] = []
 
         for module_path in modules:
-            try:
-                plugin = self.load_plugin(module_path)
-
-                # Get the actual plugin_id that will be used for registration
-                actual_plugin_id = getattr(plugin, "plugin_id", None) or plugin.name
-
-                # Register if requested
-                if auto_register:
-                    registry.register(plugin)
-                    registered_ids.append(actual_plugin_id)
-                    self.logger.debug(
-                        f"Registered plugin from '{module_path}' "
-                        f"(id: {actual_plugin_id}, name: {plugin.name})"
-                    )
-                else:
-                    self.logger.debug(
-                        f"Loaded plugin from '{module_path}' "
-                        f"(id: {actual_plugin_id}, name: {plugin.name})"
-                    )
-
-                result.loaded.append(actual_plugin_id)
-
-            except Exception as e:
-                error_msg = f"Failed to load plugin from '{module_path}': {e}"
-
-                if strict:
-                    result.success = False
-                    result.errors.append(error_msg)
-                    self.logger.error(error_msg)
-                    # In strict mode, rollback all successfully registered modules
-                    if auto_register and registered_ids:
-                        self.logger.warning(
-                            f"Strict mode failure - rolling back {len(registered_ids)} "
-                            f"registered modules: {registered_ids}"
-                        )
-                        for registered_id in registered_ids:
-                            try:
-                                registry.unregister(registered_id)
-                            except Exception as unregister_error:
-                                self.logger.error(
-                                    f"Failed to unregister '{registered_id}' during "
-                                    f"rollback: {unregister_error}"
-                                )
-                    result.loaded.clear()
-                    return result
-                else:
-                    result.warnings.append(error_msg)
-                    self.logger.warning(error_msg)
+            keep_going = self._load_one_module_path(
+                module_path, registry, result, registered_ids, strict, auto_register
+            )
+            if not keep_going:
+                return result
 
         # Determine final success state
         # In non-strict mode: success if we loaded at least one plugin
