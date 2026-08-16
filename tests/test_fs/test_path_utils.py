@@ -25,17 +25,17 @@ from quack_core.core.fs.normalize import _extract_path_str, safe_path_str
 class TestPathUtils(TestCase):
     """Tests for the path utility functions."""
 
-    def test_extract_path_str_with_path(self):
+    def test_extract_path_str_with_path(self) -> None:
         """Test extracting a path string from a Path object."""
         path = Path("test.txt")
         assert _extract_path_str(path) == "test.txt"
 
-    def test_extract_path_str_with_string(self):
+    def test_extract_path_str_with_string(self) -> None:
         """Test extracting a path string from a string."""
         path = "test.txt"
         assert _extract_path_str(path) == "test.txt"
 
-    def test_extract_path_str_with_path_result(self):
+    def test_extract_path_str_with_path_result(self) -> None:
         """Test extracting a path string from a PathResult object."""
         result = PathResult(
             ok=True,
@@ -46,7 +46,7 @@ class TestPathUtils(TestCase):
         )
         assert _extract_path_str(result) == "a.txt"
 
-    def test_extract_path_str_with_data_result_path(self):
+    def test_extract_path_str_with_data_result_path(self) -> None:
         """Test extracting a path string from a DataResult with a path-like data."""
         result = DataResult(
             ok=True,
@@ -56,7 +56,7 @@ class TestPathUtils(TestCase):
         )
         assert _extract_path_str(result) == "b.txt"
 
-    def test_extract_path_str_with_data_result_string(self):
+    def test_extract_path_str_with_data_result_string(self) -> None:
         """Test extracting a path string from a DataResult with a string data."""
         result = DataResult(
             ok=True,
@@ -66,7 +66,7 @@ class TestPathUtils(TestCase):
         )
         assert _extract_path_str(result) == "c.txt"
 
-    def test_extract_path_str_with_non_path_data_falls_back_to_path(self):
+    def test_extract_path_str_with_non_path_data_falls_back_to_path(self) -> None:
         """Test that a DataResult with non-path-like `.data` falls back to `.path`
         rather than raising.
 
@@ -85,14 +85,14 @@ class TestPathUtils(TestCase):
         )
         assert _extract_path_str(result) == "fallback.txt"
 
-    def test_extract_path_str_with_invalid_data_result(self):
+    def test_extract_path_str_with_invalid_data_result(self) -> None:
         """Test that extracting from a DataResult with neither usable `.data` nor
         `.path` raises TypeError."""
         result = DataResult(ok=True, path=None, data=42, format="integer")
         with pytest.raises(TypeError):
             _extract_path_str(result)
 
-    def test_extract_path_str_with_failed_result(self):
+    def test_extract_path_str_with_failed_result(self) -> None:
         """Test that extracting from a failed Result raises ValueError."""
         result = PathResult(
             ok=False,
@@ -104,58 +104,58 @@ class TestPathUtils(TestCase):
         with pytest.raises(ValueError):
             _extract_path_str(result)
 
-    def test_extract_path_str_with_invalid_object(self):
+    def test_extract_path_str_with_invalid_object(self) -> None:
         """Test that extracting from an invalid object raises TypeError."""
         with pytest.raises(TypeError):
             _extract_path_str(object())
 
-    def test_extract_path_str_with_value_method(self):
+    def test_extract_path_str_with_value_method(self) -> None:
         """Test extracting from an object with a value method."""
 
         class ResultWithValue:
             success = True
 
-            def value(self):
+            def value(self) -> str:
                 return "unwrapped.txt"
 
         result = ResultWithValue()
         assert _extract_path_str(result) == "unwrapped.txt"
 
-    def test_extract_path_str_with_unwrap_method(self):
+    def test_extract_path_str_with_unwrap_method(self) -> None:
         """Test extracting from an object with an unwrap method."""
 
         class ResultWithUnwrap:
             success = True
 
-            def unwrap(self):
+            def unwrap(self) -> Path:
                 return Path("unwrapped.txt")
 
         result = ResultWithUnwrap()
         assert _extract_path_str(result) == "unwrapped.txt"
 
-    def test_extract_path_str_with_nested_unwrapping(self):
+    def test_extract_path_str_with_nested_unwrapping(self) -> None:
         """Test extracting from nested result objects that need unwrapping."""
 
         class InnerResult:
             success = True
 
-            def value(self):
+            def value(self) -> Path:
                 return Path("inner.txt")
 
         class OuterResult:
             success = True
 
-            def value(self):
+            def value(self) -> "InnerResult":
                 return InnerResult()
 
         result = OuterResult()
         assert _extract_path_str(result) == "inner.txt"
 
-    def test_safe_path_with_valid_path(self):
+    def test_safe_path_with_valid_path(self) -> None:
         """Test safe_path_str with a valid path."""
         assert safe_path_str(Path("test.txt")) == "test.txt"
 
-    def test_safe_path_with_invalid_object(self):
+    def test_safe_path_with_invalid_object(self) -> None:
         """Test safe_path_str with an invalid object.
 
         NOTE (fs-internals-fix): the old private `_safe_path_str` (in a
@@ -172,11 +172,11 @@ class TestPathUtils(TestCase):
         """
         assert safe_path_str(object()) is None
 
-    def test_safe_path_with_custom_default(self):
+    def test_safe_path_with_custom_default(self) -> None:
         """Test safe_path_str with a custom default value."""
         assert safe_path_str(object(), default="/fallback") == "/fallback"
 
-    def test_safe_path_with_failed_result(self):
+    def test_safe_path_with_failed_result(self) -> None:
         """Test safe_path_str with a failed Result (ok=False)."""
         result = PathResult(
             ok=False,

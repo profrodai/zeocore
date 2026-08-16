@@ -10,6 +10,7 @@ Fix #2: Single source of truth for JSON-safe validation and normalization.
 Prevents drift between ToolContext metadata validation and ToolRunner output serialization.
 """
 
+import logging
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from enum import Enum
@@ -18,12 +19,12 @@ from typing import Any
 
 
 def normalize_for_json(
-    data: Any,
+    data: Any,  # noqa: ANN401 -- genuinely dynamic: accepts any Python object to normalize
     path: str = "value",
     allow_pydantic: bool = True,
     allow_string_fallback: bool = False,
-    logger: Any | None = None,
-) -> Any:
+    logger: logging.Logger | None = None,
+) -> Any:  # noqa: ANN401 -- genuinely dynamic: return is a recursive JSON-safe value (str/int/float/bool/None/list/dict), no narrower static type without a JSONValue recursive alias
     """
     Normalize data to JSON-serializable form.
 
@@ -148,7 +149,7 @@ def normalize_for_json(
         ) from e
 
 
-def is_json_safe(data: Any, allow_pydantic: bool = True) -> bool:
+def is_json_safe(data: Any, allow_pydantic: bool = True) -> bool:  # noqa: ANN401 -- genuinely dynamic, same as normalize_for_json's data param it delegates to
     """
     Check if data is JSON-serializable without modifying it.
 
