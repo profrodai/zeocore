@@ -9,13 +9,17 @@ This module provides methods for interacting with LLMs, such as chat and token c
 """
 
 from collections.abc import Callable, Sequence
+from typing import TYPE_CHECKING
 
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions
 
+if TYPE_CHECKING:
+    from quack_core.integrations.llms.service.integration import LLMIntegration
+
 
 def chat(
-    self,
+    self: "LLMIntegration",
     messages: Sequence[ChatMessage] | Sequence[dict],
     options: LLMOptions | None = None,
     callback: Callable[[str], None] | None = None,
@@ -48,7 +52,7 @@ def chat(
 
 
 def count_tokens(
-    self, messages: Sequence[ChatMessage] | Sequence[dict]
+    self: "LLMIntegration", messages: Sequence[ChatMessage] | Sequence[dict]
 ) -> IntegrationResult[int]:
     """
     Count the number of tokens in the messages.
@@ -75,7 +79,7 @@ def count_tokens(
     return result
 
 
-def get_provider_status(self) -> list[dict] | None:
+def get_provider_status(self: "LLMIntegration") -> list[dict] | None:
     """
     Get the status of all providers when using fallback.
 
@@ -93,7 +97,7 @@ def get_provider_status(self) -> list[dict] | None:
     return None
 
 
-def reset_provider_status(self) -> bool:
+def reset_provider_status(self: "LLMIntegration") -> bool:
     """
     Reset the status of all providers, forcing re-evaluation.
 

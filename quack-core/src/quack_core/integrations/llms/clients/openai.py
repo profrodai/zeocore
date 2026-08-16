@@ -34,7 +34,7 @@ class OpenAIClient(LLMClient):
         initial_retry_delay: float = 1.0,
         max_retry_delay: float = 30.0,
         log_level: int = logging.INFO,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401 -- provider-specific kwargs passed through to the openai SDK constructor
     ) -> None:
         """
         Initialize the OpenAI client.
@@ -67,7 +67,7 @@ class OpenAIClient(LLMClient):
                 "Set OPENAI_ORGANIZATION in environment from provided argument"
             )
 
-    def _get_client(self) -> Any:
+    def _get_client(self) -> Any:  # noqa: ANN401 -- returns the third-party openai.OpenAI SDK object; no local protocol exists for it
         """
         Get the OpenAI client instance.
         Returns:
@@ -205,7 +205,7 @@ class OpenAIClient(LLMClient):
 
     def _handle_streaming(
         self,
-        client: Any,
+        client: Any,  # noqa: ANN401 -- the third-party openai.OpenAI SDK client object; no local protocol exists for it
         model: str,
         messages: list[dict],
         params: dict,
@@ -276,7 +276,7 @@ class OpenAIClient(LLMClient):
 
         return openai_message
 
-    def _process_response(self, response: Any) -> str:
+    def _process_response(self, response: Any) -> str:  # noqa: ANN401 -- accepts either the raw openai SDK response object or a dict (both handled below); no shared protocol exists
         """
         Process a response from the OpenAI API.
         Supports both dict and object responses.
