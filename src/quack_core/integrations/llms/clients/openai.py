@@ -341,6 +341,82 @@ class OpenAIClient(LLMClient):
                 original_error=error,
             )
 
+    def _count_tokens_with_tiktoken(self, messages: list[ChatMessage]) -> int:
+        """
+        Count tokens exactly using tiktoken's encoder.
+
+        Args:
+            messages: Messages to count tokens for.
+
+        Returns:
+            int: Exact token count as computed by tiktoken.
+
+        Raises:
+            ImportError: If tiktoken is not installed.
+        """
+        import tiktoken
+
+        model = self.model
+        encoding_name = "cl100k_base"
+        try:
+            encoding = tiktoken.encoding_for_model(model)
+        except KeyError:
+            encoding = tiktoken.get_encoding(encoding_name)
+
+        token_count = 0
+        openai_messages = [self._convert_message_to_openai(msg) for msg in messages]
+
+        tokens_per_message = 3  # This already accounts for role tokens.
+        tokens_per_name = 1  # Extra token for name if present.
+
+        for message in openai_messages:
+            token_count += tokens_per_message
+
+            for key, value in message.items():
+                # Skip the role since it's already counted in
+                # tokens_per_message.
+                if key == "role":
+                    continue
+                if isinstance(value, str):
+                    token_count += len(encoding.encode(value))
+                elif isinstance(value, dict):
+                    json_str = str(value)
+                    token_count += len(encoding.encode(json_str))
+                if key == "name" and value:
+                    token_count += tokens_per_name
+
+        # Add 3 tokens for the assistant's reply.
+        token_count += 3
+
+        return token_count
+
+    def _estimate_tokens_without_tiktoken(
+        self, messages: list[ChatMessage]
+    ) -> IntegrationResult[int]:
+        """
+        Estimate token count without tiktoken, using a simple heuristic.
+
+        Args:
+            messages: Messages to estimate token count for.
+
+        Returns:
+            IntegrationResult[int]: Estimated token count with a warning
+                message explaining the estimation is approximate.
+        """
+        self.logger.warning(
+            "tiktoken not installed. Using simple token estimation. "
+            "Install tiktoken for more accurate counts: pip install tiktoken"
+        )
+        total_text = ""
+        for message in messages:
+            if message.content:
+                total_text += message.content + " "
+        estimated_tokens = len(total_text) // 4
+        return IntegrationResult.success_result(
+            estimated_tokens,
+            message=("Using simple token estimation. Install tiktoken for accuracy."),
+        )
+
     def _count_tokens_with_provider(
         self, messages: list[ChatMessage]
     ) -> IntegrationResult[int]:
@@ -349,60 +425,10 @@ class OpenAIClient(LLMClient):
         """
         try:
             try:
-                import tiktoken
-
-                model = self.model
-                encoding_name = "cl100k_base"
-                try:
-                    encoding = tiktoken.encoding_for_model(model)
-                except KeyError:
-                    encoding = tiktoken.get_encoding(encoding_name)
-
-                token_count = 0
-                openai_messages = [
-                    self._convert_message_to_openai(msg) for msg in messages
-                ]
-
-                tokens_per_message = 3  # This already accounts for role tokens.
-                tokens_per_name = 1  # Extra token for name if present.
-
-                for message in openai_messages:
-                    token_count += tokens_per_message
-
-                    for key, value in message.items():
-                        # Skip the role since it's already counted in
-                        # tokens_per_message.
-                        if key == "role":
-                            continue
-                        if isinstance(value, str):
-                            token_count += len(encoding.encode(value))
-                        elif isinstance(value, dict):
-                            json_str = str(value)
-                            token_count += len(encoding.encode(json_str))
-                        if key == "name" and value:
-                            token_count += tokens_per_name
-
-                # Add 3 tokens for the assistant's reply.
-                token_count += 3
-
+                token_count = self._count_tokens_with_tiktoken(messages)
                 return IntegrationResult.success_result(token_count)
-
             except ImportError:
-                self.logger.warning(
-                    "tiktoken not installed. Using simple token estimation. "
-                    "Install tiktoken for more accurate counts: pip install tiktoken"
-                )
-                total_text = ""
-                for message in messages:
-                    if message.content:
-                        total_text += message.content + " "
-                estimated_tokens = len(total_text) // 4
-                return IntegrationResult.success_result(
-                    estimated_tokens,
-                    message=(
-                        "Using simple token estimation. Install tiktoken for accuracy."
-                    ),
-                )
+                return self._estimate_tokens_without_tiktoken(messages)
 
         except Exception as e:
             self.logger.error(f"Error counting tokens: {e}")
