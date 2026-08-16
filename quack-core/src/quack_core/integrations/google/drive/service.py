@@ -896,6 +896,17 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             file, upload_error = self._upload_media(path_obj, mime_type, file_metadata)
             if upload_error:
                 return upload_error
+            # _upload_media returns exactly (dict, None) on success or
+            # (None, IntegrationResult) on failure -- the guard above makes
+            # file non-None by construction, but mypy cannot narrow across
+            # the tuple-unpack boundary. Explicit guard, not a behavior
+            # change (matches the auth_provider/config_provider precedent
+            # elsewhere in this file).
+            if file is None:
+                return IntegrationResult.error_result(
+                    error="File upload returned no error but no file data",
+                    message="File upload returned no error but no file data",
+                )
 
             self._apply_public_sharing(file, public)
 
