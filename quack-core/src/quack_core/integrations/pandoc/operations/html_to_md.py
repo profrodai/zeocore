@@ -59,6 +59,73 @@ except ImportError:
     )
 
 
+def _safe_file_size(file_info: object) -> int:
+    """
+    Safely coerce a file info object's size attribute to an int.
+
+    Args:
+        file_info: File info object, expected to expose a "size" attribute.
+
+    Returns:
+        int: The file size, or 1024 as a fallback if it cannot be
+        converted, or 0 if the object has no usable size at all.
+    """
+    try:
+        if hasattr(file_info, "size"):
+            if hasattr(file_info.size, "__int__"):
+                return int(file_info.size)
+            elif file_info.size is not None:
+                return int(str(file_info.size))
+            else:
+                return 0
+        else:
+            return 0
+    except (TypeError, ValueError):
+        raw_size = getattr(file_info, "size", None)
+        logger.warning(
+            f"Could not convert file size to integer: {raw_size}, using default size"
+        )
+        return 1024
+
+
+def _verify_html_structure(html_path: str, config: PandocConfig) -> None:
+    """
+    Read and validate the HTML file's structure, raising on invalid input.
+
+    Args:
+        html_path: Path to the HTML file as a string.
+        config: Conversion configuration.
+
+    Raises:
+        QuackIntegrationError: If the file cannot be read or has invalid
+            HTML structure.
+    """
+    try:
+        read_result = fs.read_text(html_path)
+        if not getattr(read_result, "success", False):
+            read_error = getattr(read_result, "error", "Unknown error")
+            raise QuackIntegrationError(f"Could not read HTML file: {read_error}")
+        html_content = getattr(read_result, "content", "")
+        if not isinstance(html_content, str):
+            logger.warning(
+                "HTML content is not a string, skipping validation: "
+                f"{type(html_content)}"
+            )
+            return
+        is_valid, html_errors = validate_html_structure(
+            html_content, config.validation.check_links
+        )
+        if not is_valid:
+            error_msg = "; ".join(html_errors)
+            raise QuackIntegrationError(
+                f"Invalid HTML structure in {html_path}: {error_msg}"
+            )
+    except Exception as e:
+        if isinstance(e, QuackIntegrationError):
+            raise
+        logger.warning(f"Could not validate HTML structure: {str(e)}")
+
+
 def _validate_input(html_path: str, config: PandocConfig) -> int:
     """
     Validate the input HTML file and return its size.
@@ -79,50 +146,12 @@ def _validate_input(html_path: str, config: PandocConfig) -> int:
     ):
         raise QuackIntegrationError(f"Input file not found: {html_path}")
 
-    # Convert file size to integer safely
-    try:
-        if hasattr(file_info, "size"):
-            if hasattr(file_info.size, "__int__"):
-                original_size = int(file_info.size)
-            elif file_info.size is not None:
-                original_size = int(str(file_info.size))
-            else:
-                original_size = 0
-        else:
-            original_size = 0
-    except (TypeError, ValueError):
-        logger.warning(
-            f"Could not convert file size to integer: {getattr(file_info, 'size', None)}, using default size"
-        )
-        original_size = 1024
+    original_size = _safe_file_size(file_info)
 
     if not config.validation.verify_structure:
         return original_size
 
-    try:
-        read_result = fs.read_text(html_path)
-        if not getattr(read_result, "success", False):
-            raise QuackIntegrationError(
-                f"Could not read HTML file: {getattr(read_result, 'error', 'Unknown error')}"
-            )
-        html_content = getattr(read_result, "content", "")
-        if not isinstance(html_content, str):
-            logger.warning(
-                f"HTML content is not a string, skipping validation: {type(html_content)}"
-            )
-            return original_size
-        is_valid, html_errors = validate_html_structure(
-            html_content, config.validation.check_links
-        )
-        if not is_valid:
-            error_msg = "; ".join(html_errors)
-            raise QuackIntegrationError(
-                f"Invalid HTML structure in {html_path}: {error_msg}"
-            )
-    except Exception as e:
-        if isinstance(e, QuackIntegrationError):
-            raise
-        logger.warning(f"Could not validate HTML structure: {str(e)}")
+    _verify_html_structure(html_path, config)
 
     return original_size
 
@@ -187,15 +216,13 @@ def _write_and_validate_output(
     output_dir = os.path.dirname(output_path)
     dir_result = fs.create_directory(output_dir, exist_ok=True)
     if not getattr(dir_result, "success", False):
-        raise QuackIntegrationError(
-            f"Failed to create output directory: {getattr(dir_result, 'error', 'Unknown error')}"
-        )
+        dir_error = getattr(dir_result, "error", "Unknown error")
+        raise QuackIntegrationError(f"Failed to create output directory: {dir_error}")
 
     write_result = fs.write_text(output_path, cleaned_markdown, encoding="utf-8")
     if not getattr(write_result, "success", False):
-        raise QuackIntegrationError(
-            f"Failed to write output file: {getattr(write_result, 'error', 'Unknown error')}"
-        )
+        write_error = getattr(write_result, "error", "Unknown error")
+        raise QuackIntegrationError(f"Failed to write output file: {write_error}")
 
     conversion_time = time.time() - attempt_start
 
@@ -213,8 +240,9 @@ def _write_and_validate_output(
         try:
             output_size = int(write_result.bytes_written)
         except (TypeError, ValueError):
+            raw_bytes_written = getattr(write_result, "bytes_written", None)
             logger.warning(
-                f"Could not convert bytes_written to integer: {getattr(write_result, 'bytes_written', None)}"
+                f"Could not convert bytes_written to integer: {raw_bytes_written}"
             )
 
     if (
@@ -225,9 +253,8 @@ def _write_and_validate_output(
         try:
             output_size = int(output_info.size)
         except (TypeError, ValueError):
-            logger.warning(
-                f"Could not convert file size to integer: {getattr(output_info, 'size', None)}"
-            )
+            raw_output_size = getattr(output_info, "size", None)
+            logger.warning(f"Could not convert file size to integer: {raw_output_size}")
 
     validation_errors = validate_conversion(
         output_path, input_path, original_size, config
@@ -293,7 +320,8 @@ def convert_html_to_markdown(
                 if validation_errors:
                     error_msg = "; ".join(validation_errors)
                     logger.error(
-                        f"Conversion validation failed on attempt {attempt}: {error_msg}"
+                        f"Conversion validation failed on attempt {attempt}: "
+                        f"{error_msg}"
                     )
                     if attempt == max_retries:
                         metrics.failed_conversions += 1
@@ -365,48 +393,38 @@ def post_process_markdown(markdown_content: str) -> str:
     return cleaned
 
 
-def validate_conversion(
-    output_path: str, input_path: str, original_size: int, config: PandocConfig
-) -> list[str]:
+def _is_test_environment(
+    output_path: str, input_path: str, config: PandocConfig
+) -> bool:
     """
-    Validate the converted markdown document.
+    Detect whether validation is running against test-style fake paths.
 
     Args:
         output_path: Path to the output markdown file as a string.
         input_path: Path to the input HTML file as a string.
-        original_size: Size of the original file.
         config: Conversion configuration.
 
     Returns:
-        List of validation error messages (empty if valid).
+        bool: True if paths or config suggest a test environment.
     """
-    validation_errors: list[str] = []
-
-    # During tests, paths might not be actual file paths
-    # Check if we're in a test by looking for test indicators in paths
-    is_test_environment = (
+    return (
         "test" in output_path.lower()
         or "test" in input_path.lower()
         or config.validation.min_file_size < 20
     )
 
-    # Get file info and examine results
-    output_info = fs.get_file_info(output_path)
-    success = getattr(output_info, "success", False)
-    exists = getattr(output_info, "exists", False)
 
-    # Check if this is a test environment - if so, be more lenient
-    if is_test_environment:
-        # In test environments, assume the file exists even if get_file_info says otherwise
-        if not (success and exists):
-            logger.debug(
-                f"Test environment detected - assuming {output_path} exists despite contradicting file system info"
-            )
-    elif not (success and exists):
-        # Only in non-test environments do we fail validation if the file doesn't exist
-        validation_errors.append(f"Output file does not exist: {output_path}")
-        return validation_errors
+def _resolve_output_size(output_info: object, output_path: str) -> int:
+    """
+    Resolve the effective output file size, preferring actual content length.
 
+    Args:
+        output_info: File info object for the output file.
+        output_path: Path to the output markdown file as a string.
+
+    Returns:
+        int: The best-known size of the output file in bytes.
+    """
     # Get output size safely
     try:
         output_size = (
@@ -415,13 +433,13 @@ def validate_conversion(
             else 0
         )
     except (TypeError, ValueError):
+        raw_output_size = getattr(output_info, "size", None)
         logger.warning(
-            f"Could not convert output size to integer: {getattr(output_info, 'size', None)}, using 0"
+            f"Could not convert output size to integer: {raw_output_size}, using 0"
         )
         output_size = 0
 
     # For testing purposes: assume content size is related to file size
-    content_length = 0
     try:
         read_result = fs.read_text(output_path, encoding="utf-8")
         if getattr(read_result, "success", False):
@@ -434,6 +452,29 @@ def validate_conversion(
         logger.debug(
             f"Could not read {output_path} back to estimate content size: {exc}"
         )
+
+    return output_size
+
+
+def _validate_output_size_and_ratio(
+    output_size: int,
+    original_size: int,
+    config: PandocConfig,
+    is_test_environment: bool,
+) -> list[str]:
+    """
+    Validate the output file's absolute size and its ratio to the input.
+
+    Args:
+        output_size: Size of the output file in bytes.
+        original_size: Size of the original input file in bytes.
+        config: Conversion configuration.
+        is_test_environment: Whether to skip absolute size validation.
+
+    Returns:
+        list[str]: Validation error messages, empty if valid.
+    """
+    validation_errors: list[str] = []
 
     # Skip size validation in tests
     if is_test_environment:
@@ -452,13 +493,30 @@ def validate_conversion(
     if not valid_ratio:
         validation_errors.extend(ratio_errors)
 
-    # Run content validation regardless of environment
+    return validation_errors
+
+
+def _validate_output_content(
+    output_path: str, input_path: str, config: PandocConfig
+) -> list[str]:
+    """
+    Validate the readability and structure of the converted markdown content.
+
+    Args:
+        output_path: Path to the output markdown file as a string.
+        input_path: Path to the input HTML file as a string.
+        config: Conversion configuration.
+
+    Returns:
+        list[str]: Validation error messages, empty if valid.
+    """
+    validation_errors: list[str] = []
+
     try:
         read_result = fs.read_text(output_path, encoding="utf-8")
         if not getattr(read_result, "success", False):
-            validation_errors.append(
-                f"Error reading output file: {getattr(read_result, 'error', 'Unknown error')}"
-            )
+            read_error = getattr(read_result, "error", "Unknown error")
+            validation_errors.append(f"Error reading output file: {read_error}")
             return validation_errors
 
         content = getattr(read_result, "content", "")
@@ -480,10 +538,60 @@ def validate_conversion(
             source_file_name = split_result.data[-1]
             if config.validation.check_links and source_file_name not in content:
                 logger.debug(
-                    f"Source file reference missing in markdown output: {source_file_name}"
+                    "Source file reference missing in markdown output: "
+                    f"{source_file_name}"
                 )
     except Exception as e:
         validation_errors.append(f"Error reading output file: {str(e)}")
+
+    return validation_errors
+
+
+def validate_conversion(
+    output_path: str, input_path: str, original_size: int, config: PandocConfig
+) -> list[str]:
+    """
+    Validate the converted markdown document.
+
+    Args:
+        output_path: Path to the output markdown file as a string.
+        input_path: Path to the input HTML file as a string.
+        original_size: Size of the original file.
+        config: Conversion configuration.
+
+    Returns:
+        List of validation error messages (empty if valid).
+    """
+    # During tests, paths might not be actual file paths
+    # Check if we're in a test by looking for test indicators in paths
+    is_test_environment = _is_test_environment(output_path, input_path, config)
+
+    # Get file info and examine results
+    output_info = fs.get_file_info(output_path)
+    success = getattr(output_info, "success", False)
+    exists = getattr(output_info, "exists", False)
+
+    # Check if this is a test environment - if so, be more lenient
+    if is_test_environment:
+        # In test environments, assume the file exists even if get_file_info
+        # says otherwise
+        if not (success and exists):
+            logger.debug(
+                f"Test environment detected - assuming {output_path} exists "
+                "despite contradicting file system info"
+            )
+    elif not (success and exists):
+        # Only in non-test environments do we fail validation if the file doesn't exist
+        return [f"Output file does not exist: {output_path}"]
+
+    output_size = _resolve_output_size(output_info, output_path)
+
+    validation_errors = _validate_output_size_and_ratio(
+        output_size, original_size, config, is_test_environment
+    )
+
+    # Run content validation regardless of environment
+    validation_errors.extend(_validate_output_content(output_path, input_path, config))
 
     return validation_errors
 

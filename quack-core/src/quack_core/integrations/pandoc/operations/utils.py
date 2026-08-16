@@ -291,7 +291,8 @@ def check_file_size(
         converted_size_str = get_size_str_wrapper(converted_size_int)
         min_size_str = get_size_str_wrapper(validation_min_size_int)
         errors.append(
-            f"Converted file size ({converted_size_str}) is below the minimum threshold ({min_size_str})"
+            f"Converted file size ({converted_size_str}) is below the minimum "
+            f"threshold ({min_size_str})"
         )
         return False, errors
     return True, errors
@@ -322,8 +323,10 @@ def check_conversion_ratio(
             converted_size_str = get_size_str_wrapper(converted_size_int)
             original_size_str = get_size_str_wrapper(original_size_int)
             errors.append(
-                f"Conversion error: Converted file size ({converted_size_str}) is less than "
-                f"{threshold_float * 100:.0f}% of the original file size ({original_size_str}) (ratio: {conversion_ratio:.2f})."
+                "Conversion error: Converted file size "
+                f"({converted_size_str}) is less than "
+                f"{threshold_float * 100:.0f}% of the original file size "
+                f"({original_size_str}) (ratio: {conversion_ratio:.2f})."
             )
             return False, errors
     return True, errors
@@ -369,7 +372,8 @@ def track_metrics(
         converted_size_str = get_size_str_wrapper(converted_size_int)
 
         logger.info(
-            f"File size change for {filename}: {original_size_str} -> {converted_size_str}"
+            f"File size change for {filename}: {original_size_str} -> "
+            f"{converted_size_str}"
         )
 
 

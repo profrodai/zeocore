@@ -40,7 +40,8 @@ def patched_check_file_size(
         file_size_str = f"{file_size_int}B"
         min_size_str = f"{min_size_int}B"
         errors.append(
-            f"Converted file size ({file_size_str}) is below the minimum threshold ({min_size_str})"
+            f"Converted file size ({file_size_str}) is below the "
+            f"minimum threshold ({min_size_str})"
         )
 
     return is_valid, errors
@@ -71,7 +72,8 @@ def patched_check_conversion_ratio(
         is_valid = ratio >= min_ratio_float
         if not is_valid:
             errors.append(
-                f"Conversion ratio ({ratio:.2f}) is less than the minimum threshold ({min_ratio_float:.2f})"
+                f"Conversion ratio ({ratio:.2f}) is less than the minimum "
+                f"threshold ({min_ratio_float:.2f})"
             )
         return is_valid, errors
 
@@ -86,7 +88,8 @@ def patched_check_conversion_ratio(
 
     if not is_valid:
         errors.append(
-            f"Conversion ratio ({ratio:.2f}) is less than the minimum threshold ({min_ratio_float:.2f})"
+            f"Conversion ratio ({ratio:.2f}) is less than the minimum "
+            f"threshold ({min_ratio_float:.2f})"
         )
 
     return is_valid, errors

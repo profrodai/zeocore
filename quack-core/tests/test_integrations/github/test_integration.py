@@ -159,7 +159,8 @@ class TestGitHubMockedIntegration:
         # Create a test-specific subclass of GitHubIntegration that overrides initialize
         class TestGitHubIntegration(GitHubIntegration):
             def initialize(self) -> IntegrationResult:
-                # Skip the problematic path resolution and just set up the integration directly
+                # Skip the problematic path resolution and just set up the
+                # integration directly
                 self.config = {
                     "token": "mock_token",
                     "api_url": "https://api.github.com",

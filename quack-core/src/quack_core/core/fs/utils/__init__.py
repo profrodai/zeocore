@@ -15,7 +15,8 @@ import warnings
 from quack_core.core.fs.service.standalone import *  # noqa: F403
 
 warnings.warn(
-    "quack_core.core.fs.utils is deprecated. Use quack_core.core.fs.service.standalone instead.",
+    "quack_core.core.fs.utils is deprecated. Use "
+    "quack_core.core.fs.service.standalone instead.",
     DeprecationWarning,
     stacklevel=2,
 )

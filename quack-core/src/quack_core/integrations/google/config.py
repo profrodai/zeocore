@@ -105,6 +105,75 @@ class GoogleConfigProvider(BaseConfigProvider):
         """Get the name of the configuration provider."""
         return f"Google{self.service.capitalize()}"
 
+    def _apply_nested_integrations_google(
+        self, config_data: dict[str, Any], result_config: dict[str, Any]
+    ) -> bool:
+        """
+        Phase 1 of _extract_config: nested integrations.google structure
+        (shared settings, then service-specific override). Extracted to keep
+        _extract_config's own branch count under the C901 threshold;
+        behavior/order unchanged from the original inline block. Returns
+        True if this phase found and applied any config.
+        """
+        if (
+            "integrations" not in config_data
+            or "google" not in config_data["integrations"]
+        ):
+            return False
+
+        base_google_config = config_data["integrations"]["google"]
+        # Start with the shared Google configuration
+        result_config.update(base_google_config)
+
+        # Look for service-specific settings inside integrations.google.<service>
+        service_specific = base_google_config.get(self.service, {})
+        if service_specific and isinstance(service_specific, dict):
+            # Override shared settings with service-specific ones
+            result_config.update(service_specific)
+
+        return True
+
+    def _apply_direct_service_key(
+        self, config_data: dict[str, Any], result_config: dict[str, Any]
+    ) -> bool:
+        """
+        Phase 2 of _extract_config: direct google_<service> section.
+        Extracted for the same C901 reason as
+        _apply_nested_integrations_google.
+        """
+        service_key = f"google_{self.service}"
+        if service_key not in config_data:
+            return False
+        result_config.update(config_data[service_key])
+        return True
+
+    def _apply_top_level_google_section(
+        self, config_data: dict[str, Any], result_config: dict[str, Any]
+    ) -> bool:
+        """
+        Phase 3 of _extract_config: top-level google section, plus its
+        service-specific subkey. Extracted for the same C901 reason as
+        _apply_nested_integrations_google.
+        """
+        if "google" not in config_data:
+            return False
+
+        google_config = config_data["google"]
+
+        # Extract any shared Google settings not already in result_config
+        for key, value in google_config.items():
+            if key not in result_config and key != "mail" and key != "drive":
+                result_config[key] = value
+
+        # Look for service-specific subkey (e.g., google.drive or google.mail)
+        if self.service in google_config:
+            service_config = google_config[self.service]
+            if isinstance(service_config, dict):
+                # Override with service-specific settings
+                result_config.update(service_config)
+
+        return True
+
     def _extract_config(self, config_data: dict[str, Any]) -> dict[str, Any]:
         """
         Extract Google service configuration from the full config data.
@@ -118,46 +187,16 @@ class GoogleConfigProvider(BaseConfigProvider):
         Returns:
             dict[str, Any]: Google service-specific configuration
         """
-        result_config = {}
-        found_config = False
+        result_config: dict[str, Any] = {}
 
-        # First check for nested integrations.google structure (shared settings)
-        if "integrations" in config_data and "google" in config_data["integrations"]:
-            base_google_config = config_data["integrations"]["google"]
-            # Start with the shared Google configuration
-            result_config.update(base_google_config)
-            found_config = True
-
-            # Look for service-specific settings inside integrations.google.<service>
-            service_specific = base_google_config.get(self.service, {})
-            if service_specific and isinstance(service_specific, dict):
-                # Override shared settings with service-specific ones
-                result_config.update(service_specific)
-
-        # Look for direct google_<service> section next
-        service_key = f"google_{self.service}"
-        if service_key in config_data:
-            service_config = config_data[service_key]
-            # Override with direct service config
-            result_config.update(service_config)
-            found_config = True
-
-        # If not found, check top-level google section
-        if "google" in config_data:
-            google_config = config_data["google"]
-            found_config = True
-
-            # Extract any shared Google settings not already in result_config
-            for key, value in google_config.items():
-                if key not in result_config and key != "mail" and key != "drive":
-                    result_config[key] = value
-
-            # Look for service-specific subkey (e.g., google.drive or google.mail)
-            if self.service in google_config:
-                service_config = google_config[self.service]
-                if isinstance(service_config, dict):
-                    # Override with service-specific settings
-                    result_config.update(service_config)
+        found_nested = self._apply_nested_integrations_google(
+            config_data, result_config
+        )
+        found_direct = self._apply_direct_service_key(config_data, result_config)
+        found_top_level = self._apply_top_level_google_section(
+            config_data, result_config
+        )
+        found_config = found_nested or found_direct or found_top_level
 
         # If no configuration was found at all, return an empty dict
         # This matches the expectation in the test case

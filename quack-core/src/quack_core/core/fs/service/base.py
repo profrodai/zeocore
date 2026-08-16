@@ -48,13 +48,14 @@ class _BaseFileSystemService:
         if self.unsafe_allow_absolute_paths:
             self.logger.warning(
                 "⚠️  SECURITY WARNING: unsafe_allow_absolute_paths=True - "
-                "Absolute paths outside base_dir are permitted. Operations can access paths "
-                "outside the sandbox root. Relative-path escape via '..' remains BLOCKED "
-                "(this flag does not disable the '..' traversal check). "
-                "NOTE: This does NOT protect against symlink-based TOCTOU attacks or symlinks "
-                "inside base_dir that point outside. For maximum security, use a dedicated "
-                "filesystem namespace or container-level isolation. "
-                "Only enable this in fully trusted environments."
+                "Absolute paths outside base_dir are permitted. Operations can "
+                "access paths outside the sandbox root. Relative-path escape via "
+                "'..' remains BLOCKED (this flag does not disable the '..' "
+                "traversal check). NOTE: This does NOT protect against "
+                "symlink-based TOCTOU attacks or symlinks inside base_dir that "
+                "point outside. For maximum security, use a dedicated filesystem "
+                "namespace or container-level isolation. Only enable this in "
+                "fully trusted environments."
             )
 
         self.operations = FileSystemOperations()
@@ -88,79 +89,113 @@ class _BaseFileSystemService:
                 f"Invalid path input: {path}", original_error=e
             ) from e
 
+    # Ordered exception-type dispatch table for _map_error. ORDER MATTERS: the
+    # first matching (most-specific-first) entry wins, exactly mirroring the
+    # prior if/elif isinstance chain's semantics. ValueError is handled
+    # separately below because its disposition depends on the message text,
+    # not just the type.
+    _ERROR_TYPE_DISPATCH: tuple[tuple[type[Exception], str, str], ...] = (
+        (
+            QuackPathEscapeError,
+            "path_escape_attempt",
+            "Path attempted to traverse above the base directory using '..' or "
+            "similar.",
+        ),
+        (
+            QuackPathOutsideBaseDirError,
+            "path_outside_base_dir",
+            "Absolute paths outside the configured base directory are not allowed "
+            "(unsafe_allow_absolute_paths=False).",
+        ),
+        (
+            QuackValidationError,
+            "validation_error",
+            "The input path is invalid, malformed, or unsafe.",
+        ),
+        (TypeError, "validation_error", "Invalid path input type or shape."),
+        (
+            FileNotFoundError,
+            "file_not_found",
+            "Check if the file path is correct relative to base_dir.",
+        ),
+        (
+            FileExistsError,
+            "file_exists",
+            "Target already exists. Use overwrite=True or choose a different path.",
+        ),
+        (
+            PermissionError,
+            "permission_denied",
+            "Check file permissions or run with elevated privileges.",
+        ),
+        (
+            IsADirectoryError,
+            "is_a_directory",
+            "Expected a file but found a directory.",
+        ),
+        (
+            NotADirectoryError,
+            "not_a_directory",
+            "Expected a directory but found a file.",
+        ),
+        (
+            OSError,
+            "io_error",
+            "An operating system error occurred during filesystem access.",
+        ),
+    )
+
+    @staticmethod
+    def _map_value_error(msg: str) -> tuple[str, str]:
+        """
+        Sub-dispatch for ValueError, whose disposition depends on message text
+        rather than a distinct exception subclass. Extracted from _map_error
+        to keep the top-level dispatch a flat table (C901 reduction).
+        """
+        msg_lower = msg.lower()
+        if "unsupported algorithm" in msg_lower:
+            return "unsupported_algorithm", "Check the requested hash algorithm."
+        if "invalid regex" in msg_lower:
+            return (
+                "invalid_regex",
+                "The provided regular expression pattern is invalid.",
+            )
+        if "is not a dict" in msg_lower:  # yaml/json parsing errors from ops
+            return (
+                "invalid_data_format",
+                "The file content structure does not match the expected format "
+                "(e.g. dict).",
+            )
+        return "validation_error", "Input validation failed."
+
     def _map_error(self, e: Exception) -> ErrorInfo:
         """
         Centralized error mapping logic.
         Converts native exceptions to structured ErrorInfo with stable IDs.
 
-        CRITICAL: Order matters - most specific exceptions first!
+        CRITICAL: Order matters - most specific exceptions first! See
+        _ERROR_TYPE_DISPATCH for the ordered type table; ValueError is
+        special-cased via _map_value_error because its mapping depends on
+        message content, not just its type.
         """
         exception_cls = e.__class__.__name__
         msg = str(e)
-        hint = None
-        details = {}
         trace_id = str(uuid.uuid4())
 
-        # Stable snake_case IDs
         err_type = "unknown_error"
+        hint: str | None = None
 
-        # SECURITY ERRORS FIRST (most specific)
-        if isinstance(e, QuackPathEscapeError):
-            err_type = "path_escape_attempt"
-            hint = "Path attempted to traverse above the base directory using '..' or similar."
-        elif isinstance(e, QuackPathOutsideBaseDirError):
-            err_type = "path_outside_base_dir"
-            hint = "Absolute paths outside the configured base directory are not allowed (unsafe_allow_absolute_paths=False)."
+        for exc_type, mapped_type, mapped_hint in self._ERROR_TYPE_DISPATCH:
+            if isinstance(e, exc_type):
+                err_type, hint = mapped_type, mapped_hint
+                break
+        else:
+            # No entry in the table matched - only ValueError has a mapping
+            # left to try (checked last, same as the original elif chain).
+            if isinstance(e, ValueError):
+                err_type, hint = self._map_value_error(msg)
 
-        # VALIDATION ERRORS
-        elif isinstance(e, QuackValidationError):
-            err_type = "validation_error"
-            hint = "The input path is invalid, malformed, or unsafe."
-        elif isinstance(e, TypeError):
-            err_type = "validation_error"
-            hint = "Invalid path input type or shape."
-
-        # FILE SYSTEM ERRORS (specific before general)
-        elif isinstance(e, FileNotFoundError):
-            err_type = "file_not_found"
-            hint = "Check if the file path is correct relative to base_dir."
-        elif isinstance(e, FileExistsError):
-            err_type = "file_exists"
-            hint = (
-                "Target already exists. Use overwrite=True or choose a different path."
-            )
-        elif isinstance(e, PermissionError):
-            err_type = "permission_denied"
-            hint = "Check file permissions or run with elevated privileges."
-        elif isinstance(e, IsADirectoryError):
-            err_type = "is_a_directory"
-            hint = "Expected a file but found a directory."
-        elif isinstance(e, NotADirectoryError):
-            err_type = "not_a_directory"
-            hint = "Expected a directory but found a file."
-        elif isinstance(e, OSError):
-            err_type = "io_error"
-            hint = "An operating system error occurred during filesystem access."
-
-        # VALUE ERRORS (generic bucket, after specific checks)
-        elif isinstance(e, ValueError):
-            msg_lower = msg.lower()
-            if "unsupported algorithm" in msg_lower:
-                err_type = "unsupported_algorithm"
-                hint = "Check the requested hash algorithm."
-            elif "invalid regex" in msg_lower:
-                err_type = "invalid_regex"
-                hint = "The provided regular expression pattern is invalid."
-            elif (
-                "is not a dict" in msg_lower
-            ):  # Catching yaml/json parsing errors from ops
-                err_type = "invalid_data_format"
-                hint = "The file content structure does not match the expected format (e.g. dict)."
-            else:
-                err_type = "validation_error"
-                hint = "Input validation failed."
-
-        # Extract error details if available
+        details = {}
         if hasattr(e, "filename"):
             details["filename"] = str(e.filename)
         if hasattr(e, "errno"):

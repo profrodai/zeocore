@@ -35,7 +35,8 @@ class TestDriveOperationsFolder:
             },
         )
 
-        # Mock API request execution - make sure the path matches exactly what's in folder.py
+        # Mock API request execution - make sure the path matches exactly
+        # what's in folder.py
         with patch(
             "quack_core.integrations.google.drive.operations.folder.execute_api_request"
         ) as mock_execute:
@@ -79,7 +80,8 @@ class TestDriveOperationsFolder:
                 assert isinstance(mock_service, MockDriveService)
                 assert mock_service.files_call_count == 1
 
-                # Check that the files resource methods were called with correct parameters
+                # Check that the files resource methods were called with
+                # correct parameters
                 files_resource = mock_service.files()
                 assert isinstance(files_resource, MockDriveFilesResource)
                 assert files_resource.create_call_count == 1

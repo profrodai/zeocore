@@ -59,7 +59,8 @@ class StorageScheme(str, Enum):
     Storage backend type for artifacts.
 
     Core schemes are well-known and blessed.
-    For custom backends, use 'custom' and specify the scheme in StorageRef.scheme_custom.
+    For custom backends, use 'custom' and specify the scheme in
+    StorageRef.scheme_custom.
     """
 
     # Core schemes (always supported)

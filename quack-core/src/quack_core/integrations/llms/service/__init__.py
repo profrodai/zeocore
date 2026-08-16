@@ -27,7 +27,8 @@ def check_llm_dependencies() -> tuple[bool, str, list[str]]:
     Check if LLM dependencies are available.
 
     Returns:
-        tuple[bool, str, list[str]]: Success status, message, and list of available providers
+        tuple[bool, str, list[str]]: Success status, message, and list of
+            available providers
     """
     available_providers = []
 
@@ -64,7 +65,8 @@ def check_llm_dependencies() -> tuple[bool, str, list[str]]:
     ):
         return (
             False,
-            "No LLM providers available. Install OpenAI or Anthropic package, or run Ollama locally.",
+            "No LLM providers available. Install OpenAI or Anthropic package, "
+            "or run Ollama locally.",
             available_providers,
         )
 
@@ -188,7 +190,8 @@ class LLMIntegration(BaseIntegrationService):
                 try:
                     fallback_config = FallbackConfig(**llm_config["fallback"])
                     self.logger.info(
-                        f"Loaded fallback configuration with providers: {fallback_config.providers}"
+                        "Loaded fallback configuration with providers: "
+                        f"{fallback_config.providers}"
                     )
                 except Exception as e:
                     self.logger.warning(
@@ -399,11 +402,15 @@ class LLMIntegration(BaseIntegrationService):
 
             self._initialized = True
 
+            mock_note = (
+                " (using mock client only)"
+                if self._using_mock
+                else " (may use mock client as fallback)"
+            )
             return IntegrationResult.success_result(
                 message=(
-                    f"LLM integration initialized successfully with fallback support. "
-                    f"Providers: {', '.join(fallback_providers)}"
-                    f"{' (may use mock client as fallback)' if not self._using_mock else ' (using mock client only)'}"
+                    "LLM integration initialized successfully with fallback "
+                    f"support. Providers: {', '.join(fallback_providers)}{mock_note}"
                 )
             )
         except Exception as e:
@@ -475,7 +482,8 @@ class LLMIntegration(BaseIntegrationService):
         Get the status of all providers when using fallback.
 
         Returns:
-            list[dict] | None: Status information for all providers or None if not using fallback
+            list[dict] | None: Status information for all providers or None if
+                not using fallback
         """
         if self._fallback_client is not None:
             return [

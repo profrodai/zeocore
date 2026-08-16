@@ -45,7 +45,10 @@ class ToolInfo(BaseModel):
 
     name: str = Field(
         ...,
-        description="Tool identifier with namespace (e.g., 'media.slice_video', 'text.summarize')",
+        description=(
+            "Tool identifier with namespace (e.g., 'media.slice_video', "
+            "'text.summarize')"
+        ),
         examples=["media.slice_video", "text.summarize", "crm.sync_contacts"],
     )
 
@@ -128,7 +131,8 @@ class RunManifest(BaseModel):
         - finished_at >= started_at (if both present)
         - duration_sec consistent with timestamps (if all present)
         - If status == skipped → outputs AND intermediates must be empty
-        - If status == error → outputs AND intermediates must be empty (no partial outputs)
+        - If status == error → outputs AND intermediates must be empty
+          (no partial outputs)
         - error field required if status == error
 
     Routing Convention:
@@ -291,7 +295,10 @@ class RunManifest(BaseModel):
     # Execution identity
     run_id: str = Field(
         default_factory=generate_run_id,
-        description="Unique identifier for this execution (should match CapabilityResult.run_id)",
+        description=(
+            "Unique identifier for this execution (should match "
+            "CapabilityResult.run_id)"
+        ),
     )
 
     tool: ToolInfo = Field(..., description="Information about the tool that executed")
@@ -339,7 +346,9 @@ class RunManifest(BaseModel):
     # Metadata
     metadata: dict[str, Any] = Field(
         default_factory=dict,
-        description="Free-form metadata (config, environment, capability-specific data)",
+        description=(
+            "Free-form metadata (config, environment, capability-specific data)"
+        ),
     )
 
     provenance: Provenance | None = Field(
@@ -365,7 +374,8 @@ class RunManifest(BaseModel):
         if self.finished_at is not None:
             if self.finished_at < self.started_at:
                 raise ValueError(
-                    f"finished_at ({self.finished_at}) must be >= started_at ({self.started_at})"
+                    f"finished_at ({self.finished_at}) must be >= "
+                    f"started_at ({self.started_at})"
                 )
 
             # Validate duration_sec if present
@@ -401,17 +411,20 @@ class RunManifest(BaseModel):
                 )
             if self.intermediates:
                 raise ValueError(
-                    "status=error must have empty intermediates (no partial artifacts allowed)"
+                    "status=error must have empty intermediates "
+                    "(no partial artifacts allowed)"
                 )
 
         if self.status == CapabilityStatus.skipped:
             if self.outputs:
                 raise ValueError(
-                    "status=skipped must have empty outputs (skipped processing produces no outputs)"
+                    "status=skipped must have empty outputs "
+                    "(skipped processing produces no outputs)"
                 )
             if self.intermediates:
                 raise ValueError(
-                    "status=skipped must have empty intermediates (skipped processing produces no artifacts)"
+                    "status=skipped must have empty intermediates "
+                    "(skipped processing produces no artifacts)"
                 )
 
         return self

@@ -108,7 +108,8 @@ class DependencyChecker:
                 ):
                     violations.append(
                         f"{filepath.relative_to(self.contracts_root)}: "
-                        f"Forbidden import '{imported_module}' (Ring A must not import Ring B/C/D)"
+                        f"Forbidden import '{imported_module}' "
+                        "(Ring A must not import Ring B/C/D)"
                     )
                     continue  # Already found violation for this import
 

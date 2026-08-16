@@ -58,7 +58,8 @@ class TestGetIntegrationService(unittest.TestCase):
     @patch("quack_core.integrations.core.get_global_registry")
     def test_get_integration_service_not_found(self, mock_get_global_registry):
         """
-        Test that get_integration_service returns None when no matching service is found.
+        Test that get_integration_service returns None when no matching
+        service is found.
         """
         # Setup mock registry returned by get_global_registry()
         mock_registry = mock_get_global_registry.return_value
@@ -76,7 +77,8 @@ class TestGetIntegrationService(unittest.TestCase):
         self, mock_get_global_registry
     ):
         """
-        Test that get_integration_service returns the first matching service when multiple are found.
+        Test that get_integration_service returns the first matching
+        service when multiple are found.
         """
 
         # Setup mock registry with multiple services

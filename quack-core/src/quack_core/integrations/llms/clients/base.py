@@ -109,7 +109,9 @@ class LLMClient(ABC, LLMProviderProtocol):
                 try:
                     request_options.model = self.model
                 except ValueError:
-                    pass  # If model is not specified, let the concrete implementation handle it
+                    # If model is not specified, let the concrete
+                    # implementation handle it
+                    pass
 
             # Apply retry logic
             retry_count = 0
@@ -127,7 +129,8 @@ class LLMClient(ABC, LLMProviderProtocol):
 
                     # Log retry information
                     self.logger.warning(
-                        f"Retrying chat request ({retry_count}/{self._retry_count}) after error: {e}"
+                        f"Retrying chat request ({retry_count}/{self._retry_count}) "
+                        f"after error: {e}"
                     )
 
                     # Sleep with exponential backoff
@@ -228,7 +231,8 @@ class LLMClient(ABC, LLMProviderProtocol):
 
         Raises:
             ValueError: If messages are of an unsupported type
-            QuackIntegrationError: If message conversion fails or required fields are missing
+            QuackIntegrationError: If message conversion fails or required
+                fields are missing
         """
         normalized_messages: list[ChatMessage] = []
 
@@ -237,7 +241,8 @@ class LLMClient(ABC, LLMProviderProtocol):
                 # Ensure required keys are present
                 if "role" not in message or "content" not in message:
                     raise QuackIntegrationError(
-                        "Failed to normalize message: missing required fields 'role' and/or 'content'",
+                        "Failed to normalize message: missing required "
+                        "fields 'role' and/or 'content'",
                         context={"message_type": type(message).__name__},
                     )
                 try:

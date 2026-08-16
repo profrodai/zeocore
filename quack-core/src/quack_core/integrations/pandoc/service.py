@@ -75,7 +75,8 @@ class PandocIntegration(BaseIntegrationService):
         # Store service instances
         self.paths_service = paths_service or PathService()
 
-        # Use /tmp as fallback base_dir to avoid issues when cwd is deleted (common in tests)
+        # Use /tmp as fallback base_dir to avoid issues when cwd is deleted
+        # (common in tests)
         try:
             self.fs_service = fs_service or FileSystemService()
         except (FileNotFoundError, OSError):
@@ -113,9 +114,12 @@ class PandocIntegration(BaseIntegrationService):
         """
         if not self._initialized:
             logger.error("Pandoc integration is not initialized")
+            not_initialized_msg = (
+                "Pandoc integration is not initialized. Call initialize() first."
+            )
             return IntegrationResult.error_result(
-                error="Pandoc integration is not initialized. Call initialize() first.",
-                message="Pandoc integration is not initialized. Call initialize() first.",
+                error=not_initialized_msg,
+                message=not_initialized_msg,
             )
         return None
 
@@ -286,7 +290,8 @@ class PandocIntegration(BaseIntegrationService):
                     output_result.path if output_result.success else output_path
                 )
 
-            # Use converter - signature is: convert_file(input_path, output_path, output_format)
+            # Use converter - signature is:
+            # convert_file(input_path, output_path, output_format)
             return self.converter.convert_file(input_path, output_path, "markdown")
 
         except Exception as e:
@@ -323,13 +328,94 @@ class PandocIntegration(BaseIntegrationService):
                     output_result.path if output_result.success else output_path
                 )
 
-            # Use converter - signature is: convert_file(input_path, output_path, output_format)
+            # Use converter - signature is:
+            # convert_file(input_path, output_path, output_format)
             return self.converter.convert_file(input_path, output_path, "docx")
 
         except Exception as e:
             error_msg = f"Markdown to DOCX conversion failed: {str(e)}"
             logger.error(error_msg)
             return IntegrationResult.error_result(error=error_msg, message=error_msg)
+
+    def _resolve_convert_directory_paths(
+        self, input_dir: str, output_dir: str | None
+    ) -> tuple[str, str | None]:
+        """Resolve the input and output directories to project paths.
+
+        Args:
+            input_dir: Directory containing input files.
+            output_dir: Optional output directory.
+
+        Returns:
+            Tuple of (resolved_input_dir, resolved_output_dir).
+        """
+        input_result = self.paths_service.resolve_project_path(input_dir)
+        input_dir = input_result.path if input_result.success else input_dir
+
+        if output_dir:
+            output_result = self.paths_service.resolve_project_path(output_dir)
+            output_dir = output_result.path if output_result.success else output_dir
+
+        return input_dir, output_dir
+
+    def _verify_convert_directory(self, input_dir: str) -> IntegrationResult | None:
+        """Verify that the input directory exists and is a directory.
+
+        Args:
+            input_dir: Resolved directory containing input files.
+
+        Returns:
+            IntegrationResult error if verification fails, None if valid.
+        """
+        dir_info = self.fs_service.get_file_info(input_dir)
+        if not dir_info.success or not dir_info.exists:
+            return IntegrationResult.error_result(
+                error=f"Input directory not found: {input_dir}",
+                message=f"Input directory not found: {input_dir}",
+            )
+
+        if not dir_info.is_dir:
+            return IntegrationResult.error_result(
+                error=f"Path is not a directory: {input_dir}",
+                message=f"Path is not a directory: {input_dir}",
+            )
+
+        return None
+
+    def _build_conversion_tasks(
+        self, input_files: list[str], output_format: str, options: dict[str, Any]
+    ) -> list[Any]:
+        """Build ConversionTask objects for each discovered input file.
+
+        Args:
+            input_files: Paths to files to convert.
+            output_format: Target format (e.g., 'markdown', 'docx').
+            options: Additional conversion options passed to each task.
+
+        Returns:
+            list[ConversionTask]: Tasks successfully built. Files that fail
+            to yield file info are skipped with a warning.
+        """
+        from quack_core.integrations.pandoc.models import ConversionTask
+        from quack_core.integrations.pandoc.operations import get_file_info
+
+        tasks = []
+        for file_path in input_files:
+            try:
+                file_info = get_file_info(file_path)
+                # Pass **options into the task
+                task = ConversionTask(
+                    source=file_info,
+                    target_format=output_format,
+                    output_path=None,  # Let converter determine output path
+                    options=options,  # Pass user provided options
+                )
+                tasks.append(task)
+            except Exception as e:
+                logger.warning(f"Failed to create task for {file_path}: {e}")
+                continue
+
+        return tasks
 
     def convert_directory(
         self,
@@ -357,26 +443,14 @@ class PandocIntegration(BaseIntegrationService):
 
         try:
             # Resolve paths
-            input_result = self.paths_service.resolve_project_path(input_dir)
-            input_dir = input_result.path if input_result.success else input_dir
-
-            if output_dir:
-                output_result = self.paths_service.resolve_project_path(output_dir)
-                output_dir = output_result.path if output_result.success else output_dir
+            input_dir, output_dir = self._resolve_convert_directory_paths(
+                input_dir, output_dir
+            )
 
             # Verify input directory exists
-            dir_info = self.fs_service.get_file_info(input_dir)
-            if not dir_info.success or not dir_info.exists:
-                return IntegrationResult.error_result(
-                    error=f"Input directory not found: {input_dir}",
-                    message=f"Input directory not found: {input_dir}",
-                )
-
-            if not dir_info.is_dir:
-                return IntegrationResult.error_result(
-                    error=f"Path is not a directory: {input_dir}",
-                    message=f"Path is not a directory: {input_dir}",
-                )
+            verify_error = self._verify_convert_directory(input_dir)
+            if verify_error:
+                return verify_error
 
             # Find files matching pattern
             find_result = self.fs_service.find_files(
@@ -396,24 +470,7 @@ class PandocIntegration(BaseIntegrationService):
                 )
 
             # Create ConversionTask objects for each file
-            from quack_core.integrations.pandoc.models import ConversionTask
-            from quack_core.integrations.pandoc.operations import get_file_info
-
-            tasks = []
-            for file_path in input_files:
-                try:
-                    file_info = get_file_info(file_path)
-                    # Pass **options into the task
-                    task = ConversionTask(
-                        source=file_info,
-                        target_format=output_format,
-                        output_path=None,  # Let converter determine output path
-                        options=options,  # Pass user provided options
-                    )
-                    tasks.append(task)
-                except Exception as e:
-                    logger.warning(f"Failed to create task for {file_path}: {e}")
-                    continue
+            tasks = self._build_conversion_tasks(input_files, output_format, options)
 
             if not tasks:
                 return IntegrationResult.error_result(

@@ -50,7 +50,8 @@ class TestLLMProtocols:
         mock = MagicMock()
         assert not isinstance(mock, LLMProviderProtocol)
 
-        # Test with a more specific implementation that has properties but not all methods
+        # Test with a more specific implementation that has properties
+        # but not all methods
         class PartialImpl:
             @property
             def model(self) -> str:

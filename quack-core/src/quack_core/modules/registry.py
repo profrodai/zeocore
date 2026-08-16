@@ -229,6 +229,63 @@ class PluginRegistry:
 
         self.logger.debug(f"Unregistered plugin: {plugin_id}")
 
+    def _unregister_command_plugin(
+        self, plugin: CommandPluginProtocol, plugin_id: str
+    ) -> None:
+        """
+        Remove a command plugin's registry entry and owned commands.
+
+        Args:
+            plugin: Command plugin to unregister
+            plugin_id: Stable plugin identifier
+        """
+        self._command_plugins.pop(plugin_id, None)
+        for command in plugin.list_commands():
+            # Only remove if this plugin still owns the command
+            if command in self._commands:
+                owner_id = self._get_plugin_id(self._commands[command])
+                if owner_id == plugin_id:
+                    self._commands.pop(command, None)
+
+    def _unregister_workflow_plugin(
+        self, plugin: WorkflowPluginProtocol, plugin_id: str
+    ) -> None:
+        """
+        Remove a workflow plugin's registry entry and owned workflows.
+
+        Args:
+            plugin: Workflow plugin to unregister
+            plugin_id: Stable plugin identifier
+        """
+        self._workflow_plugins.pop(plugin_id, None)
+        for workflow in plugin.list_workflows():
+            # Only remove if this plugin still owns the workflow
+            if workflow in self._workflows:
+                owner_id = self._get_plugin_id(self._workflows[workflow])
+                if owner_id == plugin_id:
+                    self._workflows.pop(workflow, None)
+
+    def _unregister_extension_plugin(
+        self, plugin: ExtensionPluginProtocol, plugin_id: str
+    ) -> None:
+        """
+        Remove an extension plugin's registry entry and target mapping.
+
+        Args:
+            plugin: Extension plugin to unregister
+            plugin_id: Stable plugin identifier
+        """
+        self._extension_plugins.pop(plugin_id, None)
+        target = plugin.get_target_plugin()
+        if target in self._extensions:
+            self._extensions[target] = [
+                p
+                for p in self._extensions[target]
+                if self._get_plugin_id(p) != plugin_id
+            ]
+            if not self._extensions[target]:
+                self._extensions.pop(target, None)
+
     def _unregister_by_type(self, plugin: QuackPluginProtocol, plugin_id: str) -> None:
         """
         Remove the plugin from type-specific registries.
@@ -238,34 +295,13 @@ class PluginRegistry:
             plugin_id: Stable plugin identifier
         """
         if isinstance(plugin, CommandPluginProtocol):
-            self._command_plugins.pop(plugin_id, None)
-            for command in plugin.list_commands():
-                # Only remove if this plugin still owns the command
-                if command in self._commands:
-                    owner_id = self._get_plugin_id(self._commands[command])
-                    if owner_id == plugin_id:
-                        self._commands.pop(command, None)
+            self._unregister_command_plugin(plugin, plugin_id)
 
         if isinstance(plugin, WorkflowPluginProtocol):
-            self._workflow_plugins.pop(plugin_id, None)
-            for workflow in plugin.list_workflows():
-                # Only remove if this plugin still owns the workflow
-                if workflow in self._workflows:
-                    owner_id = self._get_plugin_id(self._workflows[workflow])
-                    if owner_id == plugin_id:
-                        self._workflows.pop(workflow, None)
+            self._unregister_workflow_plugin(plugin, plugin_id)
 
         if isinstance(plugin, ExtensionPluginProtocol):
-            self._extension_plugins.pop(plugin_id, None)
-            target = plugin.get_target_plugin()
-            if target in self._extensions:
-                self._extensions[target] = [
-                    p
-                    for p in self._extensions[target]
-                    if self._get_plugin_id(p) != plugin_id
-                ]
-                if not self._extensions[target]:
-                    self._extensions.pop(target, None)
+            self._unregister_extension_plugin(plugin, plugin_id)
 
         if isinstance(plugin, ProviderPluginProtocol):
             self._provider_plugins.pop(plugin_id, None)

@@ -190,10 +190,10 @@ class TestProtocolInheritance:
         assert not isinstance(auth_provider, IntegrationProtocol)
         assert not isinstance(config_provider, StorageIntegrationProtocol)
 
-    def test_partial_implementations(self) -> None:
-        """Test that partial implementations are not recognized as fully implementing protocols."""
+    def _make_partial_integration(self) -> object:
+        """A class missing initialize/is_available -- not a full
+        IntegrationProtocol implementation."""
 
-        # Partial IntegrationProtocol
         class PartialIntegration:
             @property
             def name(self) -> str:
@@ -205,10 +205,11 @@ class TestProtocolInheritance:
 
             # Missing initialize and is_available methods
 
-        partial = PartialIntegration()
-        assert not isinstance(partial, IntegrationProtocol)
+        return PartialIntegration()
 
-        # Partial StorageIntegrationProtocol (implements IntegrationProtocol but not storage methods)
+    def _partial_storage_class(self) -> type:
+        """Implements IntegrationProtocol but not storage methods."""
+
         class PartialStorage:
             @property
             def integration_id(self) -> str:
@@ -230,12 +231,15 @@ class TestProtocolInheritance:
 
             # Missing storage-specific methods
 
-        partial_storage = PartialStorage()
-        assert isinstance(partial_storage, IntegrationProtocol)
-        assert not isinstance(partial_storage, StorageIntegrationProtocol)
+        return PartialStorage
 
-        # Missing a single method
-        class AlmostStorage(PartialStorage):
+    def _make_partial_storage(self) -> object:
+        return self._partial_storage_class()()
+
+    def _make_almost_storage(self) -> object:
+        """PartialStorage plus every storage method except create_folder."""
+
+        class AlmostStorage(self._partial_storage_class()):
             def upload_file(
                 self, file_path: str, remote_path: str | None = None
             ) -> IntegrationResult[str]:
@@ -253,7 +257,19 @@ class TestProtocolInheritance:
 
             # Missing create_folder method
 
-        almost_storage = AlmostStorage()
+        return AlmostStorage()
+
+    def test_partial_implementations(self) -> None:
+        """Test that partial implementations are not recognized as fully
+        implementing protocols."""
+        partial = self._make_partial_integration()
+        assert not isinstance(partial, IntegrationProtocol)
+
+        partial_storage = self._make_partial_storage()
+        assert isinstance(partial_storage, IntegrationProtocol)
+        assert not isinstance(partial_storage, StorageIntegrationProtocol)
+
+        almost_storage = self._make_almost_storage()
         assert isinstance(almost_storage, IntegrationProtocol)
         assert not isinstance(almost_storage, StorageIntegrationProtocol)
 
@@ -343,8 +359,8 @@ class TestProtocolInheritance:
         assert isinstance(folder_result, IntegrationResult)
         assert folder_result.content == "folder_id"
 
-    def test_duck_typing_compatibility(self) -> None:
-        """Test duck typing compatibility with protocols."""
+    def _make_duck_typed_integration(self) -> object:
+        """Build a duck-typed IntegrationProtocol implementation with no inheritance."""
 
         # Create a duck-typed implementation without inheriting
         class DuckTypedIntegration:
@@ -366,8 +382,10 @@ class TestProtocolInheritance:
             def is_available(self) -> bool:
                 return True
 
-        duck = DuckTypedIntegration()
-        assert isinstance(duck, IntegrationProtocol)
+        return DuckTypedIntegration()
+
+    def _make_duck_typed_storage(self) -> object:
+        """Build a duck-typed StorageIntegrationProtocol implementation."""
 
         # Duck-typed storage implementation
         class DuckTypedStorage:
@@ -409,7 +427,14 @@ class TestProtocolInheritance:
             ) -> IntegrationResult:
                 return IntegrationResult.success_result("folder_id")
 
-        duck_storage = DuckTypedStorage()
+        return DuckTypedStorage()
+
+    def test_duck_typing_compatibility(self) -> None:
+        """Test duck typing compatibility with protocols."""
+        duck = self._make_duck_typed_integration()
+        assert isinstance(duck, IntegrationProtocol)
+
+        duck_storage = self._make_duck_typed_storage()
         assert isinstance(duck_storage, IntegrationProtocol)
         assert isinstance(duck_storage, StorageIntegrationProtocol)
 

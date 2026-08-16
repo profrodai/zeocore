@@ -28,7 +28,9 @@ class OpenAIConfig(BaseModel):
     )
     organization: str | None = Field(
         None,
-        description="OpenAI organization ID (or set OPENAI_ORG_ID environment variable)",
+        description=(
+            "OpenAI organization ID (or set OPENAI_ORG_ID environment variable)"
+        ),
     )
     api_base: str | None = Field(
         "https://api.openai.com/v1", description="OpenAI API base URL"

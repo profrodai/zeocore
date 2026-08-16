@@ -63,7 +63,8 @@ def resolve_file_details(
         parent_folder_id: Optional parent folder ID.
 
     Returns:
-        A tuple containing the resolved path, filename, folder ID, and MIME type as strings.
+        A tuple containing the resolved path, filename, folder ID, and MIME
+        type as strings.
 
     Raises:
         QuackIntegrationError: If the file does not exist.

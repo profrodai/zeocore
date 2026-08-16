@@ -20,7 +20,6 @@ root conftest's mock_fs_standalone/mock_normalize_path already state, scoped to 
 directory only so it cannot change behavior for suites outside test_paths/.
 """
 
-import os
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
