@@ -38,7 +38,11 @@ class QuackToolProtocol(Protocol):
     version: str  # Has default "1.0.0"
 
     # Core method
-    def run(self, request: Any, ctx: "ToolContext") -> "CapabilityResult[Any]":
+    def run(
+        self,
+        request: Any,  # noqa: ANN401 -- request type is per-tool; mirrors BaseQuackTool.run (structural protocol, must match exactly)
+        ctx: "ToolContext",
+    ) -> "CapabilityResult[Any]":
         """
         Execute the tool capability.
 
