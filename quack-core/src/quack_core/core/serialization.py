@@ -7,7 +7,8 @@
 Shared JSON serialization utilities.
 
 Fix #2: Single source of truth for JSON-safe validation and normalization.
-Prevents drift between ToolContext metadata validation and ToolRunner output serialization.
+Prevents drift between ToolContext metadata validation and ToolRunner output
+serialization.
 """
 
 from dataclasses import asdict, is_dataclass
@@ -15,6 +16,123 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
+
+
+_SCALAR_CONVERTERS: tuple[tuple[type, Any], ...] = (
+    (Path, str),
+    (datetime, lambda d: d.isoformat()),
+    (Enum, lambda d: d.value),
+)
+
+
+def _normalize_scalar(data: Any) -> tuple[bool, Any]:
+    """
+    Try each safe scalar auto-conversion (Path, datetime, Enum) in order.
+    Returns (True, converted_value) on the first match, else (False, None).
+    Extracted from normalize_for_json for the same C901 reason as
+    _normalize_sequence.
+    """
+    for scalar_type, convert in _SCALAR_CONVERTERS:
+        if isinstance(data, scalar_type):
+            return True, convert(data)
+    return False, None
+
+
+def _normalize_sequence(
+    data: set | list | tuple,
+    path: str,
+    allow_pydantic: bool,
+    allow_string_fallback: bool,
+    logger: Any | None,
+) -> list[Any]:
+    """
+    Recurse over a set/list/tuple, normalizing each element. Extracted from
+    normalize_for_json to keep its own branch count under the C901
+    threshold; behavior (including the set->list debug log) is unchanged.
+    """
+    if isinstance(data, set) and logger:
+        logger.debug(f"Converting set to list at {path}")
+    return [
+        normalize_for_json(
+            item, f"{path}[{i}]", allow_pydantic, allow_string_fallback, logger
+        )
+        for i, item in enumerate(data)
+    ]
+
+
+def _normalize_dict_key(
+    k: Any, path: str, allow_string_fallback: bool, logger: Any | None
+) -> str:
+    """
+    Coerce or reject a single dict key per allow_string_fallback. Extracted
+    from normalize_for_json for the same C901 reason as _normalize_sequence.
+    """
+    if isinstance(k, str):
+        return k
+    if allow_string_fallback:
+        if logger:
+            logger.warning(
+                f"Dict key {k!r} at {path} is not a string. Converting to string."
+            )
+        return str(k)
+    raise TypeError(
+        f"Dict key at {path}[{k!r}] must be string, got {type(k).__name__}. "
+        f"JSON requires string keys."
+    )
+
+
+def _normalize_dict(
+    data: dict[Any, Any],
+    path: str,
+    allow_pydantic: bool,
+    allow_string_fallback: bool,
+    logger: Any | None,
+) -> dict[str, Any]:
+    """
+    Enforce string keys and recurse over a dict's values. Extracted from
+    normalize_for_json for the same C901 reason as _normalize_sequence.
+    """
+    result = {}
+    for k, v in data.items():
+        key = _normalize_dict_key(k, path, allow_string_fallback, logger)
+        result[key] = normalize_for_json(
+            v, f"{path}.{key}", allow_pydantic, allow_string_fallback, logger
+        )
+    return result
+
+
+def _normalize_unknown(
+    data: Any,
+    path: str,
+    allow_pydantic: bool,
+    allow_string_fallback: bool,
+    logger: Any | None,
+) -> Any:
+    """
+    Handle a type normalize_for_json does not otherwise recognize: reject it,
+    or stringify it if allow_string_fallback permits. Extracted from
+    normalize_for_json for the same C901 reason as _normalize_sequence.
+    """
+    if not allow_string_fallback:
+        raise TypeError(
+            f"Value at {path} is not JSON-serializable: "
+            f"type={type(data).__name__}, value={data!r}. "
+            f"Allowed: primitives, Path, datetime, Enum, lists, dicts"
+            + (", Pydantic BaseModel" if allow_pydantic else "")
+            + ". Convert to supported type or use allow_string_fallback=True."
+        )
+
+    if logger:
+        logger.warning(
+            f"Serializing {type(data).__name__} at {path} to string "
+            "(may lose structure)"
+        )
+    try:
+        return str(data)
+    except Exception as e:
+        raise ValueError(
+            f"Cannot serialize value at {path} (type={type(data).__name__}): {e}"
+        ) from e
 
 
 def normalize_for_json(
@@ -74,78 +192,25 @@ def normalize_for_json(
     if is_dataclass(data):
         return asdict(data)
 
-    # Safe auto-conversions (common types)
-    if isinstance(data, Path):
-        return str(data)
+    # Safe auto-conversions (common types: Path, datetime, Enum)
+    converted, value = _normalize_scalar(data)
+    if converted:
+        return value
 
-    if isinstance(data, datetime):
-        return data.isoformat()
-
-    if isinstance(data, Enum):
-        return data.value
-
-    # Sets → lists
-    if isinstance(data, set):
-        if logger:
-            logger.debug(f"Converting set to list at {path}")
-        return [
-            normalize_for_json(
-                item, f"{path}[{i}]", allow_pydantic, allow_string_fallback, logger
-            )
-            for i, item in enumerate(data)
-        ]
-
-    # Lists/tuples - recurse
-    if isinstance(data, (list, tuple)):
-        return [
-            normalize_for_json(
-                item, f"{path}[{i}]", allow_pydantic, allow_string_fallback, logger
-            )
-            for i, item in enumerate(data)
-        ]
+    # Sets/lists/tuples - recurse
+    if isinstance(data, (set, list, tuple)):
+        return _normalize_sequence(
+            data, path, allow_pydantic, allow_string_fallback, logger
+        )
 
     # Dicts - enforce string keys and recurse
     if isinstance(data, dict):
-        result = {}
-        for k, v in data.items():
-            if not isinstance(k, str):
-                if allow_string_fallback:
-                    if logger:
-                        logger.warning(
-                            f"Dict key {k!r} at {path} is not a string. Converting to string."
-                        )
-                    k = str(k)
-                else:
-                    raise TypeError(
-                        f"Dict key at {path}[{k!r}] must be string, got {type(k).__name__}. "
-                        f"JSON requires string keys."
-                    )
-            result[k] = normalize_for_json(
-                v, f"{path}.{k}", allow_pydantic, allow_string_fallback, logger
-            )
-        return result
+        return _normalize_dict(
+            data, path, allow_pydantic, allow_string_fallback, logger
+        )
 
     # Unknown type - reject or stringify
-    if not allow_string_fallback:
-        raise TypeError(
-            f"Value at {path} is not JSON-serializable: "
-            f"type={type(data).__name__}, value={data!r}. "
-            f"Allowed: primitives, Path, datetime, Enum, lists, dicts"
-            + (", Pydantic BaseModel" if allow_pydantic else "")
-            + ". Convert to supported type or use allow_string_fallback=True."
-        )
-
-    # Fallback: stringify (only if explicitly allowed)
-    if logger:
-        logger.warning(
-            f"Serializing {type(data).__name__} at {path} to string (may lose structure)"
-        )
-    try:
-        return str(data)
-    except Exception as e:
-        raise ValueError(
-            f"Cannot serialize value at {path} (type={type(data).__name__}): {e}"
-        ) from e
+    return _normalize_unknown(data, path, allow_pydantic, allow_string_fallback, logger)
 
 
 def is_json_safe(data: Any, allow_pydantic: bool = True) -> bool:
