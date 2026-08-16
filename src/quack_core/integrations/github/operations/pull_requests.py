@@ -304,7 +304,7 @@ def merge_pull_request(
         QuackApiError: If the API request fails.
     """
     endpoint = f"/repos/{repo}/pulls/{pull_number}/merge"
-    data = {"merge_method": merge_method}
+    data: dict[str, Any] = {"merge_method": merge_method}
     if commit_title:
         data["commit_title"] = commit_title
     if commit_message:
@@ -318,8 +318,9 @@ def merge_pull_request(
         json=data,
         **request_kwargs,
     )
-    result = response.json()
-    return result.get("merged", False)
+    result: dict[str, Any] = response.json()
+    merged: bool = result.get("merged", False)
+    return merged
 
 
 def get_pull_request_files(
@@ -352,7 +353,8 @@ def get_pull_request_files(
         api_url=api_url,
         **request_kwargs,
     )
-    return response.json()
+    result: list[dict[str, Any]] = response.json()
+    return result
 
 
 def add_pull_request_review(
@@ -391,7 +393,8 @@ def add_pull_request_review(
         json=data,
         **request_kwargs,
     )
-    return response.json()
+    result: dict[str, Any] = response.json()
+    return result
 
 
 def get_pull_requests_by_user(

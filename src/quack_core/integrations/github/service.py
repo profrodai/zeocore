@@ -4,7 +4,7 @@
 
 """GitHub core integration service for quack_core."""
 
-from quack_core.core.logging import get_logger
+from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.integrations.core import (
     AuthProviderProtocol,
     BaseIntegrationService,
@@ -29,7 +29,7 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
         config_provider: ConfigProviderProtocol | None = None,
         auth_provider: AuthProviderProtocol | None = None,
         config_path: str | None = None,
-        log_level: int | str | None = None,
+        log_level: int = LOG_LEVELS[LogLevel.INFO],
     ) -> None:
         """Initialize the GitHub integration.
 
@@ -39,23 +39,19 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
             config_path: Path to configuration file
             log_level: Logging level
         """
-        # Define a default log level for when None is provided
-        default_log_level = "INFO"
-        effective_log_level = log_level or default_log_level
-
         # Create default providers if not provided
         if config_provider is None:
-            config_provider = GitHubConfigProvider(log_level=effective_log_level)
+            config_provider = GitHubConfigProvider(log_level=log_level)
 
         if auth_provider is None:
-            auth_provider = GitHubAuthProvider(log_level=effective_log_level)
+            auth_provider = GitHubAuthProvider(log_level=log_level)
 
         super().__init__(
             config_provider=config_provider,
             auth_provider=None,
             config=None,
             config_path=config_path,
-            log_level=effective_log_level,
+            log_level=log_level,
         )
 
         self.client: GitHubClient | None = None
