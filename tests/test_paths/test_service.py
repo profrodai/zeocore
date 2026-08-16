@@ -106,7 +106,8 @@ def test_get_known_directory(tmp_path: Path, path_service: PathService) -> None:
     (tmp_path / "src").mkdir()
 
     with patch.object(path_service, "detect_project_context") as mock_detect:
-        # Mock the detect_project_context method to return a context with a known directory
+        # Mock the detect_project_context method to return a context with
+        # a known directory
         from quack_core.core.paths._internal.context import ProjectContext
 
         context = ProjectContext(root_dir=str(tmp_path))
@@ -137,7 +138,8 @@ def test_get_module_path(tmp_path: Path, path_service: PathService) -> None:
     (utils_dir / "helper.py").write_text("")
 
     with patch.object(path_service, "detect_project_context") as mock_detect:
-        # Mock the detect_project_context method to return a context with a source directory
+        # Mock the detect_project_context method to return a context with
+        # a source directory
         from quack_core.core.paths._internal.context import ProjectContext
 
         context = ProjectContext(root_dir=str(tmp_path))

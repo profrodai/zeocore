@@ -266,7 +266,8 @@ class MockAnthropicClient(MockClient):
             **kwargs: Keyword arguments
 
         Returns:
-            Union[MockAnthropicResponse, MockAnthropicStreamingResponse]: Response object
+            Union[MockAnthropicResponse, MockAnthropicStreamingResponse]:
+                Response object
 
         Raises:
             Exception: If configured to raise an error

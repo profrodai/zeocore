@@ -158,7 +158,8 @@ class TestPathResolver:
             assert resolved == str(mock_project_structure / "src" / "file.txt")
 
         # Test when project root cannot be found
-        # IMPORTANT: This test actually expects the exception since the internal method does raise it
+        # IMPORTANT: This test actually expects the exception since the
+        # internal method does raise it
         with patch.object(
             resolver, "_get_project_root", side_effect=QuackFileNotFoundError("")
         ):

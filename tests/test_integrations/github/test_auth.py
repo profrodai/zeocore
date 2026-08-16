@@ -156,7 +156,8 @@ def test_getattr_unknown_attribute() -> None:
         quack_core.integrations.github.__getattr__ = mock_getattr
 
         # Test accessing unknown attribute
-        # We are intentionally accessing a non-existent attribute to test the error handling
+        # We are intentionally accessing a non-existent attribute to test the
+        # error handling
         # noinspection PyUnresolvedReferences
         with pytest.raises(AttributeError):
             _ = quack_core.integrations.github.NonExistentAttribute

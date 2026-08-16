@@ -91,7 +91,8 @@ class TestDriveOperationsListFiles:
                 assert isinstance(mock_service, MockDriveService)
                 assert mock_service.files_call_count == 1
 
-                # Check that the files resource methods were called with correct parameters
+                # Check that the files resource methods were called with
+                # correct parameters
                 files_resource = mock_service.files()
                 assert isinstance(files_resource, MockDriveFilesResource)
                 assert files_resource.list_call_count == 1
@@ -192,7 +193,8 @@ class TestDriveOperationsListFiles:
                 assert len(result.content) == 0  # Should handle gracefully
 
     def test_list_files_with_model_conversion(self) -> None:
-        """Test that list_files correctly converts API responses to DriveFile and DriveFolder models."""
+        """Test that list_files correctly converts API responses to
+        DriveFile and DriveFolder models."""
         # Create a customized mock service with detailed file list
         file_list = [
             {
