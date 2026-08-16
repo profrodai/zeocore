@@ -27,13 +27,21 @@ class TestFileSystemService:
         service = FileSystemService()
         assert service.base_dir == Path.cwd()
 
-        # Initialize with custom base_dir (using the temp_dir fixture)
+        # Initialize with custom base_dir (using the temp_dir fixture).
+        # service/base.py's __init__ does Path(base_dir).resolve() -- on macOS,
+        # /var is a symlink to /private/var, so tempfile.mkdtemp()'s /var/folders/...
+        # path resolves to /private/var/folders/... . Comparing against the
+        # un-resolved temp_dir fixture value directly failed for a reason unrelated
+        # to base_dir/sandboxing at all -- confirmed live (AssertionError showed the
+        # two paths differing only by the /private prefix). Compare against
+        # temp_dir.resolve() to match what the service's own constructor actually
+        # does, not a raw un-resolved fixture path.
         service = FileSystemService(base_dir=temp_dir)
-        assert service.base_dir == temp_dir
+        assert service.base_dir == temp_dir.resolve()
 
     def test_read_text(self, test_file: Path) -> None:
         """Test reading text from a file."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=test_file.parent)
 
         # Test successful read
         result = service.read_text(test_file)
@@ -49,7 +57,7 @@ class TestFileSystemService:
 
     def test_checksum_and_byte_counting(self, temp_dir: Path) -> None:
         """Test that checksums are generated correctly and bytes are counted."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
 
         # Test text file with checksum
         text_file = temp_dir / "checksum.txt"
@@ -68,7 +76,7 @@ class TestFileSystemService:
         # Test binary file with checksum
         bin_file = temp_dir / "checksum.bin"
         bin_content = b"\x01\x02\x03\x04\x05"
-        result = service.write_binary(bin_file, bin_content, calculate_checksum=True)
+        result = service.write_bytes(bin_file, bin_content, calculate_checksum=True)
         assert result.success is True
         assert result.checksum is not None
         assert result.bytes_written == len(bin_content)
@@ -79,22 +87,22 @@ class TestFileSystemService:
 
     def test_read_binary(self, test_binary_file: Path) -> None:
         """Test reading binary data from a file."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=test_binary_file.parent)
 
         # Test successful read
-        result = service.read_binary(test_binary_file)
+        result = service.read_bytes(test_binary_file)
         assert result.success is True
         assert result.content == b"\x00\x01\x02\x03"
 
         # Test reading non-existent file
-        result = service.read_binary(test_binary_file.parent / "nonexistent.bin")
+        result = service.read_bytes(test_binary_file.parent / "nonexistent.bin")
         assert result.success is False
         # Updated to check for part of the error message that will be consistent
         assert "No such file or directory" in result.error
 
     def test_read_lines(self, temp_dir: Path) -> None:
         """Test reading lines from a file."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
 
         # Create a multi-line file
         lines_file = temp_dir / "lines.txt"
@@ -113,7 +121,7 @@ class TestFileSystemService:
 
     def test_write_text(self, temp_dir: Path) -> None:
         """Test writing text to a file."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         file_path = temp_dir / "write_test.txt"
 
         # Test writing to a new file
@@ -135,12 +143,12 @@ class TestFileSystemService:
 
     def test_write_binary(self, temp_dir: Path) -> None:
         """Test writing binary data to a file."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         file_path = temp_dir / "binary_test.bin"
 
         # Test writing to a new file
         content = b"\x00\x01\x02\x03"
-        result = service.write_binary(file_path, content)
+        result = service.write_bytes(file_path, content)
         assert result.success is True
         # The bytes_written should match the content length
         assert result.bytes_written == len(content)
@@ -148,13 +156,13 @@ class TestFileSystemService:
 
         # Test overwriting an existing file
         new_content = b"\x04\x05\x06\x07"
-        result = service.write_binary(file_path, new_content)
+        result = service.write_bytes(file_path, new_content)
         assert result.success is True
         assert file_path.read_bytes() == new_content
 
     def test_write_lines(self, temp_dir: Path) -> None:
         """Test writing lines to a file."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         file_path = temp_dir / "lines_test.txt"
 
         # Test writing to a new file
@@ -173,7 +181,7 @@ class TestFileSystemService:
 
     def test_copy(self, test_file: Path, temp_dir: Path) -> None:
         """Test copying a file."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         dest_path = temp_dir / "copy_dest.txt"
 
         # Test successful copy
@@ -182,10 +190,19 @@ class TestFileSystemService:
         assert dest_path.exists()
         assert dest_path.read_text() == "test content"
 
-        # Test copying to existing file (should fail without overwrite)
+        # Test copying to existing file (should fail without overwrite).
+        # .error (legacy) is now just str(exception) -- for FileExistsError/
+        # FileNotFoundError that is the bare filename, not a human-readable
+        # message (confirmed live). The human-readable text lives in
+        # error_info.hint; the STABLE, canonical, machine-checkable identifier
+        # is error_info.type ("stable snake_case IDs" per _map_error's own
+        # docstring in service/base.py). Asserting against error_info.type
+        # matches the current, documented, canonical contract rather than the
+        # legacy field's now-unreliable string content.
         result = service.copy(test_file, dest_path)
         assert result.success is False
-        assert "already exists" in result.error.lower()
+        assert result.error_info is not None
+        assert result.error_info.type == "file_exists"
 
         # Test copying with overwrite
         modified_file = temp_dir / "modified.txt"
@@ -197,11 +214,12 @@ class TestFileSystemService:
         # Test copying non-existent file
         result = service.copy(temp_dir / "nonexistent.txt", dest_path)
         assert result.success is False
-        assert "not found" in result.error.lower()
+        assert result.error_info is not None
+        assert result.error_info.type == "file_not_found"
 
     def test_delete(self, temp_dir: Path) -> None:
         """Test deleting a file."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         file_path = temp_dir / "to_delete.txt"
         file_path.write_text("delete me")
 
@@ -214,14 +232,16 @@ class TestFileSystemService:
         result = service.delete(file_path)
         assert result.success is True
 
-        # Test deleting non-existent file with missing_ok=False
+        # Test deleting non-existent file with missing_ok=False. Same
+        # error_info.type vs legacy .error rework as test_copy above.
         result = service.delete(file_path, missing_ok=False)
         assert result.success is False
-        assert "not found" in result.error.lower()
+        assert result.error_info is not None
+        assert result.error_info.type == "file_not_found"
 
     def test_create_directory(self, temp_dir: Path) -> None:
         """Test creating a directory."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         dir_path = temp_dir / "new_dir"
 
         # Test successful directory creation
@@ -241,7 +261,7 @@ class TestFileSystemService:
 
     def test_get_file_info(self, test_file: Path, temp_dir: Path) -> None:
         """Test getting file information."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
 
         # Test getting info for a file
         result = service.get_file_info(test_file)
@@ -268,7 +288,14 @@ class TestFileSystemService:
 
     def test_list_directory(self, temp_dir: Path) -> None:
         """Test listing directory contents."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
+        # service/base.py's __init__ resolves base_dir (Path(base_dir).resolve());
+        # every path this service returns is anchored to and derived from that
+        # resolved base_dir. On macOS, /var is a symlink to /private/var, so
+        # tempfile.mkdtemp()'s raw path differs from its resolved form -- compare
+        # against the resolved path throughout, matching what the service itself
+        # actually returns (confirmed live).
+        resolved_temp_dir = temp_dir.resolve()
 
         # Create some files and directories for testing
         (temp_dir / "file1.txt").write_text("content1")
@@ -289,18 +316,18 @@ class TestFileSystemService:
 
         # Check each item individually by converting the Path to string first
         file_paths = [str(path) for path in result.files]
-        assert str(temp_dir / "file1.txt") in file_paths
-        assert str(temp_dir / "file2.txt") in file_paths
+        assert str(resolved_temp_dir / "file1.txt") in file_paths
+        assert str(resolved_temp_dir / "file2.txt") in file_paths
 
         dir_paths = [str(path) for path in result.directories]
-        assert str(temp_dir / "subdir") in dir_paths
+        assert str(resolved_temp_dir / "subdir") in dir_paths
 
         # Test listing with include_hidden=True
         result = service.list_directory(temp_dir, include_hidden=True)
         assert result.success is True
         assert len(result.files) == 3  # Now includes hidden file
         file_paths = [str(path) for path in result.files]
-        assert str(temp_dir / ".hidden_file") in file_paths
+        assert str(resolved_temp_dir / ".hidden_file") in file_paths
 
         # Test listing with pattern
         result = service.list_directory(temp_dir, pattern="*.txt")
@@ -314,7 +341,9 @@ class TestFileSystemService:
 
     def test_find_files(self, temp_dir: Path) -> None:
         """Test finding files matching a pattern."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
+        # Same base_dir-resolution note as test_list_directory above.
+        resolved_temp_dir = temp_dir.resolve()
 
         # Create some files and directories for testing
         (temp_dir / "file1.txt").write_text("content1")
@@ -322,6 +351,7 @@ class TestFileSystemService:
         (temp_dir / "doc1.pdf").write_text("pdf content")
         subdir = temp_dir / "subdir"
         subdir.mkdir()
+        resolved_subdir = resolved_temp_dir / "subdir"
         (subdir / "subfile.txt").write_text("sub content")
 
         # Test finding with pattern
@@ -333,27 +363,27 @@ class TestFileSystemService:
 
         # Convert Path objects to strings for comparison
         file_paths = [str(path) for path in result.files]
-        assert str(temp_dir / "file1.txt") in file_paths
-        assert str(temp_dir / "file2.txt") in file_paths
-        assert str(subdir / "subfile.txt") in file_paths
+        assert str(resolved_temp_dir / "file1.txt") in file_paths
+        assert str(resolved_temp_dir / "file2.txt") in file_paths
+        assert str(resolved_subdir / "subfile.txt") in file_paths
 
         # Test finding without recursion
         result = service.find_files(temp_dir, "*.txt", recursive=False)
         assert result.success is True
         assert len(result.files) == 2  # Excludes subdir/subfile.txt
         file_paths = [str(path) for path in result.files]
-        assert str(subdir / "subfile.txt") not in file_paths
+        assert str(resolved_subdir / "subfile.txt") not in file_paths
 
         # Test finding directories
         result = service.find_files(temp_dir, "*subdir*")
         assert result.success is True
         assert len(result.directories) == 1
         dir_paths = [str(path) for path in result.directories]
-        assert str(subdir) in dir_paths
+        assert str(resolved_subdir) in dir_paths
 
     def test_read_yaml(self, temp_dir: Path) -> None:
         """Test reading YAML files."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         yaml_file = temp_dir / "test.yaml"
 
         # Create a YAML file
@@ -385,7 +415,7 @@ class TestFileSystemService:
 
     def test_write_yaml(self, temp_dir: Path) -> None:
         """Test writing YAML files."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         yaml_file = temp_dir / "write.yaml"
 
         # Test writing data
@@ -400,7 +430,7 @@ class TestFileSystemService:
 
     def test_read_json(self, temp_dir: Path) -> None:
         """Test reading JSON files."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         json_file = temp_dir / "test.json"
 
         # Create a JSON file
@@ -432,7 +462,7 @@ class TestFileSystemService:
 
     def test_write_json(self, temp_dir: Path) -> None:
         """Test writing JSON files."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         json_file = temp_dir / "write.json"
 
         # Test writing data
@@ -447,7 +477,7 @@ class TestFileSystemService:
 
     def test_ensure_directory(self, temp_dir: Path) -> None:
         """Test ensuring a directory exists."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         dir_path = temp_dir / "ensure_dir"
 
         # Test creating a non-existent directory
@@ -470,34 +500,47 @@ class TestFileSystemService:
         assert nested_path.is_dir()
 
     def test_get_unique_filename(self, temp_dir: Path) -> None:
-        """Test getting a unique filename."""
-        service = FileSystemService()
+        """Test getting a unique filename.
+
+        get_unique_filename's DataResult.data is documented (format="filename")
+        and confirmed live to hold the bare filename only, not a full path --
+        the directory it was resolved against is separately available on
+        `.path`. The original assertions expected `.data` to already be a full
+        path string; reworked to match the real, current, deliberate contract
+        (bare filename in `.data`, directory in `.path`).
+        """
+        service = FileSystemService(base_dir=temp_dir)
 
         # Test with a non-existent filename
         unique_name = service.get_unique_filename(temp_dir, "unique.txt")
         assert unique_name.success is True
-        # Updated to match the new return value format
-        assert unique_name.data == str(temp_dir / "unique.txt")
-        assert not Path(unique_name.data).exists()
+        assert unique_name.format == "filename"
+        assert unique_name.data == "unique.txt"
+        assert not (temp_dir / unique_name.data).exists()
 
         # Test with an existing filename
         existing_file = temp_dir / "existing.txt"
         existing_file.touch()
         unique_name = service.get_unique_filename(temp_dir, "existing.txt")
         assert unique_name.success is True
-        assert unique_name.data != str(existing_file)
-        assert str(unique_name.data).startswith(str(temp_dir / "existing"))
+        assert unique_name.data != "existing.txt"
+        assert str(unique_name.data).startswith("existing")
         assert "_1" in str(unique_name.data)
-        assert not Path(unique_name.data).exists()
+        assert not (temp_dir / unique_name.data).exists()
 
     def test_path_utilities(self, temp_dir: Path) -> None:
         """Test path manipulation utilities."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
+        # Same base_dir-resolution note as test_list_directory above -- join_path
+        # is base_dir-anchored (service.path_operations.join_path, per
+        # quackverse-fs-internals-fix-SOW-01's own recon), so its output is
+        # resolved even though the raw temp_dir fixture path is not.
+        resolved_temp_dir = temp_dir.resolve()
 
         # Test join_path
         joined_path = service.join_path(temp_dir, "subdir", "file.txt")
         assert joined_path.success is True
-        assert joined_path.data == str(temp_dir / "subdir" / "file.txt")
+        assert joined_path.data == str(resolved_temp_dir / "subdir" / "file.txt")
 
         # Test split_path
         split = service.split_path(temp_dir / "subdir" / "file.txt")
@@ -558,9 +601,13 @@ class TestFileSystemService:
         if content in ("\r", "\r\n", "\n\r"):
             return
 
-        service = FileSystemService()
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
+            # Anchor the service's base_dir sandbox at this test's own temp
+            # directory -- must be constructed inside the `with` block, after
+            # tmp_path exists, not before (this test builds its own tempdir
+            # locally rather than taking one via a fixture).
+            service = FileSystemService(base_dir=tmp_path)
             file_path = tmp_path / "hypo_test.txt"
 
             # Write content
@@ -592,7 +639,7 @@ class TestFileSystemService:
 
     def test_move(self, temp_dir: Path) -> None:
         """Test moving a file."""
-        service = FileSystemService()
+        service = FileSystemService(base_dir=temp_dir)
         source_path = temp_dir / "source.txt"
         source_path.write_text("source content")
         dest_path = temp_dir / "move_dest.txt"
@@ -607,10 +654,12 @@ class TestFileSystemService:
         # Recreate the source file
         source_path.write_text("new source content")
 
-        # Test move to existing destination (should fail without overwrite)
+        # Test move to existing destination (should fail without overwrite).
+        # Same error_info.type vs legacy .error rework as test_copy/test_delete.
         result = service.move(source_path, dest_path)
         assert result.success is False
-        assert "already exists" in result.error.lower()
+        assert result.error_info is not None
+        assert result.error_info.type == "file_exists"
 
         # Test move with overwrite
         result = service.move(source_path, dest_path, overwrite=True)
@@ -622,4 +671,5 @@ class TestFileSystemService:
         # Test move with non-existent source
         result = service.move(temp_dir / "nonexistent.txt", dest_path)
         assert result.success is False
-        assert "not found" in result.error.lower()
+        assert result.error_info is not None
+        assert result.error_info.type == "file_not_found"
