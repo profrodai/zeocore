@@ -289,7 +289,7 @@ class TestConfigModels:
             self.logging.setup_logging()
 
         # Temporarily add the setup_logging method
-        QuackConfig.setup_logging = mock_setup_logging
+        QuackConfig.setup_logging = mock_setup_logging  # type: ignore[method-assign]
 
         # Now patch the logging config's setup_logging method
         with patch.object(LoggingConfig, "setup_logging") as mock_setup:

@@ -13,7 +13,7 @@ or manage global state.
 
 import os
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 T = TypeVar("T")
 
@@ -57,7 +57,7 @@ def get_config_value(
             current = current[part]
         else:
             return default
-    return current
+    return cast("T | None", current)
 
 
 def validate_required_config(
