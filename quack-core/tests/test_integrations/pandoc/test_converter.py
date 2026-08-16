@@ -19,7 +19,7 @@ from quack_core.integrations.pandoc import (
 # --- Tests for DocumentConverter ---
 
 
-def test_document_converter_initialization(mock_pypandoc):
+def test_document_converter_initialization(mock_pypandoc: MagicMock) -> None:
     """Test DocumentConverter initialization."""
     config = PandocConfig()
     converter = DocumentConverter(config)
@@ -29,7 +29,9 @@ def test_document_converter_initialization(mock_pypandoc):
     assert converter.pandoc_version == "2.11.0"
 
 
-def test_convert_file_html_to_markdown_success(mock_pypandoc, fs_stub):
+def test_convert_file_html_to_markdown_success(
+    mock_pypandoc: MagicMock, fs_stub: SimpleNamespace
+) -> None:
     """Test successful HTML to Markdown conversion."""
     # Setup
     config = PandocConfig()
@@ -54,7 +56,9 @@ def test_convert_file_html_to_markdown_success(mock_pypandoc, fs_stub):
         )
 
 
-def test_convert_file_markdown_to_docx_success(mock_pypandoc, fs_stub):
+def test_convert_file_markdown_to_docx_success(
+    mock_pypandoc: MagicMock, fs_stub: SimpleNamespace
+) -> None:
     """Test successful Markdown to DOCX conversion."""
     # Setup
     config = PandocConfig()
@@ -79,7 +83,7 @@ def test_convert_file_markdown_to_docx_success(mock_pypandoc, fs_stub):
         )
 
 
-def test_convert_file_unsupported_format(mock_pypandoc):
+def test_convert_file_unsupported_format(mock_pypandoc: MagicMock) -> None:
     """Test conversion with unsupported format."""
     config = PandocConfig()
     converter = DocumentConverter(config)
@@ -97,10 +101,11 @@ def test_convert_file_unsupported_format(mock_pypandoc):
 
         # Verify
         assert not result.success
+        assert result.error is not None
         assert "Unsupported conversion" in result.error
 
 
-def test_convert_file_integration_error(mock_pypandoc):
+def test_convert_file_integration_error(mock_pypandoc: MagicMock) -> None:
     """Test handling of integration errors during conversion."""
     config = PandocConfig()
     converter = DocumentConverter(config)
@@ -116,10 +121,11 @@ def test_convert_file_integration_error(mock_pypandoc):
 
         # Verify
         assert not result.success
+        assert result.error is not None
         assert "Failed to convert" in result.error
 
 
-def test_convert_batch_all_success(mock_pypandoc):
+def test_convert_batch_all_success(mock_pypandoc: MagicMock) -> None:
     """Test batch conversion with all files succeeding."""
     config = PandocConfig()
     converter = DocumentConverter(config)
@@ -163,13 +169,15 @@ def test_convert_batch_all_success(mock_pypandoc):
         assert len(result.content) == 2
 
 
-def test_convert_batch_partial_failure(mock_pypandoc):
+def test_convert_batch_partial_failure(mock_pypandoc: MagicMock) -> None:
     """Test batch conversion with some files failing."""
     config = PandocConfig()
     converter = DocumentConverter(config)
 
     # Mock convert_file to succeed for first file but fail for second
-    def mock_convert_side_effect(input_path, output_path, format_):
+    def mock_convert_side_effect(
+        input_path: str, output_path: str, format_: str
+    ) -> IntegrationResult:
         if "file2" in input_path:
             return IntegrationResult.error_result("Conversion failed")
         return IntegrationResult.success_result(output_path)
@@ -208,12 +216,13 @@ def test_convert_batch_partial_failure(mock_pypandoc):
 
         # Verify
         assert result.success  # Still success overall
+        assert result.message is not None
         assert "Partially successful" in result.message
         assert len(result.content) == 1
         assert result.content[0] == "output1.md"
 
 
-def test_convert_batch_all_failure(mock_pypandoc):
+def test_convert_batch_all_failure(mock_pypandoc: MagicMock) -> None:
     """Test batch conversion with all files failing."""
     config = PandocConfig()
     converter = DocumentConverter(config)
@@ -253,11 +262,14 @@ def test_convert_batch_all_failure(mock_pypandoc):
 
         # Verify
         assert not result.success
+        assert result.error is not None
         assert "failed" in result.error.lower()
         assert mock_convert.call_count == 2
 
 
-def test_validate_conversion(mock_pypandoc, fs_stub):
+def test_validate_conversion(
+    mock_pypandoc: MagicMock, fs_stub: SimpleNamespace
+) -> None:
     """Test document validation after conversion."""
     config = PandocConfig()
     converter = DocumentConverter(config)

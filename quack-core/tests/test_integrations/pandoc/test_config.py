@@ -5,6 +5,7 @@
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from _pytest.monkeypatch import MonkeyPatch
 from quack_core.integrations.pandoc import (
     PandocConfig,
     PandocConfigProvider,
@@ -20,7 +21,7 @@ from quack_core.integrations.pandoc.config import (
 # --- Tests for PandocConfig ---
 
 
-def test_pandoc_config_initialization():
+def test_pandoc_config_initialization() -> None:
     """Test that PandocConfig initializes with default values."""
     config = PandocConfig()
 
@@ -39,7 +40,7 @@ def test_pandoc_config_initialization():
     assert config.retry_mechanism.max_conversion_retries == 3
 
 
-def test_pandoc_config_custom_values():
+def test_pandoc_config_custom_values() -> None:
     """Test PandocConfig with custom values."""
     custom_config = PandocConfig(
         output_dir="/custom/output",
@@ -58,7 +59,7 @@ def test_pandoc_config_custom_values():
     assert "--no-highlight" in custom_config.html_to_md_extra_args
 
 
-def test_pandoc_config_validate_output_dir(fs_stub):
+def test_pandoc_config_validate_output_dir(fs_stub: SimpleNamespace) -> None:
     """Test validation of output directory path."""
     # Valid path
     config = PandocConfig(output_dir="/valid/path")
@@ -73,7 +74,7 @@ def test_pandoc_config_validate_output_dir(fs_stub):
 # --- Tests for PandocConfigProvider ---
 
 
-def test_config_provider_default_config():
+def test_config_provider_default_config() -> None:
     """Test that the config provider returns default config values."""
     provider = PandocConfigProvider()
     default_config = provider.get_default_config()
@@ -83,7 +84,7 @@ def test_config_provider_default_config():
     assert "validation" in default_config
 
 
-def test_config_provider_validation():
+def test_config_provider_validation() -> None:
     """Test config validation in the provider."""
     provider = PandocConfigProvider()
 
@@ -99,7 +100,7 @@ def test_config_provider_validation():
     # # assert not provider.validate_config({"invalid_key": "value"})
 
 
-def test_config_provider_load_from_environment(monkeypatch):
+def test_config_provider_load_from_environment(monkeypatch: MonkeyPatch) -> None:
     """Test loading config from environment variables."""
     provider = PandocConfigProvider()
 

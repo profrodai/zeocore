@@ -20,7 +20,7 @@ from quack_core.integrations.pandoc.models import (
 )
 
 
-def test_file_info_initialization():
+def test_file_info_initialization() -> None:
     """Test initialization of FileInfo model."""
     # Minimal initialization
     file_info = FileInfo(path="/path/to/file.html", format="html")
@@ -45,7 +45,7 @@ def test_file_info_initialization():
     assert file_info.extra_args == ["--strip-comments"]
 
 
-def test_conversion_task_initialization():
+def test_conversion_task_initialization() -> None:
     """Test initialization of ConversionTask model."""
     file_info = FileInfo(path="/path/to/file.html", format="html")
 
@@ -64,7 +64,7 @@ def test_conversion_task_initialization():
     assert task.output_path is None
 
 
-def test_conversion_metrics_initialization():
+def test_conversion_metrics_initialization() -> None:
     """Test initialization of ConversionMetrics model."""
     # Default initialization
     metrics = ConversionMetrics()
@@ -90,7 +90,7 @@ def test_conversion_metrics_initialization():
     assert metrics.failed_conversions == 2
 
 
-def test_conversion_details_initialization():
+def test_conversion_details_initialization() -> None:
     """Test initialization of ConversionDetails model."""
     # Default initialization
     details = ConversionDetails()

@@ -19,7 +19,9 @@ from quack_core.integrations.pandoc.service import PandocIntegration
 
 
 @pytest.fixture
-def setup_mocks(fs_stub, mock_paths_service):
+def setup_mocks(
+    fs_stub: SimpleNamespace, mock_paths_service: MagicMock
+) -> tuple[SimpleNamespace, MagicMock]:
     """Shared setup for service tests."""
     if not isinstance(mock_paths_service, MagicMock):
         mock_paths_service = MagicMock()
@@ -48,7 +50,7 @@ def setup_mocks(fs_stub, mock_paths_service):
     return fs_stub, mock_paths_service
 
 
-def test_pandoc_integration_name_version():
+def test_pandoc_integration_name_version() -> None:
     """Test basic properties of PandocIntegration."""
     integration = PandocIntegration()
     assert integration.name == "Pandoc"
@@ -59,8 +61,10 @@ def test_pandoc_integration_name_version():
 @patch("quack_core.core.fs.service.standalone.expand_user_vars")
 @patch("quack_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_with_mocked_verify_pandoc(
-    mock_verify_pandoc, mock_expand_user_vars, setup_mocks
-):
+    mock_verify_pandoc: MagicMock,
+    mock_expand_user_vars: MagicMock,
+    setup_mocks: tuple[SimpleNamespace, MagicMock],
+) -> None:
     """Test initialize method with mocked verify_pandoc."""
     fs_stub, mock_paths_service = setup_mocks
 
@@ -69,7 +73,7 @@ def test_initialize_with_mocked_verify_pandoc(
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.fs_service = fs_stub
+    integration.fs_service = fs_stub  # type: ignore[assignment]  # SimpleNamespace duck-types FileSystemService for this test double
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
@@ -83,14 +87,16 @@ def test_initialize_with_mocked_verify_pandoc(
 
 
 @patch("quack_core.integrations.pandoc.service.verify_pandoc")
-def test_initialize_with_verify_pandoc_error(mock_verify_pandoc, setup_mocks):
+def test_initialize_with_verify_pandoc_error(
+    mock_verify_pandoc: MagicMock, setup_mocks: tuple[SimpleNamespace, MagicMock]
+) -> None:
     """Test initialize method when verify_pandoc raises an error."""
     fs_stub, mock_paths_service = setup_mocks
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
     # We must assign fs_service for initialization cleanup/logic even if it fails early
-    integration.fs_service = fs_stub
+    integration.fs_service = fs_stub  # type: ignore[assignment]  # SimpleNamespace duck-types FileSystemService for this test double
 
     # Mock verify_pandoc to raise an error
     mock_verify_pandoc.side_effect = QuackIntegrationError("Pandoc not found", {})
@@ -101,34 +107,37 @@ def test_initialize_with_verify_pandoc_error(mock_verify_pandoc, setup_mocks):
     assert not integration._initialized
 
 
-def test_html_to_markdown_not_initialized():
+def test_html_to_markdown_not_initialized() -> None:
     """Test HTML to Markdown conversion when service is not initialized."""
     integration = PandocIntegration()
     result = integration.html_to_markdown("input.html", "output.md")
 
     assert not result.success
+    assert result.error is not None
     assert "not initialized" in result.error
 
 
-def test_markdown_to_docx_not_initialized():
+def test_markdown_to_docx_not_initialized() -> None:
     """Test Markdown to DOCX conversion when service is not initialized."""
     integration = PandocIntegration()
     result = integration.markdown_to_docx("input.md", "output.docx")
 
     assert not result.success
+    assert result.error is not None
     assert "not initialized" in result.error
 
 
-def test_convert_directory_not_initialized():
+def test_convert_directory_not_initialized() -> None:
     """Test directory conversion when service is not initialized."""
     integration = PandocIntegration()
     result = integration.convert_directory("input_dir", "markdown")
 
     assert not result.success
+    assert result.error is not None
     assert "not initialized" in result.error
 
 
-def test_is_pandoc_available():
+def test_is_pandoc_available() -> None:
     """Test is_pandoc_available method."""
     integration = PandocIntegration()
 
@@ -150,8 +159,10 @@ def test_is_pandoc_available():
 @patch("quack_core.core.fs.service.standalone.expand_user_vars")
 @patch("quack_core.integrations.pandoc.service.verify_pandoc")
 def test_html_to_markdown_with_initialized_service(
-    mock_verify_pandoc, mock_expand_user_vars, setup_mocks
-):
+    mock_verify_pandoc: MagicMock,
+    mock_expand_user_vars: MagicMock,
+    setup_mocks: tuple[SimpleNamespace, MagicMock],
+) -> None:
     """Test HTML to Markdown conversion with initialized service."""
     fs_stub, mock_paths_service = setup_mocks
 
@@ -160,7 +171,7 @@ def test_html_to_markdown_with_initialized_service(
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.fs_service = fs_stub
+    integration.fs_service = fs_stub  # type: ignore[assignment]  # SimpleNamespace duck-types FileSystemService for this test double
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
@@ -189,8 +200,10 @@ def test_html_to_markdown_with_initialized_service(
 @patch("quack_core.core.fs.service.standalone.expand_user_vars")
 @patch("quack_core.integrations.pandoc.service.verify_pandoc")
 def test_markdown_to_docx_with_initialized_service(
-    mock_verify_pandoc, mock_expand_user_vars, setup_mocks
-):
+    mock_verify_pandoc: MagicMock,
+    mock_expand_user_vars: MagicMock,
+    setup_mocks: tuple[SimpleNamespace, MagicMock],
+) -> None:
     """Test Markdown to DOCX conversion with initialized service."""
     fs_stub, mock_paths_service = setup_mocks
 
@@ -199,7 +212,7 @@ def test_markdown_to_docx_with_initialized_service(
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.fs_service = fs_stub
+    integration.fs_service = fs_stub  # type: ignore[assignment]  # SimpleNamespace duck-types FileSystemService for this test double
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
@@ -228,8 +241,10 @@ def test_markdown_to_docx_with_initialized_service(
 @patch("quack_core.core.fs.service.standalone.expand_user_vars")
 @patch("quack_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_with_initialized_service(
-    mock_verify_pandoc, mock_expand_user_vars, setup_mocks
-):
+    mock_verify_pandoc: MagicMock,
+    mock_expand_user_vars: MagicMock,
+    setup_mocks: tuple[SimpleNamespace, MagicMock],
+) -> None:
     """Test directory conversion with initialized service."""
     fs_stub, mock_paths_service = setup_mocks
 
@@ -238,7 +253,7 @@ def test_convert_directory_with_initialized_service(
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
-    integration.fs_service = fs_stub
+    integration.fs_service = fs_stub  # type: ignore[assignment]  # SimpleNamespace duck-types FileSystemService for this test double
     integration.config_provider.load_config = MagicMock(
         return_value=IntegrationResult(success=True, content={})
     )
