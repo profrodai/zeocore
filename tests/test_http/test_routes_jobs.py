@@ -8,8 +8,10 @@ Tests for job routes.
 
 import time
 
+from fastapi.testclient import TestClient
 
-def test_post_jobs_no_auth(test_client):
+
+def test_post_jobs_no_auth(test_client: TestClient) -> None:
     """Test job creation fails without auth."""
     response = test_client.post(
         "/jobs",
@@ -18,7 +20,9 @@ def test_post_jobs_no_auth(test_client):
     assert response.status_code == 401
 
 
-def test_post_jobs_success(test_client, auth_headers):
+def test_post_jobs_success(
+    test_client: TestClient, auth_headers: dict[str, str]
+) -> None:
     """Test successful job creation."""
     response = test_client.post(
         "/jobs",
@@ -35,7 +39,9 @@ def test_post_jobs_success(test_client, auth_headers):
     assert data["status"] == "queued"
 
 
-def test_post_jobs_with_callback(test_client, auth_headers):
+def test_post_jobs_with_callback(
+    test_client: TestClient, auth_headers: dict[str, str]
+) -> None:
     """Test job creation with callback URL."""
     response = test_client.post(
         "/jobs",
@@ -50,7 +56,9 @@ def test_post_jobs_with_callback(test_client, auth_headers):
     assert response.status_code == 200
 
 
-def test_post_jobs_with_idempotency_header(test_client, auth_headers):
+def test_post_jobs_with_idempotency_header(
+    test_client: TestClient, auth_headers: dict[str, str]
+) -> None:
     """Test job creation with idempotency header."""
     headers = {**auth_headers, "Idempotency-Key": "test-123"}
 
@@ -72,13 +80,17 @@ def test_post_jobs_with_idempotency_header(test_client, auth_headers):
     assert response1.json()["job_id"] == response2.json()["job_id"]
 
 
-def test_get_job_status_not_found(test_client, auth_headers):
+def test_get_job_status_not_found(
+    test_client: TestClient, auth_headers: dict[str, str]
+) -> None:
     """Test getting status for non-existent job."""
     response = test_client.get("/jobs/non-existent", headers=auth_headers)
     assert response.status_code == 404
 
 
-def test_get_job_status_success(test_client, auth_headers):
+def test_get_job_status_success(
+    test_client: TestClient, auth_headers: dict[str, str]
+) -> None:
     """Test getting job status."""
     # Create a job first
     create_response = test_client.post(
@@ -98,7 +110,7 @@ def test_get_job_status_success(test_client, auth_headers):
     assert data["status"] in ["queued", "running", "done"]
 
 
-def test_job_lifecycle(test_client, auth_headers):
+def test_job_lifecycle(test_client: TestClient, auth_headers: dict[str, str]) -> None:
     """Test complete job lifecycle."""
     # Create job
     create_response = test_client.post(

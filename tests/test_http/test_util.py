@@ -18,7 +18,7 @@ from quack_core.adapters.http.util import post_callback
 
 
 # Remove async tests that require pytest-asyncio
-def test_post_callback_mock():
+def test_post_callback_mock() -> None:
     """Test callback posting with mocking (sync test)."""
     # This is a simplified test that doesn't require async
     url = "http://example.com/callback"

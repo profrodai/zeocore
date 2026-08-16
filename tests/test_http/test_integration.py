@@ -15,7 +15,7 @@ from quack_core.adapters.http.config import HttpAdapterConfig
 
 
 @pytest.fixture
-def integration_client():
+def integration_client() -> TestClient:
     """Create client for integration testing."""
     config = HttpAdapterConfig(
         auth_token="integration-test-token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
@@ -27,12 +27,14 @@ def integration_client():
 
 
 @pytest.fixture
-def integration_headers():
+def integration_headers() -> dict[str, str]:
     """Auth headers for integration tests."""
     return {"Authorization": "Bearer integration-test-token"}
 
 
-def test_full_job_workflow(integration_client, integration_headers):
+def test_full_job_workflow(
+    integration_client: TestClient, integration_headers: dict[str, str]
+) -> None:
     """Test complete job workflow from creation to completion."""
     # Create job
     create_response = integration_client.post(
@@ -74,7 +76,9 @@ def test_full_job_workflow(integration_client, integration_headers):
     assert "input_path" in status_data["result"]["params"]
 
 
-def test_sync_vs_async_consistency(integration_client, integration_headers):
+def test_sync_vs_async_consistency(
+    integration_client: TestClient, integration_headers: dict[str, str]
+) -> None:
     """Test that sync and async endpoints return consistent results."""
     params = {
         "input_path": "/test.mp4",
@@ -118,7 +122,7 @@ def test_sync_vs_async_consistency(integration_client, integration_headers):
     assert sync_result["operation"] == async_result["operation"]
 
 
-def test_health_endpoints(integration_client):
+def test_health_endpoints(integration_client: TestClient) -> None:
     """Test health endpoints work without auth."""
     # Health endpoints should work without auth
     live_response = integration_client.get("/health/live")
@@ -130,7 +134,7 @@ def test_health_endpoints(integration_client):
     assert ready_response.json() == {"ok": True}
 
 
-def test_cors_headers(integration_client):
+def test_cors_headers(integration_client: TestClient) -> None:
     """Test CORS handling."""
     # This is a basic test - full CORS testing would require
     # configuring CORS origins and testing preflight requests
@@ -138,7 +142,7 @@ def test_cors_headers(integration_client):
     assert response.status_code == 200
 
 
-def test_openapi_docs(integration_client):
+def test_openapi_docs(integration_client: TestClient) -> None:
     """Test that OpenAPI documentation is available."""
     docs_response = integration_client.get("/docs")
     # Should redirect or return HTML
