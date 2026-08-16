@@ -8,7 +8,6 @@ Tests for the filesystem operation result classes.
 
 from pathlib import Path
 
-import pytest
 from quack_core.core.fs import (
     DataResult,
     DirectoryInfoResult,
@@ -25,7 +24,14 @@ class TestOperationResult:
 
     def test_basic_result(self) -> None:
         """Test creating a basic operation result."""
-        result = OperationResult(path=Path("/test/path"))
+        # ok is a required field (no default) on the canonical current
+        # OperationResult contract -- confirmed live via a ValidationError before
+        # this fix (pydantic-mypy-plugin round, quackverse-lint-mypy-backlog-SOW-07).
+        # `success` is a read-only computed_field aliasing .ok (deprecated,
+        # transitional), not a settable constructor kwarg -- kept below only on the
+        # read side, where it still legitimately exercises that back-compat alias.
+        # Applies uniformly to every construction call site in this file.
+        result = OperationResult(ok=True, path=Path("/test/path"))
 
         assert result.success is True
         assert result.path == Path("/test/path")
@@ -35,7 +41,7 @@ class TestOperationResult:
     def test_failed_result(self) -> None:
         """Test creating a failed operation result."""
         result = OperationResult(
-            success=False, path=Path("/test/path"), error="Operation failed"
+            ok=False, path=Path("/test/path"), error="Operation failed"
         )
 
         assert result.success is False
@@ -49,7 +55,10 @@ class TestReadResult:
     def test_text_result(self) -> None:
         """Test creating a read result with text content."""
         result = ReadResult(
-            path=Path("/test/file.txt"), content="text content", encoding="utf-8"
+            ok=True,
+            path=Path("/test/file.txt"),
+            content="text content",
+            encoding="utf-8",
         )
 
         assert result.success is True
@@ -66,40 +75,61 @@ class TestReadResult:
         assert binary.decode("utf-8") == "text content"
 
     def test_binary_result(self) -> None:
-        """Test creating a read result with binary content."""
-        result = ReadResult(path=Path("/test/file.bin"), content=b"\x00\x01\x02\x03")
+        """Test creating a read result with binary content.
+
+        The original test expected `.text` to RAISE UnicodeDecodeError on
+        undecodable bytes under the default utf-8 encoding. Two independent
+        problems, both confirmed live before touching anything: (1)
+        b"\\x00\\x01\\x02\\x03" is itself valid UTF-8 (four ASCII control
+        bytes) -- it was never going to fail decoding regardless of
+        ReadResult's implementation, a pre-existing test-authoring bug, not a
+        reorg-caused drift; (2) even with genuinely undecodable bytes
+        (b"\\xff\\xfe..."), `.text` still does not raise -- its own docstring
+        ("Safe access to text content. Returns None if invalid type/missing")
+        and source (`except Exception: return None`) show this is a
+        deliberate, documented safe-access design, not a bug. Reworked to
+        assert the real current contract: `.text` returns None on a decode
+        failure rather than raising.
+        """
+        invalid_utf8 = b"\xff\xfe\x02\x03"
+        result = ReadResult(ok=True, path=Path("/test/file.bin"), content=invalid_utf8)
 
         assert result.success is True
         assert result.path == Path("/test/file.bin")
-        assert result.content == b"\x00\x01\x02\x03"
+        assert result.content == invalid_utf8
 
         # Test the binary property
-        assert result.binary == b"\x00\x01\x02\x03"
+        assert result.binary == invalid_utf8
 
-        # Test the text property with binary content
-        with pytest.raises(UnicodeDecodeError):
-            # This should fail with default utf-8 encoding
-            _ = result.text
+        # Test the text property with binary content that fails to decode under
+        # the default utf-8 encoding: .text safely returns None, it never raises.
+        assert result.text is None
 
         # Test with explicit encoding
         result.encoding = "latin1"
         text = result.text
         assert isinstance(text, str)
-        assert text == "\x00\x01\x02\x03"
+        assert text == invalid_utf8.decode("latin1")
 
     def test_invalid_content_type(self) -> None:
-        """Test handling invalid content types."""
+        """Test handling invalid content types.
+
+        ReadResult.text/.binary are documented "safe access" properties (see their
+        own docstrings in results.py: "Returns None if invalid type/missing") that
+        deliberately catch and swallow decode/type errors, returning None rather
+        than propagating an exception -- confirmed live, current, and intentional
+        (not a regression to route around). Reworked from "raises TypeError" to
+        "returns None", matching the real current, documented contract.
+        """
         result = ReadResult(
+            ok=True,
             path=Path("/test/file"),
             content=[1, 2, 3],  # type: ignore
         )
 
-        # Both text and binary properties should raise TypeError
-        with pytest.raises(TypeError):
-            _ = result.text
-
-        with pytest.raises(TypeError):
-            _ = result.binary
+        # Both text and binary properties safely return None for an invalid type
+        assert result.text is None
+        assert result.binary is None
 
 
 class TestWriteResult:
@@ -107,7 +137,7 @@ class TestWriteResult:
 
     def test_basic_write_result(self) -> None:
         """Test creating a basic write result."""
-        result = WriteResult(path=Path("/test/file.txt"), bytes_written=100)
+        result = WriteResult(ok=True, path=Path("/test/file.txt"), bytes_written=100)
 
         assert result.success is True
         assert result.path == Path("/test/file.txt")
@@ -118,7 +148,10 @@ class TestWriteResult:
     def test_write_result_with_checksum(self) -> None:
         """Test creating a write result with checksum."""
         result = WriteResult(
-            path=Path("/test/file.txt"), bytes_written=100, checksum="abcdef1234567890"
+            ok=True,
+            path=Path("/test/file.txt"),
+            bytes_written=100,
+            checksum="abcdef1234567890",
         )
 
         assert result.success is True
@@ -127,6 +160,7 @@ class TestWriteResult:
     def test_copy_move_result(self) -> None:
         """Test creating a result for copy/move _ops."""
         result = WriteResult(
+            ok=True,
             path=Path("/test/dest.txt"),
             original_path=Path("/test/source.txt"),
             bytes_written=100,
@@ -144,6 +178,7 @@ class TestFileInfoResult:
     def test_file_info(self) -> None:
         """Test creating a file info result."""
         result = FileInfoResult(
+            ok=True,
             path=Path("/test/file.txt"),
             exists=True,
             is_file=True,
@@ -171,6 +206,7 @@ class TestFileInfoResult:
     def test_directory_info(self) -> None:
         """Test creating a directory info result."""
         result = FileInfoResult(
+            ok=True,
             path=Path("/test/dir"),
             exists=True,
             is_file=False,
@@ -196,7 +232,9 @@ class TestFileInfoResult:
 
     def test_non_existent_file(self) -> None:
         """Test creating a result for a non-existent file."""
-        result = FileInfoResult(path=Path("/test/nonexistent.txt"), exists=False)
+        result = FileInfoResult(
+            ok=True, path=Path("/test/nonexistent.txt"), exists=False
+        )
 
         assert result.success is True
         assert result.path == Path("/test/nonexistent.txt")
@@ -220,6 +258,7 @@ class TestDirectoryInfoResult:
         directories = [Path("/test/dir/subdir1"), Path("/test/dir/subdir2")]
 
         result = DirectoryInfoResult(
+            ok=True,
             path=Path("/test/dir"),
             exists=True,
             is_empty=False,
@@ -243,6 +282,7 @@ class TestDirectoryInfoResult:
     def test_empty_directory(self) -> None:
         """Test creating a result for an empty directory."""
         result = DirectoryInfoResult(
+            ok=True,
             path=Path("/test/empty_dir"),
             exists=True,
             is_empty=True,
@@ -266,6 +306,7 @@ class TestDirectoryInfoResult:
     def test_non_existent_directory(self) -> None:
         """Test creating a result for a non-existent directory."""
         result = DirectoryInfoResult(
+            ok=True,
             path=Path("/test/nonexistent_dir"),
             exists=False,
         )
@@ -292,6 +333,7 @@ class TestFindResult:
         directories = [Path("/test/dir/subdir1"), Path("/test/dir/subdir2")]
 
         result = FindResult(
+            ok=True,
             path=Path("/test/dir"),
             pattern="*.txt",
             recursive=True,
@@ -311,6 +353,7 @@ class TestFindResult:
     def test_no_matches(self) -> None:
         """Test creating a result with no matches."""
         result = FindResult(
+            ok=True,
             path=Path("/test/dir"),
             pattern="*.nonexistent",
             recursive=True,
@@ -332,7 +375,9 @@ class TestDataResult:
         """Test creating a YAML data result."""
         data = {"name": "Test", "values": [1, 2, 3]}
 
-        result = DataResult(path=Path("/test/file.yaml"), data=data, format="yaml")
+        result = DataResult(
+            ok=True, path=Path("/test/file.yaml"), data=data, format="yaml"
+        )
 
         assert result.success is True
         assert result.path == Path("/test/file.yaml")
@@ -345,7 +390,11 @@ class TestDataResult:
         data = {"name": "Test", "values": [1, 2, 3]}
 
         result = DataResult(
-            path=Path("/test/file.json"), data=data, format="json", schema_valid=True
+            ok=True,
+            path=Path("/test/file.json"),
+            data=data,
+            format="json",
+            schema_valid=True,
         )
 
         assert result.success is True
@@ -357,7 +406,7 @@ class TestDataResult:
     def test_failed_data_result(self) -> None:
         """Test creating a failed data result."""
         result = DataResult(
-            success=False,
+            ok=False,
             path=Path("/test/file.yaml"),
             data={},
             format="yaml",
