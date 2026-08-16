@@ -11,6 +11,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from quack_core.core.errors import QuackApiError, QuackIntegrationError
+from quack_core.core.fs import DataResult
 from quack_core.core.paths.api.public.results import PathResult
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.drive.operations import upload
@@ -95,11 +96,13 @@ class TestDriveOperationsUpload:
                 mock_info.return_value.success = True
                 mock_info.return_value.exists = True
 
-                # Mock get_mime_type
+                # Mock get_mime_type. get_mime_type returns a DataResult
+                # in real life (RULING-247's fix unwraps via .success/
+                # .data), not a raw str -- mock the real shape.
                 with patch(
                     "quack_core.core.fs.service.standalone.get_mime_type"
                 ) as mock_mime:
-                    mock_mime.return_value = "text/plain"
+                    mock_mime.return_value = DataResult(ok=True, data="text/plain")
 
                     # Test with default parameters
                     path_obj, filename, folder_id, mime_type = (
