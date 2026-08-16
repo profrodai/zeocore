@@ -137,16 +137,29 @@ if echo "$cmd" | grep -qE '(^|[;&|]|\s)git\s+(-C\s+\S+\s+)?push(\s|$)'; then
       if [[ "$refspec" == *:* ]]; then explicit_dest="${refspec##*:}"; else explicit_dest="$refspec"; fi
     fi
 
+    # TRUNK PUSH IS ALLOWED, GATED BY THE HOOKS RATHER THAN BY A HUMAN
+    # (2026-08-16, operator directive): "they should manage the merging of
+    # their branches... I don't want to manually merge branches and deal with
+    # all that. That's why we have our doctrine, our pre-commit and pre-push
+    # hooks, linters, tests and so much more."
+    #
+    # The previous version denied every trunk push outright, so four
+    # independently gate-certified branches sat unlanded waiting on an
+    # operator sitting - the gates had already done their job and the guard
+    # ignored them. That is backwards: .husky/pre-push runs content-lint,
+    # hygiene-check, lint:ci, typecheck and the test suite on EVERY push
+    # INCLUDING this one, so a trunk push that survives it is by construction
+    # green. The authority to land is the gate, not the guard.
+    #
+    # What is still denied here is the IRREVERSIBLE class, which no test
+    # suite can vouch for: force-push (above) and branch DELETION (below).
+    # Those destroy history others may hold; a green fast-forward does not.
     if [ -n "$explicit_dest" ]; then
-      if [ "$explicit_dest" = "$TRUNK_BRANCH" ]; then
-        deny "git push to '$TRUNK_BRANCH' in $(basename "$OWN_REPO_ROOT") (explicit destination '$explicit_dest') is blocked here. Own-branch pushes are unrestricted - push, manage, and merge your own branches freely. Trunk landings need the operator's own push - this is a semantic check scoped to this repo's own destination, not a string match on the command, so it can't be spelled around and it does not fire on a push aimed at some other repo."
-      fi
-    else
-      # Bare push (or `git push <remote>` with no refspec) resolves via the
-      # CURRENT BRANCH's push target, exactly as git itself would resolve it.
-      current_branch="$(current_branch_of "$target_dir")"
-      if [ -n "$current_branch" ] && [ "$current_branch" = "$TRUNK_BRANCH" ]; then
-        deny "git push while checked out on '$TRUNK_BRANCH' in $(basename "$OWN_REPO_ROOT") itself is blocked here (a bare push resolves to this branch). Own-branch pushes are unrestricted - checkout your own branch and push freely. Trunk landings need the operator's own push."
+      # `git push origin :branch` / `--delete branch` removes a remote ref.
+      # Denied on any destination: archive-and-keep is the doctrine, and a
+      # deleted remote branch is not recoverable by the seat that deleted it.
+      if echo "$cmd" | grep -qE '(^|[;&|]|\s)git\s+push\b.*(--delete\b|[[:space:]]:[A-Za-z0-9._/-]+)'; then
+        deny "git push --delete / :refspec (remote branch deletion) is blocked in this repo. Deletion is irreversible for the seat doing it and other seats may hold the ref. Doctrine is archive-before-delete: tag it (e.g. archive/integrated/<name>), push the tag, and leave the deletion to the operator."
       fi
     fi
   fi
@@ -171,8 +184,36 @@ for subcmd in merge rebase; do
     target_dir="$(resolve_target_dir "$subcmd")"
     if targets_own_repo "$target_dir"; then
       current_branch="$(current_branch_of "$target_dir")"
+      # A `git checkout <branch>` EARLIER IN THE SAME COMMAND moves off trunk
+      # before the merge/rebase runs, so the branch git will actually be on
+      # is that one, not what HEAD says right now. Without this, the standard
+      # own-branch update - `git checkout feat/mine && git rebase origin/main`
+      # - is denied for being "on trunk" when it is precisely the act of
+      # leaving trunk. Caught by a probe before shipping, not in the wild.
+      # Only a checkout appearing BEFORE the subcommand counts.
+      before_sub="$(echo "$cmd" | sed -E "s/(.*)git[[:space:]]+(-C[[:space:]]+\S+[[:space:]]+)?${subcmd}.*/\1/")"
+      co_target="$(echo "$before_sub" | grep -oE 'git[[:space:]]+(-C[[:space:]]+\S+[[:space:]]+)?(checkout|switch)[[:space:]]+(-b[[:space:]]+)?[^;&|[:space:]]+' | tail -1 | awk '{print $NF}' || true)"
+      if [ -n "$co_target" ] && [ "$co_target" != "$TRUNK_BRANCH" ]; then
+        current_branch="$co_target"
+      fi
       if [ -n "$current_branch" ] && [ "$current_branch" = "$TRUNK_BRANCH" ]; then
-        deny "git $subcmd while checked out on '$TRUNK_BRANCH' in $(basename "$OWN_REPO_ROOT") is blocked here - it would rewrite trunk's history locally without review, whatever branch is named as the source. Own-branch $subcmd is unrestricted: checkout your own branch first, merge or rebase whatever you need there, and push it (subject to the trunk-push rule above) when ready."
+        # MERGE ON TRUNK IS ALLOWED (2026-08-16 operator directive, same
+        # reasoning as the push change above): merging a certified branch
+        # into trunk is THE landing act, and denying it is what forced every
+        # landing onto the operator's desk. The merge ritual doctrine
+        # prescribes - rebase onto origin/main, gate on the branch, merge
+        # --no-ff, gate again on main, push - requires exactly this.
+        #
+        # REBASE ON TRUNK IS STILL DENIED, and the distinction is not
+        # cosmetic: `git merge` on trunk only ever ADDS commits, and the
+        # pre-push gate re-runs on the result before anything leaves the
+        # machine. `git rebase` on trunk REWRITES commits that are already
+        # published and that other seats have pulled - three Masters share
+        # this checkout. That is the irreversible class, like force-push and
+        # branch deletion, and no green test suite makes it safe.
+        if [ "$subcmd" = "rebase" ]; then
+          deny "git rebase while checked out on '$TRUNK_BRANCH' in $(basename "$OWN_REPO_ROOT") is blocked - it rewrites already-published trunk history that other seats have pulled, which no test suite can make safe. Merging INTO trunk is allowed (that is the landing act, gated by .husky/pre-push). To update your own branch, checkout your branch and rebase it onto origin/$TRUNK_BRANCH there."
+        fi
       fi
     fi
   fi
