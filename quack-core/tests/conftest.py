@@ -74,7 +74,12 @@ def patch_filesystem_operations():
             elif hasattr(arg, "__fspath__"):
                 try:
                     new_args[i] = arg.__fspath__()
-                except Exception:
+                except Exception:  # noqa: S110 -- this patched __init__ runs on
+                    # every Path() construction across the whole test suite; if
+                    # __fspath__() fails, leaving the arg unchanged lets the real
+                    # Path.__init__ raise its own natural error below, so
+                    # swallowing here (not logging) avoids per-call log noise
+                    # for a fallback path that's not itself an error.
                     pass
 
         # Call original __init__ with potentially modified args
