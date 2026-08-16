@@ -90,7 +90,7 @@ def test_prepare_pandoc_args() -> None:
     assert "--custom-arg" in custom_args
 
 
-@patch("quack_core.core.fs.service.standalone")
+@patch("quack_core.integrations.pandoc.operations.utils.fs")
 def test_get_file_info(mock_fs: MagicMock) -> None:
     """Test getting file information for conversion."""
     # Setup mock fs
@@ -103,7 +103,9 @@ def test_get_file_info(mock_fs: MagicMock) -> None:
     html_info = get_file_info("test.html")
     assert html_info.path == "test.html"
     assert html_info.format == "html"
-    assert html_info.size == 1024
+    # size comes straight from the mocked file_info.size (100); 1024 is only
+    # the fallback safe_convert_to_int() uses when size is missing/unconvertible.
+    assert html_info.size == 100
 
     # Test with Markdown file
     mock_fs.get_extension.return_value = SimpleNamespace(success=True, data="md")
