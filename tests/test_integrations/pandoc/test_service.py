@@ -9,6 +9,7 @@ This module contains unit tests for the PandocIntegration service class
 that provides document conversion functionality.
 """
 
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
@@ -297,3 +298,71 @@ def test_convert_directory_with_initialized_service(
     )
     assert result.success
     assert mock_convert_batch.call_count == 2
+
+
+@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+def test_convert_directory_find_files_real_fs_service(
+    mock_verify_pandoc: MagicMock,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """RULING-239: convert_directory's find_files call against the REAL
+    FileSystemService, not a mock/SimpleNamespace.
+
+    Before the fix, convert_directory called
+    self.fs_service.find_files(directory=input_dir, pattern=pattern) --
+    but the real FileSystemService.find_files signature is
+    find_files(path, pattern, ...), no `directory` kwarg. Every existing
+    convert_directory test replaces fs_service with a MagicMock/
+    SimpleNamespace whose find_files accepts arbitrary kwargs, so the
+    TypeError this call raises against the real service was never caught.
+    This test uses a REAL FileSystemService (sandboxed to tmp_path via
+    monkeypatch.chdir, matching the module-level `fs` singleton's own
+    default cwd-sandbox used by pandoc.operations.utils.get_file_info) so
+    a regression back to `directory=` fails loudly with the exact
+    TypeError this ruling fixed, instead of being silently absorbed by a
+    permissive test double.
+    """
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "a.html").write_text("<p>hello</p>")
+    (tmp_path / "b.html").write_text("<p>world</p>")
+
+    from quack_core.core.fs.service import FileSystemService
+
+    mock_verify_pandoc.return_value = "2.11.0"
+
+    integration = PandocIntegration()
+    integration.fs_service = FileSystemService()  # REAL service, not a mock/stub
+    assert integration.config_provider is not None
+    integration.config_provider.load_config = MagicMock(  # type: ignore[method-assign]
+        return_value=IntegrationResult(success=True, content={})
+    )
+
+    init_result = integration.initialize()
+    assert init_result.success, init_result.error
+
+    # The call under test: convert_directory -> self.fs_service.find_files(...).
+    # Exercised directly against the real service's find_files to prove the
+    # kwarg name is correct.
+    find_result = integration.fs_service.find_files(
+        path=str(tmp_path), pattern="*.html"
+    )
+    assert find_result.success, find_result.error
+    assert len(find_result.files) == 2
+
+    # Regression guard on convert_directory ITSELF, not just the isolated
+    # find_files call above: convert_directory's own try/except swallows any
+    # exception from the find_files call and stuffs the message into
+    # result.error -- so `directory=input_dir` regressing back in would NOT
+    # raise here, it would surface as this exact TypeError text in
+    # result.error. Assert that text is ABSENT (proving the correct kwarg
+    # reached the real service) rather than asserting overall success --
+    # full pipeline success is gated by a separate, NOT-yet-authorized
+    # finding (RULING-239 s1.4: the list[Path]/list[str] mismatch in
+    # _build_conversion_tasks causes every file to fail get_file_info
+    # downstream of a working find_files call, confirmed live this round,
+    # reported but not fixed here). Falsified: reverting the kwarg to
+    # `directory=` while keeping this assertion makes it fail with exactly
+    # "unexpected keyword argument 'directory'" in result.error.
+    result = integration.convert_directory(str(tmp_path), "markdown", pattern="*.html")
+    assert "unexpected keyword argument 'directory'" not in (result.error or "")
