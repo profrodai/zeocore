@@ -1,0 +1,56 @@
+{
+  "manifest_version": "1.0",
+  "run_id": "550e8400-e29b-41d4-a716-446655440000",
+  "tool": {"name": "slice_video", "version": "1.0.0"},
+  "started_at": "2025-01-15T10:30:00Z",
+  "finished_at": "2025-01-15T10:30:45Z",
+  "duration_sec": 45.0,
+  "status": "success",
+  "inputs": [
+    {
+      "name": "source_video",
+      "artifact": {
+        "artifact_id": "a1b2c3d4-e5f6-4789-abcd-ef0123456789",
+        "role": "video_source",
+        "kind": "intermediate",
+        "content_type": "video/mp4",
+        "storage": {
+          "scheme": "local",
+          "uri": "file:///data/input.mp4"
+        }
+      },
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "artifact_id": "b2c3d4e5-f678-49ab-cdef-0123456789ab",
+      "role": "video_slice_1",
+      "kind": "final",
+      "content_type": "video/mp4",
+      "storage": {
+        "scheme": "local",
+        "uri": "file:///data/output/clip1.mp4"
+      }
+    },
+    {
+      "artifact_id": "c3d4e5f6-7890-4abc-def0-123456789abc",
+      "role": "video_slice_2",
+      "kind": "final",
+      "content_type": "video/mp4",
+      "storage": {
+        "scheme": "local",
+        "uri": "file:///data/output/clip2.mp4"
+      }
+    }
+  ],
+  "intermediates": [],
+  "logs": [],
+  "metadata": {"preset": "fast", "clip_count": 2},
+  "provenance": {
+    "git_commit": "abc123",
+    "git_branch": "main",
+    "environment": "prod",
+    "runner": "n8n"
+  }
+}

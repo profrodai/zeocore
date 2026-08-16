@@ -1,0 +1,19 @@
+{
+  "artifact_id": "550e8400-e29b-41d4-a716-446655440000",
+  "role": "transcript_txt",
+  "kind": "final",
+  "content_type": "text/plain",
+  "storage": {
+    "scheme": "local",
+    "uri": "file:///data/transcript.txt",
+    "metadata": {}
+  },
+  "size_bytes": 2048,
+  "checksum": {
+    "algorithm": "sha256",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "created_at": "2025-01-15T10:30:00Z",
+  "tags": {"language": "en"},
+  "metadata": {"word_count": 150}
+}
