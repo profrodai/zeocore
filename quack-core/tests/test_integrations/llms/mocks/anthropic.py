@@ -30,7 +30,7 @@ class MockAnthropicResponse(MockLLMResponse):
         type: str = "message",
         stop_reason: str | None = None,
         stop_sequence: str | None = None,
-    ):
+    ) -> None:
         """
         Initialize a mock Anthropic response.
 
@@ -175,7 +175,7 @@ class MockAnthropicErrorResponse:
         message: str = "Anthropic API error",
         type: str = "api_error",
         status_code: int = 429,
-    ):
+    ) -> None:
         """
         Initialize a mock Anthropic error response.
 
@@ -225,7 +225,7 @@ class MockAnthropicClient(MockClient):
         model: str = "claude-3-opus-20240229",
         errors: list[Exception] = None,
         **kwargs: Any,
-    ):
+    ) -> None:
         """
         Initialize a mock Anthropic client.
 
@@ -247,7 +247,7 @@ class MockAnthropicClient(MockClient):
         # Track Anthropic-specific data
         self.anthropic_requests = []
 
-    def messages_create(self, *args, **kwargs):
+    def messages_create(self, *args: Any, **kwargs: Any):
         """
         Mock Anthropic's messages.create method.
 
@@ -282,7 +282,7 @@ class MockAnthropicClient(MockClient):
         # Return a normal response
         return MockAnthropicResponse(content=response_text, model=self.model)
 
-    def count_tokens(self, *args, **kwargs):
+    def count_tokens(self, *args: Any, **kwargs: Any):
         """
         Mock Anthropic's count_tokens method.
 

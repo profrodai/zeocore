@@ -43,7 +43,7 @@ class ExampleTool(
     4. Optionally uploads to Google Drive if integration is available
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the ExampleTool.
         """

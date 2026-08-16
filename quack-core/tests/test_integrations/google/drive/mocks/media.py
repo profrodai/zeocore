@@ -20,7 +20,7 @@ class MockDownloadStatus:
     that are used internally, and MagicMock doesn't handle these correctly.
     """
 
-    def __init__(self, progress_value: float):
+    def __init__(self, progress_value: float) -> None:
         """
         Initialize with a progress value.
 
@@ -81,7 +81,9 @@ class MockMediaDownloader:
     logic that regular MagicMock can't properly simulate.
     """
 
-    def __init__(self, progress_sequence: list[tuple[float, bool]] | None = None):
+    def __init__(
+        self, progress_sequence: list[tuple[float, bool]] | None = None
+    ) -> None:
         """
         Initialize the mock downloader with a sequence of progress values.
 

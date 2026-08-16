@@ -25,7 +25,9 @@ R = TypeVar("R")  # Generic type for return values
 class MockDrivePermissionsResource(DrivePermissionsResource):
     """Mock permissions resource with configurable behavior."""
 
-    def __init__(self, permission_id: str = "perm123", error: Exception | None = None):
+    def __init__(
+        self, permission_id: str = "perm123", error: Exception | None = None
+    ) -> None:
         """
         Initialize mock permissions resource.
 
@@ -86,7 +88,7 @@ class MockDriveFilesResource(DriveFilesResource):
         list_error: Exception | None = None,
         update_error: Exception | None = None,
         delete_error: Exception | None = None,
-    ):
+    ) -> None:
         """
         Initialize mock files resource.
 

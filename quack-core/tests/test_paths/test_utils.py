@@ -9,6 +9,7 @@ Tests for path utility functions.
 import os
 import tempfile
 from pathlib import Path
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -19,7 +20,7 @@ from quack_core.core.paths import service as paths
 
 # Create mock DataResult for fs _ops
 class MockDataResult:
-    def __init__(self, success, data, error=None):
+    def __init__(self, success, data, error=None) -> None:
         self.success = success
         self.data = data
         self.error = error
@@ -29,7 +30,7 @@ class MockDataResult:
 @pytest.fixture(autouse=True)
 def mock_fs_methods(monkeypatch):
     # Mock join_path to return MockDataResult
-    def mock_join_path(*args):
+    def mock_join_path(*args: Any):
         path_str = str(Path(*[str(arg) for arg in args]))
         return MockDataResult(True, path_str)
 

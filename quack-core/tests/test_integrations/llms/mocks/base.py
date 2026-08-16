@@ -21,7 +21,7 @@ class MockLLMResponse:
         usage: dict[str, int] | None = None,
         finish_reason: str = "stop",
         error: Exception | None = None,
-    ):
+    ) -> None:
         """
         Initialize a mock LLM response.
 
@@ -79,7 +79,7 @@ class MockLLMResponse:
 class MockTokenResponse:
     """A mock token count response."""
 
-    def __init__(self, count: int = 30, error: Exception | None = None):
+    def __init__(self, count: int = 30, error: Exception | None = None) -> None:
         """
         Initialize a mock token count response.
 
@@ -113,7 +113,7 @@ class MockStreamingGenerator:
         model: str = "mock-model",
         error: Exception | None = None,
         error_after: int | None = None,
-    ):
+    ) -> None:
         """
         Initialize a mock streaming generator.
 

@@ -11,6 +11,7 @@ including building queries, listing emails, and downloading emails.
 
 import logging
 from datetime import datetime
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -34,19 +35,19 @@ class TestGmailEmailOperations:
 
         # Create a proper mock hierarchy that matches the protocol structure
         class MockRequest(GmailRequest):
-            def __init__(self, return_value):
+            def __init__(self, return_value) -> None:
                 self.return_value = return_value
 
             def execute(self):
                 return self.return_value
 
         class MockAttachmentsResource(GmailAttachmentsResource):
-            def __init__(self):
-                self.get_return = None
+            def __init__(self) -> None:
+                self.get_return: dict | None = None
                 # Initialize instance attributes in __init__
-                self.last_user_id = None
-                self.last_message_id = None
-                self.last_attachment_id = None
+                self.last_user_id: str | None = None
+                self.last_message_id: str | None = None
+                self.last_attachment_id: str | None = None
 
             def get(
                 self, user_id: str, message_id: str, attachment_id: str
@@ -58,16 +59,16 @@ class TestGmailEmailOperations:
                 return MockRequest(self.get_return)
 
         class MockMessagesResource(GmailMessagesResource):
-            def __init__(self):
+            def __init__(self) -> None:
                 self.attachments_resource = MockAttachmentsResource()
-                self.list_return = {}
-                self.get_return = {}
+                self.list_return: dict = {}
+                self.get_return: dict = {}
                 # Initialize attributes for test assertions
-                self.last_user_id = None
-                self.last_query = None
-                self.last_max_results = None
-                self.last_message_id = None
-                self.last_format = None
+                self.last_user_id: str | None = None
+                self.last_query: str | None = None
+                self.last_max_results: int | None = None
+                self.last_message_id: str | None = None
+                self.last_format: str | None = None
 
             def list(self, user_id: str, q: str, max_results: int) -> GmailRequest:
                 # Store parameters for test assertions
@@ -89,14 +90,14 @@ class TestGmailEmailOperations:
                 return self.attachments_resource
 
         class MockUsersResource(GmailUsersResource):
-            def __init__(self):
+            def __init__(self) -> None:
                 self.messages_resource = MockMessagesResource()
 
             def messages(self) -> GmailMessagesResource:
                 return self.messages_resource
 
         class MockGmailService(GmailService):
-            def __init__(self):
+            def __init__(self) -> None:
                 self.users_resource = MockUsersResource()
 
             def users(self) -> GmailUsersResource:
@@ -267,7 +268,7 @@ class TestGmailEmailOperations:
         error_resp.status = 500
 
         # Create a function that always raises HTTPError with our mock response
-        def raise_http_error(*args, **kwargs):
+        def raise_http_error(*args: Any, **kwargs: Any) -> None:
             raise HttpError(resp=error_resp, content=b"Server error")
 
         # Create a mock with this side effect

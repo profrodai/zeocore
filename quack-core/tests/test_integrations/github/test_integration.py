@@ -8,6 +8,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -253,7 +254,7 @@ class TestGitHubMockedIntegration:
         # Make sure we're patching the right object - integration.client.session
         with patch.object(integration.client.session, "request") as mock_request:
             # Configure mock to handle different requests
-            def mock_request_side_effect(*args, **kwargs):
+            def mock_request_side_effect(*args: Any, **kwargs: Any) -> MagicMock:
                 if "user" in args[1]:
                     return user_response
                 elif "repos" in args[1] and "mock-repo" in args[1]:

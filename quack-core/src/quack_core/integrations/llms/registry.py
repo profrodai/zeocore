@@ -9,6 +9,8 @@ This module provides a registry for LLM clients, allowing for
 dynamic loading and access to different LLM implementations.
 """
 
+from typing import Any
+
 from quack_core.core.errors import QuackIntegrationError
 from quack_core.core.logging import get_logger
 from quack_core.integrations.llms.clients.anthropic import AnthropicClient
@@ -44,7 +46,7 @@ def get_llm_client(
     provider: str = "openai",
     model: str | None = None,
     api_key: str | None = None,
-    **kwargs,
+    **kwargs: Any,
 ) -> LLMClient:
     """
     Get an LLM client instance.
