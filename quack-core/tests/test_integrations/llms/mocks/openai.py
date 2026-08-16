@@ -213,7 +213,7 @@ class MockOpenAIClient(MockClient):
         token_counts: list[int] = None,
         model: str = "gpt-4o",
         errors: list[Exception] = None,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401 -- passthrough to MockClient/LLMClient's own **kwargs
     ) -> None:
         """
         Initialize a mock OpenAI client.
@@ -236,7 +236,11 @@ class MockOpenAIClient(MockClient):
         # Track OpenAI-specific data
         self.openai_requests = []
 
-    def chat_completions_create(self, *args: Any, **kwargs: Any):
+    def chat_completions_create(
+        self,
+        *args: Any,  # noqa: ANN401 -- stands in for OpenAI SDK's arbitrary call signature
+        **kwargs: Any,  # noqa: ANN401 -- stands in for OpenAI SDK's arbitrary call signature
+    ) -> "MockOpenAIResponse | MockOpenAIStreamingResponse":
         """
         Mock OpenAI's chat.completions.create method.
 

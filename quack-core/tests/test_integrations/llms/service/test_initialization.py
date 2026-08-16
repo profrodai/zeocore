@@ -315,8 +315,11 @@ class TestInitialization:
 
             # Create a custom function to handle the fallback logic
             def patched_fallback(
-                self, llm_config, fallback_config, available_providers
-            ):
+                self: MagicMock,
+                llm_config: dict,
+                fallback_config: FallbackConfig,
+                available_providers: list[str],
+            ) -> IntegrationResult | None:
                 try:
                     # This will raise an exception
                     from quack_core.integrations.llms.fallback import FallbackLLMClient
