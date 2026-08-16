@@ -54,7 +54,7 @@ class TestReadResult:
 
     def test_text_result(self) -> None:
         """Test creating a read result with text content."""
-        result = ReadResult(
+        result = ReadResult[str](
             ok=True,
             path=Path("/test/file.txt"),
             content="text content",
@@ -92,7 +92,9 @@ class TestReadResult:
         failure rather than raising.
         """
         invalid_utf8 = b"\xff\xfe\x02\x03"
-        result = ReadResult(ok=True, path=Path("/test/file.bin"), content=invalid_utf8)
+        result = ReadResult[bytes](
+            ok=True, path=Path("/test/file.bin"), content=invalid_utf8
+        )
 
         assert result.success is True
         assert result.path == Path("/test/file.bin")
@@ -375,7 +377,7 @@ class TestDataResult:
         """Test creating a YAML data result."""
         data = {"name": "Test", "values": [1, 2, 3]}
 
-        result = DataResult(
+        result = DataResult[dict](
             ok=True, path=Path("/test/file.yaml"), data=data, format="yaml"
         )
 
@@ -389,7 +391,7 @@ class TestDataResult:
         """Test creating a JSON data result."""
         data = {"name": "Test", "values": [1, 2, 3]}
 
-        result = DataResult(
+        result = DataResult[dict](
             ok=True,
             path=Path("/test/file.json"),
             data=data,
@@ -405,7 +407,7 @@ class TestDataResult:
 
     def test_failed_data_result(self) -> None:
         """Test creating a failed data result."""
-        result = DataResult(
+        result = DataResult[dict](
             ok=False,
             path=Path("/test/file.yaml"),
             data={},

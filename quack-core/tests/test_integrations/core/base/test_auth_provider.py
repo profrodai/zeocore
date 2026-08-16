@@ -78,7 +78,10 @@ class TestBaseAuthProvider:
             class InvalidProvider(BaseAuthProvider):
                 pass
 
-            InvalidProvider()  # This should raise TypeError
+            # Deliberately incomplete (implements none of the abstract methods)
+            # -- this test's whole point is exercising Python's abstract-class
+            # enforcement at instantiation time (see pytest.raises above).
+            InvalidProvider()  # type: ignore[abstract]  # This should raise TypeError
 
     def test_authenticate(self, temp_dir: Path) -> None:
         """Test authentication flow."""
@@ -114,6 +117,7 @@ class TestBaseAuthProvider:
                 provider = MockAuthProvider(credentials_file="/nonexistent/path")
                 result = provider.authenticate()
                 assert result.success is False
+                assert result.error is not None
                 assert "not found" in result.error
 
     def test_refresh_credentials(self) -> None:
@@ -123,12 +127,14 @@ class TestBaseAuthProvider:
         # Test refresh before authentication
         result = provider.refresh_credentials()
         assert result.success is False
+        assert result.error is not None
         assert "Not authenticated" in result.error
 
         # Test refresh after authentication
         provider.authenticated = True
         result = provider.refresh_credentials()
         assert result.success is True
+        assert result.message is not None
         assert "refreshed" in result.message
 
     def test_ensure_credentials_directory(self, temp_dir: Path) -> None:
@@ -205,8 +211,13 @@ class TestBaseAuthProvider:
         provider.logger = MagicMock()
 
         # Replace the save_credentials method with the one from BaseAuthProvider
+        # -- a deliberate runtime instance-level method swap (to exercise the
+        # base class's default implementation through a concrete instance
+        # without subclassing it directly); mypy correctly flags instance
+        # method assignment as generally unsafe, but this is exactly what the
+        # test needs.
         original_save = provider.save_credentials
-        provider.save_credentials = BaseAuthProvider.save_credentials.__get__(
+        provider.save_credentials = BaseAuthProvider.save_credentials.__get__(  # type: ignore[method-assign]
             provider, MockAuthProvider
         )
 
@@ -216,4 +227,4 @@ class TestBaseAuthProvider:
             provider.logger.warning.assert_called_once()
         finally:
             # Restore the original method
-            provider.save_credentials = original_save
+            provider.save_credentials = original_save  # type: ignore[method-assign]

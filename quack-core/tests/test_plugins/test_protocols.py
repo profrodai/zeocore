@@ -15,6 +15,7 @@ from quack_core.modules.protocols import (
     ConfigurablePluginProtocol,
     ExtensionPluginProtocol,
     ProviderPluginProtocol,
+    QuackPluginMetadata,
     QuackPluginProtocol,
     WorkflowPluginProtocol,
 )
@@ -25,21 +26,45 @@ class SamplePlugin(QuackPluginProtocol):
     """Test implementation of QuackPluginProtocol."""
 
     @property
+    def plugin_id(self) -> str:
+        return "test_plugin"
+
+    @property
     def name(self) -> str:
         return "test_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Sample plugin for testing",
+        )
 
 
 class SampleCommandPlugin(CommandPluginProtocol):
     """Test implementation of CommandPluginProtocol."""
 
     @property
+    def plugin_id(self) -> str:
+        return "test_command_plugin"
+
+    @property
     def name(self) -> str:
         return "test_command_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Sample command plugin for testing",
+        )
 
     def list_commands(self) -> list[str]:
         return ["cmd1", "cmd2"]
 
-    def get_command(self, name: str) -> Callable | None:
+    def get_command(self, name: str) -> Callable[..., str] | None:
         if name in self.list_commands():
             return lambda *args, **kwargs: f"Executed {name}"
         return None
@@ -55,13 +80,25 @@ class SampleWorkflowPlugin(WorkflowPluginProtocol):
     """Test implementation of WorkflowPluginProtocol."""
 
     @property
+    def plugin_id(self) -> str:
+        return "test_workflow_plugin"
+
+    @property
     def name(self) -> str:
         return "test_workflow_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Sample workflow plugin for testing",
+        )
 
     def list_workflows(self) -> list[str]:
         return ["flow1", "flow2"]
 
-    def get_workflow(self, name: str) -> Callable | None:
+    def get_workflow(self, name: str) -> Callable[..., str] | None:
         if name in self.list_workflows():
             return lambda *args, **kwargs: f"Ran {name}"
         return None
@@ -77,8 +114,20 @@ class SampleExtensionPlugin(ExtensionPluginProtocol):
     """Test implementation of ExtensionPluginProtocol."""
 
     @property
+    def plugin_id(self) -> str:
+        return "test_extension_plugin"
+
+    @property
     def name(self) -> str:
         return "test_extension_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Sample extension plugin for testing",
+        )
 
     def get_target_plugin(self) -> str:
         return "target_plugin"
@@ -91,8 +140,20 @@ class SampleProviderPlugin(ProviderPluginProtocol):
     """Test implementation of ProviderPluginProtocol."""
 
     @property
+    def plugin_id(self) -> str:
+        return "test_provider_plugin"
+
+    @property
     def name(self) -> str:
         return "test_provider_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Sample provider plugin for testing",
+        )
 
     def get_services(self) -> dict[str, object]:
         return {"service1": "Service 1", "service2": "Service 2"}
@@ -109,8 +170,20 @@ class SampleConfigurablePlugin(ConfigurablePluginProtocol):
         self._config: dict[str, Any] = {}  # Use Any for typing
 
     @property
+    def plugin_id(self) -> str:
+        return "test_configurable_plugin"
+
+    @property
     def name(self) -> str:
         return "test_configurable_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Sample configurable plugin for testing",
+        )
 
     def configure(self, config: dict[str, Any]) -> None:  # Use Any here
         self._config = config
@@ -150,13 +223,25 @@ class SampleMixedPlugin(CommandPluginProtocol, WorkflowPluginProtocol):
     """Test implementation mixing multiple protocols."""
 
     @property
+    def plugin_id(self) -> str:
+        return "test_mixed_plugin"
+
+    @property
     def name(self) -> str:
         return "test_mixed_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Sample mixed plugin for testing",
+        )
 
     def list_commands(self) -> list[str]:
         return ["cmd1", "cmd2"]
 
-    def get_command(self, name: str) -> Callable | None:
+    def get_command(self, name: str) -> Callable[..., str] | None:
         if name in self.list_commands():
             return lambda *args, **kwargs: f"Executed {name}"
         return None
@@ -170,7 +255,7 @@ class SampleMixedPlugin(CommandPluginProtocol, WorkflowPluginProtocol):
     def list_workflows(self) -> list[str]:
         return ["flow1", "flow2"]
 
-    def get_workflow(self, name: str) -> Callable | None:
+    def get_workflow(self, name: str) -> Callable[..., str] | None:
         if name in self.list_workflows():
             return lambda *args, **kwargs: f"Ran {name}"
         return None

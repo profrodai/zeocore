@@ -196,10 +196,14 @@ class MockOpenAIErrorResponse:
         if self.param:
             error["param"] = self.param
 
-        # Create an exception with OpenAI-like attributes
+        # Create an exception with OpenAI-like attributes. Real OpenAI SDK
+        # exceptions carry .response/.error; a bare Exception does not, so
+        # this is deliberate dynamic attribute injection to mimic the real
+        # SDK's error shape for tests -- scoped ignore, same precedent as
+        # round 10/11's InvalidPlugin/InvalidProvider deliberate-shape ignores.
         exception = Exception(f"OpenAI API error: {self.message}")
-        exception.response = response
-        exception.error = error
+        exception.response = response  # type: ignore[attr-defined]
+        exception.error = error  # type: ignore[attr-defined]
 
         return exception
 
@@ -209,10 +213,10 @@ class MockOpenAIClient(MockClient):
 
     def __init__(
         self,
-        responses: list[str] = None,
-        token_counts: list[int] = None,
+        responses: list[str] | None = None,
+        token_counts: list[int] | None = None,
         model: str = "gpt-4o",
-        errors: list[Exception] = None,
+        errors: list[Exception] | None = None,
         **kwargs: Any,  # noqa: ANN401 -- passthrough to MockClient/LLMClient's own **kwargs
     ) -> None:
         """
@@ -234,7 +238,7 @@ class MockOpenAIClient(MockClient):
         )
 
         # Track OpenAI-specific data
-        self.openai_requests = []
+        self.openai_requests: list[dict[str, Any]] = []
 
     def chat_completions_create(
         self,

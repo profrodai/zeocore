@@ -10,6 +10,7 @@ which contains the main LLMIntegration class implementation.
 """
 
 from types import SimpleNamespace
+from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -18,6 +19,17 @@ from quack_core.integrations.core.results import ConfigResult, IntegrationResult
 from quack_core.integrations.llms.config import LLMConfigProvider
 from quack_core.integrations.llms.fallback import FallbackConfig
 from quack_core.integrations.llms.service.integration import LLMIntegration
+
+
+def _mock_provider(integration: LLMIntegration) -> MagicMock:
+    """Narrow integration.config_provider (typed ConfigProviderProtocol | None
+    in production, since a real caller may not pass one) to the MagicMock the
+    `integration` fixture below always installs, so tests can assert on mock
+    call history without every call site re-asserting non-None. The cast is
+    honest, not a suppression: the fixture's own body (below) guarantees this
+    at construction time, mypy just can't see across the fixture boundary."""
+    assert integration.config_provider is not None
+    return cast(MagicMock, integration.config_provider)
 
 
 class TestLLMIntegrationComprehensive:
@@ -78,7 +90,26 @@ class TestLLMIntegrationComprehensive:
             mock_provider_class.assert_called_once()
 
     def test_init_custom(self) -> None:
-        """Test initializing with custom parameters."""
+        """Test initializing with custom parameters.
+
+        Regression test for RULING-236: LLMIntegration.__init__ used to call
+        super().__init__(config_provider, None, config_path, str(log_level))
+        positionally against BaseIntegrationService.__init__'s real signature
+        (config_provider, auth_provider, config, config_path, log_level) --
+        shifting config_path into the `config` slot and a stringified
+        log_level into the `config_path` slot. The old version of this test
+        could not catch that: `mock_resolve_path.return_value` was a FIXED
+        SimpleNamespace regardless of what string `resolve_path` was actually
+        called with, so a corrupted config_path (e.g. the log level "10"
+        resolved as a bogus relative path) and the real config_path
+        ("custom_config.yaml" resolved correctly) both produced the exact
+        same asserted value -- a false-positive that would have passed
+        against either the buggy or the fixed call site. `resolve_path` is
+        now a side_effect that echoes its actual argument, so the assertion
+        below can only pass if `_set_config_path` (and therefore
+        BaseIntegrationService.__init__) actually received the caller's real
+        config_path string, not a stringified log level.
+        """
         with patch(
             "quack_core.core.fs.service.standalone.get_file_info"
         ) as mock_file_info:
@@ -89,18 +120,21 @@ class TestLLMIntegrationComprehensive:
             file_info_result.is_file = True
             mock_file_info.return_value = file_info_result
 
-            # Also patch resolve_path
+            # Also patch resolve_path -- echo the input path instead of a
+            # fixed return value, so the test can distinguish "resolved the
+            # caller's real config_path" from "resolved something else
+            # entirely" (e.g. a stringified log_level landing in that slot).
             with patch(
                 "quack_core.core.fs.service.standalone.resolve_path"
             ) as mock_resolve_path:
-                # Create a mock path string directly. A plain SimpleNamespace
-                # (not a bare MagicMock) is required here: coerce_path_str's
-                # duck-typing checks .value()/.unwrap() before .path, and a
-                # bare MagicMock auto-vivifies both as callables, so it never
-                # reaches the real .path attribute.
-                mock_path = "/Users/rodrivera/custom_config.yaml"
-                mock_result = SimpleNamespace(path=mock_path)
-                mock_resolve_path.return_value = mock_result
+                # A plain SimpleNamespace (not a bare MagicMock) is required
+                # here: coerce_path_str's duck-typing checks .value()/
+                # .unwrap() before .path, and a bare MagicMock auto-vivifies
+                # both as callables, so it never reaches the real .path
+                # attribute.
+                mock_resolve_path.side_effect = lambda p: SimpleNamespace(
+                    path=f"/Users/rodrivera/{p}"
+                )
 
                 # Mock os.getcwd to prevent FileNotFoundError
                 with patch("os.getcwd", return_value="/Users/rodrivera"):
@@ -116,8 +150,24 @@ class TestLLMIntegrationComprehensive:
                     assert integration.provider == "anthropic"
                     assert integration.model == "claude-3-opus"
                     assert integration.api_key == "test-key"
-                    assert integration.config_path == mock_path
+                    # config_path must resolve from the REAL passed path
+                    # ("custom_config.yaml"), never from a log-level-derived
+                    # nonsense path (e.g. "/Users/rodrivera/10").
+                    assert (
+                        integration.config_path
+                        == "/Users/rodrivera/custom_config.yaml"
+                    )
+                    # config stays None (the ctor's own default): the bug
+                    # shifted config_path into this slot, so a regression
+                    # would set self.config to the string "custom_config.yaml"
+                    # instead.
+                    assert integration.config is None
                     assert integration.log_level == 10
+                    # The base logger's effective level must reflect the
+                    # caller's real log_level, not the base class's own
+                    # default (20/INFO) that the bug silently fell back to
+                    # by never passing log_level through positionally.
+                    assert integration.logger.getEffectiveLevel() == 10
                     assert integration._enable_fallback is False
 
     def test_name_property(self, integration: LLMIntegration) -> None:
@@ -135,8 +185,9 @@ class TestLLMIntegrationComprehensive:
 
         # Should return existing config without calling provider methods
         assert result == test_config
-        integration.config_provider.load_config.assert_not_called()
-        integration.config_provider.get_default_config.assert_not_called()
+        provider = _mock_provider(integration)
+        provider.load_config.assert_not_called()
+        provider.get_default_config.assert_not_called()
 
     def test_extract_config_from_provider(self, integration: LLMIntegration) -> None:
         """Test extracting config from the config provider."""
@@ -152,15 +203,16 @@ class TestLLMIntegrationComprehensive:
             "timeout": 60,
             "openai": {"api_key": "mock-key", "default_model": "gpt-4o"},
         }
-        integration.config_provider.load_config.assert_called_once()
+        _mock_provider(integration).load_config.assert_called_once()
 
     def test_extract_config_provider_failure(self, integration: LLMIntegration) -> None:
         """Test extracting config when provider fails."""
         # Clear existing config
         integration.config = None
+        provider = _mock_provider(integration)
 
         # Make load_config return failure
-        integration.config_provider.load_config.return_value = ConfigResult(
+        provider.load_config.return_value = ConfigResult(
             success=False, error="Failed to load config"
         )
 
@@ -168,25 +220,26 @@ class TestLLMIntegrationComprehensive:
         result = integration._extract_config()
 
         # Should use default config
-        assert result == integration.config_provider.get_default_config.return_value
-        integration.config_provider.load_config.assert_called_once()
-        integration.config_provider.get_default_config.assert_called_once()
+        assert result == provider.get_default_config.return_value
+        provider.load_config.assert_called_once()
+        provider.get_default_config.assert_called_once()
 
     def test_extract_config_load_exception(self, integration: LLMIntegration) -> None:
         """Test extracting config when provider raises an exception."""
         # Clear existing config
         integration.config = None
+        provider = _mock_provider(integration)
 
         # Make load_config raise an exception
-        integration.config_provider.load_config.side_effect = Exception("Load error")
+        provider.load_config.side_effect = Exception("Load error")
 
         # Extract config - should handle exception and fall back to default
         result = integration._extract_config()
 
         # Should use default config
-        assert result == integration.config_provider.get_default_config.return_value
-        integration.config_provider.load_config.assert_called_once()
-        integration.config_provider.get_default_config.assert_called_once()
+        assert result == provider.get_default_config.return_value
+        provider.load_config.assert_called_once()
+        provider.get_default_config.assert_called_once()
 
     def test_extract_config_invalid(self, integration: LLMIntegration) -> None:
         """Test extracting invalid config."""
@@ -220,7 +273,7 @@ class TestLLMIntegrationComprehensive:
             assert result.error == "Base initialization failed"
 
             # Shouldn't proceed to further initialization steps
-            integration.config_provider.load_config.assert_not_called()
+            _mock_provider(integration).load_config.assert_not_called()
 
     def test_initialize_complete(self, integration: LLMIntegration) -> None:
         """Test complete initialization process."""
@@ -248,7 +301,7 @@ class TestLLMIntegrationComprehensive:
                     return_value={"default_provider": "openai"},
                 ) as mock_extract:
                     # Mock single provider initialization
-                    success_result = IntegrationResult(
+                    success_result: IntegrationResult[Any] = IntegrationResult(
                         success=True, message="Initialized"
                     )
                     with patch(
@@ -306,7 +359,7 @@ class TestLLMIntegrationComprehensive:
                         )
 
                         # Mock fallback initialization
-                        success_result = IntegrationResult(
+                        success_result: IntegrationResult[Any] = IntegrationResult(
                             success=True, message="Initialized with fallback"
                         )
                         with patch(
@@ -343,7 +396,7 @@ class TestLLMIntegrationComprehensive:
                 assert "Integration error" == result.error
 
                 # Logger should record the error
-                integration.logger.error.assert_called()
+                cast(MagicMock, integration.logger).error.assert_called()
 
     def test_initialize_generic_error(self, integration: LLMIntegration) -> None:
         """Test handling generic exceptions during initialization."""
@@ -361,10 +414,11 @@ class TestLLMIntegrationComprehensive:
                 result = integration.initialize()
 
                 assert result.success is False
+                assert result.error is not None
                 assert "Failed to initialize LLM integration" in result.error
 
                 # Logger should record the error
-                integration.logger.error.assert_called()
+                cast(MagicMock, integration.logger).error.assert_called()
 
     def test_get_client_not_initialized(self, integration: LLMIntegration) -> None:
         """Test get_client when not initialized."""

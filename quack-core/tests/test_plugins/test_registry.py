@@ -21,6 +21,22 @@ from quack_core.modules.protocols import (
 from quack_core.modules.registry import PluginRegistry
 
 
+def _make_metadata(plugin_id: str, description: str) -> QuackPluginMetadata:
+    """Build a minimal QuackPluginMetadata for a test fixture plugin.
+
+    Factored out so each fixture's get_metadata() is a one-line delegation
+    instead of a repeated multi-line literal -- keeps the enclosing test
+    functions (several of which define 2+ nested fixture classes) under
+    C901's complexity budget without weakening what any fixture asserts.
+    """
+    return QuackPluginMetadata(
+        plugin_id=plugin_id,
+        name=plugin_id,
+        version="1.0.0",
+        description=description,
+    )
+
+
 # Mock plugin implementations for testing
 class BasicPlugin(QuackPluginProtocol):
     """Basic plugin implementation for testing."""
@@ -48,13 +64,25 @@ class CommandPlugin(CommandPluginProtocol):
     """Command plugin implementation for testing."""
 
     @property
+    def plugin_id(self) -> str:
+        return "command_plugin"
+
+    @property
     def name(self) -> str:
         return "command_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Command plugin for testing",
+        )
 
     def list_commands(self) -> list[str]:
         return ["cmd1", "cmd2"]
 
-    def get_command(self, name: str) -> Callable | None:
+    def get_command(self, name: str) -> Callable[..., str] | None:
         if name in self.list_commands():
             return lambda *args, **kwargs: f"Executed {name}"
         return None
@@ -70,13 +98,25 @@ class WorkflowPlugin(WorkflowPluginProtocol):
     """Workflow plugin implementation for testing."""
 
     @property
+    def plugin_id(self) -> str:
+        return "workflow_plugin"
+
+    @property
     def name(self) -> str:
         return "workflow_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Workflow plugin for testing",
+        )
 
     def list_workflows(self) -> list[str]:
         return ["flow1", "flow2"]
 
-    def get_workflow(self, name: str) -> Callable | None:
+    def get_workflow(self, name: str) -> Callable[..., str] | None:
         if name in self.list_workflows():
             return lambda *args, **kwargs: f"Ran {name}"
         return None
@@ -92,8 +132,20 @@ class ExtensionPlugin(ExtensionPluginProtocol):
     """Extension plugin implementation for testing."""
 
     @property
+    def plugin_id(self) -> str:
+        return "extension_plugin"
+
+    @property
     def name(self) -> str:
         return "extension_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Extension plugin for testing",
+        )
 
     def get_target_plugin(self) -> str:
         return "target_plugin"
@@ -106,14 +158,155 @@ class ProviderPlugin(ProviderPluginProtocol):
     """Provider plugin implementation for testing."""
 
     @property
+    def plugin_id(self) -> str:
+        return "provider_plugin"
+
+    @property
     def name(self) -> str:
         return "provider_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Provider plugin for testing",
+        )
 
     def get_services(self) -> dict[str, object]:
         return {"service1": "Service 1", "service2": "Service 2"}
 
     def get_service(self, name: str) -> object | None:
         return self.get_services().get(name)
+
+
+class MultiPlugin(CommandPluginProtocol, WorkflowPluginProtocol):
+    """Plugin implementing multiple protocols, for testing multi-registration."""
+
+    @property
+    def plugin_id(self) -> str:
+        return "multi_plugin"
+
+    @property
+    def name(self) -> str:
+        return "multi_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return _make_metadata(self.plugin_id, "Multi plugin for testing")
+
+    def list_commands(self) -> list[str]:
+        return ["cmd1", "cmd2"]
+
+    def get_command(self, name: str) -> Callable[..., str] | None:
+        return lambda: f"Command {name}"
+
+    def execute_command(self, name: str, *args: object, **kwargs: object) -> str:
+        return f"Executed {name}"
+
+    def list_workflows(self) -> list[str]:
+        return ["flow1", "flow2"]
+
+    def get_workflow(self, name: str) -> Callable[..., str] | None:
+        return lambda: f"Workflow {name}"
+
+    def execute_workflow(self, name: str, *args: object, **kwargs: object) -> str:
+        return f"Ran {name}"
+
+
+class CommandOverridePlugin1(CommandPluginProtocol):
+    """First of two command plugins with an overlapping command, override test."""
+
+    @property
+    def plugin_id(self) -> str:
+        return "plugin1"
+
+    @property
+    def name(self) -> str:
+        return "plugin1"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return _make_metadata(self.plugin_id, "Plugin1 for testing")
+
+    def list_commands(self) -> list[str]:
+        return ["common", "cmd1"]
+
+    def get_command(self, name: str) -> Callable[..., str] | None:
+        return lambda: f"Plugin1 {name}"
+
+    def execute_command(self, name: str, *args: object, **kwargs: object) -> str:
+        return f"Plugin1 executed {name}"
+
+
+class CommandOverridePlugin2(CommandPluginProtocol):
+    """Second of two command plugins with an overlapping command, override test."""
+
+    @property
+    def plugin_id(self) -> str:
+        return "plugin2"
+
+    @property
+    def name(self) -> str:
+        return "plugin2"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return _make_metadata(self.plugin_id, "Plugin2 for testing")
+
+    def list_commands(self) -> list[str]:
+        return ["common", "cmd2"]
+
+    def get_command(self, name: str) -> Callable[..., str] | None:
+        return lambda: f"Plugin2 {name}"
+
+    def execute_command(self, name: str, *args: object, **kwargs: object) -> str:
+        return f"Plugin2 executed {name}"
+
+
+class WorkflowOverridePlugin1(WorkflowPluginProtocol):
+    """First of two workflow plugins with an overlapping workflow, override test."""
+
+    @property
+    def plugin_id(self) -> str:
+        return "plugin1"
+
+    @property
+    def name(self) -> str:
+        return "plugin1"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return _make_metadata(self.plugin_id, "Plugin1 for testing")
+
+    def list_workflows(self) -> list[str]:
+        return ["common", "flow1"]
+
+    def get_workflow(self, name: str) -> Callable[..., str] | None:
+        return lambda: f"Plugin1 {name}"
+
+    def execute_workflow(self, name: str, *args: object, **kwargs: object) -> str:
+        return f"Plugin1 ran {name}"
+
+
+class WorkflowOverridePlugin2(WorkflowPluginProtocol):
+    """Second of two workflow plugins with an overlapping workflow, override test."""
+
+    @property
+    def plugin_id(self) -> str:
+        return "plugin2"
+
+    @property
+    def name(self) -> str:
+        return "plugin2"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return _make_metadata(self.plugin_id, "Plugin2 for testing")
+
+    def list_workflows(self) -> list[str]:
+        return ["common", "flow2"]
+
+    def get_workflow(self, name: str) -> Callable[..., str] | None:
+        return lambda: f"Plugin2 {name}"
+
+    def execute_workflow(self, name: str, *args: object, **kwargs: object) -> str:
+        return f"Plugin2 ran {name}"
 
 
 class TestPluginRegistry:
@@ -193,35 +386,6 @@ class TestPluginRegistry:
 
     def test_register_multiple_types(self) -> None:
         """Test registering a plugin that implements multiple protocols."""
-
-        # Create a plugin with multiple interfaces
-        class MultiPlugin(CommandPluginProtocol, WorkflowPluginProtocol):
-            @property
-            def name(self) -> str:
-                return "multi_plugin"
-
-            def list_commands(self) -> list[str]:
-                return ["cmd1", "cmd2"]
-
-            def get_command(self, name: str) -> Callable | None:
-                return lambda: f"Command {name}"
-
-            def execute_command(
-                self, name: str, *args: object, **kwargs: object
-            ) -> str:
-                return f"Executed {name}"
-
-            def list_workflows(self) -> list[str]:
-                return ["flow1", "flow2"]
-
-            def get_workflow(self, name: str) -> Callable | None:
-                return lambda: f"Workflow {name}"
-
-            def execute_workflow(
-                self, name: str, *args: object, **kwargs: object
-            ) -> str:
-                return f"Ran {name}"
-
         registry = PluginRegistry()
         plugin = MultiPlugin()
 
@@ -242,41 +406,8 @@ class TestPluginRegistry:
         """Test that newer command modules override older ones for the same command."""
         registry = PluginRegistry()
 
-        # Create two command modules with overlapping commands
-        class Plugin1(CommandPluginProtocol):
-            @property
-            def name(self) -> str:
-                return "plugin1"
-
-            def list_commands(self) -> list[str]:
-                return ["common", "cmd1"]
-
-            def get_command(self, name: str) -> Callable | None:
-                return lambda: f"Plugin1 {name}"
-
-            def execute_command(
-                self, name: str, *args: object, **kwargs: object
-            ) -> str:
-                return f"Plugin1 executed {name}"
-
-        class Plugin2(CommandPluginProtocol):
-            @property
-            def name(self) -> str:
-                return "plugin2"
-
-            def list_commands(self) -> list[str]:
-                return ["common", "cmd2"]
-
-            def get_command(self, name: str) -> Callable | None:
-                return lambda: f"Plugin2 {name}"
-
-            def execute_command(
-                self, name: str, *args: object, **kwargs: object
-            ) -> str:
-                return f"Plugin2 executed {name}"
-
-        plugin1 = Plugin1()
-        plugin2 = Plugin2()
+        plugin1 = CommandOverridePlugin1()
+        plugin2 = CommandOverridePlugin2()
 
         # Register first plugin
         registry.register(plugin1)
@@ -294,41 +425,8 @@ class TestPluginRegistry:
         older ones for the same workflow."""
         registry = PluginRegistry()
 
-        # Create two workflow modules with overlapping workflows
-        class Plugin1(WorkflowPluginProtocol):
-            @property
-            def name(self) -> str:
-                return "plugin1"
-
-            def list_workflows(self) -> list[str]:
-                return ["common", "flow1"]
-
-            def get_workflow(self, name: str) -> Callable | None:
-                return lambda: f"Plugin1 {name}"
-
-            def execute_workflow(
-                self, name: str, *args: object, **kwargs: object
-            ) -> str:
-                return f"Plugin1 ran {name}"
-
-        class Plugin2(WorkflowPluginProtocol):
-            @property
-            def name(self) -> str:
-                return "plugin2"
-
-            def list_workflows(self) -> list[str]:
-                return ["common", "flow2"]
-
-            def get_workflow(self, name: str) -> Callable | None:
-                return lambda: f"Plugin2 {name}"
-
-            def execute_workflow(
-                self, name: str, *args: object, **kwargs: object
-            ) -> str:
-                return f"Plugin2 ran {name}"
-
-        plugin1 = Plugin1()
-        plugin2 = Plugin2()
+        plugin1 = WorkflowOverridePlugin1()
+        plugin2 = WorkflowOverridePlugin2()
 
         # Register first plugin
         registry.register(plugin1)
@@ -532,8 +630,20 @@ class TestPluginRegistry:
         # Create another extension targeting the same plugin
         class Extension2(ExtensionPluginProtocol):
             @property
+            def plugin_id(self) -> str:
+                return "extension2"
+
+            @property
             def name(self) -> str:
                 return "extension2"
+
+            def get_metadata(self) -> QuackPluginMetadata:
+                return QuackPluginMetadata(
+                    plugin_id=self.plugin_id,
+                    name=self.name,
+                    version="1.0.0",
+                    description="Extension2 for testing",
+                )
 
             def get_target_plugin(self) -> str:
                 return "target_plugin"
@@ -586,11 +696,16 @@ class TestPluginRegistry:
                 self._capabilities = capabilities
 
             @property
+            def plugin_id(self) -> str:
+                return self._name
+
+            @property
             def name(self) -> str:
                 return self._name
 
             def get_metadata(self) -> QuackPluginMetadata:
                 return QuackPluginMetadata(
+                    plugin_id=self.plugin_id,
                     name=self._name,
                     version="1.0.0",
                     description=f"Plugin {self._name}",
@@ -637,11 +752,16 @@ class TestPluginRegistry:
         # Create our modules for testing
         class TestPlugin(QuackPluginProtocol):
             @property
+            def plugin_id(self) -> str:
+                return "test_reload_plugin"
+
+            @property
             def name(self) -> str:
                 return "test_reload_plugin"
 
             def get_metadata(self) -> QuackPluginMetadata:
                 return QuackPluginMetadata(
+                    plugin_id=self.plugin_id,
                     name=self.name,
                     version="1.0.0",
                     description="Test plugin",
@@ -650,11 +770,16 @@ class TestPluginRegistry:
 
         class UpdatedTestPlugin(QuackPluginProtocol):
             @property
+            def plugin_id(self) -> str:
+                return "test_reload_plugin"
+
+            @property
             def name(self) -> str:
                 return "test_reload_plugin"
 
             def get_metadata(self) -> QuackPluginMetadata:
                 return QuackPluginMetadata(
+                    plugin_id=self.plugin_id,
                     name=self.name,
                     version="1.1.0",  # Updated version
                     description="Updated test plugin",
@@ -739,7 +864,14 @@ class TestPluginRegistry:
                 # but we need a valid return type for the method signature
                 raise NotImplementedError("This should be mocked")
 
-        invalid_plugin = InvalidPlugin()
+        # InvalidPlugin deliberately omits plugin_id: the whole point of this
+        # fixture is exercising _validate_plugin's runtime rejection of a
+        # plugin that does not implement the full QuackPluginProtocol contract
+        # (see the ValidPlugin comment above). mypy strict now correctly
+        # flags this exact incompleteness at the type level too -- a real
+        # signal, not a false positive -- so it is silenced here, scoped to
+        # this one construction, precisely because triggering it IS the test.
+        invalid_plugin = InvalidPlugin()  # type: ignore[abstract]
 
         # Simpler approach - patch the _validate_plugin method itself for
         # this specific test

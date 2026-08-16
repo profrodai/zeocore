@@ -21,6 +21,21 @@ class MockIntegration:
         self.version_value = version
         self._initialized = False
 
+    # Deliberately does NOT implement integration_id: this mock exercises
+    # IntegrationRegistry's documented legacy fallback path ("Prefer
+    # integration_id, fallback to name if missing", registry.py's own
+    # register()), which every assertion below is keyed on (is_registered,
+    # list_ids, get_integration all use mock_integration.name). Adding
+    # integration_id here would silently switch these tests onto the
+    # integration_id-keyed path instead and desync the assertions from what
+    # they actually verify -- confirmed live: doing so broke
+    # test_register_integration/test_unregister_integration/
+    # test_registry_is_pure_container_no_discovery. The resulting
+    # IntegrationProtocol mismatch is real (register()'s param type is
+    # IntegrationProtocol, which now requires integration_id) but is a
+    # narrowing of the runtime-supported legacy contract, not a defect in
+    # this mock -- scoped ignores are applied at each register() call instead.
+
     @property
     def name(self) -> str:
         """Get the name of the integration."""
@@ -67,7 +82,7 @@ def test_register_integration(
 ) -> None:
     """Test registering an integration."""
     # Register the integration
-    registry.register(mock_integration)
+    registry.register(mock_integration)  # type: ignore[arg-type]  # deliberately no integration_id, see MockIntegration's own comment
 
     # Verify it's registered
     assert registry.is_registered(mock_integration.name)
@@ -80,11 +95,11 @@ def test_register_duplicate_integration(
 ) -> None:
     """Test that registering a duplicate integration raises an error."""
     # Register the integration
-    registry.register(mock_integration)
+    registry.register(mock_integration)  # type: ignore[arg-type]  # deliberately no integration_id, see MockIntegration's own comment
 
     # Try to register the same integration again
     with pytest.raises(QuackError) as excinfo:
-        registry.register(mock_integration)
+        registry.register(mock_integration)  # type: ignore[arg-type]  # deliberately no integration_id, see MockIntegration's own comment
 
     # Verify the error message
     assert "already registered" in str(excinfo.value)
@@ -95,7 +110,7 @@ def test_unregister_integration(
 ) -> None:
     """Test unregistering an integration."""
     # Register then unregister the integration
-    registry.register(mock_integration)
+    registry.register(mock_integration)  # type: ignore[arg-type]  # deliberately no integration_id, see MockIntegration's own comment
     result = registry.unregister(mock_integration.name)
 
     # Verify it's unregistered
@@ -121,11 +136,13 @@ def test_get_integration_by_type(registry: IntegrationRegistry) -> None:
     integration2 = MockIntegration("Integration2")
 
     # Register the integrations
-    registry.register(integration1)
-    registry.register(integration2)
+    registry.register(integration1)  # type: ignore[arg-type]  # deliberately no integration_id, see MockIntegration's own comment
+    registry.register(integration2)  # type: ignore[arg-type]  # deliberately no integration_id, see MockIntegration's own comment
 
     # Get integrations by type
-    integrations = list(registry.get_integration_by_type(MockIntegration))
+    integrations = list(
+        registry.get_integration_by_type(MockIntegration)  # type: ignore[type-var]  # deliberately no integration_id, see MockIntegration's own comment
+    )
 
     # Verify the result
     assert len(integrations) == 2
@@ -143,7 +160,7 @@ def test_registry_is_pure_container_no_discovery(registry: IntegrationRegistry) 
     module_integration = MockIntegration("ModuleIntegration")
 
     # The only supported path is explicit registration by the caller.
-    registry.register(module_integration)
+    registry.register(module_integration)  # type: ignore[arg-type]  # deliberately no integration_id, see MockIntegration's own comment
 
     assert registry.is_registered("ModuleIntegration")
     assert registry.list_ids() == ["ModuleIntegration"]

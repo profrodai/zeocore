@@ -103,6 +103,7 @@ class TestBaseIntegrationService:
                 result = service.initialize()
 
                 assert result.success is False
+                assert result.error is not None
                 assert "Failed to load config" in result.error
                 assert service._initialized is False
 
@@ -118,6 +119,7 @@ class TestBaseIntegrationService:
             result = service.initialize()
 
             assert result.success is False
+            assert result.error is not None
             assert "Authentication failed" in result.error
             assert service._initialized is False
 
@@ -163,5 +165,6 @@ class TestBaseIntegrationService:
             result = service._ensure_initialized()
             assert result is not None
             assert result.success is False
+            assert result.error is not None
             assert "Initialization failed" in result.error
             mock_init.assert_called_once()

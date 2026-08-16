@@ -24,7 +24,7 @@ class TestIntegrationResult:
 
     def test_basic_result(self) -> None:
         """Test creating a basic success result."""
-        result = IntegrationResult(success=True, message="Operation succeeded")
+        result = IntegrationResult[Any](success=True, message="Operation succeeded")
 
         assert result.success is True
         assert result.message == "Operation succeeded"
@@ -33,7 +33,7 @@ class TestIntegrationResult:
 
     def test_error_result(self) -> None:
         """Test creating a basic error result."""
-        result = IntegrationResult(
+        result = IntegrationResult[Any](
             success=False, error="Operation failed", message="Additional info"
         )
 
@@ -71,7 +71,9 @@ class TestIntegrationResult:
 
     def test_error_result_factory(self) -> None:
         """Test the error_result factory method."""
-        result = IntegrationResult.error_result("Error message", "Additional info")
+        result: IntegrationResult[Any] = IntegrationResult.error_result(
+            "Error message", "Additional info"
+        )
 
         assert result.success is False
         assert result.message == "Additional info"
@@ -108,7 +110,7 @@ class TestIntegrationResult:
             # Skip invalid combinations: success=True with error
             return
 
-        result = IntegrationResult(
+        result: IntegrationResult[Any] = IntegrationResult(
             success=success, message=message, error=error, content=content
         )
 
@@ -332,4 +334,4 @@ class TestConfigResult:
         """Test validation error when providing non-list validation errors."""
         # This will raise a validation error since validation_errors should be a list
         with pytest.raises(ValidationError):
-            ConfigResult(success=True, validation_errors="not a list")  # type: ignore
+            ConfigResult(success=True, validation_errors="not a list")

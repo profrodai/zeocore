@@ -239,7 +239,11 @@ class TestProtocolInheritance:
     def _make_almost_storage(self) -> object:
         """PartialStorage plus every storage method except create_folder."""
 
-        class AlmostStorage(self._partial_storage_class()):
+        # Dynamic base class (a factory method's return value) -- mypy cannot
+        # statically resolve a base class computed at runtime; this is the
+        # deliberate design (composing a fresh partial-storage class per
+        # test), not a fixable annotation gap.
+        class AlmostStorage(self._partial_storage_class()):  # type: ignore[misc]
             def upload_file(
                 self, file_path: str, remote_path: str | None = None
             ) -> IntegrationResult[str]:
@@ -408,22 +412,22 @@ class TestProtocolInheritance:
                 return True
 
             def upload_file(
-                self, file_path: str, remote_path: str = None
+                self, file_path: str, remote_path: str | None = None
             ) -> IntegrationResult[str]:
                 return IntegrationResult.success_result("fileId")
 
             def download_file(
-                self, remote_id: str, local_path: str = None
+                self, remote_id: str, local_path: str | None = None
             ) -> IntegrationResult[str]:
                 return IntegrationResult.success_result("local_path")
 
             def list_files(
-                self, remote_path: str = None, pattern: str = None
+                self, remote_path: str | None = None, pattern: str | None = None
             ) -> IntegrationResult[list]:
                 return IntegrationResult.success_result([{"name": "test.txt"}])
 
             def create_folder(
-                self, folder_name: str, parent_path: str = None
+                self, folder_name: str, parent_path: str | None = None
             ) -> IntegrationResult:
                 return IntegrationResult.success_result("folder_id")
 
@@ -481,7 +485,7 @@ class TestProtocolInheritance:
         assert isinstance(ab, ServiceB)
 
         # Test using runtime protocols in a registry-like scenario
-        registry = {"service_a": [], "service_b": []}
+        registry: dict[str, list[object]] = {"service_a": [], "service_b": []}
 
         for service in [a, b, ab]:
             if isinstance(service, ServiceA):

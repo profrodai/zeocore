@@ -97,6 +97,7 @@ class TestLLMOperationsComplete:
         result = chat(mock_integration, messages)
 
         assert result.success is False
+        assert result.error is not None
         assert "LLM client not initialized" in result.error
 
     def test_chat_with_mock(self, mock_integration: MagicMock) -> None:
@@ -114,6 +115,7 @@ class TestLLMOperationsComplete:
 
         assert result.success is True
         assert result.content == "Mock response"
+        assert result.message is not None
         assert "using mock LLM" in result.message
 
     def test_chat_failure(self, mock_integration: MagicMock) -> None:
@@ -182,6 +184,7 @@ class TestLLMOperationsComplete:
         result = count_tokens(mock_integration, messages)
 
         assert result.success is False
+        assert result.error is not None
         assert "LLM client not initialized" in result.error
 
     def test_count_tokens_with_mock(self, mock_integration: MagicMock) -> None:
@@ -199,6 +202,7 @@ class TestLLMOperationsComplete:
 
         assert result.success is True
         assert result.content == 42
+        assert result.message is not None
         assert "using mock estimation" in result.message
 
     def test_count_tokens_failure(self, mock_integration: MagicMock) -> None:

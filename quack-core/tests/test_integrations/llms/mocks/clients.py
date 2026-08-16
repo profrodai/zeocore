@@ -20,10 +20,10 @@ class MockClient(LLMClient):
 
     def __init__(
         self,
-        responses: list[str] = None,
-        token_counts: list[int] = None,
+        responses: list[str] | None = None,
+        token_counts: list[int] | None = None,
         model: str = "mock-model",
-        errors: list[Exception] = None,
+        errors: list[Exception] | None = None,
         log_level: int = logging.INFO,
         **kwargs: Any,  # noqa: ANN401 -- passthrough to LLMClient.__init__'s own **kwargs
     ) -> None:
@@ -46,9 +46,9 @@ class MockClient(LLMClient):
         self.chat_call_count = 0
         self.count_tokens_call_count = 0
 
-        self.last_messages = None
-        self.last_options = None
-        self.last_callback = None
+        self.last_messages: list[ChatMessage] | None = None
+        self.last_options: LLMOptions | None = None
+        self.last_callback: Callable[[str], None] | None = None
 
     def _chat_with_provider(
         self,
@@ -132,10 +132,10 @@ class MockClient(LLMClient):
 
 def create_mock_client(
     client_type: type[LLMClient] = MockClient,
-    responses: list[str] = None,
-    token_counts: list[int] = None,
+    responses: list[str] | None = None,
+    token_counts: list[int] | None = None,
     model: str = "mock-model",
-    errors: list[Exception] = None,
+    errors: list[Exception] | None = None,
     **kwargs: Any,  # noqa: ANN401 -- passthrough to client_type's own constructor kwargs
 ) -> LLMClient:
     """
