@@ -131,13 +131,14 @@ class OpenAIClient(LLMClient):
         Returns:
             str: OpenAI API key
         Raises:
-            QuackIntegrationError: If API key is not provided or available in environment
+            QuackIntegrationError: If API key is not provided or available in
+                environment
         """
         api_key = os.environ.get("OPENAI_API_KEY")
         if not api_key:
             raise QuackIntegrationError(
-                "OpenAI API key not provided. "
-                "Please provide it as an argument or set the OPENAI_API_KEY environment variable."
+                "OpenAI API key not provided. Please provide it as an "
+                "argument or set the OPENAI_API_KEY environment variable."
             )
         return api_key
 
@@ -369,7 +370,8 @@ class OpenAIClient(LLMClient):
                     token_count += tokens_per_message
 
                     for key, value in message.items():
-                        # Skip the role since it's already counted in tokens_per_message.
+                        # Skip the role since it's already counted in
+                        # tokens_per_message.
                         if key == "role":
                             continue
                         if isinstance(value, str):
@@ -397,7 +399,9 @@ class OpenAIClient(LLMClient):
                 estimated_tokens = len(total_text) // 4
                 return IntegrationResult.success_result(
                     estimated_tokens,
-                    message="Using simple token estimation. Install tiktoken for accuracy.",
+                    message=(
+                        "Using simple token estimation. Install tiktoken for accuracy."
+                    ),
                 )
 
         except Exception as e:

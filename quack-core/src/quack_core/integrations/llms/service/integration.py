@@ -71,7 +71,8 @@ class LLMIntegration(BaseIntegrationService):
         """Get the name of the integration."""
         return "LLM"
 
-    # src/quack-core/integrations/llms/service/integration.py (update for _extract_config method)
+    # src/quack-core/integrations/llms/service/integration.py
+    # (update for _extract_config method)
     def _extract_config(self) -> dict:
         """
         Extract and validate the LLM configuration.
@@ -148,7 +149,8 @@ class LLMIntegration(BaseIntegrationService):
                 try:
                     fallback_config = FallbackConfig(**llm_config["fallback"])
                     self.logger.info(
-                        f"Loaded fallback configuration with providers: {fallback_config.providers}"
+                        "Loaded fallback configuration with providers: "
+                        f"{fallback_config.providers}"
                     )
                 except Exception as e:
                     self.logger.warning(
@@ -240,7 +242,8 @@ class LLMIntegration(BaseIntegrationService):
         Get the status of all providers when using fallback.
 
         Returns:
-            list[dict] | None: Status information for all providers or None if not using fallback
+            list[dict] | None: Status information for all providers or None if
+                not using fallback
         """
         from quack_core.integrations.llms.service.operations import get_provider_status
 
