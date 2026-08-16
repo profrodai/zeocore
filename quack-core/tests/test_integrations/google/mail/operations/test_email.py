@@ -223,6 +223,7 @@ class TestGmailEmailOperations:
             # Test successful listing
             result = email.list_emails(mock_gmail_service, "me", "is:unread", logger)
             assert result.success is True
+            assert result.content is not None
             assert len(result.content) == 2
             assert result.content[0]["id"] == "msg1"
             assert result.content[1]["threadId"] == "thread2"

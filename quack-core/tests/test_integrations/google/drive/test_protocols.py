@@ -66,6 +66,7 @@ class TestDriveProtocols:
 
         # Verify that our mock captured the correct parameters
         assert mock_permissions.last_file_id == "file123"
+        assert mock_permissions.last_permission_body is not None
         assert mock_permissions.last_permission_body["type"] == "anyone"
         assert mock_permissions.last_permission_body["role"] == "reader"
         assert mock_permissions.last_fields == "id"
@@ -93,6 +94,7 @@ class TestDriveProtocols:
         )
         assert isinstance(result, DriveRequest)
         assert mock_files.create_call_count == 1
+        assert mock_files.last_create_body is not None
         assert mock_files.last_create_body["name"] == "test.txt"
         assert mock_files.last_create_fields == "id,webViewLink"
 
@@ -122,6 +124,7 @@ class TestDriveProtocols:
         assert isinstance(result, DriveRequest)
         assert mock_files.update_call_count == 1
         assert mock_files.last_update_file_id == "file123"
+        assert mock_files.last_update_body is not None
         assert mock_files.last_update_body["trashed"] is True
 
         # Test delete

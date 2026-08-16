@@ -68,6 +68,7 @@ class TestDriveOperationsPermissions:
             assert isinstance(permissions_resource, MockDrivePermissionsResource)
             assert permissions_resource.create_call_count == 1
             assert permissions_resource.last_file_id == "file123"
+            assert permissions_resource.last_permission_body is not None
             assert permissions_resource.last_permission_body["type"] == "anyone"
             assert permissions_resource.last_permission_body["role"] == "reader"
 
@@ -107,6 +108,7 @@ class TestDriveOperationsPermissions:
             permissions_resource = mock_service.files().permissions()
             assert isinstance(permissions_resource, MockDrivePermissionsResource)
             assert permissions_resource.last_file_id == "file123"
+            assert permissions_resource.last_permission_body is not None
             assert permissions_resource.last_permission_body["type"] == "user"
             assert permissions_resource.last_permission_body["role"] == "writer"
 
@@ -280,6 +282,7 @@ class TestDriveOperationsPermissions:
             # Verify custom permissions were set correctly
             assert isinstance(permissions_resource, MockDrivePermissionsResource)
             assert permissions_resource.last_file_id == "special_file"
+            assert permissions_resource.last_permission_body is not None
             assert permissions_resource.last_permission_body["type"] == "domain"
             assert permissions_resource.last_permission_body["role"] == "commenter"
             assert permissions_resource.permission_id == "custom_perm_123"
