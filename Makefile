@@ -227,7 +227,21 @@ typecheck: ## Run mypy in strict mode (the closest thing to tsc)
 	# rev 34/n:35, for the verbatim recon output. Per s1 ("if it resolves, D supersedes A
 	# before A is even committed"), D is what ships: full three-target scope restored,
 	# config only, no restructure, no deletion.
-	MYPYPATH="$(REPO_ROOT)/quack-core" $(PYTHON) -m mypy --explicit-package-bases $(SRC) $(TESTS) examples/
+	#
+	# RULING-230 s4 (Option C1): quack_core/py.typed makes mypy walk the editable
+	# install's PEP 561 site-packages route, which names quack-core/src/quack_core/*
+	# as "quack_core.*". Without quack-core/src ALSO listed as an explicit package
+	# base, mypy's CLI-target walk (mypy/find_sources.py's crawl_up_dir) finds
+	# quack-core/src/__init__.py, treats "src" as a package-name segment, and names
+	# the SAME files "src.quack_core.*" -- two module identities for one file, mypy
+	# aborts with "Source file found twice under different module names". Adding
+	# quack-core/src to MYPYPATH (order-independent, verified) makes it an explicit
+	# package base too, so crawl_up_dir's is_explicit_package_base check (which runs
+	# BEFORE the __init__.py check) stops the walk AT src instead of folding it into
+	# the module name -- both routes now agree on "quack_core.*". Verified: no abort,
+	# 413 files still checked (unchanged), RULING-111's own falsifier (the
+	# "quack-core is not a valid Python package name" walk-up abort) does not fire.
+	MYPYPATH="$(REPO_ROOT)/quack-core:$(REPO_ROOT)/quack-core/src" $(PYTHON) -m mypy --explicit-package-bases $(SRC) $(TESTS) examples/
 
 .PHONY: hygiene-check
 hygiene-check: ## Fail if production code detects that it is under test (RULING-111 s2/s2a: widened)
