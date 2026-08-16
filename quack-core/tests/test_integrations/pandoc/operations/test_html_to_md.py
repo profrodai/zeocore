@@ -34,7 +34,7 @@ from .test_utils_fix import (
 # --- Tests for HTML to Markdown _ops ---
 
 
-def test_post_process_markdown():
+def test_post_process_markdown() -> None:
     """Test post-processing of markdown content."""
     # Test removal of braces
     assert "{remove} text" not in post_process_markdown("Some {remove} text")
@@ -56,8 +56,11 @@ def test_post_process_markdown():
 @patch("quack_core.integrations.pandoc._ops.html_to_md._write_and_validate_output")
 @patch("quack_core.integrations.pandoc._ops.html_to_md.validate_conversion")
 def test_convert_html_to_markdown_success(
-    mock_validate, mock_write, mock_convert, mock_validate_input
-):
+    mock_validate: MagicMock,
+    mock_write: MagicMock,
+    mock_convert: MagicMock,
+    mock_validate_input: MagicMock,
+) -> None:
     """Test successful HTML to Markdown conversion."""
     # Setup mocks
     mock_validate_input.return_value = 100  # Original size
@@ -89,7 +92,7 @@ def test_convert_html_to_markdown_success(
 
 
 @patch("quack_core.integrations.pandoc._ops.html_to_md._validate_input")
-def test_convert_html_to_markdown_validation_error(mock_validate):
+def test_convert_html_to_markdown_validation_error(mock_validate: MagicMock) -> None:
     """Test HTML to Markdown conversion with validation error."""
     # Setup mock to raise error
     mock_validate.side_effect = QuackIntegrationError("Invalid HTML")
@@ -101,6 +104,7 @@ def test_convert_html_to_markdown_validation_error(mock_validate):
 
     # Verify
     assert not result.success
+    assert result.error is not None
     assert "Invalid HTML" in result.error
     assert metrics.failed_conversions == 1
     assert "input.html" in metrics.errors
@@ -110,8 +114,8 @@ def test_convert_html_to_markdown_validation_error(mock_validate):
 @patch("quack_core.integrations.pandoc._ops.html_to_md._attempt_conversion")
 @patch("quack_core.integrations.pandoc._ops.html_to_md._write_and_validate_output")
 def test_convert_html_to_markdown_conversion_failure(
-    mock_write, mock_convert, mock_validate
-):
+    mock_write: MagicMock, mock_convert: MagicMock, mock_validate: MagicMock
+) -> None:
     """Test HTML to Markdown conversion with pandoc failure."""
     # Setup mocks
     mock_validate.return_value = 100
@@ -124,6 +128,7 @@ def test_convert_html_to_markdown_conversion_failure(
 
     # Verify
     assert not result.success
+    assert result.error is not None
     assert "Pandoc failed" in result.error
     assert metrics.failed_conversions == 1
 
@@ -132,8 +137,8 @@ def test_convert_html_to_markdown_conversion_failure(
 @patch("quack_core.integrations.pandoc._ops.html_to_md._attempt_conversion")
 @patch("quack_core.integrations.pandoc._ops.html_to_md._write_and_validate_output")
 def test_convert_html_to_markdown_validation_failure(
-    mock_write, mock_convert, mock_validate
-):
+    mock_write: MagicMock, mock_convert: MagicMock, mock_validate: MagicMock
+) -> None:
     """Test HTML to Markdown conversion with output validation failure."""
     # Setup mocks
     mock_validate.return_value = 100
@@ -150,12 +155,13 @@ def test_convert_html_to_markdown_validation_failure(
 
     # Verify
     assert not result.success
+    assert result.error is not None
     assert "validation failed" in result.error.lower()
     assert mock_convert.call_count == 2  # Called twice due to retry
     assert metrics.failed_conversions == 1
 
 
-def test_validate_conversion_html_to_md():
+def test_validate_conversion_html_to_md() -> None:
     """Test validation of HTML to Markdown conversion results."""
     # Create a real mock for the fs module
     fs_mock = MagicMock()
@@ -173,10 +179,10 @@ def test_validate_conversion_html_to_md():
     )
 
     # Configure check functions to return valid results
-    def patched_file_size_check(*args: Any):
+    def patched_file_size_check(*args: Any) -> tuple[bool, list[str]]:
         return (True, [])
 
-    def patched_ratio_check(*args: Any):
+    def patched_ratio_check(*args: Any) -> tuple[bool, list[str]]:
         return (True, [])
 
     # Configure PandocConfig for testing
@@ -234,7 +240,7 @@ def test_validate_conversion_html_to_md():
 
 
 @patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
-def test_html_to_md_validate_input_success(mock_fs):
+def test_html_to_md_validate_input_success(mock_fs: MagicMock) -> None:
     """Test successful validation of HTML input."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(
@@ -261,7 +267,7 @@ def test_html_to_md_validate_input_success(mock_fs):
 
 
 @patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
-def test_html_to_md_validate_input_file_not_found(mock_fs):
+def test_html_to_md_validate_input_file_not_found(mock_fs: MagicMock) -> None:
     """Test validation of HTML input when file is not found."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(success=True, exists=False)
@@ -277,7 +283,7 @@ def test_html_to_md_validate_input_file_not_found(mock_fs):
 
 
 @patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
-def test_html_to_md_validate_input_invalid_structure(mock_fs):
+def test_html_to_md_validate_input_invalid_structure(mock_fs: MagicMock) -> None:
     """Test validation of HTML input with invalid structure."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(
@@ -310,8 +316,8 @@ def test_html_to_md_validate_input_invalid_structure(mock_fs):
 @patch("quack_core.integrations.pandoc._ops.html_to_md.time")
 @patch("quack_core.integrations.pandoc._ops.html_to_md.validate_conversion")
 def test_html_to_md_write_and_validate_output_success(
-    mock_validate, mock_time, mock_fs
-):
+    mock_validate: MagicMock, mock_time: MagicMock, mock_fs: MagicMock
+) -> None:
     """Test successful write and validation of converted markdown."""
     # Setup mocks
     mock_fs.create_directory.return_value = SimpleNamespace(success=True)
@@ -341,7 +347,9 @@ def test_html_to_md_write_and_validate_output_success(
 
 
 @patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
-def test_html_to_md_write_and_validate_output_directory_error(mock_fs):
+def test_html_to_md_write_and_validate_output_directory_error(
+    mock_fs: MagicMock,
+) -> None:
     """Test write with directory creation error."""
     # Setup mock to fail directory creation
     mock_fs.create_directory.return_value = SimpleNamespace(
@@ -365,7 +373,7 @@ def test_html_to_md_write_and_validate_output_directory_error(mock_fs):
 
 
 @patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
-def test_html_to_md_write_and_validate_output_write_error(mock_fs):
+def test_html_to_md_write_and_validate_output_write_error(mock_fs: MagicMock) -> None:
     """Test write with file writing error."""
     # Setup mocks
     mock_fs.create_directory.return_value = SimpleNamespace(success=True)
@@ -391,8 +399,8 @@ def test_html_to_md_write_and_validate_output_write_error(mock_fs):
 @patch("quack_core.integrations.pandoc._ops.html_to_md.time")
 @patch("quack_core.integrations.pandoc._ops.html_to_md.validate_conversion")
 def test_html_to_md_write_and_validate_output_validation_errors(
-    mock_validate, mock_time, mock_fs
-):
+    mock_validate: MagicMock, mock_time: MagicMock, mock_fs: MagicMock
+) -> None:
     """Test write and validation with validation errors."""
     # Setup mocks
     mock_fs.create_directory.return_value = SimpleNamespace(success=True)
@@ -422,7 +430,7 @@ def test_html_to_md_write_and_validate_output_validation_errors(
     assert "Validation error 1" in result[2]
 
 
-def test_html_to_md_attempt_conversion_success():
+def test_html_to_md_attempt_conversion_success() -> None:
     """Test successful attempt to convert HTML to Markdown."""
     # Mock pypandoc
     mock_pypandoc = MagicMock()
@@ -441,7 +449,7 @@ def test_html_to_md_attempt_conversion_success():
         assert mock_pypandoc.convert_file.called
 
 
-def test_html_to_md_attempt_conversion_pandoc_error():
+def test_html_to_md_attempt_conversion_pandoc_error() -> None:
     """Test conversion attempt with pandoc error."""
     # Mock pypandoc to raise error
     mock_pypandoc = MagicMock()
