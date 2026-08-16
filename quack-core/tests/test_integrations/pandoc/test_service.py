@@ -74,7 +74,8 @@ def test_initialize_with_mocked_verify_pandoc(
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
     integration.fs_service = fs_stub  # type: ignore[assignment]  # SimpleNamespace duck-types FileSystemService for this test double
-    integration.config_provider.load_config = MagicMock(
+    assert integration.config_provider is not None
+    integration.config_provider.load_config = MagicMock(  # type: ignore[method-assign]
         return_value=IntegrationResult(success=True, content={})
     )
 
@@ -172,7 +173,8 @@ def test_html_to_markdown_with_initialized_service(
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
     integration.fs_service = fs_stub  # type: ignore[assignment]  # SimpleNamespace duck-types FileSystemService for this test double
-    integration.config_provider.load_config = MagicMock(
+    assert integration.config_provider is not None
+    integration.config_provider.load_config = MagicMock(  # type: ignore[method-assign]
         return_value=IntegrationResult(success=True, content={})
     )
 
@@ -180,11 +182,13 @@ def test_html_to_markdown_with_initialized_service(
     integration.initialize()
 
     # Mock the converter
-    mock_result = IntegrationResult(success=True, content="output.md")
+    mock_result: IntegrationResult[str] = IntegrationResult(
+        success=True, content="output.md"
+    )
     mock_convert_file = MagicMock(return_value=mock_result)
 
     assert integration.converter is not None
-    integration.converter.convert_file = mock_convert_file
+    integration.converter.convert_file = mock_convert_file  # type: ignore[method-assign]
 
     # Test with output path
     result = integration.html_to_markdown("input.html", "output.md")
@@ -213,7 +217,8 @@ def test_markdown_to_docx_with_initialized_service(
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
     integration.fs_service = fs_stub  # type: ignore[assignment]  # SimpleNamespace duck-types FileSystemService for this test double
-    integration.config_provider.load_config = MagicMock(
+    assert integration.config_provider is not None
+    integration.config_provider.load_config = MagicMock(  # type: ignore[method-assign]
         return_value=IntegrationResult(success=True, content={})
     )
 
@@ -221,11 +226,13 @@ def test_markdown_to_docx_with_initialized_service(
     integration.initialize()
 
     # Mock the converter
-    mock_result = IntegrationResult(success=True, content="output.docx")
+    mock_result: IntegrationResult[str] = IntegrationResult(
+        success=True, content="output.docx"
+    )
     mock_convert_file = MagicMock(return_value=mock_result)
 
     assert integration.converter is not None
-    integration.converter.convert_file = mock_convert_file
+    integration.converter.convert_file = mock_convert_file  # type: ignore[method-assign]
 
     # Test with output path
     result = integration.markdown_to_docx("input.md", "output.docx")
@@ -254,7 +261,8 @@ def test_convert_directory_with_initialized_service(
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
     integration.fs_service = fs_stub  # type: ignore[assignment]  # SimpleNamespace duck-types FileSystemService for this test double
-    integration.config_provider.load_config = MagicMock(
+    assert integration.config_provider is not None
+    integration.config_provider.load_config = MagicMock(  # type: ignore[method-assign]
         return_value=IntegrationResult(success=True, content={})
     )
 
@@ -270,11 +278,13 @@ def test_convert_directory_with_initialized_service(
     integration.initialize()
 
     # Mock the converter
-    mock_result = IntegrationResult(success=True, content=["output1.md", "output2.md"])
+    mock_result: IntegrationResult[list[str]] = IntegrationResult(
+        success=True, content=["output1.md", "output2.md"]
+    )
     mock_convert_batch = MagicMock(return_value=mock_result)
 
     assert integration.converter is not None
-    integration.converter.convert_batch = mock_convert_batch
+    integration.converter.convert_batch = mock_convert_batch  # type: ignore[method-assign]
 
     # Test with default parameters
     result = integration.convert_directory("input_dir", "markdown")
