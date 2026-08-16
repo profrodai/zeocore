@@ -9,7 +9,7 @@ import time
 from typing import Any, Protocol
 
 import requests
-from quack_core.core.fs import service as fs
+from quack_core.core.fs.service import standalone as fs
 from quack_core.core.logging import get_logger
 from quack_core.integrations.core import AuthResult, BaseAuthProvider
 

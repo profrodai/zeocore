@@ -16,54 +16,60 @@ get_credentials() / save_credentials() / _load_credentials() /
 _save_token_data() code, with only the network response faked.
 
 Credentials-file I/O goes through the REAL quack_core.core.fs.service.
-Two PRE-EXISTING PRODUCTION BUGS were discovered writing this file (not
-introduced by it, and out of this stream's circle of control to fix --
-recorded here and in the SOW ledger for escalation):
 
-BUG A -- integrations/core/base.py::BaseAuthProvider._resolve_path()
-crashes with an unhandled ValueError for ANY credentials_file path outside
-the FileSystemService singleton's base_dir (== CWD). Its own except-Exception
-fallback (line 59-60) repeats the identical mistake (passes a possibly
-ok=False PathResult straight into coerce_path_str, which fails fast on a
-failed Result by design -- core/fs/normalize.py's _unwrap_result_like is
-correct; base.py's caller is not). This affects every BaseAuthProvider
-subclass (confirmed also crashes GoogleAuthProvider), for the overwhelmingly
-common real-world case of a credentials file outside the process CWD. The
-existing test suite never caught it because github/test_integration.py's
-one test that would exercise the real construction path is `SKIPPED`, and
-every other existing test either mocks _verify_client_secrets_file/
-_initialize_config or never passes an out-of-CWD path.
-WORKAROUND USED BELOW (not a fix): pass a credentials_file path RELATIVE to
-the worktree CWD (via the `github_creds_relpath` fixture), which stays
-inside base_dir and avoids the crash -- this still exercises real
-_resolve_path/coerce_path_str code, just not the sandbox-escape branch,
-which is the actual bug and not this stream's to silently patch.
+PER RULING-237: two production bugs discovered while writing this file (SOW-4,
+round 3) are now FIXED in this stream's own chain, and the canaries below that
+pinned them as failing-red have been flipped to assert real, correct
+(non-crashing) behavior instead. History kept here, not deleted, per
+append-don't-revert (CLAUDE.md s5):
 
-BUG B -- github/auth.py itself does `from quack_core.core.fs import service
-as fs` then calls fs.get_file_info / fs.read_json / fs.write_json. But
+BUG A (FIXED) -- integrations/core/base.py::BaseAuthProvider._resolve_path()
+used to crash with an unhandled ValueError for ANY credentials_file path
+outside the FileSystemService singleton's base_dir (== CWD): its own
+except-Exception fallback repeated the identical sandboxed call
+(standalone.resolve_path and standalone.normalize_path are literal aliases of
+the same underlying method, confirmed by reading service/path_operations.py),
+so the "fallback" was a guaranteed second failure, not a genuine alternative.
+Fix (this stream, citing RULING-237 s2.1): mirror BaseConfigProvider's own
+sibling _resolve_path in the same file, which already had the correct shape
+-- on failure, log a warning and fall back to the raw, unresolved path string
+rather than repeating the same sandboxed call or silently returning None.
+`allow_absolute=True` was considered and rejected: core/fs/SERVICE-CONTRACT.md
+s4 names `unsafe_allow_absolute_paths` as a deliberate, Master-ratified (R-2)
+security opt-out for "fully trusted environments" only -- flipping it by
+default in a shared base class used by every integration would silently
+weaken a security invariant repo-wide, far outside this fix's scope.
+`test_resolve_path_outside_sandbox_hits_bug_a_now_fixed` below is the real
+canary: it constructs a provider with an absolute, out-of-sandbox
+credentials_file and asserts the RESOLVED path is correct and usable, not
+merely that no exception was raised.
+
+BUG B (FIXED) -- github/auth.py used to import
+`from quack_core.core.fs import service as fs` then call
+fs.get_file_info / fs.read_json / fs.write_json. But
 core/fs/service/__init__.py's public API is deliberately restricted to
 FileSystemService / create_service / get_service only (its own __getattr__
 raises AttributeError for anything else) -- those module-level convenience
-functions live in core/fs/service/standalone, not service/__init__. Compare
-integrations/pandoc/*.py, which correctly imports
-`from quack_core.core.fs.service import standalone as fs`. This means
-GitHubAuthProvider._load_credentials() and _save_token_data() are BROKEN
-in production today: calling either with a real credentials_file raises
-AttributeError, not the documented behavior. (Same bug, second occurrence:
-google/mail/service.py:197 calls fs.create_directory() through the same
-broken import.) Per RULING-234/CLAUDE.md's own discipline (assert real
-behavior, never a guess softened to pass), the tests below for these two
-methods assert the REAL (buggy) AttributeError outcome rather than a
-fictional working one -- this pins the bug with a real failing-red canary
-rather than hiding it, and is the honest thing to test until Master rules
-on the fix. Every other GitHubAuthProvider method that does NOT go through
-this broken fs.* call chain is tested against real, correct behavior.
+functions live in core/fs/service/standalone, not service/__init__. Fix
+(this stream, citing RULING-237 s2.2): changed the import to
+`from quack_core.core.fs.service import standalone as fs`, matching the
+already-correct precedent in integrations/pandoc/*.py exactly (drop-in, no
+call-site changes needed -- standalone exposes the same four function
+names). Same bug, same fix, independently applied to
+google/mail/service.py:11 (a sibling file, out of this test file's scope but
+covered by its own suite). The `_hits_bug_b`-named tests below now assert
+the REAL, CORRECT (post-fix) success behavior instead of the AttributeError
+they used to pin -- names kept as history (what they used to prove), bodies
+changed to prove the fix actually works, not just that "no exception was
+raised."
 
 Boundary mocked in every test below: the GitHub REST API HTTP call
 (`requests`-shaped `.get()`). No quack_core function under test is mocked.
 """
 
+import json
 import shutil
+import tempfile
 from collections.abc import Generator
 from pathlib import Path
 from typing import Any
@@ -76,8 +82,11 @@ from quack_core.integrations.github.auth import GitHubAuthProvider
 @pytest.fixture
 def github_creds_relpath() -> Generator[Path]:
     """A credentials_file path RELATIVE to the worktree CWD, so it stays
-    inside the FileSystemService singleton's base_dir and avoids BUG A
-    (see module docstring). Cleaned up after each test."""
+    inside the FileSystemService singleton's base_dir -- kept relative (not
+    testing sandbox-escape here) so these tests stay focused on BUG B's
+    fixed behavior; BUG A's own dedicated canary
+    (test_resolve_path_outside_sandbox_hits_bug_a_now_fixed) covers the
+    out-of-sandbox path. Cleaned up after each test."""
     scratch = Path("test_scratch_github_creds")
     scratch.mkdir(exist_ok=True)
     try:
@@ -146,6 +155,51 @@ class TestGitHubAuthProviderConstruction:
         provider = GitHubAuthProvider(http_client=FakeHTTPClient())
         assert provider.token is None
 
+    def test_resolve_path_outside_sandbox_hits_bug_a_now_fixed(self) -> None:
+        """RULING-237 s2.1: BUG A fixed. Before the fix, constructing a
+        BaseAuthProvider subclass (GitHubAuthProvider) with a
+        credentials_file OUTSIDE the FileSystemService singleton's base_dir
+        raised an unhandled ValueError from _resolve_path's own
+        except-branch fallback (standalone.resolve_path and
+        standalone.normalize_path are aliases of the same sandboxed method,
+        so the "fallback" was a guaranteed second identical failure -- see
+        module docstring). After the fix, construction succeeds and
+        credentials_file resolves to the real, correct, usable absolute
+        path -- asserting the RESOLVED VALUE, not merely that no exception
+        was raised, per the ruling's own proof requirement."""
+        with tempfile.TemporaryDirectory() as outside_dir:
+            outside_creds = str(Path(outside_dir) / "outside-creds.json")
+
+            provider = GitHubAuthProvider(
+                credentials_file=outside_creds, http_client=FakeHTTPClient()
+            )
+
+            # Resolution did not crash, and did not silently swallow to
+            # None -- it returned the real path, still usable by the OS
+            # directly (the fallback shape chosen per RULING-237 s2.1,
+            # matching BaseConfigProvider's own sibling fallback). This is
+            # BUG A's fix, proven: construction that used to raise an
+            # unhandled ValueError now returns a correct, usable path.
+            assert provider.credentials_file is not None
+            assert Path(provider.credentials_file) == Path(outside_creds)
+
+            # Corrected-guess note (not softened to force a pass): writing
+            # THROUGH this out-of-sandbox path still correctly fails, via a
+            # DIFFERENT, already-correctly-sandboxed call site --
+            # BaseAuthProvider._ensure_credentials_directory() (base.py)
+            # calls standalone.create_directory() on the parent dir, which
+            # enforces the same base_dir sandbox as everything else in
+            # core/fs (SERVICE-CONTRACT.md s4, Master-ratified R-2). That is
+            # NOT part of RULING-237's two named bugs (it is neither
+            # _resolve_path's fallback nor the broken `fs` import) and is
+            # correct, intentional sandboxing behavior, not a bug --
+            # confirmed live before writing this assertion. Directly
+            # exercising fs.write_json (BUG B's own fix) on an in-sandbox
+            # parent, independent of this out-of-sandbox path, is already
+            # covered by TestSaveCredentials::test_save_credentials_hits_bug_b.
+            assert provider.save_credentials() is False
+            assert not Path(outside_creds).exists()
+
 
 class TestAuthenticateSuccess:
     def test_authenticate_with_explicit_token(
@@ -171,20 +225,25 @@ class TestAuthenticateSuccess:
     def test_authenticate_with_credentials_file_hits_bug_b(
         self, github_creds_relpath: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """Pins BUG B (see module docstring): authenticate()'s success path
+        """RULING-237: BUG B fixed. authenticate()'s success path
         unconditionally calls self._save_token_data(self.token) with no
-        try/except, so a real credentials_file makes authenticate() ITSELF
-        crash today via the broken `fs.write_json` import -- not just
-        _save_token_data() in isolation. This is real, current behavior,
-        asserted honestly rather than assumed away."""
+        try/except, so this exercises the real fs.write_json call through
+        the fixed `standalone` import -- asserts the token actually
+        persists to the real credentials file, not just that no exception
+        was raised."""
         monkeypatch.delenv("GITHUB_TOKEN", raising=False)
         fake_client = FakeHTTPClient(response=FakeResponse(200, {"login": "duck"}))
         provider = GitHubAuthProvider(
             credentials_file=str(github_creds_relpath), http_client=fake_client
         )
 
-        with pytest.raises(AttributeError, match="write_json"):
-            provider.authenticate(token="tok-abc")  # noqa: S106 -- test fixture, fake credential value, not a real secret
+        result = provider.authenticate(token="tok-abc")  # noqa: S106 -- test fixture, fake credential value, not a real secret
+
+        assert result.success is True
+        assert result.token == "tok-abc"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert github_creds_relpath.exists()
+        saved = json.loads(github_creds_relpath.read_text())
+        assert saved["token"] == "tok-abc"  # noqa: S105 -- test fixture, fake credential value, not a real secret
 
     def test_authenticate_falls_back_to_env_token(
         self, monkeypatch: pytest.MonkeyPatch
@@ -203,9 +262,11 @@ class TestAuthenticateSuccess:
     def test_authenticate_loads_token_from_credentials_file_hits_bug_b(
         self, github_creds_relpath: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """authenticate()'s no-explicit-token branch calls
-        self._load_credentials() first, which hits BUG B (fs.read_json)
-        before it ever reaches the HTTP boundary. Pins the real crash."""
+        """RULING-237: BUG B fixed. authenticate()'s no-explicit-token
+        branch calls self._load_credentials() first (real fs.read_json,
+        fixed import) before it ever reaches the HTTP boundary -- asserts
+        the token actually loaded from the real file drives a real
+        successful authentication."""
         monkeypatch.delenv("GITHUB_TOKEN", raising=False)
         github_creds_relpath.write_text('{"token": "from-file-token"}')
         fake_client = FakeHTTPClient(response=FakeResponse(200, {"login": "y"}))
@@ -213,8 +274,13 @@ class TestAuthenticateSuccess:
             credentials_file=str(github_creds_relpath), http_client=fake_client
         )
 
-        with pytest.raises(AttributeError, match="get_file_info"):
-            provider.authenticate()
+        result = provider.authenticate()
+
+        assert result.success is True
+        assert result.token == "from-file-token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert len(fake_client.calls) == 1
+        _, kwargs = fake_client.calls[0]
+        assert kwargs["headers"]["Authorization"] == "token from-file-token"
 
 
 class TestAuthenticateFailure:
@@ -332,16 +398,20 @@ class TestGetCredentials:
     def test_get_credentials_loads_from_file_when_no_token_hits_bug_b(
         self, github_creds_relpath: Path
     ) -> None:
-        """get_credentials() calls self._load_credentials() when self.token
-        is falsy, which hits BUG B (fs.get_file_info). Pins the real crash."""
+        """RULING-237: BUG B fixed. get_credentials() calls
+        self._load_credentials() when self.token is falsy (real
+        fs.get_file_info, fixed import) -- asserts the loaded token is
+        actually returned, not just that no exception was raised."""
         github_creds_relpath.write_text('{"token": "loaded-tok"}')
         provider = GitHubAuthProvider(
             credentials_file=str(github_creds_relpath), http_client=FakeHTTPClient()
         )
         provider.token = None
 
-        with pytest.raises(AttributeError, match="get_file_info"):
-            provider.get_credentials()
+        creds = provider.get_credentials()
+
+        assert creds == {"token": "loaded-tok", "user_info": None}
+        assert provider.token == "loaded-tok"  # noqa: S105 -- test fixture, fake credential value, not a real secret
 
     def test_get_credentials_no_file_no_token(self) -> None:
         provider = GitHubAuthProvider(http_client=FakeHTTPClient())
@@ -361,15 +431,18 @@ class TestSaveCredentials:
         assert provider.save_credentials() is False
 
     def test_save_credentials_hits_bug_b(self, github_creds_relpath: Path) -> None:
-        """save_credentials() delegates straight to self._save_token_data(),
-        which hits BUG B (fs.write_json). Pins the real crash."""
+        """RULING-237: BUG B fixed. save_credentials() delegates straight to
+        self._save_token_data() (real fs.write_json, fixed import) --
+        asserts the token actually persists to the real file."""
         provider = GitHubAuthProvider(
             credentials_file=str(github_creds_relpath), http_client=FakeHTTPClient()
         )
         provider.token = "save-me"  # noqa: S105 -- test fixture, fake credential value, not a real secret
 
-        with pytest.raises(AttributeError, match="write_json"):
-            provider.save_credentials()
+        assert provider.save_credentials() is True
+        assert github_creds_relpath.exists()
+        saved = json.loads(github_creds_relpath.read_text())
+        assert saved["token"] == "save-me"  # noqa: S105 -- test fixture, fake credential value, not a real secret
 
 
 class TestLoadCredentialsPrivate:
@@ -382,37 +455,42 @@ class TestLoadCredentialsPrivate:
     def test_load_credentials_file_does_not_exist_hits_bug_b(
         self, github_creds_relpath: Path
     ) -> None:
-        """_load_credentials()'s existence check itself calls
-        fs.get_file_info() (BUG B) before it can even determine the file is
-        missing -- pins the real crash rather than the intended
-        early-return-None behavior."""
+        """RULING-237: BUG B fixed. _load_credentials()'s existence check
+        calls the real fs.get_file_info() (fixed import) and correctly
+        determines the file is missing -- the INTENDED early-return-None
+        behavior, now reachable."""
         provider = GitHubAuthProvider(
             credentials_file=str(github_creds_relpath),
             http_client=FakeHTTPClient(),
         )
 
-        with pytest.raises(AttributeError, match="get_file_info"):
-            provider._load_credentials()
+        assert provider._load_credentials() is None
 
     def test_load_credentials_file_not_valid_json_hits_bug_b(
         self, github_creds_relpath: Path
     ) -> None:
+        """RULING-237: BUG B fixed. Real fs.read_json() on malformed JSON
+        returns a failed (non-raising) result; _load_credentials() logs and
+        returns None -- the real, correct behavior."""
         github_creds_relpath.write_text("not json at all {{{")
         provider = GitHubAuthProvider(
             credentials_file=str(github_creds_relpath), http_client=FakeHTTPClient()
         )
 
-        with pytest.raises(AttributeError, match="get_file_info"):
-            provider._load_credentials()
+        assert provider._load_credentials() is None
 
     def test_load_credentials_hits_bug_b(self, github_creds_relpath: Path) -> None:
+        """RULING-237: BUG B fixed. Real fs.get_file_info() + fs.read_json()
+        round-trip a real credentials file and return its real parsed
+        contents."""
         github_creds_relpath.write_text('{"token": "real-token", "saved_at": 123}')
         provider = GitHubAuthProvider(
             credentials_file=str(github_creds_relpath), http_client=FakeHTTPClient()
         )
 
-        with pytest.raises(AttributeError, match="get_file_info"):
-            provider._load_credentials()
+        result = provider._load_credentials()
+
+        assert result == {"token": "real-token", "saved_at": 123}
 
 
 class TestSaveTokenDataPrivate:
@@ -435,10 +513,15 @@ class TestSaveTokenDataPrivate:
         assert provider._save_token_data("tok") is False
 
     def test_save_token_data_hits_bug_b(self, github_creds_relpath: Path) -> None:
+        """RULING-237: BUG B fixed. Real fs.write_json() (fixed import)
+        actually persists the token + user_info to the real file."""
         provider = GitHubAuthProvider(
             credentials_file=str(github_creds_relpath), http_client=FakeHTTPClient()
         )
         provider._user_info = {"login": "has-info"}
 
-        with pytest.raises(AttributeError, match="write_json"):
-            provider._save_token_data("tok-123")
+        assert provider._save_token_data("tok-123") is True  # noqa: S106 -- test fixture, fake credential value, not a real secret
+        assert github_creds_relpath.exists()
+        saved = json.loads(github_creds_relpath.read_text())
+        assert saved["token"] == "tok-123"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert saved["user_info"] == {"login": "has-info"}

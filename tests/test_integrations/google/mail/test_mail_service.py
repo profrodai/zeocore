@@ -21,6 +21,55 @@ from tests.test_integrations.google.mail.mocks import (
 )
 
 
+class TestInitializeConfigRealPathHitsBugC:
+    """NEW FINDING (this session, quackverse-coverage-90 round 4), NOT part of
+    RULING-237's two named bugs -- pinned here as a real failing-red canary
+    and escalated in the SOW, not fixed (out of this ruling's scope, per
+    CLAUDE.md s7's ESCALATE discipline: a new prerequisite/defect crossing
+    scope is textbook escalate, never a self-authorized fix).
+
+    BUG C -- google/mail/service.py:194 calls
+    `paths.resolve_project_path(self.storage_path)` where
+    `paths = quack_core.core.paths.service` (the raw MODULE, imported at
+    line 12: `from quack_core.core.paths import service as paths`). But
+    `resolve_project_path` is an INSTANCE method of `PathService`
+    (core/paths/service.py:64), not a module-level function, and the module
+    itself has no such attribute and no __getattr__ shim (confirmed live:
+    `type(paths)` is `<class 'module'>`, `hasattr(paths,
+    'resolve_project_path')` is False). Every real call raises
+    `AttributeError: module 'quack_core.core.paths.service' has no
+    attribute 'resolve_project_path'`. This is caught by
+    `_initialize_config()`'s own generic `except Exception` (service.py
+    line 209-211), logged, and swallowed to a `None` return -- so
+    `GoogleMailService.initialize()` ALWAYS fails with "Failed to
+    initialize configuration" for any real (non-mocked) caller today,
+    independent of and upstream of the two RULING-237 bugs already fixed in
+    this same file (the broken `fs` import, RULING-237 s2.2) -- this
+    executes BEFORE the fixed `fs.create_directory` call is ever reached.
+    google/config.py:330-342 already carries a comment flagging the exact
+    same `PathService` instance-vs-module gotcha, suggesting this is a
+    known trap in this codebase, not a one-off typo.
+    Compare `integrations/google/config.py:342`, which correctly
+    instantiates `PathService()` first: `path_service =
+    PathService(); ... path_service.resolve_project_path(...)`.
+    """
+
+    def test_initialize_config_real_storage_path_hits_bug_c(self) -> None:
+        service = GoogleMailService(
+            client_secrets_file="secrets.json",
+            credentials_file="creds.json",
+            storage_path="test_scratch_mail_storage_bug_c",
+        )
+
+        # Real current (buggy) behavior: swallowed to None, not raised --
+        # the AttributeError is caught by _initialize_config's own
+        # except Exception and logged, never propagating to the caller.
+        # Asserting the REAL outcome, not a fictional working one.
+        result = service._initialize_config()
+
+        assert result is None
+
+
 class TestGoogleMailService:
     """Tests for the GoogleMailService class."""
 
