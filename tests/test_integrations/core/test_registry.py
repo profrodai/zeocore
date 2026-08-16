@@ -59,7 +59,7 @@ def test_registry_creation(registry):
     """Test that the registry can be created."""
     assert registry is not None
     assert isinstance(registry, IntegrationRegistry)
-    assert registry.list_integrations() == []
+    assert registry.list_ids() == []
 
 
 def test_register_integration(registry, mock_integration):
@@ -69,7 +69,7 @@ def test_register_integration(registry, mock_integration):
 
     # Verify it's registered
     assert registry.is_registered(mock_integration.name)
-    assert registry.list_integrations() == [mock_integration.name]
+    assert registry.list_ids() == [mock_integration.name]
     assert registry.get_integration(mock_integration.name) is mock_integration
 
 
@@ -95,7 +95,7 @@ def test_unregister_integration(registry, mock_integration):
     # Verify it's unregistered
     assert result is True
     assert not registry.is_registered(mock_integration.name)
-    assert registry.list_integrations() == []
+    assert registry.list_ids() == []
     assert registry.get_integration(mock_integration.name) is None
 
 
@@ -127,29 +127,21 @@ def test_get_integration_by_type(registry):
     assert integration2 in integrations
 
 
-def test_load_integration_module(registry, monkeypatch):
-    """Test loading integrations from a module."""
+def test_registry_is_pure_container_no_discovery(registry):
+    """The registry is a pure container: it registers whatever is handed to
+    it explicitly and performs no module discovery or import side effects
+    (per registry.py's own docstring: "avoids any auto-discovery logic or
+    side effects" -- the module-loading API this test used to exercise,
+    `load_integration_module`, was deliberately removed).
+    """
+    module_integration = MockIntegration("ModuleIntegration")
 
-    # Create a mock module
-    class MockModule:
-        def create_integration(self):
-            return MockIntegration("ModuleIntegration")
+    # The only supported path is explicit registration by the caller.
+    registry.register(module_integration)
 
-    mock_module = MockModule()
-
-    # Patch importlib.import_module to return the mock module
-    def mock_import_module(name):
-        return mock_module
-
-    monkeypatch.setattr("importlib.import_module", mock_import_module)
-
-    # Add create_integration to the mock module
-    mock_module.create_integration = mock_module.create_integration
-
-    # Load integrations from the mock module
-    loaded = registry.load_integration_module("mock_module")
-
-    # Verify the result
-    assert len(loaded) == 1
-    assert loaded[0].name == "ModuleIntegration"
     assert registry.is_registered("ModuleIntegration")
+    assert registry.list_ids() == ["ModuleIntegration"]
+    assert registry.get_integration("ModuleIntegration") is module_integration
+
+    # No dynamic-loading surface remains on the registry.
+    assert not hasattr(registry, "load_integration_module")
