@@ -436,7 +436,7 @@ class TestOpenAIClient:
         mock_tiktoken.return_value = mock_encoding
 
         # Configure encode method to return a token array of specific length
-        def mock_encode(text):
+        def mock_encode(text: str) -> list[int]:
             # Return an array with one "token" per character for simplicity
             return list(range(len(text)))
 

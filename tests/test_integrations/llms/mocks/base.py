@@ -134,7 +134,7 @@ class MockStreamingGenerator:
         """Return self as iterator."""
         return self
 
-    def __next__(self) -> Any:
+    def __next__(self) -> Any:  # noqa: ANN401 -- stub overridden by subclasses with differing concrete chunk types
         """Not implemented directly, use the provider-specific generators."""
         raise NotImplementedError("Use a provider-specific streaming generator")
 

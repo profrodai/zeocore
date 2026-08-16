@@ -37,10 +37,18 @@ class TestLLMRegistry:
 
         # Create a test client class
         class TestClient(LLMClient):
-            def _chat_with_provider(self, *args: Any, **kwargs: Any):
+            def _chat_with_provider(
+                self,
+                *args: Any,  # noqa: ANN401 -- deliberately generic override, doesn't care about call shape
+                **kwargs: Any,  # noqa: ANN401 -- deliberately generic override, doesn't care about call shape
+            ) -> MagicMock:
                 return MagicMock()
 
-            def _count_tokens_with_provider(self, *args: Any, **kwargs: Any):
+            def _count_tokens_with_provider(
+                self,
+                *args: Any,  # noqa: ANN401 -- deliberately generic override, doesn't care about call shape
+                **kwargs: Any,  # noqa: ANN401 -- deliberately generic override, doesn't care about call shape
+            ) -> MagicMock:
                 return MagicMock()
 
         # Register the test client
@@ -58,10 +66,18 @@ class TestLLMRegistry:
 
         # Create a test client class
         class TestClient(LLMClient):
-            def _chat_with_provider(self, *args: Any, **kwargs: Any):
+            def _chat_with_provider(
+                self,
+                *args: Any,  # noqa: ANN401 -- deliberately generic override, doesn't care about call shape
+                **kwargs: Any,  # noqa: ANN401 -- deliberately generic override, doesn't care about call shape
+            ) -> MagicMock:
                 return MagicMock()
 
-            def _count_tokens_with_provider(self, *args: Any, **kwargs: Any):
+            def _count_tokens_with_provider(
+                self,
+                *args: Any,  # noqa: ANN401 -- deliberately generic override, doesn't care about call shape
+                **kwargs: Any,  # noqa: ANN401 -- deliberately generic override, doesn't care about call shape
+            ) -> MagicMock:
                 return MagicMock()
 
         # Register the test client with mixed case
