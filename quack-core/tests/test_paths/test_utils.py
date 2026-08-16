@@ -87,7 +87,8 @@ class TestPathUtils:
         assert root_result.success
         assert root_result.path == str(mock_project_structure)
 
-        # Test with non-existent path - updated to test for failure result rather than exception
+        # Test with non-existent path - updated to test for failure result
+        # rather than exception
         root_result = paths.find_project_root("/nonexistent/path")
         assert not root_result.success
         assert root_result.error is not None

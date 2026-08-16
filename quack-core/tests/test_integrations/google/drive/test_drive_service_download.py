@@ -66,7 +66,8 @@ class TestGoogleDriveServiceDownload:
                             "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
                         ):
                             service = GoogleDriveService()
-                            # Mark as initialized to skip the actual initialization logic
+                            # Mark as initialized to skip the actual
+                            # initialization logic
                             service._initialized = True
                             service.drive_service = MagicMock()
                             yield service

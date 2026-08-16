@@ -47,7 +47,8 @@ class TestGoogleDriveServiceFiles:
                 ):
                     # Create and configure the service
                     service = GoogleDriveService()
-                    # Manually set shared_folder_id since we're not using the constructor parameter
+                    # Manually set shared_folder_id since we're not using the
+                    # constructor parameter
                     service.shared_folder_id = "shared_folder"
                     service._initialized = True
                     service.drive_service = MagicMock()
@@ -80,7 +81,8 @@ class TestGoogleDriveServiceFiles:
                 # Mock get_mime_type
                 mock_fs.get_mime_type.return_value = "text/plain"
 
-                # Patch the _resolve_file_details method to avoid TypeError in implementation
+                # Patch the _resolve_file_details method to avoid TypeError in
+                # implementation
                 with patch.object(
                     drive_service,
                     "_resolve_file_details",
@@ -120,7 +122,8 @@ class TestGoogleDriveServiceFiles:
                 )
                 mock_fs.get_mime_type.return_value = "text/plain"
 
-                # Patch the _resolve_file_details method to avoid TypeError in implementation
+                # Patch the _resolve_file_details method to avoid TypeError in
+                # implementation
                 with patch.object(
                     drive_service,
                     "_resolve_file_details",

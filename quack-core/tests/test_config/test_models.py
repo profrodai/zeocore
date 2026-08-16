@@ -81,7 +81,8 @@ class TestConfigModels:
                 config = LoggingConfig(console=False)
                 config.setup_logging()
 
-                # We just check the method is called, the actual filtering is implemented in the class
+                # We just check the method is called, the actual filtering
+                # is implemented in the class
                 mock_configure_logger.assert_called_once()
 
                 # Reset mocks for next test

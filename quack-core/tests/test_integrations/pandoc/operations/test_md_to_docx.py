@@ -181,7 +181,8 @@ def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
         mock_validate_docx.return_value = (True, [])
 
         errors = validate_docx_conversion("output.docx", "input.md", 100, config)
-        # # assert not errors  # Validation logic on mocks is brittle # Validation logic might be strict on mocked sizes
+        # # assert not errors  # Validation logic on mocks is brittle
+        # # Validation logic might be strict on mocked sizes
 
     # Test file size too small
     config.validation.min_file_size = 1000

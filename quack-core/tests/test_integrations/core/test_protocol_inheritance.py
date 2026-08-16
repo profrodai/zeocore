@@ -183,7 +183,8 @@ class TestProtocolInheritance:
         assert not isinstance(config_provider, StorageIntegrationProtocol)
 
     def test_partial_implementations(self) -> None:
-        """Test that partial implementations are not recognized as fully implementing protocols."""
+        """Test that partial implementations are not recognized as fully
+        implementing protocols."""
 
         # Partial IntegrationProtocol
         class PartialIntegration:
@@ -200,7 +201,8 @@ class TestProtocolInheritance:
         partial = PartialIntegration()
         assert not isinstance(partial, IntegrationProtocol)
 
-        # Partial StorageIntegrationProtocol (implements IntegrationProtocol but not storage methods)
+        # Partial StorageIntegrationProtocol (implements IntegrationProtocol
+        # but not storage methods)
         class PartialStorage:
             @property
             def name(self) -> str:

@@ -226,7 +226,8 @@ class MockDriveFilesResource(DriveFilesResource):
         # Default file content as bytes
         file_content = b"Test file content"
 
-        # Directly create a mock request with additional attributes expected during download
+        # Directly create a mock request with additional attributes expected
+        # during download
         mock_request = MockDriveRequest(file_content, self.get_media_error)
 
         # Add additional attributes that might be checked during download

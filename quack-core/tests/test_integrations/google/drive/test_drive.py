@@ -19,7 +19,7 @@ from tests.test_integrations.google.drive.operations.test_operations_folder impo
 from tests.test_integrations.google.drive.operations.test_operations_list_files import (
     TestDriveOperationsListFiles,
 )
-from tests.test_integrations.google.drive.operations.test_operations_permissions import (
+from tests.test_integrations.google.drive.operations.test_operations_permissions import (  # noqa: E501
     TestDriveOperationsPermissions,
 )
 from tests.test_integrations.google.drive.operations.test_operations_upload import (

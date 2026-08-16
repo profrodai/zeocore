@@ -330,7 +330,8 @@ class TestExplicitLoading(unittest.TestCase):
     def test_plugin_id_must_match_entry_point_name(
         self, mock_entry_points: MagicMock
     ) -> None:
-        """Test that plugin_id must match entry point name for deterministic behavior."""
+        """Test that plugin_id must match entry point name for deterministic
+        behavior."""
         from quack_core.modules import load_enabled_entry_points, registry
 
         # Create mock plugin with DIFFERENT plugin_id than entry point name

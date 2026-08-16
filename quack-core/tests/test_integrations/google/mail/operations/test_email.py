@@ -281,7 +281,8 @@ class TestGmailEmailOperations:
             with patch(
                 "quack_core.integrations.google.mail.operations.email.time.sleep"
             ) as mock_sleep:
-                # We're testing with 2 max retries, so expect 1 sleep call (after the 1st failure)
+                # We're testing with 2 max retries, so expect 1 sleep call
+                # (after the 1st failure)
                 message = email._get_message_with_retry(
                     mock_gmail_service, "me", "msg1", 2, 0.1, 0.5, logger
                 )

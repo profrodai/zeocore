@@ -168,7 +168,8 @@ class TestGoogleDriveServiceInit:
 
         assert result.success is False
         assert "Auth error" in result.error
-        # The implementation doesn't set _initialized to False on error, so we don't assert that
+        # The implementation doesn't set _initialized to False on error, so
+        # we don't assert that
 
         # Test credentials error
         # Reset authentication mock

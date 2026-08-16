@@ -344,7 +344,8 @@ class TestProtocolInheritance:
     """Tests for protocol inheritance and interface contracts."""
 
     def test_storage_integration_inheritance(self) -> None:
-        """Test that StorageIntegrationProtocol properly inherits from IntegrationProtocol."""
+        """Test that StorageIntegrationProtocol properly inherits from
+        IntegrationProtocol."""
         storage = SampleStorageIntegration()
 
         # Check implementation against the MinimalStorageProtocol
