@@ -145,6 +145,11 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
             )
 
         config_data = yaml_result.data
+        if config_data is None:
+            raise QuackConfigurationError(
+                f"Configuration file loaded but contained no data: {config_path_str}",
+                config_path=config_path_str,
+            )
         integration_config = self._extract_config(config_data)
 
         if not self.validate_config(integration_config):
@@ -158,7 +163,13 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
 
     def _extract_config(self, config_data: dict[str, Any]) -> dict[str, Any]:
         integration_name = self.name.lower().replace(" ", "_")
-        return config_data.get(integration_name, {})
+        section = config_data.get(integration_name, {})
+        if not isinstance(section, dict):
+            raise QuackConfigurationError(
+                f"Configuration section '{integration_name}' must be a mapping, "
+                f"got {type(section).__name__}"
+            )
+        return section
 
     def _config_path_from_env_var(self) -> str | None:
         """

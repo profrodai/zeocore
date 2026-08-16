@@ -9,6 +9,7 @@ Validates invariants, convenience methods, and JSON serialization.
 """
 
 from datetime import datetime, timezone
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
@@ -107,7 +108,7 @@ class TestCapabilityResult:
 
     def test_skip_result(self) -> None:
         """Test skip result creation."""
-        result = CapabilityResult.skip(
+        result: CapabilityResult[Any] = CapabilityResult.skip(
             reason="Video too short", code="QC_VAL_TOO_SHORT"
         )
 
@@ -118,7 +119,9 @@ class TestCapabilityResult:
 
     def test_fail_result(self) -> None:
         """Test error result creation."""
-        result = CapabilityResult.fail(msg="Processing failed", code="QC_IO_ERROR")
+        result: CapabilityResult[Any] = CapabilityResult.fail(
+            msg="Processing failed", code="QC_IO_ERROR"
+        )
 
         assert result.status == CapabilityStatus.error
         assert result.human_message == "Processing failed"
@@ -129,7 +132,7 @@ class TestCapabilityResult:
     def test_fail_from_exception(self) -> None:
         """Test error result from exception."""
         exc = ValueError("Invalid input")
-        result = CapabilityResult.fail_from_exc(
+        result: CapabilityResult[Any] = CapabilityResult.fail_from_exc(
             msg="Validation failed", code="QC_VAL_ERROR", exc=exc
         )
 

@@ -32,7 +32,7 @@ class TestErrorHandler:
     def test_format_quack_error(self) -> None:
         """Test formatting a QuackError with context."""
         handler = ErrorHandler()
-        context = {"file": "test.txt", "operation": "read"}
+        context: dict[str, object] = {"file": "test.txt", "operation": "read"}
         error = QuackError("Test error", context=context)
 
         formatted = handler.format_error(error)

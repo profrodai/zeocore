@@ -288,6 +288,7 @@ class TestRunManifest:
             duration_sec=45.0,
         )
 
+        assert manifest.finished_at is not None
         assert manifest.finished_at > manifest.started_at
 
     def test_manifest_invalid_time_order(self) -> None:

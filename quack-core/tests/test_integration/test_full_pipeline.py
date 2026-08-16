@@ -20,6 +20,7 @@ from quack_core.core.paths import service as paths
 from quack_core.modules.protocols import (
     CommandPluginProtocol,
     ProviderPluginProtocol,
+    QuackPluginMetadata,
 )
 from quack_core.modules.registry import PluginRegistry
 
@@ -33,8 +34,21 @@ class SampleFilePlugin(CommandPluginProtocol):
         self.fs = fs_service
 
     @property
+    def plugin_id(self) -> str:
+        return "file_plugin"
+
+    @property
     def name(self) -> str:
         return "file_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Test plugin for file operations",
+            capabilities=[],
+        )
 
     def list_commands(self) -> list[str]:
         return ["read_file", "write_file"]
@@ -57,6 +71,7 @@ class SampleFilePlugin(CommandPluginProtocol):
         result = self.fs.read_text(path)
         if not result.success:
             raise QuackError(f"Failed to read file: {result.error}")
+        assert result.content is not None
         return result.content
 
     def write_file(self, path: str, content: str) -> bool:
@@ -73,8 +88,21 @@ class SamplePathPlugin(CommandPluginProtocol):
         self.resolver = path_resolver
 
     @property
+    def plugin_id(self) -> str:
+        return "path_plugin"
+
+    @property
     def name(self) -> str:
         return "path_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Test plugin for path operations",
+            capabilities=[],
+        )
 
     def list_commands(self) -> list[str]:
         return ["find_project_root", "resolve_path"]
@@ -101,14 +129,16 @@ class SamplePathPlugin(CommandPluginProtocol):
         result = paths.PathService().get_project_root(start_dir)
         if not result.success:
             raise QuackError(f"Failed to find project root: {result.error}")
-        return result.path
+        assert result.path is not None
+        return Path(result.path)
 
     def resolve_path(self, path: str, project_root: str | None = None) -> Path:
         """Resolve a path relative to the project root."""
         result = paths.PathService().resolve_project_path(path, project_root)
         if not result.success:
             raise QuackError(f"Failed to resolve path: {result.error}")
-        return result.path
+        assert result.path is not None
+        return Path(result.path)
 
 
 class SampleConfigProvider(ProviderPluginProtocol):
@@ -119,8 +149,21 @@ class SampleConfigProvider(ProviderPluginProtocol):
         self.config = config
 
     @property
+    def plugin_id(self) -> str:
+        return "config_provider"
+
+    @property
     def name(self) -> str:
         return "config_provider"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Test plugin providing configuration services",
+            capabilities=[],
+        )
 
     def get_services(self) -> dict[str, object]:
         return {"get_config": self.get_config, "get_value": self.get_value}

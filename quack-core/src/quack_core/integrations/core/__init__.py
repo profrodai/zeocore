@@ -9,7 +9,7 @@ This package provides a framework for connecting QuackCore to external services
 and platforms, with a modular approach that allows for community contributions.
 """
 
-from typing import TypeVar, cast
+from typing import TypeVar
 
 from quack_core.integrations.boot import get_global_registry, load_integrations
 from quack_core.integrations.core.base import (
@@ -44,7 +44,7 @@ def get_integration_service(service_type: type[T]) -> T | None:
     registry = get_global_registry()
     for service in registry.get_integration_by_type(service_type):
         if isinstance(service, service_type):
-            return cast(T, service)
+            return service
     return None
 
 

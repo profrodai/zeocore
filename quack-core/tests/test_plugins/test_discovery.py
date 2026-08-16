@@ -109,11 +109,11 @@ class TestPluginLoader:
         # using ModuleType.
         import types
 
-        mock_module = types.ModuleType("test.module")
-        mock_module.MockPlugin = MockPlugin
-        mock_module.MockPlugin.__module__ = "test.module"
-        with patch.dict(sys.modules, {"test.module": mock_module}):
-            with patch("importlib.import_module", return_value=mock_module):
+        dummy_module = types.ModuleType("test.module")
+        dummy_module.MockPlugin = MockPlugin  # type: ignore[attr-defined]
+        dummy_module.MockPlugin.__module__ = "test.module"
+        with patch.dict(sys.modules, {"test.module": dummy_module}):
+            with patch("importlib.import_module", return_value=dummy_module):
                 plugin = loader.load_plugin("test.module")
                 assert isinstance(plugin, MockPlugin)
 
@@ -282,7 +282,7 @@ class TestPluginLoader:
                     capabilities=[],
                 )
 
-        result = loader._validate_plugin(  # type: ignore[arg-type]
+        result = loader._validate_plugin(
             PluginNoneMetadataId(), "fallback.module.path"
         )
         assert result is not None
