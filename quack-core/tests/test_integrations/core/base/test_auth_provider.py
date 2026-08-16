@@ -40,35 +40,39 @@ class TestBaseAuthProvider:
         assert provider.credentials_file is None
 
     def test_resolve_path(self) -> None:
-        """Test resolving a relative path."""
+        """Test resolving a relative path.
+
+        RULING-237 s2.1 (quackverse-coverage-90): BaseAuthProvider._resolve_path's
+        except-branch fallback used to call standalone.normalize_path as a
+        second attempt after standalone.resolve_path failed -- but the two
+        are literal aliases of the same sandboxed method
+        (service/path_operations.py: resolve_path() is defined as
+        `return self.normalize_path(path)`), so the "fallback" was a
+        guaranteed second identical failure for the same input, not a
+        genuine alternative. Fixed to mirror BaseConfigProvider's own
+        sibling _resolve_path in the same file: on failure, log and return
+        the raw, unresolved path string. This test now exercises the REAL
+        standalone.resolve_path (no mock of the function under test, per
+        RULING-235's own boundary-mock discipline) and asserts the real
+        post-fix behavior for both the success and failure cases, rather
+        than mocking standalone.normalize_path to prove a fallback shape
+        that no longer exists."""
         provider = MockAuthProvider()
 
-        # Test with absolute path
-        abs_path = "/absolute/path"
+        # Real success case: a path inside the FileSystemService sandbox
+        # resolves via the real standalone.resolve_path, no mock involved.
+        resolved = provider._resolve_path("relative/path")
+        assert resolved == str(Path.cwd() / "relative/path")
 
-        # Need to patch the proper method now
-        with patch(
-            "quack_core.core.fs.service.standalone.resolve_path"
-        ) as mock_resolve:
-            mock_resolve.return_value = abs_path
-            resolved = provider._resolve_path(abs_path)
-            assert resolved == abs_path
-            mock_resolve.assert_called_once_with(abs_path)
-
-        # Test with resolver exception - patch the fs service instance
-        with patch(
-            "quack_core.core.fs.service.standalone.resolve_path"
-        ) as mock_resolve:
-            mock_resolve.side_effect = Exception("Test error")
-
-            with patch(
-                "quack_core.core.fs.service.standalone.normalize_path"
-            ) as mock_normalize:
-                mock_normalize.return_value = "/normalized/path"
-
-                resolved = provider._resolve_path("relative/path")
-                assert resolved == "/normalized/path"
-                mock_normalize.assert_called_once_with("relative/path")
+        # Real failure case: an absolute path outside the sandbox base_dir
+        # makes the real standalone.resolve_path fail (QuackPathOutsideBaseDirError,
+        # wrapped as a failed-Result ValueError at the coerce_path_str
+        # boundary) -- the fixed fallback does NOT repeat the identical
+        # sandboxed call; it logs a warning and returns the raw path
+        # unresolved rather than crashing or silently returning None.
+        outside_path = "/definitely/outside/the/sandbox/creds.json"
+        resolved_outside = provider._resolve_path(outside_path)
+        assert resolved_outside == outside_path
 
     def test_abstract_methods(self) -> None:
         """Test that abstract methods must be implemented."""

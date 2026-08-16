@@ -53,11 +53,19 @@ class BaseAuthProvider(ABC, AuthProviderProtocol):
             result = standalone.resolve_path(file_path)
             return coerce_path_str(result)
         except Exception as e:
-            self.logger.warning(f"Could not resolve project path: {e}")
-            from quack_core.core.fs.service import standalone
-
-            normalized = standalone.normalize_path(file_path)
-            return coerce_path_str(normalized)
+            # standalone.resolve_path is an alias for standalone.normalize_path
+            # (service/path_operations.py) -- both are sandboxed to the same
+            # FileSystemService base_dir, so a retry via normalize_path here
+            # would fail identically for the same input (e.g. a credentials_file
+            # legitimately living outside the sandbox, per RULING-237 s2.1). Match
+            # BaseConfigProvider._resolve_path's own established fallback shape
+            # (below in this file): log and fall back to the raw, unresolved path
+            # rather than repeating the identical sandboxed call or silently
+            # returning None -- a credentials path that fails to resolve is still
+            # usable to the OS directly, and swallowing it to None would be a
+            # quieter, worse bug than surfacing the unresolved path.
+            self.logger.warning(f"Could not resolve credentials path: {e}")
+            return file_path
 
     @property
     @abstractmethod

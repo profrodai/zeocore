@@ -193,15 +193,24 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         """Resolve file details for upload."""
         from quack_core.core.fs.service import standalone
 
-        # Extract clean paths using our new helper
-        path_obj_result = paths_service.resolve_project_path(file_path)
-        if not path_obj_result.success:
+        # resolve_project_path is a PathService INSTANCE method, not a
+        # module-level free function (same trap documented in
+        # google/config.py's resolve_config_paths and fixed identically in
+        # google/mail/service.py's _initialize_config, RULING-238/240) --
+        # instantiate PathService and unwrap its PathResult explicitly
+        # rather than passing the Result object itself into a helper that
+        # does not exist on this module (standalone has no
+        # extract_path_from_result -- that name lives only in
+        # quack_core.core.fs.normalize and was never exported here).
+        path_service = paths_service.PathService()
+        path_obj_result = path_service.resolve_project_path(file_path)
+        if not path_obj_result.success or path_obj_result.path is None:
             raise QuackIntegrationError(
                 f"Failed to resolve path: {path_obj_result.error}"
             )
 
-        # Extract the clean path as a string from the path_obj_result
-        path_obj = standalone.extract_path_from_result(path_obj_result)
+        # Extract the clean path directly from the unwrapped PathResult
+        path_obj = path_obj_result.path
 
         file_info = standalone.get_file_info(path_obj)
         if not file_info.success or not file_info.exists:
@@ -252,9 +261,14 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
                 else joined_path_result
             )
 
-        # Resolve the local path
-        local_path_obj_result = paths_service.resolve_project_path(local_path)
-        if not local_path_obj_result.success:
+        # Resolve the local path.
+        # resolve_project_path is a PathService INSTANCE method, not a
+        # module-level free function (same trap fixed identically in
+        # google/mail/service.py's _initialize_config, RULING-238/240) --
+        # instantiate PathService and unwrap its PathResult explicitly.
+        path_service = paths_service.PathService()
+        local_path_obj_result = path_service.resolve_project_path(local_path)
+        if not local_path_obj_result.success or local_path_obj_result.path is None:
             raise QuackIntegrationError(
                 f"Failed to resolve local path: {local_path_obj_result.error}"
             )

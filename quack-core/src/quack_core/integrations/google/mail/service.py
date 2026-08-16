@@ -8,7 +8,7 @@ from types import NoneType
 from typing import cast
 
 from quack_core.core.errors import QuackIntegrationError
-from quack_core.core.fs import service as fs
+from quack_core.core.fs.service import standalone as fs
 from quack_core.core.paths import service as paths
 from quack_core.integrations.core.base import BaseIntegrationService
 from quack_core.integrations.core.results import IntegrationResult
@@ -190,8 +190,19 @@ class GoogleMailService(BaseIntegrationService):
                     "Storage path not specified in configuration", {}
                 )
 
-            # Resolve the storage path
-            storage_path_obj = paths.resolve_project_path(self.storage_path)
+            # Resolve the storage path.
+            # resolve_project_path is a PathService INSTANCE method, not a
+            # module-level free function (same trap already documented in
+            # google/config.py's own resolve_config_paths) -- instantiate
+            # PathService and unwrap its PathResult explicitly rather than
+            # stringifying the result object itself.
+            path_service = paths.PathService()
+            resolve_result = path_service.resolve_project_path(self.storage_path)
+            if not resolve_result.success or resolve_result.path is None:
+                raise QuackIntegrationError(
+                    f"Failed to resolve storage path: {resolve_result.error}", {}
+                )
+            storage_path_obj = resolve_result.path
             self.storage_path = str(storage_path_obj)
 
             create_result = fs.create_directory(storage_path_obj, exist_ok=True)

@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from quack_core.core.errors import QuackApiError
+from quack_core.core.errors import QuackApiError, QuackError
 from quack_core.integrations.github.models import (
     GitHubRepo,
     GitHubUser,
@@ -793,6 +793,543 @@ class TestPullRequestOperations:
                 url="/repos/test_owner/test-repo/pulls/123/files",
                 api_url="https://api.github.com",
             )
+
+    def test_create_pull_request_no_body(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """Test creating a pull request without a body -- covers the `if body:`
+        skip branch (line 53) and the merged/closed status branches
+        (lines 88-93) via a closed, non-merged PR."""
+        pr_data = {
+            "number": 124,
+            "title": "No-body PR",
+            "html_url": "https://github.com/test_owner/test-repo/pull/124",
+            "user": {
+                "login": "test_user",
+                "html_url": "https://github.com/test_user",
+                "avatar_url": "https://github.com/test_user.png",
+            },
+            "state": "closed",
+            "body": None,
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-01T00:00:00Z",
+            "merged_at": None,
+            "head": {"ref": "feature", "repo": {"full_name": "test_user/test-repo"}},
+            "base": {"ref": "main", "repo": {"full_name": "test_owner/test-repo"}},
+        }
+        mock_response.json.return_value = pr_data
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            result = create_pull_request(
+                session=mock_session,
+                base_repo="test_owner/test-repo",
+                head="test_user:feature",
+                title="No-body PR",
+                api_url="https://api.github.com",
+            )
+
+            assert result.status == PullRequestStatus.CLOSED
+            assert result.body is None
+            # No "body" key sent when body is falsy.
+            call_json = mock_make_request.call_args[1]["json"]
+            assert "body" not in call_json
+
+    def test_create_pull_request_merged(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """Test creating a pull request that comes back already merged --
+        covers the merged_at branch (lines 88-89)."""
+        pr_data = {
+            "number": 125,
+            "title": "Merged PR",
+            "html_url": "https://github.com/test_owner/test-repo/pull/125",
+            "user": {
+                "login": "test_user",
+                "html_url": "https://github.com/test_user",
+                "avatar_url": "https://github.com/test_user.png",
+            },
+            "state": "closed",
+            "body": "merged body",
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-02T00:00:00Z",
+            "merged_at": "2023-01-02T00:00:00Z",
+            "head": {"ref": "feature", "repo": {"full_name": "test_user/test-repo"}},
+            "base": {"ref": "main", "repo": {"full_name": "test_owner/test-repo"}},
+        }
+        mock_response.json.return_value = pr_data
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            result = create_pull_request(
+                session=mock_session,
+                base_repo="test_owner/test-repo",
+                head="test_user:feature",
+                title="Merged PR",
+                api_url="https://api.github.com",
+                body="merged body",
+            )
+
+            assert result.status == PullRequestStatus.MERGED
+            assert result.merged_at is not None
+
+    def test_list_pull_requests_filters_by_author_and_statuses(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """Test listing pull requests exercises the author-mismatch skip
+        (line 154-155) and the merged/closed/open status branches
+        (lines 170-180) all in one real (boundary-mocked) call."""
+        pr_list = [
+            {
+                # Wrong author -- must be filtered out.
+                "number": 200,
+                "title": "Not mine",
+                "html_url": "https://github.com/test_owner/test-repo/pull/200",
+                "user": {
+                    "login": "someone_else",
+                    "html_url": "https://github.com/someone_else",
+                    "avatar_url": "https://github.com/someone_else.png",
+                },
+                "state": "open",
+                "body": None,
+                "created_at": "2023-01-01T00:00:00Z",
+                "updated_at": "2023-01-01T00:00:00Z",
+                "merged_at": None,
+                "head": {"ref": "f0", "repo": {"full_name": "someone_else/test-repo"}},
+                "base": {"ref": "main", "repo": {"full_name": "test_owner/test-repo"}},
+            },
+            {
+                # Merged.
+                "number": 201,
+                "title": "Merged one",
+                "html_url": "https://github.com/test_owner/test-repo/pull/201",
+                "user": {
+                    "login": "test_user",
+                    "html_url": "https://github.com/test_user",
+                    "avatar_url": "https://github.com/test_user.png",
+                },
+                "state": "closed",
+                "body": None,
+                "created_at": "2023-01-01T00:00:00Z",
+                "updated_at": "2023-01-02T00:00:00Z",
+                "merged_at": "2023-01-02T00:00:00Z",
+                "head": {"ref": "f1", "repo": {"full_name": "test_user/test-repo"}},
+                "base": {"ref": "main", "repo": {"full_name": "test_owner/test-repo"}},
+            },
+            {
+                # Closed, not merged.
+                "number": 202,
+                "title": "Closed one",
+                "html_url": "https://github.com/test_owner/test-repo/pull/202",
+                "user": {
+                    "login": "test_user",
+                    "html_url": "https://github.com/test_user",
+                    "avatar_url": "https://github.com/test_user.png",
+                },
+                "state": "closed",
+                "body": None,
+                "created_at": "2023-01-01T00:00:00Z",
+                "updated_at": "2023-01-02T00:00:00Z",
+                "merged_at": None,
+                "head": {"ref": "f2", "repo": {"full_name": "test_user/test-repo"}},
+                "base": {"ref": "main", "repo": {"full_name": "test_owner/test-repo"}},
+            },
+        ]
+        mock_response.json.return_value = pr_list
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            result = list_pull_requests(
+                session=mock_session,
+                repo="test_owner/test-repo",
+                api_url="https://api.github.com",
+                state="all",
+                author="test_user",
+            )
+
+            # The wrong-author PR (200) was filtered out.
+            assert [pr.number for pr in result] == [201, 202]
+            assert result[0].status == PullRequestStatus.MERGED
+            assert result[1].status == PullRequestStatus.CLOSED
+
+    def test_get_pull_request_merged_and_closed_statuses(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """Test get_pull_request's merged/closed status branches
+        (lines 246-256), calling it twice with distinct fixtures."""
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            merged_data = {
+                "number": 301,
+                "title": "Merged",
+                "html_url": "https://github.com/test_owner/test-repo/pull/301",
+                "user": {
+                    "login": "test_user",
+                    "html_url": "https://github.com/test_user",
+                    "avatar_url": "https://github.com/test_user.png",
+                },
+                "state": "closed",
+                "body": None,
+                "created_at": "2023-01-01T00:00:00Z",
+                "updated_at": "2023-01-02T00:00:00Z",
+                "merged_at": "2023-01-02T00:00:00Z",
+                "head": {"ref": "f", "repo": {"full_name": "test_user/test-repo"}},
+                "base": {"ref": "main", "repo": {"full_name": "test_owner/test-repo"}},
+            }
+            mock_response.json.return_value = merged_data
+            mock_make_request.return_value = mock_response
+
+            merged_result = get_pull_request(
+                session=mock_session,
+                repo="test_owner/test-repo",
+                number=301,
+                api_url="https://api.github.com",
+            )
+            assert merged_result.status == PullRequestStatus.MERGED
+
+            closed_data = {**merged_data, "number": 302, "merged_at": None}
+            mock_response.json.return_value = closed_data
+
+            closed_result = get_pull_request(
+                session=mock_session,
+                repo="test_owner/test-repo",
+                number=302,
+                api_url="https://api.github.com",
+            )
+            assert closed_result.status == PullRequestStatus.CLOSED
+
+    def test_merge_pull_request(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """Test merging a pull request -- covers merge_pull_request
+        (lines 306-322) end to end, including the optional commit_title
+        and commit_message request-body fields."""
+        from quack_core.integrations.github.operations.pull_requests import (
+            merge_pull_request,
+        )
+
+        mock_response.json.return_value = {"merged": True, "sha": "abc123"}
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            result = merge_pull_request(
+                session=mock_session,
+                repo="test_owner/test-repo",
+                pull_number=123,
+                api_url="https://api.github.com",
+                commit_title="Merge it",
+                commit_message="extra detail",
+                merge_method="squash",
+            )
+
+            assert result is True
+            mock_make_request.assert_called_once_with(
+                session=mock_session,
+                method="PUT",
+                url="/repos/test_owner/test-repo/pulls/123/merge",
+                api_url="https://api.github.com",
+                json={
+                    "merge_method": "squash",
+                    "commit_title": "Merge it",
+                    "commit_message": "extra detail",
+                },
+            )
+
+    def test_merge_pull_request_not_merged(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """Test merge_pull_request's False-return path (a mergeable
+        conflict reported by the API without an HTTP error) and the
+        default-arguments branch (no commit_title/commit_message)."""
+        from quack_core.integrations.github.operations.pull_requests import (
+            merge_pull_request,
+        )
+
+        mock_response.json.return_value = {"merged": False}
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            result = merge_pull_request(
+                session=mock_session,
+                repo="test_owner/test-repo",
+                pull_number=456,
+                api_url="https://api.github.com",
+            )
+
+            assert result is False
+            mock_make_request.assert_called_once_with(
+                session=mock_session,
+                method="PUT",
+                url="/repos/test_owner/test-repo/pulls/456/merge",
+                api_url="https://api.github.com",
+                json={"merge_method": "merge"},
+            )
+
+    def test_add_pull_request_review(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """Test adding a review to a pull request -- covers
+        add_pull_request_review (lines 384-394) end to end."""
+        from quack_core.integrations.github.operations.pull_requests import (
+            add_pull_request_review,
+        )
+
+        review_data = {
+            "id": 999,
+            "state": "APPROVED",
+            "body": "Looks good",
+        }
+        mock_response.json.return_value = review_data
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            result = add_pull_request_review(
+                session=mock_session,
+                repo="test_owner/test-repo",
+                pull_number=123,
+                body="Looks good",
+                api_url="https://api.github.com",
+                event="APPROVE",
+            )
+
+            assert result == review_data
+            mock_make_request.assert_called_once_with(
+                session=mock_session,
+                method="POST",
+                url="/repos/test_owner/test-repo/pulls/123/reviews",
+                api_url="https://api.github.com",
+                json={"body": "Looks good", "event": "APPROVE"},
+            )
+
+
+class TestGetPullRequestsByUser:
+    """Tests for get_pull_requests_by_user (lines 397-504) -- the GitHub
+    Search API path, entirely untested before this round."""
+
+    def _make_search_item(
+        self,
+        number: int,
+        state: str = "open",
+    ) -> dict:
+        return {
+            "number": number,
+            "title": f"PR {number}",
+            "html_url": f"https://github.com/test_org/test-repo/pull/{number}",
+            "body": "body text",
+            "state": state,
+            "user": {
+                "login": "test_user",
+                "html_url": "https://github.com/test_user",
+                "avatar_url": "https://github.com/test_user.png",
+            },
+            "created_at": "2023-01-01T00:00:00Z",
+            "updated_at": "2023-01-02T00:00:00Z",
+        }
+
+    def test_open_state_query_and_results(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """state='open' appends the is:open qualifier and results parse
+        into PullRequest objects with empty repo/branch fields (the search
+        API does not return head/base repo details)."""
+        from quack_core.integrations.github.operations.pull_requests import (
+            get_pull_requests_by_user,
+        )
+
+        mock_response.json.return_value = {
+            "items": [self._make_search_item(1), self._make_search_item(2)]
+        }
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            result = get_pull_requests_by_user(
+                session=mock_session,
+                username="test_user",
+                org="test_org",
+                api_url="https://api.github.com",
+                state="open",
+            )
+
+            assert len(result) == 2
+            assert all(isinstance(pr, PullRequest) for pr in result)
+            assert result[0].status == PullRequestStatus.OPEN
+            assert result[0].base_repo == ""
+            assert result[0].head_repo == ""
+            assert result[0].merged_at is None
+
+            call_kwargs = mock_make_request.call_args[1]
+            assert call_kwargs["params"] == {
+                "q": "is:pr author:test_user org:test_org is:open"
+            }
+
+    def test_closed_state_query_and_status(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """state='closed' appends is:closed and a closed item maps to
+        PullRequestStatus.CLOSED (the search API path never reports
+        MERGED -- confirmed by reading the source: status is only OPEN or
+        CLOSED here, unlike the REST endpoints above)."""
+        from quack_core.integrations.github.operations.pull_requests import (
+            get_pull_requests_by_user,
+        )
+
+        mock_response.json.return_value = {
+            "items": [self._make_search_item(3, state="closed")]
+        }
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            result = get_pull_requests_by_user(
+                session=mock_session,
+                username="test_user",
+                org="test_org",
+                api_url="https://api.github.com",
+                state="closed",
+            )
+
+            assert len(result) == 1
+            assert result[0].status == PullRequestStatus.CLOSED
+
+            call_kwargs = mock_make_request.call_args[1]
+            assert call_kwargs["params"] == {
+                "q": "is:pr author:test_user org:test_org is:closed"
+            }
+
+    def test_all_state_no_qualifier_appended(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """state='all' (the else branch) appends no extra qualifier."""
+        from quack_core.integrations.github.operations.pull_requests import (
+            get_pull_requests_by_user,
+        )
+
+        mock_response.json.return_value = {"items": []}
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            result = get_pull_requests_by_user(
+                session=mock_session,
+                username="test_user",
+                org="test_org",
+                api_url="https://api.github.com",
+                state="all",
+            )
+
+            assert result == []
+            call_kwargs = mock_make_request.call_args[1]
+            assert call_kwargs["params"] == {"q": "is:pr author:test_user org:test_org"}
+
+    def test_make_request_failure_wraps_in_quack_error(
+        self, mock_session: MagicMock
+    ) -> None:
+        """The API-call failure path (lines 435-447): make_request raising
+        is caught and re-raised as QuackError, not left to propagate the
+        original exception type."""
+        from quack_core.integrations.github.operations.pull_requests import (
+            get_pull_requests_by_user,
+        )
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.side_effect = RuntimeError("boom")
+
+            with pytest.raises(QuackError, match="Failed to search for pull requests"):
+                get_pull_requests_by_user(
+                    session=mock_session,
+                    username="test_user",
+                    org="test_org",
+                    api_url="https://api.github.com",
+                )
+
+    def test_response_json_failure_wraps_in_quack_error(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """The response-parsing failure path (lines 449-454): a real
+        response.json() raising ValueError is caught and re-raised as
+        QuackError."""
+        from quack_core.integrations.github.operations.pull_requests import (
+            get_pull_requests_by_user,
+        )
+
+        mock_response.json.side_effect = ValueError("not json")
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            with pytest.raises(QuackError, match="Failed to parse search results"):
+                get_pull_requests_by_user(
+                    session=mock_session,
+                    username="test_user",
+                    org="test_org",
+                    api_url="https://api.github.com",
+                )
+
+    def test_malformed_item_skipped_not_fatal(
+        self, mock_session: MagicMock, mock_response: MagicMock
+    ) -> None:
+        """A single malformed search-result item (missing created_at,
+        so datetime.fromisoformat's .replace() call raises AttributeError
+        on None) is caught per-item and skipped (lines 499-502) rather than
+        aborting the whole call -- the well-formed sibling item still comes
+        back."""
+        from quack_core.integrations.github.operations.pull_requests import (
+            get_pull_requests_by_user,
+        )
+
+        malformed = self._make_search_item(4)
+        malformed["created_at"] = None  # .replace() on None raises AttributeError
+
+        mock_response.json.return_value = {
+            "items": [malformed, self._make_search_item(5)]
+        }
+
+        with patch(
+            "quack_core.integrations.github.operations.pull_requests.make_request"
+        ) as mock_make_request:
+            mock_make_request.return_value = mock_response
+
+            result = get_pull_requests_by_user(
+                session=mock_session,
+                username="test_user",
+                org="test_org",
+                api_url="https://api.github.com",
+            )
+
+            # Only the well-formed item survives; the malformed one is
+            # logged and skipped, not fatal to the whole call.
+            assert len(result) == 1
+            assert result[0].number == 5
 
 
 class TestIssueOperations:
