@@ -17,7 +17,7 @@ from quack_core.core.errors import QuackApiError
 from quack_core.integrations.google.mail.protocols import GmailRequest
 
 T = TypeVar("T")  # Generic type for API response
-R = TypeVar("R")  # Generic type for request results
+R = TypeVar("R", covariant=True)  # Generic type for request results
 
 
 # Add the missing APIRequest protocol that's imported in email.py

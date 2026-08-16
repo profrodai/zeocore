@@ -6,7 +6,10 @@
 Tests for authentication functionality.
 """
 
+from typing import Any, cast
+
 import pytest
+from fastapi import Request
 from fastapi.testclient import TestClient
 from quack_core.adapters.http.auth import require_bearer, sign_payload
 from quack_core.adapters.http.config import HttpAdapterConfig
@@ -24,7 +27,7 @@ def test_require_bearer_no_auth_configured() -> None:
     request = MockRequest()
 
     # Should not raise
-    require_bearer(request, cfg)
+    require_bearer(cast(Request[Any], request), cfg)
 
 
 def test_require_bearer_missing_header() -> None:
@@ -38,7 +41,7 @@ def test_require_bearer_missing_header() -> None:
     request = MockRequest()
 
     with pytest.raises(Exception) as exc_info:
-        require_bearer(request, cfg)
+        require_bearer(cast(Request[Any], request), cfg)
 
     assert "Authorization header required" in str(exc_info.value)
 
@@ -54,7 +57,7 @@ def test_require_bearer_wrong_scheme() -> None:
     request = MockRequest()
 
     with pytest.raises(Exception) as exc_info:
-        require_bearer(request, cfg)
+        require_bearer(cast(Request[Any], request), cfg)
 
     assert "Bearer token required" in str(exc_info.value)
 
@@ -70,7 +73,7 @@ def test_require_bearer_wrong_token() -> None:
     request = MockRequest()
 
     with pytest.raises(Exception) as exc_info:
-        require_bearer(request, cfg)
+        require_bearer(cast(Request[Any], request), cfg)
 
     assert "Invalid token" in str(exc_info.value)
 
@@ -86,7 +89,7 @@ def test_require_bearer_success() -> None:
     request = MockRequest()
 
     # Should not raise
-    require_bearer(request, cfg)
+    require_bearer(cast(Request[Any], request), cfg)
 
 
 def test_sign_payload() -> None:
