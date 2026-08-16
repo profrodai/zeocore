@@ -118,18 +118,18 @@ def test_lazy_loading() -> None:
 
     # Apply the mock
     try:
-        quack_core.integrations.github.__getattr__ = mock_getattr
+        quack_core.integrations.github.__getattr__ = mock_getattr  # type: ignore[method-assign]
 
         # Test accessing lazy-loaded attributes
-        assert quack_core.integrations.github.GitHubGrader == "MockGitHubGrader"
+        assert quack_core.integrations.github.GitHubGrader == "MockGitHubGrader"  # type: ignore[attr-defined]
         assert (
-            quack_core.integrations.github.GitHubTeachingAdapter
+            quack_core.integrations.github.GitHubTeachingAdapter  # type: ignore[attr-defined]
             == "MockGitHubTeachingAdapter"
         )
     finally:
         # Restore original if it existed
         if original_getattr:
-            quack_core.integrations.github.__getattr__ = original_getattr
+            quack_core.integrations.github.__getattr__ = original_getattr  # type: ignore[method-assign]
         else:
             delattr(quack_core.integrations.github, "__getattr__")
 
@@ -153,17 +153,17 @@ def test_getattr_unknown_attribute() -> None:
 
     # Apply the mock
     try:
-        quack_core.integrations.github.__getattr__ = mock_getattr
+        quack_core.integrations.github.__getattr__ = mock_getattr  # type: ignore[method-assign]
 
         # Test accessing unknown attribute
         # We are intentionally accessing a non-existent attribute to test the
         # error handling
         # noinspection PyUnresolvedReferences
         with pytest.raises(AttributeError):
-            _ = quack_core.integrations.github.NonExistentAttribute
+            _ = quack_core.integrations.github.NonExistentAttribute  # type: ignore[attr-defined]
     finally:
         # Restore original if it existed
         if original_getattr:
-            quack_core.integrations.github.__getattr__ = original_getattr
+            quack_core.integrations.github.__getattr__ = original_getattr  # type: ignore[method-assign]
         else:
             delattr(quack_core.integrations.github, "__getattr__")

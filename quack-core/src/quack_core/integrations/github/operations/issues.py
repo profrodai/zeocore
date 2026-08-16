@@ -40,7 +40,7 @@ def create_issue(
     """
     endpoint = f"/repos/{repo}/issues"
 
-    data = {
+    data: dict[str, Any] = {
         "title": title,
     }
 
@@ -62,7 +62,8 @@ def create_issue(
         **request_kwargs,
     )
 
-    return response.json()
+    result: dict[str, Any] = response.json()
+    return result
 
 
 def list_issues(
@@ -95,7 +96,7 @@ def list_issues(
     """
     endpoint = f"/repos/{repo}/issues"
 
-    params = {"state": state, "sort": sort, "direction": direction}
+    params: dict[str, Any] = {"state": state, "sort": sort, "direction": direction}
 
     if labels:
         params["labels"] = labels
@@ -109,7 +110,8 @@ def list_issues(
         **request_kwargs,
     )
 
-    return response.json()
+    result: list[dict[str, Any]] = response.json()
+    return result
 
 
 def get_issue(
@@ -140,7 +142,8 @@ def get_issue(
         session=session, method="GET", url=endpoint, api_url=api_url, **request_kwargs
     )
 
-    return response.json()
+    result: dict[str, Any] = response.json()
+    return result
 
 
 def add_issue_comment(
@@ -180,4 +183,5 @@ def add_issue_comment(
         **request_kwargs,
     )
 
-    return response.json()
+    result: dict[str, Any] = response.json()
+    return result
