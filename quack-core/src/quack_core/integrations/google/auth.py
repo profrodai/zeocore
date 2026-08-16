@@ -94,7 +94,8 @@ class GoogleAuthProvider(BaseAuthProvider):
                     )  # Default to 8080 if no port specified
 
                     # Start the local server on the same port
-                    # Set redirect_uri_trailing_slash=False to match the exact format in Google Cloud Console
+                    # Set redirect_uri_trailing_slash=False to match the
+                    # exact format in Google Cloud Console
                     creds = flow.run_local_server(
                         port=port, redirect_uri_trailing_slash=False
                     )

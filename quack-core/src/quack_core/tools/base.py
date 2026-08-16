@@ -160,7 +160,9 @@ class BaseQuackTool(ABC):
             CapabilityResult with status, data, error, logs, metadata
 
         Example:
-            >>> def run(self, request: MyRequest, ctx: ToolContext) -> CapabilityResult[MyResponse]:
+            >>> def run(
+            ...     self, request: MyRequest, ctx: ToolContext
+            ... ) -> CapabilityResult[MyResponse]:
             ...     logger = ctx.require_logger()
             ...     logger.info(f"Processing: {request.input}")
             ...

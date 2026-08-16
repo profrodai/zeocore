@@ -262,7 +262,8 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         file_info = standalone.get_file_info(local_path_obj)
 
         if file_info.success and file_info.exists:
-            # Handle different cases depending on whether local_path is a directory or file
+            # Handle different cases depending on whether local_path is a
+            # directory or file
             if file_info.is_dir:
                 # If it's a directory, join the file name to it
                 joined_path_result = standalone.join_path(local_path_obj, file_name)

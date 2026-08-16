@@ -20,7 +20,8 @@ class QuackPathSecurityError(QuackFileSystemError, ValueError):
 
 
 class QuackPathEscapeError(QuackPathSecurityError):
-    """Raised when a path attempts to traverse above the base directory (e.g. via '..')."""
+    """Raised when a path attempts to traverse above the base directory
+    (e.g. via '..')."""
 
     pass
 

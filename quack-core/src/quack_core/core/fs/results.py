@@ -224,7 +224,9 @@ class PathResult(OperationResult):
     )
     exists: bool = Field(
         default=False,
-        description="True if path exists on filesystem (checked if validation succeeded)",
+        description=(
+            "True if path exists on filesystem (checked if validation succeeded)"
+        ),
     )
 
     @computed_field  # type: ignore[prop-decorator]  # pydantic computed_field+property, mypy limitation

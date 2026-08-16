@@ -32,7 +32,8 @@ except ImportError:
     class HttpAdapterConfig:
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             raise ImportError(
-                "HTTP adapter requires FastAPI. Install with: pip install quack-core[http]"
+                "HTTP adapter requires FastAPI. Install with: "
+                "pip install quack-core[http]"
             )
 
     __all__ = ["create_app", "HttpAdapterConfig", "run"]

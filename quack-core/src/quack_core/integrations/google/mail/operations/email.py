@@ -148,7 +148,8 @@ def download_email(
         logger: Optional logger instance.
 
     Returns:
-        IntegrationResult containing the file path (as a string) where the email was saved.
+        IntegrationResult containing the file path (as a string) where the
+        email was saved.
     """
     logger = logger or logging.getLogger(__name__)
     try:
@@ -250,7 +251,8 @@ def _get_message_with_retry(
                 )
                 return None
             logger.debug(
-                f"Retry {retry_count}/{max_retries} for message {msg_id} after error: {e}"
+                f"Retry {retry_count}/{max_retries} for message {msg_id} "
+                f"after error: {e}"
             )
             time.sleep(delay)
             delay = min(delay * 2, max_delay)
@@ -308,7 +310,8 @@ def process_message_parts(
         logger: Logger instance.
 
     Returns:
-        A tuple of HTML content (or None) and a list of attachment file paths (as strings).
+        A tuple of HTML content (or None) and a list of attachment file
+        paths (as strings).
     """
     html_content = None
     attachments: list[str] = []

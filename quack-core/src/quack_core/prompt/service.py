@@ -129,7 +129,8 @@ class PromptService:
                 "strategy": raw_prompt,  # Input for System Prompt Engineer
             }
 
-            # Merge explicit kwargs (allows passing 'data', 'tools', 'source_code', etc.)
+            # Merge explicit kwargs (allows passing 'data', 'tools',
+            # 'source_code', etc.)
             inputs.update(kwargs)
 
             # 3. Validation
@@ -145,7 +146,10 @@ class PromptService:
             if missing_fields:
                 return PromptRenderResult(
                     success=False,
-                    error=f"Missing required inputs for strategy '{strategy.id}': {', '.join(missing_fields)}",
+                    error=(
+                        f"Missing required inputs for strategy "
+                        f"'{strategy.id}': {', '.join(missing_fields)}"
+                    ),
                 )
 
             # 4. Render

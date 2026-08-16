@@ -66,7 +66,8 @@ def __getattr__(name: str) -> Any:  # noqa: ANN401  # dynamic attr type
 
     if name in internal_names:
         raise AttributeError(
-            f"'{name}' is an internal service component and not part of the public API. "
+            f"'{name}' is an internal service component and not part of the "
+            f"public API. "
             f"Use FileSystemService instead, which includes all operations."
         )
 

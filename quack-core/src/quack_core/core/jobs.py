@@ -349,8 +349,10 @@ class ThreadPoolJobRunner(JobRunner):
             except RuntimeError as e:
                 if "cannot be called from a running event loop" in str(e):
                     raise RuntimeError(
-                        "Async operation execution failed: asyncio.run() called from a running loop. "
-                        "ThreadPoolJobRunner expects to run in a worker thread without an active event loop."
+                        "Async operation execution failed: asyncio.run() "
+                        "called from a running loop. "
+                        "ThreadPoolJobRunner expects to run in a worker thread "
+                        "without an active event loop."
                     ) from e
                 raise
 

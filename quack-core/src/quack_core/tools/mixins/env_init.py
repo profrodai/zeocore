@@ -27,7 +27,8 @@ class ToolEnvInitializerMixin:
 
     IMPORTANT: This VALIDATES only. It does NOT create directories.
 
-    USAGE: Tools must explicitly call initialize_environment() from initialize() or validate().
+    USAGE: Tools must explicitly call initialize_environment() from
+    initialize() or validate().
 
     FS CONTRACT (MIGRATION COMPAT with deadline):
 
@@ -142,7 +143,10 @@ class ToolEnvInitializerMixin:
 
         if not info.exists:
             return CapabilityResult.fail_from_exc(
-                msg=f"{name.capitalize()} directory does not exist: {path}. Runner must create it.",
+                msg=(
+                    f"{name.capitalize()} directory does not exist: {path}. "
+                    f"Runner must create it."
+                ),
                 code=f"QC_ENV_{name.upper()}_DIR_MISSING",
                 exc=Exception(f"{name.capitalize()} directory missing"),
             )
