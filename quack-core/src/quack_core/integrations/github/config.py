@@ -46,7 +46,10 @@ class GitHubConfigProvider(BaseConfigProvider):
                 "assignment_branch_prefix": "assignment-",
                 "default_base_branch": "main",
                 "pr_title_template": "[SUBMISSION] {title}",
-                "pr_body_template": "This is a submission for the assignment: {assignment}\n\nSubmitted by: {student}",
+                "pr_body_template": (
+                    "This is a submission for the assignment: {assignment}"
+                    "\n\nSubmitted by: {student}"
+                ),
             },
         }
 

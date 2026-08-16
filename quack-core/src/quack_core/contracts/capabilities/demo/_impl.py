@@ -90,7 +90,10 @@ def validate_video_ref(req: VideoRefRequest) -> CapabilityResult[bool]:
     # Check if URL contains any supported provider
     if not any(provider in req.url for provider in supported_providers):
         return CapabilityResult.skip(
-            reason=f"URL is not from a supported provider. Supported: {', '.join(supported_providers)}",
+            reason=(
+                "URL is not from a supported provider. Supported: "
+                f"{', '.join(supported_providers)}"
+            ),
             code="QC_VAL_UNSUPPORTED_PROVIDER",
         )
 

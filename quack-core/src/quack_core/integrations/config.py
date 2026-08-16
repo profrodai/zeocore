@@ -28,10 +28,16 @@ class IntegrationsConfig(BaseModel):
     # Use a generic mapping for specific integration configs to avoid hard dependencies
     settings: dict[str, dict[str, Any]] = Field(
         default_factory=dict,
-        description="Configuration settings keyed by integration ID (e.g., 'github', 'google.mail').",
+        description=(
+            "Configuration settings keyed by integration ID "
+            "(e.g., 'github', 'google.mail')."
+        ),
     )
 
     strict_loading: bool = Field(
         default=True,
-        description="If True, the boot process fails if an enabled integration cannot be loaded.",
+        description=(
+            "If True, the boot process fails if an enabled integration "
+            "cannot be loaded."
+        ),
     )

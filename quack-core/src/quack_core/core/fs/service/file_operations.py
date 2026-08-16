@@ -226,7 +226,8 @@ class FileOperationsMixin:
                 message=f"Copied to {result_path}",
             )
         except Exception as e:
-            # For copy/move, return None for path since we may have failed before normalizing both paths
+            # For copy/move, return None for path since we may have failed
+            # before normalizing both paths
             src_str = safe_path_str(src)
             dst_str = safe_path_str(dst)
             return WriteResult(

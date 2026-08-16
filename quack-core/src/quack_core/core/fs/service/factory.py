@@ -20,7 +20,8 @@ def create_service(
     Args:
         base_dir: Root directory for the service. Defaults to CWD.
         log_level: Logging verbosity.
-        unsafe_allow_absolute_paths: If True, allows absolute paths outside base_dir (still blocks ../ escape).
+        unsafe_allow_absolute_paths: If True, allows absolute paths outside
+            base_dir (still blocks ../ escape).
                                 ⚠️  WARNING: This is a TRUST BOUNDARY setting.
                                 Permits absolute paths outside base_dir; the '..'
                                 traversal escape check remains active. Only use in

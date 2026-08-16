@@ -148,8 +148,12 @@ class TeachingAwareFormatter(logging.Formatter):
 
         verbosity_formatting = {
             VerbosityLevel.BASIC: f"{Colors.CYAN}🦆 {msg}{Colors.RESET}",
-            VerbosityLevel.VERBOSE: f"{Colors.MAGENTA}🦆 {Colors.BOLD}[VERBOSE]{Colors.RESET} {msg}",
-            VerbosityLevel.DEBUG: f"{Colors.BLUE}🦆 {Colors.BOLD}[DEBUG]{Colors.RESET} {msg}",
+            VerbosityLevel.VERBOSE: (
+                f"{Colors.MAGENTA}🦆 {Colors.BOLD}[VERBOSE]{Colors.RESET} {msg}"
+            ),
+            VerbosityLevel.DEBUG: (
+                f"{Colors.BLUE}🦆 {Colors.BOLD}[DEBUG]{Colors.RESET} {msg}"
+            ),
         }
 
         return verbosity_formatting.get(verbosity, f"🦆 {msg}")
