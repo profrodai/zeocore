@@ -162,6 +162,7 @@ class TestStructuredDataMixin:
         # Real message is "YAML content is not a dict: <class 'list'>" --
         # my first-draft guess of "not a dictionary" was wrong; corrected to
         # match the actual _ops-layer message, not softened to force a pass.
+        assert result.error is not None
         assert "is not a dict" in result.error
 
     def test_read_yaml_nonexistent_fails(self, temp_dir: Path) -> None:
@@ -197,6 +198,7 @@ class TestStructuredDataMixin:
         assert result.data is None
         # Same corrected-guess as read_yaml above: real message says
         # "is not a dict", not "not a dictionary".
+        assert result.error is not None
         assert "is not a dict" in result.error
 
     def test_read_json_nonexistent_fails(self, temp_dir: Path) -> None:
@@ -223,6 +225,7 @@ class TestStructuredDataMixin:
 
         assert result.ok is False
         assert result.path is None
+        assert result.error is not None
         assert "escape" in result.error
 
     def test_write_json_sandbox_escape_hits_except_branch(self, temp_dir: Path) -> None:
@@ -232,6 +235,7 @@ class TestStructuredDataMixin:
 
         assert result.ok is False
         assert result.path is None
+        assert result.error is not None
         assert "escape" in result.error
 
 
@@ -409,6 +413,7 @@ class TestPathValidationMixin:
 
         assert result.ok is False
         assert result.value is False
+        assert result.error is not None
         assert "escape" in result.error
 
     def test_is_valid_path_bad_type_hits_except_branch(self, temp_dir: Path) -> None:
@@ -428,6 +433,7 @@ class TestPathValidationMixin:
         result = service.validate_file("../../../etc/passwd")
 
         assert result.ok is False
+        assert result.error is not None
         assert "escape" in result.error
 
     def test_normalize_path_with_info_sandbox_escape_hits_except_branch(
@@ -460,6 +466,7 @@ class TestPathOperationsMixin:
         result = service.join_path("a", "b", "c.txt")
 
         assert result.ok is True
+        assert result.data is not None
         assert result.data.endswith("a/b/c.txt") or result.data.endswith("a\\b\\c.txt")
 
     def test_split_path_components(self, temp_dir: Path) -> None:
@@ -469,6 +476,7 @@ class TestPathOperationsMixin:
         result = service.split_path(f)
 
         assert result.ok is True
+        assert result.data is not None
         assert "file.txt" in result.data
         assert "sub" in result.data
 
@@ -494,6 +502,7 @@ class TestPathOperationsMixin:
 
         assert result.ok is False
         assert result.is_valid is False
+        assert result.error is not None
         assert "escape" in result.error
 
     def test_resolve_path_is_normalize_path_alias(self, temp_dir: Path) -> None:
@@ -516,6 +525,7 @@ class TestPathOperationsMixin:
         result = service.expand_user_vars_raw("$QUACK_TEST_VAR/sub")
 
         assert result.ok is True
+        assert result.data is not None
         assert "expanded_value" in result.data
 
     def test_expand_user_vars_is_raw_alias(
@@ -606,6 +616,7 @@ class TestPathOperationsMixin:
         assert result.ok is False
         assert result.data == ""
         assert result.error_info is not None
+        assert result.error is not None
         assert "escape" in result.error
 
     def test_split_path_sandbox_escape_hits_except_branch(self, temp_dir: Path) -> None:
@@ -615,6 +626,7 @@ class TestPathOperationsMixin:
 
         assert result.ok is False
         assert result.data == []
+        assert result.error is not None
         assert "escape" in result.error
 
     def test_get_extension_sandbox_escape_hits_except_branch(
@@ -626,6 +638,7 @@ class TestPathOperationsMixin:
 
         assert result.ok is False
         assert result.data == ""
+        assert result.error is not None
         assert "escape" in result.error
 
     def test_is_same_file_sandbox_escape_hits_except_branch(
@@ -637,6 +650,7 @@ class TestPathOperationsMixin:
 
         assert result.ok is False
         assert result.data is False
+        assert result.error is not None
         assert "escape" in result.error
 
     def test_is_subdirectory_sandbox_escape_hits_except_branch(
@@ -648,6 +662,7 @@ class TestPathOperationsMixin:
 
         assert result.ok is False
         assert result.data is False
+        assert result.error is not None
         assert "escape" in result.error
 
 
