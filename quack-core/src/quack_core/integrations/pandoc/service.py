@@ -493,7 +493,12 @@ class PandocIntegration(BaseIntegrationService):
                     message=f"Failed to find files: {find_result.error}",
                 )
 
-            input_files = find_result.files or []
+            # RULING-241: find_result.files is list[Path]; coerce to str here
+            # (the single point of entry) so _build_conversion_tasks's
+            # list[str]-typed pipeline gets what it actually expects --
+            # get_file_info's strict pydantic FileInfo.path field rejects a
+            # PosixPath with a ValidationError otherwise, on every real file.
+            input_files = [str(p) for p in (find_result.files or [])]
             if not input_files:
                 return IntegrationResult(
                     success=True, message="No files found matching pattern", content=[]
