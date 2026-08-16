@@ -16,7 +16,7 @@ from quack_core.integrations.core.results import IntegrationResult
 class MockIntegration:
     """Mock integration for testing."""
 
-    def __init__(self, name="MockIntegration", version="1.0.0") -> None:
+    def __init__(self, name: str = "MockIntegration", version: str = "1.0.0") -> None:
         self.name_value = name
         self.version_value = version
         self._initialized = False
@@ -44,25 +44,27 @@ class MockIntegration:
 
 
 @pytest.fixture
-def registry():
+def registry() -> IntegrationRegistry:
     """Create a fresh registry for testing."""
     return IntegrationRegistry()
 
 
 @pytest.fixture
-def mock_integration():
+def mock_integration() -> MockIntegration:
     """Create a mock integration for testing."""
     return MockIntegration()
 
 
-def test_registry_creation(registry):
+def test_registry_creation(registry: IntegrationRegistry) -> None:
     """Test that the registry can be created."""
     assert registry is not None
     assert isinstance(registry, IntegrationRegistry)
     assert registry.list_ids() == []
 
 
-def test_register_integration(registry, mock_integration):
+def test_register_integration(
+    registry: IntegrationRegistry, mock_integration: MockIntegration
+) -> None:
     """Test registering an integration."""
     # Register the integration
     registry.register(mock_integration)
@@ -73,7 +75,9 @@ def test_register_integration(registry, mock_integration):
     assert registry.get_integration(mock_integration.name) is mock_integration
 
 
-def test_register_duplicate_integration(registry, mock_integration):
+def test_register_duplicate_integration(
+    registry: IntegrationRegistry, mock_integration: MockIntegration
+) -> None:
     """Test that registering a duplicate integration raises an error."""
     # Register the integration
     registry.register(mock_integration)
@@ -86,7 +90,9 @@ def test_register_duplicate_integration(registry, mock_integration):
     assert "already registered" in str(excinfo.value)
 
 
-def test_unregister_integration(registry, mock_integration):
+def test_unregister_integration(
+    registry: IntegrationRegistry, mock_integration: MockIntegration
+) -> None:
     """Test unregistering an integration."""
     # Register then unregister the integration
     registry.register(mock_integration)
@@ -99,7 +105,7 @@ def test_unregister_integration(registry, mock_integration):
     assert registry.get_integration(mock_integration.name) is None
 
 
-def test_unregister_nonexistent_integration(registry):
+def test_unregister_nonexistent_integration(registry: IntegrationRegistry) -> None:
     """Test unregistering a non-existent integration."""
     # Try to unregister a non-existent integration
     result = registry.unregister("NonExistentIntegration")
@@ -108,7 +114,7 @@ def test_unregister_nonexistent_integration(registry):
     assert result is False
 
 
-def test_get_integration_by_type(registry):
+def test_get_integration_by_type(registry: IntegrationRegistry) -> None:
     """Test getting integrations by type."""
     # Create mock integrations of different types
     integration1 = MockIntegration("Integration1")
@@ -127,7 +133,7 @@ def test_get_integration_by_type(registry):
     assert integration2 in integrations
 
 
-def test_registry_is_pure_container_no_discovery(registry):
+def test_registry_is_pure_container_no_discovery(registry: IntegrationRegistry) -> None:
     """The registry is a pure container: it registers whatever is handed to
     it explicitly and performs no module discovery or import side effects
     (per registry.py's own docstring: "avoids any auto-discovery logic or
