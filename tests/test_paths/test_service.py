@@ -13,6 +13,7 @@ from unittest.mock import patch
 import pytest
 from quack_core.core.errors import QuackFileNotFoundError
 from quack_core.core.paths.api.public.results import ContextResult, PathResult
+from quack_core.core.paths.models import ContentContext
 from quack_core.core.paths.service import PathService
 
 
@@ -93,7 +94,7 @@ def test_detect_content_context(tmp_path: Path, path_service: PathService) -> No
 
     assert isinstance(result, ContextResult)
     assert result.success
-    assert result.context is not None
+    assert isinstance(result.context, ContentContext)
     assert result.context.root_dir == str(tmp_path)
     assert result.context.content_type == "tutorials"
     assert result.error is None
@@ -214,7 +215,7 @@ def test_get_content_dir(tmp_path: Path, path_service: PathService) -> None:
 
     assert isinstance(result, ContextResult)
     assert result.success
-    assert result.context is not None
+    assert isinstance(result.context, ContentContext)
     assert result.context.content_type == "tutorials"
     assert result.context.root_dir == str(tmp_path)
 
@@ -243,6 +244,7 @@ def test_is_inside_project(tmp_path: Path, path_service: PathService) -> None:
     root_result = path_service.get_project_root(str(tmp_path))
     assert root_result.success
     root = root_result.path
+    assert root is not None
 
     # Inside path: commonpath with root equals root
     inside_path = os.path.join(str(tmp_path), "src", "module.py")

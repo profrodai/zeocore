@@ -85,7 +85,7 @@ class TestOperationRegistryRegisterAndGet:
         reg = OperationRegistry()
         reg.register(
             "op.double",
-            _double,
+            _double,  # type: ignore[arg-type]  # deliberate: _double returns dict, exercises the registry's own runtime coercion to response_model, not a type-correct call (see module docstring)
             Req,
             response_model=Resp,
             description="doubles a value",
@@ -189,7 +189,10 @@ class TestInvokeOperationSync:
 
     def test_sync_callable_with_response_model_dict_result(self) -> None:
         op = Operation(
-            name="op.double", callable=_double, request_model=Req, response_model=Resp
+            name="op.double",
+            callable=_double,  # type: ignore[arg-type]  # deliberate: _double returns dict, exercises invoke_operation's own dict-to-response_model coercion (see module docstring)
+            request_model=Req,
+            response_model=Resp,
         )
         result = asyncio.run(invoke_operation(op, {"value": 5}))
         assert result == {"doubled": 10}
@@ -226,7 +229,7 @@ class TestInvokeOperationResultShapes:
 
         op = Operation(
             name="op.none",
-            callable=_returns_none,
+            callable=_returns_none,  # type: ignore[arg-type]  # deliberate: returns None, exercises invoke_operation's own skip-validation-on-None branch (see module docstring and test name)
             request_model=Req,
             response_model=Resp,
         )
@@ -260,7 +263,7 @@ class TestInvokeOperationResultShapes:
 
         op = Operation(
             name="op.wrap",
-            callable=_returns_scalar,
+            callable=_returns_scalar,  # type: ignore[arg-type]  # deliberate: returns int, exercises the TypeError raised by registry.py's own non-dict/non-instance branch calling response_model(result) positionally (see module docstring and comment below)
             request_model=Req,
             response_model=SingleValue,
         )

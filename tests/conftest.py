@@ -25,7 +25,7 @@ try:
     from quack_core.core.fs import DataResult, OperationResult, PathResult
     from quack_core.core.fs.protocols import FsPathLike
     from quack_core.core.fs.service import standalone as fs_standalone
-    from quack_core.modules.protocols import QuackPluginProtocol
+    from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol
 except ImportError as e:
     print(f"Error importing quack-core modules: {e}")
     # Emergency fallbacks if needed
@@ -36,7 +36,7 @@ except ImportError as e:
     from quack_core.core.fs import DataResult, OperationResult, PathResult
     from quack_core.core.fs.protocols import FsPathLike
     from quack_core.core.fs.service import standalone as fs_standalone
-    from quack_core.modules.protocols import QuackPluginProtocol
+    from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol
 
 
 @pytest.fixture(autouse=True)
@@ -234,8 +234,22 @@ class MockPlugin(QuackPluginProtocol):
     """Mock plugin for testing."""
 
     @property
+    def plugin_id(self) -> str:
+        return "mock_plugin"
+
+    @property
     def name(self) -> str:
         return "mock_plugin"
+
+    def get_metadata(self) -> QuackPluginMetadata:
+        """Get plugin metadata."""
+        return QuackPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="Mock plugin for testing",
+            capabilities=[],
+        )
 
 
 @pytest.fixture

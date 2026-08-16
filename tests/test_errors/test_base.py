@@ -7,6 +7,7 @@ Tests for QuackCore error classes and decorators.
 """
 
 from pathlib import Path
+from typing import cast
 
 import pytest
 from hypothesis import given
@@ -40,7 +41,13 @@ class TestQuackError:
     @given(st.text(min_size=1), st.dictionaries(st.text(), st.text()))
     def test_with_context(self, message: str, context: dict[str, str]) -> None:
         """Test QuackError with a message and context dictionary."""
-        error = QuackError(message, context=context)
+        # dict[str, str] deliberately narrower than QuackError's own
+        # dict[str, object] parameter -- this property test's whole point is
+        # exercising arbitrary string-valued dicts, and dict's invariance
+        # means it isn't assignable to dict[str, object] even though
+        # QuackError only ever reads context (never mutates it). Cast
+        # reflects that read-only variance gap, not a real type mismatch.
+        error = QuackError(message, context=cast(dict[str, object], context))
 
         assert error.context == context
         # Check that context info is included in the string representation

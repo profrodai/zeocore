@@ -24,6 +24,7 @@ from typing import TypeVar
 
 import pytest
 from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.integrations.core.results import IntegrationResult
 from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
 from quack_core.tools.mixins.lifecycle import QuackToolLifecycleMixin
 
@@ -41,8 +42,9 @@ class MockIntegrationService(BaseIntegrationService):
         super().__init__()
         self.initialized = False
 
-    def initialize(self) -> None:
+    def initialize(self) -> IntegrationResult:
         self.initialized = True
+        return IntegrationResult.success_result(message="Initialized")
 
 
 class AnotherMockService(BaseIntegrationService):

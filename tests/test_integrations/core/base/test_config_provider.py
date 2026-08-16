@@ -104,3 +104,52 @@ class TestBaseConfigProvider:
                     assert result.success is False
                     assert result.error is not None
                     assert "validation failed" in result.error.lower()
+
+    def test_load_config_raises_when_yaml_data_is_none(self, temp_dir: Path) -> None:
+        """A successful read_yaml() that yields no data (e.g. an empty YAML
+        file) must raise QuackConfigurationError rather than pass None into
+        _extract_config, which would otherwise crash on `.get()`.
+        """
+        config_file = temp_dir / "empty_config.yaml"
+        config_file.write_text("")
+
+        provider = MockConfigProvider()
+
+        with patch("quack_core.core.fs.service.standalone.get_file_info") as mock_info:
+            mock_info.return_value.success = True
+            mock_info.return_value.exists = True
+
+            with patch("quack_core.core.fs.service.standalone.read_yaml") as mock_read:
+                mock_read.return_value.success = True
+                mock_read.return_value.data = None
+
+                with pytest.raises(QuackConfigurationError, match="no data"):
+                    provider.load_config(str(config_file))
+
+    def test_extract_config_raises_when_section_is_not_a_mapping(self) -> None:
+        """BaseConfigProvider._extract_config's own default implementation
+        must reject a malformed config file where the integration's own
+        section is not itself a mapping (e.g. a YAML list or scalar under
+        the integration's key), rather than silently return the wrong type.
+
+        MockConfigProvider overrides _extract_config, so the base class's
+        own implementation is exercised directly via an unbound call,
+        matching this repo's own established idiom for reaching a
+        default method a fixture subclass otherwise shadows.
+        """
+        provider = MockConfigProvider()
+        with pytest.raises(QuackConfigurationError, match="must be a mapping"):
+            BaseConfigProvider._extract_config(
+                provider, {"test_config": ["not", "a", "mapping"]}
+            )
+
+    def test_extract_config_returns_section_when_it_is_a_mapping(self) -> None:
+        """BaseConfigProvider._extract_config's own default implementation
+        returns the integration's section unchanged when it is a proper
+        mapping -- the success path alongside the not-a-mapping guard above.
+        """
+        provider = MockConfigProvider()
+        result = BaseConfigProvider._extract_config(
+            provider, {"test_config": {"test_key": "test_value"}}
+        )
+        assert result == {"test_key": "test_value"}
