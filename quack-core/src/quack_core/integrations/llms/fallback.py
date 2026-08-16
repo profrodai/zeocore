@@ -10,7 +10,7 @@ degradation when primary providers are unavailable or fail.
 """
 
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -74,7 +74,7 @@ class FallbackLLMClient(LLMClient):
         self,
         fallback_config: FallbackConfig | None = None,
         model_map: dict[str, str] | None = None,
-        api_key_map: dict[str, str] | None = None,
+        api_key_map: Mapping[str, str | None] | None = None,
         log_level: int = LOG_LEVELS[LogLevel.INFO],
         **kwargs: Any,  # noqa: ANN401 -- provider-specific kwargs forwarded to each underlying provider client's constructor
     ) -> None:
@@ -108,7 +108,7 @@ class FallbackLLMClient(LLMClient):
         self._model_map = model_map or {}
         self._api_key_map = api_key_map or {}
         self._common_kwargs = kwargs
-        self._provider_args = {}
+        self._provider_args: dict[str, dict[str, str | None]] = {}
 
         # Initialize client cache and provider status tracking
         self._client_cache: dict[str, LLMClient] = {}
@@ -196,7 +196,7 @@ class FallbackLLMClient(LLMClient):
             from quack_core.integrations.llms.registry import get_llm_client
 
             # Initialize client arguments
-            client_args = {
+            client_args: dict[str, Any] = {
                 "model": self._model_map.get(provider),
                 "api_key": self._api_key_map.get(provider),
                 "log_level": self.logger.level,  # Use the logger's level directly
@@ -410,7 +410,7 @@ class FallbackLLMClient(LLMClient):
         """
         providers_to_try = self._resolve_providers_to_try()
 
-        last_error = None
+        last_error: Exception | None = None
 
         # Try each provider in sequence
         for provider_idx, provider in enumerate(providers_to_try):
@@ -481,7 +481,7 @@ class FallbackLLMClient(LLMClient):
         # Similar fallback logic as _chat_with_provider, but for token counting
         providers_to_try = self._resolve_providers_to_try()
 
-        last_error = None
+        last_error: str | Exception | None = None
 
         for provider_idx, provider in enumerate(providers_to_try):
             # Check if provider is marked as unavailable

@@ -11,6 +11,7 @@ handling configuration, client initialization, and conversation management.
 
 import importlib.util
 from collections.abc import Callable, Sequence
+from typing import TYPE_CHECKING
 
 from quack_core.core.errors import QuackIntegrationError
 from quack_core.core.logging import LOG_LEVELS, LogLevel
@@ -20,6 +21,9 @@ from quack_core.integrations.llms.clients import LLMClient, MockLLMClient
 from quack_core.integrations.llms.config import LLMConfig, LLMConfigProvider
 from quack_core.integrations.llms.fallback import FallbackConfig
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions
+
+if TYPE_CHECKING:
+    from quack_core.integrations.llms.fallback import FallbackLLMClient
 
 
 def check_llm_dependencies() -> tuple[bool, str, list[str]]:
@@ -115,7 +119,7 @@ class LLMIntegration(BaseIntegrationService):
         self.client: LLMClient | None = None
         self._using_mock = False
         self._enable_fallback = enable_fallback
-        self._fallback_client = None  # Type hint removed to avoid circular imports
+        self._fallback_client: FallbackLLMClient | None = None
 
     @property
     def name(self) -> str:
@@ -337,9 +341,9 @@ class LLMIntegration(BaseIntegrationService):
         )
 
         # Prepare model and API key maps
-        model_map = {}
-        api_key_map = {}
-        provider_args = {}
+        model_map: dict[str, str] = {}
+        api_key_map: dict[str, str | None] = {}
+        provider_args: dict[str, dict[str, str | None]] = {}
 
         for provider in fallback_providers:
             provider_config = llm_config.get(provider, {})

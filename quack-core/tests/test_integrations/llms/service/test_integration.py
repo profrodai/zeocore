@@ -241,6 +241,30 @@ class TestLLMIntegrationComprehensive:
         provider.load_config.assert_called_once()
         provider.get_default_config.assert_called_once()
 
+    def test_extract_config_none_after_load_raises(
+        self, integration: LLMIntegration
+    ) -> None:
+        """Test the defensive self.config is None guard (line ~115-116).
+
+        Structurally reachable only if a config_provider misbehaves and
+        returns None from get_default_config() despite its own dict[str,
+        Any] signature -- not exercised by any other test since every
+        other path sets a real dict. Forces that exact misbehavior via the
+        mock provider directly, rather than leaving the guard body dead
+        code, matching this chain's own established discipline for
+        traced-safe defensive branches (SOW-57 s5)."""
+        integration.config = None
+        provider = _mock_provider(integration)
+        provider.load_config.return_value = ConfigResult(
+            success=False, error="Failed to load config"
+        )
+        provider.get_default_config.return_value = None
+
+        with pytest.raises(QuackIntegrationError) as excinfo:
+            integration._extract_config()
+
+        assert "LLM configuration not initialized" in str(excinfo.value)
+
     def test_extract_config_invalid(self, integration: LLMIntegration) -> None:
         """Test extracting invalid config."""
         # Clear existing config
