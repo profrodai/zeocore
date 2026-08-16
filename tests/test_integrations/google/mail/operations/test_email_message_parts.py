@@ -321,6 +321,9 @@ class TestHandleAttachment:
 
         with (
             patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+            ) as mock_join,
+            patch(
                 "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
@@ -330,6 +333,12 @@ class TestHandleAttachment:
                 "quack_core.integrations.google.mail.operations.email.standalone.write_binary"
             ) as mock_write,
         ):
+            # join_path mocked per the module docstring's documented
+            # get_service() singleton hazard -- see
+            # TestHandleAttachment.test_happy_path_creates_directory_and_writes_once's
+            # own comment.
+            joined_path = str(storage_dir / "doc.txt")
+            mock_join.return_value = MagicMock(success=True, data=joined_path)
             mock_info.return_value = MagicMock(success=True, exists=False)
             mock_mkdir.return_value = MagicMock(success=True)
             mock_write.return_value = MagicMock(success=True)
@@ -338,7 +347,7 @@ class TestHandleAttachment:
                 mock_gmail_service, "me", part, "msg1", str(storage_dir), logger
             )
 
-        assert result is not None
+        assert result == joined_path
         # The attachment bytes actually written are the ones fetched by ID.
         assert mock_write.call_args[0][1] == b"fetched-bytes"
 
@@ -352,6 +361,9 @@ class TestHandleAttachment:
 
         with (
             patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+            ) as mock_join,
+            patch(
                 "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
@@ -361,6 +373,13 @@ class TestHandleAttachment:
                 "quack_core.integrations.google.mail.operations.email.standalone.write_binary"
             ) as mock_write,
         ):
+            # join_path itself is mocked, not exercised for real, per the
+            # module docstring's own documented get_service() singleton
+            # hazard: a bare storage_dir/tmp_path is not guaranteed to
+            # match whatever cwd got baked into the process-wide fs
+            # service singleton by an earlier test in this same run.
+            joined_path = str(storage_dir / "photo.png")
+            mock_join.return_value = MagicMock(success=True, data=joined_path)
             mock_info.return_value = MagicMock(success=True, exists=False)
             mock_mkdir.return_value = MagicMock(success=True)
             mock_write.return_value = MagicMock(success=True)
@@ -369,7 +388,7 @@ class TestHandleAttachment:
                 mock_gmail_service, "me", part, "msg1", str(storage_dir), logger
             )
 
-        assert result is not None
+        assert result == joined_path
         mock_mkdir.assert_called_once()
         mock_write.assert_called_once()
         assert mock_write.call_args[0][1] == b"png-bytes"
@@ -386,6 +405,9 @@ class TestHandleAttachment:
 
         with (
             patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+            ) as mock_join,
+            patch(
                 "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
@@ -398,11 +420,26 @@ class TestHandleAttachment:
                 "quack_core.integrations.google.mail.operations.email.standalone.split_path"
             ) as mock_split,
         ):
+            # join_path/split_path mocked per the module docstring's
+            # documented get_service() singleton hazard -- see
+            # test_happy_path_creates_directory_and_writes_once's own
+            # comment. split_path's return value must carry .success/.data
+            # (a real DataResult, not a bare list) to match
+            # _deduplicate_attachment_path's real unwrap logic
+            # (RULING-245's fix).
+            deduped_path = str(storage_dir / "dupe-1.txt")
+
+            def _join_side_effect(storage: str, name: str) -> MagicMock:
+                return MagicMock(success=True, data=str(Path(storage) / name))
+
+            mock_join.side_effect = _join_side_effect
             mock_info.side_effect = [
                 MagicMock(success=True, exists=True),  # dupe.txt already there
                 MagicMock(success=True, exists=False),  # dupe-1.txt is free
             ]
-            mock_split.return_value = ["dupe.txt"]
+            mock_split.return_value = MagicMock(
+                success=True, data=[str(storage_dir), "dupe.txt"]
+            )
             mock_mkdir.return_value = MagicMock(success=True)
             mock_write.return_value = MagicMock(success=True)
 
@@ -413,6 +450,121 @@ class TestHandleAttachment:
         assert result is not None
         assert mock_info.call_count == 2
         assert mock_write.call_count == 1
+        assert result == deduped_path
+
+    def test_duplicate_filename_split_path_failure_returns_none(
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
+    ) -> None:
+        """Covers _deduplicate_attachment_path's own
+        `if not split_result.success or split_result.data is None:
+        return None` branch (email.py:390-392), and consequently
+        handle_attachment's own `if file_path is None: return None`
+        check right after calling it (email.py:465-466) -- a real
+        split_path failure propagates all the way up as a clean None,
+        not an unhandled exception."""
+        part = {"filename": "dupe.txt", "body": {"data": _b64("new-content")}}
+
+        with (
+            patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+            ) as mock_join,
+            patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
+            ) as mock_info,
+            patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.split_path"
+            ) as mock_split,
+        ):
+            mock_join.return_value = MagicMock(
+                success=True, data=str(storage_dir / "dupe.txt")
+            )
+            # exists=True keeps hitting the while loop; split_path itself
+            # then reports failure, which is the branch under test.
+            mock_info.return_value = MagicMock(success=True, exists=True)
+            mock_split.return_value = MagicMock(
+                success=False, error="split failed", data=None
+            )
+
+            result = email.handle_attachment(
+                mock_gmail_service, "me", part, "msg1", str(storage_dir), logger
+            )
+
+        assert result is None
+        mock_split.assert_called_once()
+
+    def test_duplicate_filename_retry_join_path_failure_returns_none(
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
+    ) -> None:
+        """Covers _deduplicate_attachment_path's retry-path
+        `if new_file_path is None: return None` branch (email.py:398-399)
+        -- distinct from the initial _unwrap_join_path call in
+        handle_attachment itself: split_path succeeds (so the loop body
+        proceeds past its own failure branch, covered separately above),
+        but the RETRY's own join_path call (for the "-1" suffixed name)
+        fails."""
+        part = {"filename": "dupe.txt", "body": {"data": _b64("new-content")}}
+
+        with (
+            patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+            ) as mock_join,
+            patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
+            ) as mock_info,
+            patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.split_path"
+            ) as mock_split,
+        ):
+            # First join_path call (handle_attachment's own initial
+            # _unwrap_join_path) succeeds; the retry call inside
+            # _deduplicate_attachment_path's loop body fails.
+            mock_join.side_effect = [
+                MagicMock(success=True, data=str(storage_dir / "dupe.txt")),
+                MagicMock(success=False, error="retry join failed", data=None),
+            ]
+            mock_info.return_value = MagicMock(success=True, exists=True)
+            mock_split.return_value = MagicMock(
+                success=True, data=[str(storage_dir), "dupe.txt"]
+            )
+
+            result = email.handle_attachment(
+                mock_gmail_service, "me", part, "msg1", str(storage_dir), logger
+            )
+
+        assert result is None
+        assert mock_join.call_count == 2
+
+    def test_initial_join_path_failure_returns_none(
+        self,
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
+    ) -> None:
+        """Covers handle_attachment's own initial `if file_path is None:
+        return None` check (email.py:462-463) -- distinct from the
+        _deduplicate_attachment_path-internal branches above: this is the
+        VERY FIRST _unwrap_join_path call, before deduplication is ever
+        reached, failing."""
+        part = {"filename": "x.txt", "body": {"data": _b64("x")}}
+
+        with patch(
+            "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+        ) as mock_join:
+            mock_join.return_value = MagicMock(
+                success=False, error="join failed", data=None
+            )
+            result = email.handle_attachment(
+                mock_gmail_service, "me", part, "msg1", str(storage_dir), logger
+            )
+
+        assert result is None
+        mock_join.assert_called_once()
 
     def test_directory_create_failure_returns_none(
         self,
@@ -423,18 +575,30 @@ class TestHandleAttachment:
         part = {"filename": "x.txt", "body": {"data": _b64("x")}}
         with (
             patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+            ) as mock_join,
+            patch(
                 "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
                 "quack_core.integrations.google.mail.operations.email.standalone.create_directory"
             ) as mock_mkdir,
         ):
+            # join_path mocked (deterministic, not the real singleton-cached
+            # sandbox) so this test provably reaches create_directory's own
+            # failure branch rather than a possible earlier None-return from
+            # an unrelated real join_path failure -- see the module
+            # docstring's own singleton hazard note.
+            mock_join.return_value = MagicMock(
+                success=True, data=str(storage_dir / "x.txt")
+            )
             mock_info.return_value = MagicMock(success=True, exists=False)
             mock_mkdir.return_value = MagicMock(success=False)
             result = email.handle_attachment(
                 mock_gmail_service, "me", part, "msg1", str(storage_dir), logger
             )
         assert result is None
+        mock_mkdir.assert_called_once()
 
     def test_write_failure_returns_none(
         self,
@@ -445,6 +609,9 @@ class TestHandleAttachment:
         part = {"filename": "x.txt", "body": {"data": _b64("x")}}
         with (
             patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+            ) as mock_join,
+            patch(
                 "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
@@ -454,6 +621,12 @@ class TestHandleAttachment:
                 "quack_core.integrations.google.mail.operations.email.standalone.write_binary"
             ) as mock_write,
         ):
+            # join_path mocked for the same determinism reason as above --
+            # otherwise this test cannot prove it reached write_binary's
+            # own failure branch rather than an earlier unrelated None.
+            mock_join.return_value = MagicMock(
+                success=True, data=str(storage_dir / "x.txt")
+            )
             mock_info.return_value = MagicMock(success=True, exists=False)
             mock_mkdir.return_value = MagicMock(success=True)
             mock_write.return_value = MagicMock(success=False, error="disk full")
@@ -461,6 +634,7 @@ class TestHandleAttachment:
                 mock_gmail_service, "me", part, "msg1", str(storage_dir), logger
             )
         assert result is None
+        mock_write.assert_called_once()
 
     def test_unexpected_exception_caught_and_returns_none(
         self,
@@ -479,12 +653,14 @@ class TestHandleAttachment:
         assert result is None
 
     def test_join_path_result_is_stringified_not_unwrapped_bug(self) -> None:
-        """PINS A REAL PRODUCTION BUG, found while writing this coverage
-        pass -- NOT fixed here, per this stream's charter (a ruling must
-        authorize any production fix).
+        """Documents a REAL production bug that WAS present at both call
+        sites in this file, now fixed at both:
 
-        Two call sites in this file -- handle_attachment (line 396) and
-        download_email (line 178) -- do:
+        handle_attachment (fixed by RULING-245, sibling
+        `quackverse-lint-mypy-backlog` chain, commit 80b5097c, landed on
+        main via cc521383) and download_email (fixed here per RULING-246,
+        citing the same disease and the same `_unwrap_join_path` helper
+        RULING-245 introduced). Both used to do:
             file_path = str(standalone.join_path(storage_path, clean_name))
         standalone.join_path returns a DataResult[str] (core/fs/results.py),
         a pydantic BaseModel with NO custom __str__ -- so str(...) on it
@@ -492,44 +668,27 @@ class TestHandleAttachment:
         field-dump repr:
           "ok=True path=PosixPath(...) message='Joined paths' ...
           data='/actual/path' format='path' ..."
-        The correct unwrap is `.data`, exactly as _resolve_download_path in
-        google/drive/service.py does it (RULING-238/240's fix to this same
-        disease shape -- a core/fs Result-wrapping return value handled as
-        if it were the raw unwrapped value).
+        The correct unwrap is `.data` (after checking `.success`), exactly
+        as _resolve_download_path in google/drive/service.py does it
+        (RULING-238/240's fix to this same disease shape -- a core/fs
+        Result-wrapping return value handled as if it were the raw
+        unwrapped value), and exactly what `_unwrap_join_path` (this file,
+        below) now does for both call sites.
 
-        Verified directly against real, unmocked join_path (run from this
-        investigation, output captured here for the record -- this test
-        reproduces the identical unwrap bug deterministically without
-        touching the real filesystem, by asserting on DataResult's actual
-        __str__ contract rather than re-running the sandboxed call):
-
-            >>> from quack_core.core.fs.service import standalone
-            >>> str(standalone.join_path("foo", "bar.txt"))
-            "ok=True path=PosixPath('.../foo/bar.txt') message='Joined paths'
-            ... data='.../foo/bar.txt' format='path' ..."
-
-        Downstream effect: handle_attachment's and download_email's
-        returned "path" is this garbage repr string, not a real filesystem
-        path -- any caller that tries to open/read/display it gets
-        nonsense, and any write that follows (write_binary/write_text)
-        either 403s against the fs sandbox (the observed failure mode when
-        the garbage string is long/contains characters the sandbox
-        resolver rejects) or -- worse -- silently writes to a bogus
-        filename it DOES accept, silently corrupting where the file lands.
-        Confirmed by directly invoking the unmocked function during this
-        investigation: it produced a file literally named after the
-        stringified DataResult repr in the process cwd (see this stream's
-        SOW for the exact repro and cleanup note).
-
-        This test does not call handle_attachment/download_email at all --
-        it isolates the exact defective expression so it cannot regress
-        silently if either call site's mocking style changes later.
+        This test still documents `join_path`'s own real, unchanged
+        contract directly (str() on its return value is NOT the path --
+        this was never going to change, callers must unwrap via `.data`),
+        which is why both call sites needed a real fix rather than relying
+        on `join_path` itself being altered. See
+        `TestDownloadEmailRealPathBuild` below for the end-to-end proof
+        that `download_email` itself now uses the real unwrapped path.
         """
         from quack_core.core.fs.service import standalone
 
         result = standalone.join_path("some_dir", "some_file.txt")
 
-        # The bug: str() on the DataResult does NOT give the joined path.
+        # join_path's own str() contract: NOT the joined path. Callers
+        # (this file's own _unwrap_join_path, e.g.) must use .data instead.
         stringified = str(result)
         assert stringified != result.data
         assert "data=" in stringified
@@ -560,9 +719,21 @@ class TestDownloadEmailWriteFailure:
         }
         mock_process_parts.return_value = ("<html>content</html>", [])
 
-        with patch(
-            "quack_core.integrations.google.mail.operations.email.standalone.write_text"
-        ) as mock_write:
+        with (
+            patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+            ) as mock_join,
+            patch(
+                "quack_core.integrations.google.mail.operations.email.standalone.write_text"
+            ) as mock_write,
+        ):
+            # join_path mocked per the module docstring's documented
+            # get_service() singleton hazard -- see
+            # TestHandleAttachment.test_happy_path_creates_directory_and_writes_once's
+            # own comment.
+            mock_join.return_value = MagicMock(
+                success=True, data=str(storage_dir / "email.html")
+            )
             mock_write.return_value.success = False
             mock_write.return_value.error = "disk full"
             result = email.download_email(
@@ -581,6 +752,123 @@ class TestDownloadEmailWriteFailure:
         assert result.success is False
         assert result.error is not None
         assert "Failed to write email content" in result.error
+
+
+class TestDownloadEmailRealPathBuild:
+    """FLIPPED per RULING-246 (was a pinned-bug test asserting the garbage
+    repr string). Proves download_email's filepath build (via
+    _unwrap_join_path, RULING-246's fix) end to end: join_path AND
+    write_text are both real/unmocked here, so a real file is actually
+    written to disk at the real unwrapped path.
+
+    Per the module docstring's documented get_service() singleton hazard:
+    the real fs service is a process-wide @lru_cache(maxsize=1) bound to
+    whatever cwd was live at its first construction anywhere in this test
+    run, not necessarily this test's own storage_dir/monkeypatch.chdir()
+    (which runs too late to matter once the singleton already exists).
+    So this test does not assert the written file lands under its own
+    storage_dir fixture -- it reads back the REAL base_dir the live
+    singleton is actually using (get_service().base_dir) and asserts
+    against that, which is the honest, singleton-aware way to prove a
+    real end-to-end write without fighting or mocking around the sandbox."""
+
+    @patch("quack_core.integrations.google.mail.operations.email.process_message_parts")
+    @patch(
+        "quack_core.integrations.google.mail.operations.email._get_message_with_retry"
+    )
+    def test_download_email_writes_to_real_unwrapped_path(
+        self,
+        mock_get_message: Any,  # noqa: ANN401 -- @patch-injected MagicMock, not the fixture
+        mock_process_parts: Any,  # noqa: ANN401 -- @patch-injected MagicMock, not the fixture
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+        storage_dir: Path,
+    ) -> None:
+        from quack_core.core.fs.service import get_service
+
+        mock_get_message.return_value = {
+            "id": "msg1",
+            "payload": {"headers": [], "parts": [{"mimeType": "text/html"}]},
+        }
+        mock_process_parts.return_value = ("<html>real content</html>", [])
+
+        # The real, live fs service singleton's actual base_dir -- may or
+        # may not equal this test's own storage_dir, per the class
+        # docstring. Pass it explicitly as storage_path so join_path (real,
+        # unmocked) resolves inside whatever sandbox is actually live.
+        real_base_dir = get_service().base_dir
+
+        result = email.download_email(
+            mock_gmail_service,
+            "me",
+            "msg1",
+            str(real_base_dir),
+            False,
+            False,
+            3,
+            0.1,
+            0.5,
+            logger,
+        )
+
+        try:
+            assert result.success is True
+            assert result.content is not None
+            # Not the pydantic DataResult repr -- a real path.
+            assert "DataResult" not in result.content
+            assert "success=" not in result.content
+            written_path = Path(result.content)
+            assert written_path.parent == real_base_dir
+            assert written_path.exists()
+            assert (
+                written_path.read_text(encoding="utf-8")
+                == "<html>real content</html>"
+            )
+        finally:
+            if result.content and Path(result.content).exists():
+                Path(result.content).unlink()
+
+    @patch("quack_core.integrations.google.mail.operations.email.process_message_parts")
+    @patch(
+        "quack_core.integrations.google.mail.operations.email._get_message_with_retry"
+    )
+    def test_download_email_returns_error_when_join_path_fails(
+        self,
+        mock_get_message: Any,  # noqa: ANN401 -- @patch-injected MagicMock, not the fixture
+        mock_process_parts: Any,  # noqa: ANN401 -- @patch-injected MagicMock, not the fixture
+        mock_gmail_service: Any,  # noqa: ANN401 -- mock exposes test-only attrs beyond GmailService protocol
+        logger: logging.Logger,
+    ) -> None:
+        """Covers download_email's `if filepath is None: return
+        error_result(...)` branch (line 182-185) -- exercised when
+        _unwrap_join_path's own real join_path call reports failure (a
+        real, sandboxed rejection, not a mock of quack_core logic itself,
+        per RULING-235: the boundary being proven here is the real fs
+        sandbox rejecting a path outside its own base_dir)."""
+        mock_get_message.return_value = {
+            "id": "msg1",
+            "payload": {"headers": [], "parts": [{"mimeType": "text/html"}]},
+        }
+        mock_process_parts.return_value = ("<html>content</html>", [])
+
+        # A storage_path the real (unmocked) fs sandbox will genuinely
+        # reject -- outside base_dir, allow_absolute=False.
+        result = email.download_email(
+            mock_gmail_service,
+            "me",
+            "msg1",
+            "/definitely/outside/the/sandbox",
+            False,
+            False,
+            3,
+            0.1,
+            0.5,
+            logger,
+        )
+
+        assert result.success is False
+        assert result.error is not None
+        assert "Failed to build file path for message msg1" in result.error
 
 
 class TestGetMessageWithRetryZeroRetries:

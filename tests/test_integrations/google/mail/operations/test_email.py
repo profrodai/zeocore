@@ -375,8 +375,14 @@ class TestGmailEmailOperations:
             # Configure filename cleaning
             mock_clean.return_value = "sender-example-com"
 
-            # Configure fs join_path to return a string path
-            mock_fs.join_path.return_value = expected_file_path
+            # Configure fs join_path to return a DataResult-shaped mock
+            # (RULING-246: download_email now unwraps via .success/.data,
+            # matching handle_attachment's own established RULING-245 fix
+            # in this same file -- a bare string here no longer matches
+            # the real join_path/_unwrap_join_path contract).
+            mock_fs.join_path.return_value = MagicMock(
+                success=True, data=expected_file_path
+            )
 
             # Configure fs write_text operation results
             write_result = MagicMock()
@@ -445,18 +451,31 @@ class TestGmailEmailOperations:
             },
         }
         mock_process_parts.return_value = (None, ["/path/to/storage/attachment.pdf"])
-        result = email.download_email(
-            mock_gmail_service,
-            "me",
-            "msg1",
-            storage_path,
-            False,
-            False,
-            3,
-            0.1,
-            0.5,
-            logger,
-        )
+        # RULING-246: download_email's filepath build (via
+        # _unwrap_join_path) now runs -- and can genuinely fail -- BEFORE
+        # the html_content check, so standalone.join_path must be patched
+        # here too (this scenario runs outside the earlier `with` block's
+        # patch scope) or the real, unmocked join_path call against this
+        # literal "/path/to/storage" string trips the real fs sandbox and
+        # masks the html-content branch this test is meant to exercise.
+        with patch(
+            "quack_core.integrations.google.mail.operations.email.standalone"
+        ) as mock_fs_no_html:
+            mock_fs_no_html.join_path.return_value = MagicMock(
+                success=True, data="/path/to/storage/whatever.html"
+            )
+            result = email.download_email(
+                mock_gmail_service,
+                "me",
+                "msg1",
+                storage_path,
+                False,
+                False,
+                3,
+                0.1,
+                0.5,
+                logger,
+            )
         assert result.success is False
         assert "No HTML content found in message msg1" in result.error
 
