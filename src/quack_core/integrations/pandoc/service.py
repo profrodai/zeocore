@@ -514,6 +514,11 @@ class PandocIntegration(BaseIntegrationService):
                 )
 
             # Use converter for batch processing
+            if self.converter is None:
+                raise QuackIntegrationError(
+                    "PandocIntegration.converter is unexpectedly None after "
+                    "_ensure_initialized() passed"
+                )
             return self.converter.convert_batch(tasks=tasks, output_dir=output_dir)
 
         except Exception as e:

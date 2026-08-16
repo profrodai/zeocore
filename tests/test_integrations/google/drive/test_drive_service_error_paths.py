@@ -1270,3 +1270,34 @@ class TestUploadHelperBranches:
         assert result.error is not None
         assert "File not found" in result.error
         real_drive_service.drive_service.files.assert_not_called()
+
+    def test_upload_file_returns_error_when_file_is_none_despite_no_upload_error(
+        self, real_drive_service: GoogleDriveService, tmp_path: Path
+    ) -> None:
+        """RULING-274 s2 (round 25): _upload_media's (dict, None) /
+        (None, IntegrationResult) contract is exhaustive by construction
+        (confirmed by reading _upload_media in full, service.py:817-843),
+        so the `if file is None` guard right after the `upload_error`
+        early-return can never fire in production. Directly force the
+        structurally-impossible combination (_upload_media mocked to
+        return (None, None)) to exercise the guard's own body -- same
+        defensive-branch-testing discipline as
+        test_initialize_returns_error_when_auth_provider_none above."""
+        test_file = tmp_path / "probe.txt"
+        test_file.write_text("probe content")
+
+        with patch.object(GoogleDriveService, "_resolve_file_details") as mock_resolve:
+            mock_resolve.return_value = (
+                Path(test_file),
+                "probe.txt",
+                "shared_folder",
+                "text/plain",
+            )
+            with patch.object(
+                real_drive_service, "_upload_media", return_value=(None, None)
+            ):
+                result = real_drive_service.upload_file(str(test_file))
+
+        assert result.success is False
+        assert result.error is not None
+        assert "no file data" in result.error

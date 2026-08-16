@@ -1069,6 +1069,54 @@ def test_markdown_to_docx_converter_none_after_initialized(
 
 @patch("quack_core.core.fs.service.standalone.expand_user_vars")
 @patch("quack_core.integrations.pandoc.service.verify_pandoc")
+def test_convert_directory_converter_none_after_initialized(
+    mock_verify_pandoc: MagicMock,
+    mock_expand_user_vars: MagicMock,
+    setup_mocks: tuple[SimpleNamespace, MagicMock],
+) -> None:
+    """RULING-274 s2 (round 25): same defensive guard as
+    html_to_markdown/markdown_to_docx above, exercised for
+    convert_directory (service.py:517-521). initialize()'s own success
+    path sets self.converter and self._initialized=True atomically
+    (service.py:249-252), so this invariant violation cannot occur via the
+    public API -- forced directly here, same discipline as the two sibling
+    tests immediately above. Unlike html_to_markdown/markdown_to_docx,
+    convert_directory has no dedicated `except QuackIntegrationError`
+    clause -- the raise is caught by its own generic `except Exception`
+    (service.py:519-522) and surfaced with the "Directory conversion
+    failed" prefix.
+    """
+    fs_stub, mock_paths_service = setup_mocks
+    mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
+
+    integration = PandocIntegration()
+    integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub  # type: ignore[assignment]
+    assert integration.config_provider is not None
+    integration.config_provider.load_config = MagicMock(  # type: ignore[method-assign]
+        return_value=IntegrationResult(success=True, content={})
+    )
+
+    fs_stub.get_file_info = MagicMock(
+        return_value=SimpleNamespace(success=True, exists=True, is_dir=True)
+    )
+    fs_stub.find_files = MagicMock(
+        return_value=SimpleNamespace(success=True, files=["file1.html"])
+    )
+
+    integration.initialize()
+    integration.converter = None  # force the invariant violation
+
+    result = integration.convert_directory("input_dir", "markdown")
+
+    assert not result.success
+    assert result.error is not None
+    assert "converter is unexpectedly None" in result.error
+
+
+@patch("quack_core.core.fs.service.standalone.expand_user_vars")
+@patch("quack_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_input_dir_not_found(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,

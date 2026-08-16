@@ -11,6 +11,7 @@ from quack_core.core.errors import QuackIntegrationError
 from quack_core.core.fs.service import standalone as fs
 from quack_core.core.paths import service as paths
 from quack_core.integrations.core.base import BaseIntegrationService
+from quack_core.integrations.core.protocols import ConfigProviderProtocol
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.google.auth import GoogleAuthProvider
 from quack_core.integrations.google.config import GoogleConfigProvider
@@ -105,6 +106,22 @@ class GoogleMailService(BaseIntegrationService):
         """Get the version of the integration."""
         return "1.0.0"
 
+    def _require_config_provider(self) -> ConfigProviderProtocol:
+        """Return `self.config_provider`, narrowed to non-None.
+
+        `self.config_provider` is typed `ConfigProviderProtocol | None` on the
+        base class, but `__init__` always constructs and passes a real
+        `GoogleConfigProvider` before `super().__init__` -- never `None` for
+        this concrete class (same reasoning as `PandocIntegration
+        ._require_config_provider`). Raises if that invariant is ever
+        violated (defensive, not expected).
+        """
+        if self.config_provider is None:
+            raise QuackIntegrationError(
+                "GoogleMailService has no config_provider configured"
+            )
+        return self.config_provider
+
     def initialize(self) -> IntegrationResult[NoneType]:
         """
         Initialize the Google Mail service.
@@ -172,7 +189,8 @@ class GoogleMailService(BaseIntegrationService):
             if self.custom_config:
                 self.config = self.custom_config
             else:
-                config_result = self.config_provider.load_config(self.config_path)
+                config_provider = self._require_config_provider()
+                config_result = config_provider.load_config(self.config_path)
                 if not config_result.success or not config_result.content:
                     raise QuackIntegrationError(
                         "Failed to load configuration from file", {}
