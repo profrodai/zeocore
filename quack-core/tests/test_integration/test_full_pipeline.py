@@ -94,14 +94,18 @@ class SamplePathPlugin(CommandPluginProtocol):
 
     def find_project_root(self, start_dir: str | None = None) -> Path:
         """Find the project root directory."""
-        result = paths.get_project_root(start_dir)
+        # paths.get_project_root/resolve_project_path are PathService INSTANCE
+        # methods, not module-level free functions (the module never had
+        # free functions -- see the sibling test_paths chain's own conftest
+        # note, which established this same fact).
+        result = paths.PathService().get_project_root(start_dir)
         if not result.success:
             raise QuackError(f"Failed to find project root: {result.error}")
         return result.path
 
     def resolve_path(self, path: str, project_root: str | None = None) -> Path:
         """Resolve a path relative to the project root."""
-        result = paths.resolve_project_path(path, project_root)
+        result = paths.PathService().resolve_project_path(path, project_root)
         if not result.success:
             raise QuackError(f"Failed to resolve path: {result.error}")
         return result.path
@@ -181,7 +185,9 @@ class TestIntegration:
         assert read_result.content == "Test data content"
 
         # Test reading through resolved paths
-        data_path_result = paths.resolve_project_path("data/test.txt", temp_dir)
+        data_path_result = paths.PathService().resolve_project_path(
+            "data/test.txt", temp_dir
+        )
         assert data_path_result.success is True
         data_path = data_path_result.path
         assert Path(data_path) == test_file
