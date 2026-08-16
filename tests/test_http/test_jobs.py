@@ -10,13 +10,14 @@ import time
 import uuid
 
 import pytest
+from pydantic import BaseModel
 from quack_core.core.jobs import (
     InMemoryJobStore,
     JobData,
     JobStatus,
     ThreadPoolJobRunner,
 )
-from quack_core.core.registry import Operation, OperationRegistry
+from quack_core.core.registry import OperationRegistry
 
 
 def test_job_store_create_and_get(job_store: InMemoryJobStore) -> None:
@@ -149,16 +150,22 @@ def test_job_runner_execution(job_store: InMemoryJobStore) -> None:
     """Test job runner executes jobs successfully."""
     registry = OperationRegistry()
 
-    # Register a test operation
-    def test_operation(x: int, y: int) -> dict:
-        return {"result": x + y}
+    # Register a test operation. OperationRegistry.register() builds the
+    # Operation internally from separate kwargs -- it does not accept a
+    # pre-constructed Operation instance -- and the registered callable
+    # takes ONE argument, the validated request_model instance (see
+    # invoke_operation: `op.callable(validated_params)`), not **kwargs.
+    class AddRequest(BaseModel):
+        x: int
+        y: int
+
+    def test_operation(req: AddRequest) -> dict:
+        return {"result": req.x + req.y}
 
     registry.register(
-        Operation(
-            name="test.add",
-            fn=test_operation,
-            is_async=False,
-        )
+        name="test.add",
+        callable=test_operation,
+        request_model=AddRequest,
     )
 
     runner = ThreadPoolJobRunner(
@@ -209,16 +216,18 @@ def test_job_runner_error_handling(job_store: InMemoryJobStore) -> None:
     """Test job runner handles errors properly."""
     registry = OperationRegistry()
 
-    # Register an operation that fails
-    def failing_operation() -> dict:
+    # Register an operation that fails. See test_job_runner_execution for
+    # why this needs a request_model and a single-argument callable.
+    class EmptyRequest(BaseModel):
+        pass
+
+    def failing_operation(req: EmptyRequest) -> dict:
         raise ValueError("Test error message")
 
     registry.register(
-        Operation(
-            name="test.fail",
-            fn=failing_operation,
-            is_async=False,
-        )
+        name="test.fail",
+        callable=failing_operation,
+        request_model=EmptyRequest,
     )
 
     runner = ThreadPoolJobRunner(
@@ -270,16 +279,21 @@ def test_job_runner_async_operation(job_store: InMemoryJobStore) -> None:
     """Test job runner executes async operations."""
     registry = OperationRegistry()
 
-    # Register an async operation
-    async def async_operation(value: str) -> dict:
-        return {"echo": value}
+    # Register an async operation. See test_job_runner_execution for why
+    # this needs a request_model and a single-argument callable --
+    # invoke_operation awaits the result itself when it is awaitable
+    # (`if inspect.isawaitable(result): result = await result`), so no
+    # separate is_async flag is needed or accepted any more.
+    class EchoRequest(BaseModel):
+        value: str
+
+    async def async_operation(req: EchoRequest) -> dict:
+        return {"echo": req.value}
 
     registry.register(
-        Operation(
-            name="test.async",
-            fn=async_operation,
-            is_async=True,
-        )
+        name="test.async",
+        callable=async_operation,
+        request_model=EchoRequest,
     )
 
     runner = ThreadPoolJobRunner(
