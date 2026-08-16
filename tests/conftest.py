@@ -23,6 +23,7 @@ from _pytest.monkeypatch import MonkeyPatch
 try:
     from quack_core.config.models import QuackConfig
     from quack_core.core.fs import DataResult, OperationResult, PathResult
+    from quack_core.core.fs.protocols import FsPathLike
     from quack_core.core.fs.service import standalone as fs_standalone
     from quack_core.modules.protocols import QuackPluginProtocol
 except ImportError as e:
@@ -33,12 +34,13 @@ except ImportError as e:
     sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
     from quack_core.config.models import QuackConfig
     from quack_core.core.fs import DataResult, OperationResult, PathResult
+    from quack_core.core.fs.protocols import FsPathLike
     from quack_core.core.fs.service import standalone as fs_standalone
     from quack_core.modules.protocols import QuackPluginProtocol
 
 
 @pytest.fixture(autouse=True)
-def mock_fs_standalone():
+def mock_fs_standalone() -> Generator[None]:
     """
     Mock the fs.standalone functionality for consistent test behavior
     across different platforms.
@@ -52,7 +54,7 @@ def mock_fs_standalone():
         # Return a real PathResult (ok/path contract, core/fs SERVICE-CONTRACT) so
         # callers that check `.ok`/`.path` on the result see a well-formed object,
         # not a bare Path (which has neither attribute).
-        def _mock_normalize(p: Any) -> "PathResult":
+        def _mock_normalize(p: FsPathLike) -> "PathResult":
             resolved = Path(os.path.abspath(str(p)))
             return PathResult(
                 ok=True,
@@ -68,7 +70,7 @@ def mock_fs_standalone():
 
 
 @pytest.fixture(autouse=True)
-def patch_filesystem_operations():
+def patch_filesystem_operations() -> Generator[None]:
     """
     Patch filesystem _ops for tests.
 
@@ -79,7 +81,11 @@ def patch_filesystem_operations():
     original_path_init = Path.__init__
 
     # Patched version that handles DataResult
-    def patched_path_init(self, *args: Any, **kwargs: Any) -> None:
+    def patched_path_init(
+        self: Path,
+        *args: Any,  # noqa: ANN401 -- genuinely dynamic: monkeypatches Path.__init__ itself, must accept whatever Path's real constructor accepts
+        **kwargs: Any,  # noqa: ANN401 -- genuinely dynamic: same as *args above
+    ) -> None:
         new_args = list(args)
         for i, arg in enumerate(new_args):
             if isinstance(arg, (DataResult, OperationResult)) and hasattr(arg, "data"):
@@ -238,7 +244,7 @@ def mock_plugin() -> MockPlugin:
     return MockPlugin()
 
 
-def pytest_configure(config):
+def pytest_configure(config: pytest.Config) -> None:
     """Register custom pytest marks."""
     config.addinivalue_line(
         "markers", "integration: mark a test as an integration test"
@@ -247,10 +253,10 @@ def pytest_configure(config):
 
 # Fix for the mock_normalize_path fixture
 @pytest.fixture(autouse=True)
-def mock_normalize_path(monkeypatch):
+def mock_normalize_path(monkeypatch: MonkeyPatch) -> None:
     """Mock the normalize_path function to avoid filesystem access."""
 
-    def mock_normalize(path):
+    def mock_normalize(path: FsPathLike) -> "PathResult":
         # Return a real PathResult (ok/path contract, core/fs SERVICE-CONTRACT) so
         # callers that check `.ok`/`.path` on the result see a well-formed object,
         # not a bare Path (which has neither attribute) - PosixPath-has-no-attribute
