@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-runner/src/quack_runner/workflow/legacy.py
-# module: quack_runner.workflow.legacy
-# role: module
-# neighbors: __init__.py, results.py, tool_runner.py
-# exports: FileWorkflowRunner, LegacyWorkflowOutputWriter, DefaultOutputWriter, RemoteFileHandler, InputResult, OutputResult, FinalResult
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

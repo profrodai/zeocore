@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/core/protocols.py
-# module: quack_core.integrations.core.protocols
-# role: protocols
-# neighbors: __init__.py, registry.py, results.py, base.py
-# exports: AuthProviderProtocol, ConfigProviderProtocol, IntegrationProtocol, StorageIntegrationProtocol
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

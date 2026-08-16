@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-runner/src/quack_runner/workflow/protocols/remote_handler.py
-# module: quack_runner.workflow.protocols.remote_handler
-# role: protocols
-# neighbors: __init__.py
-# exports: RemoteFileHandler
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from __future__ import annotations

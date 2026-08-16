@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/google/mail/service.py
-# module: quack_core.integrations.google.mail.service
-# role: service
-# neighbors: __init__.py, protocols.py, config.py
-# exports: GoogleMailService
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 import logging

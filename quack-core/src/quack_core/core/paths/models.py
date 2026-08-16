@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/paths/models.py
-# module: quack_core.core.paths.models
-# role: models
-# neighbors: __init__.py, service.py, plugin.py
-# exports: ProjectDirectory, ProjectContext, ContentContext, PathInfo
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

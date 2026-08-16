@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/fs/protocols.py
-# module: quack_core.core.fs.protocols
-# role: protocols
-# neighbors: __init__.py, plugin.py, results.py, exceptions.py, normalize.py
-# exports: HasValue, HasUnwrap, HasPath, HasData, BaseResult
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from os import PathLike

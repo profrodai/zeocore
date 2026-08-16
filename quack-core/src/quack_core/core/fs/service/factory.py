@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/fs/service/factory.py
-# module: quack_core.core.fs.service.factory
-# role: service
-# neighbors: __init__.py, base.py, directory_operations.py, file_info_operations.py, file_operations.py, full_class.py (+5 more)
-# exports: create_service
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

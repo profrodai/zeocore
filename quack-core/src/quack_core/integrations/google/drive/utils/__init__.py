@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/google/drive/utils/__init__.py
-# module: quack_core.integrations.google.drive.utils.__init__
-# role: utils
-# neighbors: api.py, query.py
-# exports: api, query
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

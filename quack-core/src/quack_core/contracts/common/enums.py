@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/contracts/common/enums.py
-# module: quack_core.contracts.common.enums
-# role: module
-# neighbors: __init__.py, ids.py, time.py, typing.py, versions.py
-# exports: CapabilityStatus, LogLevel, ArtifactKind, StorageScheme, ChecksumAlgorithm
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

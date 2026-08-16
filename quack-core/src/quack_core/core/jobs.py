@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/jobs.py
-# module: quack_core.core.jobs
-# role: module
-# neighbors: __init__.py, registry.py, mime.py, serialization.py
-# exports: JobStatus, JobData, JobStore, JobRunner, InMemoryJobStore, ThreadPoolJobRunner
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

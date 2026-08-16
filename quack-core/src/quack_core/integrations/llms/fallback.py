@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/llms/fallback.py
-# module: quack_core.integrations.llms.fallback
-# role: module
-# neighbors: __init__.py, models.py, protocols.py, config.py, registry.py
-# exports: FallbackConfig, ProviderStatus, FallbackLLMClient
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

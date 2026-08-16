@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/prompt/_internal/enhancer.py
-# module: quack_core.prompt._internal.enhancer
-# role: module
-# neighbors: __init__.py, registry.py, selector.py
-# exports: enhance_with_llm_safe
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from quack_core.core.logging import get_logger

@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/prompt/_internal/registry.py
-# module: quack_core.prompt._internal.registry
-# role: module
-# neighbors: __init__.py, enhancer.py, selector.py
-# exports: StrategyRegistry
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from collections.abc import Sequence

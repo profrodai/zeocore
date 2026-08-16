@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/pandoc/operations/md_to_docx.py
-# module: quack_core.integrations.pandoc.operations.md_to_docx
-# role: module
-# neighbors: __init__.py, utils.py, html_to_md.py
-# exports: convert_markdown_to_docx, validate_conversion
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

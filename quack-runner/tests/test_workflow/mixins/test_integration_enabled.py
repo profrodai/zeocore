@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-runner/tests/test_workflow/mixins/test_integration_enabled.py
-# role: tests
-# neighbors: __init__.py, test_output_writer.py, test_save_output_mixin.py
-# exports: DummyService, Host, test_resolve_none, test_resolve_and_initialize
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

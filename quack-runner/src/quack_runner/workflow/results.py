@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-runner/src/quack_runner/workflow/results.py
-# module: quack_runner.workflow.results
-# role: module
-# neighbors: __init__.py, legacy.py, tool_runner.py
-# exports: InputResult, OutputResult, FinalResult
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from __future__ import annotations

@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/google/test_serialization.py
-# role: tests
-# neighbors: __init__.py, mocks.py, test_auth_provider.py, test_config_provider.py
-# exports: mock_credentials
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from unittest.mock import MagicMock

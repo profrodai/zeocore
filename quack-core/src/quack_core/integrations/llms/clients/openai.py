@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/llms/clients/openai.py
-# module: quack_core.integrations.llms.clients.openai
-# role: module
-# neighbors: __init__.py, anthropic.py, base.py, mock.py, ollama.py
-# exports: OpenAIClient
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

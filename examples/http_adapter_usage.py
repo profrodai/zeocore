@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: examples/http_adapter_usage.py
-# role: module
-# neighbors: config_tooling_test.py, explicit_plugin_loading_example.py, toolkit_usage.py
-# exports: QuackCoreHTTPClient, main, verify_signature
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

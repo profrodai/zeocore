@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/contracts/envelopes/error.py
-# module: quack_core.contracts.envelopes.error
-# role: module
-# neighbors: __init__.py, log.py, result.py
-# exports: CapabilityError
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

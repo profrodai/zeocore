@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_plugins/test_explicit_loading.py
-# role: tests
-# neighbors: __init__.py, test_discovery.py, test_protocols.py, test_registry.py
-# exports: TestImportSideEffects, MockTestPlugin, TestExplicitLoading, TestPluginIdStability, TestRegistryClear, TestLoadEnabledModules, TestListAvailableEntryPoints
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

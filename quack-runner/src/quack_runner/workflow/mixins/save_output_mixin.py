@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-runner/src/quack_runner/workflow/mixins/save_output_mixin.py
-# module: quack_runner.workflow.mixins.save_output_mixin
-# role: module
-# neighbors: __init__.py, output_writer.py
-# exports: SaveOutputMixin
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

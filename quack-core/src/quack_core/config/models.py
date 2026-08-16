@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/config/models.py
-# module: quack_core.config.models
-# role: models
-# neighbors: __init__.py, plugin.py, utils.py, loader.py
-# exports: LoggingConfig, PathsConfig, GeneralConfig, PluginsConfig, QuackConfig
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

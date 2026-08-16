@@ -1,9 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: tests/integration/conftest.py
-# role: module
-# neighbors: __init__.py, test_ducktyper_quackcore.py
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

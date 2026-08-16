@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/llms/service/initialization.py
-# module: quack_core.integrations.llms.service.initialization
-# role: service
-# neighbors: __init__.py, dependencies.py, integration.py, operations.py
-# exports: initialize_single_provider, initialize_with_fallback
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

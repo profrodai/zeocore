@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/core/base/auth_provider_impl.py
-# role: tests
-# neighbors: __init__.py, config_provider_impl.py, integration_service_impl.py, test_auth_provider.py, test_base.py, test_config_provider.py (+3 more)
-# exports: MockAuthProvider
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

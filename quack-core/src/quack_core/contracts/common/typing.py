@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/contracts/common/typing.py
-# module: quack_core.contracts.common.typing
-# role: module
-# neighbors: __init__.py, enums.py, ids.py, time.py, versions.py
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

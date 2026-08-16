@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/fs/normalize.py
-# module: quack_core.core.fs.normalize
-# role: module
-# neighbors: __init__.py, protocols.py, plugin.py, results.py, exceptions.py
-# exports: coerce_path, coerce_path_str, safe_path_str, coerce_path_result, extract_path_from_result
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

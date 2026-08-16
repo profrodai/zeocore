@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/llms/mocks/clients.py
-# role: tests
-# neighbors: __init__.py, anthropic.py, base.py, openai.py
-# exports: MockClient, create_mock_client
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

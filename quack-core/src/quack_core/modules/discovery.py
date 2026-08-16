@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/modules/discovery.py
-# module: quack_core.modules.discovery
-# role: module
-# neighbors: __init__.py, protocols.py, registry.py
-# exports: PluginInfo, PluginEntryPoint, LoadResult, PluginLoader, list_available_entry_points, load_enabled_entry_points, load_enabled_modules
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

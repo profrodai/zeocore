@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/github/test_protocols.py
-# role: tests
-# neighbors: __init__.py, conftest.py, test_api.py, test_auth.py, test_client.py, test_config.py (+5 more)
-# exports: TestGitHubProtocols
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """Tests for GitHub integration protocols."""

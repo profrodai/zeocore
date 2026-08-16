@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/google/drive/operations/test_operations_folder.py
-# role: tests
-# neighbors: __init__.py, test_operations_download.py, test_operations_list_files.py, test_operations_permissions.py, test_operations_upload.py
-# exports: TestDriveOperationsFolder
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

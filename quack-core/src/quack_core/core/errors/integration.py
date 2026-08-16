@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/errors/integration.py
-# module: quack_core.core.errors.integration
-# role: module
-# neighbors: __init__.py, base.py, handlers.py
-# exports: QuackIntegrationError, QuackAuthenticationError, QuackApiError, QuackQuotaExceededError
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

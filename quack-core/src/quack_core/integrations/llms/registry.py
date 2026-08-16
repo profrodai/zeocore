@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/llms/registry.py
-# module: quack_core.integrations.llms.registry
-# role: module
-# neighbors: __init__.py, models.py, protocols.py, config.py, fallback.py
-# exports: register_llm_client, get_llm_client
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

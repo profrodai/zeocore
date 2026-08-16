@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/google/drive/utils/test_utils_api.py
-# role: utils
-# neighbors: __init__.py, test_utils_query.py
-# exports: TestDriveUtilsApi
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

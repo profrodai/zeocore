@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/llms/service/test_initialization.py
-# role: service
-# neighbors: __init__.py, test_dependencies.py, test_integration.py, test_operations.py
-# exports: TestInitialization
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

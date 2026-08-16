@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/llms/protocols.py
-# module: quack_core.integrations.llms.protocols
-# role: protocols
-# neighbors: __init__.py, models.py, config.py, registry.py, fallback.py
-# exports: LLMProviderProtocol
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

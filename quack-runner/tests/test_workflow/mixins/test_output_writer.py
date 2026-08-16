@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-runner/tests/test_workflow/mixins/test_output_writer.py
-# role: tests
-# neighbors: __init__.py, test_integration_enabled.py, test_save_output_mixin.py
-# exports: StubFS, patch_fs_service, test_write_dict_json, test_write_plain_text, test_write_failure_raises
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from pathlib import Path

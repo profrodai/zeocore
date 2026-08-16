@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/pandoc/operations/test_utils_fix.py
-# role: tests
-# neighbors: __init__.py, test_html_to_md.py, test_md_to_docx.py, test_utils.py
-# exports: patched_check_file_size, patched_check_conversion_ratio, patched_track_metrics, apply_utils_patches
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

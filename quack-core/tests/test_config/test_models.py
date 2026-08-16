@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_config/test_models.py
-# role: tests
-# neighbors: __init__.py, test_loader.py, test_utils.py
-# exports: TestConfigModels
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

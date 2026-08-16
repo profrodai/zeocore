@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_tools/mixins/test_env_init.py
-# role: tests
-# neighbors: __init__.py, test_integration_enabled.py, test_lifecycle.py
-# exports: TestToolEnvInitializerMixin, TestToolEnvInitializerMixinWithPytest
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

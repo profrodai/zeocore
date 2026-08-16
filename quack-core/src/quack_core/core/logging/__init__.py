@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/logging/__init__.py
-# module: quack_core.core.logging.__init__
-# role: module
-# neighbors: config.py, formatter.py, logger.py
-# exports: get_logger, configure_logger, LOG_LEVELS, LogLevel
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

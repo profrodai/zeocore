@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/paths/api/public/path_utils.py
-# module: quack_core.core.paths.api.public.path_utils
-# role: api
-# neighbors: __init__.py, results.py
-# exports: ensure_clean_path, is_likely_drive_id, extract_path_from_path_result_string
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

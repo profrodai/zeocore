@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-runner/tests/test_workflow/output/test_base.py
-# role: tests
-# neighbors: __init__.py, test_writers.py
-# exports: test_base_is_abstract
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 import pytest
