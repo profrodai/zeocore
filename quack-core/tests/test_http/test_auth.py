@@ -7,11 +7,12 @@ Tests for authentication functionality.
 """
 
 import pytest
+from fastapi.testclient import TestClient
 from quack_core.adapters.http.auth import require_bearer, sign_payload
 from quack_core.adapters.http.config import HttpAdapterConfig
 
 
-def test_require_bearer_no_auth_configured():
+def test_require_bearer_no_auth_configured() -> None:
     """Test that auth is bypassed when not configured."""
     cfg = HttpAdapterConfig(auth_token=None)
 
@@ -26,7 +27,7 @@ def test_require_bearer_no_auth_configured():
     require_bearer(request, cfg)
 
 
-def test_require_bearer_missing_header():
+def test_require_bearer_missing_header() -> None:
     """Test auth failure when header missing."""
     cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
@@ -42,7 +43,7 @@ def test_require_bearer_missing_header():
     assert "Authorization header required" in str(exc_info.value)
 
 
-def test_require_bearer_wrong_scheme():
+def test_require_bearer_wrong_scheme() -> None:
     """Test auth failure with wrong scheme."""
     cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
@@ -58,7 +59,7 @@ def test_require_bearer_wrong_scheme():
     assert "Bearer token required" in str(exc_info.value)
 
 
-def test_require_bearer_wrong_token():
+def test_require_bearer_wrong_token() -> None:
     """Test auth failure with wrong token."""
     cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
@@ -74,7 +75,7 @@ def test_require_bearer_wrong_token():
     assert "Invalid token" in str(exc_info.value)
 
 
-def test_require_bearer_success():
+def test_require_bearer_success() -> None:
     """Test successful auth."""
     cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
@@ -88,7 +89,7 @@ def test_require_bearer_success():
     require_bearer(request, cfg)
 
 
-def test_sign_payload():
+def test_sign_payload() -> None:
     """Test payload signing."""
     payload = {"job_id": "123", "status": "done"}
     secret = "test-secret"  # noqa: S105 -- test fixture, fake credential value, not a real secret
@@ -108,20 +109,22 @@ def test_sign_payload():
     assert signature != signature3
 
 
-def test_health_endpoint_with_auth(test_client, auth_headers):
+def test_health_endpoint_with_auth(
+    test_client: TestClient, auth_headers: dict[str, str]
+) -> None:
     """Test health endpoint works with auth."""
     response = test_client.get("/health/live", headers=auth_headers)
     assert response.status_code == 200
     assert response.json() == {"ok": True}
 
 
-def test_health_endpoint_without_auth(no_auth_client):
+def test_health_endpoint_without_auth(no_auth_client: TestClient) -> None:
     """Test health endpoint works without auth when not required."""
     response = no_auth_client.get("/health/live")
     assert response.status_code == 200
 
 
-def test_health_endpoint_no_auth_required(no_auth_client):
+def test_health_endpoint_no_auth_required(no_auth_client: TestClient) -> None:
     """Test health endpoint works when auth not required."""
     response = no_auth_client.get("/health/live")
     assert response.status_code == 200

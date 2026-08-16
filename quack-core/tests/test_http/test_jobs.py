@@ -11,6 +11,7 @@ import uuid
 
 import pytest
 from quack_core.core.jobs import (
+    InMemoryJobStore,
     JobData,
     JobStatus,
     ThreadPoolJobRunner,
@@ -18,7 +19,7 @@ from quack_core.core.jobs import (
 from quack_core.core.registry import Operation, OperationRegistry
 
 
-def test_job_store_create_and_get(job_store):
+def test_job_store_create_and_get(job_store: InMemoryJobStore) -> None:
     """Test creating and retrieving jobs."""
     job_data = JobData(
         job_id=str(uuid.uuid4()),
@@ -38,7 +39,7 @@ def test_job_store_create_and_get(job_store):
     assert retrieved.status == JobStatus.QUEUED
 
 
-def test_job_store_update(job_store):
+def test_job_store_update(job_store: InMemoryJobStore) -> None:
     """Test updating job data."""
     job_data = JobData(
         job_id=str(uuid.uuid4()),
@@ -59,7 +60,7 @@ def test_job_store_update(job_store):
     assert retrieved.status == JobStatus.RUNNING
 
 
-def test_job_store_update_nonexistent(job_store):
+def test_job_store_update_nonexistent(job_store: InMemoryJobStore) -> None:
     """Test updating non-existent job raises error."""
     job_data = JobData(
         job_id=str(uuid.uuid4()),
@@ -73,7 +74,7 @@ def test_job_store_update_nonexistent(job_store):
         job_store.update(job_data)
 
 
-def test_job_store_idempotency(job_store):
+def test_job_store_idempotency(job_store: InMemoryJobStore) -> None:
     """Test finding jobs by idempotency hash."""
     hash_value = "test-hash-123"
 
@@ -99,7 +100,7 @@ def test_job_store_idempotency(job_store):
     assert not_found is None
 
 
-def test_job_store_cleanup_expired(job_store):
+def test_job_store_cleanup_expired(job_store: InMemoryJobStore) -> None:
     """Test cleanup of expired jobs."""
     current_time = time.time()
 
@@ -144,7 +145,7 @@ def test_job_store_cleanup_expired(job_store):
     assert job_store.get(running_job.job_id) is not None
 
 
-def test_job_runner_execution(job_store):
+def test_job_runner_execution(job_store: InMemoryJobStore) -> None:
     """Test job runner executes jobs successfully."""
     registry = OperationRegistry()
 
@@ -204,7 +205,7 @@ def test_job_runner_execution(job_store):
         runner.shutdown(wait=True)
 
 
-def test_job_runner_error_handling(job_store):
+def test_job_runner_error_handling(job_store: InMemoryJobStore) -> None:
     """Test job runner handles errors properly."""
     registry = OperationRegistry()
 
@@ -256,6 +257,7 @@ def test_job_runner_error_handling(job_store):
         final_job = job_store.get(job_id)
         assert final_job is not None
         assert final_job.status == JobStatus.ERROR
+        assert final_job.error is not None
         assert "Test error message" in final_job.error
         assert final_job.result is None
         assert final_job.finished_at is not None
@@ -264,7 +266,7 @@ def test_job_runner_error_handling(job_store):
         runner.shutdown(wait=True)
 
 
-def test_job_runner_async_operation(job_store):
+def test_job_runner_async_operation(job_store: InMemoryJobStore) -> None:
     """Test job runner executes async operations."""
     registry = OperationRegistry()
 
@@ -322,7 +324,7 @@ def test_job_runner_async_operation(job_store):
         runner.shutdown(wait=True)
 
 
-def test_job_data_to_dict():
+def test_job_data_to_dict() -> None:
     """Test JobData serialization to dict."""
     job_data = JobData(
         job_id="test-123",
