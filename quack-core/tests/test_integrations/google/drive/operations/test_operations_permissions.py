@@ -1,5 +1,5 @@
 # === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/operations/test_operations_permissions.py
+# path: quack-core/tests/test_integrations/google/drive/operations/test_operations_permissions.py  # noqa: E501
 # === QV-LLM:END ===
 
 """
