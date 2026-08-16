@@ -197,6 +197,7 @@ class TestLLMIntegrationInitializeBranches:
             )
             result = service.initialize()
             assert result.success is False
+            assert result.error is not None
             assert "base init failed" in result.error
 
     def test_invalid_fallback_config_warns_and_uses_single_provider(self) -> None:
@@ -236,6 +237,7 @@ class TestLLMIntegrationInitializeBranches:
         service.config = {"timeout": "not-a-number-and-not-coercible-????"}
         result = service.initialize()
         assert result.success is False
+        assert result.error is not None
         assert "Invalid LLM configuration" in result.error
 
     def test_valid_fallback_config_dispatches_to_fallback_init(self) -> None:
@@ -268,6 +270,7 @@ class TestLLMIntegrationInitializeBranches:
         ):
             result = service.initialize()
             assert result.success is False
+            assert result.error is not None
             assert "Failed to initialize LLM integration" in result.error
 
 
@@ -295,6 +298,7 @@ class TestLLMIntegrationSingleProviderFallbackBranches:
             # provider fell back to anthropic (first match in the
             # ["openai", "anthropic", "ollama"] preference order present
             # in available_providers)
+            assert result.message is not None
             assert "anthropic" in result.message
 
     def test_no_real_providers_available_falls_back_to_mock(self) -> None:
@@ -337,6 +341,7 @@ class TestLLMIntegrationSingleProviderFallbackBranches:
             result = service._initialize_single_provider(service.config, ["openai"])
             assert result.success is True
             assert service._using_mock is True
+            assert result.message is not None
             assert "using mock client" in result.message
 
 
@@ -460,6 +465,7 @@ class TestLLMIntegrationChatCountTokensNoneClient:
         service.client = None
         result = service.chat([ChatMessage(role=RoleType.USER, content="hi")])
         assert result.success is False
+        assert result.error is not None
         assert "LLM client not initialized" in result.error
 
     def test_count_tokens_with_no_client_after_init(self) -> None:
@@ -468,6 +474,7 @@ class TestLLMIntegrationChatCountTokensNoneClient:
         service.client = None
         result = service.count_tokens([ChatMessage(role=RoleType.USER, content="hi")])
         assert result.success is False
+        assert result.error is not None
         assert "LLM client not initialized" in result.error
 
     def test_chat_mock_note_appended_when_using_mock(self) -> None:
@@ -477,6 +484,7 @@ class TestLLMIntegrationChatCountTokensNoneClient:
         service.client = MockClient(responses=["hello"])
         result = service.chat([ChatMessage(role=RoleType.USER, content="hi")])
         assert result.success is True
+        assert result.message is not None
         assert "using mock LLM" in result.message
 
     def test_count_tokens_mock_note_appended_when_using_mock(self) -> None:
@@ -486,6 +494,7 @@ class TestLLMIntegrationChatCountTokensNoneClient:
         service.client = MockClient(token_counts=[7])
         result = service.count_tokens([ChatMessage(role=RoleType.USER, content="hi")])
         assert result.success is True
+        assert result.message is not None
         assert "using mock estimation" in result.message
 
 
