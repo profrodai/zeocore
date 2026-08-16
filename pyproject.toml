@@ -112,6 +112,16 @@ warn_unused_ignores = true
 warn_return_any = true
 strict_optional = true
 
+[[tool.mypy.overrides]]
+# RULING-251 s1 / round19: googleapiclient and google_auth_oauthlib ship no py.typed
+# marker and no bundled stubs, firing an identical import-untyped finding at every one
+# of their 14 import sites across the google integration's src and test trees. Scoped
+# config fix, not 14 inline ignores and not a new stub-package dependency (recon ruled
+# both the wrong shape) -- same precedent shape as RULING-233's per-file N803 excludes
+# for the same googleapiclient boundary above.
+module = ["googleapiclient.*", "google_auth_oauthlib.*"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["quack-core/tests", "quackverse/tests", "quackster/tests"]
 python_files = ["test_*.py"]
