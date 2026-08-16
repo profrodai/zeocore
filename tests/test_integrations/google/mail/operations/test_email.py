@@ -29,10 +29,10 @@ from quack_core.integrations.google.mail.protocols import (
 class _MockRequest(GmailRequest):
     """Protocol-compatible mock of a Gmail API request."""
 
-    def __init__(self, return_value) -> None:
+    def __init__(self, return_value: dict | None) -> None:
         self.return_value = return_value
 
-    def execute(self):
+    def execute(self) -> dict | None:
         return self.return_value
 
 

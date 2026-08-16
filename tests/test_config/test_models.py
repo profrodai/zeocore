@@ -285,7 +285,7 @@ class TestConfigModels:
 
         # Test setup_logging method
         # Add the setup_logging method to the QuackConfig class
-        def mock_setup_logging(self):
+        def mock_setup_logging(self: QuackConfig) -> None:
             self.logging.setup_logging()
 
         # Temporarily add the setup_logging method
