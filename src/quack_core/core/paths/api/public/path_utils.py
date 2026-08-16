@@ -10,10 +10,11 @@ converting various path-like objects to clean path strings.
 """
 
 import re
-from typing import Any
+
+from quack_core.core.fs.protocols import FsPathLike
 
 
-def ensure_clean_path(path_or_result: Any) -> str:
+def ensure_clean_path(path_or_result: FsPathLike) -> str:
     """
     Extract a clean path string from various input types.
 
