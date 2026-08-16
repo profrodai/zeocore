@@ -36,10 +36,13 @@ class CapabilityResult(BaseModel, Generic[T]):
     - Debugging (structured errors with context)
 
     Invariants:
-        - If status == error, then error must be present AND machine_message must be present
+        - If status == error, then error must be present AND machine_message
+          must be present
         - If status == error, then machine_message must start with QC_
-        - If status == success, then error must be None AND machine_message should be None
-        - If status == skipped, then error must be None AND machine_message must be present
+        - If status == success, then error must be None AND machine_message
+          should be None
+        - If status == skipped, then error must be None AND machine_message
+          must be present
         - If status == skipped, then machine_message must start with QC_
         - If machine_message is present, it must start with QC_
 
@@ -87,7 +90,9 @@ class CapabilityResult(BaseModel, Generic[T]):
     # Telemetry
     run_id: str = Field(
         default_factory=generate_run_id,
-        description="Unique identifier for this execution (should match RunManifest.run_id)",
+        description=(
+            "Unique identifier for this execution (should match RunManifest.run_id)"
+        ),
     )
 
     timestamp: datetime = Field(
@@ -103,7 +108,9 @@ class CapabilityResult(BaseModel, Generic[T]):
 
     machine_message: str | None = Field(
         None,
-        description="Machine-readable code for orchestrator branching (must start with QC_)",
+        description=(
+            "Machine-readable code for orchestrator branching (must start with QC_)"
+        ),
     )
 
     # Diagnostics

@@ -47,7 +47,9 @@ class CapabilityError(BaseModel):
 
     details: dict[str, Any] = Field(
         default_factory=dict,
-        description="Additional context for debugging (exception type, stack traces, etc.)",
+        description=(
+            "Additional context for debugging (exception type, stack traces, etc.)"
+        ),
     )
 
     @field_validator("code")

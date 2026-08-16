@@ -19,7 +19,8 @@ class PromptStrategy(BaseModel):
     )
     input_vars: list[str] = Field(..., description="List of input variables required")
 
-    # exclude=True ensures this callable isn't serialized, preventing crashes during logging/dumping
+    # exclude=True ensures this callable isn't serialized, preventing crashes
+    # during logging/dumping
     render_fn: Callable[..., str] = Field(
         ..., description="Function that renders the prompt", exclude=True
     )

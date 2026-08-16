@@ -62,7 +62,8 @@ def load_enabled_entry_points(
         registry: The registry to populate.
         enabled: List of integration_ids to load. Order is preserved.
         group: Entry point group.
-        strict: If True, fails if a requested integration is missing OR fails initialization.
+        strict: If True, fails if a requested integration is missing OR
+            fails initialization.
         initialize: If True, calls .initialize() on the integration instance.
 
     Returns:
@@ -105,7 +106,10 @@ def load_enabled_entry_points(
             if not isinstance(instance, IntegrationProtocol):
                 # Duck-typing check if isinstance fails due to import quirks
                 if not (hasattr(instance, "initialize") and hasattr(instance, "name")):
-                    error_msg = f"Instance for {integration_id} does not satisfy IntegrationProtocol."
+                    error_msg = (
+                        f"Instance for {integration_id} does not satisfy "
+                        f"IntegrationProtocol."
+                    )
                     report.errors.append(error_msg)
                     report.success = False
                     continue
@@ -122,7 +126,8 @@ def load_enabled_entry_points(
 
                     if strict:
                         logger.error(
-                            f"Strict mode enabled: Aborting after initialization failure of {integration_id}"
+                            f"Strict mode enabled: Aborting after "
+                            f"initialization failure of {integration_id}"
                         )
                         return report
 

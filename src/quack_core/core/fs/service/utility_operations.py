@@ -307,7 +307,8 @@ class UtilityOperationsMixin:
     def is_path_writeable(self, path: FsPathLike) -> DataResult[bool]:
         """
         Checks if the path is writeable.
-        WARNING: This method performs a write probe (side effect) if the path does not exist.
+        WARNING: This method performs a write probe (side effect) if the path
+        does not exist.
         """
         try:
             norm_path = self._normalize_input_path(path)

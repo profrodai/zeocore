@@ -96,7 +96,8 @@ class PathValidationMixin:
 
     def validate_path(self, path: FsPathLike) -> BoolResult:
         """
-        Strictly validates that a path is safe, absolute (after normalization), and syntactically valid.
+        Strictly validates that a path is safe, absolute (after normalization),
+        and syntactically valid.
         Does NOT check existence.
         Alias for is_safe_path(), provided for architectural alignment.
         """

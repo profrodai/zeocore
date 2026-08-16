@@ -19,7 +19,9 @@ def render_zero_shot(task_description: str) -> str:
 zero_shot_strategy = PromptStrategy(
     id="zero-shot-prompting",
     label="Zero-shot Prompting",
-    description="Uses a task description without examples to perform zero-shot prompting.",
+    description=(
+        "Uses a task description without examples to perform zero-shot prompting."
+    ),
     input_vars=["task_description"],
     render_fn=render_zero_shot,
     tags=["zero-shot", "general-prompting"],
@@ -153,7 +155,9 @@ react_agentic_strategy = PromptStrategy(
     input_vars=["task_description", "tools", "examples"],
     render_fn=render_react_agentic,
     tags=["reasoning", "tool-use", "multi-step"],
-    origin="ReAct: Synergizing Reasoning and Acting in Language Models (Yao et al., 2022)",
+    origin=(
+        "ReAct: Synergizing Reasoning and Acting in Language Models (Yao et al., 2022)"
+    ),
     priority=100,
     example=None,
 )
@@ -181,7 +185,10 @@ zero_shot_cot_strategy = PromptStrategy(
     input_vars=["task_description", "final_instruction"],
     render_fn=render_zero_shot_cot,
     tags=["reasoning", "zero-shot", "step-by-step"],
-    origin="Chain-of-Thought Prompting Elicits Reasoning in Large Language Models (Wei et al., 2022)",
+    origin=(
+        "Chain-of-Thought Prompting Elicits Reasoning in Large Language "
+        "Models (Wei et al., 2022)"
+    ),
     priority=100,
     example=None,
 )
@@ -194,7 +201,8 @@ def render_task_decomposition(
     output_format_section = ""
     if output_format:
         output_format_section = f"""
-After you've completed all the steps, format your final answer according to these instructions:
+After you've completed all the steps, format your final answer according to
+these instructions:
 {output_format}
 """
 
@@ -216,7 +224,9 @@ To solve this effectively, please:
 task_decomposition_strategy = PromptStrategy(
     id="task-decomposition",
     label="Task Decomposition",
-    description="Breaks down complex tasks into manageable subtasks for sequential solving.",
+    description=(
+        "Breaks down complex tasks into manageable subtasks for sequential solving."
+    ),
     input_vars=["task_description", "output_format"],
     render_fn=render_task_decomposition,
     tags=["decomposition", "complex-tasks", "structured-thinking"],
@@ -518,7 +528,9 @@ Final Answer: <your answer>
 react_prompting_strategy = PromptStrategy(
     id="react-prompting",
     label="ReAct Prompting",
-    description="Combines reasoning and tool use in an interleaved thought-action loop.",
+    description=(
+        "Combines reasoning and tool use in an interleaved thought-action loop."
+    ),
     input_vars=["task_description", "tools", "examples"],
     render_fn=render_react_prompting,
     tags=["react", "agent"],
@@ -554,14 +566,17 @@ def render_self_consistency_prompting(task_description: str) -> str:
     return f"""
 {task_description}
 
-Generate multiple reasoning paths with a higher temperature and select the most common answer.
+Generate multiple reasoning paths with a higher temperature and select the
+most common answer.
 """.strip()
 
 
 self_consistency_prompting_strategy = PromptStrategy(
     id="self-consistency-prompting",
     label="Self-consistency Prompting",
-    description="Combines sampling and majority voting over multiple reasoning chains.",
+    description=(
+        "Combines sampling and majority voting over multiple reasoning chains."
+    ),
     input_vars=["task_description"],
     render_fn=render_self_consistency_prompting,
     tags=["self-consistency", "robustness"],
@@ -604,7 +619,9 @@ Now, using the above, {main_task}
 step_back_prompting_strategy = PromptStrategy(
     id="step-back-prompting",
     label="Step-back Prompting",
-    description="Activates background reasoning before the main task for better context.",
+    description=(
+        "Activates background reasoning before the main task for better context."
+    ),
     input_vars=["background_prompt", "main_task"],
     render_fn=render_step_back_prompting,
     tags=["step-back", "reasoning"],
@@ -617,27 +634,34 @@ step_back_prompting_strategy = PromptStrategy(
 # --- System Prompt Engineer ---
 def render_system_prompt_engineer(strategy: str) -> str:
     return f"""
-You are an expert prompt engineer with deep knowledge of LLM capabilities and limitations.
+You are an expert prompt engineer with deep knowledge of LLM capabilities and
+limitations.
 
 Your task is to rewrite and improve a given prompt {strategy}.
 
 For each prompt you receive:
 1. Analyze its structure, clarity, and potential ambiguities
 2. Consider what would make the prompt more effective for an LLM
-3. Rewrite it with precise instructions, clear constraints, and appropriate examples
+3. Rewrite it with precise instructions, clear constraints, and appropriate
+examples
 4. Add step-by-step reasoning guidance if the task requires complex thinking
 5. Ensure the prompt elicits the desired format and level of detail
 
-Aim for clarity, precision, and effectiveness. The improved prompt should be complete and ready to use without further modification.
+Aim for clarity, precision, and effectiveness. The improved prompt should be
+complete and ready to use without further modification.
 
-IMPORTANT: Only output the rewritten prompt without explanations or meta-commentary.
+IMPORTANT: Only output the rewritten prompt without explanations or
+meta-commentary.
 """.strip()
 
 
 system_prompt_engineer_strategy = PromptStrategy(
     id="system-prompt-engineer",
     label="System Prompt Engineer",
-    description="Generates improved system prompts by rewriting the provided prompt to enhance clarity, precision, and effectiveness.",
+    description=(
+        "Generates improved system prompts by rewriting the provided prompt "
+        "to enhance clarity, precision, and effectiveness."
+    ),
     input_vars=["strategy"],
     render_fn=render_system_prompt_engineer,
     tags=["system-prompt", "prompt-engineering", "rewriting"],
@@ -695,7 +719,8 @@ def render_tree_of_thought_prompting(task_description: str) -> str:
     return f"""
 {task_description}
 
-Explore several alternative intermediate steps in parallel and select the optimal result.
+Explore several alternative intermediate steps in parallel and select the
+optimal result.
 """.strip()
 
 

@@ -439,7 +439,8 @@ class PluginLoader:
 
                         # Use DEBUG level instead of INFO (quieter by default)
                         self.logger.debug(
-                            f"Loaded plugin '{plugin.name}' from entry point '{ep.name}'"
+                            f"Loaded plugin '{plugin.name}' from entry "
+                            f"point '{ep.name}'"
                         )
                 except Exception as e:
                     self.logger.error(f"Failed to load entry point {ep.name}: {e}")

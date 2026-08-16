@@ -92,7 +92,10 @@ class GitHubAuthProvider(BaseAuthProvider):
             logger.error("No GitHub token available for authentication")
             return AuthResult.error_result(
                 error="No GitHub token provided",
-                message="Please provide a valid GitHub token via parameter, credentials file, or the GITHUB_TOKEN environment variable",
+                message=(
+                    "Please provide a valid GitHub token via parameter, "
+                    "credentials file, or the GITHUB_TOKEN environment variable"
+                ),
             )
 
         # Validate the token by making a test request to the GitHub API
