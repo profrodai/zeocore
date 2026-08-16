@@ -287,9 +287,7 @@ def test_path_exists_in_known_dir(tmp_path: Path, path_service: PathService) -> 
         assert known_dir_result.success
 
         # Test existing path
-        assert os.path.exists(
-            os.path.join(known_dir_result.path, "images", "logo.png")
-        )
+        assert os.path.exists(os.path.join(known_dir_result.path, "images", "logo.png"))
 
         # Test non-existing path
         assert not os.path.exists(

@@ -39,9 +39,7 @@ def mock_paths_join_path() -> Generator[None]:
     repo's CWD-derived base_dir) actually reach the filesystem instead of being
     rejected before they are ever checked.
     """
-    with patch(
-        "quack_core.core.fs.service.standalone.join_path"
-    ) as mock_join:
+    with patch("quack_core.core.fs.service.standalone.join_path") as mock_join:
 
         def _mock_join(*parts: FsPathLike) -> DataResult[str]:
             if not parts:
@@ -66,9 +64,7 @@ def mock_paths_create_directory() -> Generator[None]:
     normalize_path are - out-of-base_dir paths (every pytest tmp_path) are rejected
     before anything is written to disk. Same rationale as mock_paths_join_path.
     """
-    with patch(
-        "quack_core.core.fs.service.standalone.create_directory"
-    ) as mock_create:
+    with patch("quack_core.core.fs.service.standalone.create_directory") as mock_create:
 
         def _mock_create(path: FsPathLike, exist_ok: bool = True) -> OperationResult:
             p = Path(str(path))

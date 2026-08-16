@@ -339,9 +339,7 @@ class GoogleConfigProvider(BaseConfigProvider):
         for key in ["client_secrets_file", "credentials_file"]:
             if key in resolved_config and resolved_config[key]:
                 try:
-                    result = path_service.resolve_project_path(
-                        resolved_config[key]
-                    )
+                    result = path_service.resolve_project_path(resolved_config[key])
                     if isinstance(result, str):
                         # Some callers (e.g. mocked in tests) may return a
                         # bare string rather than a PathResult; accept both.
