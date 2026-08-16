@@ -26,7 +26,7 @@ class MyConfig(QuackToolConfigModel):
     log_level: str = Field("DEBUG")
 
 
-def main():
+def main() -> None:
     """Test the tooling module."""
     # Load the tool config
     config, tool_config = load_tool_config("testtool", MyConfig)

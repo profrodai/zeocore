@@ -16,15 +16,22 @@ This is NOT production code - it's a teaching example.
 Production code should use ToolRunner from quack_runner.workflow.
 """
 
+from typing import Any
+
 # Import the example tool
 from echo_tool import EchoTool
 from quack_core.contracts import (
+    CapabilityResult,
     EchoRequest,
 )
 from quack_core.tools import ToolContext
+from quack_core.tools.base import BaseQuackTool
 
 
-def run_tool_locally(tool_class, request):
+def run_tool_locally(
+    tool_class: type[BaseQuackTool],
+    request: Any,  # noqa: ANN401 -- request type is per-tool, mirrors BaseQuackTool.run/ToolProtocol.run (structural, no common request base)
+) -> CapabilityResult[Any]:
     """
     Run a tool locally with minimal setup.
 
@@ -67,7 +74,7 @@ def run_tool_locally(tool_class, request):
     return result
 
 
-def main():
+def main() -> None:
     """
     Main entry point - demonstrates running the echo tool.
     """

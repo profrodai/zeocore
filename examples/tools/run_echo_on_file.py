@@ -28,7 +28,7 @@ from echo_tool import EchoTool
 from quack_core.contracts import CapabilityStatus, EchoRequest
 
 
-def main():
+def main() -> None:
     """
     Demonstrate file-based tool execution.
 

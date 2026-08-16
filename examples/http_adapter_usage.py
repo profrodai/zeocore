@@ -13,7 +13,7 @@ from quack_core.adapters.http.service import run
 from quack_core.config.tooling import load_tool_config, setup_tool_logging
 
 
-def main():
+def main() -> None:
     """Main function demonstrating HTTP adapter usage."""
 
     # Set up logging for the HTTP adapter
@@ -169,7 +169,7 @@ class QuackCoreHTTPClient:
             return response.json()
 
 
-async def demo():
+async def demo() -> None:
     """Demonstrate the HTTP client."""
 
     client = QuackCoreHTTPClient(
@@ -271,7 +271,7 @@ def verify_signature(body: bytes, signature: str, secret: str) -> bool:
 
 
 @app.post("/webhook/quackcore")
-async def handle_job_callback(request: Request):
+async def handle_job_callback(request: Request) -> dict[str, Any]:
     """Handle job completion callbacks from quack_core."""
 
     body = await request.body()
@@ -309,7 +309,7 @@ async def handle_job_callback(request: Request):
 
 
 @app.get("/health")
-async def health():
+async def health() -> dict[str, bool]:
     """Health check endpoint."""
     return {"ok": True}
 
