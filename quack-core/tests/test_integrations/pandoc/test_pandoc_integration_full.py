@@ -9,6 +9,7 @@ import types
 from collections.abc import Generator
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 import quack_core.core.fs.service.standalone
@@ -101,7 +102,11 @@ def fs_stub(monkeypatch: MonkeyPatch) -> Generator[SimpleNamespace, None, None]:
 def test_verify_pandoc_success(monkeypatch: MonkeyPatch) -> None:
     # Create a dummy pypandoc module
     dummy = types.ModuleType("pypandoc")
-    dummy.get_pandoc_version = lambda: "2.11"
+    # `get_pandoc_version` is not a static ModuleType attribute -- deliberate
+    # dynamic monkeypatch of a synthetic module, bound through an Any-typed
+    # local rather than ignored per-access.
+    dummy_any: Any = dummy
+    dummy_any.get_pandoc_version = lambda: "2.11"
     monkeypatch.setitem(sys.modules, "pypandoc", dummy)
 
     ver = verify_pandoc()
@@ -151,7 +156,12 @@ def test_util_get_file_info_success() -> None:
 
 
 def test_util_get_file_info_not_found(monkeypatch: MonkeyPatch) -> None:
-    quack_core.core.fs.service.standalone.get_file_info = lambda p: SimpleNamespace(
+    # standalone.get_file_info's real signature returns FileInfoResult;
+    # a SimpleNamespace duck-types it here for the test double. Deliberate
+    # return-type widening, scoped through an Any-typed local rather than
+    # ignored -- the callee only reads .success/.exists via getattr/hasattr.
+    standalone_any: Any = quack_core.core.fs.service.standalone
+    standalone_any.get_file_info = lambda p: SimpleNamespace(
         success=False, exists=False
     )
     with pytest.raises(QuackIntegrationError):
@@ -198,7 +208,11 @@ def test_validate_html_structure_empty_links() -> None:
 def converter(monkeypatch: MonkeyPatch) -> DocumentConverter:
     # Inject our dummy pypandoc module for converter init
     dummy = types.ModuleType("pypandoc")
-    dummy.get_pandoc_version = lambda: "2.11"
+    # `get_pandoc_version` is not a static ModuleType attribute -- deliberate
+    # dynamic monkeypatch of a synthetic module, bound through an Any-typed
+    # local rather than ignored per-access.
+    dummy_any: Any = dummy
+    dummy_any.get_pandoc_version = lambda: "2.11"
     monkeypatch.setitem(sys.modules, "pypandoc", dummy)
 
     config = PandocConfig()
@@ -352,7 +366,10 @@ def test_pandoc_config_default() -> None:
 
 def test_pandoc_config_validate_output_dir(monkeypatch: MonkeyPatch) -> None:
     # Invalidate path
-    quack_core.core.fs.service.standalone.get_path_info = lambda p: SimpleNamespace(
+    # Same deliberate return-type widening as test_util_get_file_info_not_found
+    # above -- standalone.get_path_info's real return type is PathResult.
+    standalone_path_any: Any = quack_core.core.fs.service.standalone
+    standalone_path_any.get_path_info = lambda p: SimpleNamespace(
         success=False
     )
     with pytest.raises(ValueError):
