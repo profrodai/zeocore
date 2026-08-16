@@ -36,11 +36,16 @@ class FallbackConfig(BaseModel):
     )
     fail_fast_on_auth_errors: bool = Field(
         True,
-        description="Immediately try next provider on authentication errors without retrying",
+        description=(
+            "Immediately try next provider on authentication errors without retrying"
+        ),
     )
     stop_on_successful_provider: bool = Field(
         True,
-        description="Whether to remember and use only the last successful provider for subsequent calls",
+        description=(
+            "Whether to remember and use only the last successful provider "
+            "for subsequent calls"
+        ),
     )
 
 
@@ -115,8 +120,9 @@ class FallbackLLMClient(LLMClient):
         # Track the last successful provider
         self._last_successful_provider: str | None = None
 
+        providers_str = ", ".join(self._fallback_config.providers)
         self.logger.info(
-            f"Initialized fallback LLM client with providers: {', '.join(self._fallback_config.providers)}"
+            f"Initialized fallback LLM client with providers: {providers_str}"
         )
 
     @property
@@ -268,7 +274,7 @@ class FallbackLLMClient(LLMClient):
         Returns:
             IntegrationResult[str]: Result of the chat completion request
         """
-        # If we have a successful provider and configuration says to use it, try it first
+        # If we have a successful provider and config says to use it, try it first
         if (
             self._last_successful_provider
             and self._fallback_config.stop_on_successful_provider
@@ -292,7 +298,8 @@ class FallbackLLMClient(LLMClient):
             provider_status = self._provider_status[provider]
             if not provider_status.available:
                 self.logger.info(
-                    f"Skipping provider {provider} (marked unavailable: {provider_status.last_error})"
+                    f"Skipping provider {provider} "
+                    f"(marked unavailable: {provider_status.last_error})"
                 )
                 continue
 
@@ -318,7 +325,8 @@ class FallbackLLMClient(LLMClient):
                 try:
                     # Start the request
                     self.logger.debug(
-                        f"Sending request to {provider} (attempt {attempt}/{max_attempts})"
+                        f"Sending request to {provider} "
+                        f"(attempt {attempt}/{max_attempts})"
                     )
 
                     # Set the model in options if not already set
@@ -364,12 +372,14 @@ class FallbackLLMClient(LLMClient):
                         and self._is_auth_error(e)
                     ):
                         self.logger.warning(
-                            f"Authentication error with {provider}, skipping remaining attempts: {e}"
+                            f"Authentication error with {provider}, "
+                            f"skipping remaining attempts: {e}"
                         )
                         last_error = e
                         break
 
-                    # If it's the last attempt for this provider, log and continue to next
+                    # If it's the last attempt for this provider, log and
+                    # continue to next
                     if attempt == max_attempts:
                         self.logger.warning(
                             f"All attempts failed for provider {provider}: {e}"
@@ -414,7 +424,7 @@ class FallbackLLMClient(LLMClient):
             IntegrationResult[int]: Result containing the token count
         """
         # Similar fallback logic as _chat_with_provider, but for token counting
-        # If we have a successful provider and configuration says to use it, try it first
+        # If we have a successful provider and config says to use it, try it first
         if (
             self._last_successful_provider
             and self._fallback_config.stop_on_successful_provider

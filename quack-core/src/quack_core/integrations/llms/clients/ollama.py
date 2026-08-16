@@ -87,7 +87,8 @@ class OllamaClient(LLMClient):
             return True
         except ImportError as e:
             raise QuackIntegrationError(
-                f"Failed to import required package: {e}. Please install requests: pip install requests",
+                f"Failed to import required package: {e}. "
+                "Please install requests: pip install requests",
                 original_error=e,
             ) from e
 
@@ -173,7 +174,8 @@ class OllamaClient(LLMClient):
 
         except ImportError as e:
             raise QuackIntegrationError(
-                f"Failed to import required package: {e}. Please install requests: pip install requests",
+                f"Failed to import required package: {e}. "
+                "Please install requests: pip install requests",
                 original_error=e,
             ) from e
         except Exception as e:
@@ -208,7 +210,8 @@ class OllamaClient(LLMClient):
             import requests
         except ImportError as e:
             return IntegrationResult.error_result(
-                f"Failed to import required package: {e}. Please install requests: pip install requests"
+                f"Failed to import required package: {e}. "
+                "Please install requests: pip install requests"
             )
 
         try:
@@ -307,7 +310,8 @@ class OllamaClient(LLMClient):
             import requests
         except ImportError as e:
             return IntegrationResult.error_result(
-                f"Failed to import required package: {e}. Please install requests: pip install requests"
+                f"Failed to import required package: {e}. "
+                "Please install requests: pip install requests"
             )
 
         try:
@@ -353,7 +357,10 @@ class OllamaClient(LLMClient):
                 estimated_tokens = len(combined_text) // 4
                 return IntegrationResult.success_result(
                     estimated_tokens,
-                    message="Token count is an estimation. Ollama token counting API failed.",
+                    message=(
+                        "Token count is an estimation. "
+                        "Ollama token counting API failed."
+                    ),
                 )
 
         except Exception as e:
