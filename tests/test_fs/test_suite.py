@@ -21,7 +21,7 @@ from quack_core.core.fs.service import create_service
 class TestPathNoneOnFailure:
     """Test that all service methods return path=None on failures."""
 
-    def test_read_text_invalid_path_returns_none(self):
+    def test_read_text_invalid_path_returns_none(self) -> None:
         """Verify read_text returns path=None on invalid input."""
         service = create_service()
         result = service.read_text(None)  # Invalid input
@@ -37,7 +37,7 @@ class TestPathNoneOnFailure:
             or result.meta["input_path"] is None
         )
 
-    def test_write_text_invalid_path_returns_none(self):
+    def test_write_text_invalid_path_returns_none(self) -> None:
         """Verify write_text returns path=None on invalid input."""
         service = create_service()
         result = service.write_text(None, "test")
@@ -46,7 +46,7 @@ class TestPathNoneOnFailure:
         assert result.path is None
         assert result.error_info is not None
 
-    def test_read_bytes_nonexistent_file_returns_none(self):
+    def test_read_bytes_nonexistent_file_returns_none(self) -> None:
         """Verify read_bytes returns path=None on error."""
         with tempfile.TemporaryDirectory() as tmpdir:
             service = create_service(base_dir=tmpdir)
@@ -60,7 +60,7 @@ class TestPathNoneOnFailure:
             assert result.meta is not None
             assert "input_path" in result.meta
 
-    def test_delete_invalid_path_returns_none(self):
+    def test_delete_invalid_path_returns_none(self) -> None:
         """Verify delete returns path=None on invalid input."""
         service = create_service()
         result = service.delete(12345)  # Invalid type
@@ -69,7 +69,7 @@ class TestPathNoneOnFailure:
         assert result.path is None
         assert result.error_info is not None
 
-    def test_copy_failure_returns_none_for_both_paths(self):
+    def test_copy_failure_returns_none_for_both_paths(self) -> None:
         """Verify copy returns path=None and original_path=None on failure."""
         service = create_service()
         result = service.copy("nonexistent.txt", "dest.txt")
@@ -82,7 +82,7 @@ class TestPathNoneOnFailure:
         assert result.meta is not None
         assert "input_src" in result.meta or "input_dst" in result.meta
 
-    def test_path_operations_return_none_on_failure(self):
+    def test_path_operations_return_none_on_failure(self) -> None:
         """Verify path operations return path=None on failure."""
         service = create_service()
 
@@ -105,7 +105,7 @@ class TestPathNoneOnFailure:
 class TestSandboxSecurity:
     """Test sandbox escape prevention and error handling."""
 
-    def test_path_escape_with_dotdot_blocked(self):
+    def test_path_escape_with_dotdot_blocked(self) -> None:
         """Verify ../ path traversal is blocked."""
         with tempfile.TemporaryDirectory() as tmpdir:
             service = create_service(base_dir=tmpdir, unsafe_allow_absolute_paths=False)
@@ -122,7 +122,7 @@ class TestSandboxSecurity:
                 or "traverse" in result.error_info.hint.lower()
             )
 
-    def test_absolute_path_outside_basedir_blocked(self):
+    def test_absolute_path_outside_basedir_blocked(self) -> None:
         """Verify absolute paths outside base_dir are blocked by default."""
         with tempfile.TemporaryDirectory() as tmpdir:
             service = create_service(base_dir=tmpdir, unsafe_allow_absolute_paths=False)
@@ -139,7 +139,7 @@ class TestSandboxSecurity:
                 or "outside" in result.error_info.hint.lower()
             )
 
-    def test_absolute_path_allowed_with_unsafe_flag(self):
+    def test_absolute_path_allowed_with_unsafe_flag(self) -> None:
         """Verify absolute paths work when unsafe flag is enabled."""
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create a file outside the base_dir
@@ -165,7 +165,7 @@ class TestSandboxSecurity:
 class TestErrorMappingOrder:
     """Test that error mapping handles specific errors before general ones."""
 
-    def test_sandbox_errors_mapped_before_value_error(self):
+    def test_sandbox_errors_mapped_before_value_error(self) -> None:
         """Verify sandbox errors are not caught as generic ValueError."""
         with tempfile.TemporaryDirectory() as tmpdir:
             service = create_service(base_dir=tmpdir)
@@ -178,7 +178,7 @@ class TestErrorMappingOrder:
             # Should NOT be mapped as generic validation_error
             assert result.error_info.type != "validation_error"
 
-    def test_file_not_found_mapped_before_os_error(self):
+    def test_file_not_found_mapped_before_os_error(self) -> None:
         """Verify FileNotFoundError is mapped specifically, not as generic io_error."""
         with tempfile.TemporaryDirectory() as tmpdir:
             service = create_service(base_dir=tmpdir)
@@ -193,7 +193,7 @@ class TestErrorMappingOrder:
 class TestNoRaiseContract:
     """Test that no public method raises exceptions."""
 
-    def test_read_text_never_raises(self):
+    def test_read_text_never_raises(self) -> None:
         """Verify read_text never raises, even with invalid inputs."""
         service = create_service()
 
@@ -210,7 +210,7 @@ class TestNoRaiseContract:
                     f"read_text raised {type(e).__name__} for input {invalid_input}"
                 )
 
-    def test_write_text_never_raises(self):
+    def test_write_text_never_raises(self) -> None:
         """Verify write_text never raises, even with invalid inputs."""
         service = create_service()
 
@@ -220,7 +220,7 @@ class TestNoRaiseContract:
         except Exception as e:
             pytest.fail(f"write_text raised {type(e).__name__}")
 
-    def test_all_path_operations_never_raise(self):
+    def test_all_path_operations_never_raise(self) -> None:
         """Verify all path operations never raise."""
         service = create_service()
 
@@ -244,7 +244,7 @@ class TestNoRaiseContract:
 class TestInputPathInMeta:
     """Test that failed operations include input_path in meta."""
 
-    def test_read_text_includes_input_in_meta(self):
+    def test_read_text_includes_input_in_meta(self) -> None:
         """Verify failed read_text includes input_path in meta."""
         with tempfile.TemporaryDirectory() as tmpdir:
             service = create_service(base_dir=tmpdir)
@@ -256,7 +256,7 @@ class TestInputPathInMeta:
             assert "input_path" in result.meta
             assert result.meta["input_path"] == "nonexistent.txt"
 
-    def test_copy_includes_both_paths_in_meta(self):
+    def test_copy_includes_both_paths_in_meta(self) -> None:
         """Verify failed copy includes both src and dst in meta."""
         service = create_service()
         result = service.copy("src.txt", "dst.txt")
@@ -269,7 +269,7 @@ class TestInputPathInMeta:
 class TestInternalLayerDoctrine:
     """Test that _internal layer follows doctrine (Path-only)."""
 
-    def test_internal_path_ops_accepts_path_only(self):
+    def test_internal_path_ops_accepts_path_only(self) -> None:
         """Verify _internal path operations work with Path objects."""
         from quack_core.core.fs._internal.path_ops import _resolve_path, _split_path
 
