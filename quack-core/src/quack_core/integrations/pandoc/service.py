@@ -484,7 +484,7 @@ class PandocIntegration(BaseIntegrationService):
 
             # Find files matching pattern
             find_result = self.fs_service.find_files(
-                directory=input_dir, pattern=pattern
+                path=input_dir, pattern=pattern
             )
 
             if not find_result.success:
