@@ -15,6 +15,7 @@ are delegated to the quack_core.core.fs service functions.
 import os
 from collections.abc import Sequence
 from datetime import datetime
+from typing import Any
 
 from quack_core.core.errors import QuackIntegrationError
 from quack_core.core.logging import get_logger
@@ -36,7 +37,11 @@ from quack_core.integrations.pandoc.protocols import (
 
 logger = get_logger(__name__)
 
-# Import fs module with error handling
+# Import fs module with error handling. `fs` is deliberately duck-typed here: the
+# except branch swaps in a SimpleNamespace mimicking the real module's callable
+# surface, not its precise per-function return types -- annotated `Any` at the
+# declaration site, matching operations/utils.py's own fs-stub precedent.
+fs: Any
 try:
     from quack_core.core.fs.service import standalone as fs
 except ImportError:
