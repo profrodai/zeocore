@@ -209,7 +209,7 @@ def test_check_conversion_ratio() -> None:
     assert "less than" in errors[0]
 
 
-@patch("quack_core.integrations.pandoc._ops.utils.logger")
+@patch("quack_core.integrations.pandoc.operations.utils.logger")
 def test_track_metrics(mock_logger: MagicMock) -> None:
     """Test tracking of conversion metrics."""
     metrics = ConversionMetrics()

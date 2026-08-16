@@ -110,7 +110,7 @@ class TestGmailEmailOperations:
         """Test building Gmail search query."""
         # Test with days_back
         with patch(
-            "quack_core.integrations.google.mail._ops.email.datetime"
+            "quack_core.integrations.google.mail.operations.email.datetime"
         ) as mock_dt:
             mock_dt.now.return_value = datetime(2023, 1, 10)
             mock_dt.side_effect = lambda *args, **kw: datetime(*args, **kw)
@@ -194,7 +194,7 @@ class TestGmailEmailOperations:
 
         # Mock execute_api_request to return the response directly
         with patch(
-            "quack_core.integrations.google.mail._ops.email.execute_api_request",
+            "quack_core.integrations.google.mail.operations.email.execute_api_request",
             return_value={"messages": messages_list},
         ):
             # Test successful listing
@@ -206,7 +206,7 @@ class TestGmailEmailOperations:
 
         # Test with HttpError
         with patch(
-            "quack_core.integrations.google.mail._ops.email.execute_api_request",
+            "quack_core.integrations.google.mail.operations.email.execute_api_request",
             side_effect=HttpError(
                 resp=MagicMock(status=403), content=b"Permission denied"
             ),
@@ -217,7 +217,7 @@ class TestGmailEmailOperations:
 
         # Test with generic exception
         with patch(
-            "quack_core.integrations.google.mail._ops.email.execute_api_request",
+            "quack_core.integrations.google.mail.operations.email.execute_api_request",
             side_effect=Exception("Unexpected error"),
         ):
             result = email.list_emails(mock_gmail_service, "me", "is:unread", logger)
@@ -230,7 +230,7 @@ class TestGmailEmailOperations:
 
         # Mock execute_api_request to return a message
         with patch(
-            "quack_core.integrations.google.mail._ops.email.execute_api_request",
+            "quack_core.integrations.google.mail.operations.email.execute_api_request",
             return_value={"id": "msg1", "snippet": "Test email"},
         ):
             message = email._get_message_with_retry(
@@ -248,11 +248,11 @@ class TestGmailEmailOperations:
             ]
         )
         with patch(
-            "quack_core.integrations.google.mail._ops.email.execute_api_request",
+            "quack_core.integrations.google.mail.operations.email.execute_api_request",
             mock_execute,
         ):
             with patch(
-                "quack_core.integrations.google.mail._ops.email.time.sleep"
+                "quack_core.integrations.google.mail.operations.email.time.sleep"
             ) as mock_sleep:
                 message = email._get_message_with_retry(
                     mock_gmail_service, "me", "msg1", 3, 0.1, 0.5, logger
@@ -275,11 +275,11 @@ class TestGmailEmailOperations:
         mock_execute = MagicMock(side_effect=raise_http_error)
 
         with patch(
-            "quack_core.integrations.google.mail._ops.email.execute_api_request",
+            "quack_core.integrations.google.mail.operations.email.execute_api_request",
             mock_execute,
         ):
             with patch(
-                "quack_core.integrations.google.mail._ops.email.time.sleep"
+                "quack_core.integrations.google.mail.operations.email.time.sleep"
             ) as mock_sleep:
                 # We're testing with 2 max retries, so expect 1 sleep call (after the 1st failure)
                 message = email._get_message_with_retry(
@@ -291,8 +291,10 @@ class TestGmailEmailOperations:
                 assert mock_execute.call_count == 2  # Called twice (initial + 1 retry)
                 assert mock_sleep.call_count == 1  # Only 1 sleep between the 2 attempts
 
-    @patch("quack_core.integrations.google.mail._ops.email.process_message_parts")
-    @patch("quack_core.integrations.google.mail._ops.email._get_message_with_retry")
+    @patch("quack_core.integrations.google.mail.operations.email.process_message_parts")
+    @patch(
+        "quack_core.integrations.google.mail.operations.email._get_message_with_retry"
+    )
     def test_download_email(
         self,
         mock_get_message: MagicMock,
@@ -326,12 +328,14 @@ class TestGmailEmailOperations:
 
         # Patch the filesystem write operation to avoid real filesystem access
         with (
-            patch("quack_core.integrations.google.mail._ops.email.datetime") as mock_dt,
             patch(
-                "quack_core.integrations.google.mail._ops.email.clean_filename"
+                "quack_core.integrations.google.mail.operations.email.datetime"
+            ) as mock_dt,
+            patch(
+                "quack_core.integrations.google.mail.operations.email.clean_filename"
             ) as mock_clean,
             patch(
-                "quack_core.integrations.google.mail._ops.email.standalone"
+                "quack_core.integrations.google.mail.operations.email.standalone"
             ) as mock_fs,
         ):
             # Set up date/time to ensure consistent filename generation

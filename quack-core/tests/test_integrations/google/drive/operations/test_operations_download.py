@@ -34,10 +34,10 @@ class TestDriveOperationsDownload:
             patch("io.BytesIO") as mock_bytesio,
             # Patch the standalone module directly as that's what's imported in download.py
             patch(
-                "quack_core.integrations.google.drive._ops.download.standalone"
+                "quack_core.integrations.google.drive.operations.download.standalone"
             ) as mock_fs,
             patch(
-                "quack_core.integrations.google.drive._ops.download.paths_service"
+                "quack_core.integrations.google.drive.operations.download.paths_service"
             ) as mock_paths_service,
             patch(
                 "quack_core.integrations.google.drive.utils.api.execute_api_request"
@@ -101,7 +101,7 @@ class TestDriveOperationsDownload:
 
         # Patch the standalone module directly as it's imported in download.py
         with patch(
-            "quack_core.integrations.google.drive._ops.download.standalone"
+            "quack_core.integrations.google.drive.operations.download.standalone"
         ) as mock_fs:
             # Setup the mock to return Path objects directly (not DataResult)
             temp_dir_path = tmp_path / "temp_dir"
@@ -123,7 +123,7 @@ class TestDriveOperationsDownload:
         local_dir = tmp_path / "local_dir"
 
         with patch(
-            "quack_core.integrations.google.drive._ops.download.paths_service"
+            "quack_core.integrations.google.drive.operations.download.paths_service"
         ) as mock_paths_service:
             mock_paths_service.resolve_project_path.return_value = PathResult(
                 success=True,
@@ -131,7 +131,7 @@ class TestDriveOperationsDownload:
             )
 
             with patch(
-                "quack_core.integrations.google.drive._ops.download.standalone"
+                "quack_core.integrations.google.drive.operations.download.standalone"
             ) as mock_fs:
                 # Setup mock to return a directory
                 mock_fs.get_file_info.return_value = FileInfoResult(
@@ -154,7 +154,7 @@ class TestDriveOperationsDownload:
         local_file = tmp_path / "specific_file.txt"
 
         with patch(
-            "quack_core.integrations.google.drive._ops.download.paths_service"
+            "quack_core.integrations.google.drive.operations.download.paths_service"
         ) as mock_paths_service:
             mock_paths_service.resolve_project_path.return_value = PathResult(
                 success=True,
@@ -162,7 +162,7 @@ class TestDriveOperationsDownload:
             )
 
             with patch(
-                "quack_core.integrations.google.drive._ops.download.standalone"
+                "quack_core.integrations.google.drive.operations.download.standalone"
             ) as mock_fs:
                 # Setup mock to return a file
                 mock_fs.get_file_info.return_value = FileInfoResult(
@@ -215,10 +215,10 @@ class TestDriveOperationsDownload:
             patch("googleapiclient.http.MediaIoBaseDownload") as mock_download,
             patch("io.BytesIO") as mock_bytesio,
             patch(
-                "quack_core.integrations.google.drive._ops.download.standalone"
+                "quack_core.integrations.google.drive.operations.download.standalone"
             ) as mock_fs,
             patch(
-                "quack_core.integrations.google.drive._ops.download.paths_service"
+                "quack_core.integrations.google.drive.operations.download.paths_service"
             ) as mock_paths_service,
             patch(
                 "quack_core.integrations.google.drive.utils.api.execute_api_request"
