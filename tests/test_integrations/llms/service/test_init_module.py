@@ -424,6 +424,7 @@ class TestLLMIntegrationWithFallback:
             service.config, fallback_config, ["openai", "anthropic", "mock"]
         )
         assert result.success is True
+        assert service._fallback_client is not None
         assert service._fallback_client._provider_args["openai"] == {
             "api_base": "https://example.invalid",
             "organization": "org1",

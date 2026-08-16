@@ -75,7 +75,7 @@ def get_llm_client(
 
     try:
         # Pass provider-specific kwargs correctly
-        client_kwargs = {"model": model, "api_key": api_key}
+        client_kwargs: dict[str, Any] = {"model": model, "api_key": api_key}
         client_kwargs.update(kwargs)
 
         return client_class(**client_kwargs)

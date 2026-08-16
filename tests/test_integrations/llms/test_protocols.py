@@ -34,12 +34,12 @@ class TestLLMProtocols:
         options = LLMOptions(temperature=0.5)
 
         # Call chat method
-        result = client.chat(messages, options)
-        assert result.success is True
+        chat_result = client.chat(messages, options)
+        assert chat_result.success is True
 
         # Call count_tokens method
-        result = client.count_tokens(messages)
-        assert result.success is True
+        token_result = client.count_tokens(messages)
+        assert token_result.success is True
 
         # Check model property
         assert client.model == "test-model"

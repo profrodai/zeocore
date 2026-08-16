@@ -11,7 +11,7 @@ handling API keys, default models, and other settings.
 
 import logging
 import os
-from typing import Any
+from typing import Any, cast
 
 from pydantic import BaseModel, Field, field_validator
 from quack_core.config.models import LoggingConfig
@@ -147,11 +147,11 @@ class LLMConfigProvider(BaseConfigProvider):
             config_data["integrations"], dict
         ):
             if "llm" in config_data["integrations"]:
-                return config_data["integrations"]["llm"]
+                return cast(dict[str, Any], config_data["integrations"]["llm"])
 
         # Then look for llm section directly
         if "llm" in config_data:
-            return config_data["llm"]
+            return cast(dict[str, Any], config_data["llm"])
 
         # Otherwise, return the original data for further processing
         return config_data

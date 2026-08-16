@@ -45,7 +45,7 @@ class TestLLMService:
             with patch(
                 "quack_core.core.fs.service.standalone.read_yaml"
             ) as mock_read_yaml:
-                yaml_result = DataResult(
+                yaml_result = DataResult[dict](
                     ok=True,
                     path="./config/llm_config.yaml",
                     data={

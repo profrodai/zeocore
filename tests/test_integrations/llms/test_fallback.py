@@ -14,6 +14,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from quack_core.core.errors import QuackApiError, QuackIntegrationError
+from quack_core.integrations.llms.clients.base import LLMClient
 from quack_core.integrations.llms.fallback import (
     FallbackConfig,
     FallbackLLMClient,
@@ -268,7 +269,7 @@ class TestFallbackLLMClient:
         fallback_client._provider_status["openai"].fail_count = 0
 
         # Mock the client retrieval to return different clients based on provider
-        def get_mock_client(provider: str) -> MagicMock:
+        def get_mock_client(provider: str) -> LLMClient:
             if provider == "openai":
                 return mock_openai
             elif provider == "anthropic":

@@ -422,10 +422,10 @@ class TestOpenAIClient:
                 "Failed to import OpenAI package: No module named 'openai'"
             )
 
-            with pytest.raises(QuackIntegrationError) as excinfo:
+            with pytest.raises(QuackIntegrationError) as import_excinfo:
                 openai_client._chat_with_provider(messages, options)
 
-            assert "Failed to import OpenAI package" in str(excinfo.value)
+            assert "Failed to import OpenAI package" in str(import_excinfo.value)
 
     @patch("tiktoken.encoding_for_model")
     def test_count_tokens_with_provider(
