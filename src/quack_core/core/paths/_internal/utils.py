@@ -11,9 +11,9 @@ Low-level path manipulations (join, split, normalize) are delegated to
 """
 
 import os
-from typing import Any
 
 from quack_core.core.errors import QuackFileNotFoundError, wrap_io_errors
+from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.service import standalone
 from quack_core.core.logging import get_logger
 from quack_core.core.paths.models import PathInfo
@@ -21,7 +21,7 @@ from quack_core.core.paths.models import PathInfo
 logger = get_logger(__name__)
 
 
-def _normalize_path_param(path_param: Any) -> str:
+def _normalize_path_param(path_param: FsPathLike) -> str:
     """
     Helper to consistently convert any path-like object to a string.
     """
@@ -35,7 +35,7 @@ def _normalize_path_param(path_param: Any) -> str:
 
 
 @wrap_io_errors
-def _normalize_path_with_info(path: Any) -> PathInfo:
+def _normalize_path_with_info(path: FsPathLike) -> PathInfo:
     """
     Normalize a path using core.fs and return detailed information.
     """
@@ -56,7 +56,7 @@ def _normalize_path_with_info(path: Any) -> PathInfo:
 
 @wrap_io_errors
 def _find_project_root(
-    start_dir: Any | None = None,
+    start_dir: FsPathLike | None = None,
     marker_files: list[str] | None = None,
     marker_dirs: list[str] | None = None,
     max_levels: int = 5,
@@ -118,7 +118,7 @@ def _find_project_root(
 @wrap_io_errors
 def _find_nearest_directory(
     name: str,
-    start_dir: Any | None = None,
+    start_dir: FsPathLike | None = None,
     max_levels: int = 5,
 ) -> str:
     """
@@ -154,8 +154,8 @@ def _find_nearest_directory(
 
 @wrap_io_errors
 def _infer_module_from_path(
-    path: Any,
-    project_root: Any | None = None,
+    path: FsPathLike,
+    project_root: FsPathLike | None = None,
 ) -> str:
     """
     Infer a Python module name from a file path.
@@ -213,8 +213,8 @@ def _infer_module_from_path(
 
 @wrap_io_errors
 def _resolve_relative_to_project(
-    path: Any,
-    project_root: Any | None = None,
+    path: FsPathLike,
+    project_root: FsPathLike | None = None,
 ) -> str:
     """
     Resolve a path relative to the project root.
