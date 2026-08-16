@@ -94,8 +94,20 @@ def resolve_file_details(
         path_parts = str(resolved_path).split("/")
         filename = path_parts[-1] if path_parts else "file"
 
-    # Get the MIME type and add folder ID
-    mime_type = standalone.get_mime_type(resolved_path) or "application/octet-stream"
+    # Get the MIME type and add folder ID. get_mime_type returns a
+    # DataResult, not a raw str | None -- a DataResult instance is always
+    # truthy regardless of its own .success/.data fields, so `x or
+    # fallback` can never reach the fallback branch (RULING-247, eleventh
+    # instance of this disease family). Unwrap via .data after checking
+    # .success, matching this same file's own sibling fix
+    # (resolve_project_path, RULING-245) and the established precedent at
+    # pandoc/converter.py:265 / google/auth.py:246.
+    mime_result = standalone.get_mime_type(resolved_path)
+    mime_type = (
+        mime_result.data
+        if mime_result.success and mime_result.data is not None
+        else "application/octet-stream"
+    )
     return resolved_path, filename, parent_folder_id, mime_type
 
 
