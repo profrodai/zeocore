@@ -93,8 +93,10 @@ class TestGmailAttachmentOperations:
         mock_file_info.exists = False
         mock_file_info.success = True
 
-        # We need to understand and mock the entire call chain to prevent real filesystem access
-        # Looking at the error, we need to ensure that all filesystem _ops are properly mocked
+        # We need to understand and mock the entire call chain to prevent
+        # real filesystem access
+        # Looking at the error, we need to ensure that all filesystem _ops
+        # are properly mocked
 
         # Mock the entire module to prevent any real filesystem _ops
         with (

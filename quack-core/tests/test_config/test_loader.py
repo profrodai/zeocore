@@ -332,7 +332,8 @@ class TestConfigLoader:
         # Test merging with empty override
         merged = merge_configs(sample_config, {})
 
-        # We'll compare specific fields manually to ensure string vs Path comparison works correctly
+        # We'll compare specific fields manually to ensure string vs Path
+        # comparison works correctly
         assert merged.general.project_name == sample_config.general.project_name
         assert merged.general.debug == sample_config.general.debug
         assert merged.general.verbose == sample_config.general.verbose

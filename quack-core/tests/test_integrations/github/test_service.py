@@ -65,7 +65,8 @@ class TestGitHubIntegration:
 
         assert service.name == "GitHub"
         assert service.version == "1.0.0"
-        # We no longer auto-create an auth_provider, but we do get a default config_provider
+        # We no longer auto-create an auth_provider, but we do get a default
+        # config_provider
         assert service.auth_provider is None
         assert isinstance(service.config_provider, GitHubConfigProvider)
         assert service.client is None
@@ -455,10 +456,11 @@ class TestGitHubIntegration:
         assert result.success is True
         assert result.content == forked_repo
         assert result.message is not None
-        assert (
-            f"Successfully forked repository test_owner/test-repo to {forked_repo.full_name}"
-            in result.message
+        expected_message = (
+            f"Successfully forked repository test_owner/test-repo to "
+            f"{forked_repo.full_name}"
         )
+        assert expected_message in result.message
         cast(MagicMock, mock_client.fork_repo).assert_called_once_with(
             "test_owner/test-repo"
         )

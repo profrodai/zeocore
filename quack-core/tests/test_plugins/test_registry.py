@@ -741,7 +741,8 @@ class TestPluginRegistry:
 
         invalid_plugin = InvalidPlugin()
 
-        # Simpler approach - patch the _validate_plugin method itself for this specific test
+        # Simpler approach - patch the _validate_plugin method itself for
+        # this specific test
         original_validate = loader._validate_plugin
 
         def mock_validate_that_raises(
@@ -749,7 +750,8 @@ class TestPluginRegistry:
         ) -> QuackPluginProtocol:
             if plugin.name == "invalid_plugin":
                 raise QuackPluginError(
-                    f"Plugin from module {module_path} does not have valid plugin info: Missing version",
+                    f"Plugin from module {module_path} does not have valid "
+                    "plugin info: Missing version",
                     plugin_path=module_path,
                 )
             return original_validate(plugin, module_path)

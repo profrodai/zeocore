@@ -5,7 +5,8 @@
 """
 Tests for the Mock LLM client.
 
-This module tests the mock client implementation used for testing and educational purposes.
+This module tests the mock client implementation used for testing and
+educational purposes.
 """
 
 from unittest.mock import MagicMock, patch

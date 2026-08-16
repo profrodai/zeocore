@@ -300,7 +300,8 @@ class TestLLMOperationsComplete:
         assert result.success is True
         assert result.content == "Response"
 
-        # Verify client method was called (with any arguments since we can't easily check the conversion)
+        # Verify client method was called (with any arguments since we
+        # can't easily check the conversion)
         mock_integration.client.chat.assert_called_once()
 
     def test_count_tokens_with_dict_messages(self, mock_integration: MagicMock) -> None:

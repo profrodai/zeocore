@@ -16,7 +16,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from quack_core.core.errors import QuackApiError, QuackIntegrationError
-from quack_core.integrations.core.results import (  # Import IntegrationResult for testing
+
+# Import IntegrationResult for testing
+from quack_core.integrations.core.results import (
     IntegrationResult,
 )
 from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
@@ -99,7 +101,8 @@ class TestLLMClient:
         assert mock_client.last_messages[1].role == RoleType.USER
         assert mock_client.last_messages[1].content == "User message"
 
-        # Test with invalid message type (update: check error result instead of exception)
+        # Test with invalid message type
+        # (update: check error result instead of exception)
         invalid_messages = cast(list[dict], ["invalid message"])
         result = mock_client.chat(invalid_messages)
         assert result.success is False
@@ -198,7 +201,8 @@ class TestLLMClient:
         )
 
         # Mock _chat_with_provider to fail twice, then succeed.
-        # For the successful case, use the class method to create a proper IntegrationResult.
+        # For the successful case, use the class method to create a
+        # proper IntegrationResult.
         mock_provider = MagicMock()
         error = QuackApiError("Rate limit exceeded", "TestService")
         mock_provider.side_effect = [

@@ -32,7 +32,8 @@ class TestDriveOperationsDownload:
         with (
             patch("googleapiclient.http.MediaIoBaseDownload") as mock_download_class,
             patch("io.BytesIO") as mock_bytesio,
-            # Patch the standalone module directly as that's what's imported in download.py
+            # Patch the standalone module directly as that's what's imported
+            # in download.py
             patch(
                 "quack_core.integrations.google.drive.operations.download.standalone"
             ) as mock_fs,
