@@ -72,7 +72,7 @@ def test_registry() -> OperationRegistry:
     for op_name in _QUACKMEDIA_OPERATIONS:
         registry.register(
             name=op_name,
-            callable=_make_quackmedia_operation(op_name),
+            callable_=_make_quackmedia_operation(op_name),
             request_model=_QuackMediaRequest,
         )
     return registry
