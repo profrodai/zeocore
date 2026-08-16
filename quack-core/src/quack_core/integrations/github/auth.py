@@ -6,7 +6,7 @@
 
 import os
 import time
-from typing import Any
+from typing import Any, Protocol
 
 import requests
 from quack_core.core.fs import service as fs
@@ -16,6 +16,16 @@ from quack_core.integrations.core import AuthResult, BaseAuthProvider
 logger = get_logger(__name__)
 
 
+class _HTTPClient(Protocol):
+    """Minimal protocol for the HTTP client used by the auth provider.
+
+    Matches both the `requests` module and `requests.Session`, as well as
+    test doubles that only need to implement `.get()`.
+    """
+
+    def get(self, url: str, **kwargs: Any) -> requests.Response: ...  # noqa: ANN401 -- passthrough to requests.Session.get, whose extra kwargs are genuinely heterogeneous (headers, timeout, verify, ...)
+
+
 class GitHubAuthProvider(BaseAuthProvider):
     """GitHub authentication provider using personal access tokens."""
 
@@ -23,7 +33,7 @@ class GitHubAuthProvider(BaseAuthProvider):
         self,
         credentials_file: str | None = None,
         log_level: int | str | None = None,
-        http_client=None,  # Allows injection of a client for testing
+        http_client: _HTTPClient | None = None,  # injectable for testing
     ) -> None:
         """Initialize the GitHub authentication provider.
 
@@ -109,7 +119,7 @@ class GitHubAuthProvider(BaseAuthProvider):
                 content={"user_info": self._user_info},
             )
         except requests.exceptions.HTTPError as e:
-            status_code = e.response.status_code
+            status_code = e.response.status_code if e.response is not None else None
             error_message = (
                 f"GitHub API authentication failed with status {status_code}"
             )
@@ -121,7 +131,7 @@ class GitHubAuthProvider(BaseAuthProvider):
 
             return AuthResult.error_result(
                 error=error_message,
-                message=e.response.text if hasattr(e, "response") else str(e),
+                message=e.response.text if e.response is not None else str(e),
             )
         except requests.exceptions.RequestException as e:
             return AuthResult.error_result(

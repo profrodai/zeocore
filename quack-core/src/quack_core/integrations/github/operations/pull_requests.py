@@ -28,7 +28,7 @@ def create_pull_request(
     api_url: str,
     body: str | None = None,
     base_branch: str = "main",
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> PullRequest:
     """Create a pull request.
 
@@ -119,7 +119,7 @@ def list_pull_requests(
     api_url: str,
     state: Literal["open", "closed", "all"] = "open",
     author: str | None = None,
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> list[PullRequest]:
     """List pull requests for a repository.
 
@@ -207,7 +207,7 @@ def get_pull_request(
     repo: str,
     number: int,
     api_url: str,
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> PullRequest:
     """Get a specific pull request.
 
@@ -283,7 +283,7 @@ def merge_pull_request(
     commit_title: str | None = None,
     commit_message: str | None = None,
     merge_method: Literal["merge", "squash", "rebase"] = "merge",
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> bool:
     """Merge a pull request.
 
@@ -327,7 +327,7 @@ def get_pull_request_files(
     repo: str,
     pull_number: int,
     api_url: str,
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> list[dict[str, Any]]:
     """Get the files changed in a pull request.
 
@@ -362,7 +362,7 @@ def add_pull_request_review(
     body: str,
     api_url: str,
     event: Literal["APPROVE", "REQUEST_CHANGES", "COMMENT"] = "COMMENT",
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> dict[str, Any]:
     """Add a review to a pull request.
 
@@ -400,7 +400,7 @@ def get_pull_requests_by_user(
     org: str,
     api_url: str,
     state: Literal["open", "closed", "all"] = "open",
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> list[PullRequest]:
     """
     Get pull requests created by a user within an organization.
