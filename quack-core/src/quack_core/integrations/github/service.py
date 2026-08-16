@@ -78,9 +78,12 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
         """
         if not self._initialized:
             logger.error("GitHub integration is not initialized")
+            not_initialized_msg = (
+                "GitHub integration is not initialized. Call initialize() first."
+            )
             return IntegrationResult.error_result(
-                error="GitHub integration is not initialized. Call initialize() first.",
-                message="GitHub integration is not initialized. Call initialize() first.",
+                error=not_initialized_msg,
+                message=not_initialized_msg,
             )
         return None
 
@@ -378,7 +381,9 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
             fork = self.client.fork_repo(full_name)
             return IntegrationResult.success_result(
                 content=fork,
-                message=f"Successfully forked repository {full_name} to {fork.full_name}",
+                message=(
+                    f"Successfully forked repository {full_name} to {fork.full_name}"
+                ),
             )
         except Exception as e:
             error_msg = str(e)
