@@ -90,9 +90,9 @@ select = [
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**/*.py" = ["S101"]  # Disable S101 (assert warning) in test files
 "examples/**/*.py" = ["S101"]  # Disable S101 (assert warning) in illustrative example scripts
-"quack-core/**/__init__.py" = ["N999"]  # N999: quack-core/ is a hyphenated top-level dir, not a legal Python module name -- RULING-232, structural fix routed to repo-restructure (unspawned)
+"quack-core/**/__init__.py" = ["N999"]  # N999: quack-core/ is a hyphenated top-level dir, not a legal Python module name -- RULING-272, structural fix routed to repo-restructure (unspawned)
 "examples/http_adapter_usage.py" = ["E402"]  # E402: this file bundles three separate illustrative scripts (config sample, client example, webhook server) under "# File: examples/..." markers, each with its own module docstring and imports positioned to read correctly as a standalone script -- reordering would break the intentional per-section readability
-"quack-core/src/quack_core/integrations/google/drive/protocols.py" = ["N803"]  # N803: structurally types the real googleapiclient Resource object, whose fileId keyword we do not control -- RULING-233, parallel to RULING-232's N999 disposition
+"quack-core/src/quack_core/integrations/google/drive/protocols.py" = ["N803"]  # N803: structurally types the real googleapiclient Resource object, whose fileId keyword we do not control -- RULING-233, parallel to RULING-272's N999 disposition (formerly minted as RULING-232, re-minted per RULING-271 s3 to resolve a mint collision)
 "quack-core/tests/test_integrations/google/drive/mocks/*.py" = ["N803"]  # N803: subclasses/mocks protocols.py's real-API-matching Protocol, and live tests call fileId= as a keyword today -- RULING-233
 
 [tool.black]
