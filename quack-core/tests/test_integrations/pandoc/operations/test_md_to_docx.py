@@ -165,7 +165,11 @@ def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
     """Test validation of Markdown to DOCX conversion results."""
 
     # Setup the mock file system
-    def side_effect(path: Any, *args: Any, **kwargs: Any) -> SimpleNamespace:
+    def side_effect(
+        path: Any,  # noqa: ANN401 -- mirrors fs.get_file_info(path: Any) mock target
+        *args: Any,  # noqa: ANN401 -- absorbs arbitrary extra positional args from the mock call
+        **kwargs: Any,  # noqa: ANN401 -- absorbs arbitrary extra keyword args from the mock call
+    ) -> SimpleNamespace:
         if "output" in str(path):
             return SimpleNamespace(success=True, exists=True, size=500, path=str(path))
         return SimpleNamespace(success=True, exists=True, size=100, path=str(path))
