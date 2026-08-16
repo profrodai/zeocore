@@ -174,8 +174,15 @@ def download_email(
         timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
         clean_sender_name = clean_filename(sender)
         filename = f"{timestamp}-{clean_sender_name}.html"
-        # Use standalone.join_path to join storage path and filename (returns a string)
-        filepath = str(standalone.join_path(storage_path, filename))
+        # RULING-246: str(standalone.join_path(...)) does not unwrap the
+        # DataResult it returns -- it produces pydantic's repr, not the
+        # joined path. Use the same _unwrap_join_path helper RULING-245's
+        # fix already introduced for handle_attachment in this same file.
+        filepath = _unwrap_join_path(storage_path, filename, logger)
+        if filepath is None:
+            return IntegrationResult.error_result(
+                f"Failed to build file path for message {msg_id}"
+            )
         html_content, attachments = process_message_parts(
             gmail_service, user_id, [payload], msg_id, storage_path, logger
         )
