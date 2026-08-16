@@ -13,7 +13,7 @@ def enhance_with_llm_safe(
     prompt_text: str,
     model: str | None = None,
     provider: str | None = None,
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401 -- genuinely dynamic: forward-compat signature reservation, unused today, no fixed shape to constrain it to
 ) -> str:
     """
     Safely attempts to enhance a prompt using the LLM integration.

@@ -17,7 +17,11 @@ class PromptPlugin:
         self.name = "prompt"
         self._service = PromptService(load_defaults=True)
 
-    def render(self, raw_prompt: str, **kwargs: Any) -> PromptRenderResult:
+    def render(
+        self,
+        raw_prompt: str,
+        **kwargs: Any,  # noqa: ANN401 -- genuinely dynamic: arbitrary prompt-strategy input variables, forwarded verbatim to PromptService.render
+    ) -> PromptRenderResult:
         """
         Render a prompt using the underlying PromptService.
         """

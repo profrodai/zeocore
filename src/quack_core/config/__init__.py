@@ -63,7 +63,7 @@ class ConfigProxy:
     and function call access (config().paths.base_dir).
     """
 
-    def __getattr__(self, name: str) -> Any:
+    def __getattr__(self, name: str) -> Any:  # noqa: ANN401 -- genuinely dynamic: forwards to an arbitrary attribute of the underlying config, return type depends on the attribute name
         """Forward attribute access to the actual config object."""
         return getattr(get_config(), name)
 
