@@ -735,6 +735,80 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
 
     # --- End of Helper Methods ---
 
+    def _build_upload_metadata(
+        self,
+        filename: str,
+        mime_type: str,
+        description: str | None,
+        folder_id: str | None,
+    ) -> dict[str, Any]:
+        """Build the Drive file metadata payload for an upload.
+
+        Args:
+            filename: Name of the file on Drive.
+            mime_type: MIME type of the file.
+            description: Optional file description.
+            folder_id: Optional parent folder ID.
+
+        Returns:
+            Metadata dictionary to send to the Drive API.
+        """
+        file_metadata: dict[str, Any] = {
+            "name": filename,
+            "mimeType": mime_type,
+        }
+
+        if description:
+            file_metadata["description"] = description
+
+        if folder_id:
+            file_metadata["parents"] = [folder_id]
+
+        return file_metadata
+
+    def _upload_media(
+        self, path_obj: Any, mime_type: str, file_metadata: dict[str, Any]
+    ) -> tuple[dict[str, Any] | None, IntegrationResult | None]:
+        """Read the file from disk and upload it as Drive media.
+
+        Args:
+            path_obj: Resolved path to the local file.
+            mime_type: MIME type of the file.
+            file_metadata: Metadata payload for the new Drive file.
+
+        Returns:
+            Tuple of (uploaded file dict, error_result). error_result is
+            None on success.
+        """
+        media_content = standalone.read_binary(path_obj)
+        if not media_content.success:
+            return None, IntegrationResult.error_result(
+                f"Failed to read file: {media_content.error}"
+            )
+
+        from googleapiclient.http import MediaInMemoryUpload
+
+        media = MediaInMemoryUpload(
+            media_content.content, mimetype=mime_type, resumable=True
+        )
+        file = self._execute_upload(file_metadata, media)
+        return file, None
+
+    def _apply_public_sharing(self, file: dict[str, Any], public: bool | None) -> None:
+        """Set public permissions on an uploaded file if requested.
+
+        Args:
+            file: The uploaded file dict, must contain an "id" key.
+            public: Explicit public flag, or None to use config default.
+        """
+        config_public = self.config.get("public_sharing", True)
+        make_public = public if public is not None else config_public
+        if make_public:
+            # file["id"] is expected to be a str here.
+            perm_result = self.set_file_permissions(file["id"])
+            if not perm_result.success:
+                self.logger.warning(f"Failed to set permissions: {perm_result.error}")
+
     def upload_file(
         self,
         file_path: str,
@@ -767,39 +841,15 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             except QuackIntegrationError as e:
                 return IntegrationResult.error_result(str(e))
 
-            file_metadata: dict[str, Any] = {
-                "name": filename,
-                "mimeType": mime_type,
-            }
-
-            if description:
-                file_metadata["description"] = description
-
-            if folder_id:
-                file_metadata["parents"] = [folder_id]
-
-            media_content = standalone.read_binary(path_obj)
-            if not media_content.success:
-                return IntegrationResult.error_result(
-                    f"Failed to read file: {media_content.error}"
-                )
-
-            from googleapiclient.http import MediaInMemoryUpload
-
-            media = MediaInMemoryUpload(
-                media_content.content, mimetype=mime_type, resumable=True
+            file_metadata = self._build_upload_metadata(
+                filename, mime_type, description, folder_id
             )
-            file = self._execute_upload(file_metadata, media)
 
-            config_public = self.config.get("public_sharing", True)
-            make_public = public if public is not None else config_public
-            if make_public:
-                # file["id"] is expected to be a str here.
-                perm_result = self.set_file_permissions(file["id"])
-                if not perm_result.success:
-                    self.logger.warning(
-                        f"Failed to set permissions: {perm_result.error}"
-                    )
+            file, upload_error = self._upload_media(path_obj, mime_type, file_metadata)
+            if upload_error:
+                return upload_error
+
+            self._apply_public_sharing(file, public)
 
             link = (
                 file.get("webViewLink")
