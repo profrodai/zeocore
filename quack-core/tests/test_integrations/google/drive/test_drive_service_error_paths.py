@@ -872,24 +872,26 @@ class TestDownloadFileRealPath:
     (also an SDK-boundary object) are mocked -- standalone fs functions
     write to a REAL tmp_path-backed sandbox file.
 
-    BUG FOUND, PINNED, NOT FIXED (see final report): service.py:416,
-    `parent_dir = standalone.join_path(download_path).parent`, calls
+    BUG FOUND AND FIXED, per RULING-243: service.py:416 used to read
+    `parent_dir = standalone.join_path(download_path).parent`, calling
     `.parent` directly on `standalone.join_path(...)`'s return value.
-    `join_path` returns a `DataResult` (confirmed live this session), not
-    a raw `Path` -- `DataResult` has `.path` (a `PosixPath`) and `.data`
-    (a str) but NO `.parent` attribute. This means download_file's real
-    body ALWAYS raises `AttributeError: 'DataResult' object has no
-    attribute 'parent'` immediately after fetching metadata, for every
-    single call, regardless of what the Drive API or the download itself
-    would have done -- it never reaches directory creation (417), the
-    chunked download loop (424-441), or the disk write (448-457) at all.
-    Every one of those lines is consequently UNREACHABLE in the current
-    codebase, not merely untested. This is the exact "Result-wrapping
+    `join_path` returns a `DataResult` (confirmed live), not a raw `Path`
+    -- `DataResult` has `.path` (a `PosixPath`) and `.data` (a str) but no
+    `.parent` attribute. This meant download_file's real body ALWAYS
+    raised `AttributeError: 'DataResult' object has no attribute
+    'parent'` immediately after fetching metadata, for every single call,
+    regardless of what the Drive API or the download itself would have
+    done -- directory creation (417), the chunked download loop
+    (424-441), and the disk write (448-457) were all unreachable, not
+    merely untested. Fixed per RULING-243's authorized shape: `join_path`
+    was never the right tool here (it exists to JOIN multiple segments;
+    this call site passes exactly one, already-complete path) --
+    replaced with `coerce_path(download_path).parent`, matching the
+    established precedent at `integrations/core/base.py`'s
+    `_ensure_credentials_directory`. This is the exact "Result-wrapping
     return value handled as if it were the raw unwrapped value" disease
-    shape this stream's charter calls out (RULING-236 through 240's
-    fixes), just not yet ruled on for this specific call site. Not fixed
-    per this stream's charter (no unilateral production fixes) --
-    reported for a ruling."""
+    shape this stream's charter calls out (RULING-236 through 245's own
+    fixes)."""
 
     def test_download_file_not_initialized(
         self, real_drive_service: GoogleDriveService
@@ -926,69 +928,230 @@ class TestDownloadFileRealPath:
         assert result.error is not None
         assert "Failed to get file metadata from Google Drive" in result.error
 
-    def test_download_file_join_path_parent_bug_blocks_every_successful_call(
+    def test_download_file_join_path_parent_bug_now_fixed_full_success(
         self, real_drive_service: GoogleDriveService
     ) -> None:
-        """PINS THE BUG: see class docstring. Metadata fetch succeeds
-        (the real, legitimate part of the flow), but the very next line
-        (416) crashes with AttributeError on `.parent`, landing in the
-        OUTER generic `except Exception` handler (459-461) -- not the
-        directory-creation-failure branch, not the download-error branch,
-        not a success. This is true even though nothing about this
-        request was otherwise wrong: valid metadata, a fully mockable SDK
-        download that a correctly-implemented method would have
-        completed successfully."""
-        mock_execute = (
-            real_drive_service.drive_service.files.return_value
-            .get.return_value.execute
-        )
-        mock_execute.return_value = {
+        """FLIPPED per RULING-243's fix (was: PINS THE BUG). Metadata fetch
+        succeeds, directory creation now actually runs (line 417, via the
+        real `coerce_path(download_path).parent` -- no mocking of fs
+        itself, only the Drive SDK boundary and MediaIoBaseDownload), the
+        mocked chunked-download loop completes, and the file is really
+        written to disk inside the sandbox. Proves the full real body of
+        download_file end to end, not just that no exception fires."""
+        mock_files = real_drive_service.drive_service.files.return_value
+        mock_files.get.return_value.execute.return_value = {
             "name": "downloaded.txt",
             "mimeType": "text/plain",
         }
-        target = "coverage90_download_parent_bug_probe.txt"
 
-        result = real_drive_service.download_file("file123", target)
+        class _FakeStatus:
+            def progress(self) -> float:
+                return 1.0
 
-        assert result.success is False
-        assert result.error is not None
-        assert "'DataResult' object has no attribute 'parent'" in result.error
-        # Confirms the file was never even attempted to be written --
-        # the crash happens before get_media()/MediaIoBaseDownload is
-        # ever reached.
-        assert not Path(target).exists()
-        real_drive_service.drive_service.files.return_value.get_media.assert_not_called()
+        target_dir = Path("coverage90_ruling243_download_dir")
+        target = target_dir / "downloaded.txt"
 
-    def test_download_file_directory_creation_line_is_unreachable(
-        self, real_drive_service: GoogleDriveService, tmp_path: Path
+        with patch(
+            "googleapiclient.http.MediaIoBaseDownload"
+        ) as mock_downloader_cls:
+            mock_downloader = MagicMock()
+            mock_downloader.next_chunk.return_value = (_FakeStatus(), True)
+            mock_downloader_cls.return_value = mock_downloader
+
+            try:
+                result = real_drive_service.download_file(
+                    "file123", str(target)
+                )
+
+                assert result.success is True
+                assert result.content is not None
+                assert Path(result.content).name == "downloaded.txt"
+                assert Path(result.content).exists()
+                assert Path(result.content).read_bytes() == b""
+                mock_files.get_media.assert_called_once_with(fileId="file123")
+            finally:
+                if target.exists():
+                    target.unlink()
+                if target_dir.exists():
+                    target_dir.rmdir()
+
+    def test_download_file_directory_creation_failure_now_reachable(
+        self, real_drive_service: GoogleDriveService
     ) -> None:
-        """Line 419 (create_directory's success check) is, per the pinned
-        bug above, UNREACHABLE: line 416 crashes before line 417's
-        create_directory call is ever made, regardless of what real
-        filesystem state would have made create_directory itself fail
-        (here: a real file blocking the directory location). The error
-        message is the same generic AttributeError, not a
-        "Failed to create directory" message -- confirming
-        create_directory is never actually invoked."""
-        mock_execute = (
-            real_drive_service.drive_service.files.return_value
-            .get.return_value.execute
-        )
-        mock_execute.return_value = {
+        """Line 417's create_directory call is now genuinely reachable
+        (RULING-243's fix removed the crash that used to block it). Real,
+        unmocked standalone.create_directory rejects a target whose parent
+        path collides with a real file, sandboxed to a real in-sandbox
+        location (tmp_path is outside core/fs's base_dir=Path.cwd()
+        sandbox and would trigger a different, unrelated
+        QuackPathOutsideBaseDirError instead of proving this branch)."""
+        mock_files = real_drive_service.drive_service.files.return_value
+        mock_files.get.return_value.execute.return_value = {
             "name": "downloaded.txt",
             "mimeType": "text/plain",
         }
-        blocking_file = tmp_path / "blocking_file"
+        blocking_file = Path("coverage90_ruling243_blocking_file_probe.txt")
         blocking_file.write_text("I am a file, not a directory")
-        target = str(blocking_file / "downloaded.txt")
+        target = blocking_file / "downloaded.txt"
 
-        result = real_drive_service.download_file("file123", target)
+        try:
+            result = real_drive_service.download_file("file123", str(target))
 
-        assert result.success is False
-        assert result.error is not None
-        assert "Failed to create directory" not in result.error
-        assert result.error is not None
-        assert "'DataResult' object has no attribute 'parent'" in result.error
+            assert result.success is False
+            assert result.error is not None
+            assert "Failed to create directory" in result.error
+            assert "'DataResult' object has no attribute 'parent'" not in (
+                result.error
+            )
+            mock_files.get_media.assert_not_called()
+        finally:
+            blocking_file.unlink(missing_ok=True)
+
+    def test_download_file_chunked_download_exception_is_reported(
+        self, real_drive_service: GoogleDriveService
+    ) -> None:
+        """The chunked-download loop's own `except Exception as
+        download_error` branch (also only reachable since RULING-243's
+        fix -- metadata fetch and real directory creation both now
+        succeed and run first). MediaIoBaseDownload.next_chunk raising is
+        caught and reported without ever reaching the disk write."""
+        mock_files = real_drive_service.drive_service.files.return_value
+        mock_files.get.return_value.execute.return_value = {
+            "name": "downloaded.txt",
+            "mimeType": "text/plain",
+        }
+        target_dir = Path("coverage90_ruling243_download_exc_dir")
+        target = target_dir / "downloaded.txt"
+
+        with patch(
+            "googleapiclient.http.MediaIoBaseDownload"
+        ) as mock_downloader_cls:
+            mock_downloader = MagicMock()
+            mock_downloader.next_chunk.side_effect = RuntimeError(
+                "chunk transfer failed"
+            )
+            mock_downloader_cls.return_value = mock_downloader
+
+            try:
+                result = real_drive_service.download_file(
+                    "file123", str(target)
+                )
+
+                assert result.success is False
+                assert result.error is not None
+                assert "Failed to download file from Google Drive" in (
+                    result.error
+                )
+                assert "chunk transfer failed" in result.error
+                assert not target.exists()
+            finally:
+                if target_dir.exists():
+                    target_dir.rmdir()
+
+    def test_download_file_write_failure_is_reported(
+        self, real_drive_service: GoogleDriveService
+    ) -> None:
+        """The `write_result.success is False` branch (also only
+        reachable since RULING-243's fix). Real directory creation and a
+        mocked-successful chunked download both complete; only the final
+        standalone.write_binary call is made to fail, isolating this
+        branch from the two upstream ones already covered above."""
+        mock_files = real_drive_service.drive_service.files.return_value
+        mock_files.get.return_value.execute.return_value = {
+            "name": "downloaded.txt",
+            "mimeType": "text/plain",
+        }
+
+        class _FakeStatus:
+            def progress(self) -> float:
+                return 1.0
+
+        target_dir = Path("coverage90_ruling243_write_fail_dir")
+        target = target_dir / "downloaded.txt"
+
+        with (
+            patch(
+                "googleapiclient.http.MediaIoBaseDownload"
+            ) as mock_downloader_cls,
+            patch(
+                "quack_core.integrations.google.drive.service.standalone.write_binary"
+            ) as mock_write,
+        ):
+            mock_downloader = MagicMock()
+            mock_downloader.next_chunk.return_value = (_FakeStatus(), True)
+            mock_downloader_cls.return_value = mock_downloader
+            mock_write.return_value = MagicMock(
+                success=False, error="disk quota exceeded"
+            )
+
+            try:
+                result = real_drive_service.download_file(
+                    "file123", str(target)
+                )
+
+                assert result.success is False
+                assert result.error is not None
+                assert "Failed to write file: disk quota exceeded" in (
+                    result.error
+                )
+                assert not target.exists()
+            finally:
+                if target_dir.exists():
+                    target_dir.rmdir()
+
+    def test_download_file_outer_exception_handler_is_reached_on_unexpected_raise(
+        self, real_drive_service: GoogleDriveService
+    ) -> None:
+        """The method's OUTER `except Exception as e` (467-471) is
+        distinct from the inner download-loop handler (445-449) -- it
+        wraps the whole try body, including the final
+        standalone.write_binary call and success-result construction, and
+        is only reachable for a failure NONE of the inner handlers catch
+        (metadata fetch has its own inner try/except; the download loop
+        has its own). Forcing write_binary itself to raise (rather than
+        return a failed result, which is the OTHER, already-covered
+        write-failure branch) lands here specifically."""
+        mock_files = real_drive_service.drive_service.files.return_value
+        mock_files.get.return_value.execute.return_value = {
+            "name": "downloaded.txt",
+            "mimeType": "text/plain",
+        }
+
+        class _FakeStatus:
+            def progress(self) -> float:
+                return 1.0
+
+        target_dir = Path("coverage90_ruling243_outer_exc_dir")
+        target = target_dir / "downloaded.txt"
+
+        with (
+            patch(
+                "googleapiclient.http.MediaIoBaseDownload"
+            ) as mock_downloader_cls,
+            patch(
+                "quack_core.integrations.google.drive.service.standalone.write_binary"
+            ) as mock_write,
+        ):
+            mock_downloader = MagicMock()
+            mock_downloader.next_chunk.return_value = (_FakeStatus(), True)
+            mock_downloader_cls.return_value = mock_downloader
+            mock_write.side_effect = RuntimeError("unexpected disk error")
+
+            try:
+                result = real_drive_service.download_file(
+                    "file123", str(target)
+                )
+
+                assert result.success is False
+                assert result.error is not None
+                assert "Failed to download file from Google Drive" in (
+                    result.error
+                )
+                assert "unexpected disk error" in result.error
+                assert not target.exists()
+            finally:
+                if target_dir.exists():
+                    target_dir.rmdir()
 
 
 class TestEnsureInitializedGuards:

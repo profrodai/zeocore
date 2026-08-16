@@ -19,6 +19,7 @@ from quack_core.core.errors import (
     QuackBaseAuthError,
     QuackIntegrationError,
 )
+from quack_core.core.fs.normalize import coerce_path
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.service import standalone
 from quack_core.core.paths import service as paths_service
@@ -413,7 +414,14 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             download_path = self._resolve_download_path(file_metadata, local_path)
 
             # Ensure parent directory exists
-            parent_dir = standalone.join_path(download_path).parent
+            # RULING-243: join_path exists to JOIN multiple segments; this call
+            # passed a single already-complete path and then called .parent on
+            # join_path's return value -- but join_path returns a DataResult,
+            # which has no .parent attribute. coerce_path is the right tool for
+            # a single-path "get the parent" operation (matches the established
+            # precedent at integrations/core/base.py's
+            # _ensure_credentials_directory: coerce_path(...).parent).
+            parent_dir = coerce_path(download_path).parent
             parent_result = standalone.create_directory(parent_dir, exist_ok=True)
             if not parent_result.success:
                 return IntegrationResult.error_result(
