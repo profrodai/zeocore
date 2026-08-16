@@ -7,9 +7,24 @@ import os
 from pathlib import Path
 
 import pytest
+import quack_core.core.fs as _fs_pkg
 
-# Define the package root relative to this test file
-PACKAGE_ROOT = Path(__file__).resolve().parent.parent
+# Define the package root as the real `quack_core.core.fs` source directory
+# this checker means to validate against. `Path(__file__).resolve().parent.parent`
+# (this test file lives at quack-core/tests/test_fs/test_architecture.py) resolves
+# to quack-core/tests/ -- one directory too shallow, and not even on the source
+# side of the repo -- so the old computation's allowed_dirs list (`tests/_ops`,
+# `tests/_internal`, `tests/tests`) never matched anything real and the walk below
+# silently scanned the tests/ tree instead of fs/'s actual source tree. Anchored on
+# the imported package's own __file__ so it can never drift from the real module
+# location again, regardless of future reorganization.
+PACKAGE_ROOT = Path(_fs_pkg.__file__).resolve().parent
+
+# Where the test files themselves live -- tests are allowed to import _internal/
+# _ops directly by full path (confirmed doctrine per
+# quackverse-fs-internals-fix-SOW-01: test_operations.py's entire purpose is
+# testing _ops.base.FileSystemOperations directly).
+TESTS_ROOT = Path(__file__).resolve().parent
 
 
 def get_imports(file_path):
@@ -38,14 +53,14 @@ def test_internal_import_boundary():
     """
     internal_marker = "quack_core.core.fs._internal"
 
-    # Files allowed to import _internal: _ops and tests
+    # Files allowed to import _internal: _ops, _internal itself, and tests
     allowed_dirs = [
         PACKAGE_ROOT / "_ops",
         PACKAGE_ROOT / "_internal",
-        PACKAGE_ROOT / "tests",
+        TESTS_ROOT,
     ]
 
-    for root, _dirs, files in os.walk(PACKAGE_ROOT):
+    for root, _dirs, files in list(os.walk(PACKAGE_ROOT)) + list(os.walk(TESTS_ROOT)):
         for file in files:
             if not file.endswith(".py"):
                 continue
@@ -72,14 +87,14 @@ def test_ops_import_boundary():
     """
     ops_marker = "quack_core.core.fs._ops"
 
-    # Files allowed to import _ops: service and tests
+    # Files allowed to import _ops: service, _ops itself, and tests
     allowed_dirs = [
         PACKAGE_ROOT / "service",
         PACKAGE_ROOT / "_ops",
-        PACKAGE_ROOT / "tests",
+        TESTS_ROOT,
     ]
 
-    for root, _dirs, files in os.walk(PACKAGE_ROOT):
+    for root, _dirs, files in list(os.walk(PACKAGE_ROOT)) + list(os.walk(TESTS_ROOT)):
         for file in files:
             if not file.endswith(".py"):
                 continue

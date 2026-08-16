@@ -29,9 +29,19 @@ class TestAtomicWrapping:
     """Tests to verify that write _ops return a WriteResult wrapper."""
 
     @pytest.fixture
-    def fs_service(self) -> FileSystemService:
-        # Initialize the filesystem service with the current temporary directory
-        return FileSystemService()
+    def fs_service(self, temp_test_dir: Path) -> FileSystemService:
+        # Anchor the service's base_dir sandbox at the test's own temp directory.
+        # FileSystemService() (zero-arg) defaults base_dir to Path.cwd() and
+        # rejects any absolute path outside it (QuackPathOutsideBaseDirError,
+        # a deliberate security boundary, not a bug -- see service/base.py's
+        # _normalize_input_path/coerce_path). tmp_path-derived paths are always
+        # outside the repo checkout cwd, so the un-anchored construction this
+        # fixture used made every write in this file fail sandboxing before
+        # reaching any atomic-write logic at all. Matches the proven working
+        # pattern already used by test_service.py and test_suite.py in this
+        # same directory (FileSystemService(base_dir=temp_dir) /
+        # create_service(base_dir=tmpdir)).
+        return FileSystemService(base_dir=temp_test_dir)
 
     def test_write_text_atomic(
         self, temp_test_dir: Path, fs_service: FileSystemService
@@ -86,7 +96,7 @@ class TestAtomicWrapping:
         content = b"\x00\x01\x02\x03\x04"
 
         # Call the write_binary method with atomic=True
-        result = fs_service.write_binary(file_path, content, atomic=True)
+        result = fs_service.write_bytes(file_path, content, atomic=True)
 
         # Verify the return type and attributes
         assert isinstance(result, WriteResult)
@@ -105,7 +115,7 @@ class TestAtomicWrapping:
         content = b"\x05\x06\x07\x08"
 
         # Call the write_binary method with atomic=False
-        result = fs_service.write_binary(file_path, content, atomic=False)
+        result = fs_service.write_bytes(file_path, content, atomic=False)
 
         # Verify the return type and attributes
         assert isinstance(result, WriteResult)
@@ -147,7 +157,7 @@ class TestAtomicWrapping:
         file_path = temp_test_dir / "checksum_bin.bin"
         content = b"\x0a\x0b\x0c\x0d"
 
-        result = fs_service.write_binary(
+        result = fs_service.write_bytes(
             file_path, content, atomic=True, calculate_checksum=True
         )
 
