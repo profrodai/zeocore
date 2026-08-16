@@ -324,14 +324,14 @@ def test_validate_docx_structure_edge_cases(monkeypatch: MonkeyPatch) -> None:
 
     def mock_import(
         name: str,
-        globals: dict[str, object] | None = None,
-        locals: dict[str, object] | None = None,
+        globals_: dict[str, object] | None = None,
+        locals_: dict[str, object] | None = None,
         fromlist: Sequence[str] = (),
         level: int = 0,
     ) -> object:
         if name == "docx":
             raise ImportError("No module named 'docx'")
-        return original_import(name, globals, locals, fromlist, level)
+        return original_import(name, globals_, locals_, fromlist, level)
 
     with patch("builtins.__import__", side_effect=mock_import):
         # When docx is not available, validation should pass (soft validation)

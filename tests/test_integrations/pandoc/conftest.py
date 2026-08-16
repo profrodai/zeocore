@@ -54,14 +54,14 @@ def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
             error: str | None = None,
             path: str = "/dummy/path",
             message: str | None = None,
-            format: str | None = None,
+            fmt: str | None = None,
         ) -> None:
             self.success = success
             self.data = data
             self.error = error
             self.path = path  # Always provide a path to avoid validation errors
             self.message = message or ""
-            self.format = format or ""
+            self.format = fmt or ""
 
     # Default get_file_info returns success, exists, size, modified
     stub.get_file_info = lambda path: SimpleNamespace(
@@ -108,7 +108,7 @@ def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
 
     # Convert file size to string
     stub.get_file_size_str = lambda size: DataResult(
-        success=True, data=f"{size}B", path="/dummy/path", format="size_string"
+        success=True, data=f"{size}B", path="/dummy/path", fmt="size_string"
     )
 
     # File finding
