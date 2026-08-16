@@ -302,3 +302,388 @@ class TestGoogleAuthProvider:
 
             assert provider._save_credentials_to_file(creds)
             mock_write_json.assert_called_once()
+
+
+class TestGoogleAuthProviderCoverageGaps:
+    """Additional tests for GoogleAuthProvider covering branches not
+    exercised by TestGoogleAuthProvider above: the authenticate() refresh
+    path taken when _load_existing_credentials returns expired creds with a
+    refresh_token, the new-auth-flow path when a redirect URI IS extracted
+    from the client secrets file, _extract_redirect_uri_from_secrets's
+    web/installed/exception branches, _load_existing_credentials's full
+    body, and the remaining _save_credentials_to_file error branches.
+
+    Per RULING-235, only the external SDK/network boundary is mocked here:
+    google.oauth2.credentials.Credentials, google_auth_oauthlib's
+    InstalledAppFlow, google.auth.transport.requests.Request, and the
+    core/fs `standalone` module (the documented fs-sandbox-wall escape
+    hatch) -- never GoogleAuthProvider's own methods under test, except
+    where a helper method itself is the seam between two branches we want
+    to isolate (e.g. patching _load_existing_credentials to directly
+    supply the precondition for the refresh branch in authenticate()).
+    """
+
+    def _make_provider(self) -> GoogleAuthProvider:
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
+            mock_info.return_value.success = True
+            mock_info.return_value.exists = True
+            return GoogleAuthProvider(
+                client_secrets_file="/path/to/secrets.json",
+                credentials_file="/path/to/credentials.json",
+            )
+
+    def test_authenticate_refresh_path(self) -> None:
+        """Covers auth.py:66-70 -- when _load_existing_credentials returns
+        creds that are both expired and carry a refresh_token, authenticate()
+        refreshes them in place (via Request()) rather than starting a new
+        OAuth flow, saves them, and returns a success AuthResult."""
+        provider = self._make_provider()
+
+        expired_creds = mock_credentials(
+            token="pre_refresh",  # noqa: S106 -- test fixture, fake credential value, not a real secret
+            expired=True,
+            refresh_token="has_one",  # noqa: S106 -- test fixture, fake credential value, not a real secret
+            expiry_timestamp=1234567890,
+        )
+
+        def fake_refresh(request: object) -> None:
+            expired_creds.token = "post_refresh"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+
+        expired_creds.refresh.side_effect = fake_refresh
+
+        with (
+            patch.object(
+                provider, "_load_existing_credentials", return_value=expired_creds
+            ),
+            patch(
+                "quack_core.integrations.google.auth.Request"
+            ) as mock_request_cls,
+            patch.object(provider, "_save_credentials_to_file") as mock_save,
+        ):
+            mock_save.return_value = True
+
+            result = provider.authenticate()
+
+            assert result.success
+            assert result.message == "Successfully refreshed credentials"
+            assert result.token == "post_refresh"  # noqa: S105 -- fake test value
+            assert provider.auth is expired_creds
+            assert provider.authenticated is True
+            expired_creds.refresh.assert_called_once()
+            mock_request_cls.assert_called_once()
+            mock_save.assert_called_once_with(expired_creds)
+
+    def test_authenticate_new_flow_with_redirect_uri(self) -> None:
+        """Covers auth.py:84-99 -- when a redirect URI IS successfully
+        extracted from the client secrets file, authenticate() builds the
+        flow, parses the port out of the redirect URI (falling back to 8080
+        when unset), and calls run_local_server with that exact port and
+        redirect_uri_trailing_slash=False -- the non-fallback branch, distinct
+        from test_authenticate_new_flow in TestGoogleAuthProvider (which never
+        supplies a redirect_uri, so it exercises the "else" fallback at
+        auth.py:103-107 rather than this branch)."""
+        provider = self._make_provider()
+
+        new_creds = mock_credentials(
+            token="from_flow",  # noqa: S106 -- test fixture, fake credential value, not a real secret
+            expiry_timestamp=1234567890,
+        )
+
+        with (
+            patch.object(
+                provider, "_load_existing_credentials", return_value=None
+            ),
+            patch.object(
+                provider,
+                "_extract_redirect_uri_from_secrets",
+                return_value="http://localhost:9999/",
+            ),
+            patch(
+                "quack_core.integrations.google.auth.InstalledAppFlow"
+            ) as mock_flow_class,
+            patch.object(provider, "_save_credentials_to_file") as mock_save,
+        ):
+            flow_instance = MagicMock()
+            flow_instance.run_local_server.return_value = new_creds
+            mock_flow_class.from_client_secrets_file.return_value = flow_instance
+            mock_save.return_value = True
+
+            result = provider.authenticate()
+
+            assert result.success
+            assert result.token == "from_flow"  # noqa: S105 -- fake test value
+            mock_flow_class.from_client_secrets_file.assert_called_once_with(
+                provider.client_secrets_file, provider.scopes
+            )
+            flow_instance.run_local_server.assert_called_once_with(
+                port=9999, redirect_uri_trailing_slash=False
+            )
+            mock_save.assert_called_once_with(new_creds)
+
+    def test_authenticate_new_flow_redirect_uri_no_port_defaults_8080(self) -> None:
+        """Covers the `parsed_uri.port or 8080` fallback on auth.py:92-94
+        when the extracted redirect URI has no explicit port."""
+        provider = self._make_provider()
+        new_creds = mock_credentials(token="no_port")  # noqa: S106 -- test fixture, fake credential value, not a real secret
+
+        with (
+            patch.object(
+                provider, "_load_existing_credentials", return_value=None
+            ),
+            patch.object(
+                provider,
+                "_extract_redirect_uri_from_secrets",
+                return_value="http://localhost/",
+            ),
+            patch(
+                "quack_core.integrations.google.auth.InstalledAppFlow"
+            ) as mock_flow_class,
+            patch.object(provider, "_save_credentials_to_file", return_value=True),
+        ):
+            flow_instance = MagicMock()
+            flow_instance.run_local_server.return_value = new_creds
+            mock_flow_class.from_client_secrets_file.return_value = flow_instance
+
+            result = provider.authenticate()
+
+            assert result.success
+            flow_instance.run_local_server.assert_called_once_with(
+                port=8080, redirect_uri_trailing_slash=False
+            )
+
+    def test_authenticate_generic_exception_returns_error_result(self) -> None:
+        """Covers the broad `except Exception` at the bottom of
+        authenticate() (already partially covered, but pinned explicitly
+        here) via a boundary failure in _load_existing_credentials."""
+        provider = self._make_provider()
+
+        with patch.object(
+            provider,
+            "_load_existing_credentials",
+            side_effect=RuntimeError("boundary blew up"),
+        ):
+            result = provider.authenticate()
+            assert not result.success
+            assert "Failed to authenticate with Google" in result.error
+            assert provider.authenticated is False
+
+    def test_extract_redirect_uri_web_config(self) -> None:
+        """Covers auth.py:146-148 -- the 'web' client-config branch."""
+        provider = self._make_provider()
+        with patch(
+            "quack_core.integrations.google.auth.standalone.read_json"
+        ) as mock_read:
+            mock_read.return_value = MagicMock(
+                success=True,
+                data={"web": {"redirect_uris": ["http://localhost:1234/cb"]}},
+            )
+            uri = provider._extract_redirect_uri_from_secrets()
+            assert uri == "http://localhost:1234/cb"
+
+    def test_extract_redirect_uri_installed_config(self) -> None:
+        """Covers auth.py:152-154 -- the 'installed' client-config branch,
+        reached only when no 'web' key with redirect_uris is present."""
+        provider = self._make_provider()
+        with patch(
+            "quack_core.integrations.google.auth.standalone.read_json"
+        ) as mock_read:
+            mock_read.return_value = MagicMock(
+                success=True,
+                data={"installed": {"redirect_uris": ["http://localhost:5678/cb"]}},
+            )
+            uri = provider._extract_redirect_uri_from_secrets()
+            assert uri == "http://localhost:5678/cb"
+
+    def test_extract_redirect_uri_no_matching_config_returns_none(self) -> None:
+        """Covers auth.py:156 -- neither 'web' nor 'installed' present."""
+        provider = self._make_provider()
+        with patch(
+            "quack_core.integrations.google.auth.standalone.read_json"
+        ) as mock_read:
+            mock_read.return_value = MagicMock(success=True, data={})
+            assert provider._extract_redirect_uri_from_secrets() is None
+
+    def test_extract_redirect_uri_read_failure_returns_none(self) -> None:
+        """Covers auth.py:135-139 -- read_json() failing returns None
+        (already-covered defensive branch, pinned alongside the new ones
+        for completeness of this method's coverage)."""
+        provider = self._make_provider()
+        with patch(
+            "quack_core.integrations.google.auth.standalone.read_json"
+        ) as mock_read:
+            mock_read.return_value = MagicMock(success=False, error="boom", data=None)
+            assert provider._extract_redirect_uri_from_secrets() is None
+
+    def test_extract_redirect_uri_exception_returns_none(self) -> None:
+        """Covers auth.py:157-161 -- an unexpected exception (e.g. malformed
+        data shape raising on subscript/containment checks) is caught,
+        logged, and swallowed to None rather than propagating."""
+        provider = self._make_provider()
+        with patch(
+            "quack_core.integrations.google.auth.standalone.read_json"
+        ) as mock_read:
+            mock_read.return_value = MagicMock(success=True, data=None)
+            # `"web" in data` raises TypeError when data is None.
+            uri = provider._extract_redirect_uri_from_secrets()
+            assert uri is None
+
+    def test_load_existing_credentials_file_missing(self) -> None:
+        """Covers auth.py:164-166 -- get_file_info().exists is False."""
+        provider = self._make_provider()
+        with patch(
+            "quack_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
+            mock_info.return_value = MagicMock(exists=False)
+            assert provider._load_existing_credentials() is None
+
+    def test_load_existing_credentials_read_json_failure(self) -> None:
+        """Covers auth.py:168-171 -- get_file_info().exists True but
+        read_json() fails."""
+        provider = self._make_provider()
+        with (
+            patch(
+                "quack_core.integrations.google.auth.standalone.get_file_info"
+            ) as mock_info,
+            patch(
+                "quack_core.integrations.google.auth.standalone.read_json"
+            ) as mock_read,
+        ):
+            mock_info.return_value = MagicMock(exists=True)
+            mock_read.return_value = MagicMock(success=False, error="disk error")
+            assert provider._load_existing_credentials() is None
+
+    def test_load_existing_credentials_success(self) -> None:
+        """Covers auth.py:173-176 -- the happy path: file exists, JSON reads
+        successfully, and Credentials.from_authorized_user_info builds the
+        credentials object from the parsed data."""
+        provider = self._make_provider()
+        built_creds = mock_credentials(token="loaded")  # noqa: S106 -- fake test value
+        with (
+            patch(
+                "quack_core.integrations.google.auth.standalone.get_file_info"
+            ) as mock_info,
+            patch(
+                "quack_core.integrations.google.auth.standalone.read_json"
+            ) as mock_read,
+            patch(
+                "quack_core.integrations.google.auth.Credentials"
+            ) as mock_creds_class,
+        ):
+            mock_info.return_value = MagicMock(exists=True)
+            mock_read.return_value = MagicMock(
+                success=True, data={"token": "loaded"}
+            )
+            mock_creds_class.from_authorized_user_info.return_value = built_creds
+
+            result = provider._load_existing_credentials()
+
+            assert result is built_creds
+            mock_creds_class.from_authorized_user_info.assert_called_once_with(
+                {"token": "loaded"}, provider.scopes
+            )
+
+    def test_load_existing_credentials_invalid_data_returns_none(self) -> None:
+        """Covers auth.py:177-179 -- Credentials.from_authorized_user_info
+        raising ValueError (malformed credential JSON) is caught and
+        swallowed to None."""
+        provider = self._make_provider()
+        with (
+            patch(
+                "quack_core.integrations.google.auth.standalone.get_file_info"
+            ) as mock_info,
+            patch(
+                "quack_core.integrations.google.auth.standalone.read_json"
+            ) as mock_read,
+            patch(
+                "quack_core.integrations.google.auth.Credentials"
+            ) as mock_creds_class,
+        ):
+            mock_info.return_value = MagicMock(exists=True)
+            mock_read.return_value = MagicMock(success=True, data={"bad": "shape"})
+            mock_creds_class.from_authorized_user_info.side_effect = ValueError(
+                "invalid data"
+            )
+
+            assert provider._load_existing_credentials() is None
+
+    def test_save_credentials_to_file_split_path_failure(self) -> None:
+        """Covers auth.py:240-243 -- split_path() itself failing."""
+        provider = self._make_provider()
+        with patch(
+            "quack_core.integrations.google.auth.standalone.split_path"
+        ) as mock_split:
+            mock_split.return_value = MagicMock(success=False, error="split boom")
+            assert not provider._save_credentials_to_file(mock_credentials())
+
+    def test_save_credentials_to_file_join_result_failure(self) -> None:
+        """Covers auth.py:252-258 -- join_path() returning a Result-like
+        object (has a `.success` attribute) that reports failure."""
+        provider = self._make_provider()
+        with (
+            patch(
+                "quack_core.integrations.google.auth.standalone.split_path"
+            ) as mock_split,
+            patch(
+                "quack_core.integrations.google.auth.standalone.join_path"
+            ) as mock_join,
+        ):
+            mock_split.return_value = MagicMock(
+                success=True, data=["path", "to", "credentials.json"]
+            )
+            mock_join.return_value = MagicMock(success=False, error="join boom")
+
+            assert not provider._save_credentials_to_file(mock_credentials())
+
+    def test_save_credentials_to_file_write_json_failure(self) -> None:
+        """Covers auth.py:271-274 -- write_json() reporting failure after a
+        successful directory setup."""
+        provider = self._make_provider()
+        with (
+            patch(
+                "quack_core.integrations.google.auth.standalone.split_path"
+            ) as mock_split,
+            patch(
+                "quack_core.integrations.google.auth.standalone.join_path"
+            ) as mock_join,
+            patch(
+                "quack_core.integrations.google.auth.standalone.create_directory"
+            ) as mock_mkdir,
+            patch(
+                "quack_core.integrations.google.auth.standalone.write_json"
+            ) as mock_write_json,
+        ):
+            mock_split.return_value = MagicMock(
+                success=True, data=["path", "to", "credentials.json"]
+            )
+            mock_join.return_value = MagicMock(success=True, data="/path/to")
+            mock_mkdir.return_value = MagicMock(success=True)
+            mock_write_json.return_value = MagicMock(
+                success=False, error="write boom"
+            )
+
+            assert not provider._save_credentials_to_file(
+                mock_credentials(token="x")  # noqa: S106 -- fake test value
+            )
+
+    def test_save_credentials_to_file_serialize_exception(self) -> None:
+        """Covers auth.py:277-279 -- an exception raised while serializing
+        or writing credentials (e.g. serialize_credentials blowing up on a
+        malformed credentials object) is caught, logged, and returns False
+        rather than propagating."""
+        provider = self._make_provider()
+        with (
+            patch(
+                "quack_core.integrations.google.auth.standalone.split_path"
+            ) as mock_split,
+            patch(
+                "quack_core.integrations.google.auth.serialize_credentials"
+            ) as mock_serialize,
+        ):
+            mock_split.return_value = MagicMock(
+                success=True, data=["credentials.json"]
+            )
+            mock_serialize.side_effect = RuntimeError("serialize boom")
+
+            assert not provider._save_credentials_to_file(mock_credentials())
