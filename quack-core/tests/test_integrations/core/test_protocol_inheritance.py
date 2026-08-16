@@ -333,8 +333,8 @@ class TestProtocolInheritance:
         assert isinstance(folder_result, IntegrationResult)
         assert folder_result.content == "folder_id"
 
-    def test_duck_typing_compatibility(self) -> None:
-        """Test duck typing compatibility with protocols."""
+    def _make_duck_typed_integration(self) -> object:
+        """Build a duck-typed IntegrationProtocol implementation with no inheritance."""
 
         # Create a duck-typed implementation without inheriting
         class DuckTypedIntegration:
@@ -352,8 +352,10 @@ class TestProtocolInheritance:
             def is_available(self) -> bool:
                 return True
 
-        duck = DuckTypedIntegration()
-        assert isinstance(duck, IntegrationProtocol)
+        return DuckTypedIntegration()
+
+    def _make_duck_typed_storage(self) -> object:
+        """Build a duck-typed StorageIntegrationProtocol implementation."""
 
         # Duck-typed storage implementation
         class DuckTypedStorage:
@@ -391,7 +393,14 @@ class TestProtocolInheritance:
             ) -> IntegrationResult:
                 return IntegrationResult.success_result("folder_id")
 
-        duck_storage = DuckTypedStorage()
+        return DuckTypedStorage()
+
+    def test_duck_typing_compatibility(self) -> None:
+        """Test duck typing compatibility with protocols."""
+        duck = self._make_duck_typed_integration()
+        assert isinstance(duck, IntegrationProtocol)
+
+        duck_storage = self._make_duck_typed_storage()
         assert isinstance(duck_storage, IntegrationProtocol)
         assert isinstance(duck_storage, StorageIntegrationProtocol)
 
