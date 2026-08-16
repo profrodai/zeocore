@@ -90,7 +90,26 @@ class TestLLMIntegrationComprehensive:
             mock_provider_class.assert_called_once()
 
     def test_init_custom(self) -> None:
-        """Test initializing with custom parameters."""
+        """Test initializing with custom parameters.
+
+        Regression test for RULING-236: LLMIntegration.__init__ used to call
+        super().__init__(config_provider, None, config_path, str(log_level))
+        positionally against BaseIntegrationService.__init__'s real signature
+        (config_provider, auth_provider, config, config_path, log_level) --
+        shifting config_path into the `config` slot and a stringified
+        log_level into the `config_path` slot. The old version of this test
+        could not catch that: `mock_resolve_path.return_value` was a FIXED
+        SimpleNamespace regardless of what string `resolve_path` was actually
+        called with, so a corrupted config_path (e.g. the log level "10"
+        resolved as a bogus relative path) and the real config_path
+        ("custom_config.yaml" resolved correctly) both produced the exact
+        same asserted value -- a false-positive that would have passed
+        against either the buggy or the fixed call site. `resolve_path` is
+        now a side_effect that echoes its actual argument, so the assertion
+        below can only pass if `_set_config_path` (and therefore
+        BaseIntegrationService.__init__) actually received the caller's real
+        config_path string, not a stringified log level.
+        """
         with patch(
             "quack_core.core.fs.service.standalone.get_file_info"
         ) as mock_file_info:
@@ -101,18 +120,21 @@ class TestLLMIntegrationComprehensive:
             file_info_result.is_file = True
             mock_file_info.return_value = file_info_result
 
-            # Also patch resolve_path
+            # Also patch resolve_path -- echo the input path instead of a
+            # fixed return value, so the test can distinguish "resolved the
+            # caller's real config_path" from "resolved something else
+            # entirely" (e.g. a stringified log_level landing in that slot).
             with patch(
                 "quack_core.core.fs.service.standalone.resolve_path"
             ) as mock_resolve_path:
-                # Create a mock path string directly. A plain SimpleNamespace
-                # (not a bare MagicMock) is required here: coerce_path_str's
-                # duck-typing checks .value()/.unwrap() before .path, and a
-                # bare MagicMock auto-vivifies both as callables, so it never
-                # reaches the real .path attribute.
-                mock_path = "/Users/rodrivera/custom_config.yaml"
-                mock_result = SimpleNamespace(path=mock_path)
-                mock_resolve_path.return_value = mock_result
+                # A plain SimpleNamespace (not a bare MagicMock) is required
+                # here: coerce_path_str's duck-typing checks .value()/
+                # .unwrap() before .path, and a bare MagicMock auto-vivifies
+                # both as callables, so it never reaches the real .path
+                # attribute.
+                mock_resolve_path.side_effect = lambda p: SimpleNamespace(
+                    path=f"/Users/rodrivera/{p}"
+                )
 
                 # Mock os.getcwd to prevent FileNotFoundError
                 with patch("os.getcwd", return_value="/Users/rodrivera"):
@@ -128,8 +150,24 @@ class TestLLMIntegrationComprehensive:
                     assert integration.provider == "anthropic"
                     assert integration.model == "claude-3-opus"
                     assert integration.api_key == "test-key"
-                    assert integration.config_path == mock_path
+                    # config_path must resolve from the REAL passed path
+                    # ("custom_config.yaml"), never from a log-level-derived
+                    # nonsense path (e.g. "/Users/rodrivera/10").
+                    assert (
+                        integration.config_path
+                        == "/Users/rodrivera/custom_config.yaml"
+                    )
+                    # config stays None (the ctor's own default): the bug
+                    # shifted config_path into this slot, so a regression
+                    # would set self.config to the string "custom_config.yaml"
+                    # instead.
+                    assert integration.config is None
                     assert integration.log_level == 10
+                    # The base logger's effective level must reflect the
+                    # caller's real log_level, not the base class's own
+                    # default (20/INFO) that the bug silently fell back to
+                    # by never passing log_level through positionally.
+                    assert integration.logger.getEffectiveLevel() == 10
                     assert integration._enable_fallback is False
 
     def test_name_property(self, integration: LLMIntegration) -> None:
