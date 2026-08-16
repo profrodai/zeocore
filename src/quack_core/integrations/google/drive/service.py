@@ -550,13 +550,13 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             )
 
     def set_file_permissions(
-        self, fileId: str, role: str | None = None, type_: str = "anyone"
+        self, file_id: str, role: str | None = None, type_: str = "anyone"
     ) -> IntegrationResult[bool]:
         """
         Set permissions for a file or folder.
 
         Args:
-            fileId: ID of the file or folder.
+            file_id: ID of the file or folder.
             role: Permission role (e.g., "reader", "writer").
             type_: Permission type (e.g., "anyone", "user").
 
@@ -571,7 +571,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             permission = {"type": type_, "role": role, "allowFileDiscovery": True}
             try:
                 self.drive_service.permissions().create(
-                    fileId=fileId, body=permission, fields="id"
+                    fileId=file_id, body=permission, fields="id"
                 ).execute()
             except Exception as api_error:
                 raise QuackApiError(
@@ -597,12 +597,12 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
                 f"Failed to set permissions in Google Drive: {e}"
             )
 
-    def get_sharing_link(self, fileId: str) -> IntegrationResult[str]:
+    def get_sharing_link(self, file_id: str) -> IntegrationResult[str]:
         """
         Get the sharing link for a file.
 
         Args:
-            fileId: ID of the file.
+            file_id: ID of the file.
 
         Returns:
             IntegrationResult with the sharing link.
@@ -614,7 +614,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             try:
                 file_metadata = (
                     self.drive_service.files()
-                    .get(fileId=fileId, fields="webViewLink, webContentLink")
+                    .get(fileId=file_id, fields="webViewLink, webContentLink")
                     .execute()
                 )
             except Exception as api_error:
@@ -628,7 +628,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             link = (
                 file_metadata.get("webViewLink")
                 or file_metadata.get("webContentLink")
-                or f"https://drive.google.com/file/d/{fileId}/view"
+                or f"https://drive.google.com/file/d/{file_id}/view"
             )
             return IntegrationResult.success_result(
                 content=link, message="Got sharing link successfully"
@@ -647,13 +647,13 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             )
 
     def delete_file(
-        self, fileId: str, permanent: bool = False
+        self, file_id: str, permanent: bool = False
     ) -> IntegrationResult[bool]:
         """
         Delete a file from Google Drive.
 
         Args:
-            fileId: ID of the file or folder.
+            file_id: ID of the file or folder.
             permanent: Whether to permanently delete or move to trash.
 
         Returns:
@@ -665,10 +665,10 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         try:
             try:
                 if permanent:
-                    self.drive_service.files().delete(fileId=fileId).execute()
+                    self.drive_service.files().delete(fileId=file_id).execute()
                 else:
                     self.drive_service.files().update(
-                        fileId=fileId, body={"trashed": True}
+                        fileId=file_id, body={"trashed": True}
                     ).execute()
             except Exception as api_error:
                 api_method = "files.delete" if permanent else "files.update"
@@ -680,7 +680,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
                 ) from api_error
 
             return IntegrationResult.success_result(
-                content=True, message=f"File deleted successfully: {fileId}"
+                content=True, message=f"File deleted successfully: {file_id}"
             )
 
         except QuackApiError as e:
