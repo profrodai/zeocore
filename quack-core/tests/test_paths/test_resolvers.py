@@ -135,7 +135,8 @@ class TestPathResolver:
             assert resolved == str(mock_project_structure / "src" / "file.txt")
 
         # Test when project root cannot be found
-        # IMPORTANT: This test actually expects the exception since the internal method does raise it
+        # IMPORTANT: This test actually expects the exception since the
+        # internal method does raise it
         with patch.object(
             resolver, "_get_project_root", side_effect=QuackFileNotFoundError("")
         ):
@@ -149,9 +150,11 @@ class TestPathResolver:
 
         # IMPORTANT: We need to handle the case where 'paths' is mocked (lambda)
         # vs when it is the real module.
-        # If it is a lambda (from other tests patching imports), we can't test real logic.
+        # If it is a lambda (from other tests patching imports), we can't
+        # test real logic.
         if isinstance(paths, SimpleNamespace) or isinstance(paths, MagicMock):
-            # Skip this test if we are running in a constrained environment where paths is stubbed
+            # Skip this test if we are running in a constrained environment
+            # where paths is stubbed
             return
 
         # Test resolving a relative path
@@ -163,8 +166,11 @@ class TestPathResolver:
             pass
         else:
             resolved_result = paths.resolve_project_path("src/file.txt")
-            # assert resolved_result.success # Function returns string, not Result object
-            # assert resolved_result.path == str(mock_project_structure / "src" / "file.txt")
+            # assert resolved_result.success # Function returns string, not
+            # Result object
+            # assert resolved_result.path == str(
+            #     mock_project_structure / "src" / "file.txt"
+            # )
 
         # Test resolving an absolute path (should remain unchanged)
         abs_path = Path("/absolute/path/file.txt")
@@ -174,7 +180,8 @@ class TestPathResolver:
                 abs_path, mock_project_structure
             )
         except TypeError:
-            # Fallback if signature doesn't match or if it's a mock with strict side_effect
+            # Fallback if signature doesn't match or if it's a mock with
+            # strict side_effect
             resolved_result = paths.resolve_project_path(abs_path)
 
         # For these tests, we need to patch the correct location
@@ -184,7 +191,8 @@ class TestPathResolver:
             mock_resolve.return_value = "src/file.txt"
             resolved_result = paths.resolve_project_path("src/file.txt")
             # assert resolved_result.success
-            # Note: The result object type depends on implementation, adjusting assertion
+            # Note: The result object type depends on implementation,
+            # adjusting assertion
             if hasattr(resolved_result, "path"):
                 assert resolved_result.path == "src/file.txt"
             else:

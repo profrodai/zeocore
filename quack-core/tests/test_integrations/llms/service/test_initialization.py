@@ -104,9 +104,11 @@ class TestInitialization:
             "quack_core.integrations.llms.registry.get_llm_client",
             return_value=mock_client,
         ) as mock_get_client:
-            # Call initialize_single_provider directly from a fixture to avoid implementation details
+            # Call initialize_single_provider directly from a fixture to
+            # avoid implementation details
             with patch(
-                "quack_core.integrations.llms.service.initialization.initialize_single_provider",
+                "quack_core.integrations.llms.service.initialization."
+                "initialize_single_provider",
                 side_effect=initialize_single_provider,
             ):
                 result = initialize_single_provider(
@@ -121,7 +123,8 @@ class TestInitialization:
                 assert mock_integration._initialized is True
                 assert mock_integration._using_mock is False
 
-                # Verify get_llm_client was called with correct args - using custom values
+                # Verify get_llm_client was called with correct args -
+                # using custom values
                 mock_get_client.assert_called_once()
                 call_args = mock_get_client.call_args[1]
                 assert call_args["provider"] == "anthropic"
@@ -152,9 +155,11 @@ class TestInitialization:
             "quack_core.integrations.llms.registry.get_llm_client",
             return_value=mock_client,
         ):
-            # Call initialize_single_provider directly from a fixture to avoid implementation details
+            # Call initialize_single_provider directly from a fixture to
+            # avoid implementation details
             with patch(
-                "quack_core.integrations.llms.service.initialization.initialize_single_provider",
+                "quack_core.integrations.llms.service.initialization."
+                "initialize_single_provider",
                 side_effect=initialize_single_provider,
             ):
                 result = initialize_single_provider(
@@ -170,7 +175,8 @@ class TestInitialization:
 
                 # Should have warned about fallback
                 mock_integration.logger.warning.assert_called_with(
-                    "Requested provider 'unavailable-provider' not available. Using 'openai' instead."
+                    "Requested provider 'unavailable-provider' not "
+                    "available. Using 'openai' instead."
                 )
 
     def test_initialize_single_provider_mock_fallback(

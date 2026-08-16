@@ -112,7 +112,8 @@ class TestLLMService:
                         assert service.provider == "anthropic"
                         assert service.model == "claude-3-opus"
                         assert service.api_key == "test-key"
-                        # Skip the config_path assertion since we're patching the method that sets it
+                        # Skip the config_path assertion since we're
+                        # patching the method that sets it
                         assert service.log_level == 20
 
     def test_name_and_version(self, llm_service: LLMIntegration) -> None:

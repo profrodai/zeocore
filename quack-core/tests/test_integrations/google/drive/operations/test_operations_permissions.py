@@ -28,7 +28,8 @@ class TestDriveOperationsPermissions:
         mock_drive_service = create_mock_drive_service()
 
         # Mock execute_api_request - make sure to patch the correct module
-        # The key is to patch the module's function, which is what's being called in the implementation
+        # The key is to patch the module's function, which is what's being
+        # called in the implementation
         with patch(
             "quack_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:

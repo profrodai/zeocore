@@ -6,9 +6,10 @@
 Tests to ensure that the write_text and write_binary _ops wrap
 their return values correctly in a WriteResult object—even when using atomic writes.
 
-The error we encountered in production (i.e. "PosixPath object has no attribute 'success'")
-suggests that under some conditions a raw Path is returned instead of a proper
-WriteResult. These tests will detect such scenarios.
+The error we encountered in production (i.e. "PosixPath object has no
+attribute 'success'") suggests that under some conditions a raw Path is
+returned instead of a proper WriteResult. These tests will detect such
+scenarios.
 """
 
 from pathlib import Path
@@ -61,7 +62,8 @@ class TestAtomicWrapping:
             "The result object must have a 'success' attribute."
         )
         assert result.success is True, "The write operation should succeed."
-        # The 'path' attribute in the result should be a Path instance equal to file_path
+        # The 'path' attribute in the result should be a Path instance equal
+        # to file_path
         assert isinstance(result.path, Path), (
             "The 'path' attribute should be a Path object."
         )
@@ -129,7 +131,8 @@ class TestAtomicWrapping:
     def test_write_text_checksum(
         self, temp_test_dir: Path, fs_service: FileSystemService
     ) -> None:
-        """Test that write_text with calculate_checksum returns a WriteResult with a valid checksum."""
+        """Test that write_text with calculate_checksum returns a
+        WriteResult with a valid checksum."""
         file_path = temp_test_dir / "checksum_test.txt"
         content = "Content for checksum test."
 
@@ -153,7 +156,8 @@ class TestAtomicWrapping:
     def test_write_binary_checksum(
         self, temp_test_dir: Path, fs_service: FileSystemService
     ) -> None:
-        """Test that write_binary with calculate_checksum returns a WriteResult with a valid checksum."""
+        """Test that write_binary with calculate_checksum returns a
+        WriteResult with a valid checksum."""
         file_path = temp_test_dir / "checksum_bin.bin"
         content = b"\x0a\x0b\x0c\x0d"
 

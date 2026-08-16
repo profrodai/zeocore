@@ -38,7 +38,8 @@ class TestGitHubProtocols:
 
     def test_github_integration_protocol_method_signatures(self) -> None:
         """Test that GitHubIntegration methods have correct return type hints."""
-        # Reference the unbound methods from the class so that __annotations__ are available.
+        # Reference the unbound methods from the class so that __annotations__
+        # are available.
         assert (
             GitHubIntegration.get_current_user.__annotations__["return"]
             == IntegrationResult[GitHubUser]

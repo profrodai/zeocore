@@ -87,7 +87,8 @@ class TestPluginLoader:
                 mock_module.create_plugin.assert_called_once()
 
         # Test loading from module with plugin class.
-        # Instead of using a MagicMock for the module, create a dummy module using ModuleType.
+        # Instead of using a MagicMock for the module, create a dummy module
+        # using ModuleType.
         import types
 
         mock_module = types.ModuleType("test.module")

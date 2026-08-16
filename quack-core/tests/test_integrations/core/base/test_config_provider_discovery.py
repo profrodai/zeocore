@@ -96,7 +96,8 @@ class TestBaseConfigProviderDiscovery:
                     mock_file_info.return_value.success = True
                     mock_file_info.return_value.exists = True
 
-                    # Patch paths.service to avoid using get_project_root which is missing
+                    # Patch paths.service to avoid using get_project_root
+                    # which is missing
                     with patch(
                         "quack_core.core.paths.service.get_project_root", create=True
                     ) as mock_get_root:
@@ -218,5 +219,6 @@ class TestBaseConfigProviderDiscovery:
             mock_resolve.side_effect = Exception("Test error")
 
             result = provider._resolve_path("relative/path")
-            # The modified implementation now just returns the original path in case of exception
+            # The modified implementation now just returns the original path
+            # in case of exception
             assert result == "relative/path"

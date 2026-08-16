@@ -100,21 +100,24 @@ class TestSchemaExamples:
 
             # Tool name should be namespaced (contain a dot)
             assert "." in manifest.tool.name, (
-                f"Example {i}: tool name '{manifest.tool.name}' must be namespaced (e.g., 'domain.tool')"
+                f"Example {i}: tool name '{manifest.tool.name}' must be "
+                "namespaced (e.g., 'domain.tool')"
             )
 
             # Input artifact roles should be namespaced
             for input_idx, manifest_input in enumerate(manifest.inputs):
                 role = manifest_input.artifact.role
                 assert "." in role, (
-                    f"Example {i}, input {input_idx}: role '{role}' must be namespaced (e.g., 'domain.role')"
+                    f"Example {i}, input {input_idx}: role '{role}' must be "
+                    "namespaced (e.g., 'domain.role')"
                 )
 
             # Output artifact roles should be namespaced
             for output_idx, output in enumerate(manifest.outputs):
                 role = output.role
                 assert "." in role, (
-                    f"Example {i}, output {output_idx}: role '{role}' must be namespaced (e.g., 'domain.role')"
+                    f"Example {i}, output {output_idx}: role '{role}' must be "
+                    "namespaced (e.g., 'domain.role')"
                 )
 
     def test_run_manifest_examples_have_valid_uuids(self) -> None:
@@ -136,14 +139,16 @@ class TestSchemaExamples:
             for input_idx, manifest_input in enumerate(manifest.inputs):
                 artifact_id = manifest_input.artifact.artifact_id
                 assert is_valid_uuid(artifact_id), (
-                    f"Example {i}, input {input_idx}: artifact_id '{artifact_id}' is not a valid UUID"
+                    f"Example {i}, input {input_idx}: artifact_id "
+                    f"'{artifact_id}' is not a valid UUID"
                 )
 
             # Check artifact_ids in outputs
             for output_idx, output in enumerate(manifest.outputs):
                 artifact_id = output.artifact_id
                 assert is_valid_uuid(artifact_id), (
-                    f"Example {i}, output {output_idx}: artifact_id '{artifact_id}' is not a valid UUID"
+                    f"Example {i}, output {output_idx}: artifact_id "
+                    f"'{artifact_id}' is not a valid UUID"
                 )
 
     def test_run_manifest_examples_have_valid_timestamps(self) -> None:
@@ -179,7 +184,8 @@ class TestSchemaExamples:
                     datetime.fromisoformat(finished_at.replace("Z", "+00:00"))
                 except ValueError as e:
                     pytest.fail(
-                        f"Example {i}: finished_at '{finished_at}' is not valid ISO 8601: {e}"
+                        f"Example {i}: finished_at '{finished_at}' is not "
+                        f"valid ISO 8601: {e}"
                     )
 
     def test_run_manifest_examples_enforce_status_invariants(self) -> None:

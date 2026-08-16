@@ -117,7 +117,8 @@ class TestApiUtils:
         }
         mock_response.status_code = 429
 
-        # Don't setup raise_for_status - we want to test the direct rate limit check path
+        # Don't setup raise_for_status - we want to test the direct rate limit
+        # check path
         mock_session.request.return_value = mock_response
 
         # Mock time.time to return a stable value

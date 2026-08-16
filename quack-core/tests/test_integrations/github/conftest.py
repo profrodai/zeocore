@@ -182,7 +182,8 @@ def mock_github_auth_provider() -> AuthProviderProtocol:
     """Create a mock GitHub authentication provider."""
     # Use spec_set to enforce the interface.
     auth_provider = MagicMock(spec_set=GitHubAuthProvider)
-    # Instead of assignment (which may fail for read-only properties), use configure_mock.
+    # Instead of assignment (which may fail for read-only properties), use
+    # configure_mock.
     auth_provider.configure_mock(name="GitHub")
     auth_provider.get_credentials.return_value = {"token": "test_token"}
 
