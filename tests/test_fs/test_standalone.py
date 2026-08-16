@@ -270,17 +270,20 @@ class TestUtilityDelegations:
     def test_create_temp_file(self, tmp_path: Path) -> None:
         result = standalone.create_temp_file(directory=tmp_path)
         assert result.success is True
+        assert result.data is not None
         assert Path(result.data).exists()
 
     def test_create_temp_directory(self, tmp_path: Path) -> None:
         result = standalone.create_temp_directory()
         assert result.success is True
+        assert result.data is not None
         assert Path(result.data).is_dir()
 
     def test_find_files_by_content(self, tmp_path: Path) -> None:
         (tmp_path / "needle.txt").write_text("has the needle in it")
         result = standalone.find_files_by_content(tmp_path, "needle")
         assert result.success is True
+        assert result.data is not None
         assert any("needle.txt" in p for p in result.data)
 
     def test_get_disk_usage(self, tmp_path: Path) -> None:

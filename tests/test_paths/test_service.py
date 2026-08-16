@@ -285,6 +285,7 @@ def test_path_exists_in_known_dir(tmp_path: Path, path_service: PathService) -> 
 
         known_dir_result = path_service.get_known_directory("assets")
         assert known_dir_result.success
+        assert known_dir_result.path is not None
 
         # Test existing path
         assert os.path.exists(os.path.join(known_dir_result.path, "images", "logo.png"))
