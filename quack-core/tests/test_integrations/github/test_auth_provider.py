@@ -95,9 +95,16 @@ def github_creds_relpath() -> Generator[Path]:
         shutil.rmtree(scratch, ignore_errors=True)
 
 
-class FakeResponse:
-    """Stands in for requests.Response -- the external boundary. Not a
-    quack_core object; this is the fake that replaces the real HTTP call."""
+class FakeResponse(requests.Response):
+    """Stands in for requests.Response -- the external boundary. Subclasses
+    the real requests.Response (a no-arg __init__, safe to override) rather
+    than duck-typing it, so it satisfies _HTTPClient's Protocol structurally
+    for mypy (auth.py:26 declares `def get(...) -> requests.Response`,
+    which a same-shaped-but-unrelated FakeResponse class does not satisfy
+    even though every method it calls at runtime -- json(), raise_for_status(),
+    .status_code, .text -- was already implemented identically here). Zero
+    behavior change: only widens what mypy accepts, the fake methods below
+    are untouched."""
 
     def __init__(
         self,
@@ -105,17 +112,21 @@ class FakeResponse:
         json_data: dict[str, Any] | None = None,
         text: str = "",
     ) -> None:
+        super().__init__()
         self.status_code = status_code
         self._json_data = json_data if json_data is not None else {}
-        self.text = text
+        # requests.Response.text is a read-only @property derived from
+        # ._content -- set the backing field directly rather than the
+        # property (which subclassing now makes mypy correctly enforce).
+        self._content = text.encode()
 
-    def json(self) -> dict[str, Any]:
+    def json(self, **kwargs: Any) -> dict[str, Any]:  # noqa: ANN401 -- overrides requests.Response.json's own **kwargs: Any passthrough to the stdlib json decoder
         return self._json_data
 
     def raise_for_status(self) -> None:
         if self.status_code >= 400:
             err = requests.exceptions.HTTPError(f"{self.status_code} error")
-            err.response = self  # type: ignore[assignment]
+            err.response = self
             raise err
 
 
@@ -330,6 +341,7 @@ class TestAuthenticateFailure:
         result = provider.authenticate(token="tok")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
         assert result.success is False
+        assert result.error is not None
         assert "500" in result.error
 
     def test_authenticate_connection_error(
@@ -344,6 +356,7 @@ class TestAuthenticateFailure:
         result = provider.authenticate(token="tok")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
         assert result.success is False
+        assert result.error is not None
         assert "GitHub API connection error" in result.error
 
 
@@ -382,6 +395,7 @@ class TestRefreshCredentials:
         result = provider.refresh_credentials()
 
         assert result.success is False
+        assert result.error is not None
         assert "Failed to validate GitHub token" in result.error
 
 

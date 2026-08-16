@@ -47,7 +47,7 @@ class GitHubAuthProvider(BaseAuthProvider):
             credentials_file=credentials_file, log_level=log_level or "INFO"
         )
         self.token = None
-        self._user_info = None
+        self._user_info: dict[str, Any] | None = None
         self._http_client = http_client or requests
 
         # Check token from environment variable immediately
