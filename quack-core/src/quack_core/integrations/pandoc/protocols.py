@@ -74,11 +74,13 @@ class BatchConverterProtocol(Protocol):
 
         Args:
             tasks: A list of conversion tasks.
-            output_dir: A directory (absolute path as a string) where to save converted files
-                        or None to use each task's output configuration.
+            output_dir: A directory (absolute path as a string) where to save
+                        converted files or None to use each task's output
+                        configuration.
 
         Returns:
-            IntegrationResult[list[str]]: Result of the batch conversion, with a list of output file paths.
+            IntegrationResult[list[str]]: Result of the batch conversion, with
+            a list of output file paths.
         """
         ...
 
@@ -132,13 +134,16 @@ class PandocConversionProtocol(Protocol):
         Convert all files in a directory.
 
         Args:
-            input_dir: The absolute path to the directory containing files to convert (as a string).
+            input_dir: The absolute path to the directory containing files to
+                convert (as a string).
             output_format: The target output format (e.g., "markdown" or "docx").
-            output_dir: Optional absolute path to the directory in which to save converted files (as a string).
+            output_dir: Optional absolute path to the directory in which to
+                save converted files (as a string).
             file_pattern: Optional glob pattern to match specific files.
             recursive: Whether to search subdirectories.
 
         Returns:
-            IntegrationResult[list[str]]: Result of the conversion with a list of output file paths.
+            IntegrationResult[list[str]]: Result of the conversion with a list
+            of output file paths.
         """
         ...

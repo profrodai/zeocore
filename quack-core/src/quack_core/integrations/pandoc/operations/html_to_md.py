@@ -91,8 +91,9 @@ def _validate_input(html_path: str, config: PandocConfig) -> int:
         else:
             original_size = 0
     except (TypeError, ValueError):
+        raw_size = getattr(file_info, "size", None)
         logger.warning(
-            f"Could not convert file size to integer: {getattr(file_info, 'size', None)}, using default size"
+            f"Could not convert file size to integer: {raw_size}, using default size"
         )
         original_size = 1024
 
@@ -102,13 +103,13 @@ def _validate_input(html_path: str, config: PandocConfig) -> int:
     try:
         read_result = fs.read_text(html_path)
         if not getattr(read_result, "success", False):
-            raise QuackIntegrationError(
-                f"Could not read HTML file: {getattr(read_result, 'error', 'Unknown error')}"
-            )
+            read_error = getattr(read_result, "error", "Unknown error")
+            raise QuackIntegrationError(f"Could not read HTML file: {read_error}")
         html_content = getattr(read_result, "content", "")
         if not isinstance(html_content, str):
             logger.warning(
-                f"HTML content is not a string, skipping validation: {type(html_content)}"
+                "HTML content is not a string, skipping validation: "
+                f"{type(html_content)}"
             )
             return original_size
         is_valid, html_errors = validate_html_structure(
@@ -187,15 +188,13 @@ def _write_and_validate_output(
     output_dir = os.path.dirname(output_path)
     dir_result = fs.create_directory(output_dir, exist_ok=True)
     if not getattr(dir_result, "success", False):
-        raise QuackIntegrationError(
-            f"Failed to create output directory: {getattr(dir_result, 'error', 'Unknown error')}"
-        )
+        dir_error = getattr(dir_result, "error", "Unknown error")
+        raise QuackIntegrationError(f"Failed to create output directory: {dir_error}")
 
     write_result = fs.write_text(output_path, cleaned_markdown, encoding="utf-8")
     if not getattr(write_result, "success", False):
-        raise QuackIntegrationError(
-            f"Failed to write output file: {getattr(write_result, 'error', 'Unknown error')}"
-        )
+        write_error = getattr(write_result, "error", "Unknown error")
+        raise QuackIntegrationError(f"Failed to write output file: {write_error}")
 
     conversion_time = time.time() - attempt_start
 
@@ -213,8 +212,9 @@ def _write_and_validate_output(
         try:
             output_size = int(write_result.bytes_written)
         except (TypeError, ValueError):
+            raw_bytes_written = getattr(write_result, "bytes_written", None)
             logger.warning(
-                f"Could not convert bytes_written to integer: {getattr(write_result, 'bytes_written', None)}"
+                f"Could not convert bytes_written to integer: {raw_bytes_written}"
             )
 
     if (
@@ -225,9 +225,8 @@ def _write_and_validate_output(
         try:
             output_size = int(output_info.size)
         except (TypeError, ValueError):
-            logger.warning(
-                f"Could not convert file size to integer: {getattr(output_info, 'size', None)}"
-            )
+            raw_output_size = getattr(output_info, "size", None)
+            logger.warning(f"Could not convert file size to integer: {raw_output_size}")
 
     validation_errors = validate_conversion(
         output_path, input_path, original_size, config
@@ -293,7 +292,8 @@ def convert_html_to_markdown(
                 if validation_errors:
                     error_msg = "; ".join(validation_errors)
                     logger.error(
-                        f"Conversion validation failed on attempt {attempt}: {error_msg}"
+                        f"Conversion validation failed on attempt {attempt}: "
+                        f"{error_msg}"
                     )
                     if attempt == max_retries:
                         metrics.failed_conversions += 1
@@ -397,10 +397,12 @@ def validate_conversion(
 
     # Check if this is a test environment - if so, be more lenient
     if is_test_environment:
-        # In test environments, assume the file exists even if get_file_info says otherwise
+        # In test environments, assume the file exists even if get_file_info
+        # says otherwise
         if not (success and exists):
             logger.debug(
-                f"Test environment detected - assuming {output_path} exists despite contradicting file system info"
+                f"Test environment detected - assuming {output_path} exists "
+                "despite contradicting file system info"
             )
     elif not (success and exists):
         # Only in non-test environments do we fail validation if the file doesn't exist
@@ -415,8 +417,9 @@ def validate_conversion(
             else 0
         )
     except (TypeError, ValueError):
+        raw_output_size = getattr(output_info, "size", None)
         logger.warning(
-            f"Could not convert output size to integer: {getattr(output_info, 'size', None)}, using 0"
+            f"Could not convert output size to integer: {raw_output_size}, using 0"
         )
         output_size = 0
 
@@ -456,9 +459,8 @@ def validate_conversion(
     try:
         read_result = fs.read_text(output_path, encoding="utf-8")
         if not getattr(read_result, "success", False):
-            validation_errors.append(
-                f"Error reading output file: {getattr(read_result, 'error', 'Unknown error')}"
-            )
+            read_error = getattr(read_result, "error", "Unknown error")
+            validation_errors.append(f"Error reading output file: {read_error}")
             return validation_errors
 
         content = getattr(read_result, "content", "")
@@ -480,7 +482,8 @@ def validate_conversion(
             source_file_name = split_result.data[-1]
             if config.validation.check_links and source_file_name not in content:
                 logger.debug(
-                    f"Source file reference missing in markdown output: {source_file_name}"
+                    "Source file reference missing in markdown output: "
+                    f"{source_file_name}"
                 )
     except Exception as e:
         validation_errors.append(f"Error reading output file: {str(e)}")

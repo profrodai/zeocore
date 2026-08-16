@@ -101,8 +101,9 @@ def _validate_markdown_input(markdown_path: str) -> int:
     try:
         read_result = fs.read_text(markdown_path, encoding="utf-8")
         if not getattr(read_result, "success", False):
+            read_error = getattr(read_result, "error", "Unknown error")
             raise QuackIntegrationError(
-                f"Could not read Markdown file: {getattr(read_result, 'error', 'Unknown error')}",
+                f"Could not read Markdown file: {read_error}",
                 {"path": markdown_path},
             )
         markdown_content = getattr(read_result, "content", "")
@@ -146,8 +147,9 @@ def _convert_markdown_to_docx_once(
         # Get the parent directory of the output file
         split_result = fs.split_path(output_path)
         if not getattr(split_result, "success", False):
+            split_error = getattr(split_result, "error", "Unknown error")
             raise QuackIntegrationError(
-                f"Failed to split output path: {getattr(split_result, 'error', 'Unknown error')}",
+                f"Failed to split output path: {split_error}",
                 {"path": output_path, "operation": "split_path"},
             )
 
@@ -160,8 +162,9 @@ def _convert_markdown_to_docx_once(
         else:
             join_result = fs.join_path(*path_components)
             if not getattr(join_result, "success", False):
+                join_error = getattr(join_result, "error", "Unknown error")
                 raise QuackIntegrationError(
-                    f"Failed to join path components: {getattr(join_result, 'error', 'Unknown error')}",
+                    f"Failed to join path components: {join_error}",
                     {"components": path_components, "operation": "join_path"},
                 )
             parent_dir = join_result.data
@@ -170,8 +173,9 @@ def _convert_markdown_to_docx_once(
         # Ensure we call this even if we think it exists, for test verification
         dir_result = fs.create_directory(parent_dir, exist_ok=True)
         if not getattr(dir_result, "success", True):
+            dir_error = getattr(dir_result, "error", "Unknown error")
             raise QuackIntegrationError(
-                f"Failed to create output directory: {getattr(dir_result, 'error', 'Unknown error')}",
+                f"Failed to create output directory: {dir_error}",
                 {"path": parent_dir, "operation": "create_directory"},
             )
 
@@ -224,8 +228,9 @@ def _get_conversion_output(output_path: str, start_time: float) -> tuple[float, 
 
     if not getattr(output_info, "success", False):
         logger.warning(f"Failed to get info for converted file: {output_path}")
+        output_error = getattr(output_info, "error", "Unknown error")
         raise QuackIntegrationError(
-            f"Failed to get info for converted file: {getattr(output_info, 'error', 'Unknown error')}",
+            f"Failed to get info for converted file: {output_error}",
             {"path": output_path},
         )
 
@@ -299,7 +304,8 @@ def convert_markdown_to_docx(
                         )
 
                     logger.warning(
-                        f"Markdown to DOCX conversion attempt {retry_count} failed: {error_str}"
+                        f"Markdown to DOCX conversion attempt {retry_count} "
+                        f"failed: {error_str}"
                     )
                     time.sleep(config.retry_mechanism.conversion_retry_delay)
                     continue
@@ -325,7 +331,8 @@ def convert_markdown_to_docx(
             except Exception as e:
                 retry_count += 1
                 logger.warning(
-                    f"Markdown to DOCX conversion attempt {retry_count} failed: {str(e)}"
+                    f"Markdown to DOCX conversion attempt {retry_count} "
+                    f"failed: {str(e)}"
                 )
                 if retry_count >= max_retries:
                     metrics.failed_conversions += 1
@@ -413,9 +420,8 @@ def _check_docx_metadata(docx_path: str, source_path: str, check_links: bool) ->
     # Standard code path for normal operation
     split_result = fs.split_path(source_path)
     if not getattr(split_result, "success", False):
-        logger.debug(
-            f"Failed to split source path: {getattr(split_result, 'error', 'Unknown error')}"
-        )
+        split_error = getattr(split_result, "error", "Unknown error")
+        logger.debug(f"Failed to split source path: {split_error}")
         return
 
     source_filename = split_result.data[-1]
