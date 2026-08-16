@@ -225,7 +225,7 @@ class GoogleConfigProvider(BaseConfigProvider):
             config: Configuration dictionary to enhance
         """
         if self.service == "drive":
-            defaults = {
+            defaults: dict[str, str | bool | int | list[str] | None] = {
                 "shared_folder_id": None,
                 "team_drive_id": None,
                 "default_share_access": "reader",

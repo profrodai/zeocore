@@ -10,7 +10,7 @@ that can be used across different test modules.
 """
 
 import base64
-from typing import TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from quack_core.integrations.google.mail.protocols import (
     GmailAttachmentsResource,
@@ -117,7 +117,7 @@ class MockGmailMessagesResource(GmailMessagesResource):
             get_error: Exception to raise on get operation, if any
         """
         self._attachments = attachments_resource or MockGmailAttachmentsResource()
-        self.list_messages = list_messages or [
+        self.list_messages: list[dict[str, Any]] = list_messages or [
             {"id": "msg1", "threadId": "thread1"},
             {"id": "msg2", "threadId": "thread2"},
         ]
@@ -209,7 +209,7 @@ class MockGmailMessagesResource(GmailMessagesResource):
 
         # Customize response based on query
         if q and "subject:Error" in q:
-            response = {"messages": []}
+            response: dict[str, Any] = {"messages": []}
         else:
             response = {"messages": self.list_messages, "nextPageToken": None}
 

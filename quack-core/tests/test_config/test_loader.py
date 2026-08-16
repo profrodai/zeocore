@@ -9,6 +9,7 @@ Tests for configuration loading utilities.
 import os
 import tempfile
 from pathlib import Path
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -69,8 +70,8 @@ class TestConfigLoader:
     def test_deep_merge(self) -> None:
         """Test deep merging of dictionaries."""
         # Test basic merge
-        base = {"a": 1, "b": 2}
-        override = {"b": 3, "c": 4}
+        base: dict[str, Any] = {"a": 1, "b": 2}
+        override: dict[str, Any] = {"b": 3, "c": 4}
         merged = _deep_merge(base, override)
         assert merged == {"a": 1, "b": 3, "c": 4}
 
