@@ -7,22 +7,66 @@ Integration tests for the HTTP adapter.
 """
 
 import time
+from collections.abc import Callable
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
+from pydantic import BaseModel
 from quack_core.adapters.http.app import create_app
 from quack_core.adapters.http.config import HttpAdapterConfig
+from quack_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
+from quack_core.core.registry import OperationRegistry
+
+
+class _QuackMediaRequest(BaseModel):
+    """Request model for the test-only quack-media.* operations registered
+    below -- see conftest.py's own copy for the full rationale. Accepts
+    arbitrary extra params since these tests post varied param shapes."""
+
+    model_config = {"extra": "allow"}
+
+
+def _make_quackmedia_operation(
+    op_name: str,
+) -> Callable[[_QuackMediaRequest], dict[str, Any]]:
+    """Test-only stand-in: reports success, the operation name, and
+    echoes params, matching what test_full_job_workflow /
+    test_sync_vs_async_consistency assert."""
+
+    def _op(req: _QuackMediaRequest) -> dict[str, Any]:
+        return {"success": True, "operation": op_name, "params": req.model_dump()}
+
+    return _op
 
 
 @pytest.fixture
 def integration_client() -> TestClient:
-    """Create client for integration testing."""
+    """Create client for integration testing.
+
+    Builds its own registry/job_store/job_runner and passes them via
+    create_app's DI parameters -- bare TestClient(app) never triggers
+    FastAPI's lifespan handler (that only runs when TestClient is entered
+    as a context manager), so app.state.registry/job_store/job_runner
+    would otherwise never be populated. See conftest.py's test_app
+    fixture for the same rationale in more detail.
+    """
     config = HttpAdapterConfig(
         auth_token="integration-test-token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
         max_workers=1,
         job_ttl_seconds=30,
     )
-    app = create_app(config)
+    registry = OperationRegistry()
+    registry.register(
+        name="quack-media.slice_video",
+        callable=_make_quackmedia_operation("quack-media.slice_video"),
+        request_model=_QuackMediaRequest,
+    )
+    job_store = InMemoryJobStore()
+    job_runner = ThreadPoolJobRunner(registry=registry, store=job_store, max_workers=1)
+    app = create_app(
+        config, registry=registry, job_store=job_store, job_runner=job_runner
+    )
     return TestClient(app)
 
 
@@ -79,7 +123,11 @@ def test_full_job_workflow(
 def test_sync_vs_async_consistency(
     integration_client: TestClient, integration_headers: dict[str, str]
 ) -> None:
-    """Test that sync and async endpoints return consistent results."""
+    """Test that sync (/ops) and async (/jobs) invocation of the same
+    operation return consistent results. The old dedicated
+    "/quack-media/slice" sync route was retired in favor of the generic
+    /ops/{op_name} interface (operations.py's own docstring); /ops IS the
+    current sync surface, so this test now exercises that."""
     params = {
         "input_path": "/test.mp4",
         "output_path": "/out.mp4",
@@ -89,10 +137,10 @@ def test_sync_vs_async_consistency(
 
     # Test sync endpoint
     sync_response = integration_client.post(
-        "/quack-media/slice", json=params, headers=integration_headers
+        "/ops/quack-media.slice_video", json=params, headers=integration_headers
     )
     assert sync_response.status_code == 200
-    sync_result = sync_response.json()
+    sync_result = sync_response.json()["data"]
 
     # Test async endpoint
     async_response = integration_client.post(
