@@ -10,6 +10,7 @@ loading, validation, and management of configuration data.
 """
 
 import os
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -33,7 +34,7 @@ class TestLLMConfigProvider:
     def test_extract_config(self, config_provider: LLMConfigProvider) -> None:
         """Test extracting LLM-specific configuration."""
         # Test with llm section
-        config_data = {
+        config_data: dict[str, Any] = {
             "llm": {
                 "default_provider": "anthropic",
                 "timeout": 30,

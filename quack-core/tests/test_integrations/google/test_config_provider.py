@@ -9,6 +9,7 @@ This module tests the GoogleConfigProvider class, including configuration loadin
 validation, and format handling.
 """
 
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -45,7 +46,7 @@ class TestGoogleConfigProvider:
         provider = GoogleConfigProvider("drive")
 
         # Test with google_drive section
-        config_data = {
+        config_data: dict[str, Any] = {
             "google_drive": {
                 "client_secrets_file": "/path/to/secrets.json",
                 "credentials_file": "/path/to/credentials.json",
@@ -124,7 +125,7 @@ class TestGoogleConfigProvider:
         provider = GoogleConfigProvider("drive")
 
         # Valid config
-        valid_config = {
+        valid_config: dict[str, Any] = {
             "client_secrets_file": "/path/to/secrets.json",
             "credentials_file": "/path/to/credentials.json",
             "shared_folder_id": "folder123",
@@ -304,7 +305,7 @@ class TestGoogleConfigProvider:
     def test_google_drive_config(self) -> None:
         """Test GoogleDriveConfig validation."""
         # Valid minimal config
-        config = {
+        config: dict[str, Any] = {
             "client_secrets_file": "/path/to/secrets.json",
             "credentials_file": "/path/to/credentials.json",
         }
@@ -343,7 +344,7 @@ class TestGoogleConfigProvider:
     def test_google_mail_config(self) -> None:
         """Test GoogleMailConfig validation."""
         # Valid minimal config
-        config = {
+        config: dict[str, Any] = {
             "client_secrets_file": "/path/to/secrets.json",
             "credentials_file": "/path/to/credentials.json",
         }
