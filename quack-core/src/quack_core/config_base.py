@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/config_base.py
-# module: quack_core.config_base
-# role: module
-# neighbors: __init__.py
-# exports: BasePolicy, ConfigError, ConfigResolver, deep_merge
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

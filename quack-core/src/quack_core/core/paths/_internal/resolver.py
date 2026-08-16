@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/paths/_internal/resolver.py
-# module: quack_core.core.paths._internal.resolver
-# role: module
-# neighbors: __init__.py, utils.py, context.py
-# exports: PathResolver
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

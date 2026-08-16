@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_fs/test_architecture.py
-# role: tests
-# neighbors: __init__.py, test_api_surface.py, test_atomic_wrapping.py, test_operations.py, test_path_utils.py, test_results.py (+3 more)
-# exports: get_imports, test_internal_import_boundary, test_ops_import_boundary
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 import ast

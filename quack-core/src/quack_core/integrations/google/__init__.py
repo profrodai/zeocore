@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/google/__init__.py
-# module: quack_core.integrations.google.__init__
-# role: module
-# neighbors: config.py, auth.py, serialization.py
-# exports: GoogleAuthProvider, GoogleConfigProvider
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

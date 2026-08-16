@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/github/operations/users.py
-# module: quack_core.integrations.github.operations.users
-# role: module
-# neighbors: __init__.py, issues.py, pull_requests.py, repositories.py
-# exports: get_user
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """GitHub user _ops."""

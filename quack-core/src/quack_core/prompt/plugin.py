@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/prompt/plugin.py
-# module: quack_core.prompt.plugin
-# role: plugin
-# neighbors: __init__.py, service.py, models.py
-# exports: PromptPlugin, create_plugin
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from quack_core.prompt.api.public.results import PromptRenderResult

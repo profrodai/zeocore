@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_prompt/test_strategy_base.py
-# role: tests
-# neighbors: __init__.py, conftest.py, test_booster.py, test_enhancer.py, test_integration.py, test_plugin.py (+2 more)
-# exports: test_prompt_strategy_creation, test_prompt_strategy_rendering, test_prompt_strategy_arbitrary_types, test_prompt_strategy_without_optional_fields
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/fs/_ops/path_ops.py
-# module: quack_core.core.fs._ops.path_ops
-# role: _ops
-# neighbors: __init__.py, base.py, core.py, directory_ops.py, file_info.py, find_ops.py (+4 more)
-# exports: PathOperationsMixin
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from pathlib import Path

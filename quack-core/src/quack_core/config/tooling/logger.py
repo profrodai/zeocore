@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/config/tooling/logger.py
-# module: quack_core.config.tooling.logger
-# role: module
-# neighbors: __init__.py, base.py, loader.py
-# exports: setup_tool_logging, get_logger, log_teaching
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

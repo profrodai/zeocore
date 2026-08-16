@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: scripts/verify_installation.py
-# role: module
-# neighbors: aggregate.py, annotate_headers.py, fix_imports.py, fix_remaining_tests.py, flatten.py, prune_branches.py
-# exports: check_package, main
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 # verify_installation.py

@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/google/drive/mocks/base.py
-# role: tests
-# neighbors: __init__.py, credentials.py, download.py, media.py, requests.py, resources.py (+1 more)
-# exports: GenericApiRequestMock
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

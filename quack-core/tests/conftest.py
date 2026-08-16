@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/conftest.py
-# role: tests
-# neighbors: __init__.py, test_helper.py
-# exports: MockPlugin, mock_fs_standalone, patch_filesystem_operations, temp_dir, test_file, test_binary_file, sample_config, mock_env_vars (+4 more)
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

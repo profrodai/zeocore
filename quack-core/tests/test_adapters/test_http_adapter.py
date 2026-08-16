@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_adapters/test_http_adapter.py
-# role: tests
-# neighbors: __init__.py
-# exports: EchoRequest, EchoResponse, TestAppBootstrap, TestAuthentication, TestOperationsRegistry, TestJobExecution, TestIdempotency, TestDirectOperationInvocation (+6 more)
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

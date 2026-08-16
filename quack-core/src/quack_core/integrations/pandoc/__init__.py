@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/pandoc/__init__.py
-# module: quack_core.integrations.pandoc.__init__
-# role: module
-# neighbors: service.py, models.py, protocols.py, config.py, converter.py
-# exports: PandocIntegration, PandocConfig, PandocConfigProvider, DocumentConverter, ConversionMetrics, ConversionTask, FileInfo, create_integration
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

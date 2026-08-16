@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/adapters/http/auth.py
-# module: quack_core.adapters.http.auth
-# role: adapters
-# neighbors: __init__.py, app.py, service.py, models.py, config.py, dependencies.py (+1 more)
-# exports: require_bearer, sign_payload
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

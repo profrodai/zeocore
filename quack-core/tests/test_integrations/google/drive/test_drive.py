@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/google/drive/test_drive.py
-# role: tests
-# neighbors: __init__.py, mocks.py, test_drive_models.py, test_drive_service_delete.py, test_drive_service_download.py, test_drive_service_files.py (+6 more)
-# exports: TestDriveModels, TestGoogleDriveServiceDelete, TestGoogleDriveServiceDownload, TestGoogleDriveServiceFiles, TestGoogleDriveServiceFolders, TestGoogleDriveServiceInit, TestGoogleDriveServiceList, TestGoogleDriveServicePermissions (+9 more)
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

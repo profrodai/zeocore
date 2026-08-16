@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-runner/src/quack_runner/workflow/output/writers.py
-# module: quack_runner.workflow.output.writers
-# role: module
-# neighbors: __init__.py, base.py
-# exports: JsonOutputWriter, YamlOutputWriter
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/google/drive/mocks/media.py
-# role: tests
-# neighbors: __init__.py, base.py, credentials.py, download.py, requests.py, resources.py (+1 more)
-# exports: MockDownloadStatus, MockMediaDownloader, create_mock_media_io_base_download
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

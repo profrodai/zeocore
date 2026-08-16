@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/fs/plugin.py
-# module: quack_core.core.fs.plugin
-# role: plugin
-# neighbors: __init__.py, protocols.py, results.py, exceptions.py, normalize.py
-# exports: FSPlugin, QuackFSPlugin, create_plugin
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from typing import Any, Protocol, TypeVar

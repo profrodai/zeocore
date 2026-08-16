@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/registry.py
-# module: quack_core.core.registry
-# role: module
-# neighbors: __init__.py, jobs.py, mime.py, serialization.py
-# exports: Operation, OperationRegistry, get_registry, reset_registry
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

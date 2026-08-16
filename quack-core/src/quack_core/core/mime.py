@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/core/mime.py
-# module: quack_core.core.mime
-# role: module
-# neighbors: __init__.py, registry.py, jobs.py, serialization.py
-# exports: is_binary_extension, get_content_type, is_text_extension
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

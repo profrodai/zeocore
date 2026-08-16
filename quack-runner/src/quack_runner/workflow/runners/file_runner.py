@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-runner/src/quack_runner/workflow/runners/file_runner.py
-# module: quack_runner.workflow.runners.file_runner
-# role: module
-# neighbors: __init__.py
-# exports: WorkflowError, FileWorkflowRunner
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

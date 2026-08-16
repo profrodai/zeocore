@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 # === QV-LLM:BEGIN ===
 # path: scripts/flatten.py
-# role: module
-# neighbors: aggregate.py, annotate_headers.py, fix_imports.py, fix_remaining_tests.py, prune_branches.py, verify_installation.py
-# exports: FileStat, should_skip_dir, iter_files, safe_slug, read_text_file, count_lines, flatten_to_file, write_manifest (+1 more)
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from __future__ import annotations

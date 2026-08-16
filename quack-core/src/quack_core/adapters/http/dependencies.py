@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/adapters/http/dependencies.py
-# module: quack_core.adapters.http.dependencies
-# role: adapters
-# neighbors: __init__.py, app.py, service.py, models.py, config.py, auth.py (+1 more)
-# exports: get_cfg, get_registry, get_job_store, get_job_runner, require_auth
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

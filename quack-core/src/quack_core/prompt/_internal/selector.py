@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/prompt/_internal/selector.py
-# module: quack_core.prompt._internal.selector
-# role: module
-# neighbors: __init__.py, registry.py, enhancer.py
-# exports: select_best_strategy
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 from typing import Any

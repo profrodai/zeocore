@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: examples/tools/minimal_runner.py
-# role: module
-# neighbors: echo_tool.py, run_echo_on_file.py
-# exports: run_tool_locally, main
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

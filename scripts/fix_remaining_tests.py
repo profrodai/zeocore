@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: scripts/fix_remaining_tests.py
-# role: module
-# neighbors: aggregate.py, annotate_headers.py, fix_imports.py, flatten.py, prune_branches.py, verify_installation.py
-# exports: fix_file_content
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 # fix_remaining_tests.py

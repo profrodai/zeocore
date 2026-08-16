@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: examples/explicit_plugin_loading_example.py
-# role: module
-# neighbors: config_tooling_test.py, http_adapter_usage.py, toolkit_usage.py
-# exports: example_1_discovery, example_2_explicit_loading, example_3_error_handling, example_4_configuration_driven, example_5_plugin_metadata, example_6_lifecycle_management, example_7_testing_pattern, main
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

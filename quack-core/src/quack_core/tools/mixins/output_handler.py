@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/tools/mixins/output_handler.py
-# module: quack_core.tools.mixins.output_handler
-# role: module
-# neighbors: __init__.py, env_init.py, integration_enabled.py, lifecycle.py
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/integrations/llms/clients/anthropic.py
-# module: quack_core.integrations.llms.clients.anthropic
-# role: module
-# neighbors: __init__.py, base.py, mock.py, ollama.py, openai.py
-# exports: AnthropicClient
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 

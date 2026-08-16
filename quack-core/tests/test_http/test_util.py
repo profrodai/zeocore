@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_http/test_util.py
-# role: tests
-# neighbors: __init__.py, conftest.py, test_auth.py, test_config.py, test_integration.py, test_jobs.py (+2 more)
-# exports: test_post_callback_mock
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

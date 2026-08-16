@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_helper.py
-# role: tests
-# neighbors: __init__.py, conftest.py
-# exports: setup_python_path
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

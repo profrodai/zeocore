@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/contracts/capabilities/demo/_impl.py
-# module: quack_core.contracts.capabilities.demo._impl
-# role: module
-# neighbors: __init__.py, models.py
-# exports: echo_text, validate_video_ref
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

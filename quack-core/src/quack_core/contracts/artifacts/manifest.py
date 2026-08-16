@@ -1,11 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/src/quack_core/contracts/artifacts/manifest.py
-# module: quack_core.contracts.artifacts.manifest
-# role: module
-# neighbors: __init__.py, refs.py
-# exports: ToolInfo, Provenance, ManifestInput, RunManifest
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """

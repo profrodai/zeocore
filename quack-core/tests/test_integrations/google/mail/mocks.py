@@ -1,10 +1,5 @@
 # === QV-LLM:BEGIN ===
 # path: quack-core/tests/test_integrations/google/mail/mocks.py
-# role: tests
-# neighbors: __init__.py, test_mail.py, test_mail_service.py
-# exports: MockGmailRequest, MockGmailAttachmentsResource, MockGmailMessagesResource, MockGmailUsersResource, MockGmailService, MockGoogleCredentials, MockRequest, create_mock_gmail_service (+2 more)
-# git_branch: main
-# git_commit: f0715f0c
 # === QV-LLM:END ===
 
 """
