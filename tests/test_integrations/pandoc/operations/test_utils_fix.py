@@ -165,15 +165,15 @@ def apply_utils_patches() -> list[Any]:
     """
     patches: list[Any] = [
         patch(
-            "quack_core.integrations.pandoc._ops.utils.check_file_size",
+            "quack_core.integrations.pandoc.operations.utils.check_file_size",
             patched_check_file_size,
         ),
         patch(
-            "quack_core.integrations.pandoc._ops.utils.check_conversion_ratio",
+            "quack_core.integrations.pandoc.operations.utils.check_conversion_ratio",
             patched_check_conversion_ratio,
         ),
         patch(
-            "quack_core.integrations.pandoc._ops.utils.track_metrics",
+            "quack_core.integrations.pandoc.operations.utils.track_metrics",
             patched_track_metrics,
         ),
     ]

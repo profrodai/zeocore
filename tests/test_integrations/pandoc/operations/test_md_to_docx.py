@@ -36,12 +36,14 @@ from .test_utils_fix import (
 # --- Tests for Markdown to DOCX _ops ---
 
 
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._validate_markdown_input")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._convert_markdown_to_docx_once")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._get_conversion_output")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx.validate_conversion")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
 @patch(
-    "quack_core.integrations.pandoc._ops.md_to_docx.track_metrics",
+    "quack_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
+)
+@patch("quack_core.integrations.pandoc.operations.md_to_docx._get_conversion_output")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.validate_conversion")
+@patch(
+    "quack_core.integrations.pandoc.operations.md_to_docx.track_metrics",
     patched_track_metrics,
 )
 def test_convert_markdown_to_docx_success(
@@ -69,7 +71,7 @@ def test_convert_markdown_to_docx_success(
     assert metrics.successful_conversions == 1
 
 
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._validate_markdown_input")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
 def test_convert_markdown_to_docx_validation_error(mock_validate: MagicMock) -> None:
     """Test Markdown to DOCX conversion with validation error."""
     # Setup mock to raise error
@@ -88,8 +90,8 @@ def test_convert_markdown_to_docx_validation_error(mock_validate: MagicMock) -> 
     assert "input.md" in metrics.errors
 
 
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._validate_markdown_input")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._convert_markdown_to_docx_once")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once")
 def test_convert_markdown_to_docx_conversion_failure(
     mock_convert: MagicMock, mock_validate: MagicMock
 ) -> None:
@@ -110,12 +112,14 @@ def test_convert_markdown_to_docx_conversion_failure(
     assert metrics.failed_conversions == 1
 
 
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._validate_markdown_input")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._convert_markdown_to_docx_once")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._get_conversion_output")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx.validate_conversion")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
 @patch(
-    "quack_core.integrations.pandoc._ops.md_to_docx.track_metrics",
+    "quack_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
+)
+@patch("quack_core.integrations.pandoc.operations.md_to_docx._get_conversion_output")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.validate_conversion")
+@patch(
+    "quack_core.integrations.pandoc.operations.md_to_docx.track_metrics",
     patched_track_metrics,
 )
 def test_convert_markdown_to_docx_validation_failure(
@@ -148,10 +152,11 @@ def test_convert_markdown_to_docx_validation_failure(
 
 @patch("quack_core.core.fs.service.standalone")
 @patch(
-    "quack_core.integrations.pandoc._ops.utils.check_file_size", patched_check_file_size
+    "quack_core.integrations.pandoc.operations.utils.check_file_size",
+    patched_check_file_size,
 )
 @patch(
-    "quack_core.integrations.pandoc._ops.utils.check_conversion_ratio",
+    "quack_core.integrations.pandoc.operations.utils.check_conversion_ratio",
     patched_check_conversion_ratio,
 )
 def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
@@ -169,7 +174,7 @@ def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
 
     # Test successful validation
     with patch(
-        "quack_core.integrations.pandoc._ops.utils.validate_docx_structure"
+        "quack_core.integrations.pandoc.operations.utils.validate_docx_structure"
     ) as mock_validate_docx:
         mock_validate_docx.return_value = (True, [])
 
@@ -193,7 +198,7 @@ def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
 
     # Test docx structure validation
     with patch(
-        "quack_core.integrations.pandoc._ops.utils.validate_docx_structure"
+        "quack_core.integrations.pandoc.operations.utils.validate_docx_structure"
     ) as mock_validate_docx:
         mock_validate_docx.return_value = (False, ["Invalid DOCX structure"])
 
@@ -338,7 +343,7 @@ def test_md_to_docx_convert_once_directory_error() -> None:
 
 
 @patch("quack_core.core.fs.service.standalone")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx.time")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.time")
 def test_md_to_docx_get_conversion_output_success(
     mock_time: MagicMock, mock_fs: MagicMock
 ) -> None:
@@ -378,12 +383,14 @@ def test_md_to_docx_get_conversion_output_file_info_error(mock_fs: MagicMock) ->
     assert "Failed to get info for converted file" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._validate_markdown_input")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._convert_markdown_to_docx_once")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._get_conversion_output")
-@patch("quack_core.integrations.pandoc._ops.md_to_docx.validate_conversion")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
 @patch(
-    "quack_core.integrations.pandoc._ops.md_to_docx.track_metrics",
+    "quack_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
+)
+@patch("quack_core.integrations.pandoc.operations.md_to_docx._get_conversion_output")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx.validate_conversion")
+@patch(
+    "quack_core.integrations.pandoc.operations.md_to_docx.track_metrics",
     patched_track_metrics,
 )
 def test_convert_markdown_to_docx_full_success(
@@ -415,14 +422,15 @@ def test_convert_markdown_to_docx_full_success(
 
 
 @patch(
-    "quack_core.integrations.pandoc._ops.utils.check_file_size", patched_check_file_size
+    "quack_core.integrations.pandoc.operations.utils.check_file_size",
+    patched_check_file_size,
 )
 @patch(
-    "quack_core.integrations.pandoc._ops.utils.check_conversion_ratio",
+    "quack_core.integrations.pandoc.operations.utils.check_conversion_ratio",
     patched_check_conversion_ratio,
 )
-@patch("quack_core.integrations.pandoc._ops.md_to_docx._check_docx_metadata")
-@patch("quack_core.integrations.pandoc._ops.utils.validate_docx_structure")
+@patch("quack_core.integrations.pandoc.operations.md_to_docx._check_docx_metadata")
+@patch("quack_core.integrations.pandoc.operations.utils.validate_docx_structure")
 def test_md_to_docx_validate_conversion_docx_structure(
     mock_validate_docx: MagicMock, mock_check_metadata: MagicMock
 ) -> None:
@@ -431,7 +439,7 @@ def test_md_to_docx_validate_conversion_docx_structure(
     mock_validate_docx.return_value = (True, [])
 
     # Mock filesystem service to return valid file info
-    with patch("quack_core.integrations.pandoc._ops.md_to_docx.fs") as mock_fs:
+    with patch("quack_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs:
         # Mock get_file_info to return valid file info for output.docx
         mock_fs.get_file_info.return_value = SimpleNamespace(
             success=True, exists=True, size=2000, path=Path("output.docx")
@@ -484,7 +492,9 @@ def test_md_to_docx_check_metadata() -> None:
     with (
         patch("quack_core.core.fs.service.standalone") as mock_fs,
         patch("importlib.import_module") as mock_import,
-        patch("quack_core.integrations.pandoc._ops.md_to_docx.logger") as mock_logger,
+        patch(
+            "quack_core.integrations.pandoc.operations.md_to_docx.logger"
+        ) as mock_logger,
     ):
         mock_import.side_effect = ImportError("docx module not found")
 

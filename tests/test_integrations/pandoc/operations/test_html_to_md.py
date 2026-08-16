@@ -51,10 +51,12 @@ def test_post_process_markdown() -> None:
     assert "\n\n\n" not in result  # No more than two consecutive newlines
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md._validate_input")
-@patch("quack_core.integrations.pandoc._ops.html_to_md._attempt_conversion")
-@patch("quack_core.integrations.pandoc._ops.html_to_md._write_and_validate_output")
-@patch("quack_core.integrations.pandoc._ops.html_to_md.validate_conversion")
+@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
+@patch("quack_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
+@patch(
+    "quack_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
+)
+@patch("quack_core.integrations.pandoc.operations.html_to_md.validate_conversion")
 def test_convert_html_to_markdown_success(
     mock_validate: MagicMock,
     mock_write: MagicMock,
@@ -74,7 +76,7 @@ def test_convert_html_to_markdown_success(
 
     # Patch track_metrics to avoid DataResult validation issues
     with patch(
-        "quack_core.integrations.pandoc._ops.html_to_md.track_metrics",
+        "quack_core.integrations.pandoc.operations.html_to_md.track_metrics",
         patched_track_metrics,
     ):
         # Run conversion
@@ -91,7 +93,7 @@ def test_convert_html_to_markdown_success(
         assert "input.html" not in metrics.errors
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md._validate_input")
+@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
 def test_convert_html_to_markdown_validation_error(mock_validate: MagicMock) -> None:
     """Test HTML to Markdown conversion with validation error."""
     # Setup mock to raise error
@@ -110,9 +112,11 @@ def test_convert_html_to_markdown_validation_error(mock_validate: MagicMock) -> 
     assert "input.html" in metrics.errors
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md._validate_input")
-@patch("quack_core.integrations.pandoc._ops.html_to_md._attempt_conversion")
-@patch("quack_core.integrations.pandoc._ops.html_to_md._write_and_validate_output")
+@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
+@patch("quack_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
+@patch(
+    "quack_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
+)
 def test_convert_html_to_markdown_conversion_failure(
     mock_write: MagicMock, mock_convert: MagicMock, mock_validate: MagicMock
 ) -> None:
@@ -133,9 +137,11 @@ def test_convert_html_to_markdown_conversion_failure(
     assert metrics.failed_conversions == 1
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md._validate_input")
-@patch("quack_core.integrations.pandoc._ops.html_to_md._attempt_conversion")
-@patch("quack_core.integrations.pandoc._ops.html_to_md._write_and_validate_output")
+@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
+@patch("quack_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
+@patch(
+    "quack_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
+)
 def test_convert_html_to_markdown_validation_failure(
     mock_write: MagicMock, mock_convert: MagicMock, mock_validate: MagicMock
 ) -> None:
@@ -191,13 +197,13 @@ def test_validate_conversion_html_to_md() -> None:
 
     # Use patch context managers instead of decorators
     with (
-        patch("quack_core.integrations.pandoc._ops.html_to_md.fs", fs_mock),
+        patch("quack_core.integrations.pandoc.operations.html_to_md.fs", fs_mock),
         patch(
-            "quack_core.integrations.pandoc._ops.html_to_md.check_file_size",
+            "quack_core.integrations.pandoc.operations.html_to_md.check_file_size",
             patched_file_size_check,
         ),
         patch(
-            "quack_core.integrations.pandoc._ops.html_to_md.check_conversion_ratio",
+            "quack_core.integrations.pandoc.operations.html_to_md.check_conversion_ratio",
             patched_ratio_check,
         ),
     ):
@@ -218,7 +224,7 @@ def test_validate_conversion_html_to_md() -> None:
         # Test with conversion ratio too small
         # Set up the right mocks for this specific test
         with patch(
-            "quack_core.integrations.pandoc._ops.html_to_md.check_conversion_ratio",
+            "quack_core.integrations.pandoc.operations.html_to_md.check_conversion_ratio",
             lambda *args: (
                 False,
                 ["Conversion ratio (0.05) is less than the minimum threshold (0.10)"],
@@ -239,7 +245,7 @@ def test_validate_conversion_html_to_md() -> None:
 # --- HTML to Markdown Operation Tests ---
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
 def test_html_to_md_validate_input_success(mock_fs: MagicMock) -> None:
     """Test successful validation of HTML input."""
     # Setup mock fs
@@ -252,7 +258,7 @@ def test_html_to_md_validate_input_success(mock_fs: MagicMock) -> None:
 
     # Mock validate_html_structure
     with patch(
-        "quack_core.integrations.pandoc._ops.html_to_md.validate_html_structure"
+        "quack_core.integrations.pandoc.operations.html_to_md.validate_html_structure"
     ) as mock_validate:
         mock_validate.return_value = (True, [])
 
@@ -266,7 +272,7 @@ def test_html_to_md_validate_input_success(mock_fs: MagicMock) -> None:
         assert mock_validate.called
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
 def test_html_to_md_validate_input_file_not_found(mock_fs: MagicMock) -> None:
     """Test validation of HTML input when file is not found."""
     # Setup mock fs
@@ -282,7 +288,7 @@ def test_html_to_md_validate_input_file_not_found(mock_fs: MagicMock) -> None:
     assert "Input file not found" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
 def test_html_to_md_validate_input_invalid_structure(mock_fs: MagicMock) -> None:
     """Test validation of HTML input with invalid structure."""
     # Setup mock fs
@@ -296,7 +302,7 @@ def test_html_to_md_validate_input_invalid_structure(mock_fs: MagicMock) -> None
 
     # Mock validate_html_structure
     with patch(
-        "quack_core.integrations.pandoc._ops.html_to_md.validate_html_structure"
+        "quack_core.integrations.pandoc.operations.html_to_md.validate_html_structure"
     ) as mock_validate:
         mock_validate.return_value = (False, ["Missing body tag"])
 
@@ -312,9 +318,9 @@ def test_html_to_md_validate_input_invalid_structure(mock_fs: MagicMock) -> None
         assert "Invalid HTML structure" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
-@patch("quack_core.integrations.pandoc._ops.html_to_md.time")
-@patch("quack_core.integrations.pandoc._ops.html_to_md.validate_conversion")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.time")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.validate_conversion")
 def test_html_to_md_write_and_validate_output_success(
     mock_validate: MagicMock, mock_time: MagicMock, mock_fs: MagicMock
 ) -> None:
@@ -346,7 +352,7 @@ def test_html_to_md_write_and_validate_output_success(
     assert not result[2]  # validation_errors
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
 def test_html_to_md_write_and_validate_output_directory_error(
     mock_fs: MagicMock,
 ) -> None:
@@ -372,7 +378,7 @@ def test_html_to_md_write_and_validate_output_directory_error(
     assert "Failed to create output directory" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
 def test_html_to_md_write_and_validate_output_write_error(mock_fs: MagicMock) -> None:
     """Test write with file writing error."""
     # Setup mocks
@@ -395,9 +401,9 @@ def test_html_to_md_write_and_validate_output_write_error(mock_fs: MagicMock) ->
     assert "Failed to write output file" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc._ops.html_to_md.fs")
-@patch("quack_core.integrations.pandoc._ops.html_to_md.time")
-@patch("quack_core.integrations.pandoc._ops.html_to_md.validate_conversion")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.time")
+@patch("quack_core.integrations.pandoc.operations.html_to_md.validate_conversion")
 def test_html_to_md_write_and_validate_output_validation_errors(
     mock_validate: MagicMock, mock_time: MagicMock, mock_fs: MagicMock
 ) -> None:

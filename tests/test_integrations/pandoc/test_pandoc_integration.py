@@ -376,7 +376,7 @@ def test_end_to_end_markdown_to_docx_conversion(
     assert call_args[0][2] == "docx"  # output_format
 
 
-@patch("quack_core.integrations.pandoc._ops.utils.fs")
+@patch("quack_core.integrations.pandoc.operations.utils.fs")
 @patch("quack_core.core.fs.service.standalone.expand_user_vars")
 @patch("quack_core.integrations.pandoc.service.verify_pandoc")
 def test_end_to_end_directory_conversion(
