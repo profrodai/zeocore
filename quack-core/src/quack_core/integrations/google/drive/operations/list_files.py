@@ -39,7 +39,7 @@ def list_files(
     Returns:
         IntegrationResult containing a list of file information dictionaries.
     """
-    local_logger = get_logger(__name__) or logger(__name__)
+    local_logger = logger or get_logger(__name__)
 
     try:
         # Build query string
@@ -60,7 +60,7 @@ def list_files(
         )
 
         # Process results - add explicit type checking and casting
-        files = []
+        files: list[DriveFile | DriveFolder] = []
 
         # Get the files from the response with proper type handling
         files_data = response.get("files")

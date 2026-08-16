@@ -12,6 +12,7 @@ reading a file or obtaining file metadata are delegated to the QuackCore FS API.
 """
 
 import logging
+from typing import cast
 
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaInMemoryUpload
@@ -41,7 +42,7 @@ def initialize_drive_service(credentials: GoogleCredentials) -> DriveService:
         QuackApiError: If service initialization fails.
     """
     try:
-        return build("drive", "v3", credentials=credentials)
+        return cast(DriveService, build("drive", "v3", credentials=credentials))
     except Exception as api_error:
         raise QuackApiError(
             f"Failed to initialize Google Drive API: {api_error}",

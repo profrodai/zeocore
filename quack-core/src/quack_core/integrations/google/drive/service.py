@@ -12,7 +12,7 @@ handling file _ops, folder management, and permissions.
 import io
 import logging
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from quack_core.core.errors import (
     QuackApiError,
@@ -249,7 +249,21 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             filename = path_parts[-1] if path_parts else "file"
 
         folder_id = parent_folder_id or self.shared_folder_id
-        mime_type = standalone.get_mime_type(path_obj) or "application/octet-stream"
+        # get_mime_type returns a DataResult, not a raw str | None -- a
+        # DataResult instance is always truthy regardless of its own
+        # .success/.data fields, so `x or fallback` can never reach the
+        # fallback branch (RULING-247, same disease family as this file's
+        # own sibling operations/upload.py::resolve_file_details, which
+        # already carries this exact fix -- this call site was the
+        # unfixed twin RULING-247 missed). Unwrap via .data after checking
+        # .success, matching operations/upload.py:105-110 verbatim and the
+        # established precedent at pandoc/converter.py:265 / google/auth.py:246.
+        mime_result = standalone.get_mime_type(path_obj)
+        mime_type = (
+            mime_result.data
+            if mime_result.success and mime_result.data is not None
+            else "application/octet-stream"
+        )
         return path_obj, filename, folder_id, mime_type
 
     def _resolve_download_path(
@@ -272,7 +286,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             temp_dir_result = standalone.create_temp_directory(
                 prefix="quackcore_gdrive_"
             )
-            temp_dir = (
+            temp_dir = str(
                 temp_dir_result.data
                 if hasattr(temp_dir_result, "data")
                 else temp_dir_result
@@ -371,7 +385,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
                 )
                 .execute()
             )
-            return file
+            return cast(dict[str, Any], file)
         except Exception as api_error:
             raise QuackApiError(
                 f"Failed to upload file to Google Drive: {api_error}",
