@@ -11,9 +11,9 @@ It delegates logic to the internal Resolver and returns typed Result objects.
 
 import os
 from pathlib import Path
-from typing import Any
 
 from quack_core.core.fs import DataResult, OperationResult
+from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.logging import get_logger
 from quack_core.core.paths._internal.resolver import PathResolver
 from quack_core.core.paths._internal.utils import (
@@ -39,7 +39,7 @@ class PathService:
         self._resolver = PathResolver()
         self.logger = get_logger(__name__)
 
-    def _norm(self, path_param: Any) -> str:
+    def _norm(self, path_param: FsPathLike) -> str:
         """Internal helper to normalize inputs."""
         return _normalize_path_param(path_param)
 

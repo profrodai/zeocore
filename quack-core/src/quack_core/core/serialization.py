@@ -25,7 +25,7 @@ _SCALAR_CONVERTERS: tuple[tuple[type, Any], ...] = (
 )
 
 
-def _normalize_scalar(data: Any) -> tuple[bool, Any]:
+def _normalize_scalar(data: Any) -> tuple[bool, Any]:  # noqa: ANN401 -- genuinely dynamic: accepts any Python object, same as normalize_for_json's data param
     """
     Try each safe scalar auto-conversion (Path, datetime, Enum) in order.
     Returns (True, converted_value) on the first match, else (False, None).
@@ -43,7 +43,7 @@ def _normalize_sequence(
     path: str,
     allow_pydantic: bool,
     allow_string_fallback: bool,
-    logger: Any | None,
+    logger: logging.Logger | None,
 ) -> list[Any]:
     """
     Recurse over a set/list/tuple, normalizing each element. Extracted from
@@ -61,7 +61,10 @@ def _normalize_sequence(
 
 
 def _normalize_dict_key(
-    k: Any, path: str, allow_string_fallback: bool, logger: Any | None
+    k: Any,  # noqa: ANN401 -- genuinely dynamic: any dict key type, coerced or rejected below
+    path: str,
+    allow_string_fallback: bool,
+    logger: logging.Logger | None,
 ) -> str:
     """
     Coerce or reject a single dict key per allow_string_fallback. Extracted
@@ -86,7 +89,7 @@ def _normalize_dict(
     path: str,
     allow_pydantic: bool,
     allow_string_fallback: bool,
-    logger: Any | None,
+    logger: logging.Logger | None,
 ) -> dict[str, Any]:
     """
     Enforce string keys and recurse over a dict's values. Extracted from
@@ -102,12 +105,12 @@ def _normalize_dict(
 
 
 def _normalize_unknown(
-    data: Any,
+    data: Any,  # noqa: ANN401 -- genuinely dynamic: any unrecognized Python object, same as normalize_for_json's data param
     path: str,
     allow_pydantic: bool,
     allow_string_fallback: bool,
-    logger: Any | None,
-) -> Any:
+    logger: logging.Logger | None,
+) -> Any:  # noqa: ANN401 -- genuinely dynamic: return is either the stringified data or a raised exception, no narrower static type
     """
     Handle a type normalize_for_json does not otherwise recognize: reject it,
     or stringify it if allow_string_fallback permits. Extracted from
