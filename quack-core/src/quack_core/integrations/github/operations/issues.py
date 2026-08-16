@@ -18,7 +18,7 @@ def create_issue(
     body: str | None = None,
     labels: list[str] | None = None,
     assignees: list[str] | None = None,
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> dict[str, Any]:
     """Create an issue in a repository.
 
@@ -73,7 +73,7 @@ def list_issues(
     labels: str | None = None,
     sort: Literal["created", "updated", "comments"] = "created",
     direction: Literal["asc", "desc"] = "desc",
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> list[dict[str, Any]]:
     """List issues in a repository.
 
@@ -117,7 +117,7 @@ def get_issue(
     repo: str,
     issue_number: int,
     api_url: str,
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> dict[str, Any]:
     """Get a specific issue in a repository.
 
@@ -149,7 +149,7 @@ def add_issue_comment(
     issue_number: int,
     body: str,
     api_url: str,
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> dict[str, Any]:
     """Add a comment to an issue.
 

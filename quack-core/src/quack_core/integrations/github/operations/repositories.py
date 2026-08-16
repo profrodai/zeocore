@@ -14,7 +14,10 @@ from quack_core.integrations.github.utils.api import make_request
 
 
 def get_repo(
-    session: requests.Session, full_name: str, api_url: str, **request_kwargs: Any
+    session: requests.Session,
+    full_name: str,
+    api_url: str,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> GitHubRepo:
     """Get information about a GitHub repository.
 
@@ -61,7 +64,10 @@ def get_repo(
 
 
 def star_repo(
-    session: requests.Session, full_name: str, api_url: str, **request_kwargs: Any
+    session: requests.Session,
+    full_name: str,
+    api_url: str,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> bool:
     """Star a GitHub repository.
 
@@ -85,7 +91,10 @@ def star_repo(
 
 
 def unstar_repo(
-    session: requests.Session, full_name: str, api_url: str, **request_kwargs: Any
+    session: requests.Session,
+    full_name: str,
+    api_url: str,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> bool:
     """Unstar a GitHub repository.
 
@@ -113,7 +122,10 @@ def unstar_repo(
 
 
 def is_repo_starred(
-    session: requests.Session, full_name: str, api_url: str, **request_kwargs: Any
+    session: requests.Session,
+    full_name: str,
+    api_url: str,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> bool:
     """Check if a repository is starred by the authenticated user.
 
@@ -147,7 +159,7 @@ def fork_repo(
     full_name: str,
     api_url: str,
     organization: str | None = None,
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> GitHubRepo:
     """Fork a GitHub repository.
 
@@ -206,7 +218,10 @@ def fork_repo(
 
 
 def check_repository_exists(
-    session: requests.Session, full_name: str, api_url: str, **request_kwargs: Any
+    session: requests.Session,
+    full_name: str,
+    api_url: str,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> bool:
     """Check if a repository exists.
 
@@ -241,7 +256,7 @@ def get_repository_file_content(
     path: str,
     api_url: str,
     ref: str | None = None,
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> tuple[str, str]:
     """Get the content of a file from a repository.
 
@@ -292,7 +307,7 @@ def update_repository_file(
     sha: str,
     api_url: str,
     branch: str | None = None,
-    **request_kwargs: Any,
+    **request_kwargs: Any,  # noqa: ANN401 -- passthrough to requests.Session.request via make_request; kwargs are genuinely heterogeneous
 ) -> bool:
     """Update a file in a repository.
 

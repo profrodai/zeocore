@@ -158,7 +158,7 @@ class TestGitHubMockedIntegration:
 
         # Create a test-specific subclass of GitHubIntegration that overrides initialize
         class TestGitHubIntegration(GitHubIntegration):
-            def initialize(self):
+            def initialize(self) -> IntegrationResult:
                 # Skip the problematic path resolution and just set up the integration directly
                 self.config = {
                     "token": "mock_token",
@@ -254,7 +254,10 @@ class TestGitHubMockedIntegration:
         # Make sure we're patching the right object - integration.client.session
         with patch.object(integration.client.session, "request") as mock_request:
             # Configure mock to handle different requests
-            def mock_request_side_effect(*args: Any, **kwargs: Any) -> MagicMock:
+            def mock_request_side_effect(
+                *args: Any,  # noqa: ANN401 -- mock side_effect must accept any args passed to session.request()
+                **kwargs: Any,  # noqa: ANN401 -- mock side_effect must accept any kwargs passed to session.request()
+            ) -> MagicMock:
                 if "user" in args[1]:
                     return user_response
                 elif "repos" in args[1] and "mock-repo" in args[1]:
