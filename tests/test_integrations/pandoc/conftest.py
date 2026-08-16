@@ -132,6 +132,30 @@ def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
     # Set the standalone attribute directly in the module
     # This is the critical change - we need to directly set the attribute on the module
     sys.modules["quack_core.core.fs.service"].standalone = stub
+
+    # The line above alone does NOT reach every consumer: each pandoc module
+    # binds its own local `fs` name at import time via
+    # `from quack_core.core.fs.service import standalone as fs`, so
+    # reassigning sys.modules[...].standalone after that import has already
+    # happened never touches the already-bound local alias (mock-path-drift-fix
+    # SOW-02 Finding 2). Patch the alias directly on every module that binds
+    # it, so this one shared, autouse fixture actually reaches all of them.
+    import quack_core.integrations.pandoc.config as _pandoc_config
+    import quack_core.integrations.pandoc.converter as _pandoc_converter
+    import quack_core.integrations.pandoc.operations.html_to_md as _pandoc_html_to_md
+    import quack_core.integrations.pandoc.operations.md_to_docx as _pandoc_md_to_docx
+    import quack_core.integrations.pandoc.operations.utils as _pandoc_utils
+
+    for _mod in (
+        _pandoc_config,
+        _pandoc_converter,
+        _pandoc_html_to_md,
+        _pandoc_md_to_docx,
+        _pandoc_utils,
+    ):
+        if hasattr(_mod, "fs"):
+            monkeypatch.setattr(_mod, "fs", stub)
+
     return stub
 
 

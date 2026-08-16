@@ -70,6 +70,30 @@ def fs_stub(monkeypatch: MonkeyPatch) -> Generator[SimpleNamespace, None, None]:
     stub.normalize_path_with_info = stub.normalize_path
     stub.get_file_size_str = lambda size: f"{size}B"
     monkeypatch.setattr(fs_service, "standalone", stub)
+
+    # The line above alone does NOT reach every consumer: each pandoc module
+    # binds its own local `fs` name at import time via
+    # `from quack_core.core.fs.service import standalone as fs`, so
+    # reassigning fs_service.standalone after that import has already
+    # happened never touches the already-bound local alias (mock-path-drift-fix
+    # SOW-02 Finding 2). Patch the alias directly on every module that binds
+    # it, so this fixture actually reaches all of them.
+    import quack_core.integrations.pandoc.config as _pandoc_config
+    import quack_core.integrations.pandoc.converter as _pandoc_converter
+    import quack_core.integrations.pandoc.operations.html_to_md as _pandoc_html_to_md
+    import quack_core.integrations.pandoc.operations.md_to_docx as _pandoc_md_to_docx
+    import quack_core.integrations.pandoc.operations.utils as _pandoc_utils
+
+    for _mod in (
+        _pandoc_config,
+        _pandoc_converter,
+        _pandoc_html_to_md,
+        _pandoc_md_to_docx,
+        _pandoc_utils,
+    ):
+        if hasattr(_mod, "fs"):
+            monkeypatch.setattr(_mod, "fs", stub)
+
     yield stub
 
 
@@ -85,8 +109,21 @@ def test_verify_pandoc_success(monkeypatch: MonkeyPatch) -> None:
 
 
 def test_verify_pandoc_import_error(monkeypatch: MonkeyPatch) -> None:
-    # Ensure pypandoc not in modules to trigger ImportError
-    monkeypatch.delitem(sys.modules, "pypandoc", raising=False)
+    # pypandoc (the Python wrapper) is genuinely installed in this
+    # environment even though the `pandoc` binary is not, so deleting
+    # "pypandoc" from sys.modules does not simulate "package not
+    # installed" -- it just forces a fresh, successful re-import, which
+    # then fails with OSError from the missing binary (a different branch
+    # of verify_pandoc than this test intends to exercise). Patch
+    # importlib.import_module directly to raise ImportError, matching the
+    # technique test_utils.py::test_verify_pandoc_import_error already
+    # uses correctly for the same function.
+    import importlib
+
+    def raise_import_error(name: str) -> None:
+        raise ImportError(f"No module named '{name}'")
+
+    monkeypatch.setattr(importlib, "import_module", raise_import_error)
     with pytest.raises(QuackIntegrationError) as excinfo:
         verify_pandoc()
     assert "pypandoc module is not installed" in str(excinfo.value)
@@ -171,17 +208,27 @@ def converter(monkeypatch: MonkeyPatch) -> DocumentConverter:
 def test_convert_file_html_to_md_success(
     converter: DocumentConverter, monkeypatch: MonkeyPatch
 ) -> None:
-    # Stub file_info
+    # Stub file_info. converter.py imports get_file_info at module top level
+    # from quack_core.integrations.pandoc.operations (its own package-level
+    # re-export), not from operations.utils directly -- patch the alias
+    # actually consumed.
     monkeypatch.setattr(
-        "quack_core.integrations.pandoc.operations.utils.get_file_info",
+        "quack_core.integrations.pandoc.converter.get_file_info",
         lambda path: FileInfo(
             path=path, format="html", size=100, modified=None, extra_args=[]
         ),
     )
-    # Stub conversion operation
+    # Stub conversion operation. converter.py's deferred import
+    # (`from ...pandoc.operations import convert_html_to_markdown`) re-resolves
+    # from the `operations` package's own already-bound re-export every call,
+    # not from operations.html_to_md's origin -- patch that re-export.
+    # convert_file unpacks a tuple content into its first element (see
+    # converter.py's own "Unpack the returned tuple" comment) -- a list
+    # content is passed through unchanged, so the mock must return a tuple
+    # to match the real function's documented shape.
     monkeypatch.setattr(
-        "quack_core.integrations.pandoc.operations.html_to_md.convert_html_to_markdown",
-        lambda i, o, cfg, m: IntegrationResult.success_result(["out.md"]),
+        "quack_core.integrations.pandoc.operations.convert_html_to_markdown",
+        lambda i, o, cfg, m: IntegrationResult.success_result(("out.md", None)),
     )
 
     result = converter.convert_file("in.html", "out.md", "markdown")
@@ -317,9 +364,11 @@ def test_config_provider_validate_config(monkeypatch: MonkeyPatch) -> None:
     provider = PandocConfigProvider()
     # valid schema
     assert provider.validate_config({"output_dir": "/tmp"}) is not False  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
-    # test invalid path
-    quack_core.core.fs.service.standalone.is_valid_path = lambda p: False
-    assert not provider.validate_config({"output_dir": "/tmp"})  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
+    # test invalid path: validate_config's real, current contract (config.py)
+    # checks basic string validity and a forbidden-character set
+    # (?, *, <, >, |) -- it never calls is_valid_path, so setting that stub
+    # has no effect on the outcome. Exercise the actual gate instead.
+    assert not provider.validate_config({"output_dir": "in*valid?"})
 
 
 def test_config_provider_get_default_and_env(

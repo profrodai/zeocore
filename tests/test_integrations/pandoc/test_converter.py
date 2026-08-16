@@ -90,7 +90,7 @@ def test_convert_file_unsupported_format(mock_pypandoc: MagicMock) -> None:
 
     # Mock file info to return unsupported format
     with patch(
-        "quack_core.integrations.pandoc.operations.utils.get_file_info"
+        "quack_core.integrations.pandoc.converter.get_file_info"
     ) as mock_get_info:
         mock_get_info.return_value = FileInfo(
             path="file.txt", format="txt", size=100, modified=None, extra_args=[]
@@ -112,17 +112,21 @@ def test_convert_file_integration_error(mock_pypandoc: MagicMock) -> None:
 
     # Mock conversion to raise error
     with patch(
-        "quack_core.integrations.pandoc.operations.utils.get_file_info"
+        "quack_core.integrations.pandoc.converter.get_file_info"
     ) as mock_get_info:
         mock_get_info.side_effect = QuackIntegrationError("Test error", {})
 
         # Run conversion
         result = converter.convert_file("input.html", "output.md", "markdown")
 
-        # Verify
+        # Verify. convert_file's get_file_info error path returns str(e)
+        # directly (converter.py: `except QuackIntegrationError as e: return
+        # IntegrationResult.error_result(str(e))`) -- "Failed to convert" is
+        # only emitted by convert_batch's own aggregate-failure message, a
+        # different code path this test does not exercise.
         assert not result.success
         assert result.error is not None
-        assert "Failed to convert" in result.error
+        assert "Test error" in result.error
 
 
 def test_convert_batch_all_success(mock_pypandoc: MagicMock) -> None:
@@ -274,14 +278,11 @@ def test_validate_conversion(
     config = PandocConfig()
     converter = DocumentConverter(config)
 
-    # Test successful validation
-    with patch(
-        "quack_core.core.fs.service.standalone.get_file_info",
-        return_value=SimpleNamespace(success=True, exists=True, size=100),
-    ):
-        assert not converter.validate_conversion(
-            "output.md", "input.html"
-        )  # Expect no errors
+    # Test successful validation. validate_conversion returns a bool (True =
+    # valid), not an error list -- fs_stub's own get_file_info/read_text
+    # already report a real, non-empty markdown file, so a valid conversion
+    # is expected to return True here.
+    assert converter.validate_conversion("output.md", "input.html")
 
     # Test failure when output file doesn't exist
     fs_stub.get_file_info = lambda path: SimpleNamespace(
