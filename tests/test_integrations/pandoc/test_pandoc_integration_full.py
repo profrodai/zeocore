@@ -6,10 +6,13 @@ import os
 import sys
 import time
 import types
+from collections.abc import Generator
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 import quack_core.core.fs.service.standalone
+from _pytest.monkeypatch import MonkeyPatch
 from quack_core.core.errors import QuackIntegrationError
 from quack_core.integrations.core.results import IntegrationResult
 from quack_core.integrations.pandoc.config import (
@@ -37,7 +40,7 @@ from quack_core.integrations.pandoc.service import PandocIntegration
 
 # Fixtures for monkeypatching filesystem service
 @pytest.fixture(autouse=True)
-def fs_stub(monkeypatch):
+def fs_stub(monkeypatch: MonkeyPatch) -> Generator[SimpleNamespace, None, None]:
     """
     Stub out the quack_core.core.fs.service.standalone methods for file _ops.
     """
@@ -71,7 +74,7 @@ def fs_stub(monkeypatch):
 
 
 # Tests for verify_pandoc
-def test_verify_pandoc_success(monkeypatch):
+def test_verify_pandoc_success(monkeypatch: MonkeyPatch) -> None:
     # Create a dummy pypandoc module
     dummy = types.ModuleType("pypandoc")
     dummy.get_pandoc_version = lambda: "2.11"
@@ -81,7 +84,7 @@ def test_verify_pandoc_success(monkeypatch):
     assert ver == "2.11"
 
 
-def test_verify_pandoc_import_error(monkeypatch):
+def test_verify_pandoc_import_error(monkeypatch: MonkeyPatch) -> None:
     # Ensure pypandoc not in modules to trigger ImportError
     monkeypatch.delitem(sys.modules, "pypandoc", raising=False)
     with pytest.raises(QuackIntegrationError) as excinfo:
@@ -90,7 +93,7 @@ def test_verify_pandoc_import_error(monkeypatch):
 
 
 # Tests for prepare_pandoc_args
-def test_prepare_pandoc_args_defaults():
+def test_prepare_pandoc_args_defaults() -> None:
     config = PandocConfig()
     args = prepare_pandoc_args(config, "html", "markdown", None)
     # Check core flags present
@@ -103,14 +106,14 @@ def test_prepare_pandoc_args_defaults():
 
 
 # Tests for util_get_file_info
-def test_util_get_file_info_success():
+def test_util_get_file_info_success() -> None:
     info = util_get_file_info("test.html", format_hint=None)
     assert isinstance(info, FileInfo)
     assert info.format == "html"
     assert info.size == 100
 
 
-def test_util_get_file_info_not_found(monkeypatch):
+def test_util_get_file_info_not_found(monkeypatch: MonkeyPatch) -> None:
     quack_core.core.fs.service.standalone.get_file_info = lambda p: SimpleNamespace(
         success=False, exists=False
     )
@@ -127,26 +130,26 @@ def test_util_get_file_info_not_found(monkeypatch):
         ("<div>x</div>", "x"),
     ],
 )
-def test_post_process_markdown(raw, expected_sub):
+def test_post_process_markdown(raw: str, expected_sub: str) -> None:
     cleaned = post_process_markdown(raw)
     assert expected_sub in cleaned
 
 
 # Tests for validate_html_structure
-def test_validate_html_structure_valid():
+def test_validate_html_structure_valid() -> None:
     html = "<html><body><h1>Title</h1><p>Text</p></body></html>"
     valid, errors = validate_html_structure(html, check_links=False)
     assert valid and not errors
 
 
-def test_validate_html_structure_missing_body():
+def test_validate_html_structure_missing_body() -> None:
     html = "<html><head></head></html>"
     valid, errors = validate_html_structure(html, check_links=False)
     assert not valid
     assert "missing body" in errors[0].lower()
 
 
-def test_validate_html_structure_empty_links():
+def test_validate_html_structure_empty_links() -> None:
     html = '<html><body><a href=""></a></body></html>'
     valid, errors = validate_html_structure(html, check_links=True)
     assert not valid
@@ -155,7 +158,7 @@ def test_validate_html_structure_empty_links():
 
 # Tests for DocumentConverter.convert_file
 @pytest.fixture
-def converter(monkeypatch):
+def converter(monkeypatch: MonkeyPatch) -> DocumentConverter:
     # Inject our dummy pypandoc module for converter init
     dummy = types.ModuleType("pypandoc")
     dummy.get_pandoc_version = lambda: "2.11"
@@ -165,7 +168,9 @@ def converter(monkeypatch):
     return DocumentConverter(config)
 
 
-def test_convert_file_html_to_md_success(converter, monkeypatch):
+def test_convert_file_html_to_md_success(
+    converter: DocumentConverter, monkeypatch: MonkeyPatch
+) -> None:
     # Stub file_info
     monkeypatch.setattr(
         "quack_core.integrations.pandoc.operations.utils.get_file_info",
@@ -184,9 +189,9 @@ def test_convert_file_html_to_md_success(converter, monkeypatch):
     assert result.content == "out.md"
 
 
-def test_convert_file_unsupported(converter):
+def test_convert_file_unsupported(converter: DocumentConverter) -> None:
     # Stub file_info to unsupported format
-    def fake_get(path, _format_hint=None):
+    def fake_get(path: str, format_hint: str | None = None) -> FileInfo:
         return FileInfo(path=path, format="txt", size=0, modified=None, extra_args=[])
 
     import quack_core.integrations.pandoc.operations.utils as utils_mod
@@ -195,13 +200,18 @@ def test_convert_file_unsupported(converter):
 
     result = converter.convert_file("file.txt", "out.md", "markdown")
     assert not result.success
+    assert result.error is not None
     assert "Unsupported conversion" in result.error
 
 
 # Tests for DocumentConverter.convert_batch
-def test_convert_batch_all_success(converter):
+def test_convert_batch_all_success(converter: DocumentConverter) -> None:
     # Stub convert_file to always succeed
-    converter.convert_file = lambda inp, out, fmt: IntegrationResult.success_result(out)
+    converter.convert_file = (  # type: ignore[method-assign]
+        lambda input_path, output_path, output_format: IntegrationResult.success_result(
+            output_path
+        )
+    )
 
     tasks = [
         ConversionTask(
@@ -221,17 +231,20 @@ def test_convert_batch_all_success(converter):
     ]
     result = converter.convert_batch(tasks)
     assert result.success
+    assert result.content is not None
     assert set(result.content) == {"a.md", "b.md"}
 
 
-def test_convert_batch_partial_failure(converter):
+def test_convert_batch_partial_failure(converter: DocumentConverter) -> None:
     # First succeeds, second fails
-    def fake_convert(inp, out, _fmt=None):
-        if inp.endswith("fail.html"):
+    def fake_convert(
+        input_path: str, output_path: str, output_format: str | None = None
+    ) -> IntegrationResult[str]:
+        if input_path.endswith("fail.html"):
             return IntegrationResult.error_result("err")
-        return IntegrationResult.success_result(out)
+        return IntegrationResult.success_result(output_path)
 
-    converter.convert_file = fake_convert
+    converter.convert_file = fake_convert  # type: ignore[method-assign]
 
     tasks = [
         ConversionTask(
@@ -251,12 +264,13 @@ def test_convert_batch_partial_failure(converter):
     ]
     result = converter.convert_batch(tasks)
     assert result.success
+    assert result.message is not None
     assert "Partially successful" in result.message
     assert result.content == ["ok.md"]
 
 
 # Tests for PandocIntegration availability
-def test_pandoc_integration_is_available(monkeypatch):
+def test_pandoc_integration_is_available(monkeypatch: MonkeyPatch) -> None:
     import quack_core.integrations.pandoc.service as service_mod
 
     # inject dummy module
@@ -267,7 +281,7 @@ def test_pandoc_integration_is_available(monkeypatch):
     assert integration.get_pandoc_version() == "2.11"
 
 
-def test_pandoc_integration_not_available(monkeypatch):
+def test_pandoc_integration_not_available(monkeypatch: MonkeyPatch) -> None:
     import quack_core.integrations.pandoc.service as service_mod
     from quack_core.core.errors import QuackIntegrationError
 
@@ -283,13 +297,13 @@ def test_pandoc_integration_not_available(monkeypatch):
 
 
 # Tests for Config
-def test_pandoc_config_default():
+def test_pandoc_config_default() -> None:
     config = PandocConfig()
     assert config.output_dir == "./output"
     assert isinstance(config.pandoc_options.wrap, str)
 
 
-def test_pandoc_config_validate_output_dir(monkeypatch):
+def test_pandoc_config_validate_output_dir(monkeypatch: MonkeyPatch) -> None:
     # Invalidate path
     quack_core.core.fs.service.standalone.get_path_info = lambda p: SimpleNamespace(
         success=False
@@ -299,7 +313,7 @@ def test_pandoc_config_validate_output_dir(monkeypatch):
 
 
 # Tests for ConfigProvider
-def test_config_provider_validate_config(monkeypatch):
+def test_config_provider_validate_config(monkeypatch: MonkeyPatch) -> None:
     provider = PandocConfigProvider()
     # valid schema
     assert provider.validate_config({"output_dir": "/tmp"}) is not False  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
@@ -308,7 +322,9 @@ def test_config_provider_validate_config(monkeypatch):
     assert not provider.validate_config({"output_dir": "/tmp"})  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
 
 
-def test_config_provider_get_default_and_env(monkeypatch, tmp_path):
+def test_config_provider_get_default_and_env(
+    monkeypatch: MonkeyPatch, tmp_path: Path
+) -> None:
     provider = PandocConfigProvider()
     # normalize default
     cfg_default = provider.get_default_config()
