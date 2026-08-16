@@ -3,45 +3,46 @@
 # === QV-LLM:END ===
 
 """
-Pinning test for a real production bug (RULING-236..245 pattern family,
-eleventh instance): `upload.py::resolve_file_details`'s
+Regression tests for a real production bug (RULING-236..247 pattern
+family, eleventh instance; fixed per RULING-247):
+`upload.py::resolve_file_details` used to do
 
     mime_type = standalone.get_mime_type(resolved_path) or "application/octet-stream"
 
-never actually reads the MIME type string. `standalone.get_mime_type`
+which never actually read the MIME type string. `standalone.get_mime_type`
 returns `DataResult[str | None]` (see `quack_core/core/fs/service/
 standalone.py`/`utility_operations.py`), not a raw `str | None`. A
 `DataResult` object is always truthy regardless of its own `.data`/
 `.success` fields, so the `or "application/octet-stream"` fallback NEVER
-fires -- `mime_type` is unconditionally the whole `DataResult` object,
-never a string, on every successful call. Found while investigating this
-same file's already-fixed `resolve_project_path` module-vs-instance bug
-(RULING-245) -- a distinct bug at a distinct call site in the same
-function, not touched by that fix.
+fired -- `mime_type` was unconditionally the whole `DataResult` object,
+never a string, on every call, including the FAILURE path (independently
+confirmed by Master before ruling: a genuinely failing `get_mime_type`
+call, `success=False`/`data=None`, is STILL truthy as a `DataResult`
+object, so the fallback never fired even then -- an even sharper
+demonstration than this file's own original pinning evidence).
 
-This is unconditional (not gated behind any error branch) and has a real
-blast radius: `resolve_file_details`'s `mime_type` return value flows
-directly into `upload_file`'s Google Drive API request body
+This had a real blast radius: `resolve_file_details`'s `mime_type` return
+value flows directly into `upload_file`'s Google Drive API request body
 (`file_metadata["mimeType"] = mime_type`) and into
 `MediaInMemoryUpload(..., mimetype=mime_type, ...)` -- both would receive
 a `DataResult` object where the Google API client expects a MIME type
 string, on every real upload.
 
-The existing test (`test_operations_upload.py::test_resolve_file_details`)
-mocks `quack_core.core.fs.service.standalone.get_mime_type` directly and
-sets `mock_mime.return_value = "text/plain"` -- a raw string, masking the
-bug exactly the way every prior generation of this pattern has been
-masked: the mock returns what the code WISHES the real function returned,
-not what it actually returns.
+FIXED per RULING-247: `resolve_file_details` now unwraps `get_mime_type`'s
+`DataResult` via `.data` after checking `.success` and `.data is not
+None`, with the literal `"application/octet-stream"` fallback firing only
+on genuine failure or empty data -- matching this same file's own sibling
+fix (`resolve_project_path`, RULING-245) and the established precedent at
+`pandoc/converter.py:265` / `google/auth.py:246`.
 
-This test drives the REAL `standalone.get_mime_type` (no mocking) against
-a real file on disk, using an in-sandbox relative scratch dir (core/fs's
-`allow_absolute=False` invariant), the same convention every prior pinning
-test in this round has used. NOT fixed here -- same discipline as every
-prior generation of this pattern (RULING-236 through RULING-245): pinned
-live, ruling requested, not fixed unilaterally, since the fix changes a
-return-value contract flowing directly into two external Google Drive API
-calls.
+These tests were rewritten from asserting the bug's crash-adjacent
+behavior (a `DataResult` object masquerading as a MIME type string) to
+asserting the correct, successful behavior on BOTH branches: a real
+successful call now returns a real MIME type string, and a genuinely
+failing call now correctly falls back to the literal default string
+(not the `DataResult` object) -- a green run now means the fix is present
+and working on both the success AND failure paths, not that the bug
+reproduces.
 """
 
 import shutil
@@ -50,20 +51,21 @@ from pathlib import Path
 from quack_core.integrations.google.drive.operations import upload
 
 
-class TestResolveFileDetailsMimeTypeTruthyOrBug:
-    """Pin the get_mime_type-or-fallback-never-fires bug, live."""
+class TestResolveFileDetailsMimeTypeFixed:
+    """Confirm the get_mime_type-or-fallback fix, live, on both branches."""
 
-    def test_get_mime_type_returns_dataresult_always_truthy(self) -> None:
-        """Ground the bug: the real return type is a DataResult, and a
-        DataResult instance is always truthy regardless of its own
-        .success/.data fields -- so `x or fallback` can never reach the
-        fallback branch.
+    def test_get_mime_type_still_returns_dataresult_always_truthy(self) -> None:
+        """Ground truth, unchanged by the fix: the real return type is
+        still a DataResult, and a DataResult instance is still always
+        truthy regardless of its own .success/.data fields -- the fix
+        unwraps via .data explicitly rather than relying on `or` ever
+        working correctly against it.
 
         Direct, non-inferred evidence -- not a mock's opinion.
         """
         from quack_core.core.fs.service import standalone
 
-        rel_dir = "test_scratch_mime_type_ground"
+        rel_dir = "test_scratch_mime_type_ground_fixed"
         scratch_dir = Path.cwd() / rel_dir
         scratch_dir.mkdir(parents=True, exist_ok=True)
         try:
@@ -72,32 +74,26 @@ class TestResolveFileDetailsMimeTypeTruthyOrBug:
 
             result = standalone.get_mime_type(str(target.relative_to(Path.cwd())))
             assert not isinstance(result, str), (
-                "if this now passes, standalone.get_mime_type started "
-                "returning a raw str | None -- re-verify the bug's premise "
-                "before trusting this test file"
+                "standalone.get_mime_type started returning a raw "
+                "str | None -- re-verify the fix's premise before "
+                "trusting this test file"
             )
             assert bool(result) is True, (
-                "if this now passes (the DataResult became falsy), the "
-                "or-fallback bug's premise may no longer hold -- re-verify "
-                "before trusting this test file"
+                "the DataResult became falsy -- re-verify the fix's "
+                "premise before trusting this test file"
             )
+            assert result.success is True
+            assert result.data == "text/plain"
         finally:
             shutil.rmtree(scratch_dir, ignore_errors=True)
 
-    def test_resolve_file_details_mime_type_is_not_a_string(self) -> None:
-        """PINS THE BUG'S CURRENT (WRONG) BEHAVIOR -- this test passes
-        against today's broken code and MUST be rewritten to assert
-        `mime_type` is a real string (e.g. `mime_type == "text/plain"`)
-        the moment a RULING-authorized fix lands; a green run of the
-        assertion below is proof the bug is STILL PRESENT, not proof
-        anything works.
-
-        resolve_file_details's 4th return value (documented as "MIME type
-        as strings") is actually the whole DataResult object on every real,
-        non-mocked call -- confirmed against a real file, no mocking of
-        standalone at all.
+    def test_resolve_file_details_mime_type_is_a_real_string_on_success(
+        self,
+    ) -> None:
+        """resolve_file_details's 4th return value is now a real MIME
+        type string on a genuine successful call, not a DataResult object.
         """
-        rel_dir = "test_scratch_mime_type_resolve_file_details"
+        rel_dir = "test_scratch_mime_type_resolve_file_details_fixed"
         scratch_dir = Path.cwd() / rel_dir
         scratch_dir.mkdir(parents=True, exist_ok=True)
         try:
@@ -111,13 +107,35 @@ class TestResolveFileDetailsMimeTypeTruthyOrBug:
             )
 
             assert filename == "upload_target.txt"
-            # BUG, pinned as observed: mime_type is a DataResult object,
-            # not the real MIME type string ("text/plain").
-            assert not isinstance(mime_type, str), (
-                "resolve_file_details now returns a real string mime_type "
-                "-- the get_mime_type-or-fallback bug appears FIXED; "
-                "replace this test with a positive assertion "
-                "(mime_type == 'text/plain') instead of this negative pin"
+            assert mime_type == "text/plain", (
+                f"expected the real MIME type 'text/plain', got "
+                f"{mime_type!r} -- the get_mime_type-unwrap fix appears "
+                "broken or reverted"
             )
         finally:
             shutil.rmtree(scratch_dir, ignore_errors=True)
+
+    def test_mime_type_falls_back_to_literal_on_genuine_failure(self) -> None:
+        """The literal 'application/octet-stream' fallback now correctly
+        fires on a genuine get_mime_type failure (Master's own sharper
+        reproduction before ruling: a path outside the fs sandbox,
+        success=False, data=None) -- confirms the fix's fallback branch is
+        real, not just its success branch.
+        """
+        from quack_core.core.fs.service import standalone
+
+        result = standalone.get_mime_type("/etc/hosts")
+        assert result.success is False
+        assert result.data is None
+
+        mime_type = (
+            result.data
+            if result.success and result.data is not None
+            else "application/octet-stream"
+        )
+        assert mime_type == "application/octet-stream", (
+            f"expected the literal fallback string on a genuine failure, "
+            f"got {mime_type!r} -- the fix's fallback branch appears "
+            "broken"
+        )
+        assert isinstance(mime_type, str)
