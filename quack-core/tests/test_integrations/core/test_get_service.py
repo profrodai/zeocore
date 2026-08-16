@@ -7,7 +7,7 @@ Tests for the get_integration_service function.
 """
 
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from quack_core.integrations.core import get_integration_service
 from quack_core.integrations.core.base import BaseIntegrationService
@@ -39,7 +39,9 @@ class TestGetIntegrationService(unittest.TestCase):
     """
 
     @patch("quack_core.integrations.core.get_global_registry")
-    def test_get_integration_service_found(self, mock_get_global_registry):
+    def test_get_integration_service_found(
+        self, mock_get_global_registry: MagicMock
+    ) -> None:
         """
         Test that get_integration_service returns the correct service when found.
         """
@@ -56,7 +58,9 @@ class TestGetIntegrationService(unittest.TestCase):
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
     @patch("quack_core.integrations.core.get_global_registry")
-    def test_get_integration_service_not_found(self, mock_get_global_registry):
+    def test_get_integration_service_not_found(
+        self, mock_get_global_registry: MagicMock
+    ) -> None:
         """
         Test that get_integration_service returns None when no matching
         service is found.
@@ -74,8 +78,8 @@ class TestGetIntegrationService(unittest.TestCase):
 
     @patch("quack_core.integrations.core.get_global_registry")
     def test_get_integration_service_returns_first_match(
-        self, mock_get_global_registry
-    ):
+        self, mock_get_global_registry: MagicMock
+    ) -> None:
         """
         Test that get_integration_service returns the first matching
         service when multiple are found.
@@ -109,7 +113,9 @@ class TestGetIntegrationService(unittest.TestCase):
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
     @patch("quack_core.integrations.core.get_global_registry")
-    def test_get_integration_service_type_mismatch(self, mock_get_global_registry):
+    def test_get_integration_service_type_mismatch(
+        self, mock_get_global_registry: MagicMock
+    ) -> None:
         """
         Test that get_integration_service correctly filters by type.
         """

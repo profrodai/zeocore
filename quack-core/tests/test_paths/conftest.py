@@ -20,16 +20,17 @@ root conftest's mock_fs_standalone/mock_normalize_path already state, scoped to 
 directory only so it cannot change behavior for suites outside test_paths/.
 """
 
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any
 from unittest.mock import patch
 
 import pytest
 from quack_core.core.fs import DataResult, OperationResult
+from quack_core.core.fs.protocols import FsPathLike
 
 
 @pytest.fixture(autouse=True)
-def mock_paths_join_path():
+def mock_paths_join_path() -> Generator[None]:
     """Bypass the fs-service sandbox for join_path within test_paths/.
 
     Mirrors the real join_path contract (DataResult with ok/path/data) but performs
@@ -42,7 +43,7 @@ def mock_paths_join_path():
         "quack_core.core.fs.service.standalone.join_path"
     ) as mock_join:
 
-        def _mock_join(*parts: Any) -> DataResult[str]:
+        def _mock_join(*parts: FsPathLike) -> DataResult[str]:
             if not parts:
                 p = Path(".")
                 return DataResult(ok=True, path=p, data=".", format="path")
@@ -57,7 +58,7 @@ def mock_paths_join_path():
 
 
 @pytest.fixture(autouse=True)
-def mock_paths_create_directory():
+def mock_paths_create_directory() -> Generator[None]:
     """Bypass the fs-service sandbox for create_directory within test_paths/.
 
     _find_output_directory(create=True) (resolver.py) creates the output dir via
@@ -69,7 +70,7 @@ def mock_paths_create_directory():
         "quack_core.core.fs.service.standalone.create_directory"
     ) as mock_create:
 
-        def _mock_create(path: Any, exist_ok: bool = True) -> OperationResult:
+        def _mock_create(path: FsPathLike, exist_ok: bool = True) -> OperationResult:
             p = Path(str(path))
             p.mkdir(parents=True, exist_ok=exist_ok)
             return OperationResult(ok=True, path=p, message="Created directory")

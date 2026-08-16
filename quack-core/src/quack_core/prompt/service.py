@@ -85,7 +85,7 @@ class PromptService:
         use_llm: bool = False,
         llm_model: str | None = None,
         llm_provider: str | None = None,
-        **kwargs: Any,
+        **kwargs: Any,  # noqa: ANN401 -- genuinely dynamic: arbitrary prompt-strategy input variables merged into the render inputs dict, no fixed schema across strategies
     ) -> PromptRenderResult:
         """
         Render a prompt using a selected strategy.

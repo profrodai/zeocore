@@ -5,6 +5,7 @@
 """GitHub API request utilities."""
 
 import time
+from collections.abc import Mapping
 from datetime import datetime
 from typing import Any
 
@@ -20,7 +21,7 @@ logger = get_logger(__name__)
 
 
 def _handle_rate_limit(
-    headers: Any,
+    headers: Mapping[str, str],
     url: str,
     attempt: int,
     max_retries: int,

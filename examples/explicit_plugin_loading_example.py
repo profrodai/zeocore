@@ -27,7 +27,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def example_1_discovery():
+def example_1_discovery() -> None:
     """
     Example 1: Discover available modules without loading them.
 
@@ -57,7 +57,7 @@ def example_1_discovery():
     print("✓ Discovery completed without side effects")
 
 
-def example_2_explicit_loading():
+def example_2_explicit_loading() -> None:
     """
     Example 2: Explicitly load specific modules.
 
@@ -103,7 +103,7 @@ def example_2_explicit_loading():
             print(f"  - {warning}")
 
 
-def example_3_error_handling():
+def example_3_error_handling() -> None:
     """
     Example 3: Error handling in strict vs. non-strict mode.
 
@@ -161,7 +161,7 @@ def example_3_error_handling():
     print(f"  Registry has {len(registry.list_ids())} modules")
 
 
-def example_4_configuration_driven():
+def example_4_configuration_driven() -> None:
     """
     Example 4: Load modules based on configuration.
 
@@ -219,7 +219,7 @@ def example_4_configuration_driven():
         # In real app: sys.exit(1)
 
 
-def example_5_plugin_metadata():
+def example_5_plugin_metadata() -> None:
     """
     Example 5: Working with plugin metadata and capabilities.
 
@@ -265,7 +265,7 @@ def example_5_plugin_metadata():
         print("  (none found)")
 
 
-def example_6_lifecycle_management():
+def example_6_lifecycle_management() -> None:
     """
     Example 6: Plugin lifecycle management.
 
@@ -305,7 +305,7 @@ def example_6_lifecycle_management():
     print("✓ Lifecycle management complete")
 
 
-def example_7_testing_pattern():
+def example_7_testing_pattern() -> None:
     """
     Example 7: Testing pattern with isolated plugin state.
 
@@ -317,7 +317,7 @@ def example_7_testing_pattern():
 
     from quack_core.modules import load_enabled_entry_points, registry
 
-    def simulate_test_case_1():
+    def simulate_test_case_1() -> None:
         """Simulated test case 1."""
         # setUp: Clean state
         registry.clear()
@@ -334,7 +334,7 @@ def example_7_testing_pattern():
         # tearDown: Clean up
         registry.clear()
 
-    def simulate_test_case_2():
+    def simulate_test_case_2() -> None:
         """Simulated test case 2."""
         # setUp: Clean state
         registry.clear()
@@ -359,7 +359,7 @@ def example_7_testing_pattern():
     print("\n✓ All tests passed with proper isolation")
 
 
-def main():
+def main() -> None:
     """Run all examples."""
     print("\n" + "=" * 70)
     print("QuackCore Explicit Plugin Loading Examples")

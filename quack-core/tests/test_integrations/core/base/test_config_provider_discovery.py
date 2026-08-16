@@ -118,7 +118,7 @@ class TestBaseConfigProviderDiscovery:
                 "quack_core.core.fs.service.standalone.get_file_info"
             ) as mock_file_info:
 
-                def side_effect(path):
+                def side_effect(path: str | Path) -> MagicMock:
                     mock_result = MagicMock()
                     mock_result.success = True
                     mock_result.exists = str(path) == "/default/config.yaml"

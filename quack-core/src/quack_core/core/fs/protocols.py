@@ -9,12 +9,12 @@ from typing import Any, Protocol, TypeAlias, runtime_checkable
 
 @runtime_checkable
 class HasValue(Protocol):
-    def value(self) -> Any: ...
+    def value(self) -> Any: ...  # noqa: ANN401 -- genuinely dynamic: Result-wrapper duck-type, unwrapped value type is unknowable at this boundary
 
 
 @runtime_checkable
 class HasUnwrap(Protocol):
-    def unwrap(self) -> Any: ...
+    def unwrap(self) -> Any: ...  # noqa: ANN401 -- genuinely dynamic: Result-wrapper duck-type, unwrapped value type is unknowable at this boundary
 
 
 @runtime_checkable

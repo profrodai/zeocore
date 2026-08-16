@@ -81,7 +81,7 @@ class GitHubConfigProvider(BaseConfigProvider):
     @staticmethod
     def _lookup_dotted_or_direct_key(
         config_data: dict[str, Any], key: str
-    ) -> Any | None:
+    ) -> Any | None:  # noqa: ANN401 -- genuinely dynamic: resolves an arbitrary-depth nested config value of unknown shape (str/int/bool/dict/list)
         """
         Resolve a single candidate key against config_data, handling both a
         dotted path (e.g. "integrations.github") and a direct key. Extracted

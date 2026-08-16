@@ -19,18 +19,28 @@ try:
     __all__ = ["create_app", "HttpAdapterConfig", "run"]
 except ImportError:
     # FastAPI not available - this is expected when http extra not installed
-    def create_app(*args: Any, **kwargs: Any) -> None:
+    def create_app(
+        *args: Any,  # noqa: ANN401 -- genuinely dynamic: stub shim mirrors the real create_app's arbitrary signature, only ever raises
+        **kwargs: Any,  # noqa: ANN401 -- genuinely dynamic: same as *args above
+    ) -> None:
         raise ImportError(
             "HTTP adapter requires FastAPI. Install with: pip install quack-core[http]"
         )
 
-    def run(*args: Any, **kwargs: Any) -> None:
+    def run(
+        *args: Any,  # noqa: ANN401 -- genuinely dynamic: stub shim mirrors the real run's arbitrary signature, only ever raises
+        **kwargs: Any,  # noqa: ANN401 -- genuinely dynamic: same as *args above
+    ) -> None:
         raise ImportError(
             "HTTP adapter requires FastAPI. Install with: pip install quack-core[http]"
         )
 
     class HttpAdapterConfig:
-        def __init__(self, *args: Any, **kwargs: Any) -> None:
+        def __init__(
+            self,
+            *args: Any,  # noqa: ANN401 -- genuinely dynamic: stub shim mirrors the real HttpAdapterConfig's arbitrary signature, only ever raises
+            **kwargs: Any,  # noqa: ANN401 -- genuinely dynamic: same as *args above
+        ) -> None:
             raise ImportError(
                 "HTTP adapter requires FastAPI. Install with: "
                 "pip install quack-core[http]"

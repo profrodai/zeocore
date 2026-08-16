@@ -19,6 +19,7 @@ from quack_core.core.errors import (
     QuackBaseAuthError,
     QuackIntegrationError,
 )
+from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.service import standalone
 from quack_core.core.paths import service as paths_service
 from quack_core.integrations.core.base import BaseIntegrationService
@@ -769,7 +770,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         return file_metadata
 
     def _upload_media(
-        self, path_obj: Any, mime_type: str, file_metadata: dict[str, Any]
+        self, path_obj: FsPathLike, mime_type: str, file_metadata: dict[str, Any]
     ) -> tuple[dict[str, Any] | None, IntegrationResult | None]:
         """Read the file from disk and upload it as Drive media.
 

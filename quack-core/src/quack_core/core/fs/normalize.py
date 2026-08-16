@@ -10,7 +10,7 @@ It does NOT depend on _internal or service.
 
 import os
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from quack_core.core.fs.exceptions import (
     QuackPathEscapeError,
@@ -21,7 +21,7 @@ from quack_core.core.fs.protocols import FsPathLike
 T = TypeVar("T")
 
 
-def _unwrap_result_like(obj: Any) -> str | None:
+def _unwrap_result_like(obj: FsPathLike) -> str | None:
     """
     Try each Result-like unwrap strategy in priority order, returning the
     extracted path string, or None if none of the strategies apply to `obj`.
@@ -59,7 +59,7 @@ def _unwrap_result_like(obj: Any) -> str | None:
     return None
 
 
-def _extract_path_str(obj: Any) -> str:
+def _extract_path_str(obj: FsPathLike) -> str:
     """Core logic to extract a string path from a polymorphic input."""
     if obj is None:
         raise TypeError("Path cannot be None")
@@ -160,7 +160,7 @@ def coerce_path_str(obj: FsPathLike) -> str:
     return _extract_path_str(obj)
 
 
-def safe_path_str(obj: Any, default: str | None = None) -> str | None:
+def safe_path_str(obj: FsPathLike, default: str | None = None) -> str | None:
     """
     Safely extract a string path from any object, returning a default on failure.
     Never raises.
@@ -179,7 +179,7 @@ def coerce_path_result(obj: FsPathLike) -> Path:
     return coerce_path(obj)
 
 
-def extract_path_from_result(obj: Any) -> Path | None:
+def extract_path_from_result(obj: FsPathLike) -> Path | None:
     """
     Best-effort extraction of a Path from a result object. Returns None on failure.
     """

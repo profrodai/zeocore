@@ -49,7 +49,7 @@ class ExampleTool(
         """
         super().__init__("example_tool", "1.0.0")
 
-    def initialize_plugin(self):
+    def initialize_plugin(self) -> None:
         """
         Initialize plugin-specific resources and dependencies.
         """
@@ -79,7 +79,11 @@ class ExampleTool(
         """
         return YAMLOutputWriter()
 
-    def process_content(self, content: Any, options: dict[str, Any]) -> dict[str, Any]:
+    def process_content(
+        self,
+        content: Any,  # noqa: ANN401 -- genuinely dynamic: raw loaded content, may be a JSON string or already-parsed JSON (dict/list/scalar)
+        options: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Process content with this tool.
 
@@ -137,7 +141,7 @@ class ExampleTool(
             value_types[value_type] = value_types.get(value_type, 0) + 1
 
         # Calculate depth
-        def get_depth(d, level=1):
+        def get_depth(d: Any, level: int = 1) -> int:  # noqa: ANN401 -- genuinely dynamic: recurses into arbitrary JSON-shaped values (dict/list/scalar), same data domain as content above
             if not isinstance(d, dict):
                 return level
             if not d:
@@ -221,7 +225,7 @@ class ExampleTool(
             )
 
 
-def main():
+def main() -> None:
     """
     Example of using the ExampleTool.
     """

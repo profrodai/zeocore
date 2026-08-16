@@ -14,7 +14,6 @@ import atexit
 import logging
 import os
 import sys
-from typing import Any
 
 from quack_core.core.logging import LOG_LEVELS, LogLevel, configure_logger
 
@@ -90,7 +89,7 @@ def get_logger(tool_name: str) -> logging.Logger:
     return core_get_logger(tool_name)
 
 
-def log_teaching(logger: Any, message: str, level: str = "INFO") -> None:
+def log_teaching(logger: logging.Logger, message: str, level: str = "INFO") -> None:
     """Log a Teaching Mode message for the tool."""
     from quack_core.core.logging import log_teaching as core_log_teaching
 
