@@ -20,7 +20,7 @@ from quack_core.core.paths import service as paths
 
 # Create mock DataResult for fs _ops
 class MockDataResult:
-    def __init__(self, success, data, error=None) -> None:
+    def __init__(self, success: bool, data: Any, error: str | None = None) -> None:
         self.success = success
         self.data = data
         self.error = error
@@ -28,26 +28,26 @@ class MockDataResult:
 
 # Patch necessary fs methods
 @pytest.fixture(autouse=True)
-def mock_fs_methods(monkeypatch):
+def mock_fs_methods(monkeypatch: pytest.MonkeyPatch) -> None:
     # Mock join_path to return MockDataResult
-    def mock_join_path(*args: Any):
+    def mock_join_path(*args: Any) -> MockDataResult:
         path_str = str(Path(*[str(arg) for arg in args]))
         return MockDataResult(True, path_str)
 
     # Mock split_path to return MockDataResult
-    def mock_split_path(path):
+    def mock_split_path(path: Any) -> MockDataResult:
         parts = Path(path).parts
         return MockDataResult(True, list(parts))
 
     # Mock get_extension to return MockDataResult
-    def mock_get_extension(path):
+    def mock_get_extension(path: Any) -> MockDataResult:
         suffix = Path(path).suffix
         if suffix.startswith("."):
             suffix = suffix[1:]
         return MockDataResult(True, suffix)
 
     # Mock normalize_path to return Path
-    def mock_normalize(path):
+    def mock_normalize(path: Any) -> Path:
         # Skip filesystem checks to avoid FileNotFoundError
         return Path(os.path.normpath(os.path.join(os.getcwd(), str(path)))).absolute()
 
@@ -193,7 +193,7 @@ class TestPathUtils:
             assert normalized.is_absolute
             mock_normalize.assert_called_once_with("/some/absolute/path")
 
-    def test_join_path(self, mock_fs_methods) -> None:
+    def test_join_path(self, mock_fs_methods: None) -> None:
         """Test joining path components."""
         # Test with string paths
         joined = fs_standalone.join_path("dir1", "dir2", "file.txt")
@@ -210,7 +210,7 @@ class TestPathUtils:
         assert joined.success
         assert joined.data == str(Path("/dir1/dir2/dir3/file.txt"))
 
-    def test_split_path(self, mock_fs_methods) -> None:
+    def test_split_path(self, mock_fs_methods: None) -> None:
         """Test splitting a path into components."""
         # Test absolute path
         parts_result = fs_standalone.split_path("/dir1/dir2/file.txt")
@@ -237,7 +237,7 @@ class TestPathUtils:
         assert parts[0] == "dir"  # Path normalization removes the './'
         assert parts[1] == "file.txt"
 
-    def test_get_extension(self, mock_fs_methods) -> None:
+    def test_get_extension(self, mock_fs_methods: None) -> None:
         """Test getting file extensions."""
         assert fs_standalone.get_extension("file.txt").data == "txt"
         assert fs_standalone.get_extension("file.tar.gz").data == "gz"

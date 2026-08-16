@@ -8,15 +8,17 @@ Comprehensive test suite for HTTP adapter with dependency injection.
 """
 
 import time
-from typing import Any
-from unittest.mock import AsyncMock, patch
+from collections.abc import Generator
+from typing import Any, cast
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
 from quack_core.adapters.http.app import create_app
 from quack_core.adapters.http.config import HttpAdapterConfig
-from quack_core.core.registry import get_registry, reset_registry
+from quack_core.core.registry import OperationRegistry, get_registry, reset_registry
 
 
 class EchoRequest(BaseModel):
@@ -37,7 +39,7 @@ def echo_operation(req: EchoRequest) -> dict[str, Any]:
 
 
 @pytest.fixture
-def registry():
+def registry() -> Generator[OperationRegistry]:
     """Provide clean registry for each test."""
     reset_registry()
     reg = get_registry()
@@ -58,7 +60,7 @@ def registry():
 
 
 @pytest.fixture
-def config():
+def config() -> HttpAdapterConfig:
     """Provide test configuration."""
     return HttpAdapterConfig(
         host="0.0.0.0",  # noqa: S104 -- test fixture, config object only, no real uvicorn bind occurs in this test
@@ -70,7 +72,9 @@ def config():
 
 
 @pytest.fixture
-def client(config, registry):
+def client(
+    config: HttpAdapterConfig, registry: OperationRegistry
+) -> Generator[TestClient]:
     """Provide test client with injected dependencies."""
     from quack_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
 
@@ -102,27 +106,34 @@ def client(config, registry):
 class TestAppBootstrap:
     """Test application initialization."""
 
-    def test_app_boots(self, client):
+    def test_app_boots(self, client: TestClient) -> None:
         """App should boot successfully."""
         response = client.get("/health/live")
         assert response.status_code == 200
         assert response.json() == {"ok": True}
 
-    def test_config_in_state(self, client, config):
+    def test_config_in_state(
+        self, client: TestClient, config: HttpAdapterConfig
+    ) -> None:
         """Config should be available in app state."""
-        assert client.app.state.cfg == config
+        # client.app is typed as ASGIApp by TestClient's stub, which has no
+        # `.state` attribute -- cast to the concrete FastAPI type create_app()
+        # actually returns (see create_app's own -> FastAPI signature).
+        app = cast(FastAPI, client.app)
+        assert app.state.cfg == config
 
-    def test_job_system_initialized(self, client):
+    def test_job_system_initialized(self, client: TestClient) -> None:
         """Job system should be initialized."""
-        assert hasattr(client.app.state, "job_store")
-        assert hasattr(client.app.state, "job_runner")
-        assert hasattr(client.app.state, "registry")
+        app = cast(FastAPI, client.app)
+        assert hasattr(app.state, "job_store")
+        assert hasattr(app.state, "job_runner")
+        assert hasattr(app.state, "registry")
 
 
 class TestAuthentication:
     """Test authentication enforcement."""
 
-    def test_health_no_auth_required(self, client):
+    def test_health_no_auth_required(self, client: TestClient) -> None:
         """Health endpoints should not require auth."""
         response = client.get("/health/live")
         assert response.status_code == 200
@@ -130,7 +141,7 @@ class TestAuthentication:
         response = client.get("/health/ready")
         assert response.status_code == 200
 
-    def test_jobs_require_auth(self, client):
+    def test_jobs_require_auth(self, client: TestClient) -> None:
         """Job endpoints should require auth."""
         response = client.post(
             "/jobs",
@@ -141,7 +152,7 @@ class TestAuthentication:
         )
         assert response.status_code == 401
 
-    def test_valid_auth_accepted(self, client):
+    def test_valid_auth_accepted(self, client: TestClient) -> None:
         """Valid auth token should be accepted."""
         response = client.post(
             "/jobs",
@@ -153,7 +164,7 @@ class TestAuthentication:
         )
         assert response.status_code == 200
 
-    def test_invalid_auth_rejected(self, client):
+    def test_invalid_auth_rejected(self, client: TestClient) -> None:
         """Invalid auth token should be rejected."""
         response = client.post(
             "/jobs",
@@ -169,7 +180,7 @@ class TestAuthentication:
 class TestOperationsRegistry:
     """Test _ops registry integration."""
 
-    def test_list_operations(self, client):
+    def test_list_operations(self, client: TestClient) -> None:
         """Should list registered _ops."""
         response = client.get(
             "/ops",
@@ -181,7 +192,7 @@ class TestOperationsRegistry:
         assert len(data["_ops"]) == 1
         assert data["_ops"][0]["name"] == "test.echo"
 
-    def test_unsupported_operation_errors(self, client):
+    def test_unsupported_operation_errors(self, client: TestClient) -> None:
         """Unsupported operation should return 400 with structured error."""
         response = client.post(
             "/jobs",
@@ -200,7 +211,7 @@ class TestOperationsRegistry:
 class TestJobExecution:
     """Test job execution flow."""
 
-    def test_enqueue_job(self, client):
+    def test_enqueue_job(self, client: TestClient) -> None:
         """Should enqueue a job."""
         response = client.post(
             "/jobs",
@@ -215,7 +226,7 @@ class TestJobExecution:
         assert "job_id" in data
         assert data["status"] == "queued"
 
-    def test_job_status_transitions(self, client):
+    def test_job_status_transitions(self, client: TestClient) -> None:
         """Job should transition from queued -> running -> done."""
         # Enqueue job
         response = client.post(
@@ -241,7 +252,7 @@ class TestJobExecution:
         assert data["status"] == "done"
         assert data["result"]["echoed"] == "Echo: hello"
 
-    def test_job_not_found(self, client):
+    def test_job_not_found(self, client: TestClient) -> None:
         """Should return 404 for nonexistent job."""
         response = client.get(
             "/jobs/nonexistent-id",
@@ -253,7 +264,7 @@ class TestJobExecution:
 class TestIdempotency:
     """Test idempotency handling."""
 
-    def test_idempotency_key_header(self, client):
+    def test_idempotency_key_header(self, client: TestClient) -> None:
         """Should handle idempotency key in header."""
         # First request
         response1 = client.post(
@@ -285,7 +296,7 @@ class TestIdempotency:
 
         assert job_id_1 == job_id_2
 
-    def test_idempotency_key_body(self, client):
+    def test_idempotency_key_body(self, client: TestClient) -> None:
         """Should handle idempotency key in body."""
         # First request
         response1 = client.post(
@@ -317,7 +328,7 @@ class TestIdempotency:
 class TestDirectOperationInvocation:
     """Test direct operation invocation."""
 
-    def test_invoke_operation_sync(self, client):
+    def test_invoke_operation_sync(self, client: TestClient) -> None:
         """Should invoke operation synchronously."""
         response = client.post(
             "/ops/test.echo",
@@ -329,7 +340,9 @@ class TestDirectOperationInvocation:
         assert data["success"] is True
         assert data["data"]["echoed"] == "Echo: hello"
 
-    def test_invoke_operation_async(self, registry, client):
+    def test_invoke_operation_async(
+        self, registry: OperationRegistry, client: TestClient
+    ) -> None:
         """Should invoke async operation."""
 
         async def async_echo(req: EchoRequest) -> dict[str, Any]:
@@ -352,7 +365,7 @@ class TestDirectOperationInvocation:
         assert data["success"] is True
         assert data["data"]["echoed"] == "Async: hello"
 
-    def test_invoke_nonexistent_operation(self, client):
+    def test_invoke_nonexistent_operation(self, client: TestClient) -> None:
         """Should return 404 with stable error shape for nonexistent operation."""
         response = client.post(
             "/ops/nonexistent.op",
@@ -364,7 +377,7 @@ class TestDirectOperationInvocation:
         assert "error" in data["detail"]
         assert data["detail"]["error"]["code"] == "OPERATION_NOT_FOUND"
 
-    def test_validation_error_stable_shape(self, client):
+    def test_validation_error_stable_shape(self, client: TestClient) -> None:
         """Should return 400 with stable error shape for validation errors."""
         response = client.post(
             "/ops/test.echo",
@@ -380,7 +393,7 @@ class TestDirectOperationInvocation:
 class TestCallbackSigning:
     """Test callback signature generation and posting."""
 
-    def test_sign_payload(self):
+    def test_sign_payload(self) -> None:
         """Should generate valid HMAC signature."""
         from quack_core.adapters.http.auth import sign_payload
 
@@ -390,7 +403,7 @@ class TestCallbackSigning:
         assert signature.startswith("sha256=")
         assert len(signature) > 7
 
-    def test_signature_consistent(self):
+    def test_signature_consistent(self) -> None:
         """Same payload should produce same signature."""
         from quack_core.adapters.http.auth import sign_payload
 
@@ -400,7 +413,7 @@ class TestCallbackSigning:
 
         assert sig1 == sig2
 
-    def test_signature_changes_with_payload(self):
+    def test_signature_changes_with_payload(self) -> None:
         """Different payloads should produce different signatures."""
         from quack_core.adapters.http.auth import sign_payload
 
@@ -413,7 +426,7 @@ class TestCallbackSigning:
         assert sig1 != sig2
 
     @patch("quack_core.adapters.http.util.httpx.AsyncClient")
-    def test_post_callback(self, mock_client):
+    def test_post_callback(self, mock_client: MagicMock) -> None:
         """Should post callback with signature header."""
         import asyncio
 
@@ -439,7 +452,9 @@ class TestCallbackSigning:
 class TestErrorHandling:
     """Test error handling."""
 
-    def test_operation_error_captured(self, registry, client):
+    def test_operation_error_captured(
+        self, registry: OperationRegistry, client: TestClient
+    ) -> None:
         """Operation errors should be captured in job status."""
 
         def failing_op(req: EchoRequest) -> dict[str, Any]:
@@ -475,7 +490,7 @@ class TestErrorHandling:
         assert data["status"] == "error"
         assert "Operation failed" in data["error"]
 
-    def test_validation_error_in_job(self, client):
+    def test_validation_error_in_job(self, client: TestClient) -> None:
         """Invalid params should return 400 validation error immediately."""
         response = client.post(
             "/jobs",
@@ -489,7 +504,7 @@ class TestErrorHandling:
         data = response.json()
         assert data["detail"]["error"]["code"] == "VALIDATION_ERROR"
 
-    def test_job_not_found_error_shape(self, client):
+    def test_job_not_found_error_shape(self, client: TestClient) -> None:
         """Job not found should return structured error."""
         response = client.get(
             "/jobs/nonexistent-id",
@@ -499,7 +514,9 @@ class TestErrorHandling:
         data = response.json()
         assert data["detail"]["error"]["code"] == "JOB_NOT_FOUND"
 
-    def test_async_operation_in_job(self, registry, client):
+    def test_async_operation_in_job(
+        self, registry: OperationRegistry, client: TestClient
+    ) -> None:
         """Async _ops should work in jobs (not just direct invocation)."""
 
         async def async_echo(req: EchoRequest) -> dict[str, Any]:
