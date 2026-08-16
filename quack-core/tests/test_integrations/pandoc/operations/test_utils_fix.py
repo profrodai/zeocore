@@ -18,7 +18,7 @@ from quack_core.integrations.pandoc.operations.utils import safe_convert_to_int
 
 
 def patched_check_file_size(
-    file_size: Any, min_size: Any = 50
+    file_size: int | None, min_size: int | None = 50
 ) -> tuple[bool, list[str]]:
     """
     Patched version of check_file_size that avoids DataResult validation issues.
@@ -47,7 +47,7 @@ def patched_check_file_size(
 
 
 def patched_check_conversion_ratio(
-    output_size: Any, original_size: Any, min_ratio: Any = 0.05
+    output_size: int | None, original_size: int | None, min_ratio: float | None = 0.05
 ) -> tuple[bool, list[str]]:
     """
     Patched version of check_conversion_ratio that avoids DataResult validation issues.
@@ -95,8 +95,8 @@ def patched_check_conversion_ratio(
 def patched_track_metrics(
     filename: str,
     start_time: float,
-    original_size: Any,
-    converted_size: Any,
+    original_size: int | None,
+    converted_size: int | None,
     metrics: ConversionMetrics,
     config: PandocConfig,
 ) -> None:

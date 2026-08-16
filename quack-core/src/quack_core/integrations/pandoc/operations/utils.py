@@ -221,7 +221,7 @@ def validate_docx_structure(
         return True, []  # Return valid if docx module not available
 
 
-def safe_convert_to_int(value: Any, default: int = 0) -> int:
+def safe_convert_to_int(value: Any, default: int = 0) -> int:  # noqa: ANN401 -- accepts any value convertible via int(), by design
     """
     Safely convert a value to an integer with fallback to default.
 
