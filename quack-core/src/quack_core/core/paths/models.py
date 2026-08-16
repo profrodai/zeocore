@@ -87,6 +87,30 @@ class ProjectContext(BaseModel):
                 return dir_info.path
         return None
 
+    def _get_data_dir(self) -> str | None:
+        for dir_info in self.directories.values():
+            if dir_info.is_data:
+                return dir_info.path
+        return None
+
+    def _get_config_dir(self) -> str | None:
+        for dir_info in self.directories.values():
+            if dir_info.is_config:
+                return dir_info.path
+        return None
+
+    def _get_assets_dir(self) -> str | None:
+        for dir_info in self.directories.values():
+            if dir_info.is_asset:
+                return dir_info.path
+        return None
+
+    def _get_temp_dir(self) -> str | None:
+        for dir_info in self.directories.values():
+            if dir_info.is_temp:
+                return dir_info.path
+        return None
+
     def _get_directory(self, name: str) -> str | None:
         dir_info = self.directories.get(name)
         return dir_info.path if dir_info else None
