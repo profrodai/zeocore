@@ -36,7 +36,10 @@ class TestBaseConfigProvider:
                 def name(self) -> str:
                     return "invalid"
 
-            InvalidProvider()  # This should raise TypeError
+            # Deliberately incomplete (missing get_default_config/validate_config)
+            # -- this test's whole point is exercising Python's abstract-class
+            # enforcement at instantiation time (see pytest.raises above).
+            InvalidProvider()  # type: ignore[abstract]  # This should raise TypeError
 
     def test_load_config_with_path(self, temp_dir: Path) -> None:
         """Test loading configuration with an explicit path."""
@@ -99,4 +102,5 @@ class TestBaseConfigProvider:
 
                     result = provider.load_config(str(config_file))
                     assert result.success is False
+                    assert result.error is not None
                     assert "validation failed" in result.error.lower()
