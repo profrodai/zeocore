@@ -120,10 +120,10 @@ class TestDriveModels:
         """Test model validation."""
         # Missing required fields
         with pytest.raises(ValidationError):
-            DriveFile(name="test.txt", mime_type="text/plain")  # Missing id
+            DriveFile(name="test.txt", mime_type="text/plain")  # type: ignore[call-arg]  # deliberate missing id, testing the required-field contract
 
         with pytest.raises(ValidationError):
-            DriveFile(id="file1", mime_type="text/plain")  # Missing name
+            DriveFile(id="file1", mime_type="text/plain")  # type: ignore[call-arg]  # deliberate missing name, testing the required-field contract
 
         with pytest.raises(ValidationError):
-            DriveFile(id="file1", name="test.txt")  # Missing mime_type
+            DriveFile(id="file1", name="test.txt")  # type: ignore[call-arg]  # deliberate missing mime_type, testing the required-field contract

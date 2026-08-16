@@ -266,7 +266,9 @@ class TestDriveOperationsFolder:
             assert mock_service.files_call_count == 1
 
             # Check file resource calls
-            files_resource = mock_service.files()
-            assert isinstance(files_resource, MockDriveFilesResource)
-            assert files_resource.update_call_count == 1  # trash, not permanent delete
-            assert files_resource.last_update_file_id == "custom123"
+            returned_files_resource = mock_service.files()
+            assert isinstance(returned_files_resource, MockDriveFilesResource)
+            assert (
+                returned_files_resource.update_call_count == 1
+            )  # trash, not permanent delete
+            assert returned_files_resource.last_update_file_id == "custom123"

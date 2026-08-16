@@ -39,7 +39,7 @@ def resolve_download_path(
     if local_path is None:
         # Create a temp directory
         temp_dir_result = standalone.create_temp_directory(prefix="gdrive_download_")
-        temp_dir = (
+        temp_dir = str(
             temp_dir_result.data
             if hasattr(temp_dir_result, "data")
             else temp_dir_result

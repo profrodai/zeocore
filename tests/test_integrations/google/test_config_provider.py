@@ -336,7 +336,7 @@ class TestGoogleConfigProvider:
 
         # Invalid config - missing required fields
         with pytest.raises(ValidationError):
-            GoogleDriveConfig(
+            GoogleDriveConfig(  # type: ignore[call-arg]  # deliberate missing client_secrets_file/credentials_file, testing the required-field contract
                 # missing client_secrets_file and credentials_file
                 shared_folder_id="folder123",
             )
@@ -372,7 +372,7 @@ class TestGoogleConfigProvider:
 
         # Invalid config - missing required fields
         with pytest.raises(ValidationError):
-            GoogleMailConfig(
+            GoogleMailConfig(  # type: ignore[call-arg]  # deliberate missing client_secrets_file/credentials_file, testing the required-field contract
                 # missing client_secrets_file and credentials_file
                 gmail_labels=["INBOX"],
             )
