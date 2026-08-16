@@ -51,6 +51,7 @@ class TestCreateTempFile:
         service = FileSystemService(base_dir=temp_dir)
         result = service.create_temp_file(suffix=".log", directory=temp_dir)
         assert result.success is True
+        assert result.data is not None
         created = Path(result.data)
         assert created.exists()
         assert created.suffix == ".log"
@@ -60,6 +61,7 @@ class TestCreateTempFile:
         service = FileSystemService(base_dir=temp_dir)
         result = service.create_temp_file()
         assert result.success is True
+        assert result.data is not None
         created = Path(result.data)
         assert created.exists()
         assert created.parent == (temp_dir.resolve() / ".quack" / "tmp")
@@ -80,6 +82,7 @@ class TestCreateTempDirectory:
         service = FileSystemService(base_dir=temp_dir)
         result = service.create_temp_directory(prefix="mytest_", directory=temp_dir)
         assert result.success is True
+        assert result.data is not None
         created = Path(result.data)
         assert created.is_dir()
         assert created.name.startswith("mytest_")
@@ -88,6 +91,7 @@ class TestCreateTempDirectory:
         service = FileSystemService(base_dir=temp_dir)
         result = service.create_temp_directory()
         assert result.success is True
+        assert result.data is not None
         created = Path(result.data)
         assert created.is_dir()
         assert created.parent == (temp_dir.resolve() / ".quack" / "tmp")
@@ -110,6 +114,7 @@ class TestFindFilesByContent:
         (temp_dir / "miss.txt").write_text("nothing relevant")
         result = service.find_files_by_content(temp_dir, "needle")
         assert result.success is True
+        assert result.data is not None
         assert any("hit.txt" in p for p in result.data)
         assert not any("miss.txt" in p for p in result.data)
 
@@ -245,6 +250,7 @@ class TestIsPathWriteable:
         result = service.is_path_writeable(temp_dir)
         assert result.success is True
         assert result.data is True
+        assert result.meta is not None
         assert result.meta.get("side_effect") == "write_probe"
 
 
