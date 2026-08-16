@@ -18,7 +18,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-
 _SCALAR_CONVERTERS: tuple[tuple[type, Any], ...] = (
     (Path, str),
     (datetime, lambda d: d.isoformat()),

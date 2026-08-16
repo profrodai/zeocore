@@ -271,7 +271,8 @@ def test_resolve_content_module(tmp_path: Path, path_service: PathService) -> No
 
 
 def test_path_exists_in_known_dir(tmp_path: Path, path_service: PathService) -> None:
-    """Test checking if a path exists inside a directory known to get_known_directory."""
+    """Test checking if a path exists inside a directory known to
+    get_known_directory."""
     # Create a project-like structure with assets
     (tmp_path / "pyproject.toml").write_text("")
     assets_dir = tmp_path / "assets"
