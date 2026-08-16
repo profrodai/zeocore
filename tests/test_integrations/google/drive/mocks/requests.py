@@ -6,7 +6,7 @@
 Mock request objects for Google Drive testing.
 """
 
-from typing import TypeVar
+from typing import Any, TypeVar
 from unittest.mock import Mock
 
 from quack_core.integrations.google.drive.protocols import DriveRequest
@@ -17,7 +17,7 @@ R = TypeVar("R")  # Generic type for return values
 class MockDriveRequest(DriveRequest[R]):
     """Mock request object with configurable response."""
 
-    def __init__(self, return_value: R, error: Exception | None = None):
+    def __init__(self, return_value: R, error: Exception | None = None) -> None:
         """
         Initialize a mock request with a return value or error.
 
@@ -40,7 +40,7 @@ class MockDriveRequest(DriveRequest[R]):
 
         # Add HTTP-related attributes
         class MockHttp:
-            def request(self, *args, **kwargs):
+            def request(self, *args: Any, **kwargs: Any) -> tuple[Mock, Mock]:
                 return mock, mock
 
         mock.http = MockHttp()
@@ -50,7 +50,7 @@ class MockDriveRequest(DriveRequest[R]):
         mock._body = {}
 
         # Ensure all protocol methods are present
-        def default_method(*args, **kwargs):
+        def default_method(*args: Any, **kwargs: Any) -> Mock:
             return mock
 
         # Add fallback methods to prevent attribute errors
@@ -67,7 +67,7 @@ class MockDriveRequest(DriveRequest[R]):
         self.error = error
         self.call_count = 0
 
-    def __getattr__(self, name):
+    def __getattr__(self, name) -> Any:
         """
         Dynamically add attributes as needed.
 

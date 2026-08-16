@@ -28,8 +28,8 @@ def test_integration_registration():
 
     # Create a simple mock registry
     class MockRegistry:
-        def __init__(self):
-            self.integrations = []
+        def __init__(self) -> None:
+            self.integrations: list[GitHubIntegration] = []
 
         def register(self, integration):
             self.integrations.append(integration)

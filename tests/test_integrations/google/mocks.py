@@ -3,6 +3,7 @@
 # === QV-LLM:END ===
 
 import json
+from typing import Any
 from unittest.mock import MagicMock
 
 
@@ -16,7 +17,7 @@ def mock_credentials(
     expired=False,
     valid=True,
     expiry_timestamp=1893456000,  # 2030-01-01
-    **kwargs,
+    **kwargs: Any,
 ):
     creds = MagicMock()
 

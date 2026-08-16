@@ -53,7 +53,7 @@ def fs_stub(monkeypatch):
             path="/dummy/path",
             message=None,
             format=None,
-        ):
+        ) -> None:
             self.success = success
             self.data = data
             self.error = error

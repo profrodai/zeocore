@@ -83,7 +83,7 @@ class TeachingAwareFormatter(logging.Formatter):
         datefmt: str | None = None,
         color_enabled: bool = True,
         teaching_provider: TeachingProvider | None = None,
-    ):
+    ) -> None:
         """
         Initialize the formatter.
 

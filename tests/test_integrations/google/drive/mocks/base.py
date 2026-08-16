@@ -6,7 +6,7 @@
 Base mock classes and utilities for Google Drive testing.
 """
 
-from typing import TypeVar
+from typing import Any, TypeVar
 from unittest.mock import Mock, PropertyMock
 
 from googleapiclient.errors import HttpError
@@ -21,7 +21,7 @@ class GenericApiRequestMock:
     with configurable behaviors.
     """
 
-    def __init__(self, return_value=None, error=None, status=200, reason="OK"):
+    def __init__(self, return_value=None, error=None, status=200, reason="OK") -> None:
         """
         Create a mock API request object.
 
@@ -54,13 +54,13 @@ class GenericApiRequestMock:
         self.mock.headers = {}
 
         # Add a method to simulate API calls
-        def request_method(*args, **kwargs):
+        def request_method(*args: Any, **kwargs: Any) -> tuple[Mock, Mock]:
             return self.mock, self.mock
 
         self.mock.request.execute = self.mock.execute
         self.mock.http.request = request_method
 
-    def __getattr__(self, name):
+    def __getattr__(self, name) -> Mock:
         """
         Dynamically add attributes as needed.
 
@@ -71,7 +71,7 @@ class GenericApiRequestMock:
         setattr(self.mock, name, attr)
         return attr
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: Any, **kwargs: Any) -> Mock:
         """
         Make the mock callable to simulate various API methods.
         """

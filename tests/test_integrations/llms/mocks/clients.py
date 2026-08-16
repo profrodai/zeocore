@@ -26,7 +26,7 @@ class MockClient(LLMClient):
         errors: list[Exception] = None,
         log_level: int = logging.INFO,
         **kwargs: Any,
-    ):
+    ) -> None:
         """
         Initialize a mock LLM client.
 

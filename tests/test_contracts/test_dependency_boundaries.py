@@ -43,7 +43,7 @@ class DependencyChecker:
         "quack_core.runners",
     }
 
-    def __init__(self, contracts_root: Path):
+    def __init__(self, contracts_root: Path) -> None:
         """
         Initialize dependency checker.
 

@@ -16,7 +16,7 @@ from quack_core.integrations.core.results import IntegrationResult
 class MockIntegration:
     """Mock integration for testing."""
 
-    def __init__(self, name="MockIntegration", version="1.0.0"):
+    def __init__(self, name="MockIntegration", version="1.0.0") -> None:
         self.name_value = name
         self.version_value = version
         self._initialized = False

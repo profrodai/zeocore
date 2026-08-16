@@ -24,7 +24,7 @@ from .resources import (
 class MockDriveService(DriveService):
     """Mock Drive service for testing."""
 
-    def __init__(self, files_resource: DriveFilesResource | None = None):
+    def __init__(self, files_resource: DriveFilesResource | None = None) -> None:
         """
         Initialize mock Drive service.
 

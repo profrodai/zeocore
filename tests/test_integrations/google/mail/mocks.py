@@ -28,7 +28,9 @@ R = TypeVar("R")  # Generic type for return values
 class MockGmailRequest(GmailRequest[dict[str, T]]):
     """Mock request object with configurable response."""
 
-    def __init__(self, return_value: dict[str, T], error: Exception | None = None):
+    def __init__(
+        self, return_value: dict[str, T], error: Exception | None = None
+    ) -> None:
         """
         Initialize a mock request with a return value or error.
 
@@ -51,7 +53,7 @@ class MockGmailAttachmentsResource(GmailAttachmentsResource):
 
     def __init__(
         self, attachment_data: str | None = None, error: Exception | None = None
-    ):
+    ) -> None:
         """
         Initialize mock attachments resource.
 
@@ -103,7 +105,7 @@ class MockGmailMessagesResource(GmailMessagesResource):
         attachments_resource: GmailAttachmentsResource | None = None,
         list_error: Exception | None = None,
         get_error: Exception | None = None,
-    ):
+    ) -> None:
         """
         Initialize mock messages resource.
 
@@ -220,7 +222,7 @@ class MockGmailMessagesResource(GmailMessagesResource):
 class MockGmailUsersResource(GmailUsersResource):
     """Mock users resource."""
 
-    def __init__(self, messages_resource: GmailMessagesResource | None = None):
+    def __init__(self, messages_resource: GmailMessagesResource | None = None) -> None:
         """
         Initialize mock users resource.
 
@@ -237,7 +239,7 @@ class MockGmailUsersResource(GmailUsersResource):
 class MockGmailService(GmailService):
     """Mock Gmail service for testing."""
 
-    def __init__(self, users_resource: GmailUsersResource | None = None):
+    def __init__(self, users_resource: GmailUsersResource | None = None) -> None:
         """
         Initialize mock Gmail service.
 
@@ -262,7 +264,7 @@ class MockGoogleCredentials(GoogleCredentials):
         client_id: str = "client_id",
         client_secret: str = "client_secret",  # noqa: S107 -- mock class default, fake credential value, not a real secret
         scopes: list[str] | None = None,
-    ):
+    ) -> None:
         """
         Initialize mock Google credentials.
 
@@ -368,7 +370,7 @@ class MockRequest(GmailRequest[R]):
 
     def __init__(
         self, return_value: R | None = None, side_effect: Exception | None = None
-    ):
+    ) -> None:
         """
         Initialize a mock request with a return value or error.
 

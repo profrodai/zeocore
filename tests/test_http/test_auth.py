@@ -17,8 +17,8 @@ def test_require_bearer_no_auth_configured():
 
     # Mock request without auth header
     class MockRequest:
-        def __init__(self):
-            self.headers = {}
+        def __init__(self) -> None:
+            self.headers: dict[str, str] = {}
 
     request = MockRequest()
 
@@ -31,8 +31,8 @@ def test_require_bearer_missing_header():
     cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
     class MockRequest:
-        def __init__(self):
-            self.headers = {}
+        def __init__(self) -> None:
+            self.headers: dict[str, str] = {}
 
     request = MockRequest()
 
@@ -47,7 +47,7 @@ def test_require_bearer_wrong_scheme():
     cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
     class MockRequest:
-        def __init__(self):
+        def __init__(self) -> None:
             self.headers = {"Authorization": "Basic dGVzdA=="}
 
     request = MockRequest()
@@ -63,7 +63,7 @@ def test_require_bearer_wrong_token():
     cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
     class MockRequest:
-        def __init__(self):
+        def __init__(self) -> None:
             self.headers = {"Authorization": "Bearer wrong-token"}
 
     request = MockRequest()
@@ -79,7 +79,7 @@ def test_require_bearer_success():
     cfg = HttpAdapterConfig(auth_token="secret")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
     class MockRequest:
-        def __init__(self):
+        def __init__(self) -> None:
             self.headers = {"Authorization": "Bearer secret"}
 
     request = MockRequest()

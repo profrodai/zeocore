@@ -3,6 +3,8 @@
 # === QV-LLM:END ===
 
 
+from typing import Any
+
 from quack_core.core.logging import get_logger
 from quack_core.prompt._internal.enhancer import enhance_with_llm_safe
 from quack_core.prompt._internal.registry import StrategyRegistry
@@ -83,7 +85,7 @@ class PromptService:
         use_llm: bool = False,
         llm_model: str | None = None,
         llm_provider: str | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> PromptRenderResult:
         """
         Render a prompt using a selected strategy.
