@@ -340,6 +340,26 @@ class TestGitHubIntegration:
         assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
+    def test_get_current_user_client_none_after_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
+        """Test get_current_user's own defensive self.client is None guard.
+
+        self.client is only ever set non-None together with
+        self._initialized = True in the real _create_github_client -- this
+        state (_initialized=True, client=None) cannot occur through normal
+        use, but the guard exists because mypy cannot verify that
+        invariant across the _ensure_initialized() call boundary. Force
+        the otherwise-unreachable state directly to exercise the guard's
+        own return path.
+        """
+        github_service._initialized = True
+        github_service.client = None
+        result = github_service.get_current_user()
+        assert result.success is False
+        assert result.error is not None
+        assert "GitHub client is not initialized" in result.error
+
     def test_get_current_user_exception(
         self, github_service: GitHubIntegration
     ) -> None:
@@ -387,6 +407,21 @@ class TestGitHubIntegration:
         assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
+    def test_get_repo_client_none_after_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
+        """Test get_repo's own defensive self.client is None guard.
+
+        See test_get_current_user_client_none_after_initialized's own
+        docstring for why this otherwise-unreachable state is forced.
+        """
+        github_service._initialized = True
+        github_service.client = None
+        result = github_service.get_repo("test_owner/test-repo")
+        assert result.success is False
+        assert result.error is not None
+        assert "GitHub client is not initialized" in result.error
+
     def test_get_repo_exception(self, github_service: GitHubIntegration) -> None:
         """Test get_repo with exception."""
         mock_client = MagicMock()
@@ -422,6 +457,21 @@ class TestGitHubIntegration:
         assert result.success is False
         assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
+
+    def test_star_repo_client_none_after_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
+        """Test star_repo's own defensive self.client is None guard.
+
+        See test_get_current_user_client_none_after_initialized's own
+        docstring for why this otherwise-unreachable state is forced.
+        """
+        github_service._initialized = True
+        github_service.client = None
+        result = github_service.star_repo("test_owner/test-repo")
+        assert result.success is False
+        assert result.error is not None
+        assert "GitHub client is not initialized" in result.error
 
     def test_star_repo_exception(self, github_service: GitHubIntegration) -> None:
         """Test star_repo with exception."""
@@ -472,6 +522,21 @@ class TestGitHubIntegration:
         assert result.success is False
         assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
+
+    def test_fork_repo_client_none_after_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
+        """Test fork_repo's own defensive self.client is None guard.
+
+        See test_get_current_user_client_none_after_initialized's own
+        docstring for why this otherwise-unreachable state is forced.
+        """
+        github_service._initialized = True
+        github_service.client = None
+        result = github_service.fork_repo("test_owner/test-repo")
+        assert result.success is False
+        assert result.error is not None
+        assert "GitHub client is not initialized" in result.error
 
     def test_fork_repo_exception(self, github_service: GitHubIntegration) -> None:
         """Test fork_repo with exception."""
@@ -537,6 +602,23 @@ class TestGitHubIntegration:
         assert result.success is False
         assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
+
+    def test_create_pull_request_client_none_after_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
+        """Test create_pull_request's own defensive self.client is None guard.
+
+        See test_get_current_user_client_none_after_initialized's own
+        docstring for why this otherwise-unreachable state is forced.
+        """
+        github_service._initialized = True
+        github_service.client = None
+        result = github_service.create_pull_request(
+            base_repo="test_owner/test-repo", head="test_user:feature", title="Test PR"
+        )
+        assert result.success is False
+        assert result.error is not None
+        assert "GitHub client is not initialized" in result.error
 
     def test_create_pull_request_exception(
         self, github_service: GitHubIntegration
@@ -616,6 +698,21 @@ class TestGitHubIntegration:
         assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
+    def test_list_pull_requests_client_none_after_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
+        """Test list_pull_requests's own defensive self.client is None guard.
+
+        See test_get_current_user_client_none_after_initialized's own
+        docstring for why this otherwise-unreachable state is forced.
+        """
+        github_service._initialized = True
+        github_service.client = None
+        result = github_service.list_pull_requests(repo="test_owner/test-repo")
+        assert result.success is False
+        assert result.error is not None
+        assert "GitHub client is not initialized" in result.error
+
     def test_list_pull_requests_exception(
         self, github_service: GitHubIntegration
     ) -> None:
@@ -678,6 +775,23 @@ class TestGitHubIntegration:
         assert result.message is not None
         assert "GitHub integration is not initialized" in result.message
 
+    def test_get_pull_request_client_none_after_initialized(
+        self, github_service: GitHubIntegration
+    ) -> None:
+        """Test get_pull_request's own defensive self.client is None guard.
+
+        See test_get_current_user_client_none_after_initialized's own
+        docstring for why this otherwise-unreachable state is forced.
+        """
+        github_service._initialized = True
+        github_service.client = None
+        result = github_service.get_pull_request(
+            repo="test_owner/test-repo", number=123
+        )
+        assert result.success is False
+        assert result.error is not None
+        assert "GitHub client is not initialized" in result.error
+
     def test_get_pull_request_exception(
         self, github_service: GitHubIntegration
     ) -> None:
@@ -693,6 +807,45 @@ class TestGitHubIntegration:
         assert result.success is False
         assert result.error is not None
         assert "Failed to get pull request: API error" in result.error
+
+    def test_resolve_auth_token_config_none(
+        self, github_service: GitHubIntegration
+    ) -> None:
+        """Test _resolve_auth_token's own defensive self.config is None guard.
+
+        self.config is always non-None in practice when this private
+        helper is reached: initialize()'s own call order always runs
+        _check_config_available() (which validates this exact invariant)
+        before _resolve_auth_token() is ever called -- but the guard
+        exists because mypy cannot verify that across the call boundary.
+        Calling the private helper directly with self.config forced to
+        None bypasses initialize()'s own early-return guard, exercising
+        this method's own guard in isolation (Master's own suggested
+        direct attribute-set-then-call approach for an otherwise-
+        unreachable-through-the-public-API branch).
+        """
+        github_service.config = None
+        token, error_result = github_service._resolve_auth_token()
+        assert token is None
+        assert error_result is not None
+        assert error_result.success is False
+        assert error_result.error is not None
+        assert "GitHub configuration is not available" in error_result.error
+
+    def test_create_github_client_config_none(
+        self, github_service: GitHubIntegration
+    ) -> None:
+        """Test _create_github_client's own defensive self.config is None guard.
+
+        See test_resolve_auth_token_config_none's own docstring for why
+        this otherwise-unreachable-through-the-public-API branch is
+        exercised via a direct call to the private helper.
+        """
+        github_service.config = None
+        result = github_service._create_github_client("some-token")
+        assert result.success is False
+        assert result.error is not None
+        assert "GitHub configuration is not available" in result.error
 
     @staticmethod
     def setup_mock_auth_provider(auth_success: bool = True) -> MagicMock:
