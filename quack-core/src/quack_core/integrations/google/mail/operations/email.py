@@ -338,6 +338,64 @@ def process_message_parts(
     return html_content, attachments
 
 
+def _unwrap_join_path(
+    storage_path: str, name: str, logger: logging.Logger
+) -> str | None:
+    """
+    Join a path via standalone.join_path and unwrap its DataResult.
+
+    join_path returns a DataResult, not a raw string -- str() of the Result
+    itself produces the pydantic model's repr, not the path (RULING-245,
+    Bug A). Unwrap via .data after checking .success, matching the
+    established precedent at pandoc/converter.py:265 / google/auth.py:246.
+    Extracted to keep handle_attachment's own branch count under the C901
+    threshold; behavior unchanged.
+
+    Returns:
+        The joined path string, or None if the join failed (already logged).
+    """
+    join_result = standalone.join_path(storage_path, name)
+    if not join_result.success or join_result.data is None:
+        logger.error(f"Failed to join path: {join_result.error}")
+        return None
+    return join_result.data
+
+
+def _deduplicate_attachment_path(
+    storage_path: str, file_path: str, logger: logging.Logger
+) -> str | None:
+    """
+    Resolve filename collisions by appending an incrementing counter.
+
+    split_path also returns a DataResult -- subscripting it directly raised
+    TypeError, swallowed by handle_attachment's own except-Exception
+    (RULING-245, Bug B). Unwrap the same way as _unwrap_join_path. Extracted
+    (alongside _unwrap_join_path) to keep handle_attachment's own branch
+    count under the C901 threshold; behavior unchanged.
+
+    Returns:
+        A non-colliding path string, or None if any step failed.
+    """
+    counter = 1
+    file_info = standalone.get_file_info(file_path)
+    while file_info.success and file_info.exists:
+        split_result = standalone.split_path(file_path)
+        if not split_result.success or split_result.data is None:
+            logger.error(f"Failed to split path: {split_result.error}")
+            return None
+        filename_parts = split_result.data[-1].rsplit(".", 1)
+        base_name = filename_parts[0]
+        ext = f".{filename_parts[1]}" if len(filename_parts) > 1 else ""
+        new_filename = f"{base_name}-{counter}{ext}"
+        new_file_path = _unwrap_join_path(storage_path, new_filename, logger)
+        if new_file_path is None:
+            return None
+        file_path = new_file_path
+        file_info = standalone.get_file_info(file_path)
+        counter += 1
+    return file_path
+
+
 def handle_attachment(
     gmail_service: GmailService,
     user_id: str,
@@ -393,19 +451,12 @@ def handle_attachment(
             return None
 
         clean_name = clean_filename(filename)
-        file_path = str(standalone.join_path(storage_path, clean_name))
-        counter = 1
-        file_info = standalone.get_file_info(file_path)
-        while file_info.success and file_info.exists:
-            # Split the file name using standalone.split_path
-            path_parts = standalone.split_path(file_path)
-            filename_parts = path_parts[-1].rsplit(".", 1)
-            base_name = filename_parts[0]
-            ext = f".{filename_parts[1]}" if len(filename_parts) > 1 else ""
-            new_filename = f"{base_name}-{counter}{ext}"
-            file_path = str(standalone.join_path(storage_path, new_filename))
-            file_info = standalone.get_file_info(file_path)
-            counter += 1
+        file_path = _unwrap_join_path(storage_path, clean_name, logger)
+        if file_path is None:
+            return None
+        file_path = _deduplicate_attachment_path(storage_path, file_path, logger)
+        if file_path is None:
+            return None
 
         # Ensure the directory exists using os.path.dirname to get the directory string.
         dir_path = os.path.dirname(file_path)

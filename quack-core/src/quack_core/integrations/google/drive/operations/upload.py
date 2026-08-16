@@ -70,8 +70,14 @@ def resolve_file_details(
         QuackIntegrationError: If the file does not exist.
     """
     # Delegate to the resolver to convert the provided file path into a project path.
-    resolve_result = paths_service.resolve_project_path(file_path)
-    if not resolve_result.success:
+    # resolve_project_path is a PathService INSTANCE method, not a
+    # module-level free function (RULING-238/240's trap, fixed identically
+    # in drive/service.py's _resolve_file_details; this call site was missed
+    # by that earlier fix -- RULING-245) -- instantiate PathService
+    # explicitly rather than calling the bare module.
+    path_service = paths_service.PathService()
+    resolve_result = path_service.resolve_project_path(file_path)
+    if not resolve_result.success or resolve_result.path is None:
         raise QuackIntegrationError(f"Failed to resolve path: {resolve_result.error}")
     resolved_path = resolve_result.path
 

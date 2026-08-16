@@ -58,8 +58,12 @@ class TestDriveOperationsDownload:
                 "mimeType": "text/plain",
             }
 
-            # Configure paths_service mock
-            mock_paths_service.resolve_project_path.return_value = PathResult(
+            # Configure paths_service mock. resolve_project_path is a
+            # PathService INSTANCE method (RULING-245) -- the mock must
+            # configure the instance returned by PathService(), not the
+            # module-level attribute directly.
+            mock_path_service_instance = mock_paths_service.PathService.return_value
+            mock_path_service_instance.resolve_project_path.return_value = PathResult(
                 success=True,
                 path="/tmp/test_file.txt",  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem
             )
@@ -126,7 +130,10 @@ class TestDriveOperationsDownload:
         with patch(
             "quack_core.integrations.google.drive.operations.download.paths_service"
         ) as mock_paths_service:
-            mock_paths_service.resolve_project_path.return_value = PathResult(
+            # resolve_project_path is a PathService INSTANCE method
+            # (RULING-245) -- configure the PathService() instance mock.
+            mock_path_service_instance = mock_paths_service.PathService.return_value
+            mock_path_service_instance.resolve_project_path.return_value = PathResult(
                 success=True,
                 path=str(local_dir),  # Use string, not Path
             )
@@ -157,7 +164,10 @@ class TestDriveOperationsDownload:
         with patch(
             "quack_core.integrations.google.drive.operations.download.paths_service"
         ) as mock_paths_service:
-            mock_paths_service.resolve_project_path.return_value = PathResult(
+            # resolve_project_path is a PathService INSTANCE method
+            # (RULING-245) -- configure the PathService() instance mock.
+            mock_path_service_instance = mock_paths_service.PathService.return_value
+            mock_path_service_instance.resolve_project_path.return_value = PathResult(
                 success=True,
                 path=str(local_file),  # Use string, not Path
             )
@@ -225,8 +235,11 @@ class TestDriveOperationsDownload:
                 "quack_core.integrations.google.drive.utils.api.execute_api_request"
             ) as mock_execute,
         ):
-            # Configure mocks
-            mock_paths_service.resolve_project_path.return_value = PathResult(
+            # Configure mocks. resolve_project_path is a PathService
+            # INSTANCE method (RULING-245) -- configure the PathService()
+            # instance mock, not the module-level attribute directly.
+            mock_path_service_instance = mock_paths_service.PathService.return_value
+            mock_path_service_instance.resolve_project_path.return_value = PathResult(
                 success=True,
                 # Use string, not Path; mocked, no real I/O.
                 path="/tmp/test_file.txt",  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem

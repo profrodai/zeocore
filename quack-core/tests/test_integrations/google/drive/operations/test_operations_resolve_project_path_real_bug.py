@@ -3,79 +3,134 @@
 # === QV-LLM:END ===
 
 """
-Pinning tests for a real production bug (RULING-236..243 pattern, ~ninth
-instance): `download.resolve_download_path` and `upload.resolve_file_details`
-call `paths_service.resolve_project_path(...)` directly on the imported
-MODULE (`from quack_core.core.paths import service as paths_service`)
-instead of on an instantiated `PathService()`.
+Regression tests for a real production bug (RULING-236..243 pattern family,
+ninth instance; fixed per RULING-245): `download.resolve_download_path` and
+`upload.resolve_file_details` used to call `paths_service.
+resolve_project_path(...)` directly on the imported MODULE (`from
+quack_core.core.paths import service as paths_service`) instead of on an
+instantiated `PathService()`.
 
 `quack_core.core.paths.service` (the module) has no `resolve_project_path`
 attribute -- only `PathService` (the class) does, as an instance method.
 Every existing test for these two functions mocks
 `...operations.download.paths_service` / `...operations.upload.paths_service`
-wholesale with `unittest.mock.patch`, which happily lets the mock answer
+wholesale with `unittest.mock.patch`, which happily let the mock answer
 `resolve_project_path(...)` even though the REAL module has no such
 attribute -- masking the bug exactly the way RULING-238/240 documented for
 the same shape in `google/config.py` and `google/mail/service.py` (both of
-which carry the fix + an explanatory comment; `drive/operations/download.py`
-and `drive/operations/upload.py` were missed).
+which already carried the fix + an explanatory comment; `drive/operations/
+download.py` and `drive/operations/upload.py` were missed by that earlier
+fix, which is exactly what this pair of files pins).
 
-These tests do NOT patch `paths_service` -- they call the real module so the
-real `AttributeError` surfaces. Each test asserts the AttributeError IS
-raised (`pytest.raises`), so they PASS today, pinning the bug's current
-(broken) behavior and keeping `make test-fast` green while the fix awaits
-a Master ruling. Once the authorized fix lands (instantiate
-`paths_service.PathService()`, then call `.resolve_project_path(...)` on
-the instance -- the exact pattern already used in
-`drive/service.py:229/293`), these tests will start FAILING (no exception
-raised) and must be rewritten to assert the correct, successful return
-value instead.
+FIXED per RULING-245: both call sites now instantiate `paths_service.
+PathService()` before calling `.resolve_project_path(...)` on the instance
+-- the exact pattern already used in `drive/service.py:229/293`. These
+tests were rewritten from asserting the bug's crash (AttributeError) to
+asserting the correct, successful behavior -- a green run now means the fix
+is present and working, not that the bug reproduces.
 """
 
-import pytest
+from pathlib import Path
+
 from quack_core.integrations.google.drive.operations import download, upload
 
 
-class TestResolveProjectPathModuleVsInstanceBug:
-    """Pin the module-vs-instance `resolve_project_path` crash, live."""
+class TestResolveProjectPathModuleVsInstanceFixed:
+    """Confirm the module-vs-instance `resolve_project_path` fix, live."""
 
     def test_paths_service_module_has_no_resolve_project_path(self) -> None:
-        """Ground the bug: the imported module itself lacks the attribute.
+        """Ground truth, unchanged by the fix: the imported MODULE itself
+        never gained the attribute -- the fix instantiates PathService
+        instead of relying on the module gaining a free function.
 
         This is the direct, non-inferred evidence -- not a mock's opinion.
         """
         from quack_core.core.paths import service as paths_service
 
         assert not hasattr(paths_service, "resolve_project_path"), (
-            "if this now passes, quack_core.core.paths.service gained a "
-            "module-level resolve_project_path and the bug below may already "
-            "be fixed by a different mechanism -- re-verify before trusting "
-            "this test file's premise"
+            "quack_core.core.paths.service gained a module-level "
+            "resolve_project_path -- re-verify the fix's premise (it "
+            "should still be instantiating PathService explicitly, not "
+            "relying on this)"
+        )
+        assert hasattr(paths_service, "PathService"), (
+            "PathService class itself went missing -- re-verify the fix's "
+            "premise before trusting this test file"
         )
 
-    def test_resolve_download_path_crashes_with_real_local_path(self) -> None:
-        """download.resolve_download_path(..., local_path=...) crashes.
+    def test_resolve_download_path_succeeds_with_real_local_path(self) -> None:
+        """download.resolve_download_path(..., local_path=...) now
+        succeeds instead of raising AttributeError.
 
-        Passing a non-None local_path drives execution into the buggy
-        `paths_service.resolve_project_path(local_path)` module-level call
-        at download.py:53.
+        Passing a non-None local_path drives execution into the
+        previously-buggy `paths_service.resolve_project_path(local_path)`
+        call at download.py -- now correctly instantiates PathService
+        first.
         """
         file_metadata = {"name": "report.pdf"}
-        with pytest.raises(AttributeError, match="resolve_project_path"):
-            download.resolve_download_path(
-                file_metadata, local_path="some/local/dir"
-            )
+        result = download.resolve_download_path(
+            file_metadata, local_path="some/local/dir"
+        )
+        assert result.endswith("some/local/dir") or result.endswith(
+            "some/local/dir/report.pdf"
+        ), (
+            f"expected a real resolved path derived from 'some/local/dir', "
+            f"got {result!r}"
+        )
+        assert "AttributeError" not in result
 
-    def test_resolve_file_details_crashes_on_real_call(self) -> None:
-        """upload.resolve_file_details(...) crashes on the same shape.
-
-        upload.py:73 calls `paths_service.resolve_project_path(file_path)`
-        directly on the module -- same AttributeError, first line of the
-        function body, before any file-existence check even runs.
+    def test_resolve_file_details_succeeds_or_fails_on_missing_file_not_attribute_error(
+        self,
+    ) -> None:
+        """upload.resolve_file_details(...) now correctly reaches the
+        file-existence check (raising QuackIntegrationError for a genuinely
+        missing file) instead of crashing on the module-vs-instance
+        AttributeError before ever getting there.
         """
-        with pytest.raises(AttributeError, match="resolve_project_path"):
-            upload.resolve_file_details(
-                file_path="some/file/to/upload.txt",
+        from quack_core.core.errors import QuackIntegrationError
+
+        try:
+            path_obj, filename, folder_id, mime_type = upload.resolve_file_details(
+                file_path="some/file/to/upload/that/does/not/exist.txt",
                 remote_path=None,
                 parent_folder_id=None,
             )
+            raise AssertionError(
+                "expected QuackIntegrationError for a nonexistent file, got "
+                f"a successful result instead: {path_obj!r}"
+            )
+        except QuackIntegrationError as e:
+            # The correct failure mode now: resolve_project_path succeeded
+            # (no AttributeError), and the function reached its own
+            # explicit file-not-found check.
+            assert "File not found" in str(e), (
+                f"expected the file-not-found QuackIntegrationError, got a "
+                f"differently-shaped QuackIntegrationError instead: {e}"
+            )
+
+    def test_resolve_file_details_succeeds_for_a_real_existing_file(
+        self, tmp_path: Path
+    ) -> None:
+        """Full happy-path proof: a real, existing file resolves correctly
+        end-to-end through the fixed resolve_project_path call.
+        """
+        # Use an in-sandbox relative path (core/fs allow_absolute=False
+        # invariant), same convention as this round's other pinning tests.
+        rel_dir = "test_scratch_upload_resolve_fixed"
+        scratch_dir = Path.cwd() / rel_dir
+        scratch_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            target = scratch_dir / "real_upload_target.txt"
+            target.write_text("content")
+
+            path_obj, filename, folder_id, mime_type = upload.resolve_file_details(
+                file_path=str(target.relative_to(Path.cwd())),
+                remote_path=None,
+                parent_folder_id="some-folder-id",
+            )
+            assert filename == "real_upload_target.txt"
+            assert folder_id == "some-folder-id"
+        finally:
+            import shutil
+
+            shutil.rmtree(scratch_dir, ignore_errors=True)

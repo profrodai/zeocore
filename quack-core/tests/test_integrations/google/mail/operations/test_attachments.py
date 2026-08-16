@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from quack_core.core.fs import FileInfoResult, OperationResult, WriteResult
+from quack_core.core.fs import DataResult, FileInfoResult, OperationResult, WriteResult
 from quack_core.integrations.google.mail.operations import attachments
 from tests.test_integrations.google.mail.mocks import (
     create_mock_gmail_service,
@@ -113,11 +113,18 @@ class TestGmailAttachmentOperations:
             ) as mock_base64,
             patch("pathlib.Path") as mock_path,
         ):
-            # Configure all the filesystem mocks
+            # Configure all the filesystem mocks. join_path/split_path
+            # return DataResult objects in real life (RULING-245's fix
+            # unwraps via .success/.data), not raw str/list -- mock the
+            # real shape, not a wish.
             mock_fs.create_directory.return_value = mock_dir_result
             mock_fs.get_file_info.return_value = mock_file_info
-            mock_fs.join_path.return_value = "/path/to/storage/test.pdf"
-            mock_fs.split_path.return_value = ["path", "to", "storage", "test.pdf"]
+            mock_fs.join_path.return_value = DataResult(
+                ok=True, data="/path/to/storage/test.pdf"
+            )
+            mock_fs.split_path.return_value = DataResult(
+                ok=True, data=["path", "to", "storage", "test.pdf"]
+            )
 
             # Configure filesystem service
             mock_fs_service = MagicMock()
@@ -196,11 +203,17 @@ class TestGmailAttachmentOperations:
                 "quack_core.integrations.google.mail.operations.attachments.execute_api_request"
             ) as mock_execute,
         ):
-            # Configure filesystem mocks
+            # Configure filesystem mocks. join_path/split_path return
+            # DataResult objects in real life (RULING-245's fix unwraps via
+            # .success/.data), not raw str/list -- mock the real shape.
             mock_fs.create_directory.return_value = mock_dir_result
             mock_fs.get_file_info.return_value = mock_file_info
-            mock_fs.join_path.return_value = "/path/to/storage/test2.pdf"
-            mock_fs.split_path.return_value = ["path", "to", "storage", "test2.pdf"]
+            mock_fs.join_path.return_value = DataResult(
+                ok=True, data="/path/to/storage/test2.pdf"
+            )
+            mock_fs.split_path.return_value = DataResult(
+                ok=True, data=["path", "to", "storage", "test2.pdf"]
+            )
 
             # Configure filesystem service
             mock_fs_service = MagicMock()
@@ -289,17 +302,22 @@ class TestGmailAttachmentOperations:
                 "quack_core.integrations.google.mail.operations.attachments.execute_api_request"
             ) as mock_execute,
         ):
-            # Configure filesystem mocks with collision handling
+            # Configure filesystem mocks with collision handling.
+            # join_path/split_path return DataResult objects in real life
+            # (RULING-245's fix unwraps via .success/.data), not raw
+            # str/list -- mock the real shape.
             mock_fs.create_directory.return_value = mock_dir_result
             mock_fs.get_file_info.side_effect = [
                 mock_file_info_collision,
                 mock_file_info_no_collision,
             ]
             mock_fs.join_path.side_effect = [
-                "/path/to/storage/test2.pdf",
-                "/path/to/storage/test2-1.pdf",
+                DataResult(ok=True, data="/path/to/storage/test2.pdf"),
+                DataResult(ok=True, data="/path/to/storage/test2-1.pdf"),
             ]
-            mock_fs.split_path.return_value = ["path", "to", "storage", "test2.pdf"]
+            mock_fs.split_path.return_value = DataResult(
+                ok=True, data=["path", "to", "storage", "test2.pdf"]
+            )
 
             # Configure filesystem service
             mock_fs_service = MagicMock()
