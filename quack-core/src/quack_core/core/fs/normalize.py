@@ -21,18 +21,17 @@ from quack_core.core.fs.protocols import FsPathLike
 T = TypeVar("T")
 
 
-def _extract_path_str(obj: Any) -> str:
-    """Core logic to extract a string path from a polymorphic input."""
-    if obj is None:
-        raise TypeError("Path cannot be None")
+def _unwrap_result_like(obj: Any) -> str | None:
+    """
+    Try each Result-like unwrap strategy in priority order, returning the
+    extracted path string, or None if none of the strategies apply to `obj`.
+    Extracted from _extract_path_str to keep that function's branch count low
+    (C901); behavior and order are unchanged from the original inline chain.
 
-    if isinstance(obj, str):
-        return obj
-    if isinstance(obj, Path):
-        return str(obj)
-    if hasattr(obj, "__fspath__"):
-        return os.fspath(obj)  # type: ignore
-
+    Fails fast (raises ValueError) on an explicit failed Result — that case is
+    a genuine error, not "no strategy applied", so it is not folded into the
+    None return.
+    """
     # Fail fast on failed Results (check 'ok' first as canonical, then 'success')
     if hasattr(obj, "ok") and not getattr(obj, "ok", True):
         raise ValueError(f"Cannot extract path from failed Result object: {obj}")
@@ -56,6 +55,25 @@ def _extract_path_str(obj: Any) -> str:
 
     if hasattr(obj, "path") and obj.path is not None:
         return _extract_path_str(obj.path)
+
+    return None
+
+
+def _extract_path_str(obj: Any) -> str:
+    """Core logic to extract a string path from a polymorphic input."""
+    if obj is None:
+        raise TypeError("Path cannot be None")
+
+    if isinstance(obj, str):
+        return obj
+    if isinstance(obj, Path):
+        return str(obj)
+    if hasattr(obj, "__fspath__"):
+        return os.fspath(obj)  # type: ignore
+
+    unwrapped = _unwrap_result_like(obj)
+    if unwrapped is not None:
+        return unwrapped
 
     raise TypeError(f"Could not coerce object of type {type(obj)} to path string")
 
@@ -100,7 +118,8 @@ def coerce_path(
                     return resolved
                 except ValueError:
                     raise QuackPathOutsideBaseDirError(
-                        f"Path '{path}' is outside base directory '{base_dir}' (allow_absolute=False)"
+                        f"Path '{path}' is outside base directory '{base_dir}' "
+                        "(allow_absolute=False)"
                     ) from None
 
             # 2. Handle Relative Paths (Anchor to base_dir)
