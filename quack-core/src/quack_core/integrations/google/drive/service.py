@@ -272,7 +272,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             temp_dir_result = standalone.create_temp_directory(
                 prefix="quackcore_gdrive_"
             )
-            temp_dir = (
+            temp_dir = str(
                 temp_dir_result.data
                 if hasattr(temp_dir_result, "data")
                 else temp_dir_result
