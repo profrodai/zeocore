@@ -7,6 +7,7 @@ Tests for the QuackCore path service.
 """
 
 import os
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -16,12 +17,12 @@ from quack_core.core.paths.service import PathService
 
 # Create a fixture for the service
 @pytest.fixture
-def path_service():
+def path_service() -> PathService:
     """Create a PathService instance for testing."""
     return PathService()
 
 
-def test_get_project_root(tmp_path, path_service):
+def test_get_project_root(tmp_path: Path, path_service: PathService) -> None:
     """Test getting the project root."""
     # Create a project-like structure
     (tmp_path / "pyproject.toml").write_text("")
@@ -34,7 +35,7 @@ def test_get_project_root(tmp_path, path_service):
     assert result.error is None
 
 
-def test_get_project_root_failure(tmp_path, path_service):
+def test_get_project_root_failure(tmp_path: Path, path_service: PathService) -> None:
     """Test getting the project root when it doesn't exist."""
     # No project markers in this directory
     non_project_dir = tmp_path / "non_project"
@@ -48,7 +49,7 @@ def test_get_project_root_failure(tmp_path, path_service):
     assert result.error is not None
 
 
-def test_resolve_project_path(tmp_path, path_service):
+def test_resolve_project_path(tmp_path: Path, path_service: PathService) -> None:
     """Test resolving a path relative to the project root."""
     # Create a project-like structure
     (tmp_path / "pyproject.toml").write_text("")
@@ -61,7 +62,7 @@ def test_resolve_project_path(tmp_path, path_service):
     assert result.error is None
 
 
-def test_detect_project_context(tmp_path, path_service):
+def test_detect_project_context(tmp_path: Path, path_service: PathService) -> None:
     """Test detecting the project context."""
     # Create a project-like structure
     (tmp_path / "pyproject.toml").write_text("")
@@ -79,7 +80,7 @@ def test_detect_project_context(tmp_path, path_service):
     assert result.error is None
 
 
-def test_detect_content_context(tmp_path, path_service):
+def test_detect_content_context(tmp_path: Path, path_service: PathService) -> None:
     """Test detecting the content context."""
     # Create a project-like structure with content
     (tmp_path / "pyproject.toml").write_text("")
@@ -97,7 +98,7 @@ def test_detect_content_context(tmp_path, path_service):
     assert result.error is None
 
 
-def test_get_known_directory(tmp_path, path_service):
+def test_get_known_directory(tmp_path: Path, path_service: PathService) -> None:
     """Test getting a known directory."""
     # Create a project-like structure
     (tmp_path / "pyproject.toml").write_text("")
@@ -120,7 +121,7 @@ def test_get_known_directory(tmp_path, path_service):
         assert result.error is None
 
 
-def test_get_module_path(tmp_path, path_service):
+def test_get_module_path(tmp_path: Path, path_service: PathService) -> None:
     """Test getting a module path."""
     # Create a project-like structure with a module
     (tmp_path / "pyproject.toml").write_text("")
@@ -152,7 +153,7 @@ def test_get_module_path(tmp_path, path_service):
             assert result.error is None
 
 
-def test_get_relative_path(tmp_path, path_service):
+def test_get_relative_path(tmp_path: Path, path_service: PathService) -> None:
     """Test getting a relative path."""
     # Create a project-like structure
     (tmp_path / "pyproject.toml").write_text("")
@@ -172,7 +173,7 @@ def test_get_relative_path(tmp_path, path_service):
         assert result.error is None
 
 
-def test_get_content_dir(tmp_path, path_service):
+def test_get_content_dir(tmp_path: Path, path_service: PathService) -> None:
     """Test getting a content directory."""
     # Create a project-like structure with content
     (tmp_path / "pyproject.toml").write_text("")
@@ -201,7 +202,7 @@ def test_get_content_dir(tmp_path, path_service):
             assert result.error is None
 
 
-def test_list_known_directories(tmp_path, path_service):
+def test_list_known_directories(tmp_path: Path, path_service: PathService) -> None:
     """Test listing known directories."""
     # Create a project-like structure
     (tmp_path / "pyproject.toml").write_text("")
@@ -226,7 +227,7 @@ def test_list_known_directories(tmp_path, path_service):
         assert set(result) == {"src", "tests", "data"}
 
 
-def test_is_inside_project(tmp_path, path_service):
+def test_is_inside_project(tmp_path: Path, path_service: PathService) -> None:
     """Test checking if a path is inside the project."""
     # Create a project-like structure
     (tmp_path / "pyproject.toml").write_text("")
@@ -243,7 +244,7 @@ def test_is_inside_project(tmp_path, path_service):
         assert not path_service.is_inside_project(outside_path)
 
 
-def test_resolve_content_module(tmp_path, path_service):
+def test_resolve_content_module(tmp_path: Path, path_service: PathService) -> None:
     """Test resolving a content module."""
     # Create a project-like structure with content
     (tmp_path / "pyproject.toml").write_text("")
@@ -274,7 +275,7 @@ def test_resolve_content_module(tmp_path, path_service):
             assert result.error is None
 
 
-def test_path_exists_in_known_dir(tmp_path, path_service):
+def test_path_exists_in_known_dir(tmp_path: Path, path_service: PathService) -> None:
     """Test checking if a path exists in a known directory."""
     # Create a project-like structure with assets
     (tmp_path / "pyproject.toml").write_text("")
@@ -297,7 +298,7 @@ def test_path_exists_in_known_dir(tmp_path, path_service):
             )
 
 
-def test_find_source_directory(tmp_path, path_service):
+def test_find_source_directory(tmp_path: Path, path_service: PathService) -> None:
     """Test finding the source directory."""
     # Create a project-like structure
     (tmp_path / "pyproject.toml").write_text("")
@@ -315,7 +316,7 @@ def test_find_source_directory(tmp_path, path_service):
         assert result.error is None
 
 
-def test_find_output_directory(tmp_path, path_service):
+def test_find_output_directory(tmp_path: Path, path_service: PathService) -> None:
     """Test finding or creating the output directory."""
     # Create a project-like structure
     (tmp_path / "pyproject.toml").write_text("")
@@ -352,7 +353,7 @@ def test_find_output_directory(tmp_path, path_service):
         assert result.error is None
 
 
-def test_infer_current_content(tmp_path, path_service):
+def test_infer_current_content(tmp_path: Path, path_service: PathService) -> None:
     """Test inferring current content type and name."""
     # Create a project-like structure with content
     (tmp_path / "pyproject.toml").write_text("")
