@@ -54,6 +54,38 @@ def _normalize_path_with_info(path: Any) -> PathInfo:
         return PathInfo(success=False, path=path_str, error=e)
 
 
+def _has_marker_file(current_dir: str, markers: list[str]) -> bool:
+    """
+    True if any marker filename in `markers` exists as a FILE directly under
+    `current_dir`. Extracted from _find_project_root to keep its own branch
+    count under the C901 threshold; behavior/order unchanged from the
+    original inline loop.
+    """
+    for m in markers:
+        res = standalone.join_path(current_dir, m)
+        if res.ok and res.data:
+            check_path = str(res.data)
+            if os.path.exists(check_path) and os.path.isfile(check_path):
+                return True
+    return False
+
+
+def _count_marker_dirs(current_dir: str, dir_markers: list[str]) -> int:
+    """
+    Count how many marker directory names in `dir_markers` exist as a
+    DIRECTORY directly under `current_dir`. Extracted from _find_project_root
+    for the same C901 reason as _has_marker_file.
+    """
+    found_dirs = 0
+    for d in dir_markers:
+        res = standalone.join_path(current_dir, d)
+        if res.ok and res.data:
+            check_path = str(res.data)
+            if os.path.exists(check_path) and os.path.isdir(check_path):
+                found_dirs += 1
+    return found_dirs
+
+
 @wrap_io_errors
 def _find_project_root(
     start_dir: Any | None = None,
@@ -86,24 +118,10 @@ def _find_project_root(
     dir_markers = marker_dirs or ["src", "quack-core", "tests"]
 
     for _ in range(max_levels):
-        # Check files
-        for m in markers:
-            res = standalone.join_path(current_dir, m)
-            if res.ok and res.data:
-                check_path = str(res.data)
-                if os.path.exists(check_path) and os.path.isfile(check_path):
-                    return current_dir
+        if _has_marker_file(current_dir, markers):
+            return current_dir
 
-        # Check dirs (need at least 2)
-        found_dirs = 0
-        for d in dir_markers:
-            res = standalone.join_path(current_dir, d)
-            if res.ok and res.data:
-                check_path = str(res.data)
-                if os.path.exists(check_path) and os.path.isdir(check_path):
-                    found_dirs += 1
-
-        if found_dirs >= 2:
+        if _count_marker_dirs(current_dir, dir_markers) >= 2:
             return current_dir
 
         # Move up
