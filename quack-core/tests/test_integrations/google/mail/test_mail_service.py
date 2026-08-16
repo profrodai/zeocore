@@ -161,6 +161,7 @@ class TestGoogleMailService:
             config = service._initialize_config()
 
             # Verify the results
+            assert config is not None
             assert config["client_secrets_file"] == "/path/to/secrets.json"
             assert config["credentials_file"] == "/path/to/credentials.json"
             assert service.storage_path == "/resolved/path/to/storage"
@@ -194,6 +195,7 @@ class TestGoogleMailService:
             config = service._initialize_config()
 
             # Verify the results
+            assert config is not None
             assert config["client_secrets_file"] == "/config/secrets.json"
             assert config["credentials_file"] == "/config/credentials.json"
             assert service.storage_path == "/resolved/config/storage"
@@ -361,6 +363,7 @@ class TestGoogleMailService:
                 # Test with default query
                 result = service.list_emails()
                 assert result.success is True
+                assert result.content is not None
                 assert len(result.content) == 2
                 assert result.content[0]["id"] == "msg1"
 

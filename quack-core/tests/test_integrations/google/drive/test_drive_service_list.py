@@ -63,6 +63,7 @@ class TestGoogleDriveServiceList:
             result = service.list_files("folder123", "*.txt")
 
             assert result.success is True
+            assert result.content is not None
             assert len(result.content) == 2
             assert result.content[0]["id"] == "file1"
             assert result.content[1]["id"] == "folder1"
