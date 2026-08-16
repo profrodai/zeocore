@@ -190,11 +190,10 @@ class TestProtocolInheritance:
         assert not isinstance(auth_provider, IntegrationProtocol)
         assert not isinstance(config_provider, StorageIntegrationProtocol)
 
-    def test_partial_implementations(self) -> None:
-        """Test that partial implementations are not recognized as fully
-        implementing protocols."""
+    def _make_partial_integration(self) -> object:
+        """A class missing initialize/is_available -- not a full
+        IntegrationProtocol implementation."""
 
-        # Partial IntegrationProtocol
         class PartialIntegration:
             @property
             def name(self) -> str:
@@ -206,11 +205,11 @@ class TestProtocolInheritance:
 
             # Missing initialize and is_available methods
 
-        partial = PartialIntegration()
-        assert not isinstance(partial, IntegrationProtocol)
+        return PartialIntegration()
 
-        # Partial StorageIntegrationProtocol (implements IntegrationProtocol
-        # but not storage methods)
+    def _partial_storage_class(self) -> type:
+        """Implements IntegrationProtocol but not storage methods."""
+
         class PartialStorage:
             @property
             def integration_id(self) -> str:
@@ -232,12 +231,15 @@ class TestProtocolInheritance:
 
             # Missing storage-specific methods
 
-        partial_storage = PartialStorage()
-        assert isinstance(partial_storage, IntegrationProtocol)
-        assert not isinstance(partial_storage, StorageIntegrationProtocol)
+        return PartialStorage
 
-        # Missing a single method
-        class AlmostStorage(PartialStorage):
+    def _make_partial_storage(self) -> object:
+        return self._partial_storage_class()()
+
+    def _make_almost_storage(self) -> object:
+        """PartialStorage plus every storage method except create_folder."""
+
+        class AlmostStorage(self._partial_storage_class()):
             def upload_file(
                 self, file_path: str, remote_path: str | None = None
             ) -> IntegrationResult[str]:
@@ -255,7 +257,19 @@ class TestProtocolInheritance:
 
             # Missing create_folder method
 
-        almost_storage = AlmostStorage()
+        return AlmostStorage()
+
+    def test_partial_implementations(self) -> None:
+        """Test that partial implementations are not recognized as fully
+        implementing protocols."""
+        partial = self._make_partial_integration()
+        assert not isinstance(partial, IntegrationProtocol)
+
+        partial_storage = self._make_partial_storage()
+        assert isinstance(partial_storage, IntegrationProtocol)
+        assert not isinstance(partial_storage, StorageIntegrationProtocol)
+
+        almost_storage = self._make_almost_storage()
         assert isinstance(almost_storage, IntegrationProtocol)
         assert not isinstance(almost_storage, StorageIntegrationProtocol)
 
