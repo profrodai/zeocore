@@ -58,8 +58,7 @@ def update_tool_config(config: QuackConfig, tool_name: str, new_data: Mapping) -
         new_data: New dictionary to merge into config.custom[tool_name].
     """
     old_data = config.custom.get(tool_name, {})
-    if isinstance(old_data, Mapping):
-        updated = {**old_data, **new_data}
-    else:
-        updated = new_data
+    updated: Mapping = (
+        {**old_data, **new_data} if isinstance(old_data, Mapping) else new_data
+    )
     config.custom[tool_name] = updated

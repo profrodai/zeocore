@@ -43,10 +43,10 @@ class LoggingConfig(BaseModel):
 
     def setup_logging(self) -> None:
         """Set up logging based on configuration."""
-        from quack_core.core.logging import LOG_LEVELS, configure_logger
+        from quack_core.core.logging import LOG_LEVELS, LogLevel, configure_logger
 
         level_name = self.level.upper()
-        level = LOG_LEVELS.get(level_name, LOG_LEVELS["INFO"])
+        level = LOG_LEVELS.get(LogLevel(level_name), LOG_LEVELS[LogLevel.INFO])
 
         logger = configure_logger("quack-core", level=level, log_file=self.file)
 
