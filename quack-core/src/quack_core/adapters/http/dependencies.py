@@ -10,6 +10,8 @@ This module provides dependency injection functions that extract
 resources from app.state for use in route handlers.
 """
 
+from typing import cast
+
 from fastapi import Request
 from quack_core.adapters.http.auth import require_bearer
 from quack_core.adapters.http.config import HttpAdapterConfig
@@ -27,7 +29,7 @@ def get_cfg(request: Request) -> HttpAdapterConfig:
     Returns:
         Configuration object
     """
-    return request.app.state.cfg
+    return cast(HttpAdapterConfig, request.app.state.cfg)
 
 
 def get_registry(request: Request) -> OperationRegistry:
@@ -40,7 +42,7 @@ def get_registry(request: Request) -> OperationRegistry:
     Returns:
         Operation registry
     """
-    return request.app.state.registry
+    return cast(OperationRegistry, request.app.state.registry)
 
 
 def get_job_store(request: Request) -> JobStore:
@@ -53,7 +55,7 @@ def get_job_store(request: Request) -> JobStore:
     Returns:
         Job store
     """
-    return request.app.state.job_store
+    return cast(JobStore, request.app.state.job_store)
 
 
 def get_job_runner(request: Request) -> JobRunner:
@@ -66,7 +68,7 @@ def get_job_runner(request: Request) -> JobRunner:
     Returns:
         Job runner
     """
-    return request.app.state.job_runner
+    return cast(JobRunner, request.app.state.job_runner)
 
 
 def require_auth(request: Request) -> None:

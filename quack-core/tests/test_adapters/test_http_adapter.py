@@ -8,7 +8,7 @@ Comprehensive test suite for HTTP adapter with dependency injection.
 """
 
 import time
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from typing import Any, cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -47,7 +47,7 @@ def registry() -> Generator[OperationRegistry]:
     # Register test operation
     reg.register(
         name="test.echo",
-        callable_=echo_operation,
+        callable_=cast(Callable[[EchoRequest], EchoResponse], echo_operation),
         request_model=EchoRequest,
         response_model=EchoResponse,
         description="Echo test operation",
