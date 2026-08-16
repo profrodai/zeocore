@@ -9,12 +9,12 @@ Tests for path utility functions.
 import os
 import tempfile
 from pathlib import Path
-from typing import Any
 from unittest.mock import patch
 
 import pytest
 from quack_core.core.errors import QuackFileNotFoundError
 from quack_core.core.fs import DataResult, PathResult
+from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.service import standalone as fs_standalone
 from quack_core.core.paths import service as paths
 
@@ -26,26 +26,29 @@ def mock_fs_methods(monkeypatch: pytest.MonkeyPatch) -> None:
     # SERVICE-CONTRACT). A bespoke .success/.data-only stub used to stand in here;
     # it satisfied direct fs_standalone.* callers but broke every paths/_internal
     # caller that reads .ok, e.g. 'PosixPath' object has no attribute 'ok'.
-    def mock_join_path(*args: Any) -> DataResult[str]:
+    def mock_join_path(*args: FsPathLike) -> DataResult[str]:
         path_str = str(Path(*[str(arg) for arg in args]))
         return DataResult(ok=True, path=Path(path_str), data=path_str, format="path")
 
-    # Mock split_path to return a real DataResult
-    def mock_split_path(path: Any) -> DataResult[list[str]]:
+    # Mock split_path to return a real DataResult. Narrowed to str | Path (not the
+    # wider FsPathLike) because Path() below doesn't structurally accept every
+    # FsPathLike union member (HasPath/HasData/HasValue/HasUnwrap/BaseResult).
+    def mock_split_path(path: str | Path) -> DataResult[list[str]]:
         parts = list(Path(path).parts)
         return DataResult(
             ok=True, path=Path(path), data=parts, format="path_components"
         )
 
-    # Mock get_extension to return a real DataResult
-    def mock_get_extension(path: Any) -> DataResult[str]:
+    # Mock get_extension to return a real DataResult. Same str | Path narrowing
+    # as mock_split_path, same reason.
+    def mock_get_extension(path: str | Path) -> DataResult[str]:
         suffix = Path(path).suffix
         if suffix.startswith("."):
             suffix = suffix[1:]
         return DataResult(ok=True, path=Path(path), data=suffix, format="extension")
 
     # Mock normalize_path to return a real PathResult (not a bare Path)
-    def mock_normalize(path: Any) -> PathResult:
+    def mock_normalize(path: FsPathLike) -> PathResult:
         # Use Path.resolve() (non-strict), matching the real _resolve_path
         # (core/fs/_internal/path_ops.py) - plain os.path.abspath() does NOT
         # canonicalize symlinks (e.g. macOS /tmp -> /private/tmp), so an absolute
@@ -107,7 +110,8 @@ class TestPathUtils:
         assert root_result.success
         assert root_result.path == expected_root
 
-        # Test with non-existent path - updated to test for failure result rather than exception
+        # Test with non-existent path - updated to test for failure result
+        # rather than exception
         root_result = service.get_project_root("/nonexistent/path")
         assert not root_result.success
         assert root_result.error is not None
