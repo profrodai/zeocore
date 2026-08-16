@@ -106,8 +106,8 @@ class TestDriveProtocols:
         assert mock_files.last_get_fields == "name,mimeType"
 
         # Test get_media
-        result = mock_files.get_media(fileId="file123")
-        assert isinstance(result, DriveRequest)
+        media_result = mock_files.get_media(fileId="file123")
+        assert isinstance(media_result, DriveRequest)
         assert mock_files.get_media_call_count == 1
         assert mock_files.last_get_media_file_id == "file123"
 
@@ -128,14 +128,14 @@ class TestDriveProtocols:
         assert mock_files.last_update_body["trashed"] is True
 
         # Test delete
-        result = mock_files.delete(fileId="file123")
-        assert isinstance(result, DriveRequest)
+        delete_result = mock_files.delete(fileId="file123")
+        assert isinstance(delete_result, DriveRequest)
         assert mock_files.delete_call_count == 1
         assert mock_files.last_delete_file_id == "file123"
 
         # Test permissions
-        result = mock_files.permissions()
-        assert isinstance(result, DrivePermissionsResource)
+        permissions_result = mock_files.permissions()
+        assert isinstance(permissions_result, DrivePermissionsResource)
 
         # Test with an object missing required methods
         incomplete_mock = MagicMock()

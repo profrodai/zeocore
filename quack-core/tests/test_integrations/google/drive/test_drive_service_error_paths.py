@@ -858,6 +858,38 @@ class TestResolveFileDetailsErrorPaths:
         finally:
             real_file.unlink(missing_ok=True)
 
+    def test_resolve_file_details_mime_type_fallback_on_unrecognized_extension(
+        self, service: GoogleDriveService
+    ) -> None:
+        """RULING-247 disease family, twin call site (this file's own
+        _resolve_file_details, not operations/upload.py's already-fixed
+        resolve_file_details): get_mime_type returns a DataResult, always
+        truthy regardless of its own .success/.data fields, so a bare
+        `x or fallback` could never reach the fallback branch. This
+        exercises the fixed unwrap-then-fallback logic (lines 261-266) on
+        BOTH outcomes reachable from this call site: a real successful
+        call returns a real MIME type string (already covered by the two
+        sibling tests above, both using a real .txt file), and this test
+        forces the genuine-unrecognized-extension path so the literal
+        "application/octet-stream" fallback line itself is exercised, not
+        just the success path.
+        """
+        rel_name = "coverage90_resolve_details_mime_fallback_probe.unrecognizedext12345"
+        real_file = Path(rel_name)
+        real_file.write_text("probe")
+        try:
+            _path_obj, _filename, _folder_id, mime_type = (
+                service._resolve_file_details(rel_name, None, None)
+            )
+            assert mime_type == "application/octet-stream", (
+                f"expected the literal fallback string for an unrecognized "
+                f"extension, got {mime_type!r} -- the RULING-247-idiom "
+                "unwrap-then-fallback fix at this call site appears broken "
+                "or reverted"
+            )
+        finally:
+            real_file.unlink(missing_ok=True)
+
 
 class TestDownloadFileRealPath:
     """download_file's real body (lines 395-461) was entirely uncovered --

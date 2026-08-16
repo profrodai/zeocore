@@ -6,6 +6,7 @@
 Tests for Google Drive service download _ops.
 """
 
+from collections.abc import Generator
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -20,7 +21,7 @@ class TestGoogleDriveServiceDownload:
     """Tests for GoogleDriveService download _ops."""
 
     @pytest.fixture
-    def drive_service(self) -> GoogleDriveService:
+    def drive_service(self) -> Generator[GoogleDriveService, None, None]:
         """Set up a Google Drive service with mocked dependencies."""
         with patch(
             "quack_core.integrations.google.drive.service.paths_service"

@@ -171,7 +171,7 @@ class TestDriveOperationsUpload:
         # Configure the create method to return a specific result
         create_method = MagicMock()
         create_method.return_value = MagicMock()
-        files_resource.create = create_method
+        files_resource.create = create_method  # type: ignore[method-assign]
 
         # Mock file resolution - bypassing internal function calls
         with patch.object(upload, "resolve_file_details") as mock_resolve:
