@@ -26,8 +26,8 @@ class MockAnthropicResponse(MockLLMResponse):
         usage: dict[str, int] | None = None,
         finish_reason: str = "end_turn",
         error: Exception | None = None,
-        id: str = "msg_123",
-        type: str = "message",
+        id_: str = "msg_123",
+        type_: str = "message",
         stop_reason: str | None = None,
         stop_sequence: str | None = None,
     ) -> None:
@@ -40,8 +40,8 @@ class MockAnthropicResponse(MockLLMResponse):
             usage: Token usage statistics
             finish_reason: Reason the generation finished
             error: Optional error to raise instead of returning a response
-            id: The ID of the message
-            type: Type of Anthropic object
+            id_: The ID of the message
+            type_: Type of Anthropic object
             stop_reason: Reason for stopping (mapped from finish_reason)
             stop_sequence: Stop sequence that triggered the stop
         """
@@ -53,8 +53,8 @@ class MockAnthropicResponse(MockLLMResponse):
             error=error,
         )
 
-        self.id = id
-        self.type = type
+        self.id = id_
+        self.type = type_
         self.stop_reason = stop_reason or finish_reason
         self.stop_sequence = stop_sequence
 
@@ -91,7 +91,7 @@ class MockAnthropicStreamingResponse(MockStreamingGenerator):
         model: str = "claude-3-opus-20240229",
         error: Exception | None = None,
         error_after: int | None = None,
-        id: str = "msg_123",
+        id_: str = "msg_123",
     ) -> None:
         """
         Initialize a mock Anthropic streaming generator.
@@ -102,7 +102,7 @@ class MockAnthropicStreamingResponse(MockStreamingGenerator):
             model: The model name
             error: Optional error to raise
             error_after: Number of chunks after which to raise the error
-            id: The ID of the message
+            id_: The ID of the message
         """
         super().__init__(
             content=content,
@@ -111,7 +111,7 @@ class MockAnthropicStreamingResponse(MockStreamingGenerator):
             error=error,
             error_after=error_after,
         )
-        self.id = id
+        self.id = id_
         self.chunks_iter = None
 
     def __iter__(self) -> "MockAnthropicStreamingResponse":
@@ -173,7 +173,7 @@ class MockAnthropicErrorResponse:
     def __init__(
         self,
         message: str = "Anthropic API error",
-        type: str = "api_error",
+        type_: str = "api_error",
         status_code: int = 429,
     ) -> None:
         """
@@ -181,11 +181,11 @@ class MockAnthropicErrorResponse:
 
         Args:
             message: Error message
-            type: Error type
+            type_: Error type
             status_code: HTTP status code
         """
         self.message = message
-        self.type = type
+        self.type = type_
         self.status_code = status_code
 
     def to_exception(self) -> Exception:

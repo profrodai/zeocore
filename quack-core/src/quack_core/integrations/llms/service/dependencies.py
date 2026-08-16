@@ -38,8 +38,10 @@ def check_llm_dependencies() -> tuple[bool, str, list[str]]:
                 response = requests.get("http://localhost:11434/api/version", timeout=1)
                 if response.status_code == 200:
                     available_providers.append("ollama")
-            except Exception:  # Using generic Exception for test compatibility
-                # Failed to connect to Ollama server
+            except Exception:  # noqa: S110 -- generic Exception for test compatibility
+                # Failed to connect to Ollama server -- expected whenever Ollama
+                # isn't installed/running locally, not an error worth logging on
+                # every dependency check.
                 pass
         except ImportError:
             # Requests not installed

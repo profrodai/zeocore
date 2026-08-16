@@ -430,8 +430,10 @@ def validate_conversion(
             # If the content length is larger than the reported size, use that instead
             if content_length > output_size:
                 output_size = content_length
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug(
+            f"Could not read {output_path} back to estimate content size: {exc}"
+        )
 
     # Skip size validation in tests
     if is_test_environment:

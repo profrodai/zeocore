@@ -70,7 +70,7 @@ class OperationRegistry:
     def register(
         self,
         name: str,
-        callable: Callable[[TRequest], TResponse],
+        callable_: Callable[[TRequest], TResponse],
         request_model: type[TRequest],
         response_model: type[TResponse] | None = None,
         description: str = "",
@@ -81,7 +81,7 @@ class OperationRegistry:
 
         Args:
             name: Unique operation identifier
-            callable: Function to execute
+            callable_: Function to execute
             request_model: Pydantic model for request validation
             response_model: Pydantic model for response validation
             description: Human-readable description
@@ -95,7 +95,7 @@ class OperationRegistry:
 
         op = Operation(
             name=name,
-            callable=callable,
+            callable=callable_,
             request_model=request_model,
             response_model=response_model,
             description=description,

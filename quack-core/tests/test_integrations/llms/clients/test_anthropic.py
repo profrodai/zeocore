@@ -177,7 +177,7 @@ class TestAnthropicClient:
 
         # Use MockAnthropicErrorResponse to create test errors
         rate_limit_error = MockAnthropicErrorResponse(
-            message="Rate limit exceeded", type="rate_limit_error", status_code=429
+            message="Rate limit exceeded", type_="rate_limit_error", status_code=429
         ).to_exception()
 
         api_error = client._convert_error(rate_limit_error)
@@ -189,7 +189,7 @@ class TestAnthropicClient:
         # Test invalid API key error
         invalid_key_error = MockAnthropicErrorResponse(
             message="Invalid API key provided",
-            type="authentication_error",
+            type_="authentication_error",
             status_code=401,
         ).to_exception()
 
@@ -198,7 +198,7 @@ class TestAnthropicClient:
 
         # Test insufficient quota error
         quota_error = MockAnthropicErrorResponse(
-            message="Insufficient quota", type="quota_error", status_code=402
+            message="Insufficient quota", type_="quota_error", status_code=402
         ).to_exception()
 
         api_error = client._convert_error(quota_error)
@@ -206,7 +206,7 @@ class TestAnthropicClient:
 
         # Test generic error
         generic_error = MockAnthropicErrorResponse(
-            message="Some other error", type="api_error", status_code=500
+            message="Some other error", type_="api_error", status_code=500
         ).to_exception()
 
         api_error = client._convert_error(generic_error)
@@ -280,7 +280,7 @@ class TestAnthropicClient:
         with patch.object(anthropic_client, "_get_client") as mock_get_client:
             mock_client = MagicMock()
             error_response = MockAnthropicErrorResponse(
-                message="API error", type="server_error", status_code=500
+                message="API error", type_="server_error", status_code=500
             ).to_exception()
             mock_client.messages.create.side_effect = error_response
             mock_get_client.return_value = mock_client
@@ -391,7 +391,7 @@ class TestAnthropicClient:
 
         # Test with error during streaming
         error = MockAnthropicErrorResponse(
-            message="Streaming error", type="server_error", status_code=500
+            message="Streaming error", type_="server_error", status_code=500
         ).to_exception()
 
         mock_client.messages.stream.side_effect = error

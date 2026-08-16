@@ -47,7 +47,7 @@ def registry() -> Generator[OperationRegistry]:
     # Register test operation
     reg.register(
         name="test.echo",
-        callable=echo_operation,
+        callable_=echo_operation,
         request_model=EchoRequest,
         response_model=EchoResponse,
         description="Echo test operation",
@@ -350,7 +350,7 @@ class TestDirectOperationInvocation:
 
         registry.register(
             name="test.async_echo",
-            callable=async_echo,
+            callable_=async_echo,
             request_model=EchoRequest,
             description="Async echo operation",
         )
@@ -462,7 +462,7 @@ class TestErrorHandling:
 
         registry.register(
             name="test.failing",
-            callable=failing_op,
+            callable_=failing_op,
             request_model=EchoRequest,
             description="Failing operation",
         )
@@ -528,7 +528,7 @@ class TestErrorHandling:
 
         registry.register(
             name="test.async_job",
-            callable=async_echo,
+            callable_=async_echo,
             request_model=EchoRequest,
             description="Async echo for job testing",
         )
