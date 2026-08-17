@@ -1,44 +1,18 @@
 # ZeoCore
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![CI](https://github.com/zeroemployeeorg/zeocore/workflows/CI/badge.svg)](https://github.com/zeroemployeeorg/zeocore/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/zeocore.svg)](https://pypi.org/project/zeocore/)
+[![Python versions](https://img.shields.io/pypi/pyversions/zeocore.svg)](https://pypi.org/project/zeocore/)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/zeroemployeeorg/zeocore)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**ZeoCore** is a capability-authoring framework for Python. It gives you a small,
-typed base (`BaseZeoTool`, `ToolContext`, `CapabilityResult`) for writing tools
-that validate input, do their work, and return a structured, machine-readable
-result — plus filesystem, configuration, and integration primitives to support
-them.
-
-It is not a CLI, not a task runner, and not an application framework. It is the
-kernel other things get built on top of: a tool you write against ZeoCore's
-contracts can run inside any runner that respects them.
-
-## Install
-
-```bash
-pip install zeocore
-```
-
-Optional integrations are available as extras:
-
-```bash
-pip install "zeocore[google]"   # Google Drive + Gmail auth plumbing
-pip install "zeocore[drive]"    # Google Drive only
-pip install "zeocore[gmail]"    # Gmail only
-pip install "zeocore[notion]"   # Notion
-pip install "zeocore[pandoc]"   # Document conversion via pandoc
-pip install "zeocore[llms]"     # OpenAI / Anthropic / tiktoken clients
-pip install "zeocore[github]"   # GitHub integration
-pip install "zeocore[http]"     # FastAPI-based HTTP adapter
-pip install "zeocore[all]"      # Everything above except http/dev/lint
-```
-
-`dev` and `lint` extras exist too, for contributors — see
-[CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Quick start
+**A typed capability-authoring framework for Python.** Write a tool once —
+validated input, one method of real work, a structured result — and run it
+inside any runner that respects the contract. No inheritance ceremony, no
+framework lock-in, no untyped `**kwargs` soup.
 
 ```python
+import logging
 from pydantic import BaseModel
 from zeo_core.contracts import CapabilityResult
 from zeo_core.tools import BaseZeoTool, ToolContext
@@ -56,9 +30,7 @@ class GreetTool(BaseZeoTool):
         return CapabilityResult.ok(data=f"Hello, {request.name}!")
 
 
-# A runner builds the context and drives the tool; this is what that looks like:
-import logging
-
+# A runner builds the context; this is what that looks like:
 ctx = ToolContext(
     run_id="demo-run-001",
     tool_name="greet",
@@ -70,48 +42,126 @@ ctx = ToolContext(
 )
 
 result = GreetTool().run(GreetRequest(name="World"), ctx)
-print(result.data)  # "Hello, World!"
+print(result.data)    # Hello, World!
+print(result.status)  # CapabilityStatus.success
 ```
 
-For a fuller walkthrough — lifecycle hooks, optional integrations, graceful
-degradation when a service isn't configured — see
-[`examples/toolkit_usage.py`](examples/toolkit_usage.py), or the smaller,
-focused examples in [`examples/`](examples/):
+Every tool takes a typed request, runs against an immutable `ToolContext`
+(logger, filesystem, config, and any services the runner wires in), and
+returns a `CapabilityResult` — success or failure, always structured, always
+inspectable, never a bare exception or an untyped dict. mypy checks it end to
+end.
 
-- [`minimal_tool.py`](examples/minimal_tool.py) — the smallest possible tool,
-  no mixins, no services.
-- [`error_handling.py`](examples/error_handling.py) — structured error
-  handling with the `ZeoError` family.
+## Why a typed result instead of "just raise an exception"
 
-Each example is runnable as-is: `python examples/<name>.py`.
+Exceptions are for things the *caller* didn't expect. A `CapabilityResult` is
+for things the *tool* expects and needs to report cleanly: validation
+failed, a downstream API returned an error, an optional integration wasn't
+configured. Callers get one shape to check (`result.status`) instead of a
+`try`/`except` matrix, and a runner orchestrating many tools can log,
+retry, or persist every result the same way, without special-casing which
+tool happens to throw what.
+
+If a tool *does* hit something genuinely exceptional, ZeoCore's typed error
+hierarchy (`ZeoError` and its subclasses — `ZeoFileNotFoundError`,
+`ZeoValidationError`, `ZeoApiError`, and more) gives you specific,
+catchable exception types instead of parsing a string message. See
+[`examples/error_handling.py`](examples/error_handling.py) for the full
+pattern.
+
+## Install
+
+```bash
+pip install zeocore
+```
+
+Optional integrations ship as extras, so you only install what you use:
+
+| Extra | What it adds |
+|---|---|
+| `zeocore[github]` | GitHub API integration |
+| `zeocore[drive]` | Google Drive |
+| `zeocore[gmail]` | Gmail |
+| `zeocore[google]` | Drive + Gmail auth plumbing together |
+| `zeocore[notion]` | Notion |
+| `zeocore[pandoc]` | Document conversion via Pandoc |
+| `zeocore[llms]` | OpenAI / Anthropic / tiktoken clients |
+| `zeocore[http]` | FastAPI-based HTTP adapter for exposing tools over REST |
+| `zeocore[all]` | Every integration above, no `http`/`dev`/`lint` |
+
+`dev` and `lint` extras exist too, for contributors — see
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
+## More examples
+
+- [`examples/toolkit_usage.py`](examples/toolkit_usage.py) — the full
+  picture: lifecycle hooks, an optional integration, graceful degradation
+  when a service isn't configured.
+- [`examples/minimal_tool.py`](examples/minimal_tool.py) — the smallest
+  possible tool: no mixins, no services, just `run()`.
+- [`examples/error_handling.py`](examples/error_handling.py) — the
+  `ZeoError` family, and how a tool reports a failure it expects versus one
+  it doesn't.
+
+Every example is runnable as-is: `python examples/<name>.py`. None of them
+are illustrative fragments — each one actually executes and prints real
+output, because a code sample that's never run is a code sample that's
+already stale.
 
 ## What's in the package
 
-- `zeo_core.tools` — the capability-authoring framework itself: `BaseZeoTool`,
-  `ToolContext`, and optional mixins (`IntegrationEnabledMixin`,
-  `LifecycleMixin`, `ToolEnvInitializerMixin`).
-- `zeo_core.contracts` — the data contracts tools speak: `CapabilityResult`,
-  artifact/manifest models, common enums and IDs.
-- `zeo_core.core` — filesystem operations (`core.fs`), path resolution
-  (`core.paths`), a typed error hierarchy (`core.errors`), MIME detection,
-  serialization helpers, logging, and a small operation registry.
-- `zeo_core.config` — YAML/env-var configuration loading and per-tool config
-  models.
-- `zeo_core.integrations` — adapters for GitHub, Google Drive/Mail, LLM
-  providers (OpenAI/Anthropic), Notion, Pandoc, and a database layer.
-- `zeo_core.modules` — plugin discovery and explicit-loading registry.
-- `zeo_core.prompt` — prompt template selection and enhancement utilities.
-- `zeo_core.adapters` — an optional HTTP adapter (FastAPI-based) for exposing
-  tools over a REST API.
+| Module | What it's for |
+|---|---|
+| `zeo_core.tools` | The framework itself — `BaseZeoTool`, `ToolContext`, and optional mixins (`IntegrationEnabledMixin`, `LifecycleMixin`, `ToolEnvInitializerMixin`). |
+| `zeo_core.contracts` | The data contracts tools speak — `CapabilityResult`, artifact/manifest models, common enums and IDs. |
+| `zeo_core.core` | Filesystem operations, path resolution, a typed error hierarchy, MIME detection, serialization, logging, an operation registry. |
+| `zeo_core.config` | YAML/env-var configuration loading and per-tool config models. |
+| `zeo_core.integrations` | Adapters for GitHub, Google Drive/Mail, LLM providers, Notion, Pandoc, and a database layer. |
+| `zeo_core.modules` | Plugin discovery and explicit-loading registry. |
+| `zeo_core.prompt` | Prompt template selection and enhancement utilities. |
+| `zeo_core.adapters` | An optional HTTP adapter (FastAPI-based) for exposing tools over a REST API. |
 
-See [GET-STARTED.md](GET-STARTED.md) for a more detailed walkthrough of each
-area, including configuration file format and error handling patterns.
+See [GET-STARTED.md](GET-STARTED.md) for a fuller walkthrough of each area,
+including the configuration file format and error-handling patterns.
+
+## Quality bar
+
+- **mypy --strict**, clean across the whole source tree.
+- **2005 tests**, 90%+ coverage, enforced as a hard CI floor
+  (`--cov-fail-under=90`) — a pull request that drops coverage fails the
+  gate.
+- **CI runs the full suite on Python 3.10, 3.11, 3.12, and 3.13** on every
+  push, not just whatever version the maintainer happens to have installed.
+  That matrix has already caught and fixed three genuine cross-version
+  stdlib behavior differences before they shipped — see
+  [CHANGELOG.md](CHANGELOG.md) for specifics.
+- Production code is not allowed to detect that it's under test (a
+  dedicated CI check fails the build if it finds `"pytest" in sys.modules`
+  or similar) — if a test needs different behavior, it injects it, rather
+  than the library quietly special-casing itself for its own test suite.
+
+## Project status
+
+ZeoCore just published its first release. The API is typed and tested, but
+it hasn't yet had real-world usage outside the project that built it — some
+rough edges are likely, and the surface may still shift before a 1.0. Issues,
+questions, and API feedback are genuinely welcome; this is a good time to
+influence the shape of things.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to set up a dev environment,
-run the test/lint/type-check gate, and submit a change. This project follows
-the [Contributor Covenant](CODE_OF_CONDUCT.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for dev environment setup, the
+verification gate, and how to submit a change. This project follows the
+[Contributor Covenant](CODE_OF_CONDUCT.md).
+
+## Project links
+
+[PyPI](https://pypi.org/project/zeocore/) ·
+[Source](https://github.com/zeroemployeeorg/zeocore) ·
+[Issues](https://github.com/zeroemployeeorg/zeocore/issues) ·
+[Changelog](CHANGELOG.md) ·
+[Get started](GET-STARTED.md) ·
+[Contributing](CONTRIBUTING.md)
 
 ## License
 

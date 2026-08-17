@@ -102,6 +102,7 @@ all = [
     "tiktoken",
     "openai",
     "anthropic",
+    "requests",
 ]
 
 [project.urls]
