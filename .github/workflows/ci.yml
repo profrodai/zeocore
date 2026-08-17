@@ -1,0 +1,44 @@
+name: CI
+
+# The doctrine gate, run in CI the same way contributors run it locally:
+# `make verify` (see CONTRIBUTING.md / Makefile). We shell out to the same
+# `make` targets rather than reimplementing each tool invocation in YAML,
+# so local and CI behavior cannot drift apart. The only per-job deviation is
+# selecting the matrix Python version, which has to happen before `make setup`
+# creates the venv -- done via `PYTHON_VERSION=<matrix version>` on the make
+# command line, which overrides the Makefile's own `PYTHON_VERSION := 3.13`
+# default (make command-line assignments win over `:=` in the makefile).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: verify (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+
+      - name: make setup (env + install-all + install-dev + install-lint)
+        run: make setup PYTHON_VERSION=${{ matrix.python-version }}
+
+      - name: make verify (format-check, lint, mypy strict, arch-check, hygiene-check, hygiene-secrets, plugin-boundary, tests+coverage)
+        run: make verify

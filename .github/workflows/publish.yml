@@ -1,0 +1,88 @@
+name: Publish to PyPI
+
+# Triggered by pushing a version tag, e.g. `v0.1.0` (matches pyproject.toml's
+# `version = "0.1.0"` -- keep the tag and the pyproject version in sync when
+# cutting a release). Runs the full `make verify` gate first so a broken
+# build can never reach PyPI even if someone tags by mistake, then builds
+# sdist+wheel and publishes via PyPI Trusted Publishing (OIDC) -- no API
+# token stored as a repo secret.
+#
+# One-time setup required on PyPI's web UI before this workflow can publish
+# (not done by this workflow, and not something this session has credentials
+# for): create the `zeocore` project on PyPI (or use "pending publisher" for
+# a not-yet-published project) and link it to this GitHub repo + this
+# workflow filename (`publish.yml`) + the `pypi` environment name below.
+# See https://docs.pypi.org/trusted-publishers/.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  verify:
+    name: verify before publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+
+      - name: make setup
+        run: make setup
+
+      - name: make verify (the doctrine gate -- must pass before publish)
+        run: make verify
+
+  build:
+    name: build sdist + wheel
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+
+      - name: make setup
+        run: make setup
+
+      - name: make build (python -m build -> sdist + wheel in dist/)
+        run: make build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    name: publish to PyPI (trusted publishing)
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/zeocore/
+    permissions:
+      # id-token: write is what makes OIDC / trusted publishing work --
+      # no PYPI_API_TOKEN secret needed or wanted.
+      id-token: write
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
