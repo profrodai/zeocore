@@ -4,7 +4,6 @@
 
 import logging
 from collections.abc import Iterable, Mapping, Sequence
-from types import NoneType
 from typing import cast
 
 from quack_core.core.errors import QuackIntegrationError
@@ -21,6 +20,12 @@ from quack_core.integrations.google.mail.protocols import (
     GmailService,
     GoogleCredentials,
 )
+
+# mypy's nonetype-type check rejects `types.NoneType` used as a type
+# expression directly; google/drive/service.py already established this
+# same module-level alias (`NoneType = type(None)`) as the fix for the
+# identical pattern -- matched here rather than inventing a new idiom.
+NoneType = type(None)
 
 
 class GoogleMailService(BaseIntegrationService):
