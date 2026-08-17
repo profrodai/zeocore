@@ -14,7 +14,7 @@ from unittest.mock import MagicMock, patch
 from zeo_core.core.fs import DataResult, OperationResult
 from zeo_core.integrations.core import IntegrationResult
 from zeo_core.integrations.core.base import BaseIntegrationService
-from zeo_core.tools import BaseZeoToolPlugin
+from zeo_core.tools import BaseZeoTool
 
 
 def create_mock_fs() -> MagicMock:
@@ -240,7 +240,7 @@ class MockWorkflowRunner:
         )
 
 
-class BaseMockTool(BaseZeoToolPlugin):
+class BaseMockTool(BaseZeoTool):
     """
     Base class for mock tools that handles common patching.
 
@@ -335,7 +335,7 @@ def create_patched_base_tool(
     name: str = "dummy_tool", version: str = "1.0.0"
 ) -> MagicMock:
     """
-    Create a properly patched BaseZeoToolPlugin for tests.
+    Create a properly patched BaseZeoTool for tests.
 
     This function applies all necessary patches and returns an instance
     of a mock tool that can be used in tests without affecting the real
@@ -348,7 +348,7 @@ def create_patched_base_tool(
     Returns:
         MagicMock: A mocked tool instance
     """
-    mock_tool = MagicMock(spec=BaseZeoToolPlugin)
+    mock_tool = MagicMock(spec=BaseZeoTool)
     mock_tool.name = name
     mock_tool.version = version
     mock_tool._logger = MockLogger()

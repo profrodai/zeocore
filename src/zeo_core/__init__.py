@@ -51,9 +51,6 @@ from zeo_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 from zeo_core.tools.mixins.lifecycle import LifecycleMixin
 from zeo_core.tools.protocol import ZeoToolProtocol
 
-# Backward compatibility alias
-BaseZeoToolPlugin = BaseZeoTool
-
 __all__ = [
     # Core
     "BaseZeoTool",
@@ -63,8 +60,6 @@ __all__ = [
     "IntegrationEnabledMixin",
     "LifecycleMixin",
     "ToolEnvInitializerMixin",
-    # Backward compatibility
-    "BaseZeoToolPlugin",
 ]
 
 # Tool Author Guidelines
