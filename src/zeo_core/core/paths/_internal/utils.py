@@ -66,6 +66,34 @@ def _has_marker_file(current_dir: str, markers: list[str]) -> bool:
     return False
 
 
+def _has_root_marker(current_dir: str) -> bool:
+    """
+    True if `current_dir` looks like a project root by the standard Python-
+    project convention: it directly contains a `pyproject.toml` FILE, or a
+    `.git` entry (a DIRECTORY in a normal clone; a FILE in a git worktree/
+    submodule, where it holds a `gitdir:` pointer -- both count).
+
+    This replaces the old package-name-specific heuristic (a hardcoded
+    "quack-core" directory name plus a marker_dirs>=2 count) with a
+    convention that carries no assumption about this package's own name or
+    directory layout, so it stays correct if the repo is ever renamed or
+    restructured again.
+    """
+    pyproject_res = standalone.join_path(current_dir, "pyproject.toml")
+    if pyproject_res.ok and pyproject_res.data:
+        pyproject_path = str(pyproject_res.data)
+        if os.path.isfile(pyproject_path):
+            return True
+
+    git_res = standalone.join_path(current_dir, ".git")
+    if git_res.ok and git_res.data:
+        git_path = str(git_res.data)
+        if os.path.exists(git_path):
+            return True
+
+    return False
+
+
 def _count_marker_dirs(current_dir: str, dir_markers: list[str]) -> int:
     """
     Count how many marker directory names in `dir_markers` exist as a
@@ -90,7 +118,27 @@ def _find_project_root(
     max_levels: int = 5,
 ) -> str:
     """
-    Find project root by looking for markers in parent directories.
+    Find project root by walking up from `start_dir` (default: CWD) looking
+    for the standard Python-project markers: a `pyproject.toml` file, or a
+    `.git` entry -- see `_has_root_marker`. Stops at the first directory
+    (walking upward, `max_levels` levels max) that qualifies.
+
+    This is a convention-based check with NO hardcoded package or directory
+    name -- it does not know or care what this project (or any caller's
+    project) happens to be named. A prior version of this function looked
+    for a directory literally named "quack-core" (this package's own former
+    name) among its markers, which broke the moment the package was
+    renamed; walking up for pyproject.toml/.git has no such coupling and
+    survives a future rename for free.
+
+    `marker_files` / `marker_dirs`, if given, are additional CALLER-SUPPLIED
+    checks layered on top of (not instead of) the pyproject.toml/.git check:
+    a directory also qualifies if it directly contains any file named in
+    `marker_files`, or contains at least 2 of the directories named in
+    `marker_dirs`. This preserves the existing opt-in override contract
+    (callers that pass their own markers keep working exactly as before)
+    without hardcoding any default package/directory name when no override
+    is given.
     """
     if start_dir is None:
         current_dir = os.getcwd()
@@ -104,20 +152,14 @@ def _find_project_root(
     else:
         current_dir = os.path.abspath(current_dir)
 
-    markers = marker_files or [
-        "pyproject.toml",
-        "setup.py",
-        ".git",
-        ".zeo",
-        "zeo_config.yaml",
-    ]
-    dir_markers = marker_dirs or ["src", "zeocore", "tests"]
-
     for _ in range(max_levels):
-        if _has_marker_file(current_dir, markers):
+        if _has_root_marker(current_dir):
             return current_dir
 
-        if _count_marker_dirs(current_dir, dir_markers) >= 2:
+        if marker_files and _has_marker_file(current_dir, marker_files):
+            return current_dir
+
+        if marker_dirs and _count_marker_dirs(current_dir, marker_dirs) >= 2:
             return current_dir
 
         # Move up

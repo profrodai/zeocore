@@ -342,3 +342,172 @@ class TestPathUtils:
             )
             assert not module_name_result.success
             assert module_name_result.error is not None
+
+
+class TestProjectRootWalkUp:
+    """
+    Coverage for the walk-up-for-pyproject.toml-or-.git default behavior of
+    _find_project_root / _has_root_marker (core/paths/_internal/utils.py).
+
+    This replaces the old package-name-specific heuristic (a hardcoded
+    "quack-core" directory name checked via marker_dirs) with a convention-
+    based walk that carries no assumption about this project's own name --
+    these tests exercise that NEW logic specifically: it must find a real
+    pyproject.toml/.git marker from a nested subdirectory, prefer the
+    nearest (not the topmost) qualifying ancestor, recognize .git in both
+    its usual directory form and its worktree/submodule file form, and
+    terminate cleanly at max_levels or the filesystem root without an
+    infinite loop when no marker exists at all.
+
+    Uses real temporary directories (not the mocked fs_standalone used by
+    the rest of this file) since the walk-up itself, and its termination
+    behavior at the filesystem root, are exactly what's under test here --
+    mocking join_path/normalize_path would test the mock, not the walk.
+    """
+
+    def test_finds_pyproject_toml_from_nested_subdirectory(
+        self, tmp_path: Path
+    ) -> None:
+        """A pyproject.toml at the root is found by walking up from a
+        subdirectory several levels below it."""
+        from zeo_core.core.paths._internal.utils import _find_project_root
+
+        root = tmp_path / "proj"
+        root.mkdir()
+        (root / "pyproject.toml").write_text("[project]\nname = 'x'\n")
+        nested = root / "a" / "b" / "c"
+        nested.mkdir(parents=True)
+
+        found = _find_project_root(str(nested), max_levels=10)
+
+        assert found == str(root.resolve())
+
+    def test_finds_git_directory_from_nested_subdirectory(
+        self, tmp_path: Path
+    ) -> None:
+        """A .git DIRECTORY (the normal case for a real clone) at the root
+        is found by walking up, with no pyproject.toml present at all."""
+        from zeo_core.core.paths._internal.utils import _find_project_root
+
+        root = tmp_path / "proj"
+        root.mkdir()
+        (root / ".git").mkdir()
+        nested = root / "src" / "pkg"
+        nested.mkdir(parents=True)
+
+        found = _find_project_root(str(nested), max_levels=10)
+
+        assert found == str(root.resolve())
+
+    def test_finds_git_file_worktree_form(self, tmp_path: Path) -> None:
+        """.git as a FILE (git worktree / submodule form, holding a
+        'gitdir: <path>' pointer instead of being the real directory) is
+        also recognized -- _has_root_marker checks existence, not isdir."""
+        from zeo_core.core.paths._internal.utils import _find_project_root
+
+        root = tmp_path / "worktree"
+        root.mkdir()
+        (root / ".git").write_text("gitdir: /elsewhere/.git/worktrees/worktree\n")
+
+        found = _find_project_root(str(root), max_levels=10)
+
+        assert found == str(root.resolve())
+
+    def test_prefers_nearest_marker_over_topmost(self, tmp_path: Path) -> None:
+        """When both an outer and an inner ancestor qualify, the walk-up
+        stops at the FIRST (nearest) one it reaches, not the topmost."""
+        from zeo_core.core.paths._internal.utils import _find_project_root
+
+        outer = tmp_path / "outer"
+        outer.mkdir()
+        (outer / "pyproject.toml").write_text("[project]\nname = 'outer'\n")
+        inner = outer / "inner"
+        inner.mkdir()
+        (inner / "pyproject.toml").write_text("[project]\nname = 'inner'\n")
+        nested = inner / "src"
+        nested.mkdir()
+
+        found = _find_project_root(str(nested), max_levels=10)
+
+        assert found == str(inner.resolve())
+
+    def test_no_marker_raises_after_max_levels_without_hanging(
+        self, tmp_path: Path
+    ) -> None:
+        """No pyproject.toml/.git anywhere in the walked range: raises
+        ZeoFileNotFoundError rather than silently falling back, and the
+        walk terminates (this call returning at all, inside the test
+        timeout, is itself proof it did not infinite-loop)."""
+        from zeo_core.core.paths._internal.utils import _find_project_root
+
+        empty = tmp_path / "no_markers_here"
+        empty.mkdir()
+
+        with pytest.raises(ZeoFileNotFoundError):
+            _find_project_root(str(empty), max_levels=3)
+
+    def test_walk_up_terminates_at_filesystem_root(self) -> None:
+        """Starting the walk AT the filesystem root itself: os.path.dirname
+        of "/" is "/" again, so the loop's own parent==current_dir check
+        must break rather than spin -- proven by this call returning at
+        all rather than hanging until the test suite's timeout."""
+        from zeo_core.core.paths._internal.utils import _find_project_root
+
+        # "/" almost certainly has neither pyproject.toml nor .git; if it
+        # somehow does on some exotic CI image, the assertion below (not
+        # the call itself) is what would need loosening -- the property
+        # this test actually protects, non-infinite-looping, holds either
+        # way because the function returns instead of hanging.
+        with pytest.raises(ZeoFileNotFoundError):
+            _find_project_root("/", max_levels=3)
+
+    def test_has_root_marker_false_for_directory_with_neither(
+        self, tmp_path: Path
+    ) -> None:
+        """Direct unit coverage of _has_root_marker: a directory containing
+        neither pyproject.toml nor .git reports False."""
+        from zeo_core.core.paths._internal.utils import _has_root_marker
+
+        plain = tmp_path / "plain"
+        plain.mkdir()
+        (plain / "readme.txt").write_text("not a marker")
+
+        assert _has_root_marker(str(plain)) is False
+
+    def test_has_root_marker_true_for_pyproject_and_for_git(
+        self, tmp_path: Path
+    ) -> None:
+        """Direct unit coverage of _has_root_marker's two independent
+        qualifying conditions."""
+        from zeo_core.core.paths._internal.utils import _has_root_marker
+
+        with_pyproject = tmp_path / "with_pyproject"
+        with_pyproject.mkdir()
+        (with_pyproject / "pyproject.toml").write_text("[project]\n")
+        assert _has_root_marker(str(with_pyproject)) is True
+
+        with_git = tmp_path / "with_git"
+        with_git.mkdir()
+        (with_git / ".git").mkdir()
+        assert _has_root_marker(str(with_git)) is True
+
+    def test_explicit_marker_files_override_still_honored(
+        self, tmp_path: Path
+    ) -> None:
+        """The marker_files override (pre-existing part of the contract,
+        callers like PathService.get_project_root(marker_files=...) rely on
+        it) still qualifies a directory that has neither pyproject.toml nor
+        .git, as long as it has the caller-supplied marker file."""
+        from zeo_core.core.paths._internal.utils import _find_project_root
+
+        root = tmp_path / "custom_marker_root"
+        root.mkdir()
+        (root / "MARKER.txt").write_text("custom project marker")
+        nested = root / "sub"
+        nested.mkdir()
+
+        found = _find_project_root(
+            str(nested), marker_files=["MARKER.txt"], max_levels=10
+        )
+
+        assert found == str(root.resolve())
