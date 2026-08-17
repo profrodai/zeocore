@@ -392,27 +392,6 @@ def post_process_markdown(markdown_content: str) -> str:
     return cleaned
 
 
-def _is_test_environment(
-    output_path: str, input_path: str, config: PandocConfig
-) -> bool:
-    """
-    Detect whether validation is running against test-style fake paths.
-
-    Args:
-        output_path: Path to the output markdown file as a string.
-        input_path: Path to the input HTML file as a string.
-        config: Conversion configuration.
-
-    Returns:
-        bool: True if paths or config suggest a test environment.
-    """
-    return (
-        "test" in output_path.lower()
-        or "test" in input_path.lower()
-        or config.validation.min_file_size < 20
-    )
-
-
 def _resolve_output_size(output_info: object, output_path: str) -> int:
     """
     Resolve the effective output file size, preferring actual content length.
@@ -459,7 +438,7 @@ def _validate_output_size_and_ratio(
     output_size: int,
     original_size: int,
     config: PandocConfig,
-    is_test_environment: bool,
+    lenient_size_validation: bool,
 ) -> list[str]:
     """
     Validate the output file's absolute size and its ratio to the input.
@@ -468,17 +447,21 @@ def _validate_output_size_and_ratio(
         output_size: Size of the output file in bytes.
         original_size: Size of the original input file in bytes.
         config: Conversion configuration.
-        is_test_environment: Whether to skip absolute size validation.
+        lenient_size_validation: Whether to skip absolute size validation.
+            True when config.validation.min_file_size is set below a
+            meaningful threshold (an explicit "small file" leniency mode),
+            not derived from anything about the file paths.
 
     Returns:
         list[str]: Validation error messages, empty if valid.
     """
     validation_errors: list[str] = []
 
-    # Skip size validation in tests
+    # Skip absolute size validation when the configured minimum is itself
+    # too small to be a meaningful floor (explicit small-file leniency mode).
     valid_size: bool
     size_errors: list[str]
-    if is_test_environment:
+    if lenient_size_validation:
         valid_size, size_errors = True, []
     else:
         valid_size, size_errors = check_file_size(
@@ -563,32 +546,35 @@ def validate_conversion(
     Returns:
         List of validation error messages (empty if valid).
     """
-    # During tests, paths might not be actual file paths
-    # Check if we're in a test by looking for test indicators in paths
-    is_test_environment = _is_test_environment(output_path, input_path, config)
+    # An explicit, config-driven leniency mode for small files: callers opt in
+    # by configuring a minimum file size below a meaningful floor. This is the
+    # only legitimate signal for relaxing validation -- it is never inferred
+    # from path strings (a real file that happens to have "test" in its name
+    # or live under a "test" directory must be validated the same as any
+    # other file).
+    lenient_size_validation = config.validation.min_file_size < 20
 
     # Get file info and examine results
     output_info = fs.get_file_info(output_path)
     success = getattr(output_info, "success", False)
     exists = getattr(output_info, "exists", False)
 
-    # Check if this is a test environment - if so, be more lenient
-    if is_test_environment:
-        # In test environments, assume the file exists even if get_file_info
-        # says otherwise
+    if lenient_size_validation:
+        # Small-file leniency mode also tolerates get_file_info disagreeing
+        # about existence, since callers in this mode have explicitly
+        # signaled they want relaxed validation.
         if not (success and exists):
             logger.debug(
-                f"Test environment detected - assuming {output_path} exists "
+                f"Small-file leniency mode - assuming {output_path} exists "
                 "despite contradicting file system info"
             )
     elif not (success and exists):
-        # Only in non-test environments do we fail validation if the file doesn't exist
         return [f"Output file does not exist: {output_path}"]
 
     output_size = _resolve_output_size(output_info, output_path)
 
     validation_errors = _validate_output_size_and_ratio(
-        output_size, original_size, config, is_test_environment
+        output_size, original_size, config, lenient_size_validation
     )
 
     # Run content validation regardless of environment

@@ -331,10 +331,12 @@ def test_validate_conversion_html_to_md() -> None:
         # Verify that file existence was checked properly
         fs_mock.get_file_info.assert_called()
 
-        # Test file size too small - using test path should skip validation
+        # check_file_size and check_conversion_ratio are patched to always
+        # pass above, so this continues to report no errors regardless of
+        # the min_file_size value -- it is not exercising leniency here.
         config.validation.min_file_size = 200
         errors = validate_html_conversion("test_output.md", "input.html", 100, config)
-        assert not errors, "Size validation should be skipped for test paths"
+        assert not errors, "Patched check functions report success"
 
         # Test with conversion ratio too small
         # Set up the right mocks for this specific test
@@ -907,8 +909,9 @@ def test_resolve_output_size_read_text_raises_keeps_reported_size() -> None:
 
 
 def test_validate_output_size_and_ratio_extends_size_errors_when_invalid() -> None:
-    """When check_file_size reports invalid (outside test-env leniency), its
-    error messages are appended to validation_errors (html_to_md.py:494-495)."""
+    """When check_file_size reports invalid (outside small-file leniency
+    mode), its error messages are appended to validation_errors
+    (html_to_md.py:494-495)."""
     from zeo_core.integrations.pandoc.operations.html_to_md import (
         _validate_output_size_and_ratio,
     )
@@ -921,7 +924,7 @@ def test_validate_output_size_and_ratio_extends_size_errors_when_invalid() -> No
         output_size=10,
         original_size=100,
         config=config,
-        is_test_environment=False,
+        lenient_size_validation=False,
     )
 
     assert errors
@@ -1048,15 +1051,17 @@ def test_validate_output_content_exception_appends_error() -> None:
 # --- Additional coverage: validate_conversion (module-level function) ---
 
 
-def test_validate_conversion_test_env_debug_logged_when_file_missing() -> None:
-    """In a detected test environment, a missing/failed get_file_info result
-    is tolerated (logged, not failed) -- (html_to_md.py:582-586)."""
+def test_validate_conversion_lenient_size_debug_logged_when_file_missing() -> None:
+    """When config explicitly opts into small-file leniency mode
+    (min_file_size < 20), a missing/failed get_file_info result is tolerated
+    (logged, not failed) -- (html_to_md.py:582-586). This leniency is driven
+    purely by the config threshold, not by anything in the file paths."""
     with patch("zeo_core.integrations.pandoc.operations.html_to_md.fs") as mock_fs:
         mock_fs.get_file_info.return_value = SimpleNamespace(
             success=False, exists=False
         )
         mock_fs.read_text.return_value = SimpleNamespace(
-            success=True, content="# Title\n\nSome test content here."
+            success=True, content="# Title\n\nSome real content here."
         )
         mock_fs.split_path.return_value = SimpleNamespace(
             success=True, data=["input.html"]
@@ -1065,28 +1070,46 @@ def test_validate_conversion_test_env_debug_logged_when_file_missing() -> None:
         config = PandocConfig()
         config.validation.min_file_size = 5
 
-        # "test" appears in both paths, so _is_test_environment is True and
-        # the missing-file report from fs.get_file_info is tolerated rather
-        # than causing an immediate failure.
+        # Paths deliberately contain no "test" substring: leniency here must
+        # come solely from the min_file_size < 20 config signal.
         errors = validate_html_conversion(
-            "test_output.md", "test_input.html", 100, config
+            "/real/path/output.md", "/real/path/input.html", 100, config
         )
 
-        # No "does not exist" error, since test-env leniency applies.
+        # No "does not exist" error, since small-file leniency mode applies.
         assert not any("does not exist" in e for e in errors)
 
 
-def test_validate_conversion_non_test_env_missing_file_returns_error() -> None:
-    """Outside a detected test environment, a missing output file causes an
+def test_validate_conversion_normal_mode_missing_file_returns_error() -> None:
+    """Outside small-file leniency mode, a missing output file causes an
     immediate, single-item error list (html_to_md.py:590-592)."""
     with patch("zeo_core.integrations.pandoc.operations.html_to_md.fs") as mock_fs:
         mock_fs.get_file_info.return_value = SimpleNamespace(success=True, exists=False)
 
         config = PandocConfig()
-        config.validation.min_file_size = 1000  # keep >= 20 so not test-like
+        config.validation.min_file_size = 1000  # >= 20, leniency mode off
 
         errors = validate_html_conversion(
             "/real/path/output.md", "/real/path/input.html", 100, config
         )
 
         assert errors == ["Output file does not exist: /real/path/output.md"]
+
+
+def test_validate_conversion_test_named_path_gets_no_leniency_when_file_missing() -> (
+    None
+):
+    """A path containing the substring "test" must NOT get existence-check
+    leniency on its own -- only the explicit min_file_size < 20 config signal
+    may relax validation (regression guard for the path-sniffing bug fix)."""
+    with patch("zeo_core.integrations.pandoc.operations.html_to_md.fs") as mock_fs:
+        mock_fs.get_file_info.return_value = SimpleNamespace(success=True, exists=False)
+
+        config = PandocConfig()
+        config.validation.min_file_size = 1000  # >= 20, leniency mode off
+
+        errors = validate_html_conversion(
+            "/data/test_results/output.md", "/data/test_results/input.html", 100, config
+        )
+
+        assert errors == ["Output file does not exist: /data/test_results/output.md"]
