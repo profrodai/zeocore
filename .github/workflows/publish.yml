@@ -178,7 +178,13 @@ jobs:
         if: needs.publish-pypi.result == 'success'
         run: |
           uv venv /tmp/smoke-pypi
-          uv pip install --python /tmp/smoke-pypi/bin/python zeocore=="${GITHUB_REF_NAME#v}"
+          # Install unpinned (whatever is latest on PyPI right now, which is
+          # what this job just published) rather than pinning to a version
+          # parsed from the git ref -- this job can run from either a tag
+          # push (ref = refs/tags/vX.Y.Z) or a manual workflow_dispatch on a
+          # branch (ref = refs/heads/main, no version in the ref at all), so
+          # deriving a version from the ref is unreliable by construction.
+          uv pip install --python /tmp/smoke-pypi/bin/python zeocore
           /tmp/smoke-pypi/bin/python -c "
           import zeo_core
           print('installed version:', zeo_core.__version__)
@@ -186,8 +192,6 @@ jobs:
           from zeo_core.contracts import CapabilityResult
           print('import OK: BaseZeoTool, ToolContext, CapabilityResult')
           "
-        env:
-          GITHUB_REF_NAME: ${{ github.ref_name }}
 
       - name: Install from TestPyPI and smoke-test
         if: needs.publish-testpypi.result == 'success' && needs.publish-pypi.result != 'success'
