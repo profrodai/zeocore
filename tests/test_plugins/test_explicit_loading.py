@@ -1,4 +1,3 @@
-
 """
 Tests for explicit plugin loading behavior.
 

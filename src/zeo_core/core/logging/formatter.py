@@ -1,4 +1,3 @@
-
 """
 Custom formatters for zeocore logging.
 

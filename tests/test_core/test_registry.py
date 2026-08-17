@@ -13,6 +13,7 @@ import asyncio
 
 import pytest
 from pydantic import BaseModel, ValidationError
+
 from zeo_core.core.registry import (
     Operation,
     OperationRegistry,
@@ -196,9 +197,7 @@ class TestInvokeOperationSync:
     def test_invalid_params_raise_validation_error(self) -> None:
         op = Operation(name="op.double", callable=_double, request_model=Req)
         with pytest.raises(ValidationError):
-            asyncio.run(
-                invoke_operation(op, {"value": "not-an-int-and-not-coercible"})
-            )
+            asyncio.run(invoke_operation(op, {"value": "not-an-int-and-not-coercible"}))
 
 
 class TestInvokeOperationAsync:

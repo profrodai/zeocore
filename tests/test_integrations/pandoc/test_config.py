@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 from _pytest.monkeypatch import MonkeyPatch
+
 from zeo_core.integrations.pandoc import (
     PandocConfig,
     PandocConfigProvider,

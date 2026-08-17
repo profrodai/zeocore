@@ -3,6 +3,7 @@
 from typing import Any, Literal
 
 import requests
+
 from zeo_core.integrations.github.utils.api import make_request
 
 

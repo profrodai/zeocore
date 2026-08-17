@@ -5,6 +5,7 @@ This module defines result models for path resolution _ops.
 """
 
 from pydantic import BaseModel
+
 from zeo_core.core.paths.models import ContentContext, ProjectContext
 
 

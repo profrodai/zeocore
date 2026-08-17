@@ -6,6 +6,7 @@ settings specific to the Gmail service.
 """
 
 from pydantic import Field
+
 from zeo_core.integrations.google.config import GoogleMailConfig
 
 

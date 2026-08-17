@@ -3,6 +3,7 @@ Tests for zeo_core.prompt._internal.registry.StrategyRegistry.
 """
 
 import pytest
+
 from zeo_core.prompt._internal.registry import StrategyRegistry
 from zeo_core.prompt.models import PromptStrategy
 

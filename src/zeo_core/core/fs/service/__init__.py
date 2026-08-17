@@ -67,6 +67,4 @@ def __getattr__(name: str) -> Any:  # noqa: ANN401  # dynamic attr type
             f"Use FileSystemService instead, which includes all operations."
         )
 
-    raise AttributeError(
-        f"Module 'zeo_core.core.fs.service' has no attribute '{name}'"
-    )
+    raise AttributeError(f"Module 'zeo_core.core.fs.service' has no attribute '{name}'")

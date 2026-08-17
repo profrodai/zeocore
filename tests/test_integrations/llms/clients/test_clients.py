@@ -9,6 +9,7 @@ import os
 from unittest.mock import patch
 
 import pytest
+
 from zeo_core.integrations.llms.clients import OpenAIClient
 
 

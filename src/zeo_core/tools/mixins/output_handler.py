@@ -1,4 +1,3 @@
-
 """
 DEPRECATED: OutputFormatMixin has been removed.
 

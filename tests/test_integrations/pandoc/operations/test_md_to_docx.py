@@ -12,6 +12,7 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoIntegrationError
 from zeo_core.integrations.pandoc import (
     ConversionMetrics,

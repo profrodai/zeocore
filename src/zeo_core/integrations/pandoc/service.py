@@ -198,9 +198,7 @@ class PandocIntegration(BaseIntegrationService):
         # 2. Load Configuration
         try:
             config_provider = self._require_config_provider()
-            config_result = config_provider.load_config(
-                config_path=self._config_path
-            )
+            config_result = config_provider.load_config(config_path=self._config_path)
 
             if not config_result.success:
                 logger.warning(f"Failed to load config: {config_result.error}")
@@ -504,9 +502,7 @@ class PandocIntegration(BaseIntegrationService):
                 return verify_error
 
             # Find files matching pattern
-            find_result = self.fs_service.find_files(
-                path=input_dir, pattern=pattern
-            )
+            find_result = self.fs_service.find_files(path=input_dir, pattern=pattern)
 
             if not find_result.success:
                 return IntegrationResult.error_result(

@@ -8,6 +8,7 @@ from typing import cast
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
+
 from zeo_core.core.errors import (
     ZeoBaseAuthError,
     ZeoConfigurationError,

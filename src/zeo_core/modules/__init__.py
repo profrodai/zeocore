@@ -1,4 +1,3 @@
-
 """
 Plugin system for zeo_core.
 
@@ -80,9 +79,9 @@ from zeo_core.modules.protocols import (
     PluginLoaderProtocol,
     PluginRegistryProtocol,
     ProviderPluginProtocol,
+    WorkflowPluginProtocol,
     ZeoPluginMetadata,
     ZeoPluginProtocol,
-    WorkflowPluginProtocol,
 )
 from zeo_core.modules.registry import PluginRegistry, registry
 

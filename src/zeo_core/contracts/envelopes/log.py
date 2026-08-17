@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
+
 from zeo_core.contracts.common.enums import LogLevel
 from zeo_core.contracts.common.time import utcnow
 

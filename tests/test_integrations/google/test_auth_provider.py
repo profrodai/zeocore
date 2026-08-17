@@ -8,6 +8,7 @@ token management, and credential handling.
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoIntegrationError
 from zeo_core.integrations.core.results import AuthResult
 from zeo_core.integrations.google.auth import GoogleAuthProvider
@@ -354,9 +355,7 @@ class TestGoogleAuthProviderCoverageGaps:
             patch.object(
                 provider, "_load_existing_credentials", return_value=expired_creds
             ),
-            patch(
-                "zeo_core.integrations.google.auth.Request"
-            ) as mock_request_cls,
+            patch("zeo_core.integrations.google.auth.Request") as mock_request_cls,
             patch.object(provider, "_save_credentials_to_file") as mock_save,
         ):
             mock_save.return_value = True
@@ -389,9 +388,7 @@ class TestGoogleAuthProviderCoverageGaps:
         )
 
         with (
-            patch.object(
-                provider, "_load_existing_credentials", return_value=None
-            ),
+            patch.object(provider, "_load_existing_credentials", return_value=None),
             patch.object(
                 provider,
                 "_extract_redirect_uri_from_secrets",
@@ -426,9 +423,7 @@ class TestGoogleAuthProviderCoverageGaps:
         new_creds = mock_credentials(token="no_port")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
         with (
-            patch.object(
-                provider, "_load_existing_credentials", return_value=None
-            ),
+            patch.object(provider, "_load_existing_credentials", return_value=None),
             patch.object(
                 provider,
                 "_extract_redirect_uri_from_secrets",
@@ -586,14 +581,10 @@ class TestGoogleAuthProviderCoverageGaps:
             patch(
                 "zeo_core.integrations.google.auth.standalone.read_json"
             ) as mock_read,
-            patch(
-                "zeo_core.integrations.google.auth.Credentials"
-            ) as mock_creds_class,
+            patch("zeo_core.integrations.google.auth.Credentials") as mock_creds_class,
         ):
             mock_info.return_value = MagicMock(exists=True)
-            mock_read.return_value = MagicMock(
-                success=True, data={"token": "loaded"}
-            )
+            mock_read.return_value = MagicMock(success=True, data={"token": "loaded"})
             mock_creds_class.from_authorized_user_info.return_value = built_creds
 
             result = provider._load_existing_credentials()
@@ -615,9 +606,7 @@ class TestGoogleAuthProviderCoverageGaps:
             patch(
                 "zeo_core.integrations.google.auth.standalone.read_json"
             ) as mock_read,
-            patch(
-                "zeo_core.integrations.google.auth.Credentials"
-            ) as mock_creds_class,
+            patch("zeo_core.integrations.google.auth.Credentials") as mock_creds_class,
         ):
             mock_info.return_value = MagicMock(exists=True)
             mock_read.return_value = MagicMock(success=True, data={"bad": "shape"})
@@ -678,9 +667,7 @@ class TestGoogleAuthProviderCoverageGaps:
             )
             mock_join.return_value = MagicMock(success=True, data="/path/to")
             mock_mkdir.return_value = MagicMock(success=True)
-            mock_write_json.return_value = MagicMock(
-                success=False, error="write boom"
-            )
+            mock_write_json.return_value = MagicMock(success=False, error="write boom")
 
             assert not provider._save_credentials_to_file(
                 mock_credentials(token="x")  # noqa: S106 -- fake test value
@@ -700,9 +687,7 @@ class TestGoogleAuthProviderCoverageGaps:
                 "zeo_core.integrations.google.auth.serialize_credentials"
             ) as mock_serialize,
         ):
-            mock_split.return_value = MagicMock(
-                success=True, data=["credentials.json"]
-            )
+            mock_split.return_value = MagicMock(success=True, data=["credentials.json"])
             mock_serialize.side_effect = RuntimeError("serialize boom")
 
             assert not provider._save_credentials_to_file(mock_credentials())

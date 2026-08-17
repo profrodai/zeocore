@@ -7,6 +7,7 @@ import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoError, ZeoFileNotFoundError
 from zeo_core.core.errors.handlers import (
     ErrorHandler,

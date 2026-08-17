@@ -3,6 +3,7 @@
 from unittest.mock import patch
 
 import pytest
+
 from zeo_core.integrations.github.client import GitHubClient
 from zeo_core.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
 
@@ -552,9 +553,7 @@ class TestGitHubClient:
     def test_add_issue_comment(self, github_client: GitHubClient) -> None:
         """Test adding a comment to an issue."""
         # Mock add_issue_comment operation
-        with patch(
-            "zeo_core.integrations.github.client.add_issue_comment"
-        ) as mock_add:
+        with patch("zeo_core.integrations.github.client.add_issue_comment") as mock_add:
             mock_add.return_value = {"id": 123, "body": "Test comment"}
 
             # Call the method

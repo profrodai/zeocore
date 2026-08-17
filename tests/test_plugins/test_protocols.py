@@ -6,14 +6,15 @@ from collections.abc import Callable
 from typing import Any
 
 import pytest
+
 from zeo_core.modules.protocols import (
     CommandPluginProtocol,
     ConfigurablePluginProtocol,
     ExtensionPluginProtocol,
     ProviderPluginProtocol,
+    WorkflowPluginProtocol,
     ZeoPluginMetadata,
     ZeoPluginProtocol,
-    WorkflowPluginProtocol,
 )
 
 

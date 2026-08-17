@@ -8,11 +8,11 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from zeo_core.core.fs import DataResult, FileInfoResult, OperationResult, WriteResult
-from zeo_core.integrations.google.mail.operations import attachments
 from tests.test_integrations.google.mail.mocks import (
     create_mock_gmail_service,
 )
+from zeo_core.core.fs import DataResult, FileInfoResult, OperationResult, WriteResult
+from zeo_core.integrations.google.mail.operations import attachments
 
 
 class TestGmailAttachmentOperations:

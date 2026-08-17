@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoFileNotFoundError, ZeoIntegrationError
 from zeo_core.core.fs import FileInfoResult
 from zeo_core.core.paths.api.public.results import PathResult
@@ -181,9 +182,7 @@ class TestGoogleDriveServiceFiles:
         file_metadata = {"name": "test_file.txt"}
 
         # Patch the fs module directly
-        with patch(
-            "zeo_core.integrations.google.drive.service.standalone"
-        ) as mock_fs:
+        with patch("zeo_core.integrations.google.drive.service.standalone") as mock_fs:
             # Setup the mock to return direct values instead of DataResult objects
             temp_dir_path = tmp_path / "temp_dir"
             mock_fs.create_temp_directory.return_value = temp_dir_path
@@ -415,8 +414,7 @@ class TestGoogleDriveServiceRealPathService:
 
                     assert result.success is True
                     assert (
-                        result.content
-                        == "https://drive.google.com/file/d/file123/view"
+                        result.content == "https://drive.google.com/file/d/file123/view"
                     )
                     mock_execute_upload.assert_called_once()
         finally:
@@ -482,17 +480,13 @@ class TestGoogleDriveServiceRealPathService:
         target_dir = Path("coverage90_ruling240_download_e2e_dir")
         target_file = target_dir / "downloaded_e2e.txt"
 
-        with patch(
-            "googleapiclient.http.MediaIoBaseDownload"
-        ) as mock_downloader_cls:
+        with patch("googleapiclient.http.MediaIoBaseDownload") as mock_downloader_cls:
             mock_downloader = MagicMock()
             mock_downloader.next_chunk.return_value = (_FakeStatus(), True)
             mock_downloader_cls.return_value = mock_downloader
 
             try:
-                result = real_drive_service.download_file(
-                    "file123", str(target_file)
-                )
+                result = real_drive_service.download_file("file123", str(target_file))
                 assert result.success is True
                 assert result.content is not None
                 assert "PathResult" not in result.content

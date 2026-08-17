@@ -6,14 +6,14 @@ import logging
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from zeo_core.core.errors import ZeoApiError
-from zeo_core.core.fs import FileInfoResult, OperationResult, WriteResult
-from zeo_core.core.paths.api.public.results import PathResult
-from zeo_core.integrations.google.drive.operations import download
 from tests.test_integrations.google.drive.mocks import (
     create_error_drive_service,
     create_mock_drive_service,
 )
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.core.fs import FileInfoResult, OperationResult, WriteResult
+from zeo_core.core.paths.api.public.results import PathResult
+from zeo_core.integrations.google.drive.operations import download
 
 
 class TestDriveOperationsDownload:

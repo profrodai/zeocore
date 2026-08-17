@@ -6,6 +6,7 @@ import os
 from unittest.mock import patch
 
 import pytest
+
 from zeo_core.config.models import ZeoConfig
 from zeo_core.config.utils import (
     get_config_value,

@@ -12,6 +12,7 @@ credentials configured, so LLMIntegration.initialize() genuinely fails.
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.prompt._internal.enhancer import enhance_with_llm_safe
 
 

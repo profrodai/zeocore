@@ -1,4 +1,3 @@
-
 """
 Plugin discovery and loading for zeo_core.
 
@@ -24,6 +23,7 @@ from types import ModuleType
 from typing import TYPE_CHECKING, cast
 
 from pydantic import BaseModel, Field, ValidationError
+
 from zeo_core.core.errors import ZeoPluginError
 from zeo_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from zeo_core.modules.protocols import ZeoPluginMetadata, ZeoPluginProtocol

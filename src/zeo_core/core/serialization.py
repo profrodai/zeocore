@@ -1,4 +1,3 @@
-
 """
 Shared JSON serialization utilities.
 

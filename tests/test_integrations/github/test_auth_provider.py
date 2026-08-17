@@ -72,6 +72,7 @@ from typing import Any
 
 import pytest
 import requests
+
 from zeo_core.integrations.github.auth import GitHubAuthProvider
 
 

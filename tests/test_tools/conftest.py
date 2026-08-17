@@ -19,6 +19,7 @@ is a design decision, not a rename (see this stream's SOW for the escalation).
 from typing import TypeVar
 
 import pytest
+
 from zeo_core.integrations.core.base import BaseIntegrationService
 from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.tools.mixins.env_init import ToolEnvInitializerMixin

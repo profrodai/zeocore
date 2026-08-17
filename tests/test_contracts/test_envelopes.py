@@ -9,6 +9,7 @@ from typing import Any
 
 import pytest
 from pydantic import ValidationError
+
 from zeo_core.contracts import (
     CapabilityError,
     CapabilityLogEvent,

@@ -1,4 +1,3 @@
-
 """
 Base class for all ZeoCore tools (doctrine-compliant).
 

@@ -1,4 +1,3 @@
-
 """
 Job management routes with dependency injection.
 """
@@ -11,6 +10,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import ValidationError
+
 from zeo_core.adapters.http.dependencies import (
     get_job_runner,
     get_job_store,

@@ -7,6 +7,7 @@ from typing import Any, cast
 import pytest
 from fastapi import Request
 from fastapi.testclient import TestClient
+
 from zeo_core.adapters.http.auth import require_bearer, sign_payload
 from zeo_core.adapters.http.config import HttpAdapterConfig
 

@@ -8,6 +8,7 @@ ensuring they work together properly in real-world scenarios.
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.integrations.llms import (
     ChatMessage,
     LLMOptions,
@@ -23,9 +24,7 @@ class TestLLMIntegration:
 
     def test_create_integration(self) -> None:
         """Test the create_integration factory function."""
-        with patch(
-            "zeo_core.integrations.llms.service.LLMIntegration"
-        ) as mock_service:
+        with patch("zeo_core.integrations.llms.service.LLMIntegration") as mock_service:
             # Create a simple mock that matches what create_integration returns
             mock_instance = MagicMock()
             mock_instance.name = "LLM"

@@ -8,6 +8,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoFileNotFoundError
 from zeo_core.core.fs import DataResult, PathResult
 from zeo_core.core.fs.protocols import FsPathLike
@@ -382,9 +383,7 @@ class TestProjectRootWalkUp:
 
         assert found == str(root.resolve())
 
-    def test_finds_git_directory_from_nested_subdirectory(
-        self, tmp_path: Path
-    ) -> None:
+    def test_finds_git_directory_from_nested_subdirectory(self, tmp_path: Path) -> None:
         """A .git DIRECTORY (the normal case for a real clone) at the root
         is found by walking up, with no pyproject.toml present at all."""
         from zeo_core.core.paths._internal.utils import _find_project_root
@@ -491,9 +490,7 @@ class TestProjectRootWalkUp:
         (with_git / ".git").mkdir()
         assert _has_root_marker(str(with_git)) is True
 
-    def test_explicit_marker_files_override_still_honored(
-        self, tmp_path: Path
-    ) -> None:
+    def test_explicit_marker_files_override_still_honored(self, tmp_path: Path) -> None:
         """The marker_files override (pre-existing part of the contract,
         callers like PathService.get_project_root(marker_files=...) rely on
         it) still qualifies a directory that has neither pyproject.toml nor

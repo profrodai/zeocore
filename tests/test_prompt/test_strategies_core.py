@@ -481,9 +481,7 @@ def test_tree_of_thought_prompting_strategy_metadata() -> None:
 
 
 def test_render_working_with_schemas_prompting() -> None:
-    result = core.render_working_with_schemas_prompting(
-        "{type: object}", '{"a": 1}'
-    )
+    result = core.render_working_with_schemas_prompting("{type: object}", '{"a": 1}')
     assert "{type: object}" in result
     assert '{"a": 1}' in result
 

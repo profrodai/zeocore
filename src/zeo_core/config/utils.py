@@ -1,4 +1,3 @@
-
 """
 Utility functions for configuration management.
 

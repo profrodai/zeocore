@@ -1,4 +1,3 @@
-
 """
 Configuration package for zeo_core.
 

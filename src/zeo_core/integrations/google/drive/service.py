@@ -279,9 +279,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
 
         if local_path is None:
             # Create a temp directory using fs.create_temp_directory
-            temp_dir_result = standalone.create_temp_directory(
-                prefix="zeocore_gdrive_"
-            )
+            temp_dir_result = standalone.create_temp_directory(prefix="zeocore_gdrive_")
             temp_dir = str(
                 temp_dir_result.data
                 if hasattr(temp_dir_result, "data")

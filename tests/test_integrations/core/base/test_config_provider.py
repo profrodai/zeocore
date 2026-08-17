@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoConfigurationError
 from zeo_core.integrations.core.base import BaseConfigProvider
 

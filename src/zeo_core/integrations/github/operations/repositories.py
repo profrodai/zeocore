@@ -4,6 +4,7 @@ import base64
 from typing import Any
 
 import requests
+
 from zeo_core.core.errors import ZeoApiError
 from zeo_core.integrations.github.models import GitHubRepo, GitHubUser
 from zeo_core.integrations.github.utils.api import make_request

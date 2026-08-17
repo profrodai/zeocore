@@ -5,14 +5,14 @@ Tests for Google Drive _ops list_files module.
 from typing import Any
 from unittest.mock import patch
 
-from zeo_core.core.errors import ZeoApiError
-from zeo_core.integrations.google.drive.operations import list_files
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
     MockDriveService,
     create_error_drive_service,
     create_mock_drive_service,
 )
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.integrations.google.drive.operations import list_files
 
 
 class TestDriveOperationsListFiles:

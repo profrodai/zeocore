@@ -3,6 +3,7 @@
 from typing import Any
 
 import requests
+
 from zeo_core.integrations.github.models import GitHubUser
 from zeo_core.integrations.github.utils.api import make_request
 

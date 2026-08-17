@@ -46,8 +46,7 @@ except ImportError:
             **kwargs: Any,  # noqa: ANN401 -- genuinely dynamic: same as *args above
         ) -> None:
             raise ImportError(
-                "HTTP adapter requires FastAPI. Install with: "
-                "pip install zeocore[http]"
+                "HTTP adapter requires FastAPI. Install with: pip install zeocore[http]"
             )
 
     __all__ = ["create_app", "HttpAdapterConfig", "run"]

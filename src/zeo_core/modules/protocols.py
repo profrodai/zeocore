@@ -1,4 +1,3 @@
-
 """
 Plugin protocols for zeo_core.
 

@@ -12,6 +12,7 @@ into an external LLM-provider SDK boundary (network calls, API keys).
 from unittest.mock import patch
 
 import pytest
+
 from zeo_core.prompt.models import PromptStrategy
 from zeo_core.prompt.service import PromptService
 
@@ -243,9 +244,7 @@ def test_render_no_strategy_found_when_registry_empty() -> None:
 def test_render_missing_required_inputs_reports_missing_fields() -> None:
     service = PromptService(load_defaults=True)
     # role-prompting needs "role" and "task_description"; we don't supply "role".
-    result = service.render(
-        "Review this PR", strategy_id="role-prompting"
-    )
+    result = service.render("Review this PR", strategy_id="role-prompting")
     assert result.success is False
     assert result.error is not None
     assert "Missing required inputs for strategy 'role-prompting'" in result.error
@@ -324,9 +323,7 @@ def test_render_with_use_llm_true_calls_enhancer_and_sets_metadata() -> None:
 
 def test_render_with_use_llm_false_does_not_call_enhancer() -> None:
     service = PromptService(load_defaults=True)
-    with patch(
-        "zeo_core.prompt.service.enhance_with_llm_safe"
-    ) as mock_enhance:
+    with patch("zeo_core.prompt.service.enhance_with_llm_safe") as mock_enhance:
         result = service.render(
             "Summarize this", strategy_id="zero-shot-prompting", use_llm=False
         )

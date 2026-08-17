@@ -19,6 +19,7 @@ from datetime import datetime, timedelta
 from typing import Protocol, TypeVar, cast
 
 from googleapiclient.errors import HttpError
+
 from zeo_core.core.fs.service import standalone
 from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.integrations.google.mail.protocols import GmailRequest, GmailService

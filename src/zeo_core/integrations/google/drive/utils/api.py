@@ -9,6 +9,7 @@ from collections.abc import Callable
 from typing import TypeVar
 
 from googleapiclient.errors import HttpError
+
 from zeo_core.core.errors import ZeoApiError
 from zeo_core.integrations.google.drive.protocols import DriveRequest
 

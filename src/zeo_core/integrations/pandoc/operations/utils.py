@@ -163,9 +163,7 @@ def validate_html_structure(
         if check_links:
             links = soup.find_all("a")
             empty_links = [
-                str(link)
-                for link in links
-                if not str(link.get("href") or "").strip()
+                str(link) for link in links if not str(link.get("href") or "").strip()
             ]
             if empty_links:
                 errors.append(f"Found {len(empty_links)} empty links in document")

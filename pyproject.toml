@@ -127,6 +127,81 @@ pandoc = "zeo_core.integrations.pandoc:create_integration"
 llms = "zeo_core.integrations.llms:create_integration"
 
 
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "N",   # pep8-naming
+    "ANN", # flake8-annotations
+    "S",   # flake8-bandit
+    "A",   # flake8-builtins
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**/*.py" = ["S101"]  # Disable S101 (assert warning) in test files
+"src/zeo_core/integrations/google/drive/protocols.py" = ["N803"]  # N803: structurally types the real googleapiclient Resource object, whose fileId keyword we do not control -- monorepo RULING-233, ported as-is (still applies: same file, same third-party contract)
+"tests/test_integrations/google/drive/mocks/*.py" = ["N803"]  # N803: subclasses/mocks protocols.py's real-API-matching Protocol, and live tests call fileId= as a keyword today -- monorepo RULING-233, ported as-is
+
+[tool.black]
+line-length = 88
+target-version = ["py310", "py311", "py312", "py313"]
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+python_version = "3.10"
+# explicit_package_bases + mypy_path = "src": without this, mypy's CLI-target
+# walk finds src/__init__.py (this repo has one, a hatch-build artifact of
+# the flat src/ layout) and treats "src" as a package-name segment, naming
+# these files "src.zeo_core.*" -- while the editable install's py.typed-
+# driven site-packages route names the SAME files "zeo_core.*". Two module
+# identities for one file aborts with "Source file found twice under
+# different module names". Listing "src" as an explicit package base makes
+# mypy's is_explicit_package_base check stop the walk AT src instead of
+# folding it into the module name, so both routes agree on "zeo_core.*".
+# Config-only fix (same mechanism as the monorepo's prior RULING-230 s4),
+# ported without the monorepo's separate quack-core/ prefix since this
+# repo's root already IS that directory.
+explicit_package_bases = true
+mypy_path = "src"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+strict_optional = true
+
+[[tool.mypy.overrides]]
+# Ported from the monorepo root pyproject.toml (RULING-251 s1 / round19):
+# googleapiclient and google_auth_oauthlib ship no py.typed marker and no
+# bundled stubs, firing an identical import-untyped finding at every one of
+# their import sites across the google integration's src and test trees.
+# Scoped config fix, not N inline ignores and not a new stub-package
+# dependency.
+module = ["googleapiclient.*", "google_auth_oauthlib.*"]
+ignore_missing_imports = true
+
 [tool.coverage.run]
 source = ["zeo_core"]
 omit = ["tests/*"]

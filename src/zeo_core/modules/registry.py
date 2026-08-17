@@ -1,4 +1,3 @@
-
 """
 Plugin registry for zeo_core.
 
@@ -20,8 +19,8 @@ from zeo_core.modules.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,
     ProviderPluginProtocol,
-    ZeoPluginProtocol,
     WorkflowPluginProtocol,
+    ZeoPluginProtocol,
 )
 
 T = TypeVar("T")  # Generic for return types

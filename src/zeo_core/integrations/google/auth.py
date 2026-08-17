@@ -11,6 +11,7 @@ from collections.abc import Sequence
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+
 from zeo_core.core.errors import ZeoIntegrationError
 from zeo_core.core.fs.service import standalone
 from zeo_core.integrations.core.base import BaseAuthProvider
@@ -270,9 +271,7 @@ class GoogleAuthProvider(BaseAuthProvider):
             join_result = standalone.join_path(*path_components)
 
             if not join_result.success or join_result.data is None:
-                self.logger.error(
-                    f"Failed to join directory path: {join_result.error}"
-                )
+                self.logger.error(f"Failed to join directory path: {join_result.error}")
                 return False
             directory_path: str = join_result.data
 

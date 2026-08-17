@@ -9,6 +9,8 @@ import time
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+from tests.test_integrations.llms.mocks.clients import MockClient
 from zeo_core.core.errors import ZeoApiError, ZeoIntegrationError
 from zeo_core.integrations.llms.clients.base import LLMClient
 from zeo_core.integrations.llms.fallback import (
@@ -17,7 +19,6 @@ from zeo_core.integrations.llms.fallback import (
     ProviderStatus,
 )
 from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from tests.test_integrations.llms.mocks.clients import MockClient
 
 
 class TestFallbackConfig:

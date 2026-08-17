@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoConfigurationError, ZeoFileNotFoundError
 
 from .config_provider_impl import (
@@ -199,9 +200,7 @@ class TestBaseConfigProviderDiscovery:
         provider = MockConfigProvider()
 
         # Test with fs service standalone resolver
-        with patch(
-            "zeo_core.core.fs.service.standalone.resolve_path"
-        ) as mock_resolve:
+        with patch("zeo_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.return_value = "/resolved/path"
 
             result = provider._resolve_path("relative/path")
@@ -209,9 +208,7 @@ class TestBaseConfigProviderDiscovery:
             mock_resolve.assert_called_once_with("relative/path")
 
         # Test with resolver exception
-        with patch(
-            "zeo_core.core.fs.service.standalone.resolve_path"
-        ) as mock_resolve:
+        with patch("zeo_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.side_effect = Exception("Test error")
 
             result = provider._resolve_path("relative/path")

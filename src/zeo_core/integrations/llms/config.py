@@ -10,6 +10,7 @@ import os
 from typing import Any, cast
 
 from pydantic import BaseModel, Field, field_validator
+
 from zeo_core.config.models import LoggingConfig
 from zeo_core.integrations.core import ConfigResult
 from zeo_core.integrations.core.base import BaseConfigProvider

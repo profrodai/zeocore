@@ -11,13 +11,14 @@ from typing import cast
 from unittest.mock import MagicMock, patch
 
 import pytest
-from zeo_core.core.errors import ZeoIntegrationError
-from zeo_core.integrations.core.results import IntegrationResult
-from zeo_core.integrations.google.mail.service import GoogleMailService
+
 from tests.test_integrations.google.mail.mocks import (
     create_error_gmail_service,
     create_mock_gmail_service,
 )
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.google.mail.service import GoogleMailService
 
 
 class TestInitializeConfigRealPathHitsBugC:
@@ -246,9 +247,7 @@ class TestGoogleMailService:
         "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch("zeo_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
-    @patch(
-        "zeo_core.integrations.google.mail.operations.auth.initialize_gmail_service"
-    )
+    @patch("zeo_core.integrations.google.mail.operations.auth.initialize_gmail_service")
     @patch("zeo_core.integrations.core.base.BaseIntegrationService.initialize")
     def test_initialize(
         self,
@@ -519,9 +518,7 @@ class TestGoogleMailServiceCoverageGaps:
         _initialize_config coverage above."""
         service = GoogleMailService(config_path="/path/to/config.yaml")
         service.config_provider = None
-        with pytest.raises(
-            ZeoIntegrationError, match="no config_provider configured"
-        ):
+        with pytest.raises(ZeoIntegrationError, match="no config_provider configured"):
             service._require_config_provider()
 
     def test_initialize_config_load_from_file_failure(self) -> None:
@@ -531,9 +528,7 @@ class TestGoogleMailServiceCoverageGaps:
         (line 218-219) rather than being swallowed by the broader
         `except Exception` branch below it."""
         service = GoogleMailService(config_path="/path/to/config.yaml")
-        with patch.object(
-            service.config_provider, "load_config"
-        ) as mock_load_config:
+        with patch.object(service.config_provider, "load_config") as mock_load_config:
             mock_load_config.return_value = MagicMock(success=False, content=None)
             with pytest.raises(
                 ZeoIntegrationError, match="Failed to load configuration"
@@ -547,9 +542,7 @@ class TestGoogleMailServiceCoverageGaps:
         service = GoogleMailService(config_path="/path/to/config.yaml")
         assert service.storage_path is None
 
-        with patch.object(
-            service.config_provider, "load_config"
-        ) as mock_load_config:
+        with patch.object(service.config_provider, "load_config") as mock_load_config:
             mock_load_config.return_value = MagicMock(
                 success=True,
                 content={
@@ -588,9 +581,7 @@ class TestGoogleMailServiceCoverageGaps:
         _initialize_config surfaces it -- but the caller `initialize()`
         catches broad Exception, so we call _initialize_config directly)."""
         service = GoogleMailService(config_path="/path/to/config.yaml")
-        with patch.object(
-            service.config_provider, "load_config"
-        ) as mock_load_config:
+        with patch.object(service.config_provider, "load_config") as mock_load_config:
             mock_load_config.return_value = MagicMock(
                 success=True,
                 content={

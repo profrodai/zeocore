@@ -119,9 +119,9 @@ class GitHubConfigProvider(BaseConfigProvider):
                     logger.debug(
                         f"Found GitHub config in integrations section with key: {key}"
                     )
-                    integrations_section: dict[str, Any] = config_data[
-                        "integrations"
-                    ][key]
+                    integrations_section: dict[str, Any] = config_data["integrations"][
+                        key
+                    ]
                     return integrations_section
 
         return None

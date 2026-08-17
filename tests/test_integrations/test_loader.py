@@ -60,9 +60,7 @@ class TestListAvailableEntryPoints:
         mock_eps = MagicMock()
         mock_eps.select.return_value = [ep1, ep2]
 
-        with patch(
-            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
-        ):
+        with patch("zeo_core.integrations.loader.entry_points", return_value=mock_eps):
             result = list_available_entry_points()
 
         assert result == [
@@ -83,9 +81,7 @@ class TestListAvailableEntryPoints:
         mock_eps = MagicMock()
         mock_eps.select.return_value = []
 
-        with patch(
-            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
-        ):
+        with patch("zeo_core.integrations.loader.entry_points", return_value=mock_eps):
             result = list_available_entry_points()
 
         assert result == []
@@ -94,9 +90,7 @@ class TestListAvailableEntryPoints:
         mock_eps = MagicMock()
         mock_eps.select.return_value = []
 
-        with patch(
-            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
-        ):
+        with patch("zeo_core.integrations.loader.entry_points", return_value=mock_eps):
             list_available_entry_points(group="custom.group")
 
         mock_eps.select.assert_called_once_with(group="custom.group")
@@ -250,9 +244,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps = MagicMock()
         mock_eps.select.return_value = [ep_gh, ep_drive]
 
-        with patch(
-            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
-        ):
+        with patch("zeo_core.integrations.loader.entry_points", return_value=mock_eps):
             report = load_enabled_entry_points(registry, ["gh", "drive"])
 
         assert report.success is True
@@ -265,12 +257,8 @@ class TestLoadEnabledEntryPoints:
         mock_eps = MagicMock()
         mock_eps.select.return_value = []
 
-        with patch(
-            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
-        ):
-            report = load_enabled_entry_points(
-                registry, ["missing"], strict=True
-            )
+        with patch("zeo_core.integrations.loader.entry_points", return_value=mock_eps):
+            report = load_enabled_entry_points(registry, ["missing"], strict=True)
 
         assert report.success is False
         assert any("not found in entry points" in e for e in report.errors)
@@ -285,9 +273,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps = MagicMock()
         mock_eps.select.return_value = [ep_present]
 
-        with patch(
-            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
-        ):
+        with patch("zeo_core.integrations.loader.entry_points", return_value=mock_eps):
             report = load_enabled_entry_points(
                 registry, ["missing", "present"], strict=False
             )
@@ -309,9 +295,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps = MagicMock()
         mock_eps.select.return_value = [ep_flaky, ep_never]
 
-        with patch(
-            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
-        ):
+        with patch("zeo_core.integrations.loader.entry_points", return_value=mock_eps):
             report = load_enabled_entry_points(
                 registry, ["flaky", "never_reached"], strict=True
             )
@@ -330,12 +314,8 @@ class TestLoadEnabledEntryPoints:
         mock_eps = MagicMock()
         mock_eps.select.return_value = [ep]
 
-        with patch(
-            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
-        ):
-            report = load_enabled_entry_points(
-                registry, ["noinit"], initialize=False
-            )
+        with patch("zeo_core.integrations.loader.entry_points", return_value=mock_eps):
+            report = load_enabled_entry_points(registry, ["noinit"], initialize=False)
 
         assert report.loaded == ["noinit"]
         assert integration.initialized is False
@@ -345,9 +325,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps = MagicMock()
         mock_eps.select.return_value = []
 
-        with patch(
-            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
-        ):
+        with patch("zeo_core.integrations.loader.entry_points", return_value=mock_eps):
             report = load_enabled_entry_points(registry, [])
 
         assert report.success is True
@@ -359,9 +337,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps = MagicMock()
         mock_eps.select.return_value = []
 
-        with patch(
-            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
-        ):
+        with patch("zeo_core.integrations.loader.entry_points", return_value=mock_eps):
             load_enabled_entry_points(registry, [], group="custom.group")
 
         mock_eps.select.assert_called_once_with(group="custom.group")

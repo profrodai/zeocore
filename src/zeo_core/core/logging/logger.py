@@ -1,4 +1,3 @@
-
 """
 Defines helper functions for obtaining loggers.
 """

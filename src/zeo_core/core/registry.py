@@ -1,4 +1,3 @@
-
 """
 Operation registry for ZeoCore.
 
@@ -12,6 +11,7 @@ from dataclasses import dataclass, field
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
+
 from zeo_core.core.logging import get_logger
 
 logger = get_logger(__name__)

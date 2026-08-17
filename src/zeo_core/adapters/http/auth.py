@@ -1,4 +1,3 @@
-
 """
 Authentication utilities for the HTTP adapter.
 """
@@ -8,6 +7,7 @@ import hmac
 import json
 
 from fastapi import HTTPException, Request
+
 from zeo_core.adapters.http.config import HttpAdapterConfig
 
 

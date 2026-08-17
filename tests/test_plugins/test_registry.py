@@ -5,14 +5,15 @@ Tests for the plugin registry.
 from collections.abc import Callable
 
 import pytest
+
 from zeo_core.core.errors import ZeoPluginError
 from zeo_core.modules.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,
     ProviderPluginProtocol,
+    WorkflowPluginProtocol,
     ZeoPluginMetadata,
     ZeoPluginProtocol,
-    WorkflowPluginProtocol,
 )
 from zeo_core.modules.registry import PluginRegistry
 

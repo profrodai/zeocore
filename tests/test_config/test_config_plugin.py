@@ -79,36 +79,28 @@ class TestZeoConfigPluginAfterLoad:
 
     def test_get_value_after_load_delegates_to_get_config_value(self) -> None:
         plugin = ZeoConfigPlugin()
-        with patch(
-            "zeo_core.config.plugin.load_config", return_value=self._config()
-        ):
+        with patch("zeo_core.config.plugin.load_config", return_value=self._config()):
             plugin.load_config()
 
         assert plugin.get_value("general.project_name") == "TestProject"
 
     def test_get_value_returns_default_for_missing_path(self) -> None:
         plugin = ZeoConfigPlugin()
-        with patch(
-            "zeo_core.config.plugin.load_config", return_value=self._config()
-        ):
+        with patch("zeo_core.config.plugin.load_config", return_value=self._config()):
             plugin.load_config()
 
         assert plugin.get_value("general.nonexistent", default="fallback") == "fallback"
 
     def test_get_base_dir_after_load(self) -> None:
         plugin = ZeoConfigPlugin()
-        with patch(
-            "zeo_core.config.plugin.load_config", return_value=self._config()
-        ):
+        with patch("zeo_core.config.plugin.load_config", return_value=self._config()):
             plugin.load_config()
 
         assert plugin.get_base_dir() == "/base"
 
     def test_get_output_dir_after_load(self) -> None:
         plugin = ZeoConfigPlugin()
-        with patch(
-            "zeo_core.config.plugin.load_config", return_value=self._config()
-        ):
+        with patch("zeo_core.config.plugin.load_config", return_value=self._config()):
             plugin.load_config()
 
         assert plugin.get_output_dir() == "/base/output"

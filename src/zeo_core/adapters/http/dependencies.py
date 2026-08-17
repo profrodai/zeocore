@@ -1,4 +1,3 @@
-
 """
 FastAPI dependencies for HTTP adapter.
 
@@ -9,6 +8,7 @@ resources from app.state for use in route handlers.
 from typing import cast
 
 from fastapi import Request
+
 from zeo_core.adapters.http.auth import require_bearer
 from zeo_core.adapters.http.config import HttpAdapterConfig
 from zeo_core.core.jobs import JobRunner, JobStore

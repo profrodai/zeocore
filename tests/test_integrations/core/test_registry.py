@@ -3,6 +3,7 @@ Tests for the integration registry module.
 """
 
 import pytest
+
 from zeo_core.core.errors import ZeoError
 from zeo_core.integrations.core.registry import IntegrationRegistry
 from zeo_core.integrations.core.results import IntegrationResult

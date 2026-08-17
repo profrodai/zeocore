@@ -41,9 +41,9 @@ import logging
 import shutil
 from pathlib import Path
 
+from tests.test_integrations.google.mail.mocks import create_mock_gmail_service
 from zeo_core.integrations.google.mail.operations import attachments, email
 from zeo_core.integrations.google.mail.operations.email import clean_filename
-from tests.test_integrations.google.mail.mocks import create_mock_gmail_service
 
 
 def _make_part(filename: str, content: bytes) -> dict:

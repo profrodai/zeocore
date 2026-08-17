@@ -21,6 +21,7 @@ BaseZeoTool per this mixin's own docstring; there is no upload hook).
 import unittest
 
 import pytest
+
 from zeo_core.contracts import CapabilityResult
 from zeo_core.contracts.common.enums import CapabilityStatus
 from zeo_core.tools.context import ToolContext

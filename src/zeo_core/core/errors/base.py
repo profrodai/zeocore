@@ -1,4 +1,3 @@
-
 """
 Base error classes for zeo_core.
 

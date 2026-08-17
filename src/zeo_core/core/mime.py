@@ -1,4 +1,3 @@
-
 """
 MIME type and binary detection utilities.
 

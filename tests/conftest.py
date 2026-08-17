@@ -44,9 +44,7 @@ def mock_fs_standalone() -> Generator[None]:
     This helps us handle path issues in tests by normalizing the
     behavior of the underlying fs module.
     """
-    with patch(
-        "zeo_core.core.fs.service.standalone.normalize_path"
-    ) as mock_normalize:
+    with patch("zeo_core.core.fs.service.standalone.normalize_path") as mock_normalize:
         # Return a real PathResult (ok/path contract, core/fs SERVICE-CONTRACT) so
         # callers that check `.ok`/`.path` on the result see a well-formed object,
         # not a bare Path (which has neither attribute).

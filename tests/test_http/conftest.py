@@ -9,6 +9,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
+
 from zeo_core.adapters.http.app import create_app
 from zeo_core.adapters.http.config import HttpAdapterConfig
 from zeo_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner

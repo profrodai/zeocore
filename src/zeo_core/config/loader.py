@@ -1,4 +1,3 @@
-
 """
 Configuration loading authority for zeo_core.
 
@@ -16,6 +15,7 @@ import os
 from typing import Any, TypeVar
 
 import yaml
+
 from zeo_core.config.models import ZeoConfig
 from zeo_core.config.utils import find_project_root
 from zeo_core.core.errors import ZeoConfigurationError, wrap_io_errors

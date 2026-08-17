@@ -1,4 +1,3 @@
-
 """
 Plugin interface for the paths module.
 

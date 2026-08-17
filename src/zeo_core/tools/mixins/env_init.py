@@ -1,4 +1,3 @@
-
 """
 Environment validation mixin for tools.
 

@@ -10,6 +10,7 @@ from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoIntegrationError
 from zeo_core.integrations.core.results import ConfigResult, IntegrationResult
 from zeo_core.integrations.llms.config import LLMConfigProvider
@@ -150,8 +151,7 @@ class TestLLMIntegrationComprehensive:
                     # ("custom_config.yaml"), never from a log-level-derived
                     # nonsense path (e.g. "/Users/rodrivera/10").
                     assert (
-                        integration.config_path
-                        == "/Users/rodrivera/custom_config.yaml"
+                        integration.config_path == "/Users/rodrivera/custom_config.yaml"
                     )
                     # config stays None (the ctor's own default): the bug
                     # shifted config_path into this slot, so a regression

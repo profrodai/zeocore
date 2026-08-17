@@ -1,4 +1,3 @@
-
 """
 Integration support for tools (doctrine-compliant).
 Services come from ToolContext.services (runner-provided).

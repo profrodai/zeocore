@@ -1,4 +1,3 @@
-
 """
 Plugin interface for the configuration module.
 
@@ -28,9 +27,7 @@ class ConfigPlugin(Protocol):
         merge_defaults: bool = True,
     ) -> ZeoConfig: ...
 
-    def merge_configs(
-        self, base: ZeoConfig, override: dict[str, Any]
-    ) -> ZeoConfig: ...
+    def merge_configs(self, base: ZeoConfig, override: dict[str, Any]) -> ZeoConfig: ...
 
     def get_value(self, path: str, default: T | None = None) -> T | None: ...
 

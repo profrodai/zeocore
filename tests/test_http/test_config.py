@@ -4,6 +4,7 @@ Tests for HTTP adapter configuration.
 
 import pytest
 from pydantic import ValidationError
+
 from zeo_core.adapters.http.config import HttpAdapterConfig
 
 

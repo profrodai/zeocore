@@ -6,6 +6,7 @@ import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoPluginError
 from zeo_core.modules.discovery import LoadResult, PluginLoader
 from zeo_core.modules.protocols import ZeoPluginMetadata, ZeoPluginProtocol
@@ -72,9 +73,7 @@ class TestPluginLoader:
             mock_ep1.load.assert_called_once()
             mock_factory.assert_called_once()
 
-        with patch(
-            "zeo_core.modules.discovery.entry_points", return_value=[mock_ep1]
-        ):
+        with patch("zeo_core.modules.discovery.entry_points", return_value=[mock_ep1]):
             mock_ep1.load.side_effect = Exception("Test error")
             plugins = loader.load_entry_points("test.modules")
             assert len(plugins) == 0
@@ -278,9 +277,7 @@ class TestPluginLoader:
                     capabilities=[],
                 )
 
-        result = loader._validate_plugin(
-            PluginNoneMetadataId(), "fallback.module.path"
-        )
+        result = loader._validate_plugin(PluginNoneMetadataId(), "fallback.module.path")
         assert result is not None
 
     def test_load_from_class_error_initializing(self) -> None:
@@ -494,9 +491,7 @@ class TestPluginLoader:
         registry.clear()
         mock_entry_points.return_value = []
 
-        result = load_enabled_entry_points(
-            enabled=["totally_missing"], strict=False
-        )
+        result = load_enabled_entry_points(enabled=["totally_missing"], strict=False)
 
         assert result.success is False
         assert result.loaded == []
@@ -551,9 +546,7 @@ class TestPluginLoader:
         """
         loader = PluginLoader()
 
-        with patch.object(
-            loader, "load_plugin", side_effect=ZeoPluginError("nope")
-        ):
+        with patch.object(loader, "load_plugin", side_effect=ZeoPluginError("nope")):
             result = loader.load_enabled_modules(
                 modules=["bad.module.a", "bad.module.b"],
                 strict=False,

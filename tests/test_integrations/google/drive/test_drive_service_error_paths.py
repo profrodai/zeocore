@@ -48,6 +48,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.core.errors import (
     ZeoApiError,
     ZeoBaseAuthError,
@@ -223,8 +224,8 @@ class TestSetFilePermissionsErrorPaths:
         self, real_drive_service: GoogleDriveService
     ) -> None:
         """PINS A BUG: see class docstring."""
-        real_drive_service.drive_service.permissions.side_effect = (
-            ZeoBaseAuthError("Auth failed", service="drive")
+        real_drive_service.drive_service.permissions.side_effect = ZeoBaseAuthError(
+            "Auth failed", service="drive"
         )
         result = real_drive_service.set_file_permissions("file123")
         assert result.success is False
@@ -284,9 +285,7 @@ class TestGetSharingLinkErrorPaths:
         call itself. A response that isn't a dict (e.g. None) raises a
         plain AttributeError there."""
         mock_get = MagicMock()
-        real_drive_service.drive_service.files.return_value.get.return_value = (
-            mock_get
-        )
+        real_drive_service.drive_service.files.return_value.get.return_value = mock_get
         mock_get.execute.return_value = None
 
         result = real_drive_service.get_sharing_link("file123")
@@ -358,13 +357,9 @@ class TestUploadFileErrorPaths:
         real_file = Path(rel_name)
         real_file.write_text("probe content")
         try:
-            mock_execute = (
-                real_drive_service.drive_service.files.return_value
-                .create.return_value.execute
-            )
-            mock_execute.side_effect = ZeoBaseAuthError(
-                "Auth failed", service="drive"
-            )
+            files_create = real_drive_service.drive_service.files.return_value.create
+            mock_execute = files_create.return_value.execute
+            mock_execute.side_effect = ZeoBaseAuthError("Auth failed", service="drive")
             result = real_drive_service.upload_file(rel_name)
             assert result.success is False
             assert result.error is not None
@@ -386,13 +381,9 @@ class TestUploadFileErrorPaths:
         real_file = Path(rel_name)
         real_file.write_text("probe content")
         try:
-            mock_execute = (
-                real_drive_service.drive_service.files.return_value
-                .create.return_value.execute
-            )
-            mock_execute.return_value = {
-                "webViewLink": "https://example.com"
-            }
+            files_create = real_drive_service.drive_service.files.return_value.create
+            mock_execute = files_create.return_value.execute
+            mock_execute.return_value = {"webViewLink": "https://example.com"}
             result = real_drive_service.upload_file(rel_name)
             assert result.success is False
             assert result.error is not None
@@ -409,26 +400,18 @@ class TestExecuteUploadErrorWrapping:
     def test_execute_upload_wraps_api_exception(
         self, real_drive_service: GoogleDriveService
     ) -> None:
-        mock_execute = (
-            real_drive_service.drive_service.files.return_value
-            .create.return_value.execute
-        )
-        mock_execute.side_effect = RuntimeError(
-            "network exploded"
-        )
+        files_create = real_drive_service.drive_service.files.return_value.create
+        mock_execute = files_create.return_value.execute
+        mock_execute.side_effect = RuntimeError("network exploded")
 
         with pytest.raises(ZeoApiError, match="Failed to upload file"):
-            real_drive_service._execute_upload(
-                {"name": "f.txt"}, media=MagicMock()
-            )
+            real_drive_service._execute_upload({"name": "f.txt"}, media=MagicMock())
 
     def test_execute_upload_success(
         self, real_drive_service: GoogleDriveService
     ) -> None:
-        mock_execute = (
-            real_drive_service.drive_service.files.return_value
-            .create.return_value.execute
-        )
+        files_create = real_drive_service.drive_service.files.return_value.create
+        mock_execute = files_create.return_value.execute
         mock_execute.return_value = {
             "id": "abc123",
             "webViewLink": "https://drive.google.com/file/d/abc123/view",
@@ -452,8 +435,7 @@ class TestGetFileInfo:
             "mimeType": "text/plain",
         }
         mock_execute = (
-            real_drive_service.drive_service.files.return_value
-            .get.return_value.execute
+            real_drive_service.drive_service.files.return_value.get.return_value.execute
         )
         mock_execute.return_value = expected_metadata
 
@@ -473,12 +455,9 @@ class TestGetFileInfo:
         self, real_drive_service: GoogleDriveService
     ) -> None:
         mock_execute = (
-            real_drive_service.drive_service.files.return_value
-            .get.return_value.execute
+            real_drive_service.drive_service.files.return_value.get.return_value.execute
         )
-        mock_execute.return_value = {
-            "id": "file123"
-        }
+        mock_execute.return_value = {"id": "file123"}
 
         result = real_drive_service.get_file_info("file123", fields="id")
 
@@ -494,9 +473,7 @@ class TestGetFileInfo:
         with patch.object(real_drive_service, "initialize") as mock_init:
             from zeo_core.integrations.core.results import IntegrationResult
 
-            mock_init.return_value = IntegrationResult.error_result(
-                "Not initialized"
-            )
+            mock_init.return_value = IntegrationResult.error_result("Not initialized")
             result = real_drive_service.get_file_info("file123")
         assert result.success is False
         assert result.error is not None
@@ -504,12 +481,9 @@ class TestGetFileInfo:
 
     def test_get_file_info_error(self, real_drive_service: GoogleDriveService) -> None:
         mock_execute = (
-            real_drive_service.drive_service.files.return_value
-            .get.return_value.execute
+            real_drive_service.drive_service.files.return_value.get.return_value.execute
         )
-        mock_execute.side_effect = RuntimeError(
-            "network exploded"
-        )
+        mock_execute.side_effect = RuntimeError("network exploded")
 
         result = real_drive_service.get_file_info("file123")
 
@@ -568,9 +542,9 @@ class TestResolveDownloadPathTempDir:
             result = real_drive_service._resolve_download_path(
                 {"name": "downloaded.txt"}, rel_name
             )
-            assert result == str(Path(rel_name).resolve()) or Path(
-                result
-            ).name == rel_name
+            assert (
+                result == str(Path(rel_name).resolve()) or Path(result).name == rel_name
+            )
         finally:
             real_file.unlink(missing_ok=True)
 
@@ -602,12 +576,15 @@ class TestInitializeConfigEdgeBranches:
         """Line 135: config load fails AND the default config itself fails
         validate_config -- must raise ZeoIntegrationError rather than
         silently returning an invalid default."""
-        with patch(
-            "zeo_core.integrations.google.config.GoogleConfigProvider.load_config"
-        ) as mock_load, patch(
-            "zeo_core.integrations.google.config.GoogleConfigProvider."
-            "validate_config"
-        ) as mock_validate:
+        with (
+            patch(
+                "zeo_core.integrations.google.config.GoogleConfigProvider.load_config"
+            ) as mock_load,
+            patch(
+                "zeo_core.integrations.google.config.GoogleConfigProvider."
+                "validate_config"
+            ) as mock_validate,
+        ):
             from zeo_core.integrations.core.results import ConfigResult
 
             mock_load.return_value = ConfigResult(success=False, content=None)
@@ -874,8 +851,8 @@ class TestResolveFileDetailsErrorPaths:
         real_file = Path(rel_name)
         real_file.write_text("probe")
         try:
-            _path_obj, _filename, _folder_id, mime_type = (
-                service._resolve_file_details(rel_name, None, None)
+            _path_obj, _filename, _folder_id, mime_type = service._resolve_file_details(
+                rel_name, None, None
             )
             assert mime_type == "application/octet-stream", (
                 f"expected the literal fallback string for an unrecognized "
@@ -930,9 +907,7 @@ class TestDownloadFileRealPath:
         with patch.object(real_drive_service, "initialize") as mock_init:
             from zeo_core.integrations.core.results import IntegrationResult
 
-            mock_init.return_value = IntegrationResult.error_result(
-                "Not initialized"
-            )
+            mock_init.return_value = IntegrationResult.error_result("Not initialized")
             result = real_drive_service.download_file("file123")
         assert result.success is False
         assert result.error is not None
@@ -945,12 +920,9 @@ class TestDownloadFileRealPath:
         reported directly -- also reachable, runs before the
         join_path(...).parent bug (metadata fetch happens first)."""
         mock_execute = (
-            real_drive_service.drive_service.files.return_value
-            .get.return_value.execute
+            real_drive_service.drive_service.files.return_value.get.return_value.execute
         )
-        mock_execute.side_effect = RuntimeError(
-            "metadata fetch failed"
-        )
+        mock_execute.side_effect = RuntimeError("metadata fetch failed")
         result = real_drive_service.download_file("file123")
         assert result.success is False
         assert result.error is not None
@@ -979,17 +951,13 @@ class TestDownloadFileRealPath:
         target_dir = Path("coverage90_ruling243_download_dir")
         target = target_dir / "downloaded.txt"
 
-        with patch(
-            "googleapiclient.http.MediaIoBaseDownload"
-        ) as mock_downloader_cls:
+        with patch("googleapiclient.http.MediaIoBaseDownload") as mock_downloader_cls:
             mock_downloader = MagicMock()
             mock_downloader.next_chunk.return_value = (_FakeStatus(), True)
             mock_downloader_cls.return_value = mock_downloader
 
             try:
-                result = real_drive_service.download_file(
-                    "file123", str(target)
-                )
+                result = real_drive_service.download_file("file123", str(target))
 
                 assert result.success is True
                 assert result.content is not None
@@ -1028,9 +996,7 @@ class TestDownloadFileRealPath:
             assert result.success is False
             assert result.error is not None
             assert "Failed to create directory" in result.error
-            assert "'DataResult' object has no attribute 'parent'" not in (
-                result.error
-            )
+            assert "'DataResult' object has no attribute 'parent'" not in (result.error)
             mock_files.get_media.assert_not_called()
         finally:
             blocking_file.unlink(missing_ok=True)
@@ -1051,9 +1017,7 @@ class TestDownloadFileRealPath:
         target_dir = Path("coverage90_ruling243_download_exc_dir")
         target = target_dir / "downloaded.txt"
 
-        with patch(
-            "googleapiclient.http.MediaIoBaseDownload"
-        ) as mock_downloader_cls:
+        with patch("googleapiclient.http.MediaIoBaseDownload") as mock_downloader_cls:
             mock_downloader = MagicMock()
             mock_downloader.next_chunk.side_effect = RuntimeError(
                 "chunk transfer failed"
@@ -1061,15 +1025,11 @@ class TestDownloadFileRealPath:
             mock_downloader_cls.return_value = mock_downloader
 
             try:
-                result = real_drive_service.download_file(
-                    "file123", str(target)
-                )
+                result = real_drive_service.download_file("file123", str(target))
 
                 assert result.success is False
                 assert result.error is not None
-                assert "Failed to download file from Google Drive" in (
-                    result.error
-                )
+                assert "Failed to download file from Google Drive" in (result.error)
                 assert "chunk transfer failed" in result.error
                 assert not target.exists()
             finally:
@@ -1098,9 +1058,7 @@ class TestDownloadFileRealPath:
         target = target_dir / "downloaded.txt"
 
         with (
-            patch(
-                "googleapiclient.http.MediaIoBaseDownload"
-            ) as mock_downloader_cls,
+            patch("googleapiclient.http.MediaIoBaseDownload") as mock_downloader_cls,
             patch(
                 "zeo_core.integrations.google.drive.service.standalone.write_binary"
             ) as mock_write,
@@ -1113,15 +1071,11 @@ class TestDownloadFileRealPath:
             )
 
             try:
-                result = real_drive_service.download_file(
-                    "file123", str(target)
-                )
+                result = real_drive_service.download_file("file123", str(target))
 
                 assert result.success is False
                 assert result.error is not None
-                assert "Failed to write file: disk quota exceeded" in (
-                    result.error
-                )
+                assert "Failed to write file: disk quota exceeded" in (result.error)
                 assert not target.exists()
             finally:
                 if target_dir.exists():
@@ -1153,9 +1107,7 @@ class TestDownloadFileRealPath:
         target = target_dir / "downloaded.txt"
 
         with (
-            patch(
-                "googleapiclient.http.MediaIoBaseDownload"
-            ) as mock_downloader_cls,
+            patch("googleapiclient.http.MediaIoBaseDownload") as mock_downloader_cls,
             patch(
                 "zeo_core.integrations.google.drive.service.standalone.write_binary"
             ) as mock_write,
@@ -1166,15 +1118,11 @@ class TestDownloadFileRealPath:
             mock_write.side_effect = RuntimeError("unexpected disk error")
 
             try:
-                result = real_drive_service.download_file(
-                    "file123", str(target)
-                )
+                result = real_drive_service.download_file("file123", str(target))
 
                 assert result.success is False
                 assert result.error is not None
-                assert "Failed to download file from Google Drive" in (
-                    result.error
-                )
+                assert "Failed to download file from Google Drive" in (result.error)
                 assert "unexpected disk error" in result.error
                 assert not target.exists()
             finally:

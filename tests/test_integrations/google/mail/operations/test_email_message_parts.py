@@ -34,6 +34,7 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.integrations.google.mail.operations import email
 from zeo_core.integrations.google.mail.protocols import (
     GmailAttachmentsResource,
@@ -698,9 +699,7 @@ class TestDownloadEmailWriteFailure:
     (lines 196-200), the one remaining uncovered path in that function."""
 
     @patch("zeo_core.integrations.google.mail.operations.email.process_message_parts")
-    @patch(
-        "zeo_core.integrations.google.mail.operations.email._get_message_with_retry"
-    )
+    @patch("zeo_core.integrations.google.mail.operations.email._get_message_with_retry")
     def test_write_failure_returns_error_result(
         self,
         mock_get_message: Any,  # noqa: ANN401 -- @patch-injected MagicMock, not the fixture
@@ -769,9 +768,7 @@ class TestDownloadEmailRealPathBuild:
     real end-to-end write without fighting or mocking around the sandbox."""
 
     @patch("zeo_core.integrations.google.mail.operations.email.process_message_parts")
-    @patch(
-        "zeo_core.integrations.google.mail.operations.email._get_message_with_retry"
-    )
+    @patch("zeo_core.integrations.google.mail.operations.email._get_message_with_retry")
     def test_download_email_writes_to_real_unwrapped_path(
         self,
         mock_get_message: Any,  # noqa: ANN401 -- @patch-injected MagicMock, not the fixture
@@ -817,17 +814,14 @@ class TestDownloadEmailRealPathBuild:
             assert written_path.parent == real_base_dir
             assert written_path.exists()
             assert (
-                written_path.read_text(encoding="utf-8")
-                == "<html>real content</html>"
+                written_path.read_text(encoding="utf-8") == "<html>real content</html>"
             )
         finally:
             if result.content and Path(result.content).exists():
                 Path(result.content).unlink()
 
     @patch("zeo_core.integrations.google.mail.operations.email.process_message_parts")
-    @patch(
-        "zeo_core.integrations.google.mail.operations.email._get_message_with_retry"
-    )
+    @patch("zeo_core.integrations.google.mail.operations.email._get_message_with_retry")
     def test_download_email_returns_error_when_join_path_fails(
         self,
         mock_get_message: Any,  # noqa: ANN401 -- @patch-injected MagicMock, not the fixture

@@ -8,10 +8,10 @@ all required methods are present and correctly implemented.
 from collections.abc import Callable, Sequence
 from unittest.mock import MagicMock
 
+from tests.test_integrations.llms.mocks.clients import MockClient
 from zeo_core.integrations.core import IntegrationResult
 from zeo_core.integrations.llms.models import ChatMessage, LLMOptions
 from zeo_core.integrations.llms.protocols import LLMProviderProtocol
-from tests.test_integrations.llms.mocks.clients import MockClient
 
 
 class TestLLMProtocols:

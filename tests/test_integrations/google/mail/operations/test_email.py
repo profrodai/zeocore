@@ -12,6 +12,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from googleapiclient.errors import HttpError
+
 from zeo_core.integrations.google.mail.operations import email
 from zeo_core.integrations.google.mail.protocols import (
     GmailAttachmentsResource,
@@ -321,9 +322,7 @@ class TestGmailEmailOperations:
                 assert mock_sleep.call_count == 1  # Only 1 sleep between the 2 attempts
 
     @patch("zeo_core.integrations.google.mail.operations.email.process_message_parts")
-    @patch(
-        "zeo_core.integrations.google.mail.operations.email._get_message_with_retry"
-    )
+    @patch("zeo_core.integrations.google.mail.operations.email._get_message_with_retry")
     def test_download_email(
         self,
         mock_get_message: MagicMock,

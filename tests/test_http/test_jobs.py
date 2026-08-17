@@ -7,6 +7,7 @@ import uuid
 
 import pytest
 from pydantic import BaseModel
+
 from zeo_core.core.jobs import (
     InMemoryJobStore,
     JobData,

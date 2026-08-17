@@ -12,6 +12,7 @@ from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
 from zeo_core.contracts.common.enums import (
     ArtifactKind,
     ChecksumAlgorithm,

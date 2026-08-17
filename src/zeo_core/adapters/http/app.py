@@ -1,4 +1,3 @@
-
 """
 FastAPI application factory with dependency injection.
 """
@@ -9,6 +8,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from zeo_core.adapters.http.config import HttpAdapterConfig
 from zeo_core.adapters.http.routes import health, jobs, operations
 from zeo_core.core.jobs import InMemoryJobStore, JobStore, ThreadPoolJobRunner

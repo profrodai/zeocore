@@ -1,4 +1,3 @@
-
 """
 Utility functions for the HTTP adapter.
 """
@@ -6,6 +5,7 @@ Utility functions for the HTTP adapter.
 from typing import Any
 
 import httpx
+
 from zeo_core.core.logging import get_logger
 
 logger = get_logger(__name__)

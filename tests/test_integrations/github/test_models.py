@@ -4,6 +4,7 @@ from datetime import datetime
 
 import pytest
 from pydantic import ValidationError
+
 from zeo_core.integrations.github.models import (
     GitHubRepo,
     GitHubUser,

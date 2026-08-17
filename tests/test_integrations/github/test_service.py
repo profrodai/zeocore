@@ -4,6 +4,7 @@ from typing import cast
 from unittest.mock import MagicMock, create_autospec, patch
 
 import pytest
+
 from zeo_core.integrations.core import (
     AuthProviderProtocol,
     AuthResult,

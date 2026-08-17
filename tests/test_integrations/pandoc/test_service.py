@@ -10,6 +10,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoIntegrationError
 from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.integrations.pandoc.service import PandocIntegration, create_integration
@@ -1203,9 +1204,7 @@ def test_convert_directory_no_files_found_matching_pattern(
     fs_stub.get_file_info = MagicMock(
         return_value=SimpleNamespace(success=True, exists=True, is_dir=True)
     )
-    fs_stub.find_files = MagicMock(
-        return_value=SimpleNamespace(success=True, files=[])
-    )
+    fs_stub.find_files = MagicMock(return_value=SimpleNamespace(success=True, files=[]))
 
     integration = PandocIntegration()
     integration.paths_service = mock_paths_service
@@ -1246,12 +1245,13 @@ def test_default_output_path_same_dir_same_basename_target_extension() -> None:
     """
     integration = PandocIntegration()
 
-    assert integration._default_output_path(
-        "/some/dir/report.html", ".md"
-    ) == "/some/dir/report.md"
-    assert integration._default_output_path(
-        "docs/notes.md", ".docx"
-    ) == "docs/notes.docx"
+    assert (
+        integration._default_output_path("/some/dir/report.html", ".md")
+        == "/some/dir/report.md"
+    )
+    assert (
+        integration._default_output_path("docs/notes.md", ".docx") == "docs/notes.docx"
+    )
     # No directory component at all -- os.path.dirname("") is "", and
     # os.path.join("", ...) still yields the correct same-dir-as-input result.
     assert integration._default_output_path("report.html", ".md") == "report.md"

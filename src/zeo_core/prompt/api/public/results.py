@@ -1,6 +1,7 @@
 from typing import Any
 
 from pydantic import BaseModel, Field
+
 from zeo_core.prompt.models import PromptStrategy, StrategyInfo
 
 

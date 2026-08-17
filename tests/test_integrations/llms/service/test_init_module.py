@@ -24,6 +24,7 @@ never a zeo_core function under test.
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.core.errors import ZeoIntegrationError
 from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.integrations.llms.models import ChatMessage, RoleType

@@ -130,9 +130,7 @@ class TestGoogleDriveServiceUpload:
             mock_fs_service.read_binary.return_value = file_content_result
 
             mock_execute_upload = MagicMock()
-            mock_execute_upload.side_effect = ZeoApiError(
-                "API error", service="drive"
-            )
+            mock_execute_upload.side_effect = ZeoApiError("API error", service="drive")
 
             with patch(
                 "zeo_core.integrations.google.drive.service.standalone",

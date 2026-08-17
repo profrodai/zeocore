@@ -10,10 +10,11 @@ import traceback
 from collections.abc import Callable
 from typing import TypeVar
 
-from zeo_core.core.errors.base import ZeoError
 from rich.console import Console
 from rich.panel import Panel
 from rich.traceback import Traceback
+
+from zeo_core.core.errors.base import ZeoError
 
 T = TypeVar("T")
 

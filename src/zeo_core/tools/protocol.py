@@ -1,4 +1,3 @@
-
 """
 Structural protocol for ZeoTools.
 

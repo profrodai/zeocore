@@ -8,8 +8,9 @@ from types import SimpleNamespace
 from typing import Any
 
 import pytest
-import zeo_core.core.fs.service.standalone
 from _pytest.monkeypatch import MonkeyPatch
+
+import zeo_core.core.fs.service.standalone
 from zeo_core.core.errors import ZeoIntegrationError
 from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.integrations.pandoc.config import (
@@ -365,9 +366,7 @@ def test_pandoc_config_validate_output_dir(monkeypatch: MonkeyPatch) -> None:
     # Same deliberate return-type widening as test_util_get_file_info_not_found
     # above -- standalone.get_path_info's real return type is PathResult.
     standalone_path_any: Any = zeo_core.core.fs.service.standalone
-    standalone_path_any.get_path_info = lambda p: SimpleNamespace(
-        success=False
-    )
+    standalone_path_any.get_path_info = lambda p: SimpleNamespace(success=False)
     with pytest.raises(ValueError):
         PandocConfig(output_dir="??invalid")
 

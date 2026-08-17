@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
+
 from zeo_core.contracts import (
     ArtifactKind,
     ArtifactRef,

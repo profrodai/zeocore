@@ -14,6 +14,7 @@ import os
 from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field, field_validator
+
 from zeo_core.config.models import LoggingConfig
 from zeo_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from zeo_core.integrations.core.base import BaseConfigProvider
@@ -200,9 +201,7 @@ class PandocConfigProvider(BaseConfigProvider):
         """
         if "pandoc" in config_data and isinstance(config_data["pandoc"], dict):
             return config_data["pandoc"]
-        if "conversion" in config_data and isinstance(
-            config_data["conversion"], dict
-        ):
+        if "conversion" in config_data and isinstance(config_data["conversion"], dict):
             return config_data["conversion"]
         return config_data
 

@@ -1,4 +1,3 @@
-
 """
 Lifecycle hooks for tools (doctrine-compliant).
 

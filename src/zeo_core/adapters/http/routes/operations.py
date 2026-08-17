@@ -1,4 +1,3 @@
-
 """
 Operations routes for listing and invoking _ops directly.
 
@@ -10,6 +9,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import ValidationError
+
 from zeo_core.adapters.http.dependencies import (
     get_registry,
     require_auth,

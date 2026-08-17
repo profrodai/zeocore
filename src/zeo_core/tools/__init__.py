@@ -1,4 +1,3 @@
-
 """
 zeo_core.tools - Capability authoring framework (Ring B, Doctrine v3).
 

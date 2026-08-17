@@ -3,6 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.integrations.github import (
     GitHubIntegration,
     create_integration,

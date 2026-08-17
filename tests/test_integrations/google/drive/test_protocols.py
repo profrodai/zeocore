@@ -4,13 +4,6 @@ Tests for Google Drive protocols module.
 
 from unittest.mock import MagicMock
 
-from zeo_core.integrations.google.drive.protocols import (
-    DriveFilesResource,
-    DrivePermissionsResource,
-    DriveRequest,
-    DriveService,
-    GoogleCredentials,
-)
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
     MockDrivePermissionsResource,
@@ -19,6 +12,13 @@ from tests.test_integrations.google.drive.mocks import (
     MockGoogleCredentials,
     create_credentials,
     create_mock_drive_service,
+)
+from zeo_core.integrations.google.drive.protocols import (
+    DriveFilesResource,
+    DrivePermissionsResource,
+    DriveRequest,
+    DriveService,
+    GoogleCredentials,
 )
 
 

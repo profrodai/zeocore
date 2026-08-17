@@ -1,4 +1,3 @@
-
 """
 Integration-related error classes for zeo_core.
 """

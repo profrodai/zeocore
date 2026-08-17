@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from zeo_core.integrations.core.base import BaseAuthProvider
 
 from .auth_provider_impl import (
@@ -22,9 +23,7 @@ class TestBaseAuthProvider:
         credentials_file = str(temp_dir / "credentials.json")
 
         # Patch fs.service.standalone.resolve_path to return the expected path string
-        with patch(
-            "zeo_core.core.fs.service.standalone.resolve_path"
-        ) as mock_resolve:
+        with patch("zeo_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.return_value = credentials_file
             provider = MockAuthProvider(credentials_file=credentials_file)
             assert provider.credentials_file == credentials_file
@@ -143,16 +142,12 @@ class TestBaseAuthProvider:
         credentials_file = str(temp_dir / "creds" / "credentials.json")
 
         # Patch resolve_path to return a string
-        with patch(
-            "zeo_core.core.fs.service.standalone.resolve_path"
-        ) as mock_resolve:
+        with patch("zeo_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.return_value = credentials_file
             provider = MockAuthProvider(credentials_file=credentials_file)
 
             # Now correctly patch the methods
-            with patch(
-                "zeo_core.core.fs.service.standalone.split_path"
-            ) as mock_split:
+            with patch("zeo_core.core.fs.service.standalone.split_path") as mock_split:
                 mock_split.return_value = [str(temp_dir), "creds", "credentials.json"]
 
                 with patch(
@@ -172,15 +167,11 @@ class TestBaseAuthProvider:
                         mock_create.assert_called_once()
 
         # Test with creation error
-        with patch(
-            "zeo_core.core.fs.service.standalone.resolve_path"
-        ) as mock_resolve:
+        with patch("zeo_core.core.fs.service.standalone.resolve_path") as mock_resolve:
             mock_resolve.return_value = credentials_file
             provider = MockAuthProvider(credentials_file=credentials_file)
 
-            with patch(
-                "zeo_core.core.fs.service.standalone.split_path"
-            ) as mock_split:
+            with patch("zeo_core.core.fs.service.standalone.split_path") as mock_split:
                 mock_split.return_value = [str(temp_dir), "creds", "credentials.json"]
 
                 with patch(

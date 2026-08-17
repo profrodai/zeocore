@@ -206,9 +206,7 @@ def mock_paths_service(monkeypatch: MonkeyPatch) -> MagicMock:
         if path and isinstance(path, str) and path.startswith("~")
         else path
     )
-    paths_mod_any.read_yaml = lambda path: SimpleNamespace(
-        success=True, data={}
-    )
+    paths_mod_any.read_yaml = lambda path: SimpleNamespace(success=True, data={})
 
     return mock
 

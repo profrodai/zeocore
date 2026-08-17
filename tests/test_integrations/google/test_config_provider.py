@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 import pytest
 from pydantic import ValidationError
+
 from zeo_core.integrations.google.config import (
     GoogleConfigProvider,
     GoogleDriveConfig,

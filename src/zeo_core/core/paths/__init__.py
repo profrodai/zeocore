@@ -1,4 +1,3 @@
-
 """
 Path resolution and management utilities for zeo_core.
 

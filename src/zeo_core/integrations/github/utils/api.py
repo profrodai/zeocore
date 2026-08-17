@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Any
 
 import requests
+
 from zeo_core.core.errors import (
     ZeoApiError,
     ZeoAuthenticationError,
@@ -289,8 +290,7 @@ def make_request(
     # silence the checker -- this also documents the invariant and would
     # fail loudly if a future edit ever actually broke it.
     raise ZeoApiError(
-        "GitHub API error: retry loop exited without returning a response "
-        "or raising",
+        "GitHub API error: retry loop exited without returning a response or raising",
         service="GitHub",
         api_method=url,
     )

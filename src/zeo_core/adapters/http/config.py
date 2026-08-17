@@ -1,9 +1,9 @@
-
 """
 Configuration for the HTTP adapter.
 """
 
 from pydantic import AnyHttpUrl, Field
+
 from zeo_core.config.tooling.base import ZeoToolConfigModel
 
 

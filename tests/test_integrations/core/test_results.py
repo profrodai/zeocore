@@ -8,6 +8,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
+
 from zeo_core.integrations.core.results import (
     AuthResult,
     ConfigResult,

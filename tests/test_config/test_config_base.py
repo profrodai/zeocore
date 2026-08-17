@@ -14,6 +14,7 @@ from pathlib import Path
 
 import yaml
 from pydantic import BaseModel
+
 from zeo_core.config_base import (
     BasePolicy,
     ConfigError,

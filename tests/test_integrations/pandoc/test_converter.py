@@ -31,9 +31,7 @@ def test_document_converter_initialization_verify_pandoc_fails(
 ) -> None:
     """When verify_pandoc() raises, __init__ swallows it and falls back to
     an "unknown" version rather than propagating (converter.py:89-92)."""
-    with patch(
-        "zeo_core.integrations.pandoc.converter.verify_pandoc"
-    ) as mock_verify:
+    with patch("zeo_core.integrations.pandoc.converter.verify_pandoc") as mock_verify:
         mock_verify.side_effect = RuntimeError("pandoc not installed")
 
         config = PandocConfig()
@@ -124,9 +122,7 @@ def test_convert_file_unsupported_format(mock_pypandoc: MagicMock) -> None:
     converter = DocumentConverter(config)
 
     # Mock file info to return unsupported format
-    with patch(
-        "zeo_core.integrations.pandoc.converter.get_file_info"
-    ) as mock_get_info:
+    with patch("zeo_core.integrations.pandoc.converter.get_file_info") as mock_get_info:
         mock_get_info.return_value = FileInfo(
             path="file.txt", format="txt", size=100, modified=None, extra_args=[]
         )
@@ -146,9 +142,7 @@ def test_convert_file_integration_error(mock_pypandoc: MagicMock) -> None:
     converter = DocumentConverter(config)
 
     # Mock conversion to raise error
-    with patch(
-        "zeo_core.integrations.pandoc.converter.get_file_info"
-    ) as mock_get_info:
+    with patch("zeo_core.integrations.pandoc.converter.get_file_info") as mock_get_info:
         mock_get_info.side_effect = ZeoIntegrationError("Test error", {})
 
         # Run conversion
@@ -433,9 +427,7 @@ def test_convert_file_unexpected_exception(
     config = PandocConfig()
     converter = DocumentConverter(config)
 
-    with patch(
-        "zeo_core.integrations.pandoc.converter.get_file_info"
-    ) as mock_get_info:
+    with patch("zeo_core.integrations.pandoc.converter.get_file_info") as mock_get_info:
         mock_get_info.side_effect = RuntimeError("boom")
 
         result = converter.convert_file("input.html", "output.md", "markdown")
@@ -533,9 +525,7 @@ def test_resolve_batch_output_path_split_failure(
     config = PandocConfig()
     converter = DocumentConverter(config)
 
-    fs_stub.split_path = lambda path: SimpleNamespace(
-        success=False, error="Bad path"
-    )
+    fs_stub.split_path = lambda path: SimpleNamespace(success=False, error="Bad path")
 
     task = ConversionTask(
         source=FileInfo(
@@ -602,9 +592,7 @@ def test_process_batch_task_unresolved_output_path_marks_failure(
         ) as mock_resolve,
         patch.object(converter, "convert_file") as mock_convert,
     ):
-        converter._process_batch_task(
-            task, "batch_dir", successful_files, failed_files
-        )
+        converter._process_batch_task(task, "batch_dir", successful_files, failed_files)
 
     assert mock_resolve.called
     assert not mock_convert.called
@@ -635,9 +623,7 @@ def test_process_batch_task_raises_records_metrics_error(
     with patch.object(converter, "convert_file") as mock_convert:
         mock_convert.side_effect = RuntimeError("catastrophic failure")
 
-        converter._process_batch_task(
-            task, "batch_dir", successful_files, failed_files
-        )
+        converter._process_batch_task(task, "batch_dir", successful_files, failed_files)
 
     assert failed_files == ["file1.html"]
     assert successful_files == []
