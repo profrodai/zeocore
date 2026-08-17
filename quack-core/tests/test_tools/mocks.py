@@ -18,7 +18,7 @@ from unittest.mock import MagicMock, patch
 from quack_core.core.fs import DataResult, OperationResult
 from quack_core.integrations.core import IntegrationResult
 from quack_core.integrations.core.base import BaseIntegrationService
-from quack_core.tools.base import BaseQuackToolPlugin
+from quack_core.tools import BaseQuackToolPlugin
 
 
 def create_mock_fs() -> MagicMock:
@@ -85,7 +85,7 @@ def mock_data_result(
     """
     return DataResult(
         data=data,
-        success=success,
+        ok=success,
         path=str(data) if data is not None else None,
         format="path",
     )
@@ -106,7 +106,7 @@ def mock_operation_result(
         OperationResult: A properly constructed OperationResult
     """
     return OperationResult(
-        data=data, success=success, path=str(data) if data is not None else None
+        data=data, ok=success, path=str(data) if data is not None else None
     )
 
 
@@ -114,7 +114,7 @@ def mock_integration_result(
     success: bool = True,
     message: str = "Success",
     content: Any = None,  # noqa: ANN401 -- genuinely dynamic: mirrors IntegrationResult.content's own unconstrained type
-    error: str = None,
+    error: str | None = None,
 ) -> IntegrationResult:
     """
     Create a mock IntegrationResult.
@@ -150,10 +150,11 @@ class MockIntegrationService(BaseIntegrationService):
         self.called_methods: list[str] = []
         self.call_args: dict[str, list[Any]] = {}
 
-    def initialize(self) -> None:
+    def initialize(self) -> IntegrationResult:
         """Record that initialize was called."""
         self.initialized = True
         self.called_methods.append("initialize")
+        return mock_integration_result(success=True, message="Initialized")
 
     def process(
         self,

@@ -23,12 +23,17 @@ Following Python 3.13 best practices:
 
 import importlib
 import inspect
-from importlib.metadata import entry_points
+from importlib.metadata import EntryPoint, entry_points
+from types import ModuleType
+from typing import TYPE_CHECKING, cast
 
 from pydantic import BaseModel, Field, ValidationError
 from quack_core.core.errors import QuackPluginError
 from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol
+
+if TYPE_CHECKING:
+    from quack_core.modules.registry import PluginRegistry
 
 
 class PluginInfo(QuackPluginMetadata):
@@ -233,7 +238,7 @@ class PluginLoader:
         return None
 
     def _load_from_class(
-        self, module: object, module_path: str
+        self, module: ModuleType, module_path: str
     ) -> QuackPluginProtocol | None:
         """
         Attempt to load a plugin by searching for specific classes in the module.
@@ -252,8 +257,17 @@ class PluginLoader:
         for name, obj in inspect.getmembers(module):
             if inspect.isclass(obj) and name == class_name:
                 try:
-                    plugin = obj()
-                    plugin = self._validate_plugin(plugin, module_path)
+                    # obj is narrowed to type[object] (not type[Any]) by
+                    # inspect.isclass's own typeshed stub, so obj() is
+                    # `object`, not the QuackPluginProtocol this class is
+                    # documented to look for. _validate_plugin is exactly
+                    # this method's own runtime check for that gap (hasattr
+                    # + pydantic validation below); cast reflects that the
+                    # runtime check, not static typing, is the source of
+                    # truth here, matching this file's own defensive
+                    # try/except idiom around every dynamic construction.
+                    candidate = cast(QuackPluginProtocol, obj())
+                    plugin = self._validate_plugin(candidate, module_path)
                     self.logger.debug(
                         f"Loaded plugin {plugin.name} from "
                         f"module {module_path} using class {class_name}"
@@ -487,7 +501,7 @@ class PluginLoader:
         return available
 
     def _rollback_registered_plugins(
-        self, registry: object, registered_ids: list[str]
+        self, registry: "PluginRegistry", registered_ids: list[str]
     ) -> None:
         """
         Unregister previously registered plugins after a strict-mode failure.
@@ -516,8 +530,8 @@ class PluginLoader:
     def _load_one_entry_point(
         self,
         ep_name: str,
-        ep: object,
-        registry: object,
+        ep: EntryPoint,
+        registry: "PluginRegistry",
         result: LoadResult,
         registered_ids: list[str],
         strict: bool,
@@ -699,7 +713,7 @@ class PluginLoader:
     def _load_one_module_path(
         self,
         module_path: str,
-        registry: object,
+        registry: "PluginRegistry",
         result: LoadResult,
         registered_ids: list[str],
         strict: bool,

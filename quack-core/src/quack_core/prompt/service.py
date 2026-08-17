@@ -155,7 +155,7 @@ class PromptService:
             # 4. Render
             rendered_prompt = strategy.render_fn(**render_kwargs)
 
-            metadata = {
+            metadata: dict[str, Any] = {
                 "strategy_id": strategy.id,
                 "strategy_origin": strategy.origin,
                 "input_vars": list(render_kwargs.keys()),
