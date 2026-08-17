@@ -1,23 +1,57 @@
-name: Publish to PyPI
+name: Publish
 
-# Triggered by pushing a version tag, e.g. `v0.1.0` (matches pyproject.toml's
-# `version = "0.1.0"` -- keep the tag and the pyproject version in sync when
-# cutting a release). Runs the full `make verify` gate first so a broken
-# build can never reach PyPI even if someone tags by mistake, then builds
-# sdist+wheel and publishes via PyPI Trusted Publishing (OIDC) -- no API
-# token stored as a repo secret.
+# Two ways to trigger:
+#   1. Push a version tag (`v0.1.0`, matching pyproject.toml's `version`) --
+#      publishes straight to real PyPI. This is the release path.
+#   2. Manual dispatch (Actions tab -> Run workflow) with a `target` choice
+#      of testpypi / pypi / both -- lets a human stage a real publish
+#      attempt against TestPyPI (a real, separate package index with its
+#      own trusted-publisher binding) without cutting a tag, and is the
+#      right way to first verify PyPI's trusted-publisher link is actually
+#      configured correctly before it matters on a real release.
 #
-# One-time setup required on PyPI's web UI before this workflow can publish
-# (not done by this workflow, and not something this session has credentials
-# for): create the `zeocore` project on PyPI (or use "pending publisher" for
-# a not-yet-published project) and link it to this GitHub repo + this
-# workflow filename (`publish.yml`) + the `pypi` environment name below.
+# Runs the full `make verify` gate first so a broken build can never reach
+# either index even if someone tags/dispatches by mistake, then builds
+# sdist+wheel once and publishes via PyPI Trusted Publishing (OIDC) to
+# whichever index(es) were requested -- no API token stored as a repo
+# secret for either index.
+#
+# One-time setup required on each index's own web UI before this workflow
+# can publish there (not done by this workflow, and not something a CI
+# session has credentials for):
+#   - PyPI:     https://pypi.org/manage/account/publishing/
+#   - TestPyPI: https://test.pypi.org/manage/account/publishing/
+# For each, register a trusted publisher with EXACTLY:
+#   - repository owner: zeroemployeeorg
+#   - repository name:  zeocore
+#   - workflow filename: publish.yml  (not the full path, just the filename)
+#   - environment name: pypi (for the pypi.org publisher) or
+#                        testpypi (for the test.pypi.org publisher)
+# All four fields are baked into the OIDC token's claims and must match
+# byte-for-byte on PyPI's side -- a mismatch fails with
+# "invalid-publisher: valid token, but no corresponding publisher", which
+# gives no further detail about WHICH field is wrong, so get all four
+# exactly right rather than guessing from the error alone.
 # See https://docs.pypi.org/trusted-publishers/.
 
 on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Where to publish"
+        required: true
+        type: choice
+        options:
+          - testpypi
+          - pypi
+          - both
+        default: testpypi
   push:
     tags:
       - "v*.*.*"
+
+permissions:
+  contents: read
 
 jobs:
   verify:
@@ -66,9 +100,39 @@ jobs:
           path: dist/
           if-no-files-found: error
 
-  publish:
+  publish-testpypi:
+    name: publish to TestPyPI (trusted publishing)
+    needs: build
+    if: >-
+      (github.event_name == 'workflow_dispatch' &&
+       (github.event.inputs.target == 'testpypi' || github.event.inputs.target == 'both'))
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/zeocore/
+    permissions:
+      id-token: write
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          verbose: true
+          print-hash: true
+
+  publish-pypi:
     name: publish to PyPI (trusted publishing)
     needs: build
+    if: >-
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'workflow_dispatch' &&
+       (github.event.inputs.target == 'pypi' || github.event.inputs.target == 'both'))
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -86,3 +150,57 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
+          print-hash: true
+
+  smoke-test:
+    name: smoke-test the published package
+    needs: [publish-testpypi, publish-pypi]
+    # Runs if EITHER publish job ran and succeeded; skipped entirely (not
+    # failed) if a given publish job didn't run because its target wasn't
+    # selected -- `always()` plus explicit result checks, since `needs`
+    # results for a skipped job read as "success" by default, which would
+    # otherwise let this step silently no-op instead of actually verifying
+    # anything on a testpypi-only or pypi-only run.
+    if: |
+      always() &&
+      (needs.publish-testpypi.result == 'success' || needs.publish-pypi.result == 'success')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Wait for index propagation
+        run: sleep 30
+
+      - name: Install from PyPI and smoke-test
+        if: needs.publish-pypi.result == 'success'
+        run: |
+          uv venv /tmp/smoke-pypi
+          uv pip install --python /tmp/smoke-pypi/bin/python zeocore=="${GITHUB_REF_NAME#v}"
+          /tmp/smoke-pypi/bin/python -c "
+          import zeo_core
+          print('installed version:', zeo_core.__version__)
+          from zeo_core.tools import BaseZeoTool, ToolContext
+          from zeo_core.contracts import CapabilityResult
+          print('import OK: BaseZeoTool, ToolContext, CapabilityResult')
+          "
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+
+      - name: Install from TestPyPI and smoke-test
+        if: needs.publish-testpypi.result == 'success' && needs.publish-pypi.result != 'success'
+        run: |
+          uv venv /tmp/smoke-testpypi
+          uv pip install --python /tmp/smoke-testpypi/bin/python \
+            --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            zeocore
+          /tmp/smoke-testpypi/bin/python -c "
+          import zeo_core
+          print('installed version:', zeo_core.__version__)
+          from zeo_core.tools import BaseZeoTool, ToolContext
+          from zeo_core.contracts import CapabilityResult
+          print('import OK: BaseZeoTool, ToolContext, CapabilityResult')
+          "

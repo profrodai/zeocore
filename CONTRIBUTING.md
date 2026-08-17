@@ -108,3 +108,46 @@ make test-module M=test_fs   # run one module's tests with coverage
 
 Please open a GitHub issue with a clear description, steps to reproduce (for
 bugs), and your Python/zeocore version.
+
+## Releasing (maintainers)
+
+Releases go through `.github/workflows/publish.yml`, using PyPI's [trusted
+publishing](https://docs.pypi.org/trusted-publishers/) (OIDC) -- no API
+token is stored as a repo secret for either index.
+
+1. Bump the version in **both** `pyproject.toml`'s `[project] version` and
+   `src/zeo_core/__init__.py`'s `__version__` -- they must match exactly
+   (`[tool.hatch.version]` reads the latter as the single source of truth
+   at build time, but the former is what `pip`/PyPI display before the
+   package is even downloaded, so keep them in sync by hand).
+2. Add a dated entry to `CHANGELOG.md` (Keep a Changelog format).
+3. Before cutting a real tag, stage a publish to TestPyPI to catch any
+   packaging problem (or a trusted-publisher misconfiguration) somewhere
+   that doesn't risk the real index: Actions tab -> "Publish" workflow ->
+   "Run workflow" -> target `testpypi`. Confirm it installs cleanly:
+   `pip install --index-url https://test.pypi.org/simple/
+   --extra-index-url https://pypi.org/simple/ zeocore`.
+4. Tag and push: `git tag -a vX.Y.Z -m "..."` then `git push origin vX.Y.Z`.
+   This triggers the same workflow against real PyPI.
+5. The workflow's own `smoke-test` job installs the just-published package
+   into a clean venv and imports it -- treat that job's failure as the
+   release having NOT actually succeeded, even if the publish step itself
+   reported success (PyPI's own index can take a moment to propagate; the
+   workflow waits, but a failure here is still real signal, not a fluke to
+   ignore).
+
+**One-time setup**, before the very first release, on each index's own web
+UI (not something a CI workflow can do for itself):
+
+- https://pypi.org/manage/account/publishing/
+- https://test.pypi.org/manage/account/publishing/
+
+Register a trusted publisher on each with **all four** fields exact:
+repository owner `zeroemployeeorg`, repository name `zeocore`, workflow
+filename `publish.yml` (just the filename, not the full path), and
+environment name `pypi` (for the pypi.org entry) or `testpypi` (for the
+test.pypi.org entry). All four are baked into the OIDC token's claims and
+must match byte-for-byte, or the publish step fails with
+`invalid-publisher: valid token, but no corresponding publisher` -- an
+error that does not say which field is wrong, so get all four right rather
+than guessing from one failed attempt.
