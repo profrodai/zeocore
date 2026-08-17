@@ -114,11 +114,11 @@ class TestLLMConfig:
             "api_base": "https://custom-api.openai.com",
             "default_model": "gpt-4o-mini",
         }
-        config = OpenAIConfig(**openai_dict)
-        assert config.api_key == "test-key"
-        assert config.organization == "test-org"
-        assert config.api_base == "https://custom-api.openai.com"
-        assert config.default_model == "gpt-4o-mini"
+        openai_config = OpenAIConfig(**openai_dict)
+        assert openai_config.api_key == "test-key"
+        assert openai_config.organization == "test-org"
+        assert openai_config.api_base == "https://custom-api.openai.com"
+        assert openai_config.default_model == "gpt-4o-mini"
 
         # Test Anthropic config from dict
         anthropic_dict = {
@@ -126,10 +126,10 @@ class TestLLMConfig:
             "api_base": "https://custom-api.anthropic.com",
             "default_model": "claude-3-sonnet-20240229",
         }
-        config = AnthropicConfig(**anthropic_dict)
-        assert config.api_key == "test-key"
-        assert config.api_base == "https://custom-api.anthropic.com"
-        assert config.default_model == "claude-3-sonnet-20240229"
+        anthropic_config = AnthropicConfig(**anthropic_dict)
+        assert anthropic_config.api_key == "test-key"
+        assert anthropic_config.api_base == "https://custom-api.anthropic.com"
+        assert anthropic_config.default_model == "claude-3-sonnet-20240229"
 
         # Test main config from dict
         config_dict = {
@@ -142,15 +142,15 @@ class TestLLMConfig:
             "max_retry_delay": 10.0,
             "logging": {"level": "DEBUG"},
         }
-        config = LLMConfig(**config_dict)
-        assert config.openai.api_key == "test-key"
-        assert config.anthropic.api_key == "test-key"
-        assert config.default_provider == "anthropic"
-        assert config.timeout == 30
-        assert config.retry_count == 5
-        assert config.initial_retry_delay == 0.5
-        assert config.max_retry_delay == 10.0
-        assert config.logging.level == "DEBUG"
+        llm_config = LLMConfig(**config_dict)
+        assert llm_config.openai.api_key == "test-key"
+        assert llm_config.anthropic.api_key == "test-key"
+        assert llm_config.default_provider == "anthropic"
+        assert llm_config.timeout == 30
+        assert llm_config.retry_count == 5
+        assert llm_config.initial_retry_delay == 0.5
+        assert llm_config.max_retry_delay == 10.0
+        assert llm_config.logging.level == "DEBUG"
 
     def test_config_model_dump(self) -> None:
         """Test dumping config models to dictionaries."""

@@ -163,7 +163,7 @@ class LLMOptions(BaseModel):
         Returns:
             dict: Parameters for the OpenAI API.
         """
-        params = {
+        params: dict[str, Any] = {
             "temperature": self.temperature,
             "top_p": self.top_p,
             "frequency_penalty": self.frequency_penalty,

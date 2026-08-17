@@ -224,7 +224,7 @@ class TestLLMModels:
 
         # Test without the required function field
         with pytest.raises(ValidationError):
-            ToolCall(
+            ToolCall(  # type: ignore[call-arg]  # deliberate missing required field, testing the validation contract
                 id="call_1",
                 type="function",
                 # Missing function field
@@ -241,7 +241,7 @@ class TestLLMModels:
 
         if extra_forbidden:
             with pytest.raises(ValidationError):
-                ToolCall(
+                ToolCall(  # type: ignore[call-arg]  # deliberate extra field, testing the extra="forbid" contract
                     id="call_1",
                     type="function",
                     function=FunctionCall(name="test_function", arguments="{}"),

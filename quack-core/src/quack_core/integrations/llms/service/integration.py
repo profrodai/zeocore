@@ -112,6 +112,9 @@ class LLMIntegration(BaseIntegrationService):
                 self.logger.warning(f"Failed to load config, using defaults: {e}")
                 self.config = self.config_provider.get_default_config()
 
+        if self.config is None:
+            raise QuackIntegrationError("LLM configuration not initialized")
+
         # Validate configuration
         try:
             from quack_core.integrations.llms.config import LLMConfig

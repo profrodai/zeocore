@@ -132,7 +132,9 @@ class TestLLMConfigProvider:
 
         try:
             # Replace with a simple function that returns our mock result
-            config_provider.load_config = lambda config_path=None: mock_config_result
+            config_provider.load_config = (  # type: ignore[method-assign]
+                lambda config_path=None: mock_config_result
+            )
 
             # Now call the method and verify the result
             result = config_provider.load_config("config.yaml")
@@ -144,7 +146,7 @@ class TestLLMConfigProvider:
             assert result.content["default_provider"] == "anthropic"
         finally:
             # Restore the original method
-            config_provider.load_config = original_load_config
+            config_provider.load_config = original_load_config  # type: ignore[method-assign]
 
     def test_no_path_resolution_needed(
         self, config_provider: LLMConfigProvider

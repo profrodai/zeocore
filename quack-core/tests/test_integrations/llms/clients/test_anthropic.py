@@ -292,10 +292,10 @@ class TestAnthropicClient:
 
         # Test with import error
         with patch.dict("sys.modules", {"anthropic": None}):
-            with pytest.raises(QuackIntegrationError) as excinfo:
+            with pytest.raises(QuackIntegrationError) as import_excinfo:
                 anthropic_client._chat_with_provider(messages, options)
 
-            assert "Failed to import Anthropic package" in str(excinfo.value)
+            assert "Failed to import Anthropic package" in str(import_excinfo.value)
 
     def test_count_tokens_with_provider(
         self, anthropic_client: AnthropicClient
