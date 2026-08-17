@@ -176,8 +176,16 @@ class TestDriveProtocols:
         assert mock_credentials.client_secret == "client_secret"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         assert mock_credentials.scopes == ["https://www.googleapis.com/auth/drive.file"]
 
-        # Test with an object missing required attributes
-        incomplete_mock = MagicMock()
+        # Test with an object missing required attributes. `spec=` restricts
+        # the mock to only the attributes explicitly listed, so `hasattr`
+        # genuinely reports the rest as absent rather than relying on a bare
+        # MagicMock's auto-attribute fabrication (whose interaction with
+        # `Protocol.__instancecheck__` differs across Python versions --
+        # pre-3.12 `typing._ProtocolMeta.__instancecheck__` uses plain
+        # `hasattr`/`getattr`, which triggers MagicMock's `__getattr__` and
+        # fabricates any attribute on access; 3.12+ rewrote this to use
+        # `inspect.getattr_static`, which does not trigger `__getattr__`).
+        incomplete_mock = MagicMock(spec=["token"])
         incomplete_mock.token = "token123"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         # Missing other required attributes
         assert not isinstance(incomplete_mock, GoogleCredentials)

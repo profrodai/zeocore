@@ -73,8 +73,17 @@ class TestGitHubProtocols:
         # It should be considered an instance of the protocol.
         assert isinstance(mock_impl, GitHubIntegrationProtocol)
 
-        # Create a mock that doesn't implement all methods.
-        incomplete_mock = MagicMock()
+        # Create a mock that doesn't implement all methods. `spec=` restricts
+        # the mock to only the attributes explicitly listed here, so
+        # `hasattr`/structural checks genuinely report the rest as absent
+        # rather than relying on a bare MagicMock's auto-attribute
+        # fabrication (whose interaction with `Protocol.__instancecheck__`
+        # differs across Python versions -- see CPython's typing.py rewrite
+        # of `_ProtocolMeta.__instancecheck__` in 3.12, which switched from
+        # an `issubclass(instance.__class__, cls)` shortcut for
+        # callable-only protocols to `inspect.getattr_static`-based
+        # structural checks that don't trigger `__getattr__`).
+        incomplete_mock = MagicMock(spec=["name", "get_current_user"])
         incomplete_mock.name = "GitHub"
         incomplete_mock.get_current_user = lambda: None
 

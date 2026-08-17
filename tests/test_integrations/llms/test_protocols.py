@@ -42,8 +42,17 @@ class TestLLMProtocols:
 
     def test_incomplete_protocol_implementation(self) -> None:
         """Test that incomplete implementations don't satisfy the protocol."""
-        # Create a very basic mock that won't match the protocol
-        mock = MagicMock()
+        # Create a very basic mock that won't match the protocol. `spec=[]`
+        # restricts the mock to having no attributes at all, so `hasattr`
+        # genuinely reports every protocol member as absent rather than
+        # relying on a bare MagicMock's auto-attribute fabrication (whose
+        # interaction with `Protocol.__instancecheck__` differs across
+        # Python versions -- pre-3.12 `typing._ProtocolMeta.__instancecheck__`
+        # uses plain `hasattr`/`getattr`, which triggers MagicMock's
+        # `__getattr__` and fabricates any attribute on access; 3.12+
+        # rewrote this to use `inspect.getattr_static`, which does not
+        # trigger `__getattr__`).
+        mock = MagicMock(spec=[])
         assert not isinstance(mock, LLMProviderProtocol)
 
         # Test with a more specific implementation that has properties
