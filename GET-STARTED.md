@@ -2,11 +2,11 @@
 
 ## Introduction
 
-**ZeoCore** is the foundational library powering the **ZeoVerse** ecosystem of tools. It provides shared infrastructure for path resolution, configuration management, plugin architecture, integration protocols, and CLI utilities. This modular core enables seamless interoperability between tools and consistent behavior across the ZeoVerse.
+**ZeoCore** is a capability-authoring framework and infrastructure library for Python. It provides a typed base for writing tools (`BaseZeoTool`, `ToolContext`, `CapabilityResult`), plus shared infrastructure for path resolution, filesystem operations, configuration management, plugin discovery, and integrations with third-party services (Google Drive, Gmail, Notion, Pandoc, LLM providers, GitHub).
 
-ZeoCore is designed for developers building internal tools, CLI agents, automation pipelines, and integrations within the ZeoVerse ecosystem. It also powers educational content used in the **AI Product Engineer** learning platform.
+ZeoCore is designed for developers building automation tools, content pipelines, and integrations that need consistent configuration, filesystem, and error-handling behavior without re-solving those problems per project.
 
-This documentation helps you get started with ZeoCore and use its features in your own applications or when building new tools in the ecosystem.
+This documentation helps you get started with ZeoCore and use its features in your own applications. See also [`examples/`](examples/) for runnable, verified example scripts.
 
 ---
 
@@ -14,7 +14,7 @@ This documentation helps you get started with ZeoCore and use its features in yo
 
 ### Prerequisites
 
-- Python 3.13 or higher
+- Python 3.10 or higher
 - pip package manager
 
 ### Basic Installation
@@ -63,16 +63,24 @@ Standardized path resolution and project structure detection across environments
 Safe and consistent filesystem operations with error handling and structured results.
 
 ### `zeo_core.modules`
-Extensible plugin discovery and registration framework to build modular CLI agents and tools.
+Extensible plugin discovery and explicit-loading registration framework.
 
 ### `zeo_core.integrations`
-Interfaces to third-party services (Google Drive, Gmail, Notion, Pandoc) through a clean adapter layer.
+Interfaces to third-party services (Google Drive, Gmail, Notion, Pandoc, GitHub, LLM providers) through a clean adapter layer.
 
 ### `zeo_core.core.errors`
 Structured error handling system with typed exceptions for improved developer experience.
 
-### `zeo_core.cli`
-Shared CLI environment initialization and I/O utilities for user-friendly tooling.
+### `zeo_core.tools`
+The capability-authoring framework itself: `BaseZeoTool`, `ToolContext`, and
+optional mixins (`IntegrationEnabledMixin`, `LifecycleMixin`,
+`ToolEnvInitializerMixin`) for building doctrine-compliant tools. See
+[`examples/toolkit_usage.py`](examples/toolkit_usage.py) and
+[`examples/minimal_tool.py`](examples/minimal_tool.py).
+
+### `zeo_core.contracts`
+The data contracts tools speak: `CapabilityResult`, artifact/manifest
+models, and common enums/IDs used across the framework.
 
 ---
 
@@ -97,56 +105,71 @@ custom_config = load_config("path/to/custom_config.yaml")
 ### Path Resolution
 
 ```python
-from zeo_core.core.paths import resolver
+from zeo_core.core.paths import get_path_service
 
-# Find the project root directory
-project_root = resolver._get_project_root()
+path_service = get_path_service()
+
+# Find the project root directory (returns a PathResult, not a bare string)
+root_result = path_service.get_project_root()
+if root_result.success:
+    project_root = root_result.path
 
 # Resolve a path relative to the project root
-config_path = resolver._resolve_project_path("config/settings.yaml")
+config_path_result = path_service.resolve_project_path("config/settings.yaml")
 
 # Detect project context
-context = resolver._detect_project_context()
-source_dir = context._get_source_dir()
+context_result = path_service.detect_project_context()
+if context_result.success:
+    context = context_result.context
 ```
 
 ### File Operations
 
 ```python
-from zeo_core.core.fs import service as fs
+from zeo_core.core.fs import get_service
+
+fs = get_service()
 
 # Read text from a file
-result = fs._read_text("path/to/file.txt")
+result = fs.read_text("path/to/file.txt")
 if result.success:
     content = result.content
 else:
     print(f"Error: {result.error}")
 
 # Write text to a file
-fs._write_text("path/to/output.txt", "Hello, ZeoCore!")
+fs.write_text("path/to/output.txt", "Hello, ZeoCore!")
 
 # Create a directory
-fs._create_directory("path/to/new/directory")
+fs.create_directory("path/to/new/directory")
 
 # Read structured data
-yaml_result = fs._read_yaml("config.yaml")
+yaml_result = fs.read_yaml("config.yaml")
 if yaml_result.success:
     config_data = yaml_result.data
 ```
 
 ### Using Plugins
 
+Importing `zeo_core.modules` has no side effects -- nothing is auto-loaded.
+Plugins must be explicitly enabled, then looked up from the registry:
+
 ```python
-from zeo_core.modules import registry
+from zeo_core.modules import load_enabled_entry_points, registry
 
-# Get a list of all registered modules
-plugin_names = registry.list_plugins()
+# Explicitly load the modules you want (operator-controlled, not automatic)
+result = load_enabled_entry_points(
+    enabled=["fs", "paths", "config"],
+    strict=True,        # fail fast if one of these isn't available
+    auto_register=True, # register loaded plugins in the global registry
+)
+if result.success:
+    print(f"Loaded: {result.loaded}")
 
-# Get a specific plugin
-pandoc_plugin = registry.get_plugin("Pandoc")
-if pandoc_plugin:
-  pandoc_plugin.initialize()
-  # Use the plugin's functionality
+# Look up a loaded plugin by id
+fs_plugin = registry.get_plugin("fs")
+if fs_plugin is not None:
+    print(f"fs plugin: {fs_plugin}")
 ```
 
 ### Working with Google Drive Integration
@@ -222,68 +245,43 @@ except ZeoError as e:
   print(f"Error: {e}")
 ```
 
-### CLI Application Setup
-
-```python
-from zeo_core.cli import init_cli_env, print_info, print_error, ask
-
-# Initialize CLI environment
-context = init_cli_env(
-    config_path="config.yaml",
-    app_name="my_app"
-)
-
-# Use CLI utilities
-print_info("Starting process...")
-
-# Get user input
-user_input = ask("Enter a value:", default="default_value")
-
-# Access logger
-context.logger.debug("Debug information")
-
-# Handle errors nicely
-try:
-    # Your code here
-    pass
-except Exception as e:
-    print_error(f"Error occurred: {e}", exit_code=1)
-```
-
 ---
 
 ## Advanced Usage
 
 ### Creating a Custom Plugin
 
+`ZeoPluginProtocol` is a structural protocol (`typing.Protocol`, checked via
+`isinstance()` at runtime) -- a plugin must expose `plugin_id`, `name`, and
+`get_metadata()`:
+
 ```python
-from zeo_core.modules.protocols import ZeoPluginProtocol
-from zeo_core.integrations.core.results import IntegrationResult
-
-
-class MyCustomPlugin(ZeoPluginProtocol):
-  @property
-  def name(self) -> str:
-    return "MyCustomPlugin"
-
-  @property
-  def version(self) -> str:
-    return "1.0.0"
-
-  def initialize(self) -> IntegrationResult:
-    # Initialization logic here
-    return IntegrationResult.success_result(message="Plugin initialized successfully")
-
-  def is_available(self) -> bool:
-    return True
-
-  # Add custom methods for your plugin
-
-
-# Register the plugin
 from zeo_core.modules import registry
+from zeo_core.modules.protocols import ZeoPluginMetadata, ZeoPluginProtocol
 
-registry.register(MyCustomPlugin())
+
+class MyCustomPlugin:
+    @property
+    def plugin_id(self) -> str:
+        return "my_custom_plugin"
+
+    @property
+    def name(self) -> str:
+        return "My Custom Plugin"
+
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
+            plugin_id=self.plugin_id,
+            name=self.name,
+            version="1.0.0",
+            description="An example custom plugin",
+        )
+
+
+plugin = MyCustomPlugin()
+assert isinstance(plugin, ZeoPluginProtocol)  # structural check passes
+
+registry.register(plugin)
 ```
 
 ### Working with Pandoc for Document Conversion
@@ -395,19 +393,25 @@ custom:
 
 ## Environment Variables
 
-ZeoCore supports configuration through environment variables with the prefix `ZEO_`:
+ZeoCore supports configuration through environment variables with the prefix
+`ZEO_`, in the form `ZEO_SECTION__KEY=value` (double underscore separates
+nesting levels). These are merged onto whatever `ZeoConfig` field they map
+to -- unrecognized sections are silently dropped, since `ZeoConfig` validates
+strictly against its own fields (`general`, `paths`, `logging`,
+`integrations`, `plugins`, `custom`):
 
 ```bash
-# Set configuration values
-export ZEO_ENV=production
 export ZEO_GENERAL__DEBUG=false
 export ZEO_LOGGING__LEVEL=WARNING
 export ZEO_PATHS__BASE_DIR=/opt/zeocore
 
-# Set Google integration configuration
-export ZEO_GOOGLE__CLIENT_SECRETS_FILE=/etc/zeo/client_secrets.json
-export ZEO_GOOGLE__CREDENTIALS_FILE=/etc/zeo/credentials.json
+# Nested keys under the `integrations` dict field:
+export ZEO_INTEGRATIONS__GOOGLE__CLIENT_SECRETS_FILE=/etc/zeo/client_secrets.json
+export ZEO_INTEGRATIONS__GOOGLE__CREDENTIALS_FILE=/etc/zeo/credentials.json
 ```
+
+`ZEO_ENV` is separate: it's read by `zeo_core.config.utils.get_env()` (not by
+`load_config()` itself) and defaults to `"development"`.
 
 ## Integration Authentication
 
@@ -438,28 +442,6 @@ else:
 ```
 
 ---
-
-## ZeoVerse Ecosystem Compatibility
-
-ZeoCore is the backbone of the **ZeoVerse**—a suite of open and internal tools that power:
-- Tutorial scaffolding
-- Generative AI pipelines for content
-- Educational workflows within the **AI Product Engineer** platform
-
-Tools built with ZeoCore gain immediate compatibility with:
-- AIPE’s content pipeline
-- The ZeoTool CLI standard
-- Plugin chaining and execution environments
-
-To create your own tool:
-- Follow ZeoCore’s plugin or integration protocol
-- Use `zeo_core.config` and `zeo_core.core.fs` for standard behavior
-- Register your tool with `zeo_core.modules.registry`
-
-This ensures your tool can be consumed by orchestrators like **ZeoBuddy** and exposed via upcoming standards such as **MCP**.
-
----
-
 
 ### Project Structure
 
@@ -510,50 +492,24 @@ my_project/
 
 ## Extending ZeoCore
 
-### Creating a New Tool in the ZeoVerse Ecosystem
+### Creating a New Tool
 
-When creating a new tool that integrates with the ZeoVerse ecosystem:
+Tools are the primary extension point: subclass `BaseZeoTool`, implement
+`run(request, ctx) -> CapabilityResult`, and optionally mix in
+`IntegrationEnabledMixin` (for service lookup) or `LifecycleMixin` (for
+pre/post-run hooks).
 
-1. Use ZeoCore as a dependency
-2. Follow the architectural patterns established in ZeoCore
-3. Implement a plugin interface if your tool provides functionality that others might use
-4. Use the standard error handling mechanisms
-5. Leverage the configuration system for settings
+1. Define a Pydantic request model for your tool's input.
+2. Subclass `BaseZeoTool`, set `name`/`version`, implement `run()`.
+3. Return a `CapabilityResult` (via `.ok()`, `.fail()`, `.fail_from_exc()`,
+   or `.skip()`) -- never raise for expected failure modes.
+4. Use `zeo_core.core.errors`' `ZeoError` family for exceptional cases.
+5. Leverage `zeo_core.config` for settings your tool needs.
 
-Example of a new tool setup:
-
-```python
-# my_zeo_tool/main.py
-from zeo_core.config import load_config
-from zeo_core.core.paths import resolver
-from zeo_core.core.fs import service as fs
-from zeo_core.cli import init_cli_env
-
-
-def main():
-  # Initialize the CLI environment
-  context = init_cli_env(app_name="my_zeo_tool")
-
-  # Get configuration
-  config = context.config
-
-  # Set up logging
-  logger = context.logger
-  logger.info("Starting My Zeo Tool")
-
-  # Use ZeoCore functionality
-  project_root = resolver._get_project_root()
-  output_dir = resolver._resolve_project_path("output")
-
-  # Implement your tool's functionality
-  # ...
-
-  logger.info("Process completed successfully")
-
-
-if __name__ == "__main__":
-  main()
-```
+See [`examples/minimal_tool.py`](examples/minimal_tool.py) for the smallest
+complete version of this pattern, and
+[`examples/toolkit_usage.py`](examples/toolkit_usage.py) for one that adds
+lifecycle hooks and an optional integration.
 
 ## Troubleshooting
 
@@ -619,58 +575,10 @@ For detailed API documentation, refer to the inline documentation in the code or
 
 ## Contributing
 
-We welcome contributors interested in extending the open-source core of zeo_core.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide: dev environment
+setup (`make setup`), the verification gate (`make verify`), and code style
+expectations.
 
+## License
 
-If you're interested in contributing to ZeoCore:
-
-1. Fork the repository
-2. Install development dependencies: `pip install -e ".[dev]"`
-3. Make your changes
-4. Run tests: `pytest`
-5. Submit a pull request
-
----
-
----
-
-# 🦆 ZeoVerse Licensing Overview
-
-ZeoVerse is a modular ecosystem with mixed licensing to balance community contribution and project protection.
-
-### 🔓 Open Source (with strong copyleft)
-- **Repositories**: `quackcore`, `ducktyper`
-- **License**: [GNU Affero General Public License v3.0 (AGPL-3.0)](https://www.gnu.org/licenses/agpl-3.0.en.html)
-- **Why?** This license ensures that any public use of these tools — including SaaS or hosted services — must release the source code and improvements back to the community.
-
-### 🔐 Source-Available (with delayed open-source)
-- **Repositories**: All `quacktools/*`
-- **License**: [Business Source License 1.1 (BUSL-1.1)](https://mariadb.com/bsl11/)
-- **What does this mean?**
-  - You can **view, fork, and modify** the code.
-  - **Production or commercial use is not allowed** unless you obtain a commercial license from us.
-  - The license **automatically converts to Apache 2.0 after 3 years**, ensuring long-term openness.
-- A short human summary is provided in each tool's README.
-
-### 🎨 Brand and Creative Assets
-- **Assets**: Logos, Mascot (Quackster), design elements
-- **License**: [Creative Commons Attribution-NonCommercial-NoDerivs 4.0 (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
-- **You may not** redistribute, remix, or use our branding for commercial purposes.
-
----
-
-### 🧠 Why this setup?
-
-We love open-source and education. However, to continue building high-quality learning tools, we need to protect our work from being commercialized or rebranded by others without contributing back. Our structure enables:
-- A healthy developer community.
-- Opportunities for contributors to shape the future.
-- Commercial protection for sustainability.
-
-We welcome pull requests, issues, and feedback. If you're interested in **commercial use**, please reach out via [rod@aip.engineer](mailto:rod@aip.engineer).
-
-
----
-
-## 💬 Questions?
-
-Tweet at [@aipengineer](https://twitter.com/aipengineer) or file an issue on GitHub!
+ZeoCore is released under the [MIT License](LICENSE).
