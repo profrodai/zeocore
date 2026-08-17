@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-08-17
 
 Initial extraction from the quackverse monorepo as a standalone,
 MIT-licensed package.
@@ -41,6 +41,32 @@ MIT-licensed package.
   keys.
 - Fixed a broken version-sourcing path and a production test-detection bug
   found during the extraction (see git history for detail).
+
+### Fixed
+
+- CI now runs the full test suite on every supported Python version
+  (3.10-3.13) on real GitHub Actions infrastructure. That surfaced three
+  real, previously-invisible cross-version bugs (this package's own
+  pre-release local development only ever ran on 3.13), all fixed and
+  independently verified across every supported version before release:
+  - A `pathlib.Path.__init__`/`__new__` split changed in CPython 3.12;
+    an autouse test fixture that monkeypatched `Path.__init__` only was
+    crashing the entire test suite on 3.10/3.11 with an `INTERNALERROR`.
+    Fixed by coercing on both `__new__` and `__init__`, matching whichever
+    one actually does the real work on a given Python version.
+  - `unittest.mock`'s dotted-string `@patch(...)` target resolution
+    changed in 3.11 (`pkgutil.resolve_name` instead of an eager
+    `getattr`-walk). Three call sites depended on the newer resolution
+    semantics to reach their intended target; on 3.10 they silently
+    patched the wrong object, cascading into shared-state pollution across
+    unrelated test files.
+  - `typing.Protocol.__instancecheck__`'s structural-membership check
+    changed in 3.12 (from plain `hasattr` to `inspect.getattr_static`,
+    which does not trigger `MagicMock`'s attribute auto-fabrication).
+    Five tests asserting that a bare, unconfigured `MagicMock()` does
+    *not* satisfy a runtime-checkable protocol passed on 3.12/3.13 but
+    failed on 3.10/3.11. Fixed by constructing the mocks with an explicit
+    `spec=`, which is version-stable and expresses the real test intent.
 
 ### Removed
 
