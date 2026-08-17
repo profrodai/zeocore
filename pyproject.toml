@@ -60,6 +60,7 @@ dev = [
     "mypy>=1.8.0",
     "isort",
     "hatchling",
+    "build>=1.0.0",
     "black>=23.0.0",
     "hypothesis",
     "python-docx",
@@ -112,6 +113,25 @@ path = "src/zeo_core/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/zeo_core"]
+
+[tool.hatch.build.targets.sdist]
+# Explicit excludes, not just a .gitignore mirror: hatchling's sdist
+# target does not reliably defer to .gitignore, and this repo's own
+# .gitignore only matches the literal ".venv/" name, not variant-named
+# per-Python-version venvs (.venv310/, .venv311/, etc) that local
+# multi-version testing creates. A stray venv's own symlinks (e.g.
+# bin/python -> an absolute interpreter path) can make the sdist
+# tarball fail to build/extract entirely, and a venv should never ship
+# inside a source distribution regardless.
+exclude = [
+    ".venv*",
+    "dist",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".hypothesis",
+    "*.egg-info",
+]
 
 [project.entry-points."zeo_core.modules"]
 paths = "zeo_core.core.paths.plugin:create_plugin"
