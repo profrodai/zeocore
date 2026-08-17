@@ -1,0 +1,54 @@
+# .importlinter — Tier-1 directional import contracts (Track C)
+# Enforced via `lint-imports` inside `make verify` (wired next). Every contract
+# below targets a REAL module path verified by recon (C-RECON-06..08), not the
+# strategy-doc's vocabulary — e.g. Capability lives at zeo_core.contracts.capabilities,
+# NOT zeo_core.capabilities; a contract against the doc name would resolve to
+# nothing and never fire.
+#
+# Deliberately OMITTED here, recorded for Master (Rev 4):
+#   - producer->consumer (zeocore/zeointegrations/zeoplugins): cross-PACKAGE,
+#     not resolvable inside the zeocore-only work_repo. Belongs to a monorepo
+#     linter, outside Track C's single-work_repo scope (§15).
+#   - Plugin -> Tool/Cap: `plugin.py` is a per-subsystem MODULE (core/paths, core/fs,
+#     config, prompt), not a package — no import-linter target. Handled as a
+#     plugin.py grep-ban instead.
+#   - "nothing imports a Tool" as a GLOBAL rule: tools legitimately import their own
+#     submodules, so a blanket forbidden would fire on legitimate internal imports.
+#     The enforceable core (non-tool layers not importing tools) is expressed below;
+#     the broad form needs an allowlist/independence design — Master's call.
+
+[importlinter]
+root_package = zeo_core
+
+[importlinter:contract:capabilities-not-import-tools]
+name = Capabilities must not import Tools
+type = forbidden
+source_modules =
+    zeo_core.contracts.capabilities
+forbidden_modules =
+    zeo_core.tools
+
+[importlinter:contract:integrations-are-leaves]
+name = Integrations are leaves (no Capability/Tool imports)
+type = forbidden
+source_modules =
+    zeo_core.integrations
+forbidden_modules =
+    zeo_core.tools
+    zeo_core.contracts.capabilities
+
+[importlinter:contract:fs-internal-not-import-service]
+name = fs _internal must not import service
+type = forbidden
+source_modules =
+    zeo_core.core.fs._internal
+forbidden_modules =
+    zeo_core.core.fs.service
+
+[importlinter:contract:fs-ops-not-import-results]
+name = fs _ops must not import Result types
+type = forbidden
+source_modules =
+    zeo_core.core.fs._ops
+forbidden_modules =
+    zeo_core.core.fs.results
