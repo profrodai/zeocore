@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/test_models.py
-# === QV-LLM:END ===
-
 """
 Tests for data models used in the pandoc integration.
 

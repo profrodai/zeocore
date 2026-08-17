@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/pandoc/converter.py
-# === QV-LLM:END ===
-
 """
 Core converter implementation for Pandoc integration.
 

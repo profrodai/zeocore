@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_paths/test_api_public_path_utils.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.core.paths.api.public.path_utils (0% covered before
 this file). Pure functions, no external boundary, no mocking needed.

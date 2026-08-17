@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/core/test_get_service.py
-# === QV-LLM:END ===
-
 """
 Tests for the get_integration_service function.
 """

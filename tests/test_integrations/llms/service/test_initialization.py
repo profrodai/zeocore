@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/service/test_initialization.py
-# === QV-LLM:END ===
-
 """
 Tests for LLM integration initialization.
 

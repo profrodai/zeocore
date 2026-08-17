@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/__init__.py
-# === QV-LLM:END ===
-
 """
 Filesystem package for quack_core.
 

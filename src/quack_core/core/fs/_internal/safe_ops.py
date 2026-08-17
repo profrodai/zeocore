@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/safe_ops.py
-# === QV-LLM:END ===
-
 import shutil
 from pathlib import Path
 

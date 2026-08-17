@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/test_drive_service_folders.py
-# === QV-LLM:END ===
-
 """
 Tests for Google Drive service folder _ops.
 """

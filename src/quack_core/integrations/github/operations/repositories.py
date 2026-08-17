@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/operations/repositories.py
-# === QV-LLM:END ===
-
 """GitHub repository _ops."""
 
 import base64

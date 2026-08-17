@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_contracts/test_envelopes.py
-# === QV-LLM:END ===
-
 """
 Tests for envelope models (CapabilityResult, CapabilityError, CapabilityLogEvent).
 

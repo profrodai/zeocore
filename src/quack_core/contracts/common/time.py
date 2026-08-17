@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/common/time.py
-# === QV-LLM:END ===
-
 """
 Time utilities for contracts.
 

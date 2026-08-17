@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/artifacts/__init__.py
-# === QV-LLM:END ===
-
 """
 Artifact and manifest models for tracking data flow.
 

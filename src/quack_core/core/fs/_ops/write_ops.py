@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/write_ops.py
-# === QV-LLM:END ===
-
 from pathlib import Path
 
 from quack_core.core.fs._internal.file_ops import (

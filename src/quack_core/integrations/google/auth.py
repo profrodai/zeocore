@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/auth.py
-# === QV-LLM:END ===
-
 """
 Google authentication provider for quack_core.
 

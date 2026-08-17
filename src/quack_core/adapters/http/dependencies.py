@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/adapters/http/dependencies.py
-# === QV-LLM:END ===
-
 
 """
 FastAPI dependencies for HTTP adapter.

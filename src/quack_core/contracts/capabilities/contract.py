@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/capabilities/contract.py
-# === QV-LLM:END ===
-
 """
 DEPRECATED: Import from quack_core.contracts instead.
 

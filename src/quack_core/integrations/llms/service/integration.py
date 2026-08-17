@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/service/integration.py
-# === QV-LLM:END ===
-
 """
 Core LLM integration class.
 

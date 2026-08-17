@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/artifacts/manifest.py
-# === QV-LLM:END ===
-
 """
 Run manifest models for tracking capability execution.
 

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/operations/test_md_to_docx.py
-# === QV-LLM:END ===
-
 """
 Tests for Markdown to DOCX conversion _ops.
 

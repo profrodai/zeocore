@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/mocks/anthropic.py
-# === QV-LLM:END ===
-
 """
 Mock Anthropic classes for LLM testing.
 """

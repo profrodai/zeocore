@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/adapters/http/auth.py
-# === QV-LLM:END ===
-
 
 """
 Authentication utilities for the HTTP adapter.

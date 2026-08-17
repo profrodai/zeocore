@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/mail/operations/test_handle_attachment_split_path_real_bug.py  # noqa: E501
-# === QV-LLM:END ===
-
 """
 Regression tests for two real production bugs found while investigating a
 mypy `[index]` finding in `handle_attachment` (RULING-236..243 pattern

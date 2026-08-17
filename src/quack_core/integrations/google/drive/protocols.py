@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/protocols.py
-# === QV-LLM:END ===
-
 """
 Protocol definitions for Google Drive integration.
 

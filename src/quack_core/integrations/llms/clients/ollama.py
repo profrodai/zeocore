@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/clients/ollama.py
-# === QV-LLM:END ===
-
 """
 Ollama LLM client implementation.
 

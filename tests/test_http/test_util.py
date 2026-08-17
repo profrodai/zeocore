@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_http/test_util.py
-# === QV-LLM:END ===
-
 """
 Tests for utility functions.
 

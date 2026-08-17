@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_prompt/test_enhancer.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.prompt._internal.enhancer.enhance_with_llm_safe.
 

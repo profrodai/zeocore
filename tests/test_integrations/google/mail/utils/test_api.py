@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/mail/utils/test_api.py
-# === QV-LLM:END ===
-
 """
 Tests for Gmail API utility functions.
 

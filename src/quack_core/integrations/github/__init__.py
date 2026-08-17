@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/__init__.py
-# === QV-LLM:END ===
-
 """GitHub integration for quack_core."""
 
 from __future__ import annotations

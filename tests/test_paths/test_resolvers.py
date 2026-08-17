@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_paths/test_resolvers.py
-# === QV-LLM:END ===
-
 """
 Tests for the PathResolver class.
 """

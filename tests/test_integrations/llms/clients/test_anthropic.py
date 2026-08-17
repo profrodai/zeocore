@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/clients/test_anthropic.py
-# === QV-LLM:END ===
-
 """
 Tests for the Anthropic LLM client.
 

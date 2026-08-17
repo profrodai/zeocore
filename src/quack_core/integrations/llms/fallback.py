@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/fallback.py
-# === QV-LLM:END ===
-
 """
 Fallback mechanism for LLM clients.
 

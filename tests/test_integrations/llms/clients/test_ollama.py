@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/clients/test_ollama.py
-# === QV-LLM:END ===
-
 """
 Tests for the Ollama LLM client.
 

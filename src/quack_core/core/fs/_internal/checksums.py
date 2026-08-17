@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/checksums.py
-# === QV-LLM:END ===
-
 import hashlib
 from pathlib import Path
 

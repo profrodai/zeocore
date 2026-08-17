@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/service/test_init_module.py
-# === QV-LLM:END ===
-
 """
 Coverage-90 (RULING-234): tests for quack_core.integrations.llms.service's
 OWN LLMIntegration class and check_llm_dependencies function -- both are

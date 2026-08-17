@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/test_pandoc_integration_full.py
-# === QV-LLM:END ===
-
 import os
 import sys
 import time

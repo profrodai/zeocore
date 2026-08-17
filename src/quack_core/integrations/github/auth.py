@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/auth.py
-# === QV-LLM:END ===
-
 """Authentication provider for GitHub integration."""
 
 import os

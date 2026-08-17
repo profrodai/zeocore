@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/pandoc/service.py
-# === QV-LLM:END ===
-
 """Pandoc Integration Service
 
 This module provides the main integration service for Pandoc document conversion.

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/core/results.py
-# === QV-LLM:END ===
-
 """
 Result models for integration _ops.
 

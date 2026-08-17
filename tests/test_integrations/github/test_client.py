@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/github/test_client.py
-# === QV-LLM:END ===
-
 """Tests for GitHub client."""
 
 from unittest.mock import patch

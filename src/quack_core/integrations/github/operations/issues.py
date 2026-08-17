@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/operations/issues.py
-# === QV-LLM:END ===
-
 """GitHub issues _ops."""
 
 from typing import Any, Literal

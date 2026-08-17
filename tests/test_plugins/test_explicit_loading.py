@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_plugins/test_explicit_loading.py
-# === QV-LLM:END ===
-
 
 """
 Tests for explicit plugin loading behavior.

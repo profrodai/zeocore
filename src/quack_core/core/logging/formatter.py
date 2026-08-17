@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/logging/formatter.py
-# === QV-LLM:END ===
-
 
 """
 Custom formatters for quack-core logging.

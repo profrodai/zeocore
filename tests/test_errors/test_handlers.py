@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_errors/test_handlers.py
-# === QV-LLM:END ===
-
 """
 Tests for error handling utilities.
 """

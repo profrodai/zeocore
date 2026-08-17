@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/github/test_service.py
-# === QV-LLM:END ===
-
 from __future__ import annotations
 
 from typing import cast

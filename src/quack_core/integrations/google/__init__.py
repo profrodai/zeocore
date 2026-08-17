@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/__init__.py
-# === QV-LLM:END ===
-
 """
 Google integrations package for quack_core.
 

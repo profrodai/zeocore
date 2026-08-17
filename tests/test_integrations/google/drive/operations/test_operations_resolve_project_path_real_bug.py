@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/operations/test_operations_resolve_project_path_real_bug.py  # noqa: E501
-# === QV-LLM:END ===
-
 """
 Regression tests for a real production bug (RULING-236..243 pattern family,
 ninth instance; fixed per RULING-245): `download.resolve_download_path` and

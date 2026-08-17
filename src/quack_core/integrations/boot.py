@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/boot.py
-# === QV-LLM:END ===
-
 """
 Boot API for QuackCore integrations.
 

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/envelopes/log.py
-# === QV-LLM:END ===
-
 """
 Structured log event model for audit trails.
 

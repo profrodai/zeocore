@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/operations/folder.py
-# === QV-LLM:END ===
-
 """
 Folder _ops for Google Drive integration.
 

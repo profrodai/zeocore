@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/_dev/run_local.py
-# === QV-LLM:END ===
-
 """
 LOCAL ORCHESTRATOR (DEV ONLY)
 Use this to test chains of capabilities without spinning up n8n.

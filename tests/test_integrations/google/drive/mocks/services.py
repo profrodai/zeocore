@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/mocks/services.py
-# === QV-LLM:END ===
-
 """
 Mock service objects for Google Drive testing.
 """

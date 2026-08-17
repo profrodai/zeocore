@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/mocks/credentials.py
-# === QV-LLM:END ===
-
 """
 Mock credential objects for Google Drive testing.
 """

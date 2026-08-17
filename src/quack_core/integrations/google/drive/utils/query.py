@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/utils/query.py
-# === QV-LLM:END ===
-
 """
 Query utilities for Google Drive integration.
 

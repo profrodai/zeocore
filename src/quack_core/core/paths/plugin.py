@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/paths/plugin.py
-# === QV-LLM:END ===
-
 
 """
 Plugin interface for the paths module.

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/mixins/integration_enabled.py
-# === QV-LLM:END ===
-
 
 """
 Integration support for tools (doctrine-compliant).

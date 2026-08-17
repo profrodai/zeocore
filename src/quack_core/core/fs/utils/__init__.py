@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/utils/__init__.py
-# === QV-LLM:END ===
-
 """
 DEPRECATED: Use quack_core.core.fs.service.standalone for utility functions.
 """

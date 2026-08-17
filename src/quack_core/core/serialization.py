@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/serialization.py
-# === QV-LLM:END ===
-
 
 """
 Shared JSON serialization utilities.

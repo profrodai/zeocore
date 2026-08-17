@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/mocks/base.py
-# === QV-LLM:END ===
-
 """
 Base mock classes for LLM testing.
 """

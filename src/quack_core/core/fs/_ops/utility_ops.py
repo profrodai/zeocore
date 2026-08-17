@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/utility_ops.py
-# === QV-LLM:END ===
-
 from pathlib import Path
 
 from quack_core.core.fs._internal.checksums import _compute_checksum

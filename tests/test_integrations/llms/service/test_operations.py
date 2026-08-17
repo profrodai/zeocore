@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/service/test_operations.py
-# === QV-LLM:END ===
-
 """
 Comprehensive tests for LLM service _ops.
 

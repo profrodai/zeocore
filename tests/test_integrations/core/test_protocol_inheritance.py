@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/core/test_protocol_inheritance.py
-# === QV-LLM:END ===
-
 """
 Tests for protocol inheritance and runtime protocol checking.
 

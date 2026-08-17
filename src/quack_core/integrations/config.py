@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/config.py
-# === QV-LLM:END ===
-
 """
 Core configuration models for integrations.
 

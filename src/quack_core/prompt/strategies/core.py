@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/prompt/strategies/core.py
-# === QV-LLM:END ===
-
 """
 Core prompt strategies for the PromptService.
 

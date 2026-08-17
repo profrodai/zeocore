@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/prompt/_internal/registry.py
-# === QV-LLM:END ===
-
 from collections.abc import Sequence
 
 from quack_core.prompt.models import PromptStrategy

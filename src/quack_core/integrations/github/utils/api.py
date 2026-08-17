@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/utils/api.py
-# === QV-LLM:END ===
-
 """GitHub API request utilities."""
 
 import time

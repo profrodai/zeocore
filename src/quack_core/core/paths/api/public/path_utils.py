@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/paths/api/public/path_utils.py
-# === QV-LLM:END ===
-
 """
 Path utilities for quack_core.
 

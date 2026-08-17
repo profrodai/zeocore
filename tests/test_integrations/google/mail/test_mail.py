@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/mail/test_mail.py
-# === QV-LLM:END ===
-
 """
 Main entry point for Google Mail integration tests.
 

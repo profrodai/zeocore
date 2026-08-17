@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/mime.py
-# === QV-LLM:END ===
-
 
 """
 MIME type and binary detection utilities.

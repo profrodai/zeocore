@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_config/test_config_base.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.config_base — the Deep Merge configuration resolution
 engine (BasePolicy, ConfigError, deep_merge, ConfigResolver).

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_plugins/test_protocols.py
-# === QV-LLM:END ===
-
 """
 Tests for plugin protocol interfaces.
 """

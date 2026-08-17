@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_core/test_registry.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.core.registry — the operation registry (Operation,
 OperationRegistry, get_registry/reset_registry, invoke_operation).

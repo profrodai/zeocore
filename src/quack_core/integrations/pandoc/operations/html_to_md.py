@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/pandoc/operations/html_to_md.py
-# === QV-LLM:END ===
-
 """
 HTML to Markdown conversion _ops.
 

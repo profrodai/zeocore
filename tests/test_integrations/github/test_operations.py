@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/github/test_operations.py
-# === QV-LLM:END ===
-
 """Tests for GitHub API _ops."""
 
 import base64

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/normalize.py
-# === QV-LLM:END ===
-
 """
 Input normalization logic.
 This module is the Single Source of Truth for coercing inputs into Paths.

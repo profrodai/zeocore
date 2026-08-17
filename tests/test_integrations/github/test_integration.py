@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/github/test_integration.py
-# === QV-LLM:END ===
-
 """Integration tests for GitHub integration."""
 
 import json

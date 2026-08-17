@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/find_ops.py
-# === QV-LLM:END ===
-
 from pathlib import Path
 
 

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/test_fallback.py
-# === QV-LLM:END ===
-
 """
 Tests for the fallback mechanism for LLM clients.
 

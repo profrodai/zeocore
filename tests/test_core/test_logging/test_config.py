@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_core/test_logging/test_config.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.core.logging.config.configure_logger's log_file branch.
 

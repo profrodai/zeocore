@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/protocols.py
-# === QV-LLM:END ===
-
 """Protocols for GitHub integration."""
 
 from typing import Protocol, runtime_checkable

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_config/test_loader.py
-# === QV-LLM:END ===
-
 """
 Tests for configuration loading utilities.
 """

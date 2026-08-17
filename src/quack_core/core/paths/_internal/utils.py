@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/paths/_internal/utils.py
-# === QV-LLM:END ===
-
 """
 Utility functions for path resolution logic.
 

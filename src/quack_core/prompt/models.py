@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/prompt/models.py
-# === QV-LLM:END ===
-
 from collections.abc import Callable
 
 from pydantic import BaseModel, ConfigDict, Field

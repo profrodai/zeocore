@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/prompt/packs/internal/__init__.py
-# === QV-LLM:END ===
-
 """
 Internal strategy loader for the PromptService.
 

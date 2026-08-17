@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/standalone.py
-# === QV-LLM:END ===
-
 """
 Standalone wrappers that delegate to the singleton service.
 Ensures consistent configuration and state.

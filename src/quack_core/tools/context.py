@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/context.py
-# === QV-LLM:END ===
-
 
 """
 ToolContext: Immutable dependency container for tool execution.

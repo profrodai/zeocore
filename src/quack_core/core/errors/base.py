@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/errors/base.py
-# === QV-LLM:END ===
-
 
 """
 Base error classes for quack_core.

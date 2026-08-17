@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/service/initialization.py
-# === QV-LLM:END ===
-
 """
 Provider initialization logic for LLM integration.
 

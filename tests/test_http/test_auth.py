@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_http/test_auth.py
-# === QV-LLM:END ===
-
 """
 Tests for authentication functionality.
 """

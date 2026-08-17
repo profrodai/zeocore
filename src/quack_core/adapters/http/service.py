@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/adapters/http/service.py
-# === QV-LLM:END ===
-
 """
 Service utilities for running the HTTP adapter.
 """

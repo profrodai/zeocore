@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/modules/registry.py
-# === QV-LLM:END ===
-
 
 """
 Plugin registry for quack_core.

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/service.py
-# === QV-LLM:END ===
-
 """GitHub core integration service for quack_core."""
 
 from quack_core.core.logging import LOG_LEVELS, LogLevel, get_logger

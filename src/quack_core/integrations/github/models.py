@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/models.py
-# === QV-LLM:END ===
-
 """GitHub integration data models for quack_core."""
 
 from datetime import datetime

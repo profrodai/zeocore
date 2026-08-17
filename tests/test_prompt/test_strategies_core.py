@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_prompt/test_strategies_core.py
-# === QV-LLM:END ===
-
 """
 Tests for the built-in prompt strategies in quack_core.prompt.strategies.core.
 

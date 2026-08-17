@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_contracts/test_schema_examples.py
-# === QV-LLM:END ===
-
 """
 Tests that validate all json_schema_extra examples are valid.
 

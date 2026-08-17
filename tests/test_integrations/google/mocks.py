@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/mocks.py
-# === QV-LLM:END ===
-
 import json
 from typing import Any
 from unittest.mock import MagicMock

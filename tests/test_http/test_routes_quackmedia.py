@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_http/test_routes_quackmedia.py
-# === QV-LLM:END ===
-
 """
 Tests for QuackMedia operations, invoked through the generic /ops interface.
 

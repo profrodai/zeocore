@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/test_pandoc_integration_edge_cases.py
-# === QV-LLM:END ===
-
 """
 Tests for utilities in the pandoc integration.
 

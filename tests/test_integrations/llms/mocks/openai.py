@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/mocks/openai.py
-# === QV-LLM:END ===
-
 """
 Mock OpenAI classes for LLM testing.
 """

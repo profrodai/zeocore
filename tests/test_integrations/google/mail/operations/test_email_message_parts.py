@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/mail/operations/test_email_message_parts.py  # noqa: E501
-# === QV-LLM:END ===
-
 """
 Tests for the previously-uncovered process_message_parts / handle_attachment
 functions in quack_core.integrations.google.mail.operations.email, plus the

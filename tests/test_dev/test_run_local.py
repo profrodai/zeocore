@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_dev/test_run_local.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core._dev.run_local (0% covered before RULING-277 Bug 1's
 fix, and previously an ImportError-pinning test for the bug this ruling

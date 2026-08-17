@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_tools/__init__.py
-# === QV-LLM:END ===
-
 """
 Tests for the QuackTool tools package.
 """

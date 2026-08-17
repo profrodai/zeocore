@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/prompt/_internal/selector.py
-# === QV-LLM:END ===
-
 from typing import Any
 
 from quack_core.prompt.models import PromptStrategy

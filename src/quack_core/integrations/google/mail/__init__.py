@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/mail/__init__.py
-# === QV-LLM:END ===
-
 """
 Google Mail integration for quack_core.
 

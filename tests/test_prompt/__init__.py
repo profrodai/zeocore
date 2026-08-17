@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_prompt/__init__.py
-# === QV-LLM:END ===
-
 """
 Tests for the quack_core.prompt module.
 

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/logging/logger.py
-# === QV-LLM:END ===
-
 
 """
 Defines helper functions for obtaining loggers.

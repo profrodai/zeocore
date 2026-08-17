@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/config/tooling/loader.py
-# === QV-LLM:END ===
-
 
 """
 Configuration loading utilities for QuackTools.

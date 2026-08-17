@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_paths/test_context.py
-# === QV-LLM:END ===
-
 """
 Tests for project context models.
 """

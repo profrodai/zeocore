@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/common/enums.py
-# === QV-LLM:END ===
-
 """
 Shared enumerations used across contracts.
 

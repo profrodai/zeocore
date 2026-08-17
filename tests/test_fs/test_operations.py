@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_fs/test_operations.py
-# === QV-LLM:END ===
-
 """
 Tests for the FileSystemOperations class.
 

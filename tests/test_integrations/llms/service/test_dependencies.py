@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/service/test_dependencies.py
-# === QV-LLM:END ===
-
 from unittest.mock import MagicMock, patch
 
 from quack_core.integrations.llms.service.dependencies import check_llm_dependencies

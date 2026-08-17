@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/clients/mock.py
-# === QV-LLM:END ===
-
 """
 Mock LLM client implementation.
 

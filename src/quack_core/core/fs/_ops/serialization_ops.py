@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/serialization_ops.py
-# === QV-LLM:END ===
-
 import json
 from pathlib import Path
 from typing import Any

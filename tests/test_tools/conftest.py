@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_tools/conftest.py
-# === QV-LLM:END ===
-
 """
 Shared fixtures for QuackTool mixin tests.
 

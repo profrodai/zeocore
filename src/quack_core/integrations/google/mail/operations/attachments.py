@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/mail/operations/attachments.py
-# === QV-LLM:END ===
-
 """
 Upload _ops for Google Mail attachments.
 

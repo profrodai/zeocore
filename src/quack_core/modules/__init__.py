@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/modules/__init__.py
-# === QV-LLM:END ===
-
 
 """
 Plugin system for quack_core.

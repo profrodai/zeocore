@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/test_drive.py
-# === QV-LLM:END ===
-
 """
 Main entry point for Google Drive integration tests.
 

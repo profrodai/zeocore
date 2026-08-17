@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_fs/test_standalone.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.core.fs.service.standalone — the module-level convenience
 wrappers that delegate to the process-wide `get_service()` singleton.

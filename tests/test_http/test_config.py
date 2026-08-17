@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_http/test_config.py
-# === QV-LLM:END ===
-
 """
 Tests for HTTP adapter configuration.
 """

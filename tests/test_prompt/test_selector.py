@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_prompt/test_selector.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.prompt._internal.selector.select_best_strategy and its
 helper _match_by_schema_and_examples. Uses a real StrategyRegistry loaded with

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/paths/_internal/context.py
-# === QV-LLM:END ===
-
 """
 DEPRECATED.
 

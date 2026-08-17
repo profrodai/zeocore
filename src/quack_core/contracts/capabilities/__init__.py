@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/capabilities/__init__.py
-# === QV-LLM:END ===
-
 """
 Capability request/response contracts.
 

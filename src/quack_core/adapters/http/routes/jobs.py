@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/adapters/http/routes/jobs.py
-# === QV-LLM:END ===
-
 
 """
 Job management routes with dependency injection.

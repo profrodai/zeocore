@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/core/base/integration_service_impl.py
-# === QV-LLM:END ===
-
 """
 Implementation classes for testing integration services.
 """

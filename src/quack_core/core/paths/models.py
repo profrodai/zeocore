@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/paths/models.py
-# === QV-LLM:END ===
-
 """
 Project context models for path resolution.
 

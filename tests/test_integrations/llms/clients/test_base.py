@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/clients/test_base.py
-# === QV-LLM:END ===
-
 """
 Tests for the base LLM client.
 

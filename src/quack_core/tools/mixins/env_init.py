@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/mixins/env_init.py
-# === QV-LLM:END ===
-
 
 """
 Environment validation mixin for tools.

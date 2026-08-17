@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/serialization.py
-# === QV-LLM:END ===
-
 
 from typing import Any
 

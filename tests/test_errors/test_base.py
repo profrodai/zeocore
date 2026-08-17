@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_errors/test_base.py
-# === QV-LLM:END ===
-
 """
 Tests for QuackCore error classes and decorators.
 """

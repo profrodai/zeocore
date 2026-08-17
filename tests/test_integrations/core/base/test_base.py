@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/core/base/test_base.py
-# === QV-LLM:END ===
-
 """
 Main entry point for base integration tests.
 

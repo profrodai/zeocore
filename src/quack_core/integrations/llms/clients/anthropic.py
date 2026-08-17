@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/clients/anthropic.py
-# === QV-LLM:END ===
-
 
 import logging
 import os

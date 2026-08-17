@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/config/tooling/__init__.py
-# === QV-LLM:END ===
-
 """
 QuackTool Configuration and Logging Helpers.
 

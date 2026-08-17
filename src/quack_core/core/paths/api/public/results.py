@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/paths/api/public/results.py
-# === QV-LLM:END ===
-
 """
 Path resolution result models.
 

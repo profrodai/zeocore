@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/operations/test_html_to_md.py
-# === QV-LLM:END ===
-
 """
 Tests for HTML to Markdown conversion _ops.
 

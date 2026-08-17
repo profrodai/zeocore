@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/common/__init__.py
-# === QV-LLM:END ===
-
 """
 Common utilities and types for contracts.
 

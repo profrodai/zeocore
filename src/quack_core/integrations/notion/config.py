@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/notion/config.py
-# === QV-LLM:END ===
-
 from pydantic import BaseModel, Field
 
 

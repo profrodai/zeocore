@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/config/utils.py
-# === QV-LLM:END ===
-
 
 """
 Utility functions for configuration management.

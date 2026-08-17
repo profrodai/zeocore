@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/core/protocols.py
-# === QV-LLM:END ===
-
 """
 Protocol definitions for QuackCore integrations.
 

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/adapters/http/app.py
-# === QV-LLM:END ===
-
 
 """
 FastAPI application factory with dependency injection.

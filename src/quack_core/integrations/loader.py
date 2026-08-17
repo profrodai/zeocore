@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/loader.py
-# === QV-LLM:END ===
-
 """
 Explicit loader for QuackCore integrations.
 

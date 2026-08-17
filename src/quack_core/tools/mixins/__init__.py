@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/mixins/__init__.py
-# === QV-LLM:END ===
-
 
 """
 Internal mixin exports.

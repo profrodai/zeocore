@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_fs/test_suite.py
-# === QV-LLM:END ===
-
 """
 Test suite for amended filesystem service implementation.
 Verifies all fixes from the feedback:

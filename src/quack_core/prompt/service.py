@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/prompt/service.py
-# === QV-LLM:END ===
-
 
 from typing import Any
 

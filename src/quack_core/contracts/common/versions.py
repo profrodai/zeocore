@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/common/versions.py
-# === QV-LLM:END ===
-
 """
 Version constants for contracts module.
 

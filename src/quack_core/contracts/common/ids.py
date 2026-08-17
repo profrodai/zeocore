@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/common/ids.py
-# === QV-LLM:END ===
-
 """
 ID generation utilities for contracts.
 

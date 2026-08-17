@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/exceptions.py
-# === QV-LLM:END ===
-
 """
 Filesystem-specific exceptions for QuackCore.
 """

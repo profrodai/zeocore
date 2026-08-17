@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/config/loader.py
-# === QV-LLM:END ===
-
 
 """
 Configuration loading authority for quack_core.

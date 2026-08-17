@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/base.py
-# === QV-LLM:END ===
-
 
 """
 Base class for all QuackCore tools (doctrine-compliant).

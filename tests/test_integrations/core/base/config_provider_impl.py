@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/core/base/config_provider_impl.py
-# === QV-LLM:END ===
-
 """
 Implementation classes for testing config providers.
 """

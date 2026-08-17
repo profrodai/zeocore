@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/common/typing.py
-# === QV-LLM:END ===
-
 """
 Type aliases and typing utilities for contracts.
 

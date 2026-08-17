@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/github/conftest.py
-# === QV-LLM:END ===
-
 """Shared fixtures for GitHub integration tests."""
 
 import json

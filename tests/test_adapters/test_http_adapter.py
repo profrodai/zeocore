@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_adapters/test_http_adapter.py
-# === QV-LLM:END ===
-
 
 """
 Comprehensive test suite for HTTP adapter with dependency injection.

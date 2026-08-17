@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/operations/__init__.py
-# === QV-LLM:END ===
-
 """GitHub API _ops."""
 
 from .issues import add_issue_comment, create_issue, get_issue, list_issues

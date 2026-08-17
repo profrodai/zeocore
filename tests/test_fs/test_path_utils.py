@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_fs/test_path_utils.py
-# === QV-LLM:END ===
-
 """
 Tests for the internal path utility functions.
 

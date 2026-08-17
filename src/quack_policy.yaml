@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_policy.yaml
-# === QV-LLM:END ===
-
 # quack-core/src/quack_policy.yaml
 demo:
   default_greeting: "Quack!"

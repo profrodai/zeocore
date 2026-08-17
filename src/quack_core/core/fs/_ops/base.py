@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/base.py
-# === QV-LLM:END ===
-
 from quack_core.core.fs._ops.core import _initialize_mime_types
 from quack_core.core.fs._ops.directory_ops import DirectoryOperationsMixin
 from quack_core.core.fs._ops.file_info import FileInfoOperationsMixin

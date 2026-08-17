@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_tools/mixins/test_integration_enabled.py
-# === QV-LLM:END ===
-
 """
 Tests for the IntegrationEnabledMixin.
 

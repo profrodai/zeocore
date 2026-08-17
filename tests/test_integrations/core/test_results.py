@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/core/test_results.py
-# === QV-LLM:END ===
-
 """
 Tests for the integration result classes.
 """

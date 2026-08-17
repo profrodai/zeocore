@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/logging/__init__.py
-# === QV-LLM:END ===
-
 """
 Centralized logging module for quack_core.
 

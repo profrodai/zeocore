@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/file_info.py
-# === QV-LLM:END ===
-
 import mimetypes
 from datetime import datetime, timezone
 from pathlib import Path

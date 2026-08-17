@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/mocks.py
-# === QV-LLM:END ===
-
 import os
 import time
 from types import SimpleNamespace

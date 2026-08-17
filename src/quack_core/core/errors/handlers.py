@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/errors/handlers.py
-# === QV-LLM:END ===
-
 """
 Error handling utilities for quack_core.
 

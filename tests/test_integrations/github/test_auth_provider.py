@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/github/test_auth_provider.py
-# === QV-LLM:END ===
-
 """
 Real behavioral tests for GitHubAuthProvider (integrations/github/auth.py).
 

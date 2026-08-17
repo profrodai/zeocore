@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/mail/operations/auth.py
-# === QV-LLM:END ===
-
 """
 Authentication _ops for Google Mail integration.
 

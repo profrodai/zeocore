@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_prompt/test_service.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.prompt.service.PromptService.
 

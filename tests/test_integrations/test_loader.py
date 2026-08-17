@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/test_loader.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.integrations.loader.
 

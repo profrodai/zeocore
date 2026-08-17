@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/envelopes/result.py
-# === QV-LLM:END ===
-
 """
 The canonical result envelope for all capabilities.
 

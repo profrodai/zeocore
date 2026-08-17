@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/adapters/http/models.py
-# === QV-LLM:END ===
-
 """
 Request/Response models for the HTTP adapter.
 """

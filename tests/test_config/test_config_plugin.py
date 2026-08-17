@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_config/test_config_plugin.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.config.plugin (0% covered before this file).
 

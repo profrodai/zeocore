@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/prompt/_internal/enhancer.py
-# === QV-LLM:END ===
-
 from typing import Any
 
 from quack_core.core.logging import get_logger

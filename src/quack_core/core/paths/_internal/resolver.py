@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/paths/_internal/resolver.py
-# === QV-LLM:END ===
-
 """
 Path resolver internal logic.
 

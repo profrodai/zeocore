@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/plugin.py
-# === QV-LLM:END ===
-
 from typing import Any, Protocol, TypeVar
 
 from quack_core.core.fs.protocols import FsPathLike

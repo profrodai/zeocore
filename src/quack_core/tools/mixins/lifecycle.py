@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/mixins/lifecycle.py
-# === QV-LLM:END ===
-
 
 """
 Lifecycle hooks for tools (doctrine-compliant).

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_tools/mixins/test_lifecycle.py
-# === QV-LLM:END ===
-
 """
 Tests for the LifecycleMixin (aliased QuackToolLifecycleMixin).
 

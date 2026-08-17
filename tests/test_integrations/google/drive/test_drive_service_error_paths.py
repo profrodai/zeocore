@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/test_drive_service_error_paths.py  # noqa: E501
-# === QV-LLM:END ===
-
 """
 Tests for GoogleDriveService error-handling branches that were previously
 uncovered: the ``except QuackApiError`` / ``except QuackBaseAuthError`` /

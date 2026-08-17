@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/operations/pull_requests.py
-# === QV-LLM:END ===
-
 """GitHub pull request _ops."""
 
 from datetime import datetime

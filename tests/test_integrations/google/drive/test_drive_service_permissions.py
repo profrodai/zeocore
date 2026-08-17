@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/test_drive_service_permissions.py  # noqa: E501
-# === QV-LLM:END ===
-
 """
 Tests for Google Drive service permissions _ops.
 """

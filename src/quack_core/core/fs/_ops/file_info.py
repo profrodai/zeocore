@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_ops/file_info.py
-# === QV-LLM:END ===
-
 import mimetypes
 from dataclasses import dataclass
 from pathlib import Path

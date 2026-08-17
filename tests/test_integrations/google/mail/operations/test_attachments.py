@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/mail/operations/test_attachments.py
-# === QV-LLM:END ===
-
 """
 Tests for Gmail attachment _ops.
 """

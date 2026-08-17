@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/clients/base.py
-# === QV-LLM:END ===
-
 """
 Base LLM client implementation.
 

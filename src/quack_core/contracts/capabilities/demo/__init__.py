@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/capabilities/demo/__init__.py
-# === QV-LLM:END ===
-
 """
 Demo capabilities for testing and examples.
 

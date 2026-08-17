@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_contracts/test_artifacts.py
-# === QV-LLM:END ===
-
 """
 Tests for artifact models (ArtifactRef, StorageRef, RunManifest).
 

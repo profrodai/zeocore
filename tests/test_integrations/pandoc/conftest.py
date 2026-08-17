@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/conftest.py
-# === QV-LLM:END ===
-
 """
 Pytest configuration for pandoc integration tests.
 

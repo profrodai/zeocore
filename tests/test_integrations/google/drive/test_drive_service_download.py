@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/test_drive_service_download.py
-# === QV-LLM:END ===
-
 """
 Tests for Google Drive service download _ops.
 """

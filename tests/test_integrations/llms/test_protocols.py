@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/test_protocols.py
-# === QV-LLM:END ===
-
 """
 Tests for LLM protocols.
 

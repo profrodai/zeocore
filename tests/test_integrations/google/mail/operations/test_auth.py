@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/mail/operations/test_auth.py
-# === QV-LLM:END ===
-
 """
 Tests for Gmail authentication _ops.
 

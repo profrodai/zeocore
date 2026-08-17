@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_fs/test_architecture.py
-# === QV-LLM:END ===
-
 import ast
 import os
 from pathlib import Path

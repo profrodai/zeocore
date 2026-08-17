@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/registry.py
-# === QV-LLM:END ===
-
 
 """
 Operation registry for QuackCore.

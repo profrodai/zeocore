@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/mixins/output_handler.py
-# === QV-LLM:END ===
-
 
 """
 DEPRECATED: OutputFormatMixin has been removed.

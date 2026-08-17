@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/mocks/download.py
-# === QV-LLM:END ===
-
 """
 Mock classes for Google Drive download _ops.
 """

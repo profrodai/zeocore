@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/config_base.py
-# === QV-LLM:END ===
-
 """
 Configuration resolution engine with Deep Merge.
 Handles the merge logic: Request > Preset > Policy > Defaults.

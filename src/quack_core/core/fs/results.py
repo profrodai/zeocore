@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/results.py
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any, Generic, TypeVar
 

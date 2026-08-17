@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_core/test_serialization.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.core.serialization — shared JSON serialization utilities.
 

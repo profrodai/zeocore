@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/operations/test_operations_folder.py  # noqa: E501
-# === QV-LLM:END ===
-
 """
 Tests for Google Drive _ops folder module.
 """

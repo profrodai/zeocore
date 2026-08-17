@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/clients/openai.py
-# === QV-LLM:END ===
-
 """
 OpenAI LLM client implementation.
 

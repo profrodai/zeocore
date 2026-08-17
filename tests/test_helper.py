@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_helper.py
-# === QV-LLM:END ===
-
 """
 Helper module to set up the Python path for quack-core tests.
 This should be imported at the beginning of conftest.py.

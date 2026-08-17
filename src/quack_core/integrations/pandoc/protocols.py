@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/pandoc/protocols.py
-# === QV-LLM:END ===
-
 """
 Protocol definitions for Pandoc integration.
 

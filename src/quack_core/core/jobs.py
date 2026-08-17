@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/jobs.py
-# === QV-LLM:END ===
-
 
 """
 Job execution interfaces and implementations for QuackCore.

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/pandoc/operations/md_to_docx.py
-# === QV-LLM:END ===
-
 """
 Markdown to DOCX conversion _ops.
 

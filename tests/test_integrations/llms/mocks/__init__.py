@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/llms/mocks/__init__.py
-# === QV-LLM:END ===
-
 """
 Mock objects for LLM integration testing.
 

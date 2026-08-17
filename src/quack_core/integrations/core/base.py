@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/core/base.py
-# === QV-LLM:END ===
-
 """
 Base classes for QuackCore integrations.
 

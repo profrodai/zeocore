@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/test_auth_provider.py
-# === QV-LLM:END ===
-
 """
 Tests for Google authentication provider.
 

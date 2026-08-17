@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/conftest.py
-# === QV-LLM:END ===
-
 """
 Shared fixtures for QuackCore tests.
 """

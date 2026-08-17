@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/_internal/disk.py
-# === QV-LLM:END ===
-
 import os
 import shutil
 from pathlib import Path

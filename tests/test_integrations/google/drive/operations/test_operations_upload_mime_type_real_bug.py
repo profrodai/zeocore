@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/operations/test_operations_upload_mime_type_real_bug.py  # noqa: E501
-# === QV-LLM:END ===
-
 """
 Regression tests for a real production bug (RULING-236..247 pattern
 family, eleventh instance; fixed per RULING-247):

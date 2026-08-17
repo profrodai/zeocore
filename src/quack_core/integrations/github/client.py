@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/client.py
-# === QV-LLM:END ===
-
 """GitHub API client for quack_core."""
 
 from typing import Any, Literal

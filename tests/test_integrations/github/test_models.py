@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/github/test_models.py
-# === QV-LLM:END ===
-
 """Tests for GitHub models."""
 
 from datetime import datetime

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/mail/mocks.py
-# === QV-LLM:END ===
-
 """
 Mock objects for Gmail service testing.
 

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/artifacts/refs.py
-# === QV-LLM:END ===
-
 """
 Artifact and storage reference models.
 

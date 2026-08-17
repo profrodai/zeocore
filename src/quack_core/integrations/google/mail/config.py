@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/mail/config.py
-# === QV-LLM:END ===
-
 """
 Configuration for Google Mail integration.
 

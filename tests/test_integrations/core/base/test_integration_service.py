@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/core/base/test_integration_service.py
-# === QV-LLM:END ===
-
 from unittest.mock import patch
 
 from quack_core.integrations.core.results import (

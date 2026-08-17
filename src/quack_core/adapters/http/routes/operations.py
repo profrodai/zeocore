@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/adapters/http/routes/operations.py
-# === QV-LLM:END ===
-
 
 """
 Operations routes for listing and invoking _ops directly.

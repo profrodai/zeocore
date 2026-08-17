@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/__init__.py
-# === QV-LLM:END ===
-
 """
 QuackCore Contracts - Canonical Data Contracts (Ring A / Kernel)
 

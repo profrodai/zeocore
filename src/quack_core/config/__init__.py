@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/config/__init__.py
-# === QV-LLM:END ===
-
 
 """
 Configuration package for quack_core.

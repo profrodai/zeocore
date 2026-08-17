@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/service/dependencies.py
-# === QV-LLM:END ===
-
 """
 Dependency checking for LLM integration.
 

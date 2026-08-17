@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/models.py
-# === QV-LLM:END ===
-
 """
 Data models for Google Drive integration.
 

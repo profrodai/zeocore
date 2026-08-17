@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/config.py
-# === QV-LLM:END ===
-
 """
 Configuration management for Google integrations.
 

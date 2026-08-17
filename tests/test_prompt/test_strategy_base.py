@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_prompt/test_strategy_base.py
-# === QV-LLM:END ===
-
 """
 Tests for the PromptStrategy base class in strategy_base.py.
 """

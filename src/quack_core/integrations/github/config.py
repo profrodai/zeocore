@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/github/config.py
-# === QV-LLM:END ===
-
 """Configuration provider for GitHub integration."""
 
 import os

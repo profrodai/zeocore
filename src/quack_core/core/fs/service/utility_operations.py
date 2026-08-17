@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/utility_operations.py
-# === QV-LLM:END ===
-
 from pathlib import Path
 from typing import Any
 

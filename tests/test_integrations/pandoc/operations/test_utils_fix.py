@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/operations/test_utils_fix.py
-# === QV-LLM:END ===
-
 """
 Helper functions to fix validation issues in utils _ops.
 

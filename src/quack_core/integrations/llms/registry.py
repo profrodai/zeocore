@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/registry.py
-# === QV-LLM:END ===
-
 """
 Registry for LLM clients.
 

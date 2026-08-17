@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/full_class.py
-# === QV-LLM:END ===
-
 from quack_core.core.fs.protocols import FsPathLike
 from quack_core.core.fs.results import (
     BoolResult,

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/pandoc/operations/test_utils.py
-# === QV-LLM:END ===
-
 """
 Tests for utility functions used in pandoc integration.
 

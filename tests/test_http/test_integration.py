@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_http/test_integration.py
-# === QV-LLM:END ===
-
 """
 Integration tests for the HTTP adapter.
 """

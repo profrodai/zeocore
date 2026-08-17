@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/llms/models.py
-# === QV-LLM:END ===
-
 """
 Data models for LLM integration.
 

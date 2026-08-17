@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/pandoc/operations/__init__.py
-# === QV-LLM:END ===
-
 """
 Operations package for pandoc integration.
 

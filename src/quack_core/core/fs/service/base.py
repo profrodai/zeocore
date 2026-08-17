@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/base.py
-# === QV-LLM:END ===
-
 
 import uuid
 from pathlib import Path

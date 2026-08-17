@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/paths/api/public/__init__.py
-# === QV-LLM:END ===
-
 """
 Public API for the paths module.
 

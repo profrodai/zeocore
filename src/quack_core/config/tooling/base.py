@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/config/tooling/base.py
-# === QV-LLM:END ===
-
 """
 Base class for QuackTool-specific config models.
 

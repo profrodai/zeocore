@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/drive/__init__.py
-# === QV-LLM:END ===
-
 """
 Google Drive integration for quack_core.
 

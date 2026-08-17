@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/core/base/test_config_provider_discovery.py
-# === QV-LLM:END ===
-
 """
 Tests for the config discovery functionality in BaseConfigProvider.
 """

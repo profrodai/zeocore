@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/utils/test_utils_query.py
-# === QV-LLM:END ===
-
 """
 Tests for Google Drive api query module.
 """

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/fs/service/__init__.py
-# === QV-LLM:END ===
-
 """
 Filesystem service module.
 

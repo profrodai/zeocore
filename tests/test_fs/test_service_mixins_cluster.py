@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_fs/test_service_mixins_cluster.py
-# === QV-LLM:END ===
-
 """
 Real behavioral tests for the core/fs/service mixin cluster:
 DirectoryOperationsMixin, StructuredDataMixin, PathValidationMixin,

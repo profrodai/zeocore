@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/drive/test_drive_models.py
-# === QV-LLM:END ===
-
 """
 Tests for Google Drive models.
 """

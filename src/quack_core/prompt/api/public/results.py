@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/prompt/api/public/results.py
-# === QV-LLM:END ===
-
 from typing import Any
 
 from pydantic import BaseModel, Field

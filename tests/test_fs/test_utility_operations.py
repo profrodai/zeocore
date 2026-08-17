@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_fs/test_utility_operations.py
-# === QV-LLM:END ===
-
 """
 Tests for quack_core.core.fs.service.utility_operations.UtilityOperationsMixin,
 exercised through the real FileSystemService (the concrete class that mixes it

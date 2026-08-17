@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/adapters/http/routes/health.py
-# === QV-LLM:END ===
-
 """
 Health check routes.
 """

@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/adapters/http/config.py
-# === QV-LLM:END ===
-
 
 """
 Configuration for the HTTP adapter.

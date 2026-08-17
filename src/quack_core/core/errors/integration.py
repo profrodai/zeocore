@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/errors/integration.py
-# === QV-LLM:END ===
-
 
 """
 Integration-related error classes for quack_core.

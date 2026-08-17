@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_tools/mocks.py
-# === QV-LLM:END ===
-
 """
 Mocks for testing the quack_core.tools module.
 

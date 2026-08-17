@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_fs/test_api_surface.py
-# === QV-LLM:END ===
-
 """
 Test suite to verify hardened API surface.
 Ensures internal modules cannot be accidentally imported.

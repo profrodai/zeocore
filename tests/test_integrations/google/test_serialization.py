@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/tests/test_integrations/google/test_serialization.py
-# === QV-LLM:END ===
-
 from typing import Any
 from unittest.mock import MagicMock
 

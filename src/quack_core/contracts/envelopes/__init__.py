@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/envelopes/__init__.py
-# === QV-LLM:END ===
-
 """
 Envelope models for capability results, errors, and logs.
 

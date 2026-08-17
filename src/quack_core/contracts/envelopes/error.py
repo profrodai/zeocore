@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/contracts/envelopes/error.py
-# === QV-LLM:END ===
-
 """
 Structured error model for capability failures.
 

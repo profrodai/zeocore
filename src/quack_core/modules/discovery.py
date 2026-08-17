@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/modules/discovery.py
-# === QV-LLM:END ===
-
 
 """
 Plugin discovery and loading for quack_core.

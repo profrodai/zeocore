@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/core/logging/config.py
-# === QV-LLM:END ===
-
 """
 Logger configuration for quack_core.
 

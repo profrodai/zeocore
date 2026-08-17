@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/tools/__init__.py
-# === QV-LLM:END ===
-
 
 """
 quack_core.tools - Capability authoring framework (Ring B, Doctrine v3).

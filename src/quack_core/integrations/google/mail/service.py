@@ -1,7 +1,3 @@
-# === QV-LLM:BEGIN ===
-# path: quack-core/src/quack_core/integrations/google/mail/service.py
-# === QV-LLM:END ===
-
 import logging
 from collections.abc import Iterable, Mapping, Sequence
 from typing import cast
