@@ -155,6 +155,12 @@ class MockGmailMessagesResource(GmailMessagesResource):
         self.last_format = message_format
 
         # Use provided message data or generate default
+        # (explicit dict[str, object] annotation matches the return type's
+        # own cast below -- without it mypy infers a too-narrow
+        # dict[str, Collection[str]] from this literal's own value shapes,
+        # matching this chain's own round28-llms "reused variable across
+        # incompatible types" family, SOW-65 s2)
+        message_data: dict[str, object]
         if not self.message_data:
             message_data = {
                 "id": message_id,
@@ -182,7 +188,14 @@ class MockGmailMessagesResource(GmailMessagesResource):
                 },
             }
         else:
-            message_data = self.message_data
+            # self.message_data is dict[str, T] (T unbound on this generic
+            # class) -- dict's own invariance means assigning it directly
+            # into the dict[str, object]-declared local above is rejected
+            # even though the runtime shape is fine; cast rather than widen
+            # message_data's own declared type, since the return value is
+            # cast to GmailRequest[dict[str, object]] immediately below
+            # anyway.
+            message_data = cast(dict[str, object], self.message_data)
 
         return cast(
             GmailRequest[dict[str, object]],

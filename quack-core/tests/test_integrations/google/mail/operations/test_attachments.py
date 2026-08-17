@@ -134,7 +134,7 @@ class TestGmailAttachmentOperations:
             # Configure path mocks
             path_instance = MagicMock()
             path_instance.parent = "/path/to"
-            path_instance.__str__.return_value = "/path/to/storage/test.pdf"
+            path_instance.__str__.return_value = "/path/to/storage/test.pdf"  # type: ignore[attr-defined]
             mock_path.return_value = path_instance
 
             # Configure base64 mock for decoding attachment data
@@ -223,7 +223,7 @@ class TestGmailAttachmentOperations:
             # Configure path mocks
             path_instance = MagicMock()
             path_instance.parent = "/path/to"
-            path_instance.__str__.return_value = "/path/to/storage/test2.pdf"
+            path_instance.__str__.return_value = "/path/to/storage/test2.pdf"  # type: ignore[attr-defined]
             mock_path.return_value = path_instance
 
             # Configure API request mock for attachment retrieval
@@ -327,7 +327,7 @@ class TestGmailAttachmentOperations:
             # Configure path mocks for the collision case
             path_instance = MagicMock()
             path_instance.parent = "/path/to"
-            path_instance.__str__.return_value = "/path/to/storage/test2-1.pdf"
+            path_instance.__str__.return_value = "/path/to/storage/test2-1.pdf"  # type: ignore[attr-defined]
             mock_path.return_value = path_instance
 
             # Configure API request mock for attachment retrieval

@@ -9,6 +9,8 @@ This module provides functions for authenticating with the Gmail API
 and initializing the service.
 """
 
+from typing import cast
+
 from quack_core.core.errors import QuackApiError
 from quack_core.integrations.google.mail.protocols import (
     GmailService,
@@ -32,7 +34,10 @@ def initialize_gmail_service(credentials: GoogleCredentials) -> GmailService:
     try:
         from googleapiclient.discovery import build
 
-        return build("gmail", "v1", credentials=credentials)
+        # build() returns Any; drive/operations/upload.py:45 already
+        # established cast(<ServiceProtocol>, build(...)) as this repo's
+        # idiom for the identical googleapiclient discovery pattern.
+        return cast(GmailService, build("gmail", "v1", credentials=credentials))
     except Exception as api_error:
         raise QuackApiError(
             f"Failed to initialize Gmail API: {api_error}",

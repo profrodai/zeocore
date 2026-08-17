@@ -105,4 +105,4 @@ class TestGmailAuthOperations:
 
                 with pytest.raises(QuackApiError):
                     # Use the patched version which bypasses type checking
-                    patched_init(incomplete_creds)  # type: ignore
+                    patched_init(incomplete_creds)
