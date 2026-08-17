@@ -1,4 +1,3 @@
-
 """
 zeo_core.tools - Capability authoring framework (Ring B, Doctrine v3).
 
@@ -39,6 +38,8 @@ Example:
             result = self._process(request, ctx)
             return CapabilityResult.ok(data=result, msg="Success")
 """
+
+__version__ = "0.1.0"
 
 # Core classes
 from zeo_core.tools.base import BaseZeoTool
