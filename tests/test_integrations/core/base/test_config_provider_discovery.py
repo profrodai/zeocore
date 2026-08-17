@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackConfigurationError, QuackFileNotFoundError
+from zeo_core.core.errors import ZeoConfigurationError, ZeoFileNotFoundError
 
 from .config_provider_impl import (
     MockConfigProvider,
@@ -22,18 +22,18 @@ class TestBaseConfigProviderDiscovery:
         provider = MockConfigProvider()
 
         # Test with environment variable
-        with patch.dict(os.environ, {"QUACK_TEST_CONFIG_CONFIG": "/env/config.yaml"}):
+        with patch.dict(os.environ, {"ZEO_TEST_CONFIG_CONFIG": "/env/config.yaml"}):
             with patch.object(provider, "_find_config_file") as mock_find:
                 mock_find.return_value = "/env/config.yaml"
 
                 with patch(
-                    "quack_core.core.fs.service.standalone.get_file_info"
+                    "zeo_core.core.fs.service.standalone.get_file_info"
                 ) as mock_info:
                     mock_info.return_value.success = True
                     mock_info.return_value.exists = True
 
                     with patch(
-                        "quack_core.core.fs.service.standalone.read_yaml"
+                        "zeo_core.core.fs.service.standalone.read_yaml"
                     ) as mock_read:
                         mock_read.return_value.success = True
                         mock_read.return_value.data = {
@@ -50,13 +50,13 @@ class TestBaseConfigProviderDiscovery:
             mock_find.return_value = "/default/config.yaml"
 
             with patch(
-                "quack_core.core.fs.service.standalone.get_file_info"
+                "zeo_core.core.fs.service.standalone.get_file_info"
             ) as mock_info:
                 mock_info.return_value.success = True
                 mock_info.return_value.exists = True
 
                 with patch(
-                    "quack_core.core.fs.service.standalone.read_yaml"
+                    "zeo_core.core.fs.service.standalone.read_yaml"
                 ) as mock_read:
                     mock_read.return_value.success = True
                     mock_read.return_value.data = {
@@ -72,7 +72,7 @@ class TestBaseConfigProviderDiscovery:
         with patch.object(provider, "_find_config_file") as mock_find:
             mock_find.return_value = None
 
-            with pytest.raises(QuackConfigurationError):
+            with pytest.raises(ZeoConfigurationError):
                 provider.load_config()
 
     def test_find_config_file(self) -> None:
@@ -80,14 +80,14 @@ class TestBaseConfigProviderDiscovery:
         provider = MockConfigProvider()
 
         # Test with environment variable
-        with patch.dict(os.environ, {"QUACK_TEST_CONFIG_CONFIG": "/env/config.yaml"}):
+        with patch.dict(os.environ, {"ZEO_TEST_CONFIG_CONFIG": "/env/config.yaml"}):
             with patch(
-                "quack_core.core.fs.service.standalone.expand_user_vars"
+                "zeo_core.core.fs.service.standalone.expand_user_vars"
             ) as mock_expand:
                 mock_expand.return_value = Path("/env/config.yaml")
 
                 with patch(
-                    "quack_core.core.fs.service.standalone.get_file_info"
+                    "zeo_core.core.fs.service.standalone.get_file_info"
                 ) as mock_file_info:
                     mock_file_info.return_value.success = True
                     mock_file_info.return_value.exists = True
@@ -95,7 +95,7 @@ class TestBaseConfigProviderDiscovery:
                     # Patch paths.service to avoid using get_project_root
                     # which is missing
                     with patch(
-                        "quack_core.core.paths.service.get_project_root", create=True
+                        "zeo_core.core.paths.service.get_project_root", create=True
                     ) as mock_get_root:
                         # Just ensure it doesn't get called here
                         result = provider._find_config_file()
@@ -106,12 +106,12 @@ class TestBaseConfigProviderDiscovery:
 
         # Test with default locations
         with patch(
-            "quack_core.core.paths.service.get_project_root", create=True
+            "zeo_core.core.paths.service.get_project_root", create=True
         ) as mock_get_root:
-            mock_get_root.side_effect = QuackFileNotFoundError("mock error")
+            mock_get_root.side_effect = ZeoFileNotFoundError("mock error")
 
             with patch(
-                "quack_core.core.fs.service.standalone.get_file_info"
+                "zeo_core.core.fs.service.standalone.get_file_info"
             ) as mock_file_info:
 
                 def side_effect(path: str | Path) -> MagicMock:
@@ -123,7 +123,7 @@ class TestBaseConfigProviderDiscovery:
                 mock_file_info.side_effect = side_effect
 
                 with patch(
-                    "quack_core.core.fs.service.standalone.expand_user_vars"
+                    "zeo_core.core.fs.service.standalone.expand_user_vars"
                 ) as mock_expand:
                     mock_expand.side_effect = lambda path: (
                         Path("/default") / Path(path).name
@@ -132,48 +132,48 @@ class TestBaseConfigProviderDiscovery:
                     with patch.object(
                         provider,
                         "DEFAULT_CONFIG_LOCATIONS",
-                        ["config.yaml", "quack_config.yaml"],
+                        ["config.yaml", "zeo_config.yaml"],
                     ):
                         result = provider._find_config_file()
                         assert result == "/default/config.yaml"
 
         # Test with project root detection
         with patch(
-            "quack_core.core.paths.service.get_project_root", create=True
+            "zeo_core.core.paths.service.get_project_root", create=True
         ) as mock_get_root:
             mock_get_root.return_value = Path("/project")
 
-            with patch("quack_core.core.fs.service.standalone.join_path") as mock_join:
-                mock_join.return_value = Path("/project/quack_config.yaml")
+            with patch("zeo_core.core.fs.service.standalone.join_path") as mock_join:
+                mock_join.return_value = Path("/project/zeo_config.yaml")
 
                 with patch(
-                    "quack_core.core.fs.service.standalone.get_file_info"
+                    "zeo_core.core.fs.service.standalone.get_file_info"
                 ) as mock_file_info:
                     mock_file_info.return_value.success = True
                     mock_file_info.return_value.exists = True
 
                     with patch(
-                        "quack_core.core.fs.service.standalone.expand_user_vars"
+                        "zeo_core.core.fs.service.standalone.expand_user_vars"
                     ) as mock_expand:
-                        mock_expand.return_value = Path("/project/quack_config.yaml")
+                        mock_expand.return_value = Path("/project/zeo_config.yaml")
 
                         result = provider._find_config_file()
-                        assert result == "/project/quack_config.yaml"
+                        assert result == "/project/zeo_config.yaml"
 
         # Test when no config file can be found
         with patch(
-            "quack_core.core.paths.service.get_project_root", create=True
+            "zeo_core.core.paths.service.get_project_root", create=True
         ) as mock_get_root:
-            mock_get_root.side_effect = QuackFileNotFoundError("/nonexistent")
+            mock_get_root.side_effect = ZeoFileNotFoundError("/nonexistent")
 
             with patch(
-                "quack_core.core.fs.service.standalone.get_file_info"
+                "zeo_core.core.fs.service.standalone.get_file_info"
             ) as mock_file_info:
                 mock_file_info.return_value.success = True
                 mock_file_info.return_value.exists = False
 
                 with patch(
-                    "quack_core.core.fs.service.standalone.expand_user_vars"
+                    "zeo_core.core.fs.service.standalone.expand_user_vars"
                 ) as mock_expand:
                     mock_expand.side_effect = lambda x: x
 
@@ -200,7 +200,7 @@ class TestBaseConfigProviderDiscovery:
 
         # Test with fs service standalone resolver
         with patch(
-            "quack_core.core.fs.service.standalone.resolve_path"
+            "zeo_core.core.fs.service.standalone.resolve_path"
         ) as mock_resolve:
             mock_resolve.return_value = "/resolved/path"
 
@@ -210,7 +210,7 @@ class TestBaseConfigProviderDiscovery:
 
         # Test with resolver exception
         with patch(
-            "quack_core.core.fs.service.standalone.resolve_path"
+            "zeo_core.core.fs.service.standalone.resolve_path"
         ) as mock_resolve:
             mock_resolve.side_effect = Exception("Test error")
 

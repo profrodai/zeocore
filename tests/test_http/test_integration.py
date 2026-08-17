@@ -9,28 +9,28 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
-from quack_core.adapters.http.app import create_app
-from quack_core.adapters.http.config import HttpAdapterConfig
-from quack_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
-from quack_core.core.registry import OperationRegistry
+from zeo_core.adapters.http.app import create_app
+from zeo_core.adapters.http.config import HttpAdapterConfig
+from zeo_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
+from zeo_core.core.registry import OperationRegistry
 
 
-class _QuackMediaRequest(BaseModel):
-    """Request model for the test-only quack-media.* operations registered
+class _ZeoMediaRequest(BaseModel):
+    """Request model for the test-only zeo-media.* operations registered
     below -- see conftest.py's own copy for the full rationale. Accepts
     arbitrary extra params since these tests post varied param shapes."""
 
     model_config = {"extra": "allow"}
 
 
-def _make_quackmedia_operation(
+def _make_zeomedia_operation(
     op_name: str,
-) -> Callable[[_QuackMediaRequest], dict[str, Any]]:
+) -> Callable[[_ZeoMediaRequest], dict[str, Any]]:
     """Test-only stand-in: reports success, the operation name, and
     echoes params, matching what test_full_job_workflow /
     test_sync_vs_async_consistency assert."""
 
-    def _op(req: _QuackMediaRequest) -> dict[str, Any]:
+    def _op(req: _ZeoMediaRequest) -> dict[str, Any]:
         return {"success": True, "operation": op_name, "params": req.model_dump()}
 
     return _op
@@ -54,9 +54,9 @@ def integration_client() -> TestClient:
     )
     registry = OperationRegistry()
     registry.register(
-        name="quack-media.slice_video",
-        callable_=_make_quackmedia_operation("quack-media.slice_video"),
-        request_model=_QuackMediaRequest,
+        name="zeo-media.slice_video",
+        callable_=_make_zeomedia_operation("zeo-media.slice_video"),
+        request_model=_ZeoMediaRequest,
     )
     job_store = InMemoryJobStore()
     job_runner = ThreadPoolJobRunner(registry=registry, store=job_store, max_workers=1)
@@ -80,7 +80,7 @@ def test_full_job_workflow(
     create_response = integration_client.post(
         "/jobs",
         json={
-            "op": "quack-media.slice_video",
+            "op": "zeo-media.slice_video",
             "params": {
                 "input_path": "/test/input.mp4",
                 "output_path": "/test/output.mp4",
@@ -121,7 +121,7 @@ def test_sync_vs_async_consistency(
 ) -> None:
     """Test that sync (/ops) and async (/jobs) invocation of the same
     operation return consistent results. The old dedicated
-    "/quack-media/slice" sync route was retired in favor of the generic
+    "/zeo-media/slice" sync route was retired in favor of the generic
     /ops/{op_name} interface (operations.py's own docstring); /ops IS the
     current sync surface, so this test now exercises that."""
     params = {
@@ -133,7 +133,7 @@ def test_sync_vs_async_consistency(
 
     # Test sync endpoint
     sync_response = integration_client.post(
-        "/ops/quack-media.slice_video", json=params, headers=integration_headers
+        "/ops/zeo-media.slice_video", json=params, headers=integration_headers
     )
     assert sync_response.status_code == 200
     sync_result = sync_response.json()["data"]
@@ -141,7 +141,7 @@ def test_sync_vs_async_consistency(
     # Test async endpoint
     async_response = integration_client.post(
         "/jobs",
-        json={"op": "quack-media.slice_video", "params": params},
+        json={"op": "zeo-media.slice_video", "params": params},
         headers=integration_headers,
     )
 
@@ -198,4 +198,4 @@ def test_openapi_docs(integration_client: TestClient) -> None:
     openapi_data = openapi_response.json()
     assert "openapi" in openapi_data
     assert "info" in openapi_data
-    assert openapi_data["info"]["title"] == "QuackCore API"
+    assert openapi_data["info"]["title"] == "ZeoCore API"

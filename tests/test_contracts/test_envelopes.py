@@ -9,7 +9,7 @@ from typing import Any
 
 import pytest
 from pydantic import ValidationError
-from quack_core.contracts import (
+from zeo_core.contracts import (
     CapabilityError,
     CapabilityLogEvent,
     CapabilityResult,

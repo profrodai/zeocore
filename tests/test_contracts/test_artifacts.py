@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
-from quack_core.contracts import (
+from zeo_core.contracts import (
     ArtifactKind,
     ArtifactRef,
     CapabilityError,
@@ -405,7 +405,7 @@ class TestManifestFixtures:
 
         assert artifact.role == "video_slice_1"
         assert artifact.storage.scheme == StorageScheme.s3
-        assert artifact.storage.bucket == "quack-artifacts-prod"
+        assert artifact.storage.bucket == "zeo-artifacts-prod"
         assert artifact.tags["quality"] == "1080p"
 
     def test_manifest_error_forbids_intermediates(self) -> None:

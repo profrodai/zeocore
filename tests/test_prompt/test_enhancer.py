@@ -1,10 +1,10 @@
 """
-Tests for quack_core.prompt._internal.enhancer.enhance_with_llm_safe.
+Tests for zeo_core.prompt._internal.enhancer.enhance_with_llm_safe.
 
 enhance_with_llm_safe crosses a real external boundary (the LLM provider
 integration -- network calls, API keys), so per RULING-235 we mock at that
-boundary (quack_core.integrations.llms.service.LLMIntegration) rather than
-mocking anything inside quack_core.prompt itself. We also exercise the real,
+boundary (zeo_core.integrations.llms.service.LLMIntegration) rather than
+mocking anything inside zeo_core.prompt itself. We also exercise the real,
 unmocked fallback path since this test environment has no LLM provider
 credentials configured, so LLMIntegration.initialize() genuinely fails.
 """
@@ -12,7 +12,7 @@ credentials configured, so LLMIntegration.initialize() genuinely fails.
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.prompt._internal.enhancer import enhance_with_llm_safe
+from zeo_core.prompt._internal.enhancer import enhance_with_llm_safe
 
 
 def test_enhance_with_llm_safe_real_no_credentials_falls_back(
@@ -42,7 +42,7 @@ def test_enhance_with_llm_safe_init_failure_returns_original_prompt() -> None:
     mock_service.initialize.return_value = mock_init_result
 
     with patch(
-        "quack_core.integrations.llms.service.LLMIntegration",
+        "zeo_core.integrations.llms.service.LLMIntegration",
         return_value=mock_service,
     ):
         result = enhance_with_llm_safe("My prompt", model="gpt-x", provider="openai")
@@ -59,7 +59,7 @@ def test_enhance_with_llm_safe_success_returns_stripped_content() -> None:
     mock_service.chat.return_value = mock_chat_result
 
     with patch(
-        "quack_core.integrations.llms.service.LLMIntegration",
+        "zeo_core.integrations.llms.service.LLMIntegration",
         return_value=mock_service,
     ):
         result = enhance_with_llm_safe("My prompt")
@@ -76,7 +76,7 @@ def test_enhance_with_llm_safe_chat_failure_returns_original() -> None:
     mock_service.chat.return_value = mock_chat_result
 
     with patch(
-        "quack_core.integrations.llms.service.LLMIntegration",
+        "zeo_core.integrations.llms.service.LLMIntegration",
         return_value=mock_service,
     ):
         result = enhance_with_llm_safe("My prompt")
@@ -92,7 +92,7 @@ def test_enhance_with_llm_safe_chat_success_empty_content_returns_original() -> 
     mock_service.chat.return_value = mock_chat_result
 
     with patch(
-        "quack_core.integrations.llms.service.LLMIntegration",
+        "zeo_core.integrations.llms.service.LLMIntegration",
         return_value=mock_service,
     ):
         result = enhance_with_llm_safe("My prompt")
@@ -102,7 +102,7 @@ def test_enhance_with_llm_safe_chat_success_empty_content_returns_original() -> 
 
 def test_enhance_with_llm_safe_unexpected_exception_returns_original() -> None:
     with patch(
-        "quack_core.integrations.llms.service.LLMIntegration",
+        "zeo_core.integrations.llms.service.LLMIntegration",
         side_effect=RuntimeError("boom"),
     ):
         result = enhance_with_llm_safe("My prompt")
@@ -128,7 +128,7 @@ def test_enhance_with_llm_safe_import_error_returns_original() -> None:
         fromlist: Sequence[str] = (),
         level: int = 0,
     ) -> ModuleType:
-        if name == "quack_core.integrations.llms.service":
+        if name == "zeo_core.integrations.llms.service":
             raise ImportError("simulated missing dependency")
         return real_import(name, globals, locals, fromlist, level)
 

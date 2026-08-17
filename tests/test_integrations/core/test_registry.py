@@ -3,9 +3,9 @@ Tests for the integration registry module.
 """
 
 import pytest
-from quack_core.core.errors import QuackError
-from quack_core.integrations.core.registry import IntegrationRegistry
-from quack_core.integrations.core.results import IntegrationResult
+from zeo_core.core.errors import ZeoError
+from zeo_core.integrations.core.registry import IntegrationRegistry
+from zeo_core.integrations.core.results import IntegrationResult
 
 
 # Create a mock integration for testing
@@ -94,7 +94,7 @@ def test_register_duplicate_integration(
     registry.register(mock_integration)  # type: ignore[arg-type]  # deliberately no integration_id, see MockIntegration's own comment
 
     # Try to register the same integration again
-    with pytest.raises(QuackError) as excinfo:
+    with pytest.raises(ZeoError) as excinfo:
         registry.register(mock_integration)  # type: ignore[arg-type]  # deliberately no integration_id, see MockIntegration's own comment
 
     # Verify the error message

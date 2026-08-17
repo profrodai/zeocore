@@ -21,22 +21,22 @@ from _pytest.monkeypatch import MonkeyPatch
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
     """
-    Stub out the quack_core.core.fs.service.standalone methods for file _ops.
+    Stub out the zeo_core.core.fs.service.standalone methods for file _ops.
     """
     # Create a module structure if it doesn't exist
-    if "quack_core.core.fs.service" not in sys.modules:
+    if "zeo_core.core.fs.service" not in sys.modules:
         # Create the module hierarchy
-        if "quack-core" not in sys.modules:
-            quackcore_mod = types.ModuleType("quack-core")
-            sys.modules["quack-core"] = quackcore_mod
+        if "zeocore" not in sys.modules:
+            zeocore_mod = types.ModuleType("zeocore")
+            sys.modules["zeocore"] = zeocore_mod
 
-        if "quack_core.core.fs" not in sys.modules:
-            fs_mod = types.ModuleType("quack_core.core.fs")
-            sys.modules["quack_core.core.fs"] = fs_mod
+        if "zeo_core.core.fs" not in sys.modules:
+            fs_mod = types.ModuleType("zeo_core.core.fs")
+            sys.modules["zeo_core.core.fs"] = fs_mod
 
         # Create the service module
-        service_mod = types.ModuleType("quack_core.core.fs.service")
-        sys.modules["quack_core.core.fs.service"] = service_mod
+        service_mod = types.ModuleType("zeo_core.core.fs.service")
+        sys.modules["zeo_core.core.fs.service"] = service_mod
 
     # Create the stub with all necessary methods
     stub = SimpleNamespace()
@@ -134,21 +134,21 @@ def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
     # attribute -- this is a deliberate dynamic monkeypatch of a real (or
     # synthetic) module object, not a typo, so the lookup is bound through an
     # Any-typed local once rather than per-attribute-access ignored.
-    fs_service_mod: Any = sys.modules["quack_core.core.fs.service"]
+    fs_service_mod: Any = sys.modules["zeo_core.core.fs.service"]
     fs_service_mod.standalone = stub
 
     # The line above alone does NOT reach every consumer: each pandoc module
     # binds its own local `fs` name at import time via
-    # `from quack_core.core.fs.service import standalone as fs`, so
+    # `from zeo_core.core.fs.service import standalone as fs`, so
     # reassigning sys.modules[...].standalone after that import has already
     # happened never touches the already-bound local alias (mock-path-drift-fix
     # SOW-02 Finding 2). Patch the alias directly on every module that binds
     # it, so this one shared, autouse fixture actually reaches all of them.
-    import quack_core.integrations.pandoc.config as _pandoc_config
-    import quack_core.integrations.pandoc.converter as _pandoc_converter
-    import quack_core.integrations.pandoc.operations.html_to_md as _pandoc_html_to_md
-    import quack_core.integrations.pandoc.operations.md_to_docx as _pandoc_md_to_docx
-    import quack_core.integrations.pandoc.operations.utils as _pandoc_utils
+    import zeo_core.integrations.pandoc.config as _pandoc_config
+    import zeo_core.integrations.pandoc.converter as _pandoc_converter
+    import zeo_core.integrations.pandoc.operations.html_to_md as _pandoc_html_to_md
+    import zeo_core.integrations.pandoc.operations.md_to_docx as _pandoc_md_to_docx
+    import zeo_core.integrations.pandoc.operations.utils as _pandoc_utils
 
     for _mod in (
         _pandoc_config,
@@ -187,16 +187,16 @@ def mock_paths_service(monkeypatch: MonkeyPatch) -> MagicMock:
     mock.resolve_project_path = lambda path: path
 
     # Create a proper paths module structure
-    if "quack_core.core.paths" not in sys.modules:
-        paths_mod = types.ModuleType("quack_core.core.paths")
-        sys.modules["quack_core.core.paths"] = paths_mod
+    if "zeo_core.core.paths" not in sys.modules:
+        paths_mod = types.ModuleType("zeo_core.core.paths")
+        sys.modules["zeo_core.core.paths"] = paths_mod
 
     # Add necessary functions directly to the module
     # Same shape as fs_service_mod above: a deliberate dynamic monkeypatch of
     # a real (or synthetic) module object, bound through one Any-typed local
     # (renamed from the `paths_mod` ModuleType local above to avoid a mypy
     # redefinition-with-different-type conflict on the same name).
-    paths_mod_any: Any = sys.modules["quack_core.core.paths"]
+    paths_mod_any: Any = sys.modules["zeo_core.core.paths"]
     paths_mod_any.service = mock
     paths_mod_any.resolve_path = lambda path: (
         os.path.abspath(path) if path else "/dummy/path"

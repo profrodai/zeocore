@@ -4,16 +4,16 @@ Tests for Google Drive service folder _ops.
 
 from unittest.mock import MagicMock, patch
 
-from quack_core.core.errors import QuackApiError
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.google.drive.service import GoogleDriveService
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.google.drive.service import GoogleDriveService
 
 
 class TestGoogleDriveServiceFolders:
     """Tests for the GoogleDriveService folder _ops."""
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_create_folder(
@@ -75,7 +75,7 @@ class TestGoogleDriveServiceFolders:
         )
 
         # Test API error
-        service.drive_service.files().create.side_effect = QuackApiError(
+        service.drive_service.files().create.side_effect = ZeoApiError(
             "API error", service="drive"
         )
         result = service.create_folder("Error Folder")
@@ -84,7 +84,7 @@ class TestGoogleDriveServiceFolders:
         assert "API error" in result.error
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_delete_file(
@@ -130,7 +130,7 @@ class TestGoogleDriveServiceFolders:
         )
 
         # Test API error
-        service.drive_service.files().update.side_effect = QuackApiError(
+        service.drive_service.files().update.side_effect = ZeoApiError(
             "API error", service="drive"
         )
         result = service.delete_file("error_fileId")

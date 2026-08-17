@@ -1,14 +1,14 @@
 """
-Shared fixtures for QuackTool mixin tests.
+Shared fixtures for ZeoTool mixin tests.
 
 NOTE: OutputFormatMixin fixtures/mocks were removed here — output_handler.py
 documents its own retirement (Ring C / runner now owns output persistence;
 tools return CapabilityResult). See
-quack-core/src/quack_core/tools/mixins/output_handler.py's module docstring.
+zeocore/src/zeo_core/tools/mixins/output_handler.py's module docstring.
 
 NOTE: the integration_enabled_mixin fixture (built around
 IntegrationEnabledMixin[T].resolve_integration()) was also removed. The
-current quack_core.tools.mixins.integration_enabled.IntegrationEnabledMixin
+current zeo_core.tools.mixins.integration_enabled.IntegrationEnabledMixin
 is a different, non-generic design (get_service/require_service reading
 from ToolContext.services, runner-provided) with no resolve_integration or
 .integration property at all -- the old fixture's pattern has no live
@@ -19,10 +19,10 @@ is a design decision, not a rename (see this stream's SOW for the escalation).
 from typing import TypeVar
 
 import pytest
-from quack_core.integrations.core.base import BaseIntegrationService
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
-from quack_core.tools.mixins.lifecycle import QuackToolLifecycleMixin
+from zeo_core.integrations.core.base import BaseIntegrationService
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.tools.mixins.env_init import ToolEnvInitializerMixin
+from zeo_core.tools.mixins.lifecycle import ZeoToolLifecycleMixin
 
 
 class MockIntegrationService(BaseIntegrationService):
@@ -63,6 +63,6 @@ def tool_env_initializer_mixin() -> ToolEnvInitializerMixin:
 
 
 @pytest.fixture
-def lifecycle_mixin() -> QuackToolLifecycleMixin:
-    """Fixture that creates a QuackToolLifecycleMixin."""
-    return QuackToolLifecycleMixin()
+def lifecycle_mixin() -> ZeoToolLifecycleMixin:
+    """Fixture that creates a ZeoToolLifecycleMixin."""
+    return ZeoToolLifecycleMixin()

@@ -5,8 +5,8 @@
   "content_type": "video/mp4",
   "storage": {
     "scheme": "s3",
-    "uri": "s3://quack-artifacts-prod/outputs/clip1.mp4",
-    "bucket": "quack-artifacts-prod",
+    "uri": "s3://zeo-artifacts-prod/outputs/clip1.mp4",
+    "bucket": "zeo-artifacts-prod",
     "key": "outputs/clip1.mp4",
     "metadata": {"region": "us-east-1"}
   },

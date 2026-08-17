@@ -10,11 +10,11 @@ from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.core.results import ConfigResult, IntegrationResult
-from quack_core.integrations.llms.config import LLMConfigProvider
-from quack_core.integrations.llms.fallback import FallbackConfig
-from quack_core.integrations.llms.service.integration import LLMIntegration
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.core.results import ConfigResult, IntegrationResult
+from zeo_core.integrations.llms.config import LLMConfigProvider
+from zeo_core.integrations.llms.fallback import FallbackConfig
+from zeo_core.integrations.llms.service.integration import LLMIntegration
 
 
 def _mock_provider(integration: LLMIntegration) -> MagicMock:
@@ -70,7 +70,7 @@ class TestLLMIntegrationComprehensive:
         """Test initializing with default parameters."""
         # We need to patch where it's imported, not its original location
         with patch(
-            "quack_core.integrations.llms.service.integration.LLMConfigProvider"
+            "zeo_core.integrations.llms.service.integration.LLMConfigProvider"
         ) as mock_provider_class:
             integration = LLMIntegration()
             assert integration.provider is None
@@ -107,7 +107,7 @@ class TestLLMIntegrationComprehensive:
         config_path string, not a stringified log level.
         """
         with patch(
-            "quack_core.core.fs.service.standalone.get_file_info"
+            "zeo_core.core.fs.service.standalone.get_file_info"
         ) as mock_file_info:
             # Create a proper FileInfoResult
             file_info_result = MagicMock()
@@ -121,7 +121,7 @@ class TestLLMIntegrationComprehensive:
             # caller's real config_path" from "resolved something else
             # entirely" (e.g. a stringified log_level landing in that slot).
             with patch(
-                "quack_core.core.fs.service.standalone.resolve_path"
+                "zeo_core.core.fs.service.standalone.resolve_path"
             ) as mock_resolve_path:
                 # A plain SimpleNamespace (not a bare MagicMock) is required
                 # here: coerce_path_str's duck-typing checks .value()/
@@ -256,7 +256,7 @@ class TestLLMIntegrationComprehensive:
         )
         provider.get_default_config.return_value = None
 
-        with pytest.raises(QuackIntegrationError) as excinfo:
+        with pytest.raises(ZeoIntegrationError) as excinfo:
             integration._extract_config()
 
         assert "LLM configuration not initialized" in str(excinfo.value)
@@ -267,11 +267,11 @@ class TestLLMIntegrationComprehensive:
         integration.config = None
 
         # Mock LLMConfig using the correct import path
-        with patch("quack_core.integrations.llms.config.LLMConfig") as mock_llm_config:
+        with patch("zeo_core.integrations.llms.config.LLMConfig") as mock_llm_config:
             mock_llm_config.side_effect = ValueError("Invalid config")
 
-            # Should raise QuackIntegrationError
-            with pytest.raises(QuackIntegrationError) as excinfo:
+            # Should raise ZeoIntegrationError
+            with pytest.raises(ZeoIntegrationError) as excinfo:
                 integration._extract_config()
 
             assert "Invalid LLM configuration" in str(excinfo.value)
@@ -280,7 +280,7 @@ class TestLLMIntegrationComprehensive:
         """Test initialize when base class initialization fails."""
         # Mock base class initialize to fail
         with patch(
-            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult(
                 success=False, error="Base initialization failed"
@@ -299,7 +299,7 @@ class TestLLMIntegrationComprehensive:
         """Test complete initialization process."""
         # Mock base class initialize to succeed
         with patch(
-            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult(success=True)
 
@@ -311,7 +311,7 @@ class TestLLMIntegrationComprehensive:
             )
             # Patch where it's actually imported, not just the function itself
             with patch(
-                "quack_core.integrations.llms.service.integration.check_llm_dependencies",
+                "zeo_core.integrations.llms.service.integration.check_llm_dependencies",
                 return_value=mock_deps_result,
             ) as mock_check_deps:
                 # Mock extract_config
@@ -325,7 +325,7 @@ class TestLLMIntegrationComprehensive:
                         success=True, message="Initialized"
                     )
                     with patch(
-                        "quack_core.integrations.llms.service.initialization.initialize_single_provider",
+                        "zeo_core.integrations.llms.service.initialization.initialize_single_provider",
                         return_value=success_result,
                     ) as mock_init_single:
                         # Call initialize
@@ -348,7 +348,7 @@ class TestLLMIntegrationComprehensive:
         """Test initialization with fallback configuration."""
         # Mock base class initialize to succeed
         with patch(
-            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult(success=True)
 
@@ -359,7 +359,7 @@ class TestLLMIntegrationComprehensive:
                 ["openai", "anthropic", "mock"],
             )
             with patch(
-                "quack_core.integrations.llms.service.dependencies.check_llm_dependencies",
+                "zeo_core.integrations.llms.service.dependencies.check_llm_dependencies",
                 return_value=mock_deps_result,
             ):
                 # Mock extract_config with fallback configuration
@@ -372,7 +372,7 @@ class TestLLMIntegrationComprehensive:
                 ):
                     # Mock FallbackConfig creation
                     with patch(
-                        "quack_core.integrations.llms.fallback.FallbackConfig"
+                        "zeo_core.integrations.llms.fallback.FallbackConfig"
                     ) as mock_fallback_config:
                         mock_fallback_config.return_value = FallbackConfig(
                             providers=["openai", "anthropic", "mock"]
@@ -383,7 +383,7 @@ class TestLLMIntegrationComprehensive:
                             success=True, message="Initialized with fallback"
                         )
                         with patch(
-                            "quack_core.integrations.llms.service.initialization.initialize_with_fallback",
+                            "zeo_core.integrations.llms.service.initialization.initialize_with_fallback",
                             return_value=success_result,
                         ) as mock_init_fallback:
                             # Call initialize
@@ -396,10 +396,10 @@ class TestLLMIntegrationComprehensive:
                             mock_init_fallback.assert_called_once()
 
     def test_initialize_integration_error(self, integration: LLMIntegration) -> None:
-        """Test handling QuackIntegrationError during initialization."""
+        """Test handling ZeoIntegrationError during initialization."""
         # Mock base class initialize to succeed
         with patch(
-            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult(success=True)
 
@@ -407,7 +407,7 @@ class TestLLMIntegrationComprehensive:
             with patch.object(
                 integration,
                 "_extract_config",
-                side_effect=QuackIntegrationError("Integration error"),
+                side_effect=ZeoIntegrationError("Integration error"),
             ):
                 # Initialize should handle the error properly
                 result = integration.initialize()
@@ -422,7 +422,7 @@ class TestLLMIntegrationComprehensive:
         """Test handling generic exceptions during initialization."""
         # Mock base class initialize to succeed
         with patch(
-            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult(success=True)
 
@@ -445,7 +445,7 @@ class TestLLMIntegrationComprehensive:
         integration._initialized = False
         integration.client = None
 
-        with pytest.raises(QuackIntegrationError) as excinfo:
+        with pytest.raises(ZeoIntegrationError) as excinfo:
             integration.get_client()
 
         assert "LLM client not initialized" in str(excinfo.value)

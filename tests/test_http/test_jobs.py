@@ -7,13 +7,13 @@ import uuid
 
 import pytest
 from pydantic import BaseModel
-from quack_core.core.jobs import (
+from zeo_core.core.jobs import (
     InMemoryJobStore,
     JobData,
     JobStatus,
     ThreadPoolJobRunner,
 )
-from quack_core.core.registry import OperationRegistry
+from zeo_core.core.registry import OperationRegistry
 
 
 def test_job_store_create_and_get(job_store: InMemoryJobStore) -> None:

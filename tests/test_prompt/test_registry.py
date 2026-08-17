@@ -1,10 +1,10 @@
 """
-Tests for quack_core.prompt._internal.registry.StrategyRegistry.
+Tests for zeo_core.prompt._internal.registry.StrategyRegistry.
 """
 
 import pytest
-from quack_core.prompt._internal.registry import StrategyRegistry
-from quack_core.prompt.models import PromptStrategy
+from zeo_core.prompt._internal.registry import StrategyRegistry
+from zeo_core.prompt.models import PromptStrategy
 
 
 def _make_strategy(strategy_id: str, tags: list[str] | None = None) -> PromptStrategy:

@@ -12,12 +12,12 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.pandoc import (
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.pandoc import (
     ConversionMetrics,
     PandocConfig,
 )
-from quack_core.integrations.pandoc.operations import (
+from zeo_core.integrations.pandoc.operations import (
     convert_markdown_to_docx,
     validate_docx_conversion,
 )
@@ -32,14 +32,14 @@ from .test_utils_fix import (
 # --- Tests for Markdown to DOCX _ops ---
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
 @patch(
-    "quack_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
+    "zeo_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
 )
-@patch("quack_core.integrations.pandoc.operations.md_to_docx._get_conversion_output")
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.validate_conversion")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx._get_conversion_output")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.validate_conversion")
 @patch(
-    "quack_core.integrations.pandoc.operations.md_to_docx.track_metrics",
+    "zeo_core.integrations.pandoc.operations.md_to_docx.track_metrics",
     patched_track_metrics,
 )
 def test_convert_markdown_to_docx_success(
@@ -67,11 +67,11 @@ def test_convert_markdown_to_docx_success(
     assert metrics.successful_conversions == 1
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
 def test_convert_markdown_to_docx_validation_error(mock_validate: MagicMock) -> None:
     """Test Markdown to DOCX conversion with validation error."""
     # Setup mock to raise error
-    mock_validate.side_effect = QuackIntegrationError("Invalid Markdown", {})
+    mock_validate.side_effect = ZeoIntegrationError("Invalid Markdown", {})
 
     # Run conversion
     config = PandocConfig()
@@ -86,9 +86,9 @@ def test_convert_markdown_to_docx_validation_error(mock_validate: MagicMock) -> 
     assert "input.md" in metrics.errors
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
 @patch(
-    "quack_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
+    "zeo_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
 )
 def test_convert_markdown_to_docx_conversion_failure(
     mock_convert: MagicMock, mock_validate: MagicMock
@@ -96,7 +96,7 @@ def test_convert_markdown_to_docx_conversion_failure(
     """Test Markdown to DOCX conversion with pandoc failure."""
     # Setup mocks
     mock_validate.return_value = 100
-    mock_convert.side_effect = QuackIntegrationError("Pandoc failed", {})
+    mock_convert.side_effect = ZeoIntegrationError("Pandoc failed", {})
 
     # Run conversion
     config = PandocConfig()
@@ -110,14 +110,14 @@ def test_convert_markdown_to_docx_conversion_failure(
     assert metrics.failed_conversions == 1
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
 @patch(
-    "quack_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
+    "zeo_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
 )
-@patch("quack_core.integrations.pandoc.operations.md_to_docx._get_conversion_output")
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.validate_conversion")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx._get_conversion_output")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.validate_conversion")
 @patch(
-    "quack_core.integrations.pandoc.operations.md_to_docx.track_metrics",
+    "zeo_core.integrations.pandoc.operations.md_to_docx.track_metrics",
     patched_track_metrics,
 )
 def test_convert_markdown_to_docx_validation_failure(
@@ -148,13 +148,13 @@ def test_convert_markdown_to_docx_validation_failure(
     assert metrics.failed_conversions == 1
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs")
 @patch(
-    "quack_core.integrations.pandoc.operations.md_to_docx.check_file_size",
+    "zeo_core.integrations.pandoc.operations.md_to_docx.check_file_size",
     patched_check_file_size,
 )
 @patch(
-    "quack_core.integrations.pandoc.operations.md_to_docx.check_conversion_ratio",
+    "zeo_core.integrations.pandoc.operations.md_to_docx.check_conversion_ratio",
     patched_check_conversion_ratio,
 )
 def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
@@ -176,7 +176,7 @@ def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
 
     # Test successful validation
     with patch(
-        "quack_core.integrations.pandoc.operations.utils.validate_docx_structure"
+        "zeo_core.integrations.pandoc.operations.utils.validate_docx_structure"
     ) as mock_validate_docx:
         mock_validate_docx.return_value = (True, [])
 
@@ -206,7 +206,7 @@ def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
 
     # Test docx structure validation
     with patch(
-        "quack_core.integrations.pandoc.operations.utils.validate_docx_structure"
+        "zeo_core.integrations.pandoc.operations.utils.validate_docx_structure"
     ) as mock_validate_docx:
         mock_validate_docx.return_value = (False, ["Invalid DOCX structure"])
 
@@ -219,7 +219,7 @@ def test_validate_conversion_md_to_docx(mock_fs: MagicMock) -> None:
 # --- Markdown to DOCX Operation Tests ---
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs")
 def test_md_to_docx_validate_markdown_input_success(mock_fs: MagicMock) -> None:
     """Test successful validation of Markdown input."""
     # Setup mock fs
@@ -231,7 +231,7 @@ def test_md_to_docx_validate_markdown_input_success(mock_fs: MagicMock) -> None:
     )
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.md_to_docx import (
+    from zeo_core.integrations.pandoc.operations.md_to_docx import (
         _validate_markdown_input,
     )
 
@@ -242,24 +242,24 @@ def test_md_to_docx_validate_markdown_input_success(mock_fs: MagicMock) -> None:
     # assert mock_fs.read_text.called
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs")
 def test_md_to_docx_validate_markdown_input_file_not_found(mock_fs: MagicMock) -> None:
     """Test validation of Markdown input when file is not found."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(success=True, exists=False)
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.md_to_docx import (
+    from zeo_core.integrations.pandoc.operations.md_to_docx import (
         _validate_markdown_input,
     )
 
-    with pytest.raises(QuackIntegrationError) as excinfo:
+    with pytest.raises(ZeoIntegrationError) as excinfo:
         _validate_markdown_input("missing.md")
 
     assert "Input file not found" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs")
 def test_md_to_docx_validate_markdown_input_read_error(mock_fs: MagicMock) -> None:
     """Test validation of Markdown input with read error."""
     # Setup mock fs
@@ -269,17 +269,17 @@ def test_md_to_docx_validate_markdown_input_read_error(mock_fs: MagicMock) -> No
     mock_fs.read_text.return_value = SimpleNamespace(success=False, error="Read error")
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.md_to_docx import (
+    from zeo_core.integrations.pandoc.operations.md_to_docx import (
         _validate_markdown_input,
     )
 
-    with pytest.raises(QuackIntegrationError) as excinfo:
+    with pytest.raises(ZeoIntegrationError) as excinfo:
         _validate_markdown_input("test.md")
 
     assert "Could not read Markdown file" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs")
 def test_md_to_docx_validate_markdown_input_empty_file(mock_fs: MagicMock) -> None:
     """Test validation of empty Markdown input."""
     # Setup mock fs
@@ -289,11 +289,11 @@ def test_md_to_docx_validate_markdown_input_empty_file(mock_fs: MagicMock) -> No
     mock_fs.read_text.return_value = SimpleNamespace(success=True, content="")
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.md_to_docx import (
+    from zeo_core.integrations.pandoc.operations.md_to_docx import (
         _validate_markdown_input,
     )
 
-    with pytest.raises(QuackIntegrationError) as excinfo:
+    with pytest.raises(ZeoIntegrationError) as excinfo:
         _validate_markdown_input("empty.md")
 
     assert "Markdown file is empty" in str(excinfo.value)
@@ -303,7 +303,7 @@ def test_md_to_docx_convert_once_success() -> None:
     """Test successful single conversion of Markdown to DOCX."""
     # Mock fs and pypandoc
     with (
-        patch("quack_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs,
+        patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs,
         patch("pypandoc.convert_file") as mock_convert,
     ):
         # Setup mocks
@@ -314,7 +314,7 @@ def test_md_to_docx_convert_once_success() -> None:
         mock_fs.create_directory.return_value = SimpleNamespace(success=True)
 
         # Import and test the function
-        from quack_core.integrations.pandoc.operations.md_to_docx import (
+        from zeo_core.integrations.pandoc.operations.md_to_docx import (
             _convert_markdown_to_docx_once,
         )
 
@@ -328,7 +328,7 @@ def test_md_to_docx_convert_once_success() -> None:
 def test_md_to_docx_convert_once_directory_error() -> None:
     """Test Markdown to DOCX conversion with directory creation error."""
     # Mock fs
-    with patch("quack_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs:
+    with patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs:
         # Setup mock to fail directory creation
         mock_fs.split_path.return_value = SimpleNamespace(
             success=True, data=["path", "to", "file.md"]
@@ -339,19 +339,19 @@ def test_md_to_docx_convert_once_directory_error() -> None:
         )
 
         # Import and test the function
-        from quack_core.integrations.pandoc.operations.md_to_docx import (
+        from zeo_core.integrations.pandoc.operations.md_to_docx import (
             _convert_markdown_to_docx_once,
         )
 
         config = PandocConfig()
-        with pytest.raises(QuackIntegrationError) as excinfo:
+        with pytest.raises(ZeoIntegrationError) as excinfo:
             _convert_markdown_to_docx_once("test.md", "output.docx", config)
 
         assert "Failed to create output directory" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.time")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.time")
 def test_md_to_docx_get_conversion_output_success(
     mock_time: MagicMock, mock_fs: MagicMock
 ) -> None:
@@ -361,7 +361,7 @@ def test_md_to_docx_get_conversion_output_success(
     mock_fs.get_file_info.return_value = SimpleNamespace(success=True, size=2000)
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.md_to_docx import (
+    from zeo_core.integrations.pandoc.operations.md_to_docx import (
         _get_conversion_output,
     )
 
@@ -372,7 +372,7 @@ def test_md_to_docx_get_conversion_output_success(
     assert output_size == 2000
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.fs")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs")
 def test_md_to_docx_get_conversion_output_file_info_error(mock_fs: MagicMock) -> None:
     """Test get conversion output with file info error."""
     # Setup mock to fail getting file info
@@ -381,24 +381,24 @@ def test_md_to_docx_get_conversion_output_file_info_error(mock_fs: MagicMock) ->
     )
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.md_to_docx import (
+    from zeo_core.integrations.pandoc.operations.md_to_docx import (
         _get_conversion_output,
     )
 
-    with pytest.raises(QuackIntegrationError) as excinfo:
+    with pytest.raises(ZeoIntegrationError) as excinfo:
         _get_conversion_output("output.docx", time.time())
 
     assert "Failed to get info for converted file" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx._validate_markdown_input")
 @patch(
-    "quack_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
+    "zeo_core.integrations.pandoc.operations.md_to_docx._convert_markdown_to_docx_once"
 )
-@patch("quack_core.integrations.pandoc.operations.md_to_docx._get_conversion_output")
-@patch("quack_core.integrations.pandoc.operations.md_to_docx.validate_conversion")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx._get_conversion_output")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx.validate_conversion")
 @patch(
-    "quack_core.integrations.pandoc.operations.md_to_docx.track_metrics",
+    "zeo_core.integrations.pandoc.operations.md_to_docx.track_metrics",
     patched_track_metrics,
 )
 def test_convert_markdown_to_docx_full_success(
@@ -430,15 +430,15 @@ def test_convert_markdown_to_docx_full_success(
 
 
 @patch(
-    "quack_core.integrations.pandoc.operations.utils.check_file_size",
+    "zeo_core.integrations.pandoc.operations.utils.check_file_size",
     patched_check_file_size,
 )
 @patch(
-    "quack_core.integrations.pandoc.operations.utils.check_conversion_ratio",
+    "zeo_core.integrations.pandoc.operations.utils.check_conversion_ratio",
     patched_check_conversion_ratio,
 )
-@patch("quack_core.integrations.pandoc.operations.md_to_docx._check_docx_metadata")
-@patch("quack_core.integrations.pandoc.operations.utils.validate_docx_structure")
+@patch("zeo_core.integrations.pandoc.operations.md_to_docx._check_docx_metadata")
+@patch("zeo_core.integrations.pandoc.operations.utils.validate_docx_structure")
 def test_md_to_docx_validate_conversion_docx_structure(
     mock_validate_docx: MagicMock, mock_check_metadata: MagicMock
 ) -> None:
@@ -447,14 +447,14 @@ def test_md_to_docx_validate_conversion_docx_structure(
     mock_validate_docx.return_value = (True, [])
 
     # Mock filesystem service to return valid file info
-    with patch("quack_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs:
+    with patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs:
         # Mock get_file_info to return valid file info for output.docx
         mock_fs.get_file_info.return_value = SimpleNamespace(
             success=True, exists=True, size=2000, path=Path("output.docx")
         )
 
         # Import the validate_conversion function
-        from quack_core.integrations.pandoc.operations.md_to_docx import (
+        from zeo_core.integrations.pandoc.operations.md_to_docx import (
             validate_conversion,
         )
 
@@ -472,13 +472,13 @@ def test_md_to_docx_validate_conversion_docx_structure(
 def test_md_to_docx_check_metadata() -> None:
     """Test checking DOCX metadata."""
     # Import _check_docx_metadata directly
-    from quack_core.integrations.pandoc.operations.md_to_docx import (
+    from zeo_core.integrations.pandoc.operations.md_to_docx import (
         _check_docx_metadata,
     )
 
     # Test with docx module available
     with (
-        patch("quack_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs,
+        patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs,
         patch("importlib.import_module") as mock_import,
     ):
         mock_fs.split_path.return_value = SimpleNamespace(
@@ -507,9 +507,9 @@ def test_md_to_docx_check_metadata() -> None:
     # attribute (mock_logger.debug.called stays False even though the
     # code path runs).
     with (
-        patch("quack_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs,
+        patch("zeo_core.integrations.pandoc.operations.md_to_docx.fs") as mock_fs,
         patch(
-            "quack_core.integrations.pandoc.operations.md_to_docx.logger"
+            "zeo_core.integrations.pandoc.operations.md_to_docx.logger"
         ) as mock_logger,
         patch("importlib.import_module") as mock_import,
     ):

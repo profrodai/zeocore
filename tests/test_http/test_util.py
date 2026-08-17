@@ -10,7 +10,7 @@ removed in a cleanup pass, not relocated. Re-adding them here would resurrect
 dead code solely to satisfy a stale test, not restore a used symbol.
 """
 
-from quack_core.adapters.http.util import post_callback
+from zeo_core.adapters.http.util import post_callback
 
 
 # Remove async tests that require pytest-asyncio

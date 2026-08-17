@@ -4,8 +4,8 @@ Tests for Google Drive service deletion _ops.
 
 from unittest.mock import MagicMock
 
-from quack_core.core.errors import QuackApiError
-from quack_core.integrations.google.drive.service import GoogleDriveService
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.integrations.google.drive.service import GoogleDriveService
 
 
 class TestGoogleDriveServiceDelete:
@@ -52,7 +52,7 @@ class TestGoogleDriveServiceDelete:
         )
 
         # Test API error (delete)
-        service.drive_service.files().delete.side_effect = QuackApiError(
+        service.drive_service.files().delete.side_effect = ZeoApiError(
             "API error", service="drive"
         )
         result = service.delete_file("file123", permanent=True)
@@ -61,7 +61,7 @@ class TestGoogleDriveServiceDelete:
         assert "API error" in result.error
 
         # Test API error (update)
-        service.drive_service.files().update.side_effect = QuackApiError(
+        service.drive_service.files().update.side_effect = ZeoApiError(
             "API error", service="drive"
         )
         result = service.delete_file("file123")

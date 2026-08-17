@@ -1,10 +1,10 @@
 """
-Tests for the LifecycleMixin (aliased QuackToolLifecycleMixin).
+Tests for the LifecycleMixin (aliased ZeoToolLifecycleMixin).
 
 NOTE: this file previously tested a pre-doctrine shape of this mixin --
 no-arg pre_run()/post_run()/validate(), plus run()/upload() methods and an
 IntegrationResult(.success/.message) return type. None of that shape has
-existed on quack_core.tools.mixins.lifecycle.LifecycleMixin since the module
+existed on zeo_core.tools.mixins.lifecycle.LifecycleMixin since the module
 was introduced into this history (commit 21a4e25a, 2025-12-29) -- the test
 file itself was added earlier (commit 59e3eb9a, 2025-04-26, "adding tests to
 quackcore.toolkit") and was never reconciled against the doctrine-compliant
@@ -15,16 +15,16 @@ not a regression. Rewritten here to match the CURRENT mixin: pre_run/post_run/
 validate take (request, ctx) [post_run also takes result], return
 CapabilityResult (status=CapabilityStatus.success, human_message=...), and
 there is no run() or upload() method on this mixin at all (run() lives on
-BaseQuackTool per this mixin's own docstring; there is no upload hook).
+BaseZeoTool per this mixin's own docstring; there is no upload hook).
 """
 
 import unittest
 
 import pytest
-from quack_core.contracts import CapabilityResult
-from quack_core.contracts.common.enums import CapabilityStatus
-from quack_core.tools.context import ToolContext
-from quack_core.tools.mixins.lifecycle import QuackToolLifecycleMixin
+from zeo_core.contracts import CapabilityResult
+from zeo_core.contracts.common.enums import CapabilityStatus
+from zeo_core.tools.context import ToolContext
+from zeo_core.tools.mixins.lifecycle import ZeoToolLifecycleMixin
 
 
 def _make_tool_context() -> ToolContext:
@@ -49,7 +49,7 @@ class TestLifecycleMixin(unittest.TestCase):
         """
         Set up test fixtures.
         """
-        self.mixin = QuackToolLifecycleMixin()
+        self.mixin = ZeoToolLifecycleMixin()
         self.ctx = _make_tool_context()
 
     def test_pre_run(self) -> None:
@@ -90,9 +90,9 @@ class TestLifecycleMixin(unittest.TestCase):
 
 
 @pytest.fixture
-def lifecycle_mixin() -> QuackToolLifecycleMixin:
-    """Fixture that creates a QuackToolLifecycleMixin."""
-    return QuackToolLifecycleMixin()
+def lifecycle_mixin() -> ZeoToolLifecycleMixin:
+    """Fixture that creates a ZeoToolLifecycleMixin."""
+    return ZeoToolLifecycleMixin()
 
 
 @pytest.fixture
@@ -107,7 +107,7 @@ class TestLifecycleMixinWithPytest:
     """
 
     def test_lifecycle_pre_run(
-        self, lifecycle_mixin: QuackToolLifecycleMixin, tool_context: ToolContext
+        self, lifecycle_mixin: ZeoToolLifecycleMixin, tool_context: ToolContext
     ) -> None:
         """Test pre_run with pytest fixtures."""
         result = lifecycle_mixin.pre_run(request=None, ctx=tool_context)
@@ -115,7 +115,7 @@ class TestLifecycleMixinWithPytest:
         assert "Pre-run" in result.human_message
 
     def test_lifecycle_post_run(
-        self, lifecycle_mixin: QuackToolLifecycleMixin, tool_context: ToolContext
+        self, lifecycle_mixin: ZeoToolLifecycleMixin, tool_context: ToolContext
     ) -> None:
         """Test post_run with pytest fixtures passes the inner result through."""
         inner = CapabilityResult.ok(data=None, msg="Run completed")
@@ -124,7 +124,7 @@ class TestLifecycleMixinWithPytest:
         assert result.status == CapabilityStatus.success
 
     def test_lifecycle_validate(
-        self, lifecycle_mixin: QuackToolLifecycleMixin, tool_context: ToolContext
+        self, lifecycle_mixin: ZeoToolLifecycleMixin, tool_context: ToolContext
     ) -> None:
         """Test validate method with pytest fixtures."""
         result = lifecycle_mixin.validate(request=None, ctx=tool_context)
@@ -132,7 +132,7 @@ class TestLifecycleMixinWithPytest:
         assert "Validation" in result.human_message
 
     def test_lifecycle_cleanup(
-        self, lifecycle_mixin: QuackToolLifecycleMixin, tool_context: ToolContext
+        self, lifecycle_mixin: ZeoToolLifecycleMixin, tool_context: ToolContext
     ) -> None:
         """Test cleanup method with pytest fixtures."""
         result = lifecycle_mixin.cleanup(ctx=tool_context)

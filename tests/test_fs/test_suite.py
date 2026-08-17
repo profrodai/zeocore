@@ -11,7 +11,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
-from quack_core.core.fs.service import create_service
+from zeo_core.core.fs.service import create_service
 
 
 class TestPathNoneOnFailure:
@@ -272,7 +272,7 @@ class TestInternalLayerDoctrine:
 
     def test_internal_path_ops_accepts_path_only(self) -> None:
         """Verify _internal path operations work with Path objects."""
-        from quack_core.core.fs._internal.path_ops import _resolve_path, _split_path
+        from zeo_core.core.fs._internal.path_ops import _resolve_path, _split_path
 
         # Should work with Path
         path = Path("/tmp/test")  # noqa: S108 -- path used only inside mocked/patched I/O, never touches real filesystem

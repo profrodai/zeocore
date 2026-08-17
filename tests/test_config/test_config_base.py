@@ -1,5 +1,5 @@
 """
-Tests for quack_core.config_base — the Deep Merge configuration resolution
+Tests for zeo_core.config_base — the Deep Merge configuration resolution
 engine (BasePolicy, ConfigError, deep_merge, ConfigResolver).
 
 quackverse-coverage-90: this module carried 0% coverage (43/43 stmts missed)
@@ -14,7 +14,7 @@ from pathlib import Path
 
 import yaml
 from pydantic import BaseModel
-from quack_core.config_base import (
+from zeo_core.config_base import (
     BasePolicy,
     ConfigError,
     ConfigResolver,

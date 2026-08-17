@@ -6,12 +6,12 @@ provider talks to GitHub's REST API through. GitHubAuthProvider.__init__
 takes an explicit `http_client` injection point (its own docstring: "for
 testing") -- a FakeHTTPClient standing in for `requests`/`requests.Session`
 is exactly the sanctioned boundary-mock, never a mock of
-GitHubAuthProvider/quack_core itself. Every test below drives the REAL
+GitHubAuthProvider/zeo_core itself. Every test below drives the REAL
 GitHubAuthProvider.authenticate() / refresh_credentials() /
 get_credentials() / save_credentials() / _load_credentials() /
 _save_token_data() code, with only the network response faked.
 
-Credentials-file I/O goes through the REAL quack_core.core.fs.service.
+Credentials-file I/O goes through the REAL zeo_core.core.fs.service.
 
 PER RULING-237: two production bugs discovered while writing this file (SOW-4,
 round 3) are now FIXED in this stream's own chain, and the canaries below that
@@ -41,14 +41,14 @@ credentials_file and asserts the RESOLVED path is correct and usable, not
 merely that no exception was raised.
 
 BUG B (FIXED) -- github/auth.py used to import
-`from quack_core.core.fs import service as fs` then call
+`from zeo_core.core.fs import service as fs` then call
 fs.get_file_info / fs.read_json / fs.write_json. But
 core/fs/service/__init__.py's public API is deliberately restricted to
 FileSystemService / create_service / get_service only (its own __getattr__
 raises AttributeError for anything else) -- those module-level convenience
 functions live in core/fs/service/standalone, not service/__init__. Fix
 (this stream, citing RULING-237 s2.2): changed the import to
-`from quack_core.core.fs.service import standalone as fs`, matching the
+`from zeo_core.core.fs.service import standalone as fs`, matching the
 already-correct precedent in integrations/pandoc/*.py exactly (drop-in, no
 call-site changes needed -- standalone exposes the same four function
 names). Same bug, same fix, independently applied to
@@ -60,7 +60,7 @@ changed to prove the fix actually works, not just that "no exception was
 raised."
 
 Boundary mocked in every test below: the GitHub REST API HTTP call
-(`requests`-shaped `.get()`). No quack_core function under test is mocked.
+(`requests`-shaped `.get()`). No zeo_core function under test is mocked.
 """
 
 import json
@@ -72,7 +72,7 @@ from typing import Any
 
 import pytest
 import requests
-from quack_core.integrations.github.auth import GitHubAuthProvider
+from zeo_core.integrations.github.auth import GitHubAuthProvider
 
 
 @pytest.fixture

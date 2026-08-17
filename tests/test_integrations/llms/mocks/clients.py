@@ -6,9 +6,9 @@ import logging
 from collections.abc import Callable
 from typing import Any
 
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.llms.clients.base import LLMClient
-from quack_core.integrations.llms.models import ChatMessage, LLMOptions
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.llms.clients.base import LLMClient
+from zeo_core.integrations.llms.models import ChatMessage, LLMOptions
 
 
 class MockClient(LLMClient):

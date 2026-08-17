@@ -3,8 +3,8 @@ Tests for the IntegrationEnabledMixin.
 
 NOTE: this file previously tested a pre-doctrine shape of this mixin --
 Generic[T]-subscriptable, resolve_integration()/`.integration` property,
-backed by module-level quack_core.integrations.core.get_integration_service().
-That shape does not exist on quack_core.tools.mixins.integration_enabled.
+backed by module-level zeo_core.integrations.core.get_integration_service().
+That shape does not exist on zeo_core.tools.mixins.integration_enabled.
 IntegrationEnabledMixin in this codebase's current history: the module's own
 docstring ("Services come from ToolContext.services (runner-provided)")
 and its two methods (get_service/require_service, both taking an explicit
@@ -14,7 +14,7 @@ registry, and the class is no longer Generic (collection previously aborted
 here with `TypeError: type 'IntegrationEnabledMixin' is not subscriptable`).
 Rewritten to exercise the mixin's actual current API: get_service(name, ctx,
 expected_type=None) and require_service(name, ctx, expected_type=None),
-both reading from ctx.services (confirmed via quack_core.tools.context.
+both reading from ctx.services (confirmed via zeo_core.tools.context.
 ToolContext.get_service/require_service, read in full before writing these
 assertions).
 """
@@ -22,8 +22,8 @@ assertions).
 import unittest
 
 import pytest
-from quack_core.tools.context import ToolContext
-from quack_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
+from zeo_core.tools.context import ToolContext
+from zeo_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 
 
 class _DummyService:

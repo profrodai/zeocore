@@ -4,7 +4,7 @@ Tests for HTTP adapter configuration.
 
 import pytest
 from pydantic import ValidationError
-from quack_core.adapters.http.config import HttpAdapterConfig
+from zeo_core.adapters.http.config import HttpAdapterConfig
 
 
 def test_default_config() -> None:

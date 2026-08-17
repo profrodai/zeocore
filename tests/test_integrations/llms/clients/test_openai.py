@@ -9,9 +9,9 @@ import os
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackApiError, QuackIntegrationError
-from quack_core.integrations.llms.clients.openai import OpenAIClient
-from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from zeo_core.core.errors import ZeoApiError, ZeoIntegrationError
+from zeo_core.integrations.llms.clients.openai import OpenAIClient
+from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 from tests.test_integrations.llms.mocks.openai import (
     MockOpenAIClient,
     MockOpenAIErrorResponse,
@@ -103,7 +103,7 @@ class TestOpenAIClient:
 
         # Test import error
         with patch.dict("sys.modules", {"openai": None}):
-            with pytest.raises(QuackIntegrationError) as excinfo:
+            with pytest.raises(ZeoIntegrationError) as excinfo:
                 client = OpenAIClient(api_key="test-key")
                 client._get_client()
 
@@ -122,7 +122,7 @@ class TestOpenAIClient:
         with patch.dict(os.environ, {}, clear=True):
             client = OpenAIClient()
 
-            with pytest.raises(QuackIntegrationError) as excinfo:
+            with pytest.raises(ZeoIntegrationError) as excinfo:
                 client._get_api_key_from_env()
 
             assert "OpenAI API key not provided" in str(excinfo.value)
@@ -252,7 +252,7 @@ class TestOpenAIClient:
         assert result == ""
 
     def test_convert_error(self) -> None:
-        """Test converting OpenAI errors to QuackApiError."""
+        """Test converting OpenAI errors to ZeoApiError."""
         client = OpenAIClient()
 
         # Test with mock OpenAI error responses
@@ -261,7 +261,7 @@ class TestOpenAIClient:
         ).to_exception()
 
         api_error = client._convert_error(rate_limit_error)
-        assert isinstance(api_error, QuackApiError)
+        assert isinstance(api_error, ZeoApiError)
         assert "OpenAI rate limit exceeded" in str(api_error)
         assert api_error.service == "OpenAI"
         assert api_error.api_method == "chat.completions.create"
@@ -332,7 +332,7 @@ class TestOpenAIClient:
             )
 
             with patch.object(client, "_get_client", return_value=error_client):
-                with pytest.raises(QuackApiError) as excinfo:
+                with pytest.raises(ZeoApiError) as excinfo:
                     client._chat_with_provider(messages, options)
 
                 assert "OpenAI API error" in str(excinfo.value)
@@ -407,18 +407,18 @@ class TestOpenAIClient:
 
         mock_instance.chat.completions.create.side_effect = mock_error
 
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             openai_client._chat_with_provider(messages, options)
 
         assert "OpenAI API error" in str(excinfo.value)
 
         # Test with import error
         with patch.object(openai_client, "_get_client") as mock_get_client:
-            mock_get_client.side_effect = QuackIntegrationError(
+            mock_get_client.side_effect = ZeoIntegrationError(
                 "Failed to import OpenAI package: No module named 'openai'"
             )
 
-            with pytest.raises(QuackIntegrationError) as import_excinfo:
+            with pytest.raises(ZeoIntegrationError) as import_excinfo:
                 openai_client._chat_with_provider(messages, options)
 
             assert "Failed to import OpenAI package" in str(import_excinfo.value)
@@ -537,7 +537,7 @@ class TestOpenAIClient:
 
         mock_client.chat.completions.create.side_effect = mock_error
 
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             client._handle_streaming(mock_client, "gpt-4o", messages, params, callback)
 
         assert "OpenAI API error: Streaming error" in str(excinfo.value)

@@ -11,12 +11,12 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.pandoc import (
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.pandoc import (
     ConversionMetrics,
     PandocConfig,
 )
-from quack_core.integrations.pandoc.operations.html_to_md import (
+from zeo_core.integrations.pandoc.operations.html_to_md import (
     convert_html_to_markdown,
     post_process_markdown,
     validate_html_conversion,
@@ -47,12 +47,12 @@ def test_post_process_markdown() -> None:
     assert "\n\n\n" not in result  # No more than two consecutive newlines
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
-@patch("quack_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._validate_input")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
 @patch(
-    "quack_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
+    "zeo_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
 )
-@patch("quack_core.integrations.pandoc.operations.html_to_md.validate_conversion")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.validate_conversion")
 def test_convert_html_to_markdown_success(
     mock_validate: MagicMock,
     mock_write: MagicMock,
@@ -72,7 +72,7 @@ def test_convert_html_to_markdown_success(
 
     # Patch track_metrics to avoid DataResult validation issues
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.track_metrics",
+        "zeo_core.integrations.pandoc.operations.html_to_md.track_metrics",
         patched_track_metrics,
     ):
         # Run conversion
@@ -89,10 +89,10 @@ def test_convert_html_to_markdown_success(
         assert "input.html" not in metrics.errors
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
-@patch("quack_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._validate_input")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
 @patch(
-    "quack_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
+    "zeo_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
 )
 def test_convert_html_to_markdown_split_path_raises_falls_back_to_html_path(
     mock_write: MagicMock,
@@ -108,10 +108,10 @@ def test_convert_html_to_markdown_split_path_raises_falls_back_to_html_path(
 
     with (
         patch(
-            "quack_core.integrations.pandoc.operations.html_to_md.fs"
+            "zeo_core.integrations.pandoc.operations.html_to_md.fs"
         ) as mock_fs,
         patch(
-            "quack_core.integrations.pandoc.operations.html_to_md.track_metrics",
+            "zeo_core.integrations.pandoc.operations.html_to_md.track_metrics",
             patched_track_metrics,
         ),
     ):
@@ -126,10 +126,10 @@ def test_convert_html_to_markdown_split_path_raises_falls_back_to_html_path(
         assert result.success
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
-@patch("quack_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._validate_input")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
 @patch(
-    "quack_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
+    "zeo_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
 )
 def test_convert_html_to_markdown_split_path_unsuccessful_uses_basename(
     mock_write: MagicMock,
@@ -145,10 +145,10 @@ def test_convert_html_to_markdown_split_path_unsuccessful_uses_basename(
 
     with (
         patch(
-            "quack_core.integrations.pandoc.operations.html_to_md.fs"
+            "zeo_core.integrations.pandoc.operations.html_to_md.fs"
         ) as mock_fs,
         patch(
-            "quack_core.integrations.pandoc.operations.html_to_md.track_metrics",
+            "zeo_core.integrations.pandoc.operations.html_to_md.track_metrics",
             patched_track_metrics,
         ),
     ):
@@ -163,7 +163,7 @@ def test_convert_html_to_markdown_split_path_unsuccessful_uses_basename(
         assert result.success
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._validate_input")
 def test_convert_html_to_markdown_zero_max_retries_falls_through_loop(
     mock_validate_input: MagicMock,
 ) -> None:
@@ -192,17 +192,17 @@ def test_convert_html_to_markdown_default_metrics_created_when_none() -> None:
     rather than raising an AttributeError on None.metrics access."""
     with (
         patch(
-            "quack_core.integrations.pandoc.operations.html_to_md._validate_input"
+            "zeo_core.integrations.pandoc.operations.html_to_md._validate_input"
         ) as mock_validate_input,
         patch(
-            "quack_core.integrations.pandoc.operations.html_to_md._attempt_conversion"
+            "zeo_core.integrations.pandoc.operations.html_to_md._attempt_conversion"
         ) as mock_convert,
         patch(
-            "quack_core.integrations.pandoc.operations.html_to_md."
+            "zeo_core.integrations.pandoc.operations.html_to_md."
             "_write_and_validate_output"
         ) as mock_write,
         patch(
-            "quack_core.integrations.pandoc.operations.html_to_md.track_metrics",
+            "zeo_core.integrations.pandoc.operations.html_to_md.track_metrics",
             patched_track_metrics,
         ),
     ):
@@ -217,11 +217,11 @@ def test_convert_html_to_markdown_default_metrics_created_when_none() -> None:
         assert result.success
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._validate_input")
 def test_convert_html_to_markdown_validation_error(mock_validate: MagicMock) -> None:
     """Test HTML to Markdown conversion with validation error."""
     # Setup mock to raise error
-    mock_validate.side_effect = QuackIntegrationError("Invalid HTML")
+    mock_validate.side_effect = ZeoIntegrationError("Invalid HTML")
 
     # Run conversion
     config = PandocConfig()
@@ -236,10 +236,10 @@ def test_convert_html_to_markdown_validation_error(mock_validate: MagicMock) -> 
     assert "input.html" in metrics.errors
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
-@patch("quack_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._validate_input")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
 @patch(
-    "quack_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
+    "zeo_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
 )
 def test_convert_html_to_markdown_conversion_failure(
     mock_write: MagicMock, mock_convert: MagicMock, mock_validate: MagicMock
@@ -247,7 +247,7 @@ def test_convert_html_to_markdown_conversion_failure(
     """Test HTML to Markdown conversion with pandoc failure."""
     # Setup mocks
     mock_validate.return_value = 100
-    mock_convert.side_effect = QuackIntegrationError("Pandoc failed")
+    mock_convert.side_effect = ZeoIntegrationError("Pandoc failed")
 
     # Run conversion
     config = PandocConfig()
@@ -261,10 +261,10 @@ def test_convert_html_to_markdown_conversion_failure(
     assert metrics.failed_conversions == 1
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md._validate_input")
-@patch("quack_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._validate_input")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md._attempt_conversion")
 @patch(
-    "quack_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
+    "zeo_core.integrations.pandoc.operations.html_to_md._write_and_validate_output"
 )
 def test_convert_html_to_markdown_validation_failure(
     mock_write: MagicMock, mock_convert: MagicMock, mock_validate: MagicMock
@@ -325,13 +325,13 @@ def test_validate_conversion_html_to_md() -> None:
 
     # Use patch context managers instead of decorators
     with (
-        patch("quack_core.integrations.pandoc.operations.html_to_md.fs", fs_mock),
+        patch("zeo_core.integrations.pandoc.operations.html_to_md.fs", fs_mock),
         patch(
-            "quack_core.integrations.pandoc.operations.html_to_md.check_file_size",
+            "zeo_core.integrations.pandoc.operations.html_to_md.check_file_size",
             patched_file_size_check,
         ),
         patch(
-            "quack_core.integrations.pandoc.operations.html_to_md.check_conversion_ratio",
+            "zeo_core.integrations.pandoc.operations.html_to_md.check_conversion_ratio",
             patched_ratio_check,
         ),
     ):
@@ -352,7 +352,7 @@ def test_validate_conversion_html_to_md() -> None:
         # Test with conversion ratio too small
         # Set up the right mocks for this specific test
         with patch(
-            "quack_core.integrations.pandoc.operations.html_to_md.check_conversion_ratio",
+            "zeo_core.integrations.pandoc.operations.html_to_md.check_conversion_ratio",
             lambda *args: (
                 False,
                 ["Conversion ratio (0.05) is less than the minimum threshold (0.10)"],
@@ -373,7 +373,7 @@ def test_validate_conversion_html_to_md() -> None:
 # --- HTML to Markdown Operation Tests ---
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
 def test_html_to_md_validate_input_success(mock_fs: MagicMock) -> None:
     """Test successful validation of HTML input."""
     # Setup mock fs
@@ -386,12 +386,12 @@ def test_html_to_md_validate_input_success(mock_fs: MagicMock) -> None:
 
     # Mock validate_html_structure
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.validate_html_structure"
+        "zeo_core.integrations.pandoc.operations.html_to_md.validate_html_structure"
     ) as mock_validate:
         mock_validate.return_value = (True, [])
 
         # Import and test the function
-        from quack_core.integrations.pandoc.operations.html_to_md import _validate_input
+        from zeo_core.integrations.pandoc.operations.html_to_md import _validate_input
 
         config = PandocConfig()
         result_size = _validate_input("test.html", config)
@@ -400,23 +400,23 @@ def test_html_to_md_validate_input_success(mock_fs: MagicMock) -> None:
         assert mock_validate.called
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
 def test_html_to_md_validate_input_file_not_found(mock_fs: MagicMock) -> None:
     """Test validation of HTML input when file is not found."""
     # Setup mock fs
     mock_fs.get_file_info.return_value = SimpleNamespace(success=True, exists=False)
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.html_to_md import _validate_input
+    from zeo_core.integrations.pandoc.operations.html_to_md import _validate_input
 
     config = PandocConfig()
-    with pytest.raises(QuackIntegrationError) as excinfo:
+    with pytest.raises(ZeoIntegrationError) as excinfo:
         _validate_input("missing.html", config)
 
     assert "Input file not found" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
 def test_html_to_md_validate_input_invalid_structure(mock_fs: MagicMock) -> None:
     """Test validation of HTML input with invalid structure."""
     # Setup mock fs
@@ -430,25 +430,25 @@ def test_html_to_md_validate_input_invalid_structure(mock_fs: MagicMock) -> None
 
     # Mock validate_html_structure
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.validate_html_structure"
+        "zeo_core.integrations.pandoc.operations.html_to_md.validate_html_structure"
     ) as mock_validate:
         mock_validate.return_value = (False, ["Missing body tag"])
 
         # Import and test the function
-        from quack_core.integrations.pandoc.operations.html_to_md import _validate_input
+        from zeo_core.integrations.pandoc.operations.html_to_md import _validate_input
 
         config = PandocConfig()
         config.validation.verify_structure = True
 
-        with pytest.raises(QuackIntegrationError) as excinfo:
+        with pytest.raises(ZeoIntegrationError) as excinfo:
             _validate_input("test.html", config)
 
         assert "Invalid HTML structure" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
-@patch("quack_core.integrations.pandoc.operations.html_to_md.time")
-@patch("quack_core.integrations.pandoc.operations.html_to_md.validate_conversion")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.time")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.validate_conversion")
 def test_html_to_md_write_and_validate_output_success(
     mock_validate: MagicMock, mock_time: MagicMock, mock_fs: MagicMock
 ) -> None:
@@ -463,7 +463,7 @@ def test_html_to_md_write_and_validate_output_success(
     mock_validate.return_value = []  # No validation errors
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
@@ -480,7 +480,7 @@ def test_html_to_md_write_and_validate_output_success(
     assert not result[2]  # validation_errors
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
 def test_html_to_md_write_and_validate_output_directory_error(
     mock_fs: MagicMock,
 ) -> None:
@@ -491,14 +491,14 @@ def test_html_to_md_write_and_validate_output_directory_error(
     )
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
     config = PandocConfig()
     markdown_content = "# Converted Markdown"
 
-    with pytest.raises(QuackIntegrationError) as excinfo:
+    with pytest.raises(ZeoIntegrationError) as excinfo:
         _write_and_validate_output(
             markdown_content, "output.md", "input.html", 1200, config, time.time()
         )
@@ -506,7 +506,7 @@ def test_html_to_md_write_and_validate_output_directory_error(
     assert "Failed to create output directory" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
 def test_html_to_md_write_and_validate_output_write_error(mock_fs: MagicMock) -> None:
     """Test write with file writing error."""
     # Setup mocks
@@ -514,14 +514,14 @@ def test_html_to_md_write_and_validate_output_write_error(mock_fs: MagicMock) ->
     mock_fs.write_text.return_value = SimpleNamespace(success=False, error="Disk full")
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
     config = PandocConfig()
     markdown_content = "# Converted Markdown"
 
-    with pytest.raises(QuackIntegrationError) as excinfo:
+    with pytest.raises(ZeoIntegrationError) as excinfo:
         _write_and_validate_output(
             markdown_content, "output.md", "input.html", 1200, config, time.time()
         )
@@ -529,9 +529,9 @@ def test_html_to_md_write_and_validate_output_write_error(mock_fs: MagicMock) ->
     assert "Failed to write output file" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
-@patch("quack_core.integrations.pandoc.operations.html_to_md.time")
-@patch("quack_core.integrations.pandoc.operations.html_to_md.validate_conversion")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.time")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.validate_conversion")
 def test_html_to_md_write_and_validate_output_validation_errors(
     mock_validate: MagicMock, mock_time: MagicMock, mock_fs: MagicMock
 ) -> None:
@@ -546,7 +546,7 @@ def test_html_to_md_write_and_validate_output_validation_errors(
     mock_validate.return_value = ["Validation error 1", "Validation error 2"]
 
     # Import and test the function
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
@@ -572,7 +572,7 @@ def test_html_to_md_attempt_conversion_success() -> None:
 
     with patch.dict("sys.modules", {"pypandoc": mock_pypandoc}):
         # Import and test the function
-        from quack_core.integrations.pandoc.operations.html_to_md import (
+        from zeo_core.integrations.pandoc.operations.html_to_md import (
             _attempt_conversion,
         )
 
@@ -591,12 +591,12 @@ def test_html_to_md_attempt_conversion_pandoc_error() -> None:
 
     with patch.dict("sys.modules", {"pypandoc": mock_pypandoc}):
         # Import and test the function
-        from quack_core.integrations.pandoc.operations.html_to_md import (
+        from zeo_core.integrations.pandoc.operations.html_to_md import (
             _attempt_conversion,
         )
 
         config = PandocConfig()
-        with pytest.raises(QuackIntegrationError) as excinfo:
+        with pytest.raises(ZeoIntegrationError) as excinfo:
             _attempt_conversion("input.html", config)
 
         assert "Pandoc conversion failed" in str(excinfo.value)
@@ -604,19 +604,19 @@ def test_html_to_md_attempt_conversion_pandoc_error() -> None:
 
 def test_html_to_md_attempt_conversion_pypandoc_not_installed() -> None:
     """When the pypandoc module itself cannot be imported, _attempt_conversion
-    raises a QuackIntegrationError naming the missing module
+    raises a ZeoIntegrationError naming the missing module
     (html_to_md.py:178-183)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _attempt_conversion,
     )
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.importlib.import_module"
+        "zeo_core.integrations.pandoc.operations.html_to_md.importlib.import_module"
     ) as mock_import:
         mock_import.side_effect = ImportError("No module named 'pypandoc'")
 
         config = PandocConfig()
-        with pytest.raises(QuackIntegrationError) as excinfo:
+        with pytest.raises(ZeoIntegrationError) as excinfo:
             _attempt_conversion("input.html", config)
 
         assert "pypandoc module is not installed" in str(excinfo.value)
@@ -627,7 +627,7 @@ def test_html_to_md_attempt_conversion_pypandoc_not_installed() -> None:
 
 def test_safe_file_size_int_convertible_via_dunder_int() -> None:
     """A size object exposing __int__ is coerced directly (html_to_md.py:80-81)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import _safe_file_size
+    from zeo_core.integrations.pandoc.operations.html_to_md import _safe_file_size
 
     class IntLike:
         def __int__(self) -> int:
@@ -639,21 +639,21 @@ def test_safe_file_size_int_convertible_via_dunder_int() -> None:
 def test_safe_file_size_str_convertible_without_dunder_int() -> None:
     """A size value without __int__ but not None falls through to str()
     coercion (html_to_md.py:82-83)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import _safe_file_size
+    from zeo_core.integrations.pandoc.operations.html_to_md import _safe_file_size
 
     assert _safe_file_size(SimpleNamespace(size="512")) == 512
 
 
 def test_safe_file_size_none_returns_zero() -> None:
     """A None size attribute returns 0 (html_to_md.py:84-85)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import _safe_file_size
+    from zeo_core.integrations.pandoc.operations.html_to_md import _safe_file_size
 
     assert _safe_file_size(SimpleNamespace(size=None)) == 0
 
 
 def test_safe_file_size_no_size_attribute_returns_zero() -> None:
     """An object with no "size" attribute at all returns 0 (html_to_md.py:86-87)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import _safe_file_size
+    from zeo_core.integrations.pandoc.operations.html_to_md import _safe_file_size
 
     assert _safe_file_size(SimpleNamespace()) == 0
 
@@ -661,7 +661,7 @@ def test_safe_file_size_no_size_attribute_returns_zero() -> None:
 def test_safe_file_size_unconvertible_value_falls_back_to_default() -> None:
     """A size that raises ValueError/TypeError on conversion falls back to the
     1024-byte default and logs a warning (html_to_md.py:88-93)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import _safe_file_size
+    from zeo_core.integrations.pandoc.operations.html_to_md import _safe_file_size
 
     class Unconvertible:
         def __str__(self) -> str:
@@ -674,11 +674,11 @@ def test_safe_file_size_unconvertible_value_falls_back_to_default() -> None:
 # --- Additional coverage: _verify_html_structure ---
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
 def test_verify_html_structure_read_fails_raises(mock_fs: MagicMock) -> None:
-    """A failing fs.read_text raises QuackIntegrationError naming the read
+    """A failing fs.read_text raises ZeoIntegrationError naming the read
     error (html_to_md.py:109-112)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _verify_html_structure,
     )
 
@@ -687,20 +687,20 @@ def test_verify_html_structure_read_fails_raises(mock_fs: MagicMock) -> None:
     )
 
     config = PandocConfig()
-    with pytest.raises(QuackIntegrationError) as excinfo:
+    with pytest.raises(ZeoIntegrationError) as excinfo:
         _verify_html_structure("test.html", config)
 
     assert "Could not read HTML file" in str(excinfo.value)
     assert "Permission denied" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
 def test_verify_html_structure_non_string_content_skips_validation(
     mock_fs: MagicMock,
 ) -> None:
     """Non-string HTML content logs a warning and returns without raising
     (html_to_md.py:113-119)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _verify_html_structure,
     )
 
@@ -711,14 +711,14 @@ def test_verify_html_structure_non_string_content_skips_validation(
     _verify_html_structure("test.html", config)
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
 def test_verify_html_structure_unexpected_exception_logged_not_raised(
     mock_fs: MagicMock,
 ) -> None:
-    """A generic (non-QuackIntegrationError) exception during structure
+    """A generic (non-ZeoIntegrationError) exception during structure
     validation is caught, logged as a warning, and swallowed
     (html_to_md.py:128-131)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _verify_html_structure,
     )
 
@@ -728,7 +728,7 @@ def test_verify_html_structure_unexpected_exception_logged_not_raised(
 
     config = PandocConfig()
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.validate_html_structure"
+        "zeo_core.integrations.pandoc.operations.html_to_md.validate_html_structure"
     ) as mock_validate:
         mock_validate.side_effect = RuntimeError("validator exploded")
 
@@ -739,14 +739,14 @@ def test_verify_html_structure_unexpected_exception_logged_not_raised(
 # --- Additional coverage: _validate_input skip-structure-check branch ---
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
 def test_validate_input_skips_structure_check_when_disabled(
     mock_fs: MagicMock,
 ) -> None:
     """When config.validation.verify_structure is False, _validate_input
     returns the size immediately without calling _verify_html_structure
     (html_to_md.py:156-157)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import _validate_input
+    from zeo_core.integrations.pandoc.operations.html_to_md import _validate_input
 
     mock_fs.get_file_info.return_value = SimpleNamespace(
         success=True, exists=True, size=500
@@ -756,7 +756,7 @@ def test_validate_input_skips_structure_check_when_disabled(
     config.validation.verify_structure = False
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md._verify_html_structure"
+        "zeo_core.integrations.pandoc.operations.html_to_md._verify_html_structure"
     ) as mock_verify:
         result_size = _validate_input("test.html", config)
 
@@ -767,14 +767,14 @@ def test_validate_input_skips_structure_check_when_disabled(
 # --- Additional coverage: _write_and_validate_output branches ---
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
-@patch("quack_core.integrations.pandoc.operations.html_to_md.time")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.time")
 def test_write_and_validate_output_get_file_info_fails_raises(
     mock_time: MagicMock, mock_fs: MagicMock
 ) -> None:
     """A failing fs.get_file_info on the freshly-written output file raises
-    QuackIntegrationError (html_to_md.py:234-238)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    ZeoIntegrationError (html_to_md.py:234-238)."""
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
@@ -784,7 +784,7 @@ def test_write_and_validate_output_get_file_info_fails_raises(
     mock_time.time.return_value = 1000.0
 
     config = PandocConfig()
-    with pytest.raises(QuackIntegrationError) as excinfo:
+    with pytest.raises(ZeoIntegrationError) as excinfo:
         _write_and_validate_output(
             "# content", "output.md", "input.html", 100, config, 999.5
         )
@@ -792,16 +792,16 @@ def test_write_and_validate_output_get_file_info_fails_raises(
     assert "Failed to get info for converted file" in str(excinfo.value)
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
-@patch("quack_core.integrations.pandoc.operations.html_to_md.time")
-@patch("quack_core.integrations.pandoc.operations.html_to_md.validate_conversion")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.time")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.validate_conversion")
 def test_write_and_validate_output_bytes_written_unconvertible_falls_back(
     mock_validate: MagicMock, mock_time: MagicMock, mock_fs: MagicMock
 ) -> None:
     """When write_result.bytes_written cannot be converted to int, the
     ValueError/TypeError is caught and output_size falls through to the
     output_info.size branch instead (html_to_md.py:245-262)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
@@ -823,16 +823,16 @@ def test_write_and_validate_output_bytes_written_unconvertible_falls_back(
     assert result[1] == 777
 
 
-@patch("quack_core.integrations.pandoc.operations.html_to_md.fs")
-@patch("quack_core.integrations.pandoc.operations.html_to_md.time")
-@patch("quack_core.integrations.pandoc.operations.html_to_md.validate_conversion")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.fs")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.time")
+@patch("zeo_core.integrations.pandoc.operations.html_to_md.validate_conversion")
 def test_write_and_validate_output_size_also_unconvertible_stays_zero(
     mock_validate: MagicMock, mock_time: MagicMock, mock_fs: MagicMock
 ) -> None:
     """When both bytes_written and output_info.size are unconvertible,
     output_size remains 0 and both warning branches are exercised
     (html_to_md.py:245-262)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _write_and_validate_output,
     )
 
@@ -859,12 +859,12 @@ def test_write_and_validate_output_size_also_unconvertible_stays_zero(
 def test_resolve_output_size_uses_reported_size_when_larger_content_absent() -> None:
     """_resolve_output_size prefers the reported size when the re-read
     content is not longer than it (html_to_md.py:433-439, happy path)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _resolve_output_size,
     )
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.read_text.return_value = SimpleNamespace(success=True, content="hi")
         output_info = SimpleNamespace(size=500)
@@ -876,12 +876,12 @@ def test_resolve_output_size_unconvertible_size_falls_back_to_zero() -> None:
     """When output_info.size cannot be converted to int, _resolve_output_size
     logs a warning and treats the size as 0 before trying the content-length
     fallback (html_to_md.py:440-445)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _resolve_output_size,
     )
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.read_text.return_value = SimpleNamespace(success=True, content="")
         output_info = SimpleNamespace(size="not-a-number")
@@ -892,12 +892,12 @@ def test_resolve_output_size_unconvertible_size_falls_back_to_zero() -> None:
 def test_resolve_output_size_prefers_longer_read_back_content() -> None:
     """When re-reading the output file yields content longer than the
     reported size, the content length wins (html_to_md.py:447-455)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _resolve_output_size,
     )
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.read_text.return_value = SimpleNamespace(
             success=True, content="x" * 5000
@@ -911,12 +911,12 @@ def test_resolve_output_size_read_text_raises_keeps_reported_size() -> None:
     """An exception raised while re-reading the output file for size
     estimation is caught and logged, leaving the previously-resolved size
     intact (html_to_md.py:456-459)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _resolve_output_size,
     )
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.read_text.side_effect = OSError("cannot read back")
         output_info = SimpleNamespace(size=250)
@@ -930,7 +930,7 @@ def test_resolve_output_size_read_text_raises_keeps_reported_size() -> None:
 def test_validate_output_size_and_ratio_extends_size_errors_when_invalid() -> None:
     """When check_file_size reports invalid (outside test-env leniency), its
     error messages are appended to validation_errors (html_to_md.py:494-495)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _validate_output_size_and_ratio,
     )
 
@@ -955,12 +955,12 @@ def test_validate_output_size_and_ratio_extends_size_errors_when_invalid() -> No
 def test_validate_output_content_read_fails_returns_error() -> None:
     """A failing fs.read_text on the output markdown short-circuits with a
     single "Error reading output file" message (html_to_md.py:522-527)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _validate_output_content,
     )
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.read_text.return_value = SimpleNamespace(
             success=False, error="disk error"
@@ -977,12 +977,12 @@ def test_validate_output_content_read_fails_returns_error() -> None:
 def test_validate_output_content_minimal_content_flagged() -> None:
     """Very short content without a heading marker is flagged as minimal
     (html_to_md.py:531-533)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _validate_output_content,
     )
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.read_text.return_value = SimpleNamespace(success=True, content="hi")
         mock_fs.split_path.return_value = SimpleNamespace(
@@ -1000,14 +1000,14 @@ def test_validate_output_content_missing_headers_flagged_when_verify_structure()
 ):
     """Large content lacking any '#'/'##' header is flagged only when
     config.validation.verify_structure is True (html_to_md.py:534-540)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _validate_output_content,
     )
 
     long_no_header_content = "word " * 50  # > 100 chars, no "# " or "## "
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.read_text.return_value = SimpleNamespace(
             success=True, content=long_no_header_content
@@ -1034,14 +1034,14 @@ def test_validate_output_content_check_links_missing_source_reference_logged() -
     """When check_links is enabled and the source filename is absent from the
     converted content, a debug log fires but no validation error is added
     (html_to_md.py:542-550) -- content otherwise passes."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _validate_output_content,
     )
 
     content_with_header = "# Title\n\n" + ("word " * 30)
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.read_text.return_value = SimpleNamespace(
             success=True, content=content_with_header
@@ -1062,12 +1062,12 @@ def test_validate_output_content_check_links_missing_source_reference_logged() -
 def test_validate_output_content_exception_appends_error() -> None:
     """An unexpected exception while validating output content is caught and
     turned into a validation error message (html_to_md.py:551-552)."""
-    from quack_core.integrations.pandoc.operations.html_to_md import (
+    from zeo_core.integrations.pandoc.operations.html_to_md import (
         _validate_output_content,
     )
 
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.read_text.side_effect = RuntimeError("content read exploded")
 
@@ -1085,7 +1085,7 @@ def test_validate_conversion_test_env_debug_logged_when_file_missing() -> None:
     """In a detected test environment, a missing/failed get_file_info result
     is tolerated (logged, not failed) -- (html_to_md.py:582-586)."""
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.get_file_info.return_value = SimpleNamespace(
             success=False, exists=False
@@ -1115,7 +1115,7 @@ def test_validate_conversion_non_test_env_missing_file_returns_error() -> None:
     """Outside a detected test environment, a missing output file causes an
     immediate, single-item error list (html_to_md.py:590-592)."""
     with patch(
-        "quack_core.integrations.pandoc.operations.html_to_md.fs"
+        "zeo_core.integrations.pandoc.operations.html_to_md.fs"
     ) as mock_fs:
         mock_fs.get_file_info.return_value = SimpleNamespace(
             success=True, exists=False

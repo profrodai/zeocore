@@ -5,12 +5,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from quack_core.core.errors import (
-    QuackApiError,
-    QuackAuthenticationError,
-    QuackQuotaExceededError,
+from zeo_core.core.errors import (
+    ZeoApiError,
+    ZeoAuthenticationError,
+    ZeoQuotaExceededError,
 )
-from quack_core.integrations.github.utils.api import (
+from zeo_core.integrations.github.utils.api import (
     _handle_http_error,
     _is_rate_limited_response,
     _require_response,
@@ -95,7 +95,7 @@ class TestApiUtils:
         mock_response.raise_for_status.side_effect = mock_error
 
         # Make request
-        with pytest.raises(QuackAuthenticationError) as excinfo:
+        with pytest.raises(ZeoAuthenticationError) as excinfo:
             make_request(
                 session=mock_session,
                 method="GET",
@@ -126,8 +126,8 @@ class TestApiUtils:
         with patch("time.time", return_value=int(time.time())):
             # Avoid actual sleeping in tests
             with patch("time.sleep"):
-                # We expect a QuackQuotaExceededError to be raised
-                with pytest.raises(QuackQuotaExceededError) as excinfo:
+                # We expect a ZeoQuotaExceededError to be raised
+                with pytest.raises(ZeoQuotaExceededError) as excinfo:
                     # Use max_retries=1 so we immediately hit the quota error path
                     make_request(
                         session=mock_session,
@@ -191,7 +191,7 @@ class TestApiUtils:
         # Patch sleep to avoid waiting
         with patch("time.sleep"):
             # Make request with limited retries
-            with pytest.raises(QuackApiError) as excinfo:
+            with pytest.raises(ZeoApiError) as excinfo:
                 make_request(
                     session=mock_session,
                     method="GET",
@@ -218,7 +218,7 @@ class TestApiUtils:
         # Patch sleep to avoid waiting
         with patch("time.sleep"):
             # Make request with limited retries
-            with pytest.raises(QuackApiError) as excinfo:
+            with pytest.raises(ZeoApiError) as excinfo:
                 make_request(
                     session=mock_session,
                     method="GET",
@@ -241,7 +241,7 @@ class TestApiUtils:
         mock_session.request.side_effect = ValueError("Unexpected error")
 
         # Make request
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             make_request(
                 session=mock_session,
                 method="GET",
@@ -266,7 +266,7 @@ class TestApiUtils:
         end of the function with no return and no raise. This validates the
         defensive check added ahead of the loop.
         """
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             make_request(
                 session=mock_session,
                 method="GET",
@@ -283,7 +283,7 @@ class TestApiUtils:
         self, mock_session: MagicMock
     ) -> None:
         """Same guard, negative value."""
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             make_request(
                 session=mock_session,
                 method="GET",
@@ -319,7 +319,7 @@ class TestRequireResponse:
         error = requests.exceptions.HTTPError()
         error.response = None
 
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             _require_response(error)
 
         assert "no response object" in str(excinfo.value)
@@ -329,14 +329,14 @@ class TestRequireResponse:
         error = requests.exceptions.HTTPError()
         error.response = None
 
-        with pytest.raises(QuackApiError):
+        with pytest.raises(ZeoApiError):
             _is_rate_limited_response(error)
 
     def test_handle_http_error_raises_when_response_none(self) -> None:
         error = requests.exceptions.HTTPError()
         error.response = None
 
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             _handle_http_error(
                 error, "/user", attempt=1, max_retries=3, retry_delay=1.0
             )

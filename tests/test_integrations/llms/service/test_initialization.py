@@ -8,9 +8,9 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.llms.fallback import FallbackConfig
-from quack_core.integrations.llms.service.initialization import (
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.llms.fallback import FallbackConfig
+from zeo_core.integrations.llms.service.initialization import (
     initialize_single_provider,
     initialize_with_fallback,
 )
@@ -47,12 +47,12 @@ class TestInitialization:
         mock_client = MagicMock()
 
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client",
+            "zeo_core.integrations.llms.registry.get_llm_client",
             return_value=mock_client,
         ) as mock_get_client:
             # Call from a fixture context to avoid any implementation details
             with patch(
-                "quack_core.integrations.llms.service.initialization.initialize_single_provider",
+                "zeo_core.integrations.llms.service.initialization.initialize_single_provider",
                 side_effect=initialize_single_provider,
             ):
                 result = initialize_single_provider(
@@ -99,13 +99,13 @@ class TestInitialization:
         mock_client = MagicMock()
 
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client",
+            "zeo_core.integrations.llms.registry.get_llm_client",
             return_value=mock_client,
         ) as mock_get_client:
             # Call initialize_single_provider directly from a fixture to
             # avoid implementation details
             with patch(
-                "quack_core.integrations.llms.service.initialization."
+                "zeo_core.integrations.llms.service.initialization."
                 "initialize_single_provider",
                 side_effect=initialize_single_provider,
             ):
@@ -151,13 +151,13 @@ class TestInitialization:
         mock_client = MagicMock()
 
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client",
+            "zeo_core.integrations.llms.registry.get_llm_client",
             return_value=mock_client,
         ):
             # Call initialize_single_provider directly from a fixture to
             # avoid implementation details
             with patch(
-                "quack_core.integrations.llms.service.initialization."
+                "zeo_core.integrations.llms.service.initialization."
                 "initialize_single_provider",
                 side_effect=initialize_single_provider,
             ):
@@ -192,12 +192,12 @@ class TestInitialization:
 
         # First call get_llm_client to raise an error
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client",
+            "zeo_core.integrations.llms.registry.get_llm_client",
             side_effect=Exception("Not available"),
         ):
             # Patch MockLLMClient constructor directly to avoid log_level issues
             with patch(
-                "quack_core.integrations.llms.clients.mock.MockLLMClient",
+                "zeo_core.integrations.llms.clients.mock.MockLLMClient",
                 return_value=mock_client,
             ):
                 # Set the log_level property to a real integer instead of a MagicMock
@@ -229,12 +229,12 @@ class TestInitialization:
         mock_fallback_client = MagicMock()
 
         with patch(
-            "quack_core.integrations.llms.fallback.FallbackLLMClient",
+            "zeo_core.integrations.llms.fallback.FallbackLLMClient",
             return_value=mock_fallback_client,
         ) as mock_fallback_class:
             # Call initialize_with_fallback directly
             with patch(
-                "quack_core.integrations.llms.service.initialization.initialize_with_fallback",
+                "zeo_core.integrations.llms.service.initialization.initialize_with_fallback",
                 side_effect=initialize_with_fallback,
             ):
                 result = initialize_with_fallback(
@@ -277,12 +277,12 @@ class TestInitialization:
         mock_fallback_client = MagicMock()
 
         with patch(
-            "quack_core.integrations.llms.fallback.FallbackLLMClient",
+            "zeo_core.integrations.llms.fallback.FallbackLLMClient",
             return_value=mock_fallback_client,
         ) as mock_fallback_class:
             # Call initialize_with_fallback directly
             with patch(
-                "quack_core.integrations.llms.service.initialization.initialize_with_fallback",
+                "zeo_core.integrations.llms.service.initialization.initialize_with_fallback",
                 side_effect=initialize_with_fallback,
             ):
                 result = initialize_with_fallback(
@@ -314,7 +314,7 @@ class TestInitialization:
 
         # Mock FallbackLLMClient to raise an error
         with patch(
-            "quack_core.integrations.llms.fallback.FallbackLLMClient",
+            "zeo_core.integrations.llms.fallback.FallbackLLMClient",
             side_effect=Exception("Fallback initialization error"),
         ):
             # Mock initialize_single_provider to succeed
@@ -331,7 +331,7 @@ class TestInitialization:
             ) -> IntegrationResult | None:
                 try:
                     # This will raise an exception
-                    from quack_core.integrations.llms.fallback import FallbackLLMClient
+                    from zeo_core.integrations.llms.fallback import FallbackLLMClient
 
                     FallbackLLMClient()
                 except Exception as e:
@@ -346,11 +346,11 @@ class TestInitialization:
 
             # Call initialize_with_fallback directly but patched
             with patch(
-                "quack_core.integrations.llms.service.initialization.initialize_with_fallback",
+                "zeo_core.integrations.llms.service.initialization.initialize_with_fallback",
                 side_effect=patched_fallback,
             ):
                 with patch(
-                    "quack_core.integrations.llms.service.initialization.initialize_single_provider",
+                    "zeo_core.integrations.llms.service.initialization.initialize_single_provider",
                     return_value=success_result,
                 ):
                     result = initialize_with_fallback(

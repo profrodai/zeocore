@@ -19,25 +19,25 @@ import sys
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
-from quack_core.core.errors import QuackPluginError
-from quack_core.modules.protocols import QuackPluginMetadata
+from zeo_core.core.errors import ZeoPluginError
+from zeo_core.modules.protocols import ZeoPluginMetadata
 
 
 class TestImportSideEffects(unittest.TestCase):
-    """Test that importing quack_core.modules has no side effects."""
+    """Test that importing zeo_core.modules has no side effects."""
 
     def setUp(self) -> None:
         """Clean up any existing plugin state before each test.
 
-        Purging quack_core.modules* from sys.modules forces the next `import` to
-        build FRESH class objects (QuackPluginMetadata, PluginRegistry, etc.) -
+        Purging zeo_core.modules* from sys.modules forces the next `import` to
+        build FRESH class objects (ZeoPluginMetadata, PluginRegistry, etc.) -
         genuinely distinct from whatever any OTHER already-imported module (e.g.
-        quack_core.core.fs.plugin, or discovery.py's own already-bound reference)
+        zeo_core.core.fs.plugin, or discovery.py's own already-bound reference)
         is holding onto. Without a restore, that split leaks into every test that
         runs afterward in the same process: a plugin's get_metadata() can return
         an instance of the reloaded class while validation code elsewhere still
         checks isinstance() against the pre-purge class, producing
-        "got <class '...QuackPluginMetadata'>" errors that look like the classes
+        "got <class '...ZeoPluginMetadata'>" errors that look like the classes
         differ even though they print identically (paid: TestExplicitLoading's
         entry-point tests failed exactly this way only when this file's full
         suite ran, never in isolation - the missing teardown was the reason).
@@ -47,16 +47,16 @@ class TestImportSideEffects(unittest.TestCase):
         self._saved_modules = {
             key: sys.modules[key]
             for key in sys.modules
-            if key.startswith("quack_core.modules")
+            if key.startswith("zeo_core.modules")
         }
         modules_to_remove = [
-            key for key in sys.modules.keys() if key.startswith("quack_core.modules")
+            key for key in sys.modules.keys() if key.startswith("zeo_core.modules")
         ]
         for module in modules_to_remove:
             del sys.modules[module]
 
     def tearDown(self) -> None:
-        """Restore the pre-purge quack_core.modules* sys.modules entries.
+        """Restore the pre-purge zeo_core.modules* sys.modules entries.
 
         Undoes setUp's purge so later test classes in this process see the
         SAME class objects they started with, instead of inheriting whatever
@@ -65,7 +65,7 @@ class TestImportSideEffects(unittest.TestCase):
         """
         # Drop whatever got (re)imported during the test
         reimported = [
-            key for key in sys.modules.keys() if key.startswith("quack_core.modules")
+            key for key in sys.modules.keys() if key.startswith("zeo_core.modules")
         ]
         for module in reimported:
             del sys.modules[module]
@@ -76,46 +76,46 @@ class TestImportSideEffects(unittest.TestCase):
         """
         Test A: Import has no side effects.
 
-        Importing quack_core.modules must not register any modules.
+        Importing zeo_core.modules must not register any modules.
         The registry should be completely empty after import.
         """
         # Import the module
-        import quack_core.modules
+        import zeo_core.modules
 
         # Verify registry is empty
         self.assertEqual(
-            len(quack_core.modules.registry.list_ids()),
+            len(zeo_core.modules.registry.list_ids()),
             0,
             "Registry should be empty after import, but contains: "
-            f"{quack_core.modules.registry.list_ids()}",
+            f"{zeo_core.modules.registry.list_ids()}",
         )
 
         # Verify no modules of any type
-        self.assertEqual(len(quack_core.modules.registry.list_command_plugins()), 0)
-        self.assertEqual(len(quack_core.modules.registry.list_workflow_plugins()), 0)
-        self.assertEqual(len(quack_core.modules.registry.list_extension_plugins()), 0)
-        self.assertEqual(len(quack_core.modules.registry.list_provider_plugins()), 0)
+        self.assertEqual(len(zeo_core.modules.registry.list_command_plugins()), 0)
+        self.assertEqual(len(zeo_core.modules.registry.list_workflow_plugins()), 0)
+        self.assertEqual(len(zeo_core.modules.registry.list_extension_plugins()), 0)
+        self.assertEqual(len(zeo_core.modules.registry.list_provider_plugins()), 0)
 
         # Verify no commands or workflows registered
-        self.assertEqual(len(quack_core.modules.registry.list_commands()), 0)
-        self.assertEqual(len(quack_core.modules.registry.list_workflows()), 0)
+        self.assertEqual(len(zeo_core.modules.registry.list_commands()), 0)
+        self.assertEqual(len(zeo_core.modules.registry.list_workflows()), 0)
 
     def test_import_exports_expected_api(self) -> None:
         """Verify the module exports the expected public API."""
-        import quack_core.modules
+        import zeo_core.modules
 
         # Check that explicit loading functions are available
-        self.assertTrue(hasattr(quack_core.modules, "list_available_entry_points"))
-        self.assertTrue(hasattr(quack_core.modules, "load_enabled_entry_points"))
-        self.assertTrue(hasattr(quack_core.modules, "load_enabled_modules"))
+        self.assertTrue(hasattr(zeo_core.modules, "list_available_entry_points"))
+        self.assertTrue(hasattr(zeo_core.modules, "load_enabled_entry_points"))
+        self.assertTrue(hasattr(zeo_core.modules, "load_enabled_modules"))
 
         # Check that global instances are available
-        self.assertTrue(hasattr(quack_core.modules, "registry"))
-        self.assertTrue(hasattr(quack_core.modules, "loader"))
+        self.assertTrue(hasattr(zeo_core.modules, "registry"))
+        self.assertTrue(hasattr(zeo_core.modules, "loader"))
 
         # Check that classes are available
-        self.assertTrue(hasattr(quack_core.modules, "PluginRegistry"))
-        self.assertTrue(hasattr(quack_core.modules, "PluginLoader"))
+        self.assertTrue(hasattr(zeo_core.modules, "PluginRegistry"))
+        self.assertTrue(hasattr(zeo_core.modules, "PluginLoader"))
 
 
 class MockTestPlugin:
@@ -135,8 +135,8 @@ class MockTestPlugin:
     def name(self) -> str:
         return self._name
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self._plugin_id,
             name=self._name,
             version="1.0.0",
@@ -150,17 +150,17 @@ class TestExplicitLoading(unittest.TestCase):
 
     def setUp(self) -> None:
         """Clean registry before each test."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         registry.clear()
 
     def tearDown(self) -> None:
         """Clean registry after each test."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         registry.clear()
 
-    @patch("quack_core.modules.discovery.entry_points")
+    @patch("zeo_core.modules.discovery.entry_points")
     def test_explicit_load_loads_only_requested_plugins(
         self, mock_entry_points: MagicMock
     ) -> None:
@@ -170,7 +170,7 @@ class TestExplicitLoading(unittest.TestCase):
         When we call load_enabled_entry_points with specific plugin IDs,
         only those modules should be loaded and registered.
         """
-        from quack_core.modules import load_enabled_entry_points, registry
+        from zeo_core.modules import load_enabled_entry_points, registry
 
         # Create mock entry points
         fs_plugin = MockTestPlugin(plugin_id="fs", name="FileSystem")
@@ -180,17 +180,17 @@ class TestExplicitLoading(unittest.TestCase):
         # Mock entry point objects
         fs_ep = Mock()
         fs_ep.name = "fs"
-        fs_ep.value = "quack_core.core.fs:create_plugin"
+        fs_ep.value = "zeo_core.core.fs:create_plugin"
         fs_ep.load.return_value = lambda: fs_plugin
 
         paths_ep = Mock()
         paths_ep.name = "paths"
-        paths_ep.value = "quack_core.core.paths:create_plugin"
+        paths_ep.value = "zeo_core.core.paths:create_plugin"
         paths_ep.load.return_value = lambda: paths_plugin
 
         config_ep = Mock()
         config_ep.name = "config"
-        config_ep.value = "quack_core.core.config:create_plugin"
+        config_ep.value = "zeo_core.core.config:create_plugin"
         config_ep.load.return_value = lambda: config_plugin
 
         # Setup mock to return all three entry points
@@ -217,7 +217,7 @@ class TestExplicitLoading(unittest.TestCase):
         assert fs is not None  # narrow for mypy; assertIsNotNone doesn't
         self.assertEqual(fs.plugin_id, "fs")
 
-    @patch("quack_core.modules.discovery.entry_points")
+    @patch("zeo_core.modules.discovery.entry_points")
     def test_strict_missing_plugin_fails_and_loads_nothing(
         self, mock_entry_points: MagicMock
     ) -> None:
@@ -228,14 +228,14 @@ class TestExplicitLoading(unittest.TestCase):
         operation should fail and NO modules should be registered.
         This now includes pre-validation, so nothing is attempted.
         """
-        from quack_core.modules import load_enabled_entry_points, registry
+        from zeo_core.modules import load_enabled_entry_points, registry
 
         # Create mock entry points (only fs exists)
         fs_plugin = MockTestPlugin(plugin_id="fs", name="FileSystem")
 
         fs_ep = Mock()
         fs_ep.name = "fs"
-        fs_ep.value = "quack_core.core.fs:create_plugin"
+        fs_ep.value = "zeo_core.core.fs:create_plugin"
         fs_ep.load.return_value = lambda: fs_plugin
 
         mock_entry_points.return_value = [fs_ep]
@@ -260,7 +260,7 @@ class TestExplicitLoading(unittest.TestCase):
         # Verify fs.load() was NEVER called (pre-validation prevents loading)
         fs_ep.load.assert_not_called()
 
-    @patch("quack_core.modules.discovery.entry_points")
+    @patch("zeo_core.modules.discovery.entry_points")
     def test_non_strict_missing_plugin_continues(
         self, mock_entry_points: MagicMock
     ) -> None:
@@ -270,14 +270,14 @@ class TestExplicitLoading(unittest.TestCase):
         In non-strict mode, if a requested plugin doesn't exist, a warning
         should be generated but loading should continue with available modules.
         """
-        from quack_core.modules import load_enabled_entry_points, registry
+        from zeo_core.modules import load_enabled_entry_points, registry
 
         # Create mock entry points (only fs exists)
         fs_plugin = MockTestPlugin(plugin_id="fs", name="FileSystem")
 
         fs_ep = Mock()
         fs_ep.name = "fs"
-        fs_ep.value = "quack_core.core.fs:create_plugin"
+        fs_ep.value = "zeo_core.core.fs:create_plugin"
         fs_ep.load.return_value = lambda: fs_plugin
 
         mock_entry_points.return_value = [fs_ep]
@@ -300,10 +300,10 @@ class TestExplicitLoading(unittest.TestCase):
         self.assertEqual(len(registered_ids), 1)
         self.assertIn("fs", registered_ids)
 
-    @patch("quack_core.modules.discovery.entry_points")
+    @patch("zeo_core.modules.discovery.entry_points")
     def test_load_preserves_order(self, mock_entry_points: MagicMock) -> None:
         """Verify that modules are loaded in the order specified."""
-        from quack_core.modules import load_enabled_entry_points
+        from zeo_core.modules import load_enabled_entry_points
 
         # Create modules
         plugins = [
@@ -329,12 +329,12 @@ class TestExplicitLoading(unittest.TestCase):
         # Verify order is preserved
         self.assertEqual(result.loaded, ["gamma", "alpha", "beta"])
 
-    @patch("quack_core.modules.discovery.entry_points")
+    @patch("zeo_core.modules.discovery.entry_points")
     def test_auto_register_false_does_not_register(
         self, mock_entry_points: MagicMock
     ) -> None:
         """Test that auto_register=False prevents automatic registration."""
-        from quack_core.modules import load_enabled_entry_points, registry
+        from zeo_core.modules import load_enabled_entry_points, registry
 
         # Create mock plugin
         plugin = MockTestPlugin(plugin_id="test", name="Test")
@@ -359,13 +359,13 @@ class TestExplicitLoading(unittest.TestCase):
         # Verify plugin is NOT in registry
         self.assertEqual(len(registry.list_ids()), 0)
 
-    @patch("quack_core.modules.discovery.entry_points")
+    @patch("zeo_core.modules.discovery.entry_points")
     def test_plugin_id_must_match_entry_point_name(
         self, mock_entry_points: MagicMock
     ) -> None:
         """Test that plugin_id must match entry point name for deterministic
         behavior."""
-        from quack_core.modules import load_enabled_entry_points, registry
+        from zeo_core.modules import load_enabled_entry_points, registry
 
         # Create mock plugin with DIFFERENT plugin_id than entry point name
         plugin = MockTestPlugin(plugin_id="different_id", name="Test")
@@ -399,19 +399,19 @@ class TestPluginIdStability(unittest.TestCase):
 
     def setUp(self) -> None:
         """Clean registry before each test."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         registry.clear()
 
     def tearDown(self) -> None:
         """Clean registry after each test."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         registry.clear()
 
     def test_registry_uses_plugin_id_not_name(self) -> None:
         """Verify that registry keys on plugin_id, not name."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         # Create plugin where plugin_id differs from name
         plugin = MockTestPlugin(plugin_id="my_plugin_id", name="Different Display Name")
@@ -432,7 +432,7 @@ class TestPluginIdStability(unittest.TestCase):
 
     def test_registry_list_ids_returns_plugin_ids(self) -> None:
         """Verify that list_ids returns plugin_id values, not names."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         # Register modules with different IDs and names
         registry.register(MockTestPlugin(plugin_id="id_one", name="Name One"))
@@ -450,13 +450,13 @@ class TestPluginIdStability(unittest.TestCase):
 
     def test_duplicate_plugin_id_raises_error(self) -> None:
         """Verify that registering duplicate plugin_id raises error."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         # Register first plugin
         registry.register(MockTestPlugin(plugin_id="duplicate", name="First"))
 
         # Attempt to register second plugin with same ID
-        with self.assertRaises(QuackPluginError) as ctx:
+        with self.assertRaises(ZeoPluginError) as ctx:
             registry.register(MockTestPlugin(plugin_id="duplicate", name="Second"))
 
         self.assertIn("duplicate", str(ctx.exception).lower())
@@ -475,19 +475,19 @@ class TestRegistryClear(unittest.TestCase):
         has (TestExplicitLoading, TestPluginIdStability), so it silently counted
         whatever a preceding test happened to leave registered.
         """
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         registry.clear()
 
     def tearDown(self) -> None:
         """Clean registry after each test."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         registry.clear()
 
     def test_clear_removes_all_plugins(self) -> None:
         """Verify that clear() removes all modules from registry."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         # Register multiple modules
         registry.register(MockTestPlugin(plugin_id="one", name="One"))
@@ -509,7 +509,7 @@ class TestRegistryClear(unittest.TestCase):
 
     def test_clear_allows_re_registration(self) -> None:
         """Verify that clear() allows re-registering previously registered modules."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         plugin = MockTestPlugin(plugin_id="test", name="Test")
 
@@ -531,22 +531,22 @@ class TestLoadEnabledModules(unittest.TestCase):
 
     def setUp(self) -> None:
         """Clean registry before each test."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         registry.clear()
 
     def tearDown(self) -> None:
         """Clean registry after each test."""
-        from quack_core.modules import registry
+        from zeo_core.modules import registry
 
         registry.clear()
 
-    @patch("quack_core.modules.discovery.importlib.import_module")
+    @patch("zeo_core.modules.discovery.importlib.import_module")
     def test_load_enabled_modules_succeeds(self, mock_import: MagicMock) -> None:
         """Test successful loading of modules from module paths."""
         import types
 
-        from quack_core.modules import load_enabled_modules, registry
+        from zeo_core.modules import load_enabled_modules, registry
 
         # Create a real (not Mock) module-like object with a create_plugin
         # factory. Assigning directly to a Mock's __dict__ (the prior version of
@@ -577,10 +577,10 @@ class TestLoadEnabledModules(unittest.TestCase):
         # Verify registration
         self.assertIn("test_module", registry.list_ids())
 
-    @patch("quack_core.modules.discovery.importlib.import_module")
+    @patch("zeo_core.modules.discovery.importlib.import_module")
     def test_load_enabled_modules_strict_failure(self, mock_import: MagicMock) -> None:
         """Test that strict mode fails on first error."""
-        from quack_core.modules import load_enabled_modules, registry
+        from zeo_core.modules import load_enabled_modules, registry
 
         # First module fails to import
         mock_import.side_effect = ImportError("Module not found")
@@ -604,21 +604,21 @@ class TestLoadEnabledModules(unittest.TestCase):
 class TestListAvailableEntryPoints(unittest.TestCase):
     """Test list_available_entry_points function."""
 
-    @patch("quack_core.modules.discovery.entry_points")
+    @patch("zeo_core.modules.discovery.entry_points")
     def test_list_available_does_not_instantiate(
         self, mock_entry_points: MagicMock
     ) -> None:
         """Verify that listing entry points does not instantiate modules."""
-        from quack_core.modules import list_available_entry_points
+        from zeo_core.modules import list_available_entry_points
 
         # Create mock entry points
         ep1 = Mock()
         ep1.name = "fs"
-        ep1.value = "quack_core.core.fs:create_plugin"
+        ep1.value = "zeo_core.core.fs:create_plugin"
 
         ep2 = Mock()
         ep2.name = "paths"
-        ep2.value = "quack_core.core.paths:create_plugin"
+        ep2.value = "zeo_core.core.paths:create_plugin"
 
         mock_entry_points.return_value = [ep1, ep2]
 

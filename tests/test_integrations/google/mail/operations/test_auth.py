@@ -8,9 +8,9 @@ including initializing the Gmail service.
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackApiError
-from quack_core.integrations.google.mail.operations import auth
-from quack_core.integrations.google.mail.protocols import GoogleCredentials
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.integrations.google.mail.operations import auth
+from zeo_core.integrations.google.mail.protocols import GoogleCredentials
 
 
 class TestGmailAuthOperations:
@@ -46,7 +46,7 @@ class TestGmailAuthOperations:
         with patch("googleapiclient.discovery.build") as mock_build:
             mock_build.side_effect = Exception("API error")
 
-            with pytest.raises(QuackApiError) as excinfo:
+            with pytest.raises(ZeoApiError) as excinfo:
                 auth.initialize_gmail_service(mock_creds)
 
             assert "Failed to initialize Gmail API" in str(excinfo.value)
@@ -99,6 +99,6 @@ class TestGmailAuthOperations:
             with patch("googleapiclient.discovery.build") as mock_build:
                 mock_build.side_effect = Exception("Missing credential attributes")
 
-                with pytest.raises(QuackApiError):
+                with pytest.raises(ZeoApiError):
                     # Use the patched version which bypasses type checking
                     patched_init(incomplete_creds)

@@ -12,24 +12,24 @@ from _pytest.monkeypatch import MonkeyPatch
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
     """
-    Stub out the quack_core.core.fs.service.standalone methods for file _ops.
+    Stub out the zeo_core.core.fs.service.standalone methods for file _ops.
     """
     import sys
     import types
 
     # Create a module structure if it doesn't exist
-    if "quack_core.core.fs.service" not in sys.modules:
+    if "zeo_core.core.fs.service" not in sys.modules:
         # Create the module hierarchy
-        if "quack-core" not in sys.modules:
-            quackcore_mod = types.ModuleType("quack-core")
-            sys.modules["quack-core"] = quackcore_mod
+        if "zeocore" not in sys.modules:
+            zeocore_mod = types.ModuleType("zeocore")
+            sys.modules["zeocore"] = zeocore_mod
 
-        if "quack_core.core.fs" not in sys.modules:
-            fs_mod = types.ModuleType("quack_core.core.fs")
-            sys.modules["quack_core.core.fs"] = fs_mod
+        if "zeo_core.core.fs" not in sys.modules:
+            fs_mod = types.ModuleType("zeo_core.core.fs")
+            sys.modules["zeo_core.core.fs"] = fs_mod
 
-        service_mod = types.ModuleType("quack_core.core.fs.service")
-        sys.modules["quack_core.core.fs.service"] = service_mod
+        service_mod = types.ModuleType("zeo_core.core.fs.service")
+        sys.modules["zeo_core.core.fs.service"] = service_mod
 
     # Create the stub with all necessary methods
     stub = SimpleNamespace()
@@ -66,7 +66,7 @@ def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
     # sys.modules[...] is typed ModuleType, no static `standalone` attribute --
     # a deliberate dynamic monkeypatch, bound through one Any-typed local
     # rather than per-access ignored (same shape as conftest.py's fs_stub).
-    fs_service_mod: Any = sys.modules["quack_core.core.fs.service"]
+    fs_service_mod: Any = sys.modules["zeo_core.core.fs.service"]
     fs_service_mod.standalone = stub
 
     return stub
@@ -95,17 +95,17 @@ def mock_paths_service(monkeypatch: MonkeyPatch) -> MagicMock:
     mock.resolve_project_path = lambda path: path  # Just return the path unchanged
 
     # Create a temp module if it doesn't exist
-    if "quack_core.core.paths" not in pytest.importorskip("sys").modules:
+    if "zeo_core.core.paths" not in pytest.importorskip("sys").modules:
         import types
 
-        temp_module = types.ModuleType("quack_core.core.paths")
-        pytest.importorskip("sys").modules["quack_core.core.paths"] = temp_module
+        temp_module = types.ModuleType("zeo_core.core.paths")
+        pytest.importorskip("sys").modules["zeo_core.core.paths"] = temp_module
         # `service` is not a static attribute of ModuleType -- deliberate
         # dynamic monkeypatch, same shape as fs_service_mod above.
         temp_module_any: Any = temp_module
         temp_module_any.service = mock
     else:
-        monkeypatch.setattr("quack_core.core.paths.service", mock)
+        monkeypatch.setattr("zeo_core.core.paths.service", mock)
 
     return mock
 

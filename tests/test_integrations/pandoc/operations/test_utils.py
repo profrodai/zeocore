@@ -11,12 +11,12 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.pandoc import (
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.pandoc import (
     ConversionMetrics,
     PandocConfig,
 )
-from quack_core.integrations.pandoc.operations.utils import (
+from zeo_core.integrations.pandoc.operations.utils import (
     get_file_info,
     prepare_pandoc_args,
     validate_docx_structure,
@@ -47,7 +47,7 @@ def test_verify_pandoc_import_error(mock_import_module: MagicMock) -> None:
     # Make import_module raise ImportError
     mock_import_module.side_effect = ImportError("No module named 'pypandoc'")
 
-    with pytest.raises(QuackIntegrationError) as exc_info:
+    with pytest.raises(ZeoIntegrationError) as exc_info:
         verify_pandoc()
 
     assert "pypandoc module is not installed" in str(exc_info.value)
@@ -58,7 +58,7 @@ def test_verify_pandoc_os_error(mock_get_version: MagicMock) -> None:
     """Test handling of OSError during pandoc verification."""
     mock_get_version.side_effect = OSError("Pandoc not found")
 
-    with pytest.raises(QuackIntegrationError) as exc_info:
+    with pytest.raises(ZeoIntegrationError) as exc_info:
         verify_pandoc()
 
     assert "Pandoc is not installed" in str(exc_info.value)
@@ -86,7 +86,7 @@ def test_prepare_pandoc_args() -> None:
     assert "--custom-arg" in custom_args
 
 
-@patch("quack_core.integrations.pandoc.operations.utils.fs")
+@patch("zeo_core.integrations.pandoc.operations.utils.fs")
 def test_get_file_info(mock_fs: MagicMock) -> None:
     """Test getting file information for conversion."""
     # Setup mock fs
@@ -115,7 +115,7 @@ def test_get_file_info(mock_fs: MagicMock) -> None:
 
     # Test with file not found
     mock_fs.get_file_info.return_value = SimpleNamespace(success=False, exists=False)
-    # with pytest.raises(QuackIntegrationError): # Adjusted for non-raising behavior
+    # with pytest.raises(ZeoIntegrationError): # Adjusted for non-raising behavior
     # get_file_info('missing.html')
 
 
@@ -207,7 +207,7 @@ def test_check_conversion_ratio() -> None:
     assert "less than" in errors[0]
 
 
-@patch("quack_core.integrations.pandoc.operations.utils.logger")
+@patch("zeo_core.integrations.pandoc.operations.utils.logger")
 def test_track_metrics(mock_logger: MagicMock) -> None:
     """Test tracking of conversion metrics."""
     metrics = ConversionMetrics()

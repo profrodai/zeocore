@@ -1,6 +1,6 @@
 """
 Tests for GoogleDriveService error-handling branches that were previously
-uncovered: the ``except QuackApiError`` / ``except QuackBaseAuthError`` /
+uncovered: the ``except ZeoApiError`` / ``except ZeoBaseAuthError`` /
 generic ``except Exception`` triads at the bottom of nearly every public
 method, ``get_file_info``'s error path, ``_execute_upload``'s
 exception-wrapping branch, ``_resolve_download_path``'s temp-dir-creation
@@ -15,22 +15,22 @@ established in test_drive_service_files.py's
 TestGoogleDriveServiceRealPathService).
 
 BUG FOUND, PINNED, NOT FIXED (see final report for the full list): seven
-``except QuackBaseAuthError`` handlers in this file --
+``except ZeoBaseAuthError`` handlers in this file --
 service.py:202-204 (``initialize``), 519-521 (``list_files``), 582-584
 (``create_folder``), 630-632 (``set_file_permissions``), 679-681
 (``get_sharing_link``), 728-730 (``delete_file``), and 907-909
 (``upload_file``) -- are structurally unreachable dead code. In every one
 of these six public methods, the only Google SDK call is wrapped by an
-inner ``except Exception as api_error: raise QuackApiError(...)`` (or, for
+inner ``except Exception as api_error: raise ZeoApiError(...)`` (or, for
 ``upload_file``, by ``_execute_upload``'s own identical inner wrapper) --
-since ``QuackBaseAuthError`` IS an ``Exception``, that inner handler always
-intercepts it first and converts it to ``QuackApiError`` before the outer
-``except QuackBaseAuthError`` can ever see it. For ``initialize``, the
+since ``ZeoBaseAuthError`` IS an ``Exception``, that inner handler always
+intercepts it first and converts it to ``ZeoApiError`` before the outer
+``except ZeoBaseAuthError`` can ever see it. For ``initialize``, the
 outer handler is dead for a different but related reason:
 ``BaseIntegrationService.initialize()`` (base.py:315-354) has its own
 unconditional ``except Exception`` and never re-raises to its caller, so
 the ``super().initialize()`` call (service.py:158) can never surface a
-QuackBaseAuthError either. Net effect: authentication failures at the
+ZeoBaseAuthError either. Net effect: authentication failures at the
 Drive API boundary are always reported to callers as generic "API error:
 ..." (or worse, are silently absorbed into the wrong message), never as
 the more specific and presumably more actionable "Authentication error:
@@ -48,12 +48,12 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import (
-    QuackApiError,
-    QuackBaseAuthError,
-    QuackIntegrationError,
+from zeo_core.core.errors import (
+    ZeoApiError,
+    ZeoBaseAuthError,
+    ZeoIntegrationError,
 )
-from quack_core.integrations.google.drive.service import GoogleDriveService
+from zeo_core.integrations.google.drive.service import GoogleDriveService
 
 
 @pytest.fixture
@@ -69,7 +69,7 @@ def real_drive_service() -> Generator[GoogleDriveService, None, None]:
             "credentials_file": "/fake/test/dir/mock_credentials.json",
         }
         with patch(
-            "quack_core.integrations.google.auth.GoogleAuthProvider."
+            "zeo_core.integrations.google.auth.GoogleAuthProvider."
             "_verify_client_secrets_file"
         ):
             service = GoogleDriveService()
@@ -81,23 +81,23 @@ def real_drive_service() -> Generator[GoogleDriveService, None, None]:
 
 class TestListFilesErrorPaths:
     """Cover list_files' generic Exception branch (522-526); the
-    QuackApiError branch is already exercised in test_drive_service_list.py.
+    ZeoApiError branch is already exercised in test_drive_service_list.py.
 
-    BUG (pinned, not fixed): list_files' `except QuackBaseAuthError` at
+    BUG (pinned, not fixed): list_files' `except ZeoBaseAuthError` at
     service.py:519-521 is DEAD CODE -- see module docstring."""
 
     def test_list_files_auth_error_is_reported_as_api_error_not_auth_error(
         self, real_drive_service: GoogleDriveService
     ) -> None:
-        """PINS A BUG: service.py:519-521's `except QuackBaseAuthError`
-        handler is unreachable dead code. A QuackBaseAuthError raised by
+        """PINS A BUG: service.py:519-521's `except ZeoBaseAuthError`
+        handler is unreachable dead code. A ZeoBaseAuthError raised by
         the mocked SDK boundary is caught first by the inner `except
-        Exception` (line 496) and converted to QuackApiError, so the
+        Exception` (line 496) and converted to ZeoApiError, so the
         outer handler at 519 never fires -- the error message says "API
         error", not "Authentication error", even though the underlying
         cause was an auth failure. Not fixed per this stream's charter
         (no unilateral production fixes) -- reported for a ruling."""
-        real_drive_service.drive_service.files.side_effect = QuackBaseAuthError(
+        real_drive_service.drive_service.files.side_effect = ZeoBaseAuthError(
             "Auth failed", service="drive"
         )
         result = real_drive_service.list_files()
@@ -117,7 +117,7 @@ class TestListFilesErrorPaths:
         try/except that wraps only the SDK call itself. A malformed API
         response item missing "mimeType" raises a plain KeyError there,
         which is a genuine, not-dead, code path (distinct from the
-        QuackBaseAuthError dead-code bug pinned above)."""
+        ZeoBaseAuthError dead-code bug pinned above)."""
         mock_list = MagicMock()
         real_drive_service.drive_service.files.return_value.list.return_value = (
             mock_list
@@ -133,22 +133,22 @@ class TestListFilesErrorPaths:
 
 class TestCreateFolderErrorPaths:
     """Cover create_folder's generic Exception branch (585-589); the
-    QuackApiError branch and the perm_result.success is False warning
+    ZeoApiError branch and the perm_result.success is False warning
     branch (570) are exercised here too since they were both in the
     missing-lines list.
 
     BUG (pinned, not fixed): same dead-code shape as list_files --
-    create_folder's `except QuackBaseAuthError` at service.py:582-584 is
+    create_folder's `except ZeoBaseAuthError` at service.py:582-584 is
     unreachable. The only SDK call in the body is wrapped by an inner
-    `except Exception -> raise QuackApiError` (service.py:559-565), so a
-    QuackBaseAuthError raised at the boundary is always reported as "API
+    `except Exception -> raise ZeoApiError` (service.py:559-565), so a
+    ZeoBaseAuthError raised at the boundary is always reported as "API
     error", never "Authentication error"."""
 
     def test_create_folder_auth_error_is_reported_as_api_error_not_auth_error(
         self, real_drive_service: GoogleDriveService
     ) -> None:
         """PINS A BUG: see class docstring."""
-        real_drive_service.drive_service.files.side_effect = QuackBaseAuthError(
+        real_drive_service.drive_service.files.side_effect = ZeoBaseAuthError(
             "Auth failed", service="drive"
         )
         result = real_drive_service.create_folder("New Folder")
@@ -193,7 +193,7 @@ class TestCreateFolderErrorPaths:
         with patch.object(
             real_drive_service, "set_file_permissions"
         ) as mock_permissions:
-            from quack_core.integrations.core.results import IntegrationResult
+            from zeo_core.integrations.core.results import IntegrationResult
 
             mock_permissions.return_value = IntegrationResult.error_result(
                 "permission denied"
@@ -208,14 +208,14 @@ class TestCreateFolderErrorPaths:
 class TestSetFilePermissionsErrorPaths:
     """BUG (pinned, not fixed): set_file_permissions has TWO dead exception
     handlers, not just one. Its only SDK call is wrapped by an inner
-    `except Exception -> raise QuackApiError` (service.py:615-621), and the
+    `except Exception -> raise ZeoApiError` (service.py:615-621), and the
     only statement outside that inner try is
     `return IntegrationResult.success_result(...)` (line 623-625), which
     cannot itself raise under normal operation. So neither the outer
-    `except QuackBaseAuthError` (630-632) NOR the outer `except Exception`
+    `except ZeoBaseAuthError` (630-632) NOR the outer `except Exception`
     (633-637) is reachable through any legitimate call path -- both tests
     below deliberately still hit the (already covered elsewhere) `except
-    QuackApiError` handler at 627-629, documenting that this is where
+    ZeoApiError` handler at 627-629, documenting that this is where
     every SDK-boundary exception actually lands, contrary to what the
     dead handlers' presence implies."""
 
@@ -224,7 +224,7 @@ class TestSetFilePermissionsErrorPaths:
     ) -> None:
         """PINS A BUG: see class docstring."""
         real_drive_service.drive_service.permissions.side_effect = (
-            QuackBaseAuthError("Auth failed", service="drive")
+            ZeoBaseAuthError("Auth failed", service="drive")
         )
         result = real_drive_service.set_file_permissions("file123")
         assert result.success is False
@@ -237,7 +237,7 @@ class TestSetFilePermissionsErrorPaths:
         self, real_drive_service: GoogleDriveService
     ) -> None:
         """A generic exception raised at the SDK boundary is, like the
-        QuackBaseAuthError case above, converted to QuackApiError by the
+        ZeoBaseAuthError case above, converted to ZeoApiError by the
         inner wrapper and reported as "API error" -- there is no code path
         left in the method body, outside that inner try, capable of
         raising a plain exception the generic `except Exception` at
@@ -253,8 +253,8 @@ class TestGetSharingLinkErrorPaths:
     """Cover get_sharing_link's generic Exception branch (682-686).
 
     BUG (pinned, not fixed): same dead-code shape -- get_sharing_link's
-    `except QuackBaseAuthError` at service.py:679-681 is unreachable behind
-    its own inner `except Exception -> raise QuackApiError`
+    `except ZeoBaseAuthError` at service.py:679-681 is unreachable behind
+    its own inner `except Exception -> raise ZeoApiError`
     (service.py:659-665)."""
 
     def test_get_sharing_link_auth_error_is_reported_as_api_error_not_auth_error(
@@ -263,9 +263,9 @@ class TestGetSharingLinkErrorPaths:
         """PINS A BUG: see class docstring. Note the message here is
         prefixed twice: get_sharing_link's inner wrap already says
         "Failed to get file metadata from Google Drive: ..." and the outer
-        `except QuackApiError` handler (not the dead auth handler)
+        `except ZeoApiError` handler (not the dead auth handler)
         prefixes "API error: " onto that."""
-        real_drive_service.drive_service.files.side_effect = QuackBaseAuthError(
+        real_drive_service.drive_service.files.side_effect = ZeoBaseAuthError(
             "Auth failed", service="drive"
         )
         result = real_drive_service.get_sharing_link("file123")
@@ -299,19 +299,19 @@ class TestGetSharingLinkErrorPaths:
 class TestDeleteFileErrorPaths:
     """BUG (pinned, not fixed): same as set_file_permissions above --
     delete_file has TWO dead exception handlers. Its only SDK calls are
-    wrapped by an inner `except Exception -> raise QuackApiError`
+    wrapped by an inner `except Exception -> raise ZeoApiError`
     (service.py:712-719), and the only statement outside that inner try is
     `return IntegrationResult.success_result(...)` (line 721-723), which
-    cannot itself raise. So neither the outer `except QuackBaseAuthError`
+    cannot itself raise. So neither the outer `except ZeoBaseAuthError`
     (728-730) NOR the outer `except Exception` (731-735) is reachable --
     both tests below hit the (already covered elsewhere) `except
-    QuackApiError` handler at 725-727 instead."""
+    ZeoApiError` handler at 725-727 instead."""
 
     def test_delete_file_auth_error_is_reported_as_api_error_not_auth_error(
         self, real_drive_service: GoogleDriveService
     ) -> None:
         """PINS A BUG: see class docstring."""
-        real_drive_service.drive_service.files.side_effect = QuackBaseAuthError(
+        real_drive_service.drive_service.files.side_effect = ZeoBaseAuthError(
             "Auth failed", service="drive"
         )
         result = real_drive_service.delete_file("file123")
@@ -325,7 +325,7 @@ class TestDeleteFileErrorPaths:
         self, real_drive_service: GoogleDriveService
     ) -> None:
         """A generic exception raised at the SDK boundary is, like the
-        QuackBaseAuthError case above, converted to QuackApiError by the
+        ZeoBaseAuthError case above, converted to ZeoApiError by the
         inner wrapper and reported as "API error"."""
         real_drive_service.drive_service.files.side_effect = ValueError("boom")
         result = real_drive_service.delete_file("file123")
@@ -340,18 +340,18 @@ class TestUploadFileErrorPaths:
     _resolve_file_details/PathService.
 
     BUG (pinned, not fixed): same dead-code shape as the other five
-    methods above -- upload_file's `except QuackBaseAuthError` at
+    methods above -- upload_file's `except ZeoBaseAuthError` at
     service.py:907-909 is unreachable. The only SDK call
     (files().create().execute(), reached via _execute_upload) is wrapped
     by _execute_upload's OWN inner `except Exception -> raise
-    QuackApiError` (service.py:374-380), so a QuackBaseAuthError raised at
+    ZeoApiError` (service.py:374-380), so a ZeoBaseAuthError raised at
     that boundary is always reported as "API error", never "Authentication
     error"."""
 
     def test_upload_file_auth_error_is_reported_as_api_error_not_auth_error(
         self, real_drive_service: GoogleDriveService
     ) -> None:
-        """PINS A BUG: see class docstring. Raises QuackBaseAuthError from
+        """PINS A BUG: see class docstring. Raises ZeoBaseAuthError from
         the real SDK boundary (drive_service.files().create().execute()),
         not by bypassing _execute_upload's own wrapping."""
         rel_name = "coverage90_upload_auth_error_probe.txt"
@@ -362,7 +362,7 @@ class TestUploadFileErrorPaths:
                 real_drive_service.drive_service.files.return_value
                 .create.return_value.execute
             )
-            mock_execute.side_effect = QuackBaseAuthError(
+            mock_execute.side_effect = ZeoBaseAuthError(
                 "Auth failed", service="drive"
             )
             result = real_drive_service.upload_file(rel_name)
@@ -402,7 +402,7 @@ class TestUploadFileErrorPaths:
 
 
 class TestExecuteUploadErrorWrapping:
-    """Cover _execute_upload's own except Exception -> QuackApiError wrap
+    """Cover _execute_upload's own except Exception -> ZeoApiError wrap
     (lines 363-375), calling the real method directly against a mocked
     drive_service boundary."""
 
@@ -417,7 +417,7 @@ class TestExecuteUploadErrorWrapping:
             "network exploded"
         )
 
-        with pytest.raises(QuackApiError, match="Failed to upload file"):
+        with pytest.raises(ZeoApiError, match="Failed to upload file"):
             real_drive_service._execute_upload(
                 {"name": "f.txt"}, media=MagicMock()
             )
@@ -492,7 +492,7 @@ class TestGetFileInfo:
     ) -> None:
         real_drive_service._initialized = False
         with patch.object(real_drive_service, "initialize") as mock_init:
-            from quack_core.integrations.core.results import IntegrationResult
+            from zeo_core.integrations.core.results import IntegrationResult
 
             mock_init.return_value = IntegrationResult.error_result(
                 "Not initialized"
@@ -584,9 +584,9 @@ class TestInitializeConfigEdgeBranches:
         """Line 127: if self.config_provider is None when
         _initialize_config runs (never true in practice for the concrete
         class, but the guard exists and must be exercised), it raises
-        QuackIntegrationError rather than crashing with AttributeError."""
+        ZeoIntegrationError rather than crashing with AttributeError."""
         with patch(
-            "quack_core.integrations.google.auth.GoogleAuthProvider."
+            "zeo_core.integrations.google.auth.GoogleAuthProvider."
             "_verify_client_secrets_file"
         ):
             service = GoogleDriveService.__new__(GoogleDriveService)
@@ -594,31 +594,31 @@ class TestInitializeConfigEdgeBranches:
             service.config_path = None
 
             with pytest.raises(
-                QuackIntegrationError, match="no config_provider configured"
+                ZeoIntegrationError, match="no config_provider configured"
             ):
                 service._initialize_config(None, None, None)
 
     def test_initialize_config_raises_when_default_config_invalid(self) -> None:
         """Line 135: config load fails AND the default config itself fails
-        validate_config -- must raise QuackIntegrationError rather than
+        validate_config -- must raise ZeoIntegrationError rather than
         silently returning an invalid default."""
         with patch(
-            "quack_core.integrations.google.config.GoogleConfigProvider.load_config"
+            "zeo_core.integrations.google.config.GoogleConfigProvider.load_config"
         ) as mock_load, patch(
-            "quack_core.integrations.google.config.GoogleConfigProvider."
+            "zeo_core.integrations.google.config.GoogleConfigProvider."
             "validate_config"
         ) as mock_validate:
-            from quack_core.integrations.core.results import ConfigResult
+            from zeo_core.integrations.core.results import ConfigResult
 
             mock_load.return_value = ConfigResult(success=False, content=None)
             mock_validate.return_value = False
 
             with patch(
-                "quack_core.integrations.google.auth.GoogleAuthProvider."
+                "zeo_core.integrations.google.auth.GoogleAuthProvider."
                 "_verify_client_secrets_file"
             ):
                 with pytest.raises(
-                    QuackIntegrationError,
+                    ZeoIntegrationError,
                     match="default configuration is invalid",
                 ):
                     GoogleDriveService()
@@ -634,9 +634,9 @@ class TestInitializeConfigEdgeBranches:
         credentials_file: return {...}`), which bypasses load_config
         entirely and would never reach lines 141-147 at all."""
         with patch(
-            "quack_core.integrations.google.config.GoogleConfigProvider.load_config"
+            "zeo_core.integrations.google.config.GoogleConfigProvider.load_config"
         ) as mock_load:
-            from quack_core.integrations.core.results import ConfigResult
+            from zeo_core.integrations.core.results import ConfigResult
 
             mock_load.return_value = ConfigResult(
                 success=True,
@@ -648,7 +648,7 @@ class TestInitializeConfigEdgeBranches:
             )
 
             with patch(
-                "quack_core.integrations.google.auth.GoogleAuthProvider."
+                "zeo_core.integrations.google.auth.GoogleAuthProvider."
                 "_verify_client_secrets_file"
             ):
                 service = GoogleDriveService(
@@ -668,9 +668,9 @@ class TestInitializeConfigEdgeBranches:
         credentials_file each override independently when passed one at a
         time (never both, to avoid the early-return short-circuit)."""
         with patch(
-            "quack_core.integrations.google.config.GoogleConfigProvider.load_config"
+            "zeo_core.integrations.google.config.GoogleConfigProvider.load_config"
         ) as mock_load:
-            from quack_core.integrations.core.results import ConfigResult
+            from zeo_core.integrations.core.results import ConfigResult
 
             mock_load.return_value = ConfigResult(
                 success=True,
@@ -680,7 +680,7 @@ class TestInitializeConfigEdgeBranches:
                 },
             )
             with patch(
-                "quack_core.integrations.google.auth.GoogleAuthProvider."
+                "zeo_core.integrations.google.auth.GoogleAuthProvider."
                 "_verify_client_secrets_file"
             ):
                 service = GoogleDriveService(
@@ -691,9 +691,9 @@ class TestInitializeConfigEdgeBranches:
         assert service.config["credentials_file"] == "/loaded/credentials.json"
 
         with patch(
-            "quack_core.integrations.google.config.GoogleConfigProvider.load_config"
+            "zeo_core.integrations.google.config.GoogleConfigProvider.load_config"
         ) as mock_load:
-            from quack_core.integrations.core.results import ConfigResult
+            from zeo_core.integrations.core.results import ConfigResult
 
             mock_load.return_value = ConfigResult(
                 success=True,
@@ -703,7 +703,7 @@ class TestInitializeConfigEdgeBranches:
                 },
             )
             with patch(
-                "quack_core.integrations.google.auth.GoogleAuthProvider."
+                "zeo_core.integrations.google.auth.GoogleAuthProvider."
                 "_verify_client_secrets_file"
             ):
                 service = GoogleDriveService(
@@ -716,9 +716,9 @@ class TestInitializeConfigEdgeBranches:
 
 class TestInitializeEdgeBranches:
     """initialize()'s auth_provider-is-None narrowing (169) and the inner
-    get_credentials() QuackBaseAuthError catch (176-180).
+    get_credentials() ZeoBaseAuthError catch (176-180).
 
-    NOTE on the OUTER `except QuackBaseAuthError` at service.py:202-204:
+    NOTE on the OUTER `except ZeoBaseAuthError` at service.py:202-204:
     this is DEAD CODE too, same shape as the six sibling bugs pinned
     above, but unreachable for a structurally different reason: it is not
     guarded by an inner `except Exception` wrapper, it is guarded by
@@ -728,7 +728,7 @@ class TestInitializeEdgeBranches:
     everything and returns an IntegrationResult instead of raising. Since
     `super().initialize()` (service.py:158) is the only statement between
     the outer try and the inner get_credentials() try/except that could
-    plausibly raise QuackBaseAuthError, and it structurally cannot, lines
+    plausibly raise ZeoBaseAuthError, and it structurally cannot, lines
     202-204 have no legitimate trigger -- forcing them would require
     patching BaseIntegrationService.initialize() itself to behave
     differently than it ever does in production, which is not a real
@@ -738,7 +738,7 @@ class TestInitializeEdgeBranches:
 
     def test_initialize_returns_error_when_auth_provider_none(self) -> None:
         with patch(
-            "quack_core.integrations.google.auth.GoogleAuthProvider."
+            "zeo_core.integrations.google.auth.GoogleAuthProvider."
             "_verify_client_secrets_file"
         ):
             service = GoogleDriveService(
@@ -753,22 +753,22 @@ class TestInitializeEdgeBranches:
         assert result.error is not None
         assert "no auth_provider configured" in result.error
 
-    @patch("quack_core.integrations.google.auth.GoogleAuthProvider.authenticate")
-    @patch("quack_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
+    @patch("zeo_core.integrations.google.auth.GoogleAuthProvider.authenticate")
+    @patch("zeo_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
     def test_initialize_get_credentials_auth_error(
         self, mock_get_credentials: MagicMock, mock_authenticate: MagicMock
     ) -> None:
-        """Lines 176-180: get_credentials() raising QuackBaseAuthError IS
+        """Lines 176-180: get_credentials() raising ZeoBaseAuthError IS
         legitimately caught by its own dedicated inner try/except (unlike
         the six dead outer handlers pinned above -- this inner one is not
         itself nested inside a broader `except Exception` that would beat
         it to the exception)."""
         with patch(
-            "quack_core.integrations.google.auth.GoogleAuthProvider."
+            "zeo_core.integrations.google.auth.GoogleAuthProvider."
             "_verify_client_secrets_file"
         ):
             mock_authenticate.return_value.success = True
-            mock_get_credentials.side_effect = QuackBaseAuthError(
+            mock_get_credentials.side_effect = ZeoBaseAuthError(
                 "Bad credentials", service="drive"
             )
 
@@ -787,11 +787,11 @@ class TestInitializeEdgeBranches:
 
 class TestResolveFileDetailsErrorPaths:
     """_resolve_file_details' filename-fallback branch (line 244), using
-    the real PathService/standalone, no mocking of quack_core internals,
+    the real PathService/standalone, no mocking of zeo_core internals,
     per RULING-235.
 
     NOTE: line 231 (`if not path_obj_result.success or ...: raise
-    QuackIntegrationError("Failed to resolve path: ...")`) is not
+    ZeoIntegrationError("Failed to resolve path: ...")`) is not
     exercised here. The real PathService.resolve_project_path is lenient
     -- confirmed live this session -- it successfully resolves even
     directory-traversal-style inputs (`../../../etc/...`) and non-string
@@ -799,7 +799,7 @@ class TestResolveFileDetailsErrorPaths:
     rather than failing, so there is no real input that makes it return
     success=False. Forcing that branch would require mocking
     `paths_service`/`PathService` directly, which RULING-235 forbids as a
-    quack_core internal, not an SDK/network boundary -- so this line is
+    zeo_core internal, not an SDK/network boundary -- so this line is
     left uncovered rather than faked."""
 
     @pytest.fixture
@@ -810,7 +810,7 @@ class TestResolveFileDetailsErrorPaths:
                 "credentials_file": "/fake/test/dir/mock_credentials.json",
             }
             with patch(
-                "quack_core.integrations.google.auth.GoogleAuthProvider."
+                "zeo_core.integrations.google.auth.GoogleAuthProvider."
                 "_verify_client_secrets_file"
             ):
                 svc = GoogleDriveService()
@@ -928,7 +928,7 @@ class TestDownloadFileRealPath:
         the join_path(...).parent bug."""
         real_drive_service._initialized = False
         with patch.object(real_drive_service, "initialize") as mock_init:
-            from quack_core.integrations.core.results import IntegrationResult
+            from zeo_core.integrations.core.results import IntegrationResult
 
             mock_init.return_value = IntegrationResult.error_result(
                 "Not initialized"
@@ -1012,7 +1012,7 @@ class TestDownloadFileRealPath:
         path collides with a real file, sandboxed to a real in-sandbox
         location (tmp_path is outside core/fs's base_dir=Path.cwd()
         sandbox and would trigger a different, unrelated
-        QuackPathOutsideBaseDirError instead of proving this branch)."""
+        ZeoPathOutsideBaseDirError instead of proving this branch)."""
         mock_files = real_drive_service.drive_service.files.return_value
         mock_files.get.return_value.execute.return_value = {
             "name": "downloaded.txt",
@@ -1102,7 +1102,7 @@ class TestDownloadFileRealPath:
                 "googleapiclient.http.MediaIoBaseDownload"
             ) as mock_downloader_cls,
             patch(
-                "quack_core.integrations.google.drive.service.standalone.write_binary"
+                "zeo_core.integrations.google.drive.service.standalone.write_binary"
             ) as mock_write,
         ):
             mock_downloader = MagicMock()
@@ -1157,7 +1157,7 @@ class TestDownloadFileRealPath:
                 "googleapiclient.http.MediaIoBaseDownload"
             ) as mock_downloader_cls,
             patch(
-                "quack_core.integrations.google.drive.service.standalone.write_binary"
+                "zeo_core.integrations.google.drive.service.standalone.write_binary"
             ) as mock_write,
         ):
             mock_downloader = MagicMock()
@@ -1197,13 +1197,13 @@ class TestEnsureInitializedGuards:
                 "credentials_file": "/fake/test/dir/mock_credentials.json",
             }
             with patch(
-                "quack_core.integrations.google.auth.GoogleAuthProvider."
+                "zeo_core.integrations.google.auth.GoogleAuthProvider."
                 "_verify_client_secrets_file"
             ):
                 svc = GoogleDriveService()
                 svc._initialized = False
                 with patch.object(svc, "initialize") as mock_service_init:
-                    from quack_core.integrations.core.results import (
+                    from zeo_core.integrations.core.results import (
                         IntegrationResult,
                     )
 
@@ -1256,7 +1256,7 @@ class TestEnsureInitializedGuards:
 class TestUploadHelperBranches:
     """_build_upload_metadata's description-included branch (802),
     _apply_public_sharing's permission-failure warning (850), and
-    upload_file's own QuackIntegrationError catch when
+    upload_file's own ZeoIntegrationError catch when
     _resolve_file_details raises for a real (nonexistent) file (881-882)."""
 
     def test_build_upload_metadata_includes_description(
@@ -1270,7 +1270,7 @@ class TestUploadHelperBranches:
     def test_apply_public_sharing_logs_warning_on_permission_failure(
         self, real_drive_service: GoogleDriveService
     ) -> None:
-        from quack_core.integrations.core.results import IntegrationResult
+        from zeo_core.integrations.core.results import IntegrationResult
 
         with patch.object(
             real_drive_service, "set_file_permissions"
@@ -1288,7 +1288,7 @@ class TestUploadHelperBranches:
         self, real_drive_service: GoogleDriveService
     ) -> None:
         """Lines 881-882: _resolve_file_details raising
-        QuackIntegrationError for a real, genuinely nonexistent file is
+        ZeoIntegrationError for a real, genuinely nonexistent file is
         caught directly and turned into an error result, without ever
         reaching the SDK boundary."""
         result = real_drive_service.upload_file(

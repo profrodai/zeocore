@@ -1,8 +1,8 @@
 """
 Fixtures scoped to test_paths/.
 
-quack_core.core.paths._internal (resolver.py, utils.py) drives its marker-file /
-marker-dir detection entirely through quack_core.core.fs.service.standalone.join_path,
+zeo_core.core.paths._internal (resolver.py, utils.py) drives its marker-file /
+marker-dir detection entirely through zeo_core.core.fs.service.standalone.join_path,
 in addition to normalize_path (already mocked, out-of-sandbox, in the root conftest).
 The root conftest's autouse mocks only cover normalize_path; join_path was left on its
 real, sandboxed implementation, which rejects any path outside the FS service's
@@ -21,8 +21,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from quack_core.core.fs import DataResult, OperationResult
-from quack_core.core.fs.protocols import FsPathLike
+from zeo_core.core.fs import DataResult, OperationResult
+from zeo_core.core.fs.protocols import FsPathLike
 
 
 @pytest.fixture(autouse=True)
@@ -35,7 +35,7 @@ def mock_paths_join_path() -> Generator[None]:
     repo's CWD-derived base_dir) actually reach the filesystem instead of being
     rejected before they are ever checked.
     """
-    with patch("quack_core.core.fs.service.standalone.join_path") as mock_join:
+    with patch("zeo_core.core.fs.service.standalone.join_path") as mock_join:
 
         def _mock_join(*parts: FsPathLike) -> DataResult[str]:
             if not parts:
@@ -60,7 +60,7 @@ def mock_paths_create_directory() -> Generator[None]:
     normalize_path are - out-of-base_dir paths (every pytest tmp_path) are rejected
     before anything is written to disk. Same rationale as mock_paths_join_path.
     """
-    with patch("quack_core.core.fs.service.standalone.create_directory") as mock_create:
+    with patch("zeo_core.core.fs.service.standalone.create_directory") as mock_create:
 
         def _mock_create(path: FsPathLike, exist_ok: bool = True) -> OperationResult:
             p = Path(str(path))

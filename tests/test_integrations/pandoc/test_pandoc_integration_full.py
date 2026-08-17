@@ -8,40 +8,40 @@ from types import SimpleNamespace
 from typing import Any
 
 import pytest
-import quack_core.core.fs.service.standalone
+import zeo_core.core.fs.service.standalone
 from _pytest.monkeypatch import MonkeyPatch
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.pandoc.config import (
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.pandoc.config import (
     PandocConfig,
     PandocConfigProvider,
 )
-from quack_core.integrations.pandoc.converter import DocumentConverter
-from quack_core.integrations.pandoc.models import (
+from zeo_core.integrations.pandoc.converter import DocumentConverter
+from zeo_core.integrations.pandoc.models import (
     ConversionTask,
     FileInfo,
 )
-from quack_core.integrations.pandoc.operations.html_to_md import (
+from zeo_core.integrations.pandoc.operations.html_to_md import (
     post_process_markdown,
     validate_html_structure,
 )
-from quack_core.integrations.pandoc.operations.utils import (
+from zeo_core.integrations.pandoc.operations.utils import (
     get_file_info as util_get_file_info,
 )
-from quack_core.integrations.pandoc.operations.utils import (
+from zeo_core.integrations.pandoc.operations.utils import (
     prepare_pandoc_args,
     verify_pandoc,
 )
-from quack_core.integrations.pandoc.service import PandocIntegration
+from zeo_core.integrations.pandoc.service import PandocIntegration
 
 
 # Fixtures for monkeypatching filesystem service
 @pytest.fixture(autouse=True)
 def fs_stub(monkeypatch: MonkeyPatch) -> Generator[SimpleNamespace, None, None]:
     """
-    Stub out the quack_core.core.fs.service.standalone methods for file _ops.
+    Stub out the zeo_core.core.fs.service.standalone methods for file _ops.
     """
-    import quack_core.core.fs.service as fs_service
+    import zeo_core.core.fs.service as fs_service
 
     stub = SimpleNamespace()
     # Default get_file_info returns success, exists, size, modified
@@ -70,16 +70,16 @@ def fs_stub(monkeypatch: MonkeyPatch) -> Generator[SimpleNamespace, None, None]:
 
     # The line above alone does NOT reach every consumer: each pandoc module
     # binds its own local `fs` name at import time via
-    # `from quack_core.core.fs.service import standalone as fs`, so
+    # `from zeo_core.core.fs.service import standalone as fs`, so
     # reassigning fs_service.standalone after that import has already
     # happened never touches the already-bound local alias (mock-path-drift-fix
     # SOW-02 Finding 2). Patch the alias directly on every module that binds
     # it, so this fixture actually reaches all of them.
-    import quack_core.integrations.pandoc.config as _pandoc_config
-    import quack_core.integrations.pandoc.converter as _pandoc_converter
-    import quack_core.integrations.pandoc.operations.html_to_md as _pandoc_html_to_md
-    import quack_core.integrations.pandoc.operations.md_to_docx as _pandoc_md_to_docx
-    import quack_core.integrations.pandoc.operations.utils as _pandoc_utils
+    import zeo_core.integrations.pandoc.config as _pandoc_config
+    import zeo_core.integrations.pandoc.converter as _pandoc_converter
+    import zeo_core.integrations.pandoc.operations.html_to_md as _pandoc_html_to_md
+    import zeo_core.integrations.pandoc.operations.md_to_docx as _pandoc_md_to_docx
+    import zeo_core.integrations.pandoc.operations.utils as _pandoc_utils
 
     for _mod in (
         _pandoc_config,
@@ -125,7 +125,7 @@ def test_verify_pandoc_import_error(monkeypatch: MonkeyPatch) -> None:
         raise ImportError(f"No module named '{name}'")
 
     monkeypatch.setattr(importlib, "import_module", raise_import_error)
-    with pytest.raises(QuackIntegrationError) as excinfo:
+    with pytest.raises(ZeoIntegrationError) as excinfo:
         verify_pandoc()
     assert "pypandoc module is not installed" in str(excinfo.value)
 
@@ -156,11 +156,11 @@ def test_util_get_file_info_not_found(monkeypatch: MonkeyPatch) -> None:
     # a SimpleNamespace duck-types it here for the test double. Deliberate
     # return-type widening, scoped through an Any-typed local rather than
     # ignored -- the callee only reads .success/.exists via getattr/hasattr.
-    standalone_any: Any = quack_core.core.fs.service.standalone
+    standalone_any: Any = zeo_core.core.fs.service.standalone
     standalone_any.get_file_info = lambda p: SimpleNamespace(
         success=False, exists=False
     )
-    with pytest.raises(QuackIntegrationError):
+    with pytest.raises(ZeoIntegrationError):
         util_get_file_info("missing.md")
 
 
@@ -219,11 +219,11 @@ def test_convert_file_html_to_md_success(
     converter: DocumentConverter, monkeypatch: MonkeyPatch
 ) -> None:
     # Stub file_info. converter.py imports get_file_info at module top level
-    # from quack_core.integrations.pandoc.operations (its own package-level
+    # from zeo_core.integrations.pandoc.operations (its own package-level
     # re-export), not from operations.utils directly -- patch the alias
     # actually consumed.
     monkeypatch.setattr(
-        "quack_core.integrations.pandoc.converter.get_file_info",
+        "zeo_core.integrations.pandoc.converter.get_file_info",
         lambda path: FileInfo(
             path=path, format="html", size=100, modified=None, extra_args=[]
         ),
@@ -237,7 +237,7 @@ def test_convert_file_html_to_md_success(
     # content is passed through unchanged, so the mock must return a tuple
     # to match the real function's documented shape.
     monkeypatch.setattr(
-        "quack_core.integrations.pandoc.operations.convert_html_to_markdown",
+        "zeo_core.integrations.pandoc.operations.convert_html_to_markdown",
         lambda i, o, cfg, m: IntegrationResult.success_result(("out.md", None)),
     )
 
@@ -251,7 +251,7 @@ def test_convert_file_unsupported(converter: DocumentConverter) -> None:
     def fake_get(path: str, format_hint: str | None = None) -> FileInfo:
         return FileInfo(path=path, format="txt", size=0, modified=None, extra_args=[])
 
-    import quack_core.integrations.pandoc.operations.utils as utils_mod
+    import zeo_core.integrations.pandoc.operations.utils as utils_mod
 
     utils_mod.get_file_info = fake_get
 
@@ -328,7 +328,7 @@ def test_convert_batch_partial_failure(converter: DocumentConverter) -> None:
 
 # Tests for PandocIntegration availability
 def test_pandoc_integration_is_available(monkeypatch: MonkeyPatch) -> None:
-    import quack_core.integrations.pandoc.service as service_mod
+    import zeo_core.integrations.pandoc.service as service_mod
 
     # inject dummy module
     monkeypatch.setattr(service_mod, "verify_pandoc", lambda: "2.11")
@@ -339,13 +339,13 @@ def test_pandoc_integration_is_available(monkeypatch: MonkeyPatch) -> None:
 
 
 def test_pandoc_integration_not_available(monkeypatch: MonkeyPatch) -> None:
-    import quack_core.integrations.pandoc.service as service_mod
-    from quack_core.core.errors import QuackIntegrationError
+    import zeo_core.integrations.pandoc.service as service_mod
+    from zeo_core.core.errors import ZeoIntegrationError
 
     monkeypatch.setattr(
         service_mod,
         "verify_pandoc",
-        lambda: (_ for _ in ()).throw(QuackIntegrationError("fail", {})),
+        lambda: (_ for _ in ()).throw(ZeoIntegrationError("fail", {})),
     )
 
     integration = PandocIntegration()
@@ -364,7 +364,7 @@ def test_pandoc_config_validate_output_dir(monkeypatch: MonkeyPatch) -> None:
     # Invalidate path
     # Same deliberate return-type widening as test_util_get_file_info_not_found
     # above -- standalone.get_path_info's real return type is PathResult.
-    standalone_path_any: Any = quack_core.core.fs.service.standalone
+    standalone_path_any: Any = zeo_core.core.fs.service.standalone
     standalone_path_any.get_path_info = lambda p: SimpleNamespace(
         success=False
     )
@@ -393,6 +393,6 @@ def test_config_provider_get_default_and_env(
     assert "output_dir" in cfg_default
 
     # load from environment
-    monkeypatch.setenv("QUACK_PANDOC_OUTPUT_DIR", str(tmp_path))
+    monkeypatch.setenv("ZEO_PANDOC_OUTPUT_DIR", str(tmp_path))
     cfg_env = provider.load_from_environment()
     assert cfg_env.get("output_dir") == os.path.abspath(str(tmp_path))

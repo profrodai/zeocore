@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 import pytest
 from pydantic import ValidationError
-from quack_core.integrations.google.config import (
+from zeo_core.integrations.google.config import (
     GoogleConfigProvider,
     GoogleDriveConfig,
     GoogleMailConfig,
@@ -151,14 +151,14 @@ class TestGoogleConfigProvider:
 
         # Test validation error
         with patch(
-            "quack_core.integrations.google.config.GoogleDriveConfig"
+            "zeo_core.integrations.google.config.GoogleDriveConfig"
         ) as mock_config:
             from pydantic import ValidationError
 
             # Simple approach - create an actual validation error to use as a mock
             try:
                 # Create a validation error by triggering one
-                from quack_core.integrations.google.config import GoogleBaseConfig
+                from zeo_core.integrations.google.config import GoogleBaseConfig
 
                 GoogleBaseConfig(client_secrets_file="", credentials_file="test")
             except ValidationError as e:
@@ -170,7 +170,7 @@ class TestGoogleConfigProvider:
 
         # Test other error
         with patch(
-            "quack_core.integrations.google.config.GoogleDriveConfig"
+            "zeo_core.integrations.google.config.GoogleDriveConfig"
         ) as mock_config:
             mock_config.side_effect = Exception("Unexpected error")
 
@@ -220,7 +220,7 @@ class TestGoogleConfigProvider:
         }
 
         with patch(
-            "quack_core.core.paths.service.PathService.resolve_project_path"
+            "zeo_core.core.paths.service.PathService.resolve_project_path"
         ) as mock_resolve:
             mock_resolve.side_effect = [
                 "/project/config/secrets.json",
@@ -241,7 +241,7 @@ class TestGoogleConfigProvider:
         }
 
         with patch(
-            "quack_core.core.paths.service.PathService.resolve_project_path"
+            "zeo_core.core.paths.service.PathService.resolve_project_path"
         ) as mock_resolve:
             mock_resolve.side_effect = [
                 "/absolute/path/secrets.json",
@@ -260,7 +260,7 @@ class TestGoogleConfigProvider:
         }
 
         with patch(
-            "quack_core.core.paths.service.PathService.resolve_project_path"
+            "zeo_core.core.paths.service.PathService.resolve_project_path"
         ) as mock_resolve:
             mock_resolve.side_effect = Exception("Resolver error")
 
@@ -278,7 +278,7 @@ class TestGoogleConfigProvider:
         }
 
         # Test should pass with valid values
-        from quack_core.integrations.google.config import GoogleBaseConfig
+        from zeo_core.integrations.google.config import GoogleBaseConfig
 
         model = GoogleBaseConfig(**config)
         assert model.client_secrets_file == "/path/to/secrets.json"

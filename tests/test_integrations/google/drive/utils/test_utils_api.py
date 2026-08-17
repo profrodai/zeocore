@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from googleapiclient.errors import HttpError
-from quack_core.core.errors import QuackApiError
-from quack_core.integrations.google.drive.utils import api
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.integrations.google.drive.utils import api
 from tests.test_integrations.google.drive.mocks import (
     MockDriveRequest,
     create_mock_drive_service,
@@ -44,7 +44,7 @@ class TestDriveUtilsApi:
         mock_request = MockDriveRequest(None, http_error)
 
         # Test error handling
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             api.execute_api_request(
                 mock_request, "Failed to execute request", "test.method"
             )
@@ -64,7 +64,7 @@ class TestDriveUtilsApi:
         mock_request = MockDriveRequest(None, error)
 
         # Test error handling
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             api.execute_api_request(
                 mock_request, "Failed to execute request", "test.method"
             )

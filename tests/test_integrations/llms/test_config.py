@@ -7,8 +7,8 @@ ensuring proper validation and default values.
 
 import pytest
 from pydantic import ValidationError
-from quack_core.config.models import LoggingConfig
-from quack_core.integrations.llms.config import (
+from zeo_core.config.models import LoggingConfig
+from zeo_core.integrations.llms.config import (
     AnthropicConfig,
     LLMConfig,
     OpenAIConfig,

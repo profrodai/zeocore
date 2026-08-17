@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 import pytest
 import yaml
-from quack_core.config.loader import (
+from zeo_core.config.loader import (
     DEFAULT_CONFIG_VALUES,
     _convert_env_value,
     _deep_merge,
@@ -20,8 +20,8 @@ from quack_core.config.loader import (
     load_yaml_config,
     merge_configs,
 )
-from quack_core.config.models import QuackConfig
-from quack_core.core.errors import QuackConfigurationError
+from zeo_core.config.models import ZeoConfig
+from zeo_core.core.errors import ZeoConfigurationError
 
 
 class TestConfigLoader:
@@ -56,11 +56,11 @@ class TestConfigLoader:
         invalid_file = os.path.join(temp_dir_str, "invalid.yaml")
         with open(invalid_file, "w") as f:
             f.write("invalid: : yaml")
-        with pytest.raises(QuackConfigurationError):
+        with pytest.raises(ZeoConfigurationError):
             load_yaml_config(invalid_file)
 
         # Test loading non-existent file
-        with pytest.raises(QuackConfigurationError):
+        with pytest.raises(ZeoConfigurationError):
             load_yaml_config(os.path.join(temp_dir_str, "nonexistent.yaml"))
 
     def test_deep_merge(self) -> None:
@@ -132,11 +132,11 @@ class TestConfigLoader:
         with patch.dict(
             os.environ,
             {
-                "QUACK_GENERAL__PROJECT_NAME": "EnvProject",
-                "QUACK_LOGGING__LEVEL": "DEBUG",
-                "QUACK_PATHS__BASE_DIR": "/env/path",
-                "QUACK_DEBUG": "true",  # Invalid format (no section)
-                "OTHER_VAR": "ignored",  # Non-QUACK variable
+                "ZEO_GENERAL__PROJECT_NAME": "EnvProject",
+                "ZEO_LOGGING__LEVEL": "DEBUG",
+                "ZEO_PATHS__BASE_DIR": "/env/path",
+                "ZEO_DEBUG": "true",  # Invalid format (no section)
+                "OTHER_VAR": "ignored",  # Non-ZEO variable
             },
         ):
             config = _get_env_config()
@@ -187,12 +187,12 @@ class TestConfigLoader:
             # so neither global patch is needed - the real os.path functions work
             # correctly on the real temp file.
             with patch(
-                "quack_core.config.loader.load_yaml_config",
+                "zeo_core.config.loader.load_yaml_config",
                 return_value=config_data,
             ):
                 # Load the config
                 config = load_config(config_path)
-                assert isinstance(config, QuackConfig)
+                assert isinstance(config, ZeoConfig)
                 assert config.general.project_name == "TestProject"
                 assert config.general.debug is True
                 assert config.paths.base_dir == "/test/path"
@@ -216,15 +216,15 @@ class TestConfigLoader:
                 with patch("os.path.exists", return_value=True):
                     # Mock load_yaml_config to return our test data
                     with patch(
-                        "quack_core.config.loader.load_yaml_config",
+                        "zeo_core.config.loader.load_yaml_config",
                         return_value=base_config,
                     ):
                         # Set environment variables for override
                         with patch.dict(
                             os.environ,
                             {
-                                "QUACK_GENERAL__PROJECT_NAME": "EnvProject",
-                                "QUACK_LOGGING__LEVEL": "DEBUG",
+                                "ZEO_GENERAL__PROJECT_NAME": "EnvProject",
+                                "ZEO_LOGGING__LEVEL": "DEBUG",
                             },
                         ):
                             # Load with merge_env=True
@@ -257,7 +257,7 @@ class TestConfigLoader:
                 with patch("os.path.exists", return_value=True):
                     # Mock load_yaml_config to return our test data
                     with patch(
-                        "quack_core.config.loader.load_yaml_config",
+                        "zeo_core.config.loader.load_yaml_config",
                         return_value=partial_config,
                     ):
                         # Load with merge_defaults=True
@@ -283,17 +283,17 @@ class TestConfigLoader:
             return_value="/nonexistent/path/config.yaml",
         ):
             with patch("os.path.exists", return_value=False):
-                with pytest.raises(QuackConfigurationError):
+                with pytest.raises(ZeoConfigurationError):
                     load_config("/nonexistent/path/config.yaml")
 
         # Test auto-discovery when no path provided
-        with patch("quack_core.config.loader.find_config_file") as mock_find:
+        with patch("zeo_core.config.loader.find_config_file") as mock_find:
             # Set up mock to return a valid file
             config_file = "/discovered/config.yaml"
             mock_find.return_value = config_file
 
             # Mock the load_yaml_config function
-            with patch("quack_core.config.loader.load_yaml_config") as mock_load:
+            with patch("zeo_core.config.loader.load_yaml_config") as mock_load:
                 mock_load.return_value = {
                     "general": {"project_name": "DiscoveredProject"}
                 }
@@ -305,7 +305,7 @@ class TestConfigLoader:
                 # Verify find_config_file was called
                 mock_find.assert_called_once()
 
-    def test_merge_configs(self, sample_config: QuackConfig) -> None:
+    def test_merge_configs(self, sample_config: ZeoConfig) -> None:
         """Test merging configurations."""
         # Create an override dictionary
         override = {

@@ -1,5 +1,5 @@
 """
-Tests for quack_core.core.logging.config.configure_logger's log_file branch.
+Tests for zeo_core.core.logging.config.configure_logger's log_file branch.
 
 RULING-242: configure_logger crashed 100% of the time whenever log_file was
 set, because standalone.split_path(log_file) returns a DataResult[list[str]]
@@ -17,7 +17,7 @@ import logging
 from pathlib import Path
 
 import pytest
-from quack_core.core.logging.config import configure_logger
+from zeo_core.core.logging.config import configure_logger
 
 
 class TestConfigureLoggerFileHandler:

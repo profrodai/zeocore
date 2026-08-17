@@ -4,15 +4,15 @@ Tests for Google Drive service initialization.
 
 from unittest.mock import MagicMock, patch
 
-from quack_core.integrations.core.protocols import StorageIntegrationProtocol
-from quack_core.integrations.google.drive.service import GoogleDriveService
+from zeo_core.integrations.core.protocols import StorageIntegrationProtocol
+from zeo_core.integrations.google.drive.service import GoogleDriveService
 
 
 class TestGoogleDriveServiceInit:
     """Tests for the GoogleDriveService initialization."""
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     def test_init(self, mock_verify: MagicMock) -> None:
         """Test initializing the drive service."""
@@ -44,7 +44,7 @@ class TestGoogleDriveServiceInit:
         assert service.scopes == custom_scopes
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     def test_init_always_constructs_real_config_and_auth_providers(
         self, mock_verify: MagicMock
@@ -74,7 +74,7 @@ class TestGoogleDriveServiceInit:
         assert type(service.auth_provider).__name__ == "GoogleAuthProvider"
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_is_storage_integration(
@@ -95,9 +95,9 @@ class TestGoogleDriveServiceInit:
         assert isinstance(service, StorageIntegrationProtocol)
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
-    @patch("quack_core.integrations.google.config.GoogleConfigProvider.load_config")
+    @patch("zeo_core.integrations.google.config.GoogleConfigProvider.load_config")
     def test_initialize_config(
         self, mock_load_config: MagicMock, mock_verify: MagicMock
     ) -> None:
@@ -133,7 +133,7 @@ class TestGoogleDriveServiceInit:
         mock_load_config.return_value.success = False
 
         with patch(
-            "quack_core.integrations.google.config.GoogleConfigProvider.get_default_config"
+            "zeo_core.integrations.google.config.GoogleConfigProvider.get_default_config"
         ) as mock_default:
             mock_default.return_value = {
                 "client_secrets_file": "/default/secrets.json",
@@ -145,10 +145,10 @@ class TestGoogleDriveServiceInit:
             assert service.config["credentials_file"] == "/default/credentials.json"
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
-    @patch("quack_core.integrations.google.auth.GoogleAuthProvider.authenticate")
-    @patch("quack_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
+    @patch("zeo_core.integrations.google.auth.GoogleAuthProvider.authenticate")
+    @patch("zeo_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
     @patch("googleapiclient.discovery.build")
     def test_initialize(
         self,

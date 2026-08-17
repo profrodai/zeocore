@@ -1,5 +1,5 @@
 """
-Helper module to set up the Python path for quack-core tests.
+Helper module to set up the Python path for zeocore tests.
 This should be imported at the beginning of conftest.py.
 """
 
@@ -12,9 +12,9 @@ def setup_python_path() -> None:
     """
     Adds the necessary directories to the Python path.
     """
-    # Get the absolute path to the quack-core directory
-    quackcore_dir = Path(__file__).parent.parent.absolute()
-    src_dir = quackcore_dir / "src"
+    # Get the absolute path to the zeocore directory
+    zeocore_dir = Path(__file__).parent.parent.absolute()
+    src_dir = zeocore_dir / "src"
 
     # Add src directory to Python path
     if str(src_dir) not in sys.path:
@@ -24,21 +24,21 @@ def setup_python_path() -> None:
     print(f"Current working directory: {os.getcwd()}")
     print(f"Python path: {sys.path}")
 
-    # Verify that the quack-core module can be found
+    # Verify that the zeocore module can be found
     try:
-        import quack_core
+        import zeo_core
 
-        print(f"quack-core found at: {quack_core.__file__}")
+        print(f"zeocore found at: {zeo_core.__file__}")
     except ImportError as e:
-        print(f"Error importing quack-core: {e}")
+        print(f"Error importing zeocore: {e}")
         # Try a different approach
         try:
-            quackcore_path = os.path.join(str(src_dir), "quack-core")
-            if os.path.exists(quackcore_path):
-                sys.path.insert(0, quackcore_path)
-                print(f"Added quack-core directory to path: {quackcore_path}")
+            zeo_core_path = os.path.join(str(src_dir), "zeo_core")
+            if os.path.exists(zeo_core_path):
+                sys.path.insert(0, zeo_core_path)
+                print(f"Added zeo_core directory to path: {zeo_core_path}")
         except Exception as e:
-            print(f"Failed to add quack-core to path: {e}")
+            print(f"Failed to add zeocore to path: {e}")
 
 
 setup_python_path()

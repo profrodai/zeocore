@@ -9,14 +9,14 @@ import time
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackApiError, QuackIntegrationError
-from quack_core.integrations.llms.clients.base import LLMClient
-from quack_core.integrations.llms.fallback import (
+from zeo_core.core.errors import ZeoApiError, ZeoIntegrationError
+from zeo_core.integrations.llms.clients.base import LLMClient
+from zeo_core.integrations.llms.fallback import (
     FallbackConfig,
     FallbackLLMClient,
     ProviderStatus,
 )
-from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 from tests.test_integrations.llms.mocks.clients import MockClient
 
 
@@ -173,7 +173,7 @@ class TestFallbackLLMClient:
         mock_client = MagicMock()
 
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client",
+            "zeo_core.integrations.llms.registry.get_llm_client",
             return_value=mock_client,
         ) as mock_get_client:
             client = fallback_client._get_client_for_provider("openai")
@@ -195,10 +195,10 @@ class TestFallbackLLMClient:
     ) -> None:
         """Test error handling when getting a client."""
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client",
-            side_effect=QuackIntegrationError("Failed to initialize"),
+            "zeo_core.integrations.llms.registry.get_llm_client",
+            side_effect=ZeoIntegrationError("Failed to initialize"),
         ):
-            with pytest.raises(QuackIntegrationError) as excinfo:
+            with pytest.raises(ZeoIntegrationError) as excinfo:
                 fallback_client._get_client_for_provider("openai")
 
             assert "Failed to initialize openai client" in str(excinfo.value)
@@ -257,7 +257,7 @@ class TestFallbackLLMClient:
 
         # Create mock clients
         mock_openai = MagicMock()
-        mock_openai.chat.side_effect = QuackApiError("Rate limit exceeded", "OpenAI")
+        mock_openai.chat.side_effect = ZeoApiError("Rate limit exceeded", "OpenAI")
 
         mock_anthropic = MockClient(responses=["Anthropic response"])
 

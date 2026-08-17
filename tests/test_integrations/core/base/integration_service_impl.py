@@ -2,7 +2,7 @@
 Implementation classes for testing integration services.
 """
 
-from quack_core.integrations.core.base import BaseIntegrationService
+from zeo_core.integrations.core.base import BaseIntegrationService
 
 
 class MockIntegrationService(BaseIntegrationService):

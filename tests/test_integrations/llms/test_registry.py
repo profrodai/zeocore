@@ -9,10 +9,10 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.llms.clients.base import LLMClient
-from quack_core.integrations.llms.clients.mock import MockLLMClient
-from quack_core.integrations.llms.registry import (
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.llms.clients.base import LLMClient
+from zeo_core.integrations.llms.clients.mock import MockLLMClient
+from zeo_core.integrations.llms.registry import (
     _LLM_REGISTRY,
     get_llm_client,
     register_llm_client,
@@ -89,7 +89,7 @@ class TestLLMRegistry:
     def test_get_llm_client_openai(self) -> None:
         """Test getting the OpenAI client."""
         with patch(
-            "quack_core.integrations.llms.registry._LLM_REGISTRY"
+            "zeo_core.integrations.llms.registry._LLM_REGISTRY"
         ) as mock_registry:
             # Create a mock client class and instance
             mock_client = MagicMock()
@@ -112,7 +112,7 @@ class TestLLMRegistry:
         """Test getting the Anthropic client."""
         # Patch where the AnthropicClient is *imported* in the registry module
         with patch(
-            "quack_core.integrations.llms.registry._LLM_REGISTRY"
+            "zeo_core.integrations.llms.registry._LLM_REGISTRY"
         ) as mock_registry:
             # Create a mock client instance
             mock_instance = MagicMock()
@@ -123,7 +123,7 @@ class TestLLMRegistry:
             mock_registry.__contains__.return_value = True  # Make 'in' operator work
 
             # Import the real function
-            from quack_core.integrations.llms.registry import get_llm_client
+            from zeo_core.integrations.llms.registry import get_llm_client
 
             # Call get_llm_client with the "anthropic" provider
             client = get_llm_client(
@@ -146,11 +146,11 @@ class TestLLMRegistry:
     def test_get_llm_client_case_insensitive(self) -> None:
         """Test that provider names are case-insensitive."""
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client", wraps=get_llm_client
+            "zeo_core.integrations.llms.registry.get_llm_client", wraps=get_llm_client
         ):
             # Use a real client but patch the OpenAIClient constructor
             with patch(
-                "quack_core.integrations.llms.registry._LLM_REGISTRY"
+                "zeo_core.integrations.llms.registry._LLM_REGISTRY"
             ) as mock_registry:
                 mock_client = MagicMock()
                 mock_client_class = MagicMock(return_value=mock_client)
@@ -166,7 +166,7 @@ class TestLLMRegistry:
 
     def test_get_llm_client_unknown(self) -> None:
         """Test getting an unknown client."""
-        with pytest.raises(QuackIntegrationError) as excinfo:
+        with pytest.raises(ZeoIntegrationError) as excinfo:
             get_llm_client("unknown")
 
         assert "Unsupported LLM provider: unknown" in str(excinfo.value)
@@ -181,7 +181,7 @@ class TestLLMRegistry:
             # Remove all items from registry to trigger error
             _LLM_REGISTRY.clear()
 
-            with pytest.raises(QuackIntegrationError) as excinfo:
+            with pytest.raises(ZeoIntegrationError) as excinfo:
                 get_llm_client("openai")
 
             assert "Unsupported LLM provider" in str(excinfo.value)

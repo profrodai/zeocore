@@ -1,0 +1,38 @@
+"""
+Demo capability models for testing and examples.
+
+These demonstrate the contract patterns without requiring heavy dependencies.
+Implementation is optional and only for demonstration purposes.
+"""
+
+from pydantic import BaseModel
+
+# --- Request/Response Models ---
+
+
+class EchoRequest(BaseModel):
+    """
+    Simple echo request for demonstrating contract patterns.
+
+    Example:
+        >>> req = EchoRequest(text="Hello ZeoCore")
+    """
+
+    text: str
+    preset: str | None = None
+    override_greeting: str | None = None
+
+
+class VideoRefRequest(BaseModel):
+    """
+    Simple URL validation request.
+
+    Demonstrates skip logic (policy-based branching).
+    """
+
+    url: str
+
+
+# NOTE: Actual implementations (echo_text, validate_video_ref functions)
+# are OPTIONAL in contracts. They belong in Ring B (tools) if needed.
+# We keep them here only as minimal demos.

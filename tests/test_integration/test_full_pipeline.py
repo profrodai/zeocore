@@ -1,5 +1,5 @@
 """
-Integration tests for QuackCore components working together.
+Integration tests for ZeoCore components working together.
 """
 
 from collections.abc import Callable
@@ -7,18 +7,18 @@ from pathlib import Path
 
 import pytest
 import yaml
-from quack_core.config.loader import load_config
-from quack_core.config.models import QuackConfig
-from quack_core.core.errors import QuackError
-from quack_core.core.fs.service import FileSystemService
-from quack_core.core.paths import PathResolver
-from quack_core.core.paths import service as paths
-from quack_core.modules.protocols import (
+from zeo_core.config.loader import load_config
+from zeo_core.config.models import ZeoConfig
+from zeo_core.core.errors import ZeoError
+from zeo_core.core.fs.service import FileSystemService
+from zeo_core.core.paths import PathResolver
+from zeo_core.core.paths import service as paths
+from zeo_core.modules.protocols import (
     CommandPluginProtocol,
     ProviderPluginProtocol,
-    QuackPluginMetadata,
+    ZeoPluginMetadata,
 )
-from quack_core.modules.registry import PluginRegistry
+from zeo_core.modules.registry import PluginRegistry
 
 
 # Test modules to register in the registry
@@ -37,8 +37,8 @@ class SampleFilePlugin(CommandPluginProtocol):
     def name(self) -> str:
         return "file_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -66,7 +66,7 @@ class SampleFilePlugin(CommandPluginProtocol):
         """Read a file and return its content."""
         result = self.fs.read_text(path)
         if not result.success:
-            raise QuackError(f"Failed to read file: {result.error}")
+            raise ZeoError(f"Failed to read file: {result.error}")
         assert result.content is not None
         return result.content
 
@@ -91,8 +91,8 @@ class SamplePathPlugin(CommandPluginProtocol):
     def name(self) -> str:
         return "path_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -124,7 +124,7 @@ class SamplePathPlugin(CommandPluginProtocol):
         # note, which established this same fact).
         result = paths.PathService().get_project_root(start_dir)
         if not result.success:
-            raise QuackError(f"Failed to find project root: {result.error}")
+            raise ZeoError(f"Failed to find project root: {result.error}")
         assert result.path is not None
         return Path(result.path)
 
@@ -132,7 +132,7 @@ class SamplePathPlugin(CommandPluginProtocol):
         """Resolve a path relative to the project root."""
         result = paths.PathService().resolve_project_path(path, project_root)
         if not result.success:
-            raise QuackError(f"Failed to resolve path: {result.error}")
+            raise ZeoError(f"Failed to resolve path: {result.error}")
         assert result.path is not None
         return Path(result.path)
 
@@ -140,7 +140,7 @@ class SamplePathPlugin(CommandPluginProtocol):
 class SampleConfigProvider(ProviderPluginProtocol):
     """A test plugin providing configuration services."""
 
-    def __init__(self, config: QuackConfig) -> None:
+    def __init__(self, config: ZeoConfig) -> None:
         """Initialize with a configuration."""
         self.config = config
 
@@ -152,8 +152,8 @@ class SampleConfigProvider(ProviderPluginProtocol):
     def name(self) -> str:
         return "config_provider"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -167,19 +167,19 @@ class SampleConfigProvider(ProviderPluginProtocol):
     def get_service(self, name: str) -> object | None:
         return self.get_services().get(name)
 
-    def get_config(self) -> QuackConfig:
+    def get_config(self) -> ZeoConfig:
         """Get the current configuration."""
         return self.config
 
     def get_value(self, path: str, default: object | None = None) -> object | None:
         """Get a configuration value by path."""
-        from quack_core.config.utils import get_config_value
+        from zeo_core.config.utils import get_config_value
 
         return get_config_value(self.config, path, default)
 
 
 class TestIntegration:
-    """Integration tests for QuackCore components."""
+    """Integration tests for ZeoCore components."""
 
     def test_config_to_filesystem_pipeline(self, temp_dir: Path) -> None:
         """Test integrating configuration with filesystem _ops."""
@@ -243,7 +243,7 @@ class TestIntegration:
         test_file.write_text("Test content")
 
         # Initialize core components
-        config = QuackConfig(
+        config = ZeoConfig(
             general={"project_name": "TestProject"}, paths={"base_dir": str(temp_dir)}
         )
         fs_service = FileSystemService(base_dir=temp_dir)
@@ -278,7 +278,7 @@ class TestIntegration:
         assert callable(get_config_service)
 
         retrieved_config = get_config_service()
-        assert isinstance(retrieved_config, QuackConfig)
+        assert isinstance(retrieved_config, ZeoConfig)
         assert retrieved_config.general.project_name == "TestProject"
 
         # Test extension plugin functionality (if it were implemented)
@@ -299,18 +299,18 @@ class TestIntegration:
         registry.register(file_plugin)
 
         # Test error handling when reading non-existent file
-        with pytest.raises(QuackError):
+        with pytest.raises(ZeoError):
             registry.execute_command("read_file", "nonexistent.txt")
 
         # Test error handling for non-existent command
-        with pytest.raises(QuackError):
+        with pytest.raises(ZeoError):
             registry.execute_command("nonexistent_command")
 
         # Test path resolution error handling - use SamplePathPlugin
         path_plugin = SamplePathPlugin(PathResolver())
-        with pytest.raises(QuackError):
+        with pytest.raises(ZeoError):
             path_plugin.find_project_root("/nonexistent/path")
 
         # Test config loading error handling
-        with pytest.raises(QuackError):
+        with pytest.raises(ZeoError):
             load_config("/nonexistent/config.yaml")

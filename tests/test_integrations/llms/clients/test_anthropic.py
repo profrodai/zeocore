@@ -9,9 +9,9 @@ import os
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackApiError, QuackIntegrationError
-from quack_core.integrations.llms.clients.anthropic import AnthropicClient
-from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from zeo_core.core.errors import ZeoApiError, ZeoIntegrationError
+from zeo_core.integrations.llms.clients.anthropic import AnthropicClient
+from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 from tests.test_integrations.llms.mocks.anthropic import (
     MockAnthropicClient,
     MockAnthropicErrorResponse,
@@ -109,7 +109,7 @@ class TestAnthropicClient:
 
         # Test import error by removing anthropic from sys.modules
         with patch.dict("sys.modules", {"anthropic": None}):
-            with pytest.raises(QuackIntegrationError) as excinfo:
+            with pytest.raises(ZeoIntegrationError) as excinfo:
                 client = AnthropicClient(api_key="test-key")
                 client._get_client()
             assert "Anthropic package not installed" in str(excinfo.value)
@@ -127,7 +127,7 @@ class TestAnthropicClient:
         with patch.dict(os.environ, {}, clear=True):
             client = AnthropicClient()
 
-            with pytest.raises(QuackIntegrationError) as excinfo:
+            with pytest.raises(ZeoIntegrationError) as excinfo:
                 client._get_api_key_from_env()
 
             assert "Anthropic API key not provided" in str(excinfo.value)
@@ -168,7 +168,7 @@ class TestAnthropicClient:
         assert anthropic_message == {"role": "user", "content": ""}
 
     def test_convert_error(self) -> None:
-        """Test converting Anthropic errors to QuackApiError."""
+        """Test converting Anthropic errors to ZeoApiError."""
         client = AnthropicClient()
 
         # Use MockAnthropicErrorResponse to create test errors
@@ -177,7 +177,7 @@ class TestAnthropicClient:
         ).to_exception()
 
         api_error = client._convert_error(rate_limit_error)
-        assert isinstance(api_error, QuackApiError)
+        assert isinstance(api_error, ZeoApiError)
         assert "Anthropic rate limit exceeded" in str(api_error)
         assert api_error.service == "Anthropic"
         assert api_error.api_method == "messages.create"
@@ -281,14 +281,14 @@ class TestAnthropicClient:
             mock_client.messages.create.side_effect = error_response
             mock_get_client.return_value = mock_client
 
-            with pytest.raises(QuackApiError) as excinfo:
+            with pytest.raises(ZeoApiError) as excinfo:
                 anthropic_client._chat_with_provider(messages, options)
 
             assert "Anthropic API error" in str(excinfo.value)
 
         # Test with import error
         with patch.dict("sys.modules", {"anthropic": None}):
-            with pytest.raises(QuackIntegrationError) as import_excinfo:
+            with pytest.raises(ZeoIntegrationError) as import_excinfo:
                 anthropic_client._chat_with_provider(messages, options)
 
             assert "Failed to import Anthropic package" in str(import_excinfo.value)
@@ -395,7 +395,7 @@ class TestAnthropicClient:
 
         mock_client.messages.stream.side_effect = error
 
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             client._handle_streaming(
                 mock_client,
                 "claude-3-opus-20240229",

@@ -9,10 +9,10 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
-from quack_core.adapters.http.app import create_app
-from quack_core.adapters.http.config import HttpAdapterConfig
-from quack_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
-from quack_core.core.registry import OperationRegistry
+from zeo_core.adapters.http.app import create_app
+from zeo_core.adapters.http.config import HttpAdapterConfig
+from zeo_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
+from zeo_core.core.registry import OperationRegistry
 
 
 @pytest.fixture
@@ -23,53 +23,53 @@ def job_store() -> Generator[InMemoryJobStore, None, None]:
     store.clear()
 
 
-class _QuackMediaRequest(BaseModel):
-    """Request model for the test-only quack-media.* operations registered
+class _ZeoMediaRequest(BaseModel):
+    """Request model for the test-only zeo-media.* operations registered
     below. Accepts arbitrary extra params so the various route tests that
     post different param shapes (idempotency, callback_url, slice/
     transcribe/frame-extract params) all validate -- these stand in for
-    the real quack-media operations the tests exercise via the generic
-    /jobs and /ops surfaces (the concrete quack-media.* ROUTES were
+    the real zeo-media operations the tests exercise via the generic
+    /jobs and /ops surfaces (the concrete zeo-media.* ROUTES were
     retired in favor of that generic interface, per operations.py's own
-    docstring; there was never a real production quack-media operation
-    implementation to fall back on -- grep across quack-core/src finds
+    docstring; there was never a real production zeo-media operation
+    implementation to fall back on -- grep across zeocore/src finds
     zero references to transcribe_audio/extract_frames outside tests)."""
 
     model_config = {"extra": "allow"}
 
 
-def _make_quackmedia_operation(
+def _make_zeomedia_operation(
     op_name: str,
-) -> Callable[[_QuackMediaRequest], dict[str, Any]]:
+) -> Callable[[_ZeoMediaRequest], dict[str, Any]]:
     """Build a test-only stand-in operation body for `op_name`: reports
     success, the operation name, and echoes back the submitted params
     without doing any real file I/O, matching what test_job_lifecycle /
-    test_full_job_workflow / test_routes_quackmedia.py assert."""
+    test_full_job_workflow / test_routes_zeomedia.py assert."""
 
-    def _op(req: _QuackMediaRequest) -> dict[str, Any]:
+    def _op(req: _ZeoMediaRequest) -> dict[str, Any]:
         return {"success": True, "operation": op_name, "params": req.model_dump()}
 
     return _op
 
 
-_QUACKMEDIA_OPERATIONS = (
-    "quack-media.slice_video",
-    "quack-media.transcribe_audio",
-    "quack-media.extract_frames",
+_ZEOMEDIA_OPERATIONS = (
+    "zeo-media.slice_video",
+    "zeo-media.transcribe_audio",
+    "zeo-media.extract_frames",
 )
 
 
 @pytest.fixture
 def test_registry() -> OperationRegistry:
     """Create a test operation registry, pre-populated with the
-    quack-media.* operations the /jobs and /ops route tests submit
+    zeo-media.* operations the /jobs and /ops route tests submit
     against."""
     registry = OperationRegistry()
-    for op_name in _QUACKMEDIA_OPERATIONS:
+    for op_name in _ZEOMEDIA_OPERATIONS:
         registry.register(
             name=op_name,
-            callable_=_make_quackmedia_operation(op_name),
-            request_model=_QuackMediaRequest,
+            callable_=_make_zeomedia_operation(op_name),
+            request_model=_ZeoMediaRequest,
         )
     return registry
 

@@ -11,7 +11,7 @@ class TestHardenedAPIExports:
 
     def test_public_exports_available(self) -> None:
         """Verify all public exports are available from main module."""
-        from quack_core.core.fs import (
+        from zeo_core.core.fs import (
             BoolResult,
             DataResult,
             DirectoryInfoResult,
@@ -46,7 +46,7 @@ class TestHardenedAPIExports:
 
     def test_internal_modules_not_exported(self) -> None:
         """Verify _internal modules are not accessible via public API."""
-        import quack_core.core.fs as fs
+        import zeo_core.core.fs as fs
 
         # These should not be accessible
         with pytest.raises(
@@ -60,9 +60,9 @@ class TestHardenedAPIExports:
             _ = fs._ops
 
     def test_cannot_import_internal_directly_from_package(self) -> None:
-        """`from quack_core.core.fs import _internal` cannot be blocked.
+        """`from zeo_core.core.fs import _internal` cannot be blocked.
 
-        `_internal` is a real subpackage of `quack_core.core.fs` (it must be,
+        `_internal` is a real subpackage of `zeo_core.core.fs` (it must be,
         for `_ops/*.py` to import from it). CPython resolves
         `from package import realsubmodule` directly against `sys.modules`
         for any name that names an actual submodule -- that resolution path
@@ -75,26 +75,26 @@ class TestHardenedAPIExports:
 
         What IS achievable and IS enforced (see
         `test_internal_modules_not_exported`): plain attribute access,
-        `import quack_core.core.fs as fs; fs._internal`, correctly raises
+        `import zeo_core.core.fs as fs; fs._internal`, correctly raises
         `AttributeError` via `__getattr__` once the module scrubs the
         auto-bound submodule reference from its own namespace.
         """
-        from quack_core.core.fs import _internal  # noqa
+        from zeo_core.core.fs import _internal  # noqa
 
         assert _internal is not None  # the import always succeeds; documented above
 
     def test_cannot_import_ops_directly_from_package(self) -> None:
-        """`from quack_core.core.fs import _ops` cannot be blocked -- see
+        """`from zeo_core.core.fs import _ops` cannot be blocked -- see
         `test_cannot_import_internal_directly_from_package`'s docstring for the
         full explanation (identical cause: `_ops` is also a real subpackage).
         """
-        from quack_core.core.fs import _ops  # noqa
+        from zeo_core.core.fs import _ops  # noqa
 
         assert _ops is not None  # the import always succeeds; documented above
 
     def test_service_module_exports_only_public_api(self) -> None:
         """Verify service module only exports service, get_service, create_service."""
-        from quack_core.core.fs.service import (
+        from zeo_core.core.fs.service import (
             FileSystemService,
             create_service,
             get_service,
@@ -123,17 +123,17 @@ class TestHardenedAPIExports:
         exception CPython actually raises.
         """
         with pytest.raises(ImportError, match="DirectoryOperationsMixin"):
-            from quack_core.core.fs.service import DirectoryOperationsMixin  # noqa
+            from zeo_core.core.fs.service import DirectoryOperationsMixin  # noqa
 
         with pytest.raises(ImportError, match="FileOperationsMixin"):
-            from quack_core.core.fs.service import FileOperationsMixin  # noqa
+            from zeo_core.core.fs.service import FileOperationsMixin  # noqa
 
         with pytest.raises(ImportError, match="_BaseFileSystemService"):
-            from quack_core.core.fs.service import _BaseFileSystemService  # noqa
+            from zeo_core.core.fs.service import _BaseFileSystemService  # noqa
 
     def test_all_list_matches_actual_exports(self) -> None:
         """Verify __all__ matches actual exports."""
-        import quack_core.core.fs as fs
+        import zeo_core.core.fs as fs
 
         # Get __all__
         all_exports = fs.__all__
@@ -153,7 +153,7 @@ class TestHardenedAPIExports:
 
     def test_service_all_list_matches_exports(self) -> None:
         """Verify service.__all__ matches actual exports."""
-        import quack_core.core.fs.service as service
+        import zeo_core.core.fs.service as service
 
         all_exports = service.__all__
 
@@ -173,7 +173,7 @@ class TestPublicAPIUsability:
 
     def test_can_create_service_and_use_operations(self) -> None:
         """Verify service creation and basic operations work."""
-        from quack_core.core.fs import FileSystemService, create_service
+        from zeo_core.core.fs import FileSystemService, create_service
 
         service = create_service()
         assert isinstance(service, FileSystemService)
@@ -186,7 +186,7 @@ class TestPublicAPIUsability:
 
     def test_can_use_singleton_service(self) -> None:
         """Verify singleton accessor works."""
-        from quack_core.core.fs import get_service
+        from zeo_core.core.fs import get_service
 
         service1 = get_service()
         service2 = get_service()
@@ -196,7 +196,7 @@ class TestPublicAPIUsability:
 
     def test_can_use_result_types_for_type_hints(self) -> None:
         """Verify result types can be imported for type hints."""
-        from quack_core.core.fs import (
+        from zeo_core.core.fs import (
             OperationResult,
             ReadResult,
             WriteResult,
@@ -204,7 +204,7 @@ class TestPublicAPIUsability:
 
         # Should be usable in type hints
         def example_function() -> ReadResult[str]:
-            from quack_core.core.fs import get_service
+            from zeo_core.core.fs import get_service
 
             return get_service().read_text("test.txt")
 
@@ -219,7 +219,7 @@ class TestDoctrineEnforcement:
 
     def test_no_pathlib_in_public_exports(self) -> None:
         """Verify Path is not directly exported."""
-        import quack_core.core.fs as fs
+        import zeo_core.core.fs as fs
 
         # Path should not be in public API
         assert "Path" not in fs.__all__
@@ -229,7 +229,7 @@ class TestDoctrineEnforcement:
 
     def test_no_normalize_module_in_public_exports(self) -> None:
         """Verify normalize module is not exported."""
-        import quack_core.core.fs as fs
+        import zeo_core.core.fs as fs
 
         # Normalization is internal
         assert "normalize" not in fs.__all__
@@ -239,7 +239,7 @@ class TestDoctrineEnforcement:
 
     def test_service_is_only_entry_point(self) -> None:
         """Verify FileSystemService is the only way to do operations."""
-        import quack_core.core.fs as fs
+        import zeo_core.core.fs as fs
 
         # No standalone operation functions in main module
         assert "read_text" not in fs.__all__

@@ -1,5 +1,5 @@
 """
-Tests for the QuackTool mixins.
+Tests for the ZeoTool mixins.
 
-This package contains tests for individual mixin classes in the QuackTool tools.
+This package contains tests for individual mixin classes in the ZeoTool tools.
 """

@@ -3,10 +3,10 @@ Regression tests for a real production bug (RULING-236..243 pattern family,
 ninth instance; fixed per RULING-245): `download.resolve_download_path` and
 `upload.resolve_file_details` used to call `paths_service.
 resolve_project_path(...)` directly on the imported MODULE (`from
-quack_core.core.paths import service as paths_service`) instead of on an
+zeo_core.core.paths import service as paths_service`) instead of on an
 instantiated `PathService()`.
 
-`quack_core.core.paths.service` (the module) has no `resolve_project_path`
+`zeo_core.core.paths.service` (the module) has no `resolve_project_path`
 attribute -- only `PathService` (the class) does, as an instance method.
 Every existing test for these two functions mocks
 `...operations.download.paths_service` / `...operations.upload.paths_service`
@@ -28,7 +28,7 @@ is present and working, not that the bug reproduces.
 
 from pathlib import Path
 
-from quack_core.integrations.google.drive.operations import download, upload
+from zeo_core.integrations.google.drive.operations import download, upload
 
 
 class TestResolveProjectPathModuleVsInstanceFixed:
@@ -41,10 +41,10 @@ class TestResolveProjectPathModuleVsInstanceFixed:
 
         This is the direct, non-inferred evidence -- not a mock's opinion.
         """
-        from quack_core.core.paths import service as paths_service
+        from zeo_core.core.paths import service as paths_service
 
         assert not hasattr(paths_service, "resolve_project_path"), (
-            "quack_core.core.paths.service gained a module-level "
+            "zeo_core.core.paths.service gained a module-level "
             "resolve_project_path -- re-verify the fix's premise (it "
             "should still be instantiating PathService explicitly, not "
             "relying on this)"
@@ -79,11 +79,11 @@ class TestResolveProjectPathModuleVsInstanceFixed:
         self,
     ) -> None:
         """upload.resolve_file_details(...) now correctly reaches the
-        file-existence check (raising QuackIntegrationError for a genuinely
+        file-existence check (raising ZeoIntegrationError for a genuinely
         missing file) instead of crashing on the module-vs-instance
         AttributeError before ever getting there.
         """
-        from quack_core.core.errors import QuackIntegrationError
+        from zeo_core.core.errors import ZeoIntegrationError
 
         try:
             path_obj, filename, folder_id, mime_type = upload.resolve_file_details(
@@ -92,16 +92,16 @@ class TestResolveProjectPathModuleVsInstanceFixed:
                 parent_folder_id=None,
             )
             raise AssertionError(
-                "expected QuackIntegrationError for a nonexistent file, got "
+                "expected ZeoIntegrationError for a nonexistent file, got "
                 f"a successful result instead: {path_obj!r}"
             )
-        except QuackIntegrationError as e:
+        except ZeoIntegrationError as e:
             # The correct failure mode now: resolve_project_path succeeded
             # (no AttributeError), and the function reached its own
             # explicit file-not-found check.
             assert "File not found" in str(e), (
-                f"expected the file-not-found QuackIntegrationError, got a "
-                f"differently-shaped QuackIntegrationError instead: {e}"
+                f"expected the file-not-found ZeoIntegrationError, got a "
+                f"differently-shaped ZeoIntegrationError instead: {e}"
             )
 
     def test_resolve_file_details_succeeds_for_a_real_existing_file(

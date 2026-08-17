@@ -1,8 +1,8 @@
 """
-Tests for quack_core.prompt.plugin (0% covered before this file).
+Tests for zeo_core.prompt.plugin (0% covered before this file).
 
 PromptPlugin is a thin adapter over PromptService. Per RULING-235, the
-service's own render/strategy logic is real quack_core code with its own
+service's own render/strategy logic is real zeo_core code with its own
 dedicated test coverage elsewhere in this suite (test_service.py) -- this
 file's job is only to prove the plugin forwards correctly and exposes the
 underlying service, so PromptService itself is mocked here (scope
@@ -11,19 +11,19 @@ discipline, same pattern as test_config_plugin.py / test_paths_plugin.py).
 
 from unittest.mock import MagicMock, patch
 
-from quack_core.prompt.api.public.results import PromptRenderResult
-from quack_core.prompt.plugin import PromptPlugin, create_plugin
-from quack_core.prompt.service import PromptService
+from zeo_core.prompt.api.public.results import PromptRenderResult
+from zeo_core.prompt.plugin import PromptPlugin, create_plugin
+from zeo_core.prompt.service import PromptService
 
 
 class TestPromptPluginConstruction:
     def test_name_is_prompt(self) -> None:
-        with patch("quack_core.prompt.plugin.PromptService"):
+        with patch("zeo_core.prompt.plugin.PromptService"):
             plugin = PromptPlugin()
         assert plugin.name == "prompt"
 
     def test_constructs_prompt_service_with_load_defaults_true(self) -> None:
-        with patch("quack_core.prompt.plugin.PromptService") as mock_service_cls:
+        with patch("zeo_core.prompt.plugin.PromptService") as mock_service_cls:
             PromptPlugin()
         mock_service_cls.assert_called_once_with(load_defaults=True)
 
@@ -31,7 +31,7 @@ class TestPromptPluginConstruction:
 class TestPromptPluginRender:
     def test_render_forwards_raw_prompt_and_kwargs_to_service(self) -> None:
         fake_result = MagicMock(spec=PromptRenderResult)
-        with patch("quack_core.prompt.plugin.PromptService") as mock_service_cls:
+        with patch("zeo_core.prompt.plugin.PromptService") as mock_service_cls:
             mock_service = mock_service_cls.return_value
             mock_service.render.return_value = fake_result
             plugin = PromptPlugin()
@@ -45,7 +45,7 @@ class TestPromptPluginRender:
 
     def test_render_with_no_extra_kwargs(self) -> None:
         fake_result = MagicMock(spec=PromptRenderResult)
-        with patch("quack_core.prompt.plugin.PromptService") as mock_service_cls:
+        with patch("zeo_core.prompt.plugin.PromptService") as mock_service_cls:
             mock_service = mock_service_cls.return_value
             mock_service.render.return_value = fake_result
             plugin = PromptPlugin()
@@ -57,7 +57,7 @@ class TestPromptPluginRender:
 
 class TestPromptPluginGetService:
     def test_get_service_returns_the_underlying_service_instance(self) -> None:
-        with patch("quack_core.prompt.plugin.PromptService") as mock_service_cls:
+        with patch("zeo_core.prompt.plugin.PromptService") as mock_service_cls:
             mock_service = mock_service_cls.return_value
             plugin = PromptPlugin()
 

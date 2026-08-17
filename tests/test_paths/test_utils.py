@@ -8,11 +8,11 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from quack_core.core.errors import QuackFileNotFoundError
-from quack_core.core.fs import DataResult, PathResult
-from quack_core.core.fs.protocols import FsPathLike
-from quack_core.core.fs.service import standalone as fs_standalone
-from quack_core.core.paths import service as paths
+from zeo_core.core.errors import ZeoFileNotFoundError
+from zeo_core.core.fs import DataResult, PathResult
+from zeo_core.core.fs.protocols import FsPathLike
+from zeo_core.core.fs.service import standalone as fs_standalone
+from zeo_core.core.paths import service as paths
 
 
 # Patch necessary fs methods
@@ -163,7 +163,7 @@ class TestPathUtils:
 
         # Test resolving without explicit project root
         with patch(
-            "quack_core.core.paths._internal.utils._find_project_root",
+            "zeo_core.core.paths._internal.utils._find_project_root",
             return_value=str(mock_project_structure),
         ):
             resolved_result = service.resolve_relative_to_project("src/file.txt")
@@ -173,12 +173,12 @@ class TestPathUtils:
             )
 
         # Test when project root cannot be found: the current implementation does
-        # not silently fall back to cwd - _find_project_root's QuackFileNotFoundError
+        # not silently fall back to cwd - _find_project_root's ZeoFileNotFoundError
         # propagates and the service returns a failed PathResult (operations never
         # raise past the service boundary; they report via the Result contract).
         with patch(
-            "quack_core.core.paths._internal.utils._find_project_root",
-            side_effect=QuackFileNotFoundError(""),
+            "zeo_core.core.paths._internal.utils._find_project_root",
+            side_effect=ZeoFileNotFoundError(""),
         ):
             resolved_result = service.resolve_relative_to_project("file.txt")
             assert not resolved_result.success
@@ -188,7 +188,7 @@ class TestPathUtils:
         """Test normalizing paths."""
         # Mock the normalize_path method to avoid filesystem access
         with patch(
-            "quack_core.core.fs.service.standalone.normalize_path"
+            "zeo_core.core.fs.service.standalone.normalize_path"
         ) as mock_normalize:
             # Set up the mock to return a Path object with an absolute path
             mock_normalize.return_value = Path("/absolute/path/file.txt")
@@ -200,7 +200,7 @@ class TestPathUtils:
 
         # Test with empty path
         with patch(
-            "quack_core.core.fs.service.standalone.normalize_path"
+            "zeo_core.core.fs.service.standalone.normalize_path"
         ) as mock_normalize:
             mock_normalize.return_value = Path("/current/working/directory")
 
@@ -210,7 +210,7 @@ class TestPathUtils:
 
         # Test with absolute path
         with patch(
-            "quack_core.core.fs.service.standalone.normalize_path"
+            "zeo_core.core.fs.service.standalone.normalize_path"
         ) as mock_normalize:
             mock_normalize.return_value = Path("/some/absolute/path")
 
@@ -305,7 +305,7 @@ class TestPathUtils:
         # than the repo worktree CWD, which was the latent bug here previously),
         # the CWD must actually be mock_project_structure for the call.
         with patch(
-            "quack_core.core.paths._internal.utils._find_project_root",
+            "zeo_core.core.paths._internal.utils._find_project_root",
             return_value=str(mock_project_structure),
         ):
             monkeypatch.chdir(mock_project_structure)
@@ -317,8 +317,8 @@ class TestPathUtils:
 
         # Test inferring when src directory cannot be found
         with patch(
-            "quack_core.core.paths._internal.utils._find_nearest_directory",
-            side_effect=QuackFileNotFoundError(""),
+            "zeo_core.core.paths._internal.utils._find_nearest_directory",
+            side_effect=ZeoFileNotFoundError(""),
         ):
             # Should use file's directory as fallback
             module_name_result = service.infer_module_from_path(
@@ -330,12 +330,12 @@ class TestPathUtils:
 
         # Test inferring when file is not in project: like
         # resolve_relative_to_project above, _find_project_root's
-        # QuackFileNotFoundError is not caught inside _infer_module_from_path - it
+        # ZeoFileNotFoundError is not caught inside _infer_module_from_path - it
         # propagates and the service reports a failed StringResult rather than
         # silently falling back to a bare filename.
         with patch(
-            "quack_core.core.paths._internal.utils._find_project_root",
-            side_effect=QuackFileNotFoundError(""),
+            "zeo_core.core.paths._internal.utils._find_project_root",
+            side_effect=ZeoFileNotFoundError(""),
         ):
             module_name_result = service.infer_module_from_path(
                 "/outside/project/file.py"

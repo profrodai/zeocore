@@ -9,8 +9,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from quack_core.integrations.core import IntegrationResult
-from quack_core.integrations.github import (
+from zeo_core.integrations.core import IntegrationResult
+from zeo_core.integrations.github import (
     GitHubAuthProvider,
     GitHubClient,
     GitHubConfigProvider,

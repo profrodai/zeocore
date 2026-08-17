@@ -6,8 +6,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from quack_core.core.errors import QuackConfigurationError
-from quack_core.integrations.core.base import BaseConfigProvider
+from zeo_core.core.errors import ZeoConfigurationError
+from zeo_core.integrations.core.base import BaseConfigProvider
 
 from .config_provider_impl import (
     MockConfigProvider,
@@ -49,11 +49,11 @@ class TestBaseConfigProvider:
         provider = MockConfigProvider()
 
         # Test successful load
-        with patch("quack_core.core.fs.service.standalone.get_file_info") as mock_info:
+        with patch("zeo_core.core.fs.service.standalone.get_file_info") as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
 
-            with patch("quack_core.core.fs.service.standalone.read_yaml") as mock_read:
+            with patch("zeo_core.core.fs.service.standalone.read_yaml") as mock_read:
                 mock_read.return_value.success = True
                 mock_read.return_value.data = {
                     "test_section": {"test_key": "test_value"}
@@ -65,31 +65,31 @@ class TestBaseConfigProvider:
                 assert result.config_path == str(config_file)
 
         # Test file not found
-        with patch("quack_core.core.fs.service.standalone.get_file_info") as mock_info:
+        with patch("zeo_core.core.fs.service.standalone.get_file_info") as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = False
 
-            with pytest.raises(QuackConfigurationError):
+            with pytest.raises(ZeoConfigurationError):
                 provider.load_config(str(temp_dir / "nonexistent.yaml"))
 
         # Test invalid YAML
-        with patch("quack_core.core.fs.service.standalone.get_file_info") as mock_info:
+        with patch("zeo_core.core.fs.service.standalone.get_file_info") as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
 
-            with patch("quack_core.core.fs.service.standalone.read_yaml") as mock_read:
+            with patch("zeo_core.core.fs.service.standalone.read_yaml") as mock_read:
                 mock_read.return_value.success = False
                 mock_read.return_value.error = "Invalid YAML"
 
-                with pytest.raises(QuackConfigurationError):
+                with pytest.raises(ZeoConfigurationError):
                     provider.load_config(str(config_file))
 
         # Test invalid configuration
-        with patch("quack_core.core.fs.service.standalone.get_file_info") as mock_info:
+        with patch("zeo_core.core.fs.service.standalone.get_file_info") as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
 
-            with patch("quack_core.core.fs.service.standalone.read_yaml") as mock_read:
+            with patch("zeo_core.core.fs.service.standalone.read_yaml") as mock_read:
                 mock_read.return_value.success = True
                 mock_read.return_value.data = {"wrong_section": {}}
 
@@ -103,7 +103,7 @@ class TestBaseConfigProvider:
 
     def test_load_config_raises_when_yaml_data_is_none(self, temp_dir: Path) -> None:
         """A successful read_yaml() that yields no data (e.g. an empty YAML
-        file) must raise QuackConfigurationError rather than pass None into
+        file) must raise ZeoConfigurationError rather than pass None into
         _extract_config, which would otherwise crash on `.get()`.
         """
         config_file = temp_dir / "empty_config.yaml"
@@ -111,15 +111,15 @@ class TestBaseConfigProvider:
 
         provider = MockConfigProvider()
 
-        with patch("quack_core.core.fs.service.standalone.get_file_info") as mock_info:
+        with patch("zeo_core.core.fs.service.standalone.get_file_info") as mock_info:
             mock_info.return_value.success = True
             mock_info.return_value.exists = True
 
-            with patch("quack_core.core.fs.service.standalone.read_yaml") as mock_read:
+            with patch("zeo_core.core.fs.service.standalone.read_yaml") as mock_read:
                 mock_read.return_value.success = True
                 mock_read.return_value.data = None
 
-                with pytest.raises(QuackConfigurationError, match="no data"):
+                with pytest.raises(ZeoConfigurationError, match="no data"):
                     provider.load_config(str(config_file))
 
     def test_extract_config_raises_when_section_is_not_a_mapping(self) -> None:
@@ -134,7 +134,7 @@ class TestBaseConfigProvider:
         default method a fixture subclass otherwise shadows.
         """
         provider = MockConfigProvider()
-        with pytest.raises(QuackConfigurationError, match="must be a mapping"):
+        with pytest.raises(ZeoConfigurationError, match="must be a mapping"):
             BaseConfigProvider._extract_config(
                 provider, {"test_config": ["not", "a", "mapping"]}
             )

@@ -8,7 +8,7 @@ that can be used across different test modules.
 import base64
 from typing import Any, TypeVar, cast
 
-from quack_core.integrations.google.mail.protocols import (
+from zeo_core.integrations.google.mail.protocols import (
     GmailAttachmentsResource,
     GmailMessagesResource,
     GmailRequest,

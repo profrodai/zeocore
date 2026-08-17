@@ -6,20 +6,20 @@ from collections.abc import Callable
 from typing import Any
 
 import pytest
-from quack_core.modules.protocols import (
+from zeo_core.modules.protocols import (
     CommandPluginProtocol,
     ConfigurablePluginProtocol,
     ExtensionPluginProtocol,
     ProviderPluginProtocol,
-    QuackPluginMetadata,
-    QuackPluginProtocol,
+    ZeoPluginMetadata,
+    ZeoPluginProtocol,
     WorkflowPluginProtocol,
 )
 
 
 # Test implementations of each protocol
-class SamplePlugin(QuackPluginProtocol):
-    """Test implementation of QuackPluginProtocol."""
+class SamplePlugin(ZeoPluginProtocol):
+    """Test implementation of ZeoPluginProtocol."""
 
     @property
     def plugin_id(self) -> str:
@@ -29,8 +29,8 @@ class SamplePlugin(QuackPluginProtocol):
     def name(self) -> str:
         return "test_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -49,8 +49,8 @@ class SampleCommandPlugin(CommandPluginProtocol):
     def name(self) -> str:
         return "test_command_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -83,8 +83,8 @@ class SampleWorkflowPlugin(WorkflowPluginProtocol):
     def name(self) -> str:
         return "test_workflow_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -117,8 +117,8 @@ class SampleExtensionPlugin(ExtensionPluginProtocol):
     def name(self) -> str:
         return "test_extension_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -143,8 +143,8 @@ class SampleProviderPlugin(ProviderPluginProtocol):
     def name(self) -> str:
         return "test_provider_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -173,8 +173,8 @@ class SampleConfigurablePlugin(ConfigurablePluginProtocol):
     def name(self) -> str:
         return "test_configurable_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -226,8 +226,8 @@ class SampleMixedPlugin(CommandPluginProtocol, WorkflowPluginProtocol):
     def name(self) -> str:
         return "test_mixed_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -267,11 +267,11 @@ class SampleProtocols:
     """Tests for plugin protocols."""
 
     def test_basic_plugin_protocol(self) -> None:
-        """Test the base QuackPluginProtocol."""
+        """Test the base ZeoPluginProtocol."""
         plugin = SamplePlugin()
 
         # Test protocol conformance
-        assert isinstance(plugin, QuackPluginProtocol)
+        assert isinstance(plugin, ZeoPluginProtocol)
 
         # Test properties
         assert plugin.name == "test_plugin"
@@ -281,7 +281,7 @@ class SampleProtocols:
         plugin = SampleCommandPlugin()
 
         # Test protocol conformance
-        assert isinstance(plugin, QuackPluginProtocol)
+        assert isinstance(plugin, ZeoPluginProtocol)
         assert isinstance(plugin, CommandPluginProtocol)
 
         # Test methods
@@ -300,7 +300,7 @@ class SampleProtocols:
         plugin = SampleWorkflowPlugin()
 
         # Test protocol conformance
-        assert isinstance(plugin, QuackPluginProtocol)
+        assert isinstance(plugin, ZeoPluginProtocol)
         assert isinstance(plugin, WorkflowPluginProtocol)
 
         # Test methods
@@ -319,7 +319,7 @@ class SampleProtocols:
         plugin = SampleExtensionPlugin()
 
         # Test protocol conformance
-        assert isinstance(plugin, QuackPluginProtocol)
+        assert isinstance(plugin, ZeoPluginProtocol)
         assert isinstance(plugin, ExtensionPluginProtocol)
 
         # Test methods
@@ -340,7 +340,7 @@ class SampleProtocols:
         plugin = SampleProviderPlugin()
 
         # Test protocol conformance
-        assert isinstance(plugin, QuackPluginProtocol)
+        assert isinstance(plugin, ZeoPluginProtocol)
         assert isinstance(plugin, ProviderPluginProtocol)
 
         # Test methods
@@ -360,7 +360,7 @@ class SampleProtocols:
         plugin = SampleConfigurablePlugin()
 
         # Test protocol conformance
-        assert isinstance(plugin, QuackPluginProtocol)
+        assert isinstance(plugin, ZeoPluginProtocol)
         assert isinstance(plugin, ConfigurablePluginProtocol)
 
         # Test methods
@@ -389,7 +389,7 @@ class SampleProtocols:
         plugin = SampleMixedPlugin()
 
         # Test protocol conformance
-        assert isinstance(plugin, QuackPluginProtocol)
+        assert isinstance(plugin, ZeoPluginProtocol)
         assert isinstance(plugin, CommandPluginProtocol)
         assert isinstance(plugin, WorkflowPluginProtocol)
 
@@ -412,7 +412,7 @@ class SampleProtocols:
         non_conforming = NonConforming()
 
         # Should not be recognized as implementing the protocols
-        assert not isinstance(non_conforming, QuackPluginProtocol)
+        assert not isinstance(non_conforming, ZeoPluginProtocol)
         assert not isinstance(non_conforming, CommandPluginProtocol)
 
         # Test partially conforming class
@@ -423,8 +423,8 @@ class SampleProtocols:
 
         partially_conforming = PartiallyConforming()
 
-        # Should be recognized as implementing QuackPluginProtocol
-        assert isinstance(partially_conforming, QuackPluginProtocol)
+        # Should be recognized as implementing ZeoPluginProtocol
+        assert isinstance(partially_conforming, ZeoPluginProtocol)
 
         # But not the more specific protocols
         assert not isinstance(partially_conforming, CommandPluginProtocol)

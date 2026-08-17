@@ -4,8 +4,8 @@ Tests for Google Drive _ops permissions module.
 
 from unittest.mock import patch
 
-from quack_core.core.errors import QuackApiError
-from quack_core.integrations.google.drive.operations import permissions
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.integrations.google.drive.operations import permissions
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
     MockDrivePermissionsResource,
@@ -27,7 +27,7 @@ class TestDriveOperationsPermissions:
         # The key is to patch the module's function, which is what's being
         # called in the implementation
         with patch(
-            "quack_core.integrations.google.drive.utils.api.execute_api_request"
+            "zeo_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {"id": "perm123"}
 
@@ -75,7 +75,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request
         with patch(
-            "quack_core.integrations.google.drive.utils.api.execute_api_request"
+            "zeo_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {"id": "perm123"}
 
@@ -112,16 +112,16 @@ class TestDriveOperationsPermissions:
         """Test error handling when setting file permissions."""
         # Create error-raising mock drive service
         mock_drive_service = create_error_drive_service(
-            permission_error=QuackApiError(
+            permission_error=ZeoApiError(
                 "API error", service="Google Drive", api_method="permissions.create"
             )
         )
 
         # Mock execute_api_request to raise an error
         with patch(
-            "quack_core.integrations.google.drive.utils.api.execute_api_request"
+            "zeo_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
-            mock_execute.side_effect = QuackApiError(
+            mock_execute.side_effect = ZeoApiError(
                 "API error", service="Google Drive", api_method="permissions.create"
             )
 
@@ -146,7 +146,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request
         with patch(
-            "quack_core.integrations.google.drive.utils.api.execute_api_request"
+            "zeo_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {
                 "webViewLink": "https://drive.google.com/file/d/file123/view",
@@ -189,7 +189,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request
         with patch(
-            "quack_core.integrations.google.drive.utils.api.execute_api_request"
+            "zeo_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {
                 "webContentLink": "https://drive.google.com/uc?id=file123"
@@ -210,7 +210,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request
         with patch(
-            "quack_core.integrations.google.drive.utils.api.execute_api_request"
+            "zeo_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {}  # No links in response
 
@@ -224,16 +224,16 @@ class TestDriveOperationsPermissions:
         """Test error handling when getting a sharing link."""
         # Create error-raising mock drive service
         mock_drive_service = create_error_drive_service(
-            get_error=QuackApiError(
+            get_error=ZeoApiError(
                 "API error", service="Google Drive", api_method="files.get"
             )
         )
 
         # Mock execute_api_request to raise an error
         with patch(
-            "quack_core.integrations.google.drive.utils.api.execute_api_request"
+            "zeo_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
-            mock_execute.side_effect = QuackApiError(
+            mock_execute.side_effect = ZeoApiError(
                 "API error", service="Google Drive", api_method="files.get"
             )
 
@@ -261,7 +261,7 @@ class TestDriveOperationsPermissions:
 
         # Mock execute_api_request
         with patch(
-            "quack_core.integrations.google.drive.utils.api.execute_api_request"
+            "zeo_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
             mock_execute.return_value = {"id": "custom_perm_123"}
 

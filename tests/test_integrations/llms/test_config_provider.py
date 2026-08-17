@@ -10,8 +10,8 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
-from quack_core.integrations.core.results import ConfigResult
-from quack_core.integrations.llms.config import LLMConfigProvider
+from zeo_core.integrations.core.results import ConfigResult
+from zeo_core.integrations.llms.config import LLMConfigProvider
 
 
 class TestLLMConfigProvider:
@@ -82,7 +82,7 @@ class TestLLMConfigProvider:
 
         # Test with exception during validation
         with patch(
-            "quack_core.integrations.llms.config.LLMConfig",
+            "zeo_core.integrations.llms.config.LLMConfig",
             side_effect=Exception("Validation error"),
         ):
             assert config_provider.validate_config({}) is False

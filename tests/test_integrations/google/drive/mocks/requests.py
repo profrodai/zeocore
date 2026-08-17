@@ -5,7 +5,7 @@ Mock request objects for Google Drive testing.
 from typing import Any, TypeVar, cast
 from unittest.mock import Mock
 
-from quack_core.integrations.google.drive.protocols import DriveRequest
+from zeo_core.integrations.google.drive.protocols import DriveRequest
 
 R = TypeVar("R")  # Generic type for return values
 

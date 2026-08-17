@@ -4,16 +4,16 @@ from typing import cast
 from unittest.mock import MagicMock, create_autospec, patch
 
 import pytest
-from quack_core.integrations.core import (
+from zeo_core.integrations.core import (
     AuthProviderProtocol,
     AuthResult,
     ConfigProviderProtocol,
     IntegrationResult,
 )
-from quack_core.integrations.github.auth import GitHubAuthProvider
-from quack_core.integrations.github.config import GitHubConfigProvider
-from quack_core.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
-from quack_core.integrations.github.service import GitHubIntegration
+from zeo_core.integrations.github.auth import GitHubAuthProvider
+from zeo_core.integrations.github.config import GitHubConfigProvider
+from zeo_core.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
+from zeo_core.integrations.github.service import GitHubIntegration
 
 
 @pytest.fixture
@@ -95,7 +95,7 @@ class TestGitHubIntegration:
         }
 
         with patch(
-            "quack_core.integrations.github.service.GitHubClient"
+            "zeo_core.integrations.github.service.GitHubClient"
         ) as mock_client_class:
             result = github_service.initialize()
 
@@ -117,7 +117,7 @@ class TestGitHubIntegration:
     ) -> None:
         """Test initialization when base initialization fails."""
         with patch(
-            "quack_core.integrations.core.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.error_result(
                 error="Base initialization failed",
@@ -134,7 +134,7 @@ class TestGitHubIntegration:
     def test_initialize_no_config(self, github_service: GitHubIntegration) -> None:
         """Test initialization with no configuration."""
         with patch(
-            "quack_core.integrations.core.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
             github_service.config = None
@@ -153,7 +153,7 @@ class TestGitHubIntegration:
     ) -> None:
         """Test initialization using auth provider credentials."""
         with patch(
-            "quack_core.integrations.core.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 
@@ -167,7 +167,7 @@ class TestGitHubIntegration:
             }
 
             with patch(
-                "quack_core.integrations.github.service.GitHubClient"
+                "zeo_core.integrations.github.service.GitHubClient"
             ) as mock_client_class:
                 result = github_service.initialize()
 
@@ -185,7 +185,7 @@ class TestGitHubIntegration:
     ) -> None:
         """Test initialization by authenticating."""
         with patch(
-            "quack_core.integrations.core.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 
@@ -202,7 +202,7 @@ class TestGitHubIntegration:
             )
 
             with patch(
-                "quack_core.integrations.github.service.GitHubClient"
+                "zeo_core.integrations.github.service.GitHubClient"
             ) as mock_client_class:
                 result = github_service.initialize()
 
@@ -221,7 +221,7 @@ class TestGitHubIntegration:
     ) -> None:
         """Test initialization with authentication failure."""
         with patch(
-            "quack_core.integrations.core.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 
@@ -250,7 +250,7 @@ class TestGitHubIntegration:
     ) -> None:
         """Test initialization with no token and no auth provider."""
         with patch(
-            "quack_core.integrations.core.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 
@@ -270,12 +270,12 @@ class TestGitHubIntegration:
     def test_initialize_exception(self, github_service: GitHubIntegration) -> None:
         """Test initialization with unexpected exception."""
         with patch(
-            "quack_core.integrations.core.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 
             with patch(
-                "quack_core.integrations.github.service.GitHubClient"
+                "zeo_core.integrations.github.service.GitHubClient"
             ) as mock_client_class:
                 mock_client_class.side_effect = Exception("Unexpected error")
 
@@ -854,7 +854,7 @@ class TestGitHubIntegration:
     @staticmethod
     def setup_mock_auth_provider(auth_success: bool = True) -> MagicMock:
         """Set up a mock auth provider for tests."""
-        from quack_core.integrations.github.auth import GitHubAuthProvider
+        from zeo_core.integrations.github.auth import GitHubAuthProvider
 
         mock_auth = MagicMock(spec=GitHubAuthProvider)
         auth_result = MagicMock()
@@ -870,7 +870,7 @@ class TestGitHubIntegration:
     @staticmethod
     def setup_mock_config_provider(with_token: bool = True) -> MagicMock:
         """Set up a mock config provider for tests."""
-        from quack_core.integrations.github.config import GitHubConfigProvider
+        from zeo_core.integrations.github.config import GitHubConfigProvider
 
         mock_config = MagicMock(spec=GitHubConfigProvider)
         config_result = MagicMock()
@@ -905,7 +905,7 @@ class TestGitHubIntegration:
         service.config_provider = cast(ConfigProviderProtocol, mock_config)
 
         with patch(
-            "quack_core.integrations.core.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.BaseIntegrationService.initialize"
         ) as mock_base_init:
             mock_base_init.return_value = IntegrationResult.success_result()
 

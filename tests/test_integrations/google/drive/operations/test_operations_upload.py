@@ -6,11 +6,11 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackApiError, QuackIntegrationError
-from quack_core.core.fs import DataResult
-from quack_core.core.paths.api.public.results import PathResult
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.google.drive.operations import upload
+from zeo_core.core.errors import ZeoApiError, ZeoIntegrationError
+from zeo_core.core.fs import DataResult
+from zeo_core.core.paths.api.public.results import PathResult
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.google.drive.operations import upload
 from tests.test_integrations.google.drive.mocks import (
     MockDriveFilesResource,
     MockDriveService,
@@ -32,7 +32,7 @@ class TestDriveOperationsUpload:
 
         # Patch the build function where it's imported in upload.py
         with patch(
-            "quack_core.integrations.google.drive.operations.upload.build"
+            "zeo_core.integrations.google.drive.operations.upload.build"
         ) as mock_build:
             # Configure the mock to return our mock service
             mock_build.return_value = mock_drive_service
@@ -53,13 +53,13 @@ class TestDriveOperationsUpload:
 
         # Patch the build function where it's imported in upload.py
         with patch(
-            "quack_core.integrations.google.drive.operations.upload.build"
+            "zeo_core.integrations.google.drive.operations.upload.build"
         ) as mock_build:
             # Configure the mock to raise an exception
             mock_build.side_effect = Exception("API error")
 
             # Test error handling
-            with pytest.raises(QuackApiError) as excinfo:
+            with pytest.raises(ZeoApiError) as excinfo:
                 upload.initialize_drive_service(mock_credentials)
 
             assert "Failed to initialize Google Drive API" in str(excinfo.value)
@@ -74,7 +74,7 @@ class TestDriveOperationsUpload:
 
         # Mock resolver
         with patch(
-            "quack_core.integrations.google.drive.operations.upload.paths_service"
+            "zeo_core.integrations.google.drive.operations.upload.paths_service"
         ) as mock_paths_service:
             # resolve_project_path is a PathService INSTANCE method
             # (RULING-245) -- configure the PathService() instance mock,
@@ -87,7 +87,7 @@ class TestDriveOperationsUpload:
 
             # Mock file info
             with patch(
-                "quack_core.core.fs.service.standalone.get_file_info"
+                "zeo_core.core.fs.service.standalone.get_file_info"
             ) as mock_info:
                 mock_info.return_value.success = True
                 mock_info.return_value.exists = True
@@ -96,7 +96,7 @@ class TestDriveOperationsUpload:
                 # in real life (RULING-247's fix unwraps via .success/
                 # .data), not a raw str -- mock the real shape.
                 with patch(
-                    "quack_core.core.fs.service.standalone.get_mime_type"
+                    "zeo_core.core.fs.service.standalone.get_mime_type"
                 ) as mock_mime:
                     mock_mime.return_value = DataResult(ok=True, data="text/plain")
 
@@ -129,7 +129,7 @@ class TestDriveOperationsUpload:
 
         # Mock resolver
         with patch(
-            "quack_core.integrations.google.drive.operations.upload.paths_service"
+            "zeo_core.integrations.google.drive.operations.upload.paths_service"
         ) as mock_paths_service:
             # resolve_project_path is a PathService INSTANCE method
             # (RULING-245) -- configure the PathService() instance mock,
@@ -142,13 +142,13 @@ class TestDriveOperationsUpload:
 
             # Mock file info to show file doesn't exist
             with patch(
-                "quack_core.core.fs.service.standalone.get_file_info"
+                "zeo_core.core.fs.service.standalone.get_file_info"
             ) as mock_info:
                 mock_info.return_value.success = True
                 mock_info.return_value.exists = False
 
                 # Test error handling
-                with pytest.raises(QuackIntegrationError) as excinfo:
+                with pytest.raises(ZeoIntegrationError) as excinfo:
                     upload.resolve_file_details(str(test_file), None, None)
 
                 assert "File not found" in str(excinfo.value)
@@ -180,20 +180,20 @@ class TestDriveOperationsUpload:
 
             # Mock standalone _ops
             with patch(
-                "quack_core.integrations.google.drive.operations.upload.standalone"
+                "zeo_core.integrations.google.drive.operations.upload.standalone"
             ) as mock_fs:
                 mock_fs.read_binary.return_value.success = True
                 mock_fs.read_binary.return_value.content = b"test content"
 
                 # Mock the MediaInMemoryUpload
                 with patch(
-                    "quack_core.integrations.google.drive.operations.upload.MediaInMemoryUpload"
+                    "zeo_core.integrations.google.drive.operations.upload.MediaInMemoryUpload"
                 ) as mock_media:
                     mock_media.return_value = MagicMock()
 
                     # Mock the execute_api_request to avoid API calls
                     with patch(
-                        "quack_core.integrations.google.drive.operations.upload.execute_api_request"
+                        "zeo_core.integrations.google.drive.operations.upload.execute_api_request"
                     ) as mock_execute:
                         # Set up our mock to return expected data
                         mock_execute.return_value = {
@@ -203,7 +203,7 @@ class TestDriveOperationsUpload:
 
                         # Mock permissions to avoid that call
                         with patch(
-                            "quack_core.integrations.google.drive.operations.permissions.set_file_permissions"
+                            "zeo_core.integrations.google.drive.operations.permissions.set_file_permissions"
                         ) as mock_perm:
                             mock_perm.return_value = IntegrationResult(success=True)
 
@@ -246,7 +246,7 @@ class TestDriveOperationsUpload:
 
             # Mock read_binary to fail using the correct import path
             with patch(
-                "quack_core.integrations.google.drive.operations.upload.standalone"
+                "zeo_core.integrations.google.drive.operations.upload.standalone"
             ) as mock_fs:
                 mock_fs.read_binary.return_value.success = False
                 mock_fs.read_binary.return_value.error = "Read error"
@@ -278,7 +278,7 @@ class TestDriveOperationsUpload:
 
             # Mock read_binary
             with patch(
-                "quack_core.integrations.google.drive.operations.upload.standalone"
+                "zeo_core.integrations.google.drive.operations.upload.standalone"
             ) as mock_fs:
                 mock_fs.read_binary.return_value.success = True
                 mock_fs.read_binary.return_value.content = b"test content"
@@ -288,14 +288,14 @@ class TestDriveOperationsUpload:
 
                 # Patch MediaInMemoryUpload with our mock
                 with patch(
-                    "quack_core.integrations.google.drive.operations.upload.MediaInMemoryUpload",
+                    "zeo_core.integrations.google.drive.operations.upload.MediaInMemoryUpload",
                     return_value=media_mock,
                 ):
                     # Mock execute_api_request to raise an error
                     with patch(
-                        "quack_core.integrations.google.drive.operations.upload.execute_api_request"
+                        "zeo_core.integrations.google.drive.operations.upload.execute_api_request"
                     ) as mock_execute:
-                        mock_execute.side_effect = QuackApiError(
+                        mock_execute.side_effect = ZeoApiError(
                             "API error",
                             service="Google Drive",
                             api_method="files.create",
@@ -337,7 +337,7 @@ class TestDriveOperationsUpload:
 
             # Mock read_binary
             with patch(
-                "quack_core.integrations.google.drive.operations.upload.standalone"
+                "zeo_core.integrations.google.drive.operations.upload.standalone"
             ) as mock_fs:
                 mock_fs.read_binary.return_value.success = True
                 mock_fs.read_binary.return_value.content = b"PDF content"
@@ -347,12 +347,12 @@ class TestDriveOperationsUpload:
 
                 # Patch MediaInMemoryUpload with our mock
                 with patch(
-                    "quack_core.integrations.google.drive.operations.upload.MediaInMemoryUpload",
+                    "zeo_core.integrations.google.drive.operations.upload.MediaInMemoryUpload",
                     return_value=media_mock,
                 ):
                     # Mock execute_api_request
                     with patch(
-                        "quack_core.integrations.google.drive.operations.upload.execute_api_request"
+                        "zeo_core.integrations.google.drive.operations.upload.execute_api_request"
                     ) as mock_execute:
                         mock_execute.return_value = {
                             "id": "doc123",
@@ -364,7 +364,7 @@ class TestDriveOperationsUpload:
 
                         # Mock permissions but disable public sharing
                         with patch(
-                            "quack_core.integrations.google.drive.operations.permissions.set_file_permissions"
+                            "zeo_core.integrations.google.drive.operations.permissions.set_file_permissions"
                         ):
                             # Test upload with specific metadata
                             result = upload.upload_file(

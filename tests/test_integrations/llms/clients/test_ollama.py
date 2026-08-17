@@ -9,10 +9,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.llms.clients.ollama import OllamaClient
-from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.llms.clients.ollama import OllamaClient
+from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 
 
 class TestOllamaClient:
@@ -65,7 +65,7 @@ class TestOllamaClient:
 
         # Test with requests unavailable
         with patch.dict("sys.modules", {"requests": None}):
-            with pytest.raises(QuackIntegrationError) as excinfo:
+            with pytest.raises(ZeoIntegrationError) as excinfo:
                 ollama_client._check_requests_installed()
             assert "Failed to import required package" in str(excinfo.value)
 

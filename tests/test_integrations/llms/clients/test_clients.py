@@ -9,7 +9,7 @@ import os
 from unittest.mock import patch
 
 import pytest
-from quack_core.integrations.llms.clients import OpenAIClient
+from zeo_core.integrations.llms.clients import OpenAIClient
 
 
 class TestClientImports:
@@ -17,7 +17,7 @@ class TestClientImports:
 
     def test_client_imports(self) -> None:
         """Test that all clients are properly exported."""
-        from quack_core.integrations.llms.clients import (
+        from zeo_core.integrations.llms.clients import (
             AnthropicClient,
             LLMClient,
             MockLLMClient,

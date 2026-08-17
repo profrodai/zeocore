@@ -1,12 +1,12 @@
-# QuackCore Documentation
+# ZeoCore Documentation
 
 ## Introduction
 
-**QuackCore** is the foundational library powering the **QuackVerse** ecosystem of tools. It provides shared infrastructure for path resolution, configuration management, plugin architecture, integration protocols, and CLI utilities. This modular core enables seamless interoperability between tools and consistent behavior across the QuackVerse.
+**ZeoCore** is the foundational library powering the **ZeoVerse** ecosystem of tools. It provides shared infrastructure for path resolution, configuration management, plugin architecture, integration protocols, and CLI utilities. This modular core enables seamless interoperability between tools and consistent behavior across the ZeoVerse.
 
-QuackCore is designed for developers building internal tools, CLI agents, automation pipelines, and integrations within the QuackVerse ecosystem. It also powers educational content used in the **AI Product Engineer** learning platform.
+ZeoCore is designed for developers building internal tools, CLI agents, automation pipelines, and integrations within the ZeoVerse ecosystem. It also powers educational content used in the **AI Product Engineer** learning platform.
 
-This documentation helps you get started with QuackCore and use its features in your own applications or when building new tools in the ecosystem.
+This documentation helps you get started with ZeoCore and use its features in your own applications or when building new tools in the ecosystem.
 
 ---
 
@@ -20,58 +20,58 @@ This documentation helps you get started with QuackCore and use its features in 
 ### Basic Installation
 
 ```bash
-pip install quack-core
+pip install zeocore
 ```
 
 ### Optional Dependencies
 
-QuackCore provides optional dependency groups tailored to specific integrations:
+ZeoCore provides optional dependency groups tailored to specific integrations:
 
 ```bash
 # For Google Drive integration
-pip install "quackcore[drive]"
+pip install "zeocore[drive]"
 
 # For Gmail integration
-pip install "quackcore[gmail]"
+pip install "zeocore[gmail]"
 
 # For Notion integration
-pip install "quackcore[notion]"
+pip install "zeocore[notion]"
 
 # For Pandoc document conversion
-pip install "quackcore[pandoc]"
+pip install "zeocore[pandoc]"
 
 # For development (includes testing tools)
-pip install "quackcore[dev]"
+pip install "zeocore[dev]"
 
 # For all Google-related functionality
-pip install "quackcore[google]"
+pip install "zeocore[google]"
 ```
 
 ---
 
 ## Core Modules Overview
 
-QuackCore is organized into distinct modules that provide clear functionality:
+ZeoCore is organized into distinct modules that provide clear functionality:
 
-### `quack_core.config`
+### `zeo_core.config`
 Robust configuration system supporting YAML, environment variables, and runtime overrides.
 
-### `quack_core.core.paths`
+### `zeo_core.core.paths`
 Standardized path resolution and project structure detection across environments.
 
-### `quack_core.core.fs`
+### `zeo_core.core.fs`
 Safe and consistent filesystem operations with error handling and structured results.
 
-### `quack_core.modules`
+### `zeo_core.modules`
 Extensible plugin discovery and registration framework to build modular CLI agents and tools.
 
-### `quack_core.integrations`
+### `zeo_core.integrations`
 Interfaces to third-party services (Google Drive, Gmail, Notion, Pandoc) through a clean adapter layer.
 
-### `quack_core.core.errors`
+### `zeo_core.core.errors`
 Structured error handling system with typed exceptions for improved developer experience.
 
-### `quack_core.cli`
+### `zeo_core.cli`
 Shared CLI environment initialization and I/O utilities for user-friendly tooling.
 
 ---
@@ -81,7 +81,7 @@ Shared CLI environment initialization and I/O utilities for user-friendly toolin
 ### Basic Configuration Setup
 
 ```python
-from quack_core.config import load_config, QuackConfig
+from zeo_core.config import load_config, ZeoConfig
 
 # Load configuration from default locations
 config = load_config()
@@ -97,7 +97,7 @@ custom_config = load_config("path/to/custom_config.yaml")
 ### Path Resolution
 
 ```python
-from quack_core.core.paths import resolver
+from zeo_core.core.paths import resolver
 
 # Find the project root directory
 project_root = resolver._get_project_root()
@@ -113,7 +113,7 @@ source_dir = context._get_source_dir()
 ### File Operations
 
 ```python
-from quack_core.core.fs import service as fs
+from zeo_core.core.fs import service as fs
 
 # Read text from a file
 result = fs._read_text("path/to/file.txt")
@@ -123,7 +123,7 @@ else:
     print(f"Error: {result.error}")
 
 # Write text to a file
-fs._write_text("path/to/output.txt", "Hello, QuackCore!")
+fs._write_text("path/to/output.txt", "Hello, ZeoCore!")
 
 # Create a directory
 fs._create_directory("path/to/new/directory")
@@ -137,7 +137,7 @@ if yaml_result.success:
 ### Using Plugins
 
 ```python
-from quack_core.modules import registry
+from zeo_core.modules import registry
 
 # Get a list of all registered modules
 plugin_names = registry.list_plugins()
@@ -152,7 +152,7 @@ if pandoc_plugin:
 ### Working with Google Drive Integration
 
 ```python
-from quack_core.integrations.google.drive import GoogleDriveService
+from zeo_core.integrations.google.drive import GoogleDriveService
 
 # Initialize service
 drive_service = GoogleDriveService(
@@ -177,7 +177,7 @@ if list_result.success:
 ### Working with Gmail Integration
 
 ```python
-from quack_core.integrations.google.mail import GoogleMailService
+from zeo_core.integrations.google.mail import GoogleMailService
 
 # Initialize service
 mail_service = GoogleMailService(
@@ -203,7 +203,7 @@ if emails_result.success:
 ### Error Handling
 
 ```python
-from quack_core.core.errors import QuackError, QuackFileNotFoundError, wrap_io_errors
+from zeo_core.core.errors import ZeoError, ZeoFileNotFoundError, wrap_io_errors
 
 
 # Use decorator for automatic error handling
@@ -216,16 +216,16 @@ def read_important_file(path):
 # Handle specific errors
 try:
   content = read_important_file("config.txt")
-except QuackFileNotFoundError as e:
+except ZeoFileNotFoundError as e:
   print(f"File not found: {e.path}")
-except QuackError as e:
+except ZeoError as e:
   print(f"Error: {e}")
 ```
 
 ### CLI Application Setup
 
 ```python
-from quack_core.cli import init_cli_env, print_info, print_error, ask
+from zeo_core.cli import init_cli_env, print_info, print_error, ask
 
 # Initialize CLI environment
 context = init_cli_env(
@@ -257,11 +257,11 @@ except Exception as e:
 ### Creating a Custom Plugin
 
 ```python
-from quack_core.modules.protocols import QuackPluginProtocol
-from quack_core.integrations.core.results import IntegrationResult
+from zeo_core.modules.protocols import ZeoPluginProtocol
+from zeo_core.integrations.core.results import IntegrationResult
 
 
-class MyCustomPlugin(QuackPluginProtocol):
+class MyCustomPlugin(ZeoPluginProtocol):
   @property
   def name(self) -> str:
     return "MyCustomPlugin"
@@ -281,7 +281,7 @@ class MyCustomPlugin(QuackPluginProtocol):
 
 
 # Register the plugin
-from quack_core.modules import registry
+from zeo_core.modules import registry
 
 registry.register(MyCustomPlugin())
 ```
@@ -289,7 +289,7 @@ registry.register(MyCustomPlugin())
 ### Working with Pandoc for Document Conversion
 
 ```python
-from quack_core.integrations.pandoc import PandocIntegration
+from zeo_core.integrations.pandoc import PandocIntegration
 from pathlib import Path
 
 # Initialize the service
@@ -327,7 +327,7 @@ if batch_result.success:
 
 ```python
 from pydantic import BaseModel, Field
-from quack_core.config.models import QuackConfig
+from zeo_core.config.models import ZeoConfig
 
 # Define custom configuration model
 class MyAppConfig(BaseModel):
@@ -335,22 +335,22 @@ class MyAppConfig(BaseModel):
     endpoint: str = Field("https://api.example.com", description="API endpoint")
     timeout: int = Field(30, description="Request timeout in seconds")
 
-# Add to QuackConfig
-config = QuackConfig()
+# Add to ZeoConfig
+config = ZeoConfig()
 config.custom["my_app"] = MyAppConfig(api_key="your-api-key").model_dump()
 
 # Save configuration
-from quack_core.config.loader import merge_configs
+from zeo_core.config.loader import merge_configs
 merged_config = merge_configs(config, {})
 ```
 
 ## Configuration File Format
 
-QuackCore uses YAML for configuration files. Here's an example of a basic configuration file:
+ZeoCore uses YAML for configuration files. Here's an example of a basic configuration file:
 
 ```yaml
 general:
-  project_name: "MyQuackProject"
+  project_name: "MyZeoProject"
   environment: "development"
   debug: true
   verbose: true
@@ -395,18 +395,18 @@ custom:
 
 ## Environment Variables
 
-QuackCore supports configuration through environment variables with the prefix `QUACK_`:
+ZeoCore supports configuration through environment variables with the prefix `ZEO_`:
 
 ```bash
 # Set configuration values
-export QUACK_ENV=production
-export QUACK_GENERAL__DEBUG=false
-export QUACK_LOGGING__LEVEL=WARNING
-export QUACK_PATHS__BASE_DIR=/opt/quackverse
+export ZEO_ENV=production
+export ZEO_GENERAL__DEBUG=false
+export ZEO_LOGGING__LEVEL=WARNING
+export ZEO_PATHS__BASE_DIR=/opt/zeocore
 
 # Set Google integration configuration
-export QUACK_GOOGLE__CLIENT_SECRETS_FILE=/etc/quack/client_secrets.json
-export QUACK_GOOGLE__CREDENTIALS_FILE=/etc/quack/credentials.json
+export ZEO_GOOGLE__CLIENT_SECRETS_FILE=/etc/zeo/client_secrets.json
+export ZEO_GOOGLE__CREDENTIALS_FILE=/etc/zeo/credentials.json
 ```
 
 ## Integration Authentication
@@ -418,10 +418,10 @@ export QUACK_GOOGLE__CREDENTIALS_FILE=/etc/quack/credentials.json
 3. Enable the APIs you need (Drive API, Gmail API, etc.)
 4. Create OAuth 2.0 credentials
 5. Download the client secrets JSON file
-6. Use the client secrets file path in your QuackCore configuration
+6. Use the client secrets file path in your ZeoCore configuration
 
 ```python
-from quack_core.integrations.google.auth import GoogleAuthProvider
+from zeo_core.integrations.google.auth import GoogleAuthProvider
 
 auth_provider = GoogleAuthProvider(
     client_secrets_file="path/to/client_secrets.json",
@@ -439,31 +439,31 @@ else:
 
 ---
 
-## QuackVerse Ecosystem Compatibility
+## ZeoVerse Ecosystem Compatibility
 
-QuackCore is the backbone of the **QuackVerse**—a suite of open and internal tools that power:
+ZeoCore is the backbone of the **ZeoVerse**—a suite of open and internal tools that power:
 - Tutorial scaffolding
 - Generative AI pipelines for content
 - Educational workflows within the **AI Product Engineer** platform
 
-Tools built with QuackCore gain immediate compatibility with:
+Tools built with ZeoCore gain immediate compatibility with:
 - AIPE’s content pipeline
-- The QuackTool CLI standard
+- The ZeoTool CLI standard
 - Plugin chaining and execution environments
 
 To create your own tool:
-- Follow QuackCore’s plugin or integration protocol
-- Use `quack_core.config` and `quack_core.core.fs` for standard behavior
-- Register your tool with `quack_core.modules.registry`
+- Follow ZeoCore’s plugin or integration protocol
+- Use `zeo_core.config` and `zeo_core.core.fs` for standard behavior
+- Register your tool with `zeo_core.modules.registry`
 
-This ensures your tool can be consumed by orchestrators like **QuackBuddy** and exposed via upcoming standards such as **MCP**.
+This ensures your tool can be consumed by orchestrators like **ZeoBuddy** and exposed via upcoming standards such as **MCP**.
 
 ---
 
 
 ### Project Structure
 
-Follow this recommended project structure when using QuackCore:
+Follow this recommended project structure when using ZeoCore:
 
 ```
 my_project/
@@ -490,7 +490,7 @@ my_project/
 
 ### Error Handling
 
-- Use the provided QuackError subclasses for specific error types
+- Use the provided ZeoError subclasses for specific error types
 - Add context to errors to make debugging easier
 - Use the `wrap_io_errors` decorator for functions that perform IO operations
 - Log errors with appropriate log levels
@@ -508,14 +508,14 @@ my_project/
 - Provide clear error messages
 - Use the standard result objects for consistent return values
 
-## Extending QuackCore
+## Extending ZeoCore
 
-### Creating a New Tool in the QuackVerse Ecosystem
+### Creating a New Tool in the ZeoVerse Ecosystem
 
-When creating a new tool that integrates with the QuackVerse ecosystem:
+When creating a new tool that integrates with the ZeoVerse ecosystem:
 
-1. Use QuackCore as a dependency
-2. Follow the architectural patterns established in QuackCore
+1. Use ZeoCore as a dependency
+2. Follow the architectural patterns established in ZeoCore
 3. Implement a plugin interface if your tool provides functionality that others might use
 4. Use the standard error handling mechanisms
 5. Leverage the configuration system for settings
@@ -523,25 +523,25 @@ When creating a new tool that integrates with the QuackVerse ecosystem:
 Example of a new tool setup:
 
 ```python
-# my_quack_tool/main.py
-from quack_core.config import load_config
-from quack_core.core.paths import resolver
-from quack_core.core.fs import service as fs
-from quack_core.cli import init_cli_env
+# my_zeo_tool/main.py
+from zeo_core.config import load_config
+from zeo_core.core.paths import resolver
+from zeo_core.core.fs import service as fs
+from zeo_core.cli import init_cli_env
 
 
 def main():
   # Initialize the CLI environment
-  context = init_cli_env(app_name="my_quack_tool")
+  context = init_cli_env(app_name="my_zeo_tool")
 
   # Get configuration
   config = context.config
 
   # Set up logging
   logger = context.logger
-  logger.info("Starting My Quack Tool")
+  logger.info("Starting My Zeo Tool")
 
-  # Use QuackCore functionality
+  # Use ZeoCore functionality
   project_root = resolver._get_project_root()
   output_dir = resolver._resolve_project_path("output")
 
@@ -562,25 +562,25 @@ if __name__ == "__main__":
 #### Configuration Not Found
 
 ```
-QuackConfigurationError: Configuration file not found in default locations.
+ZeoConfigurationError: Configuration file not found in default locations.
 ```
 
 **Solution**: Create a configuration file in one of these locations:
-- `./quack_config.yaml`
-- `./config/quack_config.yaml`
-- `~/.quack/config.yaml`
+- `./zeo_config.yaml`
+- `./config/zeo_config.yaml`
+- `~/.zeo/config.yaml`
 
 Or specify the configuration path explicitly:
 
 ```python
-from quack_core.config import load_config
+from zeo_core.config import load_config
 config = load_config("path/to/config.yaml")
 ```
 
 #### Authentication Errors with Google Services
 
 ```
-QuackAuthenticationError: Failed to authenticate with Google Drive
+ZeoAuthenticationError: Failed to authenticate with Google Drive
 ```
 
 **Solution**:
@@ -592,7 +592,7 @@ QuackAuthenticationError: Failed to authenticate with Google Drive
 #### Plugin Not Found
 
 ```
-QuackPluginError: No plugin found in module quack_core.modules.my_plugin
+ZeoPluginError: No plugin found in module zeo_core.modules.my_plugin
 ```
 
 **Solution**:
@@ -603,12 +603,12 @@ QuackPluginError: No plugin found in module quack_core.modules.my_plugin
 #### Path Resolution Errors
 
 ```
-QuackFileNotFoundError: Could not find project root directory
+ZeoFileNotFoundError: Could not find project root directory
 ```
 
 **Solution**:
 1. Ensure you're running from within a valid project directory
-2. Create marker files (like `pyproject.toml` or `.quack`) in your project root
+2. Create marker files (like `pyproject.toml` or `.zeo`) in your project root
 3. Explicitly specify the project root directory
 
 ## API Reference
@@ -619,10 +619,10 @@ For detailed API documentation, refer to the inline documentation in the code or
 
 ## Contributing
 
-We welcome contributors interested in extending the open-source core of quack_core.
+We welcome contributors interested in extending the open-source core of zeo_core.
 
 
-If you're interested in contributing to QuackCore:
+If you're interested in contributing to ZeoCore:
 
 1. Fork the repository
 2. Install development dependencies: `pip install -e ".[dev]"`
@@ -634,9 +634,9 @@ If you're interested in contributing to QuackCore:
 
 ---
 
-# 🦆 QuackVerse Licensing Overview
+# 🦆 ZeoVerse Licensing Overview
 
-QuackVerse is a modular ecosystem with mixed licensing to balance community contribution and project protection.
+ZeoVerse is a modular ecosystem with mixed licensing to balance community contribution and project protection.
 
 ### 🔓 Open Source (with strong copyleft)
 - **Repositories**: `quackcore`, `ducktyper`

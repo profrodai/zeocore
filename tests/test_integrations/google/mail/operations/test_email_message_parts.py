@@ -1,6 +1,6 @@
 """
 Tests for the previously-uncovered process_message_parts / handle_attachment
-functions in quack_core.integrations.google.mail.operations.email, plus the
+functions in zeo_core.integrations.google.mail.operations.email, plus the
 two error-path lines in download_email / _get_message_with_retry that the
 sibling test_email.py did not exercise.
 
@@ -8,14 +8,14 @@ Boundary-mock rule (RULING-235): the external boundary here is the Gmail API
 (gmail_service / execute_api_request) -- that's what gets mocked, using the
 same Protocol-compatible mock classes as the sibling test_email.py. The
 filesystem side (standalone.join_path / get_file_info / create_directory /
-write_binary) is quack_core's OWN code, so it is exercised for real -- this is
+write_binary) is zeo_core's OWN code, so it is exercised for real -- this is
 exactly the boundary this stream's own history (RULING-237/238/240) found
 real bugs by respecting.
 
 core/fs's standalone service sandboxes to base_dir=Path.cwd() by default and
 REJECTS absolute paths outside it (SERVICE-CONTRACT.md, allow_absolute=False).
 A bare pytest tmp_path is always outside the repo tree, so real standalone.*
-calls against a raw tmp_path path fail with a QuackPathOutsideBaseDirError.
+calls against a raw tmp_path path fail with a ZeoPathOutsideBaseDirError.
 Worse: get_service() is an @lru_cache(maxsize=1) singleton (core/fs/service/
 __init__.py) constructed ONCE per test process from whatever cwd was active
 at first call and never re-read -- so monkeypatch.chdir() AFTER that point has
@@ -34,8 +34,8 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.integrations.google.mail.operations import email
-from quack_core.integrations.google.mail.protocols import (
+from zeo_core.integrations.google.mail.operations import email
+from zeo_core.integrations.google.mail.protocols import (
     GmailAttachmentsResource,
     GmailMessagesResource,
     GmailRequest,
@@ -203,7 +203,7 @@ class TestProcessMessageParts:
             }
         ]
         with patch(
-            "quack_core.integrations.google.mail.operations.email.handle_attachment",
+            "zeo_core.integrations.google.mail.operations.email.handle_attachment",
             return_value=str(storage_dir / "report.pdf"),
         ) as mock_handle:
             html, attachments = email.process_message_parts(
@@ -317,16 +317,16 @@ class TestHandleAttachment:
 
         with (
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.join_path"
             ) as mock_join,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
+                "zeo_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.create_directory"
+                "zeo_core.integrations.google.mail.operations.email.standalone.create_directory"
             ) as mock_mkdir,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.write_binary"
+                "zeo_core.integrations.google.mail.operations.email.standalone.write_binary"
             ) as mock_write,
         ):
             # join_path mocked per the module docstring's documented
@@ -357,16 +357,16 @@ class TestHandleAttachment:
 
         with (
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.join_path"
             ) as mock_join,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
+                "zeo_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.create_directory"
+                "zeo_core.integrations.google.mail.operations.email.standalone.create_directory"
             ) as mock_mkdir,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.write_binary"
+                "zeo_core.integrations.google.mail.operations.email.standalone.write_binary"
             ) as mock_write,
         ):
             # join_path itself is mocked, not exercised for real, per the
@@ -401,19 +401,19 @@ class TestHandleAttachment:
 
         with (
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.join_path"
             ) as mock_join,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
+                "zeo_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.create_directory"
+                "zeo_core.integrations.google.mail.operations.email.standalone.create_directory"
             ) as mock_mkdir,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.write_binary"
+                "zeo_core.integrations.google.mail.operations.email.standalone.write_binary"
             ) as mock_write,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.split_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.split_path"
             ) as mock_split,
         ):
             # join_path/split_path mocked per the module docstring's
@@ -465,13 +465,13 @@ class TestHandleAttachment:
 
         with (
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.join_path"
             ) as mock_join,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
+                "zeo_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.split_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.split_path"
             ) as mock_split,
         ):
             mock_join.return_value = MagicMock(
@@ -508,13 +508,13 @@ class TestHandleAttachment:
 
         with (
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.join_path"
             ) as mock_join,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
+                "zeo_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.split_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.split_path"
             ) as mock_split,
         ):
             # First join_path call (handle_attachment's own initial
@@ -550,7 +550,7 @@ class TestHandleAttachment:
         part = {"filename": "x.txt", "body": {"data": _b64("x")}}
 
         with patch(
-            "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+            "zeo_core.integrations.google.mail.operations.email.standalone.join_path"
         ) as mock_join:
             mock_join.return_value = MagicMock(
                 success=False, error="join failed", data=None
@@ -571,13 +571,13 @@ class TestHandleAttachment:
         part = {"filename": "x.txt", "body": {"data": _b64("x")}}
         with (
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.join_path"
             ) as mock_join,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
+                "zeo_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.create_directory"
+                "zeo_core.integrations.google.mail.operations.email.standalone.create_directory"
             ) as mock_mkdir,
         ):
             # join_path mocked (deterministic, not the real singleton-cached
@@ -605,16 +605,16 @@ class TestHandleAttachment:
         part = {"filename": "x.txt", "body": {"data": _b64("x")}}
         with (
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.join_path"
             ) as mock_join,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.get_file_info"
+                "zeo_core.integrations.google.mail.operations.email.standalone.get_file_info"
             ) as mock_info,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.create_directory"
+                "zeo_core.integrations.google.mail.operations.email.standalone.create_directory"
             ) as mock_mkdir,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.write_binary"
+                "zeo_core.integrations.google.mail.operations.email.standalone.write_binary"
             ) as mock_write,
         ):
             # join_path mocked for the same determinism reason as above --
@@ -640,7 +640,7 @@ class TestHandleAttachment:
     ) -> None:
         part = {"filename": "x.txt", "body": {"data": _b64("x")}}
         with patch(
-            "quack_core.integrations.google.mail.operations.email.standalone.get_file_info",
+            "zeo_core.integrations.google.mail.operations.email.standalone.get_file_info",
             side_effect=RuntimeError("boom"),
         ):
             result = email.handle_attachment(
@@ -679,7 +679,7 @@ class TestHandleAttachment:
         `TestDownloadEmailRealPathBuild` below for the end-to-end proof
         that `download_email` itself now uses the real unwrapped path.
         """
-        from quack_core.core.fs.service import standalone
+        from zeo_core.core.fs.service import standalone
 
         result = standalone.join_path("some_dir", "some_file.txt")
 
@@ -697,9 +697,9 @@ class TestDownloadEmailWriteFailure:
     """Covers the write_result.success is False branch in download_email
     (lines 196-200), the one remaining uncovered path in that function."""
 
-    @patch("quack_core.integrations.google.mail.operations.email.process_message_parts")
+    @patch("zeo_core.integrations.google.mail.operations.email.process_message_parts")
     @patch(
-        "quack_core.integrations.google.mail.operations.email._get_message_with_retry"
+        "zeo_core.integrations.google.mail.operations.email._get_message_with_retry"
     )
     def test_write_failure_returns_error_result(
         self,
@@ -717,10 +717,10 @@ class TestDownloadEmailWriteFailure:
 
         with (
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.join_path"
+                "zeo_core.integrations.google.mail.operations.email.standalone.join_path"
             ) as mock_join,
             patch(
-                "quack_core.integrations.google.mail.operations.email.standalone.write_text"
+                "zeo_core.integrations.google.mail.operations.email.standalone.write_text"
             ) as mock_write,
         ):
             # join_path mocked per the module docstring's documented
@@ -768,9 +768,9 @@ class TestDownloadEmailRealPathBuild:
     against that, which is the honest, singleton-aware way to prove a
     real end-to-end write without fighting or mocking around the sandbox."""
 
-    @patch("quack_core.integrations.google.mail.operations.email.process_message_parts")
+    @patch("zeo_core.integrations.google.mail.operations.email.process_message_parts")
     @patch(
-        "quack_core.integrations.google.mail.operations.email._get_message_with_retry"
+        "zeo_core.integrations.google.mail.operations.email._get_message_with_retry"
     )
     def test_download_email_writes_to_real_unwrapped_path(
         self,
@@ -780,7 +780,7 @@ class TestDownloadEmailRealPathBuild:
         logger: logging.Logger,
         storage_dir: Path,
     ) -> None:
-        from quack_core.core.fs.service import get_service
+        from zeo_core.core.fs.service import get_service
 
         mock_get_message.return_value = {
             "id": "msg1",
@@ -824,9 +824,9 @@ class TestDownloadEmailRealPathBuild:
             if result.content and Path(result.content).exists():
                 Path(result.content).unlink()
 
-    @patch("quack_core.integrations.google.mail.operations.email.process_message_parts")
+    @patch("zeo_core.integrations.google.mail.operations.email.process_message_parts")
     @patch(
-        "quack_core.integrations.google.mail.operations.email._get_message_with_retry"
+        "zeo_core.integrations.google.mail.operations.email._get_message_with_retry"
     )
     def test_download_email_returns_error_when_join_path_fails(
         self,
@@ -838,7 +838,7 @@ class TestDownloadEmailRealPathBuild:
         """Covers download_email's `if filepath is None: return
         error_result(...)` branch (line 182-185) -- exercised when
         _unwrap_join_path's own real join_path call reports failure (a
-        real, sandboxed rejection, not a mock of quack_core logic itself,
+        real, sandboxed rejection, not a mock of zeo_core logic itself,
         per RULING-235: the boundary being proven here is the real fs
         sandbox rejecting a path outside its own base_dir)."""
         mock_get_message.return_value = {
@@ -877,7 +877,7 @@ class TestGetMessageWithRetryZeroRetries:
         logger: logging.Logger,
     ) -> None:
         with patch(
-            "quack_core.integrations.google.mail.operations.email.execute_api_request"
+            "zeo_core.integrations.google.mail.operations.email.execute_api_request"
         ) as mock_execute:
             message = email._get_message_with_retry(
                 mock_gmail_service, "me", "msg1", 0, 0.1, 0.5, logger

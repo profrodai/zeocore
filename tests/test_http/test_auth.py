@@ -7,8 +7,8 @@ from typing import Any, cast
 import pytest
 from fastapi import Request
 from fastapi.testclient import TestClient
-from quack_core.adapters.http.auth import require_bearer, sign_payload
-from quack_core.adapters.http.config import HttpAdapterConfig
+from zeo_core.adapters.http.auth import require_bearer, sign_payload
+from zeo_core.adapters.http.config import HttpAdapterConfig
 
 
 def test_require_bearer_no_auth_configured() -> None:

@@ -3,12 +3,12 @@ import os
 from pathlib import Path
 
 import pytest
-import quack_core.core.fs as _fs_pkg
+import zeo_core.core.fs as _fs_pkg
 
-# Define the package root as the real `quack_core.core.fs` source directory
+# Define the package root as the real `zeo_core.core.fs` source directory
 # this checker means to validate against. `Path(__file__).resolve().parent.parent`
-# (this test file lives at quack-core/tests/test_fs/test_architecture.py) resolves
-# to quack-core/tests/ -- one directory too shallow, and not even on the source
+# (this test file lives at zeocore/tests/test_fs/test_architecture.py) resolves
+# to zeocore/tests/ -- one directory too shallow, and not even on the source
 # side of the repo -- so the old computation's allowed_dirs list (`tests/_ops`,
 # `tests/_internal`, `tests/tests`) never matched anything real and the walk below
 # silently scanned the tests/ tree instead of fs/'s actual source tree. Anchored on
@@ -45,9 +45,9 @@ def get_imports(file_path: Path) -> set[str]:
 def test_internal_import_boundary() -> None:
     """
     Enforce doctrine: _internal modules should NOT be imported outside of
-    quack_core.core.fs._ops and quack_core.core.fs._internal itself.
+    zeo_core.core.fs._ops and zeo_core.core.fs._internal itself.
     """
-    internal_marker = "quack_core.core.fs._internal"
+    internal_marker = "zeo_core.core.fs._internal"
 
     # Files allowed to import _internal: _ops, _internal itself, and tests
     allowed_dirs = [
@@ -79,9 +79,9 @@ def test_internal_import_boundary() -> None:
 def test_ops_import_boundary() -> None:
     """
     Enforce doctrine: _ops modules should NOT be imported outside of
-    quack_core.core.fs.service.
+    zeo_core.core.fs.service.
     """
-    ops_marker = "quack_core.core.fs._ops"
+    ops_marker = "zeo_core.core.fs._ops"
 
     # Files allowed to import _ops: service, _ops itself, and tests
     allowed_dirs = [

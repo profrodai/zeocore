@@ -1,7 +1,7 @@
 """
 Tests for the internal path utility functions.
 
-Note: `_extract_path_str`/`safe_path_str` live in `quack_core.core.fs.normalize`
+Note: `_extract_path_str`/`safe_path_str` live in `zeo_core.core.fs.normalize`
 now, not `_internal.path_utils` (that module never existed under this name in
 this repo's history; the low-level string-extraction logic was consolidated
 into `normalize.py`, the documented "Single Source of Truth for coercing
@@ -14,8 +14,8 @@ from pathlib import Path
 from unittest import TestCase
 
 import pytest
-from quack_core.core.fs import DataResult, PathResult
-from quack_core.core.fs.normalize import _extract_path_str, safe_path_str
+from zeo_core.core.fs import DataResult, PathResult
+from zeo_core.core.fs.normalize import _extract_path_str, safe_path_str
 
 
 class TestPathUtils(TestCase):

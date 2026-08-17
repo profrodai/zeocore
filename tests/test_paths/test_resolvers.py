@@ -7,8 +7,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from quack_core.core.errors import QuackFileNotFoundError
-from quack_core.core.paths import PathResolver
+from zeo_core.core.errors import ZeoFileNotFoundError
+from zeo_core.core.paths import PathResolver
 
 
 class TestPathResolver:
@@ -24,10 +24,10 @@ class TestPathResolver:
         """Test finding a project root based on marker files.
 
         get_project_root/find_project_root are PathService methods, not
-        module-level functions on quack_core.core.paths.service (that module
+        module-level functions on zeo_core.core.paths.service (that module
         never had free functions - see conftest.py's mock_normalize_path note).
         """
-        from quack_core.core.paths.service import PathService
+        from zeo_core.core.paths.service import PathService
 
         service = PathService()
 
@@ -126,7 +126,7 @@ class TestPathResolver:
         with patch.object(
             resolver, "_get_project_root", return_value=str(non_existent_dir)
         ):
-            with pytest.raises(QuackFileNotFoundError):
+            with pytest.raises(ZeoFileNotFoundError):
                 resolver._find_output_directory(str(non_existent_dir), create=False)
 
     def test_internal_resolve_project_path(self, mock_project_structure: Path) -> None:
@@ -157,23 +157,23 @@ class TestPathResolver:
         # IMPORTANT: This test actually expects the exception since the
         # internal method does raise it
         with patch.object(
-            resolver, "_get_project_root", side_effect=QuackFileNotFoundError("")
+            resolver, "_get_project_root", side_effect=ZeoFileNotFoundError("")
         ):
             # The internal method is designed to raise the exception
-            with pytest.raises(QuackFileNotFoundError):
+            with pytest.raises(ZeoFileNotFoundError):
                 resolver._resolve_project_path("file.txt")
 
     def test_service_resolve_project_path(self, mock_project_structure: Path) -> None:
         """Test the public PathService.resolve_project_path method with error handling.
 
         resolve_project_path is a PathService instance method, not a module-level
-        function on quack_core.core.paths.service (see conftest.py's
+        function on zeo_core.core.paths.service (see conftest.py's
         mock_normalize_path note) - the prior version of this test imported the
         module itself as "paths" and called methods on it directly, which only
         worked by accident when PathService happened to expose bare functions at
         module scope. Use a real PathService() instance instead.
         """
-        from quack_core.core.paths.service import PathService
+        from zeo_core.core.paths.service import PathService
 
         service = PathService()
 
@@ -229,7 +229,7 @@ class TestPathResolver:
         assert id(context) == id(context2)  # Should be the same cached object
 
         # Test with non-existent path
-        with pytest.raises(QuackFileNotFoundError):
+        with pytest.raises(ZeoFileNotFoundError):
             resolver._detect_project_context("/nonexistent/path")
 
         # Test where no project root can be found
@@ -290,7 +290,7 @@ class TestPathResolver:
 
     # NOTE (test-fix-paths-plugins): test_infer_current_content previously asserted
     # a PathResolver._infer_current_content method that does not exist anywhere in
-    # quack-core/src/ (grep confirms zero definitions, zero call sites) - not a
+    # zeocore/src/ (grep confirms zero definitions, zero call sites) - not a
     # regression (see the SOW's root-cause note; this is the same pattern as
     # PathService's five missing methods in test_service.py). Unlike
     # detect_content_context above, there is no real internal method for this test
@@ -303,7 +303,7 @@ class TestPathResolver:
         """Test helper methods of the PathResolver.
 
         _detect_config_file and _infer_content_structure do not exist anywhere in
-        quack-core/src/ (grep confirms zero definitions) - not a regression, same
+        zeocore/src/ (grep confirms zero definitions) - not a regression, same
         pattern as test_infer_current_content above. Config-file detection is
         inline inside _detect_project_context itself (resolver.py), not a separate
         method, so that part of this test is rewritten to assert the real,

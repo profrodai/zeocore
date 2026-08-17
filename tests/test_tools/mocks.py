@@ -1,5 +1,5 @@
 """
-Mocks for testing the quack_core.tools module.
+Mocks for testing the zeo_core.tools module.
 
 This module provides mock objects and helper functions for testing
 the tools components without actually using the real implementations
@@ -11,10 +11,10 @@ import tempfile
 from typing import Any, TypeVar, cast
 from unittest.mock import MagicMock, patch
 
-from quack_core.core.fs import DataResult, OperationResult
-from quack_core.integrations.core import IntegrationResult
-from quack_core.integrations.core.base import BaseIntegrationService
-from quack_core.tools import BaseQuackToolPlugin
+from zeo_core.core.fs import DataResult, OperationResult
+from zeo_core.integrations.core import IntegrationResult
+from zeo_core.integrations.core.base import BaseIntegrationService
+from zeo_core.tools import BaseZeoToolPlugin
 
 
 def create_mock_fs() -> MagicMock:
@@ -240,7 +240,7 @@ class MockWorkflowRunner:
         )
 
 
-class BaseMockTool(BaseQuackToolPlugin):
+class BaseMockTool(BaseZeoToolPlugin):
     """
     Base class for mock tools that handles common patching.
 
@@ -259,18 +259,18 @@ class BaseMockTool(BaseQuackToolPlugin):
         # We need to patch all external dependencies
         patch_targets = [
             # Filesystem
-            ("quack_core.core.fs.service.get_service", create_mock_fs()),
+            ("zeo_core.core.fs.service.get_service", create_mock_fs()),
             # Logging
-            ("quack_core.config.tooling.logger.setup_tool_logging", MagicMock()),
+            ("zeo_core.config.tooling.logger.setup_tool_logging", MagicMock()),
             (
-                "quack_core.config.tooling.logger.get_logger",
+                "zeo_core.config.tooling.logger.get_logger",
                 MagicMock(return_value=MockLogger()),
             ),
             # OS
             ("os.getcwd", MagicMock(return_value=tempfile.gettempdir())),
             # FileWorkflowRunner
             (
-                "quack_core.workflow.runners.file_runner.FileWorkflowRunner",
+                "zeo_core.workflow.runners.file_runner.FileWorkflowRunner",
                 MockWorkflowRunner,
             ),
         ]
@@ -324,7 +324,7 @@ class BaseMockToolWithIntegration(BaseMockTool):
 
         # Patch the integration service
         with patch(
-            "quack_core.integrations.core.get_integration_service",
+            "zeo_core.integrations.core.get_integration_service",
             return_value=self.mock_service,
         ):
             # Initialize the base class
@@ -335,7 +335,7 @@ def create_patched_base_tool(
     name: str = "dummy_tool", version: str = "1.0.0"
 ) -> MagicMock:
     """
-    Create a properly patched BaseQuackToolPlugin for tests.
+    Create a properly patched BaseZeoToolPlugin for tests.
 
     This function applies all necessary patches and returns an instance
     of a mock tool that can be used in tests without affecting the real
@@ -348,13 +348,13 @@ def create_patched_base_tool(
     Returns:
         MagicMock: A mocked tool instance
     """
-    mock_tool = MagicMock(spec=BaseQuackToolPlugin)
+    mock_tool = MagicMock(spec=BaseZeoToolPlugin)
     mock_tool.name = name
     mock_tool.version = version
     mock_tool._logger = MockLogger()
     mock_tool.logger = mock_tool._logger
     mock_tool.fs = create_mock_fs()
-    mock_tool._temp_dir = os.path.join(tempfile.gettempdir(), f"quack_{name}_temp")
-    mock_tool._output_dir = os.path.join(tempfile.gettempdir(), f"quack_{name}_output")
+    mock_tool._temp_dir = os.path.join(tempfile.gettempdir(), f"zeo_{name}_temp")
+    mock_tool._output_dir = os.path.join(tempfile.gettempdir(), f"zeo_{name}_output")
 
     return mock_tool

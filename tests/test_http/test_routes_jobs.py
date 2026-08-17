@@ -11,7 +11,7 @@ def test_post_jobs_no_auth(test_client: TestClient) -> None:
     """Test job creation fails without auth."""
     response = test_client.post(
         "/jobs",
-        json={"op": "quack-media.slice_video", "params": {"input_path": "/test"}},
+        json={"op": "zeo-media.slice_video", "params": {"input_path": "/test"}},
     )
     assert response.status_code == 401
 
@@ -23,7 +23,7 @@ def test_post_jobs_success(
     response = test_client.post(
         "/jobs",
         json={
-            "op": "quack-media.slice_video",
+            "op": "zeo-media.slice_video",
             "params": {"input_path": "/test", "output_path": "/out"},
         },
         headers=auth_headers,
@@ -42,7 +42,7 @@ def test_post_jobs_with_callback(
     response = test_client.post(
         "/jobs",
         json={
-            "op": "quack-media.slice_video",
+            "op": "zeo-media.slice_video",
             "params": {"input_path": "/test"},
             "callback_url": "http://example.com/callback",
         },
@@ -60,14 +60,14 @@ def test_post_jobs_with_idempotency_header(
 
     response1 = test_client.post(
         "/jobs",
-        json={"op": "quack-media.slice_video", "params": {"input_path": "/test"}},
+        json={"op": "zeo-media.slice_video", "params": {"input_path": "/test"}},
         headers=headers,
     )
 
     # Make second request immediately
     response2 = test_client.post(
         "/jobs",
-        json={"op": "quack-media.slice_video", "params": {"input_path": "/test"}},
+        json={"op": "zeo-media.slice_video", "params": {"input_path": "/test"}},
         headers=headers,
     )
 
@@ -91,7 +91,7 @@ def test_get_job_status_success(
     # Create a job first
     create_response = test_client.post(
         "/jobs",
-        json={"op": "quack-media.slice_video", "params": {"input_path": "/test"}},
+        json={"op": "zeo-media.slice_video", "params": {"input_path": "/test"}},
         headers=auth_headers,
     )
 
@@ -112,7 +112,7 @@ def test_job_lifecycle(test_client: TestClient, auth_headers: dict[str, str]) ->
     create_response = test_client.post(
         "/jobs",
         json={
-            "op": "quack-media.slice_video",
+            "op": "zeo-media.slice_video",
             "params": {"input_path": "/test", "output_path": "/out"},
         },
         headers=auth_headers,

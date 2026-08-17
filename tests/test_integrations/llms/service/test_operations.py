@@ -8,9 +8,9 @@ which contains the chat and token counting _ops.
 from unittest.mock import MagicMock
 
 import pytest
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from quack_core.integrations.llms.service.operations import (
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from zeo_core.integrations.llms.service.operations import (
     chat,
     count_tokens,
     get_provider_status,

@@ -1,5 +1,5 @@
 """
-Tests for the QuackCore path service.
+Tests for the ZeoCore path service.
 """
 
 import os
@@ -7,10 +7,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from quack_core.core.errors import QuackFileNotFoundError
-from quack_core.core.paths.api.public.results import ContextResult, PathResult
-from quack_core.core.paths.models import ContentContext
-from quack_core.core.paths.service import PathService
+from zeo_core.core.errors import ZeoFileNotFoundError
+from zeo_core.core.paths.api.public.results import ContextResult, PathResult
+from zeo_core.core.paths.models import ContentContext
+from zeo_core.core.paths.service import PathService
 
 
 # Create a fixture for the service
@@ -105,7 +105,7 @@ def test_get_known_directory(tmp_path: Path, path_service: PathService) -> None:
     with patch.object(path_service, "detect_project_context") as mock_detect:
         # Mock the detect_project_context method to return a context with
         # a known directory
-        from quack_core.core.paths._internal.context import ProjectContext
+        from zeo_core.core.paths._internal.context import ProjectContext
 
         context = ProjectContext(root_dir=str(tmp_path))
         src_dir = str(tmp_path / "src")
@@ -137,7 +137,7 @@ def test_get_module_path(tmp_path: Path, path_service: PathService) -> None:
     with patch.object(path_service, "detect_project_context") as mock_detect:
         # Mock the detect_project_context method to return a context with
         # a source directory
-        from quack_core.core.paths._internal.context import ProjectContext
+        from zeo_core.core.paths._internal.context import ProjectContext
 
         context = ProjectContext(root_dir=str(tmp_path))
         context._add_directory("src", str(src_dir), is_source=True)
@@ -176,7 +176,7 @@ def test_get_relative_path(tmp_path: Path, path_service: PathService) -> None:
 # NOTE (test-fix-paths-plugins): get_content_dir(), list_known_directories(),
 # is_inside_project(), resolve_content_module(), and path_exists_in_known_dir()
 # were asserted against a PathService that does not exist at this repo's current
-# HEAD (grep across quack-core/src/ finds zero definitions and zero call sites -
+# HEAD (grep across zeocore/src/ finds zero definitions and zero call sites -
 # not a regression, see the SOW's root-cause note). PathService's real, current,
 # doctrine-documented surface ("Wraps internal logic with consistent error handling
 # and return types") is narrower and does not expose these. Rather than inventing
@@ -302,7 +302,7 @@ def test_find_source_directory(tmp_path: Path, path_service: PathService) -> Non
     src_dir.mkdir()
 
     # find_source_directory has no PathService-level wrapper (grep across
-    # quack-core/src/ finds zero call sites for one - not a regression, see the
+    # zeocore/src/ finds zero call sites for one - not a regression, see the
     # SOW). The real, current entry point is the resolver's own
     # _find_source_directory, which is already what this test mocked/asserted on;
     # test_resolvers.py::test_find_source_directory covers it unmocked. Exercise
@@ -334,7 +334,7 @@ def test_find_output_directory(tmp_path: Path, path_service: PathService) -> Non
     with patch.object(
         path_service._resolver, "_get_project_root", return_value=str(no_output_dir)
     ):
-        with pytest.raises(QuackFileNotFoundError):
+        with pytest.raises(ZeoFileNotFoundError):
             path_service._resolver._find_output_directory(
                 str(no_output_dir), create=False
             )

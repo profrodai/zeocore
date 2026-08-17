@@ -1,5 +1,5 @@
 """
-Tests for quack_core.core.serialization — shared JSON serialization utilities.
+Tests for zeo_core.core.serialization — shared JSON serialization utilities.
 
 quackverse-coverage-90: this module carried 22% coverage (51/65 stmts missed)
 before this file. Every assertion below calls the real production functions
@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 from pydantic import BaseModel
-from quack_core.core.serialization import is_json_safe, normalize_for_json
+from zeo_core.core.serialization import is_json_safe, normalize_for_json
 
 
 class Color(Enum):

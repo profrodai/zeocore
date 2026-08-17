@@ -6,7 +6,7 @@ family, eleventh instance; fixed per RULING-247):
     mime_type = standalone.get_mime_type(resolved_path) or "application/octet-stream"
 
 which never actually read the MIME type string. `standalone.get_mime_type`
-returns `DataResult[str | None]` (see `quack_core/core/fs/service/
+returns `DataResult[str | None]` (see `zeo_core/core/fs/service/
 standalone.py`/`utility_operations.py`), not a raw `str | None`. A
 `DataResult` object is always truthy regardless of its own `.data`/
 `.success` fields, so the `or "application/octet-stream"` fallback NEVER
@@ -44,7 +44,7 @@ reproduces.
 import shutil
 from pathlib import Path
 
-from quack_core.integrations.google.drive.operations import upload
+from zeo_core.integrations.google.drive.operations import upload
 
 
 class TestResolveFileDetailsMimeTypeFixed:
@@ -59,7 +59,7 @@ class TestResolveFileDetailsMimeTypeFixed:
 
         Direct, non-inferred evidence -- not a mock's opinion.
         """
-        from quack_core.core.fs.service import standalone
+        from zeo_core.core.fs.service import standalone
 
         rel_dir = "test_scratch_mime_type_ground_fixed"
         scratch_dir = Path.cwd() / rel_dir
@@ -118,7 +118,7 @@ class TestResolveFileDetailsMimeTypeFixed:
         success=False, data=None) -- confirms the fix's fallback branch is
         real, not just its success branch.
         """
-        from quack_core.core.fs.service import standalone
+        from zeo_core.core.fs.service import standalone
 
         result = standalone.get_mime_type("/etc/hosts")
         assert result.success is False

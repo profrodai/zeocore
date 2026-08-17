@@ -6,15 +6,15 @@ where _ops return raw types instead of result objects.
 
 NOTE (fs-internals-fix, 2026-08-15): a second round of updates, on top of
 the note above. `FileSystemOperations` now lives at
-`quack_core.core.fs._ops.base` (composed from mixins in `_ops/*.py`), not
-`quack_core.core.fs._operations` -- that module name does not exist
+`zeo_core.core.fs._ops.base` (composed from mixins in `_ops/*.py`), not
+`zeo_core.core.fs._operations` -- that module name does not exist
 anywhere in this repo's tracked history (confirmed: `git log --oneline --all`
 on the literal path returns nothing). Reading `_ops/base.py` in full:
 `FileSystemOperations.__init__` takes NO arguments at all (no `base_dir`)
 and every method takes an absolute/already-resolved `Path` directly --
 there is no relative-path-to-base_dir joining or sandboxing at this layer
 anymore. That whole concern (base_dir anchoring, sandbox escape checks,
-`FsPathLike` coercion) moved up to `quack_core.core.fs.service.
+`FsPathLike` coercion) moved up to `zeo_core.core.fs.service.
 _BaseFileSystemService`, confirmed by reading `service/base.py` in full
 (`self.operations = FileSystemOperations()` -- zero-arg construction; base_dir
 lives on the SERVICE, not the ops class). This is a genuine architectural
@@ -38,8 +38,8 @@ PathOperationsMixin._resolve_path`, the real current method with that name
 never actually exercised despite the method existing.
 
 `patch()` targets are also corrected: the original file patched
-`"quack_core.core.fs._ops._ensure_directory"` and
-`"quack_core.core.fs._ops._atomic_write"` -- but `_ops/__init__.py` only
+`"zeo_core.core.fs._ops._ensure_directory"` and
+`"zeo_core.core.fs._ops._atomic_write"` -- but `_ops/__init__.py` only
 ever imports and re-exports `FileSystemOperations` (confirmed by reading it
 in full); `_ensure_directory`/`_atomic_write` are imported into
 `_ops.directory_ops`/`_ops.write_ops` from `_internal.*`, never into the
@@ -55,8 +55,8 @@ from unittest.mock import patch
 
 import pytest
 import yaml
-from quack_core.core.errors import QuackIOError
-from quack_core.core.fs._ops.base import FileSystemOperations
+from zeo_core.core.errors import ZeoIOError
+from zeo_core.core.fs._ops.base import FileSystemOperations
 
 
 class TestFileSystemOperations:
@@ -272,7 +272,7 @@ class TestFileSystemOperations:
         and `UtilityOperationsMixin`, both of which define `_ensure_directory`
         identically). The mock patch target is corrected to the real call
         site (`_internal.directory_ops._ensure_directory`, imported into
-        `_ops.directory_ops`), not the non-existent `quack_core.core.fs._ops.
+        `_ops.directory_ops`), not the non-existent `zeo_core.core.fs._ops.
         _ensure_directory` package-level name (see file-level NOTE on patch
         targets).
         """
@@ -424,7 +424,7 @@ class TestFileSystemOperations:
         assert result == {}
 
         # Test reading invalid YAML - bare yaml.YAMLError (subclasses Exception,
-        # not QuackIOError -- _ops/serialization_ops.py has no try/except at
+        # not ZeoIOError -- _ops/serialization_ops.py has no try/except at
         # all, it lets yaml.safe_load's own error propagate)
         invalid_yaml = temp_dir / "invalid.yaml"
         invalid_yaml.write_text("name: Test\ninvalid: : value")
@@ -531,11 +531,11 @@ class TestFileSystemOperations:
         NOTE (fs-internals-fix): patch targets corrected to the real call
         sites -- `_ops.write_ops._atomic_write` (imported from `_internal.
         file_ops`, used directly inside `WriteOperationsMixin._write_text`
-        when `atomic=True`, the default), not the non-existent `quack_core.
+        when `atomic=True`, the default), not the non-existent `zeo_core.
         core.fs._ops._atomic_write` package-level name (see file-level
         NOTE). `_read_text` propagates a bare `PermissionError`/`RuntimeError`
         unchanged (`_internal.file_ops._read_file_text` does a plain
-        `open()`, no except clause), so no QuackIOError wrapping applies at
+        `open()`, no except clause), so no ZeoIOError wrapping applies at
         this layer either.
         """
         operations = FileSystemOperations()
@@ -549,10 +549,10 @@ class TestFileSystemOperations:
 
         # Test IO error during atomic write
         with patch(
-            "quack_core.core.fs._ops.write_ops._atomic_write"
+            "zeo_core.core.fs._ops.write_ops._atomic_write"
         ) as mock_atomic_write:
-            mock_atomic_write.side_effect = QuackIOError("IO error")
-            with pytest.raises(QuackIOError) as io_excinfo:
+            mock_atomic_write.side_effect = ZeoIOError("IO error")
+            with pytest.raises(ZeoIOError) as io_excinfo:
                 operations._write_text(temp_dir / "io_error.txt", "content")
             assert "io error" in str(io_excinfo.value).lower()
 

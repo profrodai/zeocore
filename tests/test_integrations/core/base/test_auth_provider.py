@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.integrations.core.base import BaseAuthProvider
+from zeo_core.integrations.core.base import BaseAuthProvider
 
 from .auth_provider_impl import (
     MockAuthProvider,
@@ -23,7 +23,7 @@ class TestBaseAuthProvider:
 
         # Patch fs.service.standalone.resolve_path to return the expected path string
         with patch(
-            "quack_core.core.fs.service.standalone.resolve_path"
+            "zeo_core.core.fs.service.standalone.resolve_path"
         ) as mock_resolve:
             mock_resolve.return_value = credentials_file
             provider = MockAuthProvider(credentials_file=credentials_file)
@@ -61,7 +61,7 @@ class TestBaseAuthProvider:
         assert resolved == str(Path.cwd() / "relative/path")
 
         # Real failure case: an absolute path outside the sandbox base_dir
-        # makes the real standalone.resolve_path fail (QuackPathOutsideBaseDirError,
+        # makes the real standalone.resolve_path fail (ZeoPathOutsideBaseDirError,
         # wrapped as a failed-Result ValueError at the coerce_path_str
         # boundary) -- the fixed fallback does NOT repeat the identical
         # sandboxed call; it logs a warning and returns the raw path
@@ -95,7 +95,7 @@ class TestBaseAuthProvider:
 
             # Patch resolve_path to return a string
             with patch(
-                "quack_core.core.fs.service.standalone.resolve_path"
+                "zeo_core.core.fs.service.standalone.resolve_path"
             ) as mock_resolve:
                 mock_resolve.return_value = str(credentials_file)
                 provider = MockAuthProvider(credentials_file=str(credentials_file))
@@ -111,7 +111,7 @@ class TestBaseAuthProvider:
 
             # Patch resolve_path to return a string
             with patch(
-                "quack_core.core.fs.service.standalone.resolve_path"
+                "zeo_core.core.fs.service.standalone.resolve_path"
             ) as mock_resolve:
                 mock_resolve.return_value = "/nonexistent/path"
                 provider = MockAuthProvider(credentials_file="/nonexistent/path")
@@ -144,24 +144,24 @@ class TestBaseAuthProvider:
 
         # Patch resolve_path to return a string
         with patch(
-            "quack_core.core.fs.service.standalone.resolve_path"
+            "zeo_core.core.fs.service.standalone.resolve_path"
         ) as mock_resolve:
             mock_resolve.return_value = credentials_file
             provider = MockAuthProvider(credentials_file=credentials_file)
 
             # Now correctly patch the methods
             with patch(
-                "quack_core.core.fs.service.standalone.split_path"
+                "zeo_core.core.fs.service.standalone.split_path"
             ) as mock_split:
                 mock_split.return_value = [str(temp_dir), "creds", "credentials.json"]
 
                 with patch(
-                    "quack_core.core.fs.service.standalone.join_path"
+                    "zeo_core.core.fs.service.standalone.join_path"
                 ) as mock_join:
                     mock_join.return_value = str(temp_dir / "creds")
 
                     with patch(
-                        "quack_core.core.fs.service.standalone.create_directory"
+                        "zeo_core.core.fs.service.standalone.create_directory"
                     ) as mock_create:
                         mock_result = MagicMock()
                         mock_result.success = True
@@ -173,23 +173,23 @@ class TestBaseAuthProvider:
 
         # Test with creation error
         with patch(
-            "quack_core.core.fs.service.standalone.resolve_path"
+            "zeo_core.core.fs.service.standalone.resolve_path"
         ) as mock_resolve:
             mock_resolve.return_value = credentials_file
             provider = MockAuthProvider(credentials_file=credentials_file)
 
             with patch(
-                "quack_core.core.fs.service.standalone.split_path"
+                "zeo_core.core.fs.service.standalone.split_path"
             ) as mock_split:
                 mock_split.return_value = [str(temp_dir), "creds", "credentials.json"]
 
                 with patch(
-                    "quack_core.core.fs.service.standalone.join_path"
+                    "zeo_core.core.fs.service.standalone.join_path"
                 ) as mock_join:
                     mock_join.return_value = str(temp_dir / "creds")
 
                     with patch(
-                        "quack_core.core.fs.service.standalone.create_directory"
+                        "zeo_core.core.fs.service.standalone.create_directory"
                     ) as mock_create:
                         mock_result = MagicMock()
                         mock_result.success = False

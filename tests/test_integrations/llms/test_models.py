@@ -7,7 +7,7 @@ validation, conversion, and default values.
 
 import pytest
 from pydantic import ValidationError
-from quack_core.integrations.llms.models import (
+from zeo_core.integrations.llms.models import (
     ChatMessage,
     FunctionCall,
     FunctionDefinition,

@@ -10,9 +10,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from googleapiclient.errors import HttpError
-from quack_core.core.errors import QuackApiError
-from quack_core.integrations.google.mail.protocols import GmailRequest
-from quack_core.integrations.google.mail.utils.api import (
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.integrations.google.mail.protocols import GmailRequest
+from zeo_core.integrations.google.mail.utils.api import (
     execute_api_request,
     with_exponential_backoff,
 )
@@ -62,7 +62,7 @@ class TestGmailApiUtils:
 
         mock_request = MockGmailRequest(side_effect=http_error)
 
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             execute_api_request(
                 mock_request,
                 "Failed to get message",
@@ -77,7 +77,7 @@ class TestGmailApiUtils:
         generic_error = Exception("Unexpected error")
         mock_request = MockGmailRequest(side_effect=generic_error)
 
-        with pytest.raises(QuackApiError) as excinfo:
+        with pytest.raises(ZeoApiError) as excinfo:
             execute_api_request(
                 mock_request,
                 "Failed to get message",

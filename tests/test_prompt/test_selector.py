@@ -1,15 +1,15 @@
 """
-Tests for quack_core.prompt._internal.selector.select_best_strategy and its
+Tests for zeo_core.prompt._internal.selector.select_best_strategy and its
 helper _match_by_schema_and_examples. Uses a real StrategyRegistry loaded with
 the real internal strategy pack -- no mocking, per RULING-235.
 """
 
-from quack_core.prompt._internal.registry import StrategyRegistry
-from quack_core.prompt._internal.selector import (
+from zeo_core.prompt._internal.registry import StrategyRegistry
+from zeo_core.prompt._internal.selector import (
     _match_by_schema_and_examples,
     select_best_strategy,
 )
-from quack_core.prompt.packs.internal import load as load_internal
+from zeo_core.prompt.packs.internal import load as load_internal
 
 
 def _loaded_registry() -> StrategyRegistry:
@@ -105,7 +105,7 @@ def test_select_best_strategy_sorts_by_priority_then_id() -> None:
     def render_fn(task_description: str) -> str:
         return task_description
 
-    from quack_core.prompt.models import PromptStrategy
+    from zeo_core.prompt.models import PromptStrategy
 
     strat_low_priority_b = PromptStrategy(
         id="b-strategy",
@@ -150,7 +150,7 @@ def test_select_best_strategy_ties_break_alphabetically_by_id() -> None:
     def render_fn(task_description: str) -> str:
         return task_description
 
-    from quack_core.prompt.models import PromptStrategy
+    from zeo_core.prompt.models import PromptStrategy
 
     for sid in ("z-tag-strategy", "a-tag-strategy"):
         registry.register(

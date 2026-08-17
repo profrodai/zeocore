@@ -1,0 +1,13 @@
+# zeocore/src/zeo_policy.yaml
+demo:
+  default_greeting: "Zeo!"
+  safety_check_enabled: true
+
+# Presets
+presets:
+  demo:
+    angry_duck:
+      default_greeting: "HONK HONK!"
+      safety_check_enabled: false
+    polite_duck:
+      default_greeting: "Greetings, kind sir."

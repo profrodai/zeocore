@@ -1,5 +1,5 @@
 """
-Tests for quack_core._dev.run_local (0% covered before RULING-277 Bug 1's
+Tests for zeo_core._dev.run_local (0% covered before RULING-277 Bug 1's
 fix, and previously an ImportError-pinning test for the bug this ruling
 authorized fixing).
 
@@ -8,14 +8,14 @@ to test chains of capabilities without spinning up n8n") -- but the
 coverage gate does not exempt _dev/ (checked pyproject.toml: only
 "tests/*" is omitted), so it counts.
 
-FORMER BUG (RULING-277 Bug 1, fixed): quack_core/_dev/run_local.py line 16
-used to do `from quack_core.contracts.capabilities.demo import EchoRequest,
-echo_text`, but quack_core/contracts/capabilities/demo/__init__.py's own
+FORMER BUG (RULING-277 Bug 1, fixed): zeo_core/_dev/run_local.py line 16
+used to do `from zeo_core.contracts.capabilities.demo import EchoRequest,
+echo_text`, but zeo_core/contracts/capabilities/demo/__init__.py's own
 docstring says, verbatim: "NOTE: Demo implementations are NOT exported from
 this module... See _impl.py for reference implementations." echo_text was
 never re-exported, so the module was 100 percent unimportable. RULING-277
 authorized importing echo_text from
-quack_core.contracts.capabilities.demo._impl directly instead, matching
+zeo_core.contracts.capabilities.demo._impl directly instead, matching
 that docstring's own "for reference/testing only" carve-out for a
 _dev/-only script. This file now exercises the fixed, real import and
 run_flow() successfully, replacing the prior ImportError-pinning test per
@@ -29,7 +29,7 @@ class TestRunLocalModule:
         that echo_text is pulled from its true (_impl) location."""
         import importlib
 
-        import quack_core._dev.run_local as run_local_module
+        import zeo_core._dev.run_local as run_local_module
 
         importlib.reload(run_local_module)
         assert hasattr(run_local_module, "run_flow")
@@ -38,7 +38,7 @@ class TestRunLocalModule:
         """The module's own run_flow() -- previously unreachable -- now
         runs end to end against the real (unmocked) echo_text
         implementation, exercising all three of its steps."""
-        from quack_core._dev.run_local import run_flow
+        from zeo_core._dev.run_local import run_flow
 
         run_flow()
 
@@ -59,8 +59,8 @@ class TestRunLocalModule:
         mismatch inside the same broken, currently-unreachable script --
         recorded here for completeness, not separately pinned as its own
         bug, since the script cannot run at all regardless."""
-        from quack_core.contracts.capabilities.demo._impl import echo_text
-        from quack_core.contracts.capabilities.demo.models import EchoRequest
+        from zeo_core.contracts.capabilities.demo._impl import echo_text
+        from zeo_core.contracts.capabilities.demo.models import EchoRequest
 
         result = echo_text(EchoRequest(text="World"))
         assert result.status.value == "success"

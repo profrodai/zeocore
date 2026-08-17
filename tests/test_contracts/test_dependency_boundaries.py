@@ -30,13 +30,13 @@ class DependencyChecker:
 
     ALLOWED_THIRD_PARTY = {"pydantic"}
 
-    # Forbidden modules (from other QuackCore rings)
+    # Forbidden modules (from other ZeoCore rings)
     FORBIDDEN_MODULES = {
-        "quack_core.lib",
-        "quack_core.tools",
-        "quack_core.integrations",
-        "quack_core.workflow",
-        "quack_core.runners",
+        "zeo_core.lib",
+        "zeo_core.tools",
+        "zeo_core.integrations",
+        "zeo_core.workflow",
+        "zeo_core.runners",
     }
 
     def __init__(self, contracts_root: Path) -> None:
@@ -97,7 +97,7 @@ class DependencyChecker:
         violations = []
 
         for imported_module in imports:
-            # Check for forbidden QuackCore modules (Ring B/C/D)
+            # Check for forbidden ZeoCore modules (Ring B/C/D)
             for forbidden in self.FORBIDDEN_MODULES:
                 if imported_module == forbidden or imported_module.startswith(
                     f"{forbidden}."
@@ -113,8 +113,8 @@ class DependencyChecker:
             # Extract root package name for stdlib/third-party check
             root_package = imported_module.split(".")[0]
 
-            # Allow quack_core.contracts internal imports
-            if imported_module.startswith("quack_core.contracts"):
+            # Allow zeo_core.contracts internal imports
+            if imported_module.startswith("zeo_core.contracts"):
                 continue
 
             # Check if it's allowed
@@ -156,15 +156,15 @@ class TestDependencyBoundaries:
     @pytest.fixture
     def contracts_root(self) -> Path:
         """Get path to contracts module root."""
-        # Tests are in: quack-core/tests/test_contracts/
-        # Contracts are in: quack-core/src/quack_core/contracts/
+        # Tests are in: zeocore/tests/test_contracts/
+        # Contracts are in: zeocore/src/zeo_core/contracts/
         test_dir = Path(__file__).parent  # tests/test_contracts/
-        repo_root = test_dir.parent.parent  # quack-core/
-        return repo_root / "src" / "quack_core" / "contracts"
+        repo_root = test_dir.parent.parent  # zeocore/
+        return repo_root / "src" / "zeo_core" / "contracts"
 
     def test_no_forbidden_imports(self, contracts_root: Path) -> None:
         """
-        Test that contracts module does not import from other QuackCore rings.
+        Test that contracts module does not import from other ZeoCore rings.
 
         This enforces Ring A isolation - contracts can only depend on
         stdlib and Pydantic, never on Ring B/C/D modules.
@@ -205,12 +205,12 @@ class TestImportPatterns:
         """Get path to contracts module root."""
         test_dir = Path(__file__).parent
         repo_root = test_dir.parent.parent
-        return repo_root / "src" / "quack_core" / "contracts"
+        return repo_root / "src" / "zeo_core" / "contracts"
 
     def test_can_import_contracts_module(self) -> None:
         """Test that we can import the contracts module successfully."""
         try:
-            import quack_core.contracts as contracts
+            import zeo_core.contracts as contracts
 
             assert hasattr(contracts, "CapabilityResult")
             assert hasattr(contracts, "ArtifactRef")

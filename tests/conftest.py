@@ -1,5 +1,5 @@
 """
-Shared fixtures for QuackCore tests.
+Shared fixtures for ZeoCore tests.
 """
 
 # Import the test helper first to set up the Python path
@@ -15,24 +15,24 @@ from unittest.mock import patch
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-# Now try to import the quack-core modules
+# Now try to import the zeocore modules
 try:
-    from quack_core.config.models import QuackConfig
-    from quack_core.core.fs import DataResult, OperationResult, PathResult
-    from quack_core.core.fs.protocols import FsPathLike
-    from quack_core.core.fs.service import standalone as fs_standalone
-    from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol
+    from zeo_core.config.models import ZeoConfig
+    from zeo_core.core.fs import DataResult, OperationResult, PathResult
+    from zeo_core.core.fs.protocols import FsPathLike
+    from zeo_core.core.fs.service import standalone as fs_standalone
+    from zeo_core.modules.protocols import ZeoPluginMetadata, ZeoPluginProtocol
 except ImportError as e:
-    print(f"Error importing quack-core modules: {e}")
+    print(f"Error importing zeocore modules: {e}")
     # Emergency fallbacks if needed
     import sys
 
     sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
-    from quack_core.config.models import QuackConfig
-    from quack_core.core.fs import DataResult, OperationResult, PathResult
-    from quack_core.core.fs.protocols import FsPathLike
-    from quack_core.core.fs.service import standalone as fs_standalone
-    from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol
+    from zeo_core.config.models import ZeoConfig
+    from zeo_core.core.fs import DataResult, OperationResult, PathResult
+    from zeo_core.core.fs.protocols import FsPathLike
+    from zeo_core.core.fs.service import standalone as fs_standalone
+    from zeo_core.modules.protocols import ZeoPluginMetadata, ZeoPluginProtocol
 
 
 @pytest.fixture(autouse=True)
@@ -45,7 +45,7 @@ def mock_fs_standalone() -> Generator[None]:
     behavior of the underlying fs module.
     """
     with patch(
-        "quack_core.core.fs.service.standalone.normalize_path"
+        "zeo_core.core.fs.service.standalone.normalize_path"
     ) as mock_normalize:
         # Return a real PathResult (ok/path contract, core/fs SERVICE-CONTRACT) so
         # callers that check `.ok`/`.path` on the result see a well-formed object,
@@ -136,7 +136,7 @@ def test_binary_file(
 
 
 @pytest.fixture
-def sample_config(temp_dir: Path) -> QuackConfig:
+def sample_config(temp_dir: Path) -> ZeoConfig:
     """Create a sample configuration."""
     # We use string paths instead of Path objects here
     temp_dir_str = str(temp_dir)
@@ -144,7 +144,7 @@ def sample_config(temp_dir: Path) -> QuackConfig:
     output_dir = os.path.join(temp_dir_str, "output")
 
     # Using strings for paths in the configuration
-    return QuackConfig(
+    return ZeoConfig(
         general={
             "project_name": "TestProject",
             "environment": "test",
@@ -186,9 +186,9 @@ def sample_config(temp_dir: Path) -> QuackConfig:
 @pytest.fixture
 def mock_env_vars(monkeypatch: MonkeyPatch) -> None:
     """Set up environment variables for testing."""
-    monkeypatch.setenv("QUACK_ENV", "test")
-    monkeypatch.setenv("QUACK_GENERAL__DEBUG", "true")
-    monkeypatch.setenv("QUACK_LOGGING__LEVEL", "DEBUG")
+    monkeypatch.setenv("ZEO_ENV", "test")
+    monkeypatch.setenv("ZEO_GENERAL__DEBUG", "true")
+    monkeypatch.setenv("ZEO_LOGGING__LEVEL", "DEBUG")
 
 
 @pytest.fixture
@@ -226,7 +226,7 @@ def mock_project_structure(temp_dir: Path) -> Path:
     return project_root
 
 
-class MockPlugin(QuackPluginProtocol):
+class MockPlugin(ZeoPluginProtocol):
     """Mock plugin for testing."""
 
     @property
@@ -237,9 +237,9 @@ class MockPlugin(QuackPluginProtocol):
     def name(self) -> str:
         return "mock_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
+    def get_metadata(self) -> ZeoPluginMetadata:
         """Get plugin metadata."""
-        return QuackPluginMetadata(
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",

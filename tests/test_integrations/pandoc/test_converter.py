@@ -3,9 +3,9 @@ import time
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.pandoc import (
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.pandoc import (
     ConversionMetrics,
     ConversionTask,
     DocumentConverter,
@@ -32,7 +32,7 @@ def test_document_converter_initialization_verify_pandoc_fails(
     """When verify_pandoc() raises, __init__ swallows it and falls back to
     an "unknown" version rather than propagating (converter.py:89-92)."""
     with patch(
-        "quack_core.integrations.pandoc.converter.verify_pandoc"
+        "zeo_core.integrations.pandoc.converter.verify_pandoc"
     ) as mock_verify:
         mock_verify.side_effect = RuntimeError("pandoc not installed")
 
@@ -52,7 +52,7 @@ def test_convert_file_html_to_markdown_success(
 
     # Mock the conversion operation
     with patch(
-        "quack_core.integrations.pandoc.operations.convert_html_to_markdown"
+        "zeo_core.integrations.pandoc.operations.convert_html_to_markdown"
     ) as mock_convert:
         mock_convert.return_value = IntegrationResult.success_result(
             ("output.md", MagicMock()), message="Success"
@@ -79,7 +79,7 @@ def test_convert_file_markdown_to_docx_success(
 
     # Mock the conversion operation
     with patch(
-        "quack_core.integrations.pandoc.operations.convert_markdown_to_docx"
+        "zeo_core.integrations.pandoc.operations.convert_markdown_to_docx"
     ) as mock_convert:
         mock_convert.return_value = IntegrationResult.success_result(
             ("output.docx", MagicMock()), message="Success"
@@ -105,7 +105,7 @@ def test_convert_file_html_to_markdown_operation_failure_wraps_error(
     converter = DocumentConverter(config)
 
     with patch(
-        "quack_core.integrations.pandoc.operations.convert_html_to_markdown"
+        "zeo_core.integrations.pandoc.operations.convert_html_to_markdown"
     ) as mock_convert:
         mock_convert.return_value = IntegrationResult.error_result(
             "Pandoc blew up mid-conversion"
@@ -125,7 +125,7 @@ def test_convert_file_unsupported_format(mock_pypandoc: MagicMock) -> None:
 
     # Mock file info to return unsupported format
     with patch(
-        "quack_core.integrations.pandoc.converter.get_file_info"
+        "zeo_core.integrations.pandoc.converter.get_file_info"
     ) as mock_get_info:
         mock_get_info.return_value = FileInfo(
             path="file.txt", format="txt", size=100, modified=None, extra_args=[]
@@ -147,15 +147,15 @@ def test_convert_file_integration_error(mock_pypandoc: MagicMock) -> None:
 
     # Mock conversion to raise error
     with patch(
-        "quack_core.integrations.pandoc.converter.get_file_info"
+        "zeo_core.integrations.pandoc.converter.get_file_info"
     ) as mock_get_info:
-        mock_get_info.side_effect = QuackIntegrationError("Test error", {})
+        mock_get_info.side_effect = ZeoIntegrationError("Test error", {})
 
         # Run conversion
         result = converter.convert_file("input.html", "output.md", "markdown")
 
         # Verify. convert_file's get_file_info error path returns str(e)
-        # directly (converter.py: `except QuackIntegrationError as e: return
+        # directly (converter.py: `except ZeoIntegrationError as e: return
         # IntegrationResult.error_result(str(e))`) -- "Failed to convert" is
         # only emitted by convert_batch's own aggregate-failure message, a
         # different code path this test does not exercise.
@@ -392,7 +392,7 @@ def test_convert_file_output_dir_creation_failure_short_circuits(
     )
 
     with patch(
-        "quack_core.integrations.pandoc.operations.convert_html_to_markdown"
+        "zeo_core.integrations.pandoc.operations.convert_html_to_markdown"
     ) as mock_convert:
         result = converter.convert_file("input.html", "output.md", "markdown")
 
@@ -405,18 +405,18 @@ def test_convert_file_output_dir_creation_failure_short_circuits(
 def test_convert_file_integration_error_from_format_dispatch(
     mock_pypandoc: MagicMock, fs_stub: SimpleNamespace
 ) -> None:
-    """A QuackIntegrationError raised during format dispatch (rather than
+    """A ZeoIntegrationError raised during format dispatch (rather than
     during get_file_info) is caught by convert_file's outer
-    QuackIntegrationError handler (converter.py:233-235), distinct from the
+    ZeoIntegrationError handler (converter.py:233-235), distinct from the
     inner get_file_info-specific handler covered by
     test_convert_file_integration_error."""
     config = PandocConfig()
     converter = DocumentConverter(config)
 
     with patch(
-        "quack_core.integrations.pandoc.operations.convert_html_to_markdown"
+        "zeo_core.integrations.pandoc.operations.convert_html_to_markdown"
     ) as mock_convert:
-        mock_convert.side_effect = QuackIntegrationError("dispatch blew up", {})
+        mock_convert.side_effect = ZeoIntegrationError("dispatch blew up", {})
 
         result = converter.convert_file("input.html", "output.md", "markdown")
 
@@ -428,13 +428,13 @@ def test_convert_file_integration_error_from_format_dispatch(
 def test_convert_file_unexpected_exception(
     mock_pypandoc: MagicMock, fs_stub: SimpleNamespace
 ) -> None:
-    """A non-QuackIntegrationError exception raised during dispatch is caught
+    """A non-ZeoIntegrationError exception raised during dispatch is caught
     by convert_file's outer generic Exception handler (converter.py:236-238)."""
     config = PandocConfig()
     converter = DocumentConverter(config)
 
     with patch(
-        "quack_core.integrations.pandoc.converter.get_file_info"
+        "zeo_core.integrations.pandoc.converter.get_file_info"
     ) as mock_get_info:
         mock_get_info.side_effect = RuntimeError("boom")
 
@@ -807,7 +807,7 @@ def test_validate_conversion_docx_valid(
     converter = DocumentConverter(config)
 
     with patch(
-        "quack_core.integrations.pandoc.converter.validate_docx_structure"
+        "zeo_core.integrations.pandoc.converter.validate_docx_structure"
     ) as mock_validate_docx:
         mock_validate_docx.return_value = (True, [])
 
@@ -824,7 +824,7 @@ def test_validate_conversion_docx_structure_raises(
     converter = DocumentConverter(config)
 
     with patch(
-        "quack_core.integrations.pandoc.converter.validate_docx_structure"
+        "zeo_core.integrations.pandoc.converter.validate_docx_structure"
     ) as mock_validate_docx:
         mock_validate_docx.side_effect = RuntimeError("corrupt docx")
 

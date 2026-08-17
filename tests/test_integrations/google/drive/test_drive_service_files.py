@@ -7,10 +7,10 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackFileNotFoundError, QuackIntegrationError
-from quack_core.core.fs import FileInfoResult
-from quack_core.core.paths.api.public.results import PathResult
-from quack_core.integrations.google.drive.service import GoogleDriveService
+from zeo_core.core.errors import ZeoFileNotFoundError, ZeoIntegrationError
+from zeo_core.core.fs import FileInfoResult
+from zeo_core.core.paths.api.public.results import PathResult
+from zeo_core.integrations.google.drive.service import GoogleDriveService
 
 
 class TestGoogleDriveServiceFiles:
@@ -21,7 +21,7 @@ class TestGoogleDriveServiceFiles:
         """Set up a Google Drive service with mocked dependencies."""
         # Mock the paths service
         with patch(
-            "quack_core.integrations.google.drive.service.paths_service"
+            "zeo_core.integrations.google.drive.service.paths_service"
         ) as mock_paths:
             # Setup the paths mock to return PathResult objects with string paths
             mock_paths.resolve_project_path.return_value = PathResult(
@@ -40,7 +40,7 @@ class TestGoogleDriveServiceFiles:
 
                 # Patch _verify_client_secrets_file to prevent verification
                 with patch(
-                    "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+                    "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
                 ):
                     # Create and configure the service
                     service = GoogleDriveService()
@@ -63,7 +63,7 @@ class TestGoogleDriveServiceFiles:
 
         # Test with relative path and parent folder
         with patch(
-            "quack_core.integrations.google.drive.service.paths_service.resolve_project_path"
+            "zeo_core.integrations.google.drive.service.paths_service.resolve_project_path"
         ) as mock_resolve:
             # Update to return PathResult with string path
             mock_resolve.return_value = PathResult(
@@ -72,7 +72,7 @@ class TestGoogleDriveServiceFiles:
             )
 
             with patch(
-                "quack_core.integrations.google.drive.service.standalone"
+                "zeo_core.integrations.google.drive.service.standalone"
             ) as mock_fs:
                 mock_fs.get_file_info.return_value = FileInfoResult(
                     ok=True, path=test_file, exists=True, is_file=True
@@ -105,7 +105,7 @@ class TestGoogleDriveServiceFiles:
 
         # Test with remote path specified
         with patch(
-            "quack_core.integrations.google.drive.service.paths_service.resolve_project_path"
+            "zeo_core.integrations.google.drive.service.paths_service.resolve_project_path"
         ) as mock_resolve:
             # Update to return PathResult with string path
             mock_resolve.return_value = PathResult(
@@ -114,7 +114,7 @@ class TestGoogleDriveServiceFiles:
             )
 
             with patch(
-                "quack_core.integrations.google.drive.service.standalone"
+                "zeo_core.integrations.google.drive.service.standalone"
             ) as mock_fs:
                 mock_fs.get_file_info.return_value = FileInfoResult(
                     ok=True, path=test_file, exists=True, is_file=True
@@ -146,7 +146,7 @@ class TestGoogleDriveServiceFiles:
 
         # Test with file not found
         with patch(
-            "quack_core.integrations.google.drive.service.paths_service.resolve_project_path"
+            "zeo_core.integrations.google.drive.service.paths_service.resolve_project_path"
         ) as mock_resolve:
             # Update to return PathResult with string path
             mock_resolve.return_value = PathResult(
@@ -155,9 +155,9 @@ class TestGoogleDriveServiceFiles:
             )
 
             with patch(
-                "quack_core.integrations.google.drive.service.standalone"
+                "zeo_core.integrations.google.drive.service.standalone"
             ) as mock_fs:
-                # Configure the mock to raise QuackFileNotFoundError
+                # Configure the mock to raise ZeoFileNotFoundError
                 mock_fs.get_file_info.return_value = FileInfoResult(
                     ok=False, path=test_file, exists=False
                 )
@@ -166,9 +166,9 @@ class TestGoogleDriveServiceFiles:
                 with patch.object(
                     drive_service,
                     "_resolve_file_details",
-                    side_effect=QuackFileNotFoundError(str(test_file)),
+                    side_effect=ZeoFileNotFoundError(str(test_file)),
                 ):
-                    with pytest.raises(QuackFileNotFoundError):
+                    with pytest.raises(ZeoFileNotFoundError):
                         drive_service._resolve_file_details(
                             "nonexistent.txt", None, None
                         )
@@ -182,7 +182,7 @@ class TestGoogleDriveServiceFiles:
 
         # Patch the fs module directly
         with patch(
-            "quack_core.integrations.google.drive.service.standalone"
+            "zeo_core.integrations.google.drive.service.standalone"
         ) as mock_fs:
             # Setup the mock to return direct values instead of DataResult objects
             temp_dir_path = tmp_path / "temp_dir"
@@ -207,7 +207,7 @@ class TestGoogleDriveServiceFiles:
         mapped_dir = Path("/fake/test/dir/local_dir")
 
         with patch(
-            "quack_core.integrations.google.drive.service.paths_service.resolve_project_path"
+            "zeo_core.integrations.google.drive.service.paths_service.resolve_project_path"
         ) as mock_resolve:
             # Update to return PathResult with string path
             mock_resolve.return_value = PathResult(
@@ -216,7 +216,7 @@ class TestGoogleDriveServiceFiles:
             )
 
             with patch(
-                "quack_core.integrations.google.drive.service.standalone"
+                "zeo_core.integrations.google.drive.service.standalone"
             ) as mock_fs:
                 # Setup mock to return expected values for all called methods
                 mock_fs.get_file_info.return_value = FileInfoResult(
@@ -244,7 +244,7 @@ class TestGoogleDriveServiceFiles:
         mapped_file = Path("/fake/test/dir/specific_file.txt")
 
         with patch(
-            "quack_core.integrations.google.drive.service.paths_service.resolve_project_path"
+            "zeo_core.integrations.google.drive.service.paths_service.resolve_project_path"
         ) as mock_resolve:
             # Update to return PathResult with string path
             mock_resolve.return_value = PathResult(
@@ -253,7 +253,7 @@ class TestGoogleDriveServiceFiles:
             )
 
             with patch(
-                "quack_core.integrations.google.drive.service.standalone"
+                "zeo_core.integrations.google.drive.service.standalone"
             ) as mock_fs:
                 # Setup mock to return a file
                 mock_fs.get_file_info.return_value = FileInfoResult(
@@ -324,7 +324,7 @@ class TestGoogleDriveServiceRealPathService:
                 "credentials_file": "/fake/test/dir/mock_credentials.json",
             }
             with patch(
-                "quack_core.integrations.google.auth.GoogleAuthProvider."
+                "zeo_core.integrations.google.auth.GoogleAuthProvider."
                 "_verify_client_secrets_file"
             ):
                 service = GoogleDriveService()
@@ -339,7 +339,7 @@ class TestGoogleDriveServiceRealPathService:
         """_resolve_file_details (called from the public upload_file) must
         resolve a real on-disk file through the real PathService, not a
         raw-module AttributeError. Pre-fix this raised AttributeError:
-        module 'quack_core.core.paths.service' has no attribute
+        module 'zeo_core.core.paths.service' has no attribute
         'resolve_project_path'."""
         # in-sandbox relative file, matching this stream's own standing
         # discipline (SOW-5/6) of using a real sandbox-relative path rather
@@ -370,12 +370,12 @@ class TestGoogleDriveServiceRealPathService:
         self, real_drive_service: GoogleDriveService
     ) -> None:
         """A real, resolvable-but-nonexistent path must raise
-        QuackIntegrationError("File not found: ...") from real
+        ZeoIntegrationError("File not found: ...") from real
         get_file_info's exists=False, not mask a resolve AttributeError as
         something else. (Confirmed live this session: _resolve_file_details
-        raises QuackIntegrationError, not QuackFileNotFoundError, for this
+        raises ZeoIntegrationError, not ZeoFileNotFoundError, for this
         branch -- the method's own explicit raise, not a coercion.)"""
-        with pytest.raises(QuackIntegrationError, match="File not found"):
+        with pytest.raises(ZeoIntegrationError, match="File not found"):
             real_drive_service._resolve_file_details(
                 "coverage90_ruling240_does_not_exist.txt", None, None
             )
@@ -405,7 +405,7 @@ class TestGoogleDriveServiceRealPathService:
                 with patch.object(
                     real_drive_service, "set_file_permissions"
                 ) as mock_perms:
-                    from quack_core.integrations.core.results import (
+                    from zeo_core.integrations.core.results import (
                         IntegrationResult,
                     )
 
@@ -464,7 +464,7 @@ class TestGoogleDriveServiceRealPathService:
 
         UPDATED per RULING-243's fix: download_file's own parent-directory
         line (`coerce_path(download_path).parent`, formerly the broken
-        `standalone.join_path(download_path).parent`) is now real quack_core
+        `standalone.join_path(download_path).parent`) is now real zeo_core
         logic exercised unmocked, same as everything else in this test --
         no more join_path workaround needed (the old side-effect shim that
         stepped over the single-arg call site is gone; RULING-243's fix

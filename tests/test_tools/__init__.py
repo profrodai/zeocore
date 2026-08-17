@@ -1,5 +1,5 @@
 """
-Tests for the QuackTool tools package.
+Tests for the ZeoTool tools package.
 """
 
 # This file is intentionally left mostly empty.

@@ -1,11 +1,11 @@
 from types import SimpleNamespace
 
 from _pytest.monkeypatch import MonkeyPatch
-from quack_core.integrations.pandoc import (
+from zeo_core.integrations.pandoc import (
     PandocConfig,
     PandocConfigProvider,
 )
-from quack_core.integrations.pandoc.config import (
+from zeo_core.integrations.pandoc.config import (
     LoggingConfig,
     MetricsConfig,
     PandocOptions,
@@ -103,9 +103,9 @@ def test_config_provider_load_from_environment(monkeypatch: MonkeyPatch) -> None
     provider = PandocConfigProvider()
 
     # Set environment variables
-    monkeypatch.setenv("QUACK_PANDOC_OUTPUT_DIR", "/env/output")
-    monkeypatch.setenv("QUACK_PANDOC_STANDALONE", "false")
-    monkeypatch.setenv("QUACK_PANDOC_WRAP", "auto")
+    monkeypatch.setenv("ZEO_PANDOC_OUTPUT_DIR", "/env/output")
+    monkeypatch.setenv("ZEO_PANDOC_STANDALONE", "false")
+    monkeypatch.setenv("ZEO_PANDOC_WRAP", "auto")
 
     env_config = provider.load_from_environment()
 

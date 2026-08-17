@@ -4,7 +4,7 @@ import os
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.integrations.github.config import GitHubConfigProvider
+from zeo_core.integrations.github.config import GitHubConfigProvider
 
 
 @pytest.fixture
@@ -31,10 +31,10 @@ class TestGitHubConfigProvider:
         assert "timeout_seconds" in default_config
         assert "max_retries" in default_config
         assert "retry_delay" in default_config
-        assert "quackster" in default_config
+        assert "zeoster" in default_config
 
-        # Check quackster config
-        teaching_config = default_config["quackster"]
+        # Check zeoster config
+        teaching_config = default_config["zeoster"]
         assert "assignment_branch_prefix" in teaching_config
         assert "default_base_branch" in teaching_config
         assert "pr_title_template" in teaching_config
@@ -127,7 +127,7 @@ class TestGitHubConfigProvider:
         """Test extract_config falling back to base implementation."""
         # Mock super()._extract_config
         with patch(
-            "quack_core.integrations.core.BaseConfigProvider._extract_config"
+            "zeo_core.integrations.core.BaseConfigProvider._extract_config"
         ) as mock_super:
             mock_super.return_value = {"token": "fallback_token"}
 
@@ -145,7 +145,7 @@ class TestGitHubConfigProvider:
         """Test loading config and getting token from environment."""
         # Mock super().load_config
         with patch(
-            "quack_core.integrations.core.BaseConfigProvider.load_config"
+            "zeo_core.integrations.core.BaseConfigProvider.load_config"
         ) as mock_super:
             mock_super.return_value = MagicMock(
                 success=True, content={"token": "", "api_url": "https://api.github.com"}
@@ -165,7 +165,7 @@ class TestGitHubConfigProvider:
         """Test loading config with existing token."""
         # Mock super().load_config
         with patch(
-            "quack_core.integrations.core.BaseConfigProvider.load_config"
+            "zeo_core.integrations.core.BaseConfigProvider.load_config"
         ) as mock_super:
             mock_super.return_value = MagicMock(
                 success=True,

@@ -1,5 +1,5 @@
 """
-Coverage-90 (RULING-234): tests for quack_core.integrations.llms.service's
+Coverage-90 (RULING-234): tests for zeo_core.integrations.llms.service's
 OWN LLMIntegration class and check_llm_dependencies function -- both are
 standalone duplicates of the ones in service/integration.py and
 service/dependencies.py respectively (confirmed live this session: no
@@ -7,9 +7,9 @@ re-export exists in service/__init__.py; every name is defined locally).
 
 This matters for coverage because service/__init__.py's LLMIntegration is
 the one actually reachable via the public import path
-(quack_core.integrations.llms.service.LLMIntegration, used by
-quack_core/integrations/llms/__init__.py and
-quack_core/prompt/_internal/enhancer.py) -- while the well-tested,
+(zeo_core.integrations.llms.service.LLMIntegration, used by
+zeo_core/integrations/llms/__init__.py and
+zeo_core/prompt/_internal/enhancer.py) -- while the well-tested,
 composed-from-helpers class lives at service/integration.py under its own
 module path. This is a real structural duplication (recorded here as a
 finding, not fixed -- out of this stream's coverage-work scope per
@@ -17,17 +17,17 @@ CLAUDE.md's circle of control); these tests close the coverage gap on the
 class that is actually live on the public surface.
 
 External SDK/network boundary mocked per RULING-235: importlib.util.find_spec,
-requests.get, and quack_core.integrations.llms.registry.get_llm_client --
-never a quack_core function under test.
+requests.get, and zeo_core.integrations.llms.registry.get_llm_client --
+never a zeo_core function under test.
 """
 
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.llms.models import ChatMessage, RoleType
-from quack_core.integrations.llms.service import (
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.llms.models import ChatMessage, RoleType
+from zeo_core.integrations.llms.service import (
     LLMIntegration,
     check_llm_dependencies,
 )
@@ -106,7 +106,7 @@ class TestLLMIntegrationExtractConfig:
         service.config = None
         service.config_provider = None
         with pytest.raises(
-            QuackIntegrationError, match="Configuration provider not initialized"
+            ZeoIntegrationError, match="Configuration provider not initialized"
         ):
             service._extract_config()
 
@@ -169,11 +169,11 @@ class TestLLMIntegrationExtractConfig:
         config = service._extract_config()
         assert config["default_provider"] == "mock"
 
-    def test_invalid_config_raises_quack_integration_error(self) -> None:
+    def test_invalid_config_raises_zeo_integration_error(self) -> None:
         service = LLMIntegration()
         # An LLMConfig field that fails pydantic validation.
         service.config = {"timeout": "not-a-number-and-not-coercible-????"}
-        with pytest.raises(QuackIntegrationError, match="Invalid LLM configuration"):
+        with pytest.raises(ZeoIntegrationError, match="Invalid LLM configuration"):
             service._extract_config()
 
 
@@ -186,7 +186,7 @@ class TestLLMIntegrationInitializeBranches:
         service = LLMIntegration()
         service.config = {"default_provider": "mock"}
         with patch(
-            "quack_core.integrations.core.base.BaseIntegrationService.initialize"
+            "zeo_core.integrations.core.base.BaseIntegrationService.initialize"
         ) as mock_super_init:
             mock_super_init.return_value = IntegrationResult(
                 success=False, error="base init failed"
@@ -216,7 +216,7 @@ class TestLLMIntegrationInitializeBranches:
             "fallback": None,
         }
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client"
+            "zeo_core.integrations.llms.registry.get_llm_client"
         ) as mock_get_client:
             mock_get_client.return_value = MagicMock()
             result = service.initialize()
@@ -228,7 +228,7 @@ class TestLLMIntegrationInitializeBranches:
             assert result.success is True
             mock_get_client.assert_called_once()
 
-    def test_extract_config_quack_integration_error_is_caught(self) -> None:
+    def test_extract_config_zeo_integration_error_is_caught(self) -> None:
         service = LLMIntegration()
         service.config = {"timeout": "not-a-number-and-not-coercible-????"}
         result = service.initialize()
@@ -243,7 +243,7 @@ class TestLLMIntegrationInitializeBranches:
         succeeds (lines 190-195's happy path), so initialize() dispatches
         to _initialize_with_fallback (line 206) rather than
         _initialize_single_provider. Using only the 'mock' provider keeps
-        this inside quack_core's own boundary per RULING-235."""
+        this inside zeo_core's own boundary per RULING-235."""
         service = LLMIntegration(enable_fallback=True)
         service.config = {
             "default_provider": "mock",
@@ -283,7 +283,7 @@ class TestLLMIntegrationSingleProviderFallbackBranches:
         service = LLMIntegration(provider="does-not-exist")
         service.config = {"default_provider": "does-not-exist"}
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client"
+            "zeo_core.integrations.llms.registry.get_llm_client"
         ) as mock_get_client:
             mock_get_client.return_value = MagicMock()
             result = service._initialize_single_provider(
@@ -309,7 +309,7 @@ class TestLLMIntegrationSingleProviderFallbackBranches:
         service = LLMIntegration(provider="anthropic")
         service.config = {"default_provider": "anthropic", "anthropic": {}}
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client"
+            "zeo_core.integrations.llms.registry.get_llm_client"
         ) as mock_get_client:
             mock_get_client.return_value = MagicMock()
             service._initialize_single_provider(service.config, ["anthropic"])
@@ -320,7 +320,7 @@ class TestLLMIntegrationSingleProviderFallbackBranches:
         service = LLMIntegration(provider="ollama")
         service.config = {"default_provider": "ollama", "ollama": {}}
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client"
+            "zeo_core.integrations.llms.registry.get_llm_client"
         ) as mock_get_client:
             mock_get_client.return_value = MagicMock()
             service._initialize_single_provider(service.config, ["ollama"])
@@ -331,8 +331,8 @@ class TestLLMIntegrationSingleProviderFallbackBranches:
         service = LLMIntegration(provider="openai")
         service.config = {"default_provider": "openai", "openai": {}}
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client",
-            side_effect=QuackIntegrationError("no api key"),
+            "zeo_core.integrations.llms.registry.get_llm_client",
+            side_effect=ZeoIntegrationError("no api key"),
         ):
             result = service._initialize_single_provider(service.config, ["openai"])
             assert result.success is True
@@ -345,11 +345,11 @@ class TestLLMIntegrationWithFallback:
     """_initialize_with_fallback -- essentially fully uncovered before
     this round. Uses only the 'mock' provider (no external deps) so the
     real FallbackLLMClient/MockLLMClient construction stays inside
-    quack_core's own boundary, per RULING-235 (mock the SDK/network edge,
-    not quack_core code)."""
+    zeo_core's own boundary, per RULING-235 (mock the SDK/network edge,
+    not zeo_core code)."""
 
     def test_fallback_with_only_mock_provider(self) -> None:
-        from quack_core.integrations.llms.fallback import FallbackConfig
+        from zeo_core.integrations.llms.fallback import FallbackConfig
 
         service = LLMIntegration(enable_fallback=True)
         service.config = {"default_provider": "mock", "mock": {}}
@@ -365,7 +365,7 @@ class TestLLMIntegrationWithFallback:
         assert service._initialized is True
 
     def test_fallback_appends_mock_when_absent_from_providers(self) -> None:
-        from quack_core.integrations.llms.fallback import FallbackConfig
+        from zeo_core.integrations.llms.fallback import FallbackConfig
 
         service = LLMIntegration(enable_fallback=True)
         service.config = {"default_provider": "mock"}
@@ -383,7 +383,7 @@ class TestLLMIntegrationWithFallback:
         """provider == self.provider branches for model_map/api_key_map
         (lines ~348-361), matching only against the 'mock' provider so no
         real SDK client is constructed."""
-        from quack_core.integrations.llms.fallback import FallbackConfig
+        from zeo_core.integrations.llms.fallback import FallbackConfig
 
         service = LLMIntegration(
             provider="mock", model="explicit-model", api_key="explicit-key"
@@ -404,9 +404,9 @@ class TestLLMIntegrationWithFallback:
         eagerly construct provider SDK clients (confirmed live this
         session: it only stores config/maps, real client construction is
         lazy via _get_client_for_provider), so passing real provider
-        names here stays inside quack_core's own boundary per RULING-235
+        names here stays inside zeo_core's own boundary per RULING-235
         -- no real network/SDK call is made."""
-        from quack_core.integrations.llms.fallback import FallbackConfig
+        from zeo_core.integrations.llms.fallback import FallbackConfig
 
         service = LLMIntegration(enable_fallback=True)
         service.config = {
@@ -432,14 +432,14 @@ class TestLLMIntegrationWithFallback:
     def test_fallback_client_construction_raises_falls_back_to_single_provider(
         self,
     ) -> None:
-        from quack_core.integrations.llms.fallback import FallbackConfig
+        from zeo_core.integrations.llms.fallback import FallbackConfig
 
         service = LLMIntegration(enable_fallback=True)
         service.config = {"default_provider": "mock"}
         fallback_config = FallbackConfig(providers=["mock"])
 
         with patch(
-            "quack_core.integrations.llms.fallback.FallbackLLMClient",
+            "zeo_core.integrations.llms.fallback.FallbackLLMClient",
             side_effect=RuntimeError("construction failed"),
         ):
             result = service._initialize_with_fallback(

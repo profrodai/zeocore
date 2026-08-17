@@ -12,9 +12,9 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
-from quack_core.adapters.http.app import create_app
-from quack_core.adapters.http.config import HttpAdapterConfig
-from quack_core.core.registry import OperationRegistry, get_registry, reset_registry
+from zeo_core.adapters.http.app import create_app
+from zeo_core.adapters.http.config import HttpAdapterConfig
+from zeo_core.core.registry import OperationRegistry, get_registry, reset_registry
 
 
 class EchoRequest(BaseModel):
@@ -72,7 +72,7 @@ def client(
     config: HttpAdapterConfig, registry: OperationRegistry
 ) -> Generator[TestClient]:
     """Provide test client with injected dependencies."""
-    from quack_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
+    from zeo_core.core.jobs import InMemoryJobStore, ThreadPoolJobRunner
 
     # Create test store and runner
     store = InMemoryJobStore()
@@ -391,7 +391,7 @@ class TestCallbackSigning:
 
     def test_sign_payload(self) -> None:
         """Should generate valid HMAC signature."""
-        from quack_core.adapters.http.auth import sign_payload
+        from zeo_core.adapters.http.auth import sign_payload
 
         payload = {"job_id": "123", "status": "done"}
         signature = sign_payload(payload, "test-secret")
@@ -401,7 +401,7 @@ class TestCallbackSigning:
 
     def test_signature_consistent(self) -> None:
         """Same payload should produce same signature."""
-        from quack_core.adapters.http.auth import sign_payload
+        from zeo_core.adapters.http.auth import sign_payload
 
         payload = {"job_id": "123", "status": "done"}
         sig1 = sign_payload(payload, "test-secret")
@@ -411,7 +411,7 @@ class TestCallbackSigning:
 
     def test_signature_changes_with_payload(self) -> None:
         """Different payloads should produce different signatures."""
-        from quack_core.adapters.http.auth import sign_payload
+        from zeo_core.adapters.http.auth import sign_payload
 
         payload1 = {"job_id": "123", "status": "done"}
         payload2 = {"job_id": "456", "status": "done"}
@@ -421,12 +421,12 @@ class TestCallbackSigning:
 
         assert sig1 != sig2
 
-    @patch("quack_core.adapters.http.util.httpx.AsyncClient")
+    @patch("zeo_core.adapters.http.util.httpx.AsyncClient")
     def test_post_callback(self, mock_client: MagicMock) -> None:
         """Should post callback with signature header."""
         import asyncio
 
-        from quack_core.adapters.http.util import post_callback
+        from zeo_core.adapters.http.util import post_callback
 
         # Setup mock
         mock_post = AsyncMock()
@@ -442,7 +442,7 @@ class TestCallbackSigning:
         mock_post.assert_called_once()
         call_kwargs = mock_post.call_args.kwargs
         assert call_kwargs["json"] == body
-        assert call_kwargs["headers"]["X-Quack-Signature"] == signature
+        assert call_kwargs["headers"]["X-Zeo-Signature"] == signature
 
 
 class TestErrorHandling:

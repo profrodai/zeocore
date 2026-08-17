@@ -35,31 +35,31 @@ from unittest.mock import patch
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-from quack_core.core.fs._internal.checksums import _compute_checksum
-from quack_core.core.fs._internal.common import _get_extension
-from quack_core.core.fs._internal.comparison import _is_same_file, _is_subdirectory
-from quack_core.core.fs._internal.directory_ops import _ensure_directory
-from quack_core.core.fs._internal.disk import _get_disk_usage, _probe_path_writeable
-from quack_core.core.fs._internal.file_info import (
+from zeo_core.core.fs._internal.checksums import _compute_checksum
+from zeo_core.core.fs._internal.common import _get_extension
+from zeo_core.core.fs._internal.comparison import _is_same_file, _is_subdirectory
+from zeo_core.core.fs._internal.directory_ops import _ensure_directory
+from zeo_core.core.fs._internal.disk import _get_disk_usage, _probe_path_writeable
+from zeo_core.core.fs._internal.file_info import (
     _get_file_size_str,
     _get_file_timestamp,
     _get_file_type,
     _get_mime_type,
     _is_file_locked,
 )
-from quack_core.core.fs._internal.file_ops import (
+from zeo_core.core.fs._internal.file_ops import (
     _atomic_write,
     _find_files_by_content,
     _get_unique_filename,
 )
-from quack_core.core.fs._internal.path_ops import (
+from zeo_core.core.fs._internal.path_ops import (
     _expand_user_vars,
     _resolve_path,
     _split_path,
 )
-from quack_core.core.fs._internal.safe_ops import _safe_copy, _safe_delete, _safe_move
-from quack_core.core.fs._internal.temp import _create_temp_directory, _create_temp_file
-from quack_core.core.fs.service.path_operations import PathOperationsMixin
+from zeo_core.core.fs._internal.safe_ops import _safe_copy, _safe_delete, _safe_move
+from zeo_core.core.fs._internal.temp import _create_temp_directory, _create_temp_file
+from zeo_core.core.fs.service.path_operations import PathOperationsMixin
 
 
 class TestPathUtilities:
@@ -196,7 +196,7 @@ class TestPathUtilities:
         `split_path`/`is_same_file`/`is_subdirectory`/`get_extension`/
         `expand_user_vars_raw` do), so no real `FileSystemOperations`
         instance is constructed here -- deliberately avoids importing
-        `quack_core.core.fs._ops.base` from a test-module top level, which
+        `zeo_core.core.fs._ops.base` from a test-module top level, which
         would trip `test_architecture.py::test_ops_import_boundary`'s
         source-scan (a separate, pre-existing, out-of-scope defect in that
         checker's own `PACKAGE_ROOT` -- named in this stream's SOW
@@ -317,7 +317,7 @@ class TestFileUtilities:
 
         # Test with raise_if_exists=True
         # NOTE (fs-internals-fix): _internal raises bare builtin exceptions,
-        # never Quack*-wrapped ones (Vision-Invariants Brief, CLAUDE.md s11) --
+        # never Zeo*-wrapped ones (Vision-Invariants Brief, CLAUDE.md s11) --
         # verified by reading _internal/file_ops.py in full.
         with pytest.raises(FileExistsError):
             _get_unique_filename(temp_dir, "unique.txt", raise_if_exists=True)
@@ -337,7 +337,7 @@ class TestFileUtilities:
         try:
             assert created_dir.exists()
             assert created_dir.is_dir()
-            assert "quackcore_" in created_dir.name
+            assert "zeocore_" in created_dir.name
         finally:
             # Clean up
             created_dir.rmdir()
@@ -360,7 +360,7 @@ class TestFileUtilities:
         try:
             assert temp_file.exists()
             assert temp_file.is_file()
-            assert "quackcore_" in temp_file.name
+            assert "zeocore_" in temp_file.name
             assert temp_file.name.endswith(".txt")
         finally:
             # Clean up
@@ -395,7 +395,7 @@ class TestFileUtilities:
         assert timestamp > 0
 
         # Test with non-existent file (bare .stat() -> bare FileNotFoundError,
-        # not Quack-wrapped -- see the module-level note on _internal exceptions)
+        # not Zeo-wrapped -- see the module-level note on _internal exceptions)
         with pytest.raises(FileNotFoundError):
             _get_file_timestamp(temp_dir / "nonexistent.txt")
 
@@ -533,7 +533,7 @@ class TestFileUtilities:
         assert usage["total"] >= usage["used"]
 
         # Test with non-existent path (_internal wraps shutil's error in a
-        # bare OSError, not QuackIOError)
+        # bare OSError, not ZeoIOError)
         with pytest.raises(OSError):
             _get_disk_usage(temp_dir / "nonexistent")
 
@@ -570,7 +570,7 @@ class TestFileUtilities:
         assert file3 not in results
 
         # Test with invalid regex (re.error is wrapped in bare ValueError, not
-        # QuackIOError -- confirmed by reading _internal/file_ops.py in full)
+        # ZeoIOError -- confirmed by reading _internal/file_ops.py in full)
         with pytest.raises(ValueError):
             _find_files_by_content(temp_dir, "[invalid regex")
 
@@ -602,11 +602,11 @@ class TestFileUtilities:
         assert result.exists()
         assert result.is_dir()
 
-        # Test with exist_ok=False (bare FileExistsError, not Quack-wrapped)
+        # Test with exist_ok=False (bare FileExistsError, not Zeo-wrapped)
         with pytest.raises(FileExistsError):
             _ensure_directory(new_dir, exist_ok=False)
 
-        # Test with permission denied (bare PermissionError, not Quack-wrapped)
+        # Test with permission denied (bare PermissionError, not Zeo-wrapped)
         with patch("pathlib.Path.mkdir", side_effect=PermissionError):
             with pytest.raises(PermissionError):
                 _ensure_directory(temp_dir / "permission_denied")
@@ -625,11 +625,11 @@ class TestFileUtilities:
         checksum = _compute_checksum(file_path)
         assert checksum == expected
 
-        # Test with non-existent file (bare FileNotFoundError, not Quack-wrapped)
+        # Test with non-existent file (bare FileNotFoundError, not Zeo-wrapped)
         with pytest.raises(FileNotFoundError):
             _compute_checksum(temp_dir / "nonexistent.txt")
 
-        # Test with directory (should fail; bare OSError, not QuackIOError)
+        # Test with directory (should fail; bare OSError, not ZeoIOError)
         with pytest.raises(OSError):
             _compute_checksum(temp_dir)
 
@@ -639,8 +639,8 @@ class TestFileUtilities:
         NOTE (fs-internals-fix): `_internal.file_ops._atomic_write` now takes
         `content: bytes` only (read in full -- `f.write(content)` on a
         binary-mode fdopen, no str branch) and raises a bare `OSError` on
-        failure, not `QuackIOError` (`_internal` raises bare per the
-        Vision-Invariants Brief; `Quack*` wrapping happens at `service`).
+        failure, not `ZeoIOError` (`_internal` raises bare per the
+        Vision-Invariants Brief; `Zeo*` wrapping happens at `service`).
         Text content is now encoded before the call, matching how
         `_ops.write_ops.WriteOperationsMixin._write_text` itself calls it
         (`content.encode(encoding)`).
@@ -678,7 +678,7 @@ class TestFileUtilities:
         assert dst_path.read_text() == "safe copy content"
 
         # Test copying to existing destination (should fail without overwrite;
-        # bare FileExistsError, not Quack-wrapped)
+        # bare FileExistsError, not Zeo-wrapped)
         with pytest.raises(FileExistsError):
             _safe_copy(src_path, dst_path)
 
@@ -722,7 +722,7 @@ class TestFileUtilities:
         src_path.write_text("new safe move content")
 
         # Test moving to existing destination (should fail without overwrite;
-        # bare FileExistsError, not Quack-wrapped)
+        # bare FileExistsError, not Zeo-wrapped)
         with pytest.raises(FileExistsError):
             _safe_move(src_path, dst_path)
 
@@ -765,7 +765,7 @@ class TestFileUtilities:
         assert result is False
 
         # Test deleting non-existent file with missing_ok=False (bare
-        # FileNotFoundError, not Quack-wrapped)
+        # FileNotFoundError, not Zeo-wrapped)
         with pytest.raises(FileNotFoundError):
             _safe_delete(file_path, missing_ok=False)
 

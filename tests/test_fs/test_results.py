@@ -4,7 +4,7 @@ Tests for the filesystem operation result classes.
 
 from pathlib import Path
 
-from quack_core.core.fs import (
+from zeo_core.core.fs import (
     DataResult,
     DirectoryInfoResult,
     FileInfoResult,

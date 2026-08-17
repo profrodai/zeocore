@@ -1,0 +1,185 @@
+"""
+Input normalization logic.
+This module is the Single Source of Truth for coercing inputs into Paths.
+It does NOT depend on _internal or service.
+"""
+
+import os
+from pathlib import Path
+from typing import TypeVar
+
+from zeo_core.core.fs.exceptions import (
+    ZeoPathEscapeError,
+    ZeoPathOutsideBaseDirError,
+)
+from zeo_core.core.fs.protocols import FsPathLike
+
+T = TypeVar("T")
+
+
+def _unwrap_result_like(obj: FsPathLike) -> str | None:
+    """
+    Try each Result-like unwrap strategy in priority order, returning the
+    extracted path string, or None if none of the strategies apply to `obj`.
+    Extracted from _extract_path_str to keep that function's branch count low
+    (C901); behavior and order are unchanged from the original inline chain.
+
+    Fails fast (raises ValueError) on an explicit failed Result — that case is
+    a genuine error, not "no strategy applied", so it is not folded into the
+    None return.
+    """
+    # Fail fast on failed Results (check 'ok' first as canonical, then 'success')
+    if hasattr(obj, "ok") and not getattr(obj, "ok", True):
+        raise ValueError(f"Cannot extract path from failed Result object: {obj}")
+
+    # Explicit unwrap methods
+    if hasattr(obj, "value") and callable(obj.value):
+        return _extract_path_str(obj.value())
+    if hasattr(obj, "unwrap") and callable(obj.unwrap):
+        return _extract_path_str(obj.unwrap())
+
+    # Result attributes: ok-gated so only typed Results unwrap .data (R-1 narrowing)
+    # Prefer 'data' if it looks path-like, else 'path'
+    if hasattr(obj, "ok") and hasattr(obj, "data") and obj.data is not None:
+        # Only use .data if it is explicitly a string or path-like
+        # This prevents treating arbitrary payloads (dicts, lists) as paths
+        if isinstance(obj.data, (str, Path)) or hasattr(obj.data, "__fspath__"):
+            try:
+                return _extract_path_str(obj.data)
+            except (TypeError, ValueError):
+                pass
+
+    if hasattr(obj, "path") and obj.path is not None:
+        return _extract_path_str(obj.path)
+
+    return None
+
+
+def _extract_path_str(obj: FsPathLike) -> str:
+    """Core logic to extract a string path from a polymorphic input."""
+    if obj is None:
+        raise TypeError("Path cannot be None")
+
+    if isinstance(obj, str):
+        return obj
+    if isinstance(obj, Path):
+        return str(obj)
+    if hasattr(obj, "__fspath__"):
+        return os.fspath(obj)  # type: ignore
+
+    unwrapped = _unwrap_result_like(obj)
+    if unwrapped is not None:
+        return unwrapped
+
+    raise TypeError(f"Could not coerce object of type {type(obj)} to path string")
+
+
+def coerce_path(
+    obj: FsPathLike, base_dir: Path | None = None, allow_absolute: bool = False
+) -> Path:
+    """
+    Strictly coerce input to a pathlib.Path.
+    If base_dir is provided, anchors relative paths to it and prevents escape.
+
+    Args:
+        obj: The input path-like object.
+        base_dir: The root directory to anchor relative paths to.
+        allow_absolute: If True, absolute paths outside base_dir are allowed (unsafe).
+                        If False, absolute paths must be within base_dir (if provided).
+
+    Raises:
+        TypeError: If input cannot be coerced to a path.
+        ZeoPathSecurityError: If path violates sandboxing.
+    """
+    try:
+        s = _extract_path_str(obj)
+        path = Path(s)
+
+        # Handle user home expansion immediately
+        path = path.expanduser()
+
+        if base_dir:
+            # Ensure base_dir is resolved for robust relative_to checks
+            base_dir = base_dir.resolve()
+
+            # 1. Handle Absolute Paths
+            if path.is_absolute():
+                if allow_absolute:
+                    return path.resolve()
+
+                # If absolute but strict sandboxing is on, ensure it is inside base_dir
+                try:
+                    resolved = path.resolve()
+                    resolved.relative_to(base_dir)
+                    return resolved
+                except ValueError:
+                    raise ZeoPathOutsideBaseDirError(
+                        f"Path '{path}' is outside base directory '{base_dir}' "
+                        "(allow_absolute=False)"
+                    ) from None
+
+            # 2. Handle Relative Paths (Anchor to base_dir)
+            resolved_path = (base_dir / path).resolve()
+
+            # 3. Strict Sandboxing Check (escape prevention for relative paths with ..)
+            try:
+                resolved_path.relative_to(base_dir)
+            except ValueError:
+                raise ZeoPathEscapeError(
+                    f"Path '{path}' attempts to escape base directory '{base_dir}'"
+                ) from None
+
+            return resolved_path
+
+        # No base_dir context - return as is (resolved)
+        return path.resolve()
+
+    except TypeError:
+        # Re-raise TypeErrors (wrong shape) as-is or wrap with context
+        raise
+    except ValueError as e:
+        # If it's already one of our security errors, re-raise
+        if isinstance(e, (ZeoPathEscapeError, ZeoPathOutsideBaseDirError)):
+            raise
+        # Otherwise re-raise standard ValueErrors
+        raise
+    except Exception as e:
+        # Wrap unknown errors
+        raise TypeError(f"Could not coerce {type(obj)} to Path: {e}") from e
+
+
+def coerce_path_str(obj: FsPathLike) -> str:
+    """
+    Strictly coerce input to a string path.
+    Raises TypeError/ValueError on failure.
+    """
+    return _extract_path_str(obj)
+
+
+def safe_path_str(obj: FsPathLike, default: str | None = None) -> str | None:
+    """
+    Safely extract a string path from any object, returning a default on failure.
+    Never raises.
+    """
+    try:
+        return _extract_path_str(obj)
+    except (TypeError, ValueError, AttributeError):
+        return default
+
+
+def coerce_path_result(obj: FsPathLike) -> Path:
+    """
+    Helper for standalone wrappers to extract a Path from a Result or PathLike.
+    Equivalent to coerce_path but without base_dir context (used for introspection).
+    """
+    return coerce_path(obj)
+
+
+def extract_path_from_result(obj: FsPathLike) -> Path | None:
+    """
+    Best-effort extraction of a Path from a result object. Returns None on failure.
+    """
+    try:
+        return coerce_path(obj)
+    except (TypeError, ValueError):
+        return None

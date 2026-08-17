@@ -11,12 +11,12 @@ from typing import Any
 
 import pytest
 from pydantic import BaseModel, ValidationError
-from quack_core.contracts import (
+from zeo_core.contracts import (
     ArtifactRef,
     RunManifest,
     StorageRef,
 )
-from quack_core.contracts.common.ids import is_valid_uuid
+from zeo_core.contracts.common.ids import is_valid_uuid
 
 
 def _get_schema_examples(model: type[BaseModel]) -> list[Any]:

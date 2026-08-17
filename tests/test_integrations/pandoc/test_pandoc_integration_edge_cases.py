@@ -14,17 +14,17 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.pandoc.config import PandocConfig, PandocOptions
-from quack_core.integrations.pandoc.models import (
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.pandoc.config import PandocConfig, PandocOptions
+from zeo_core.integrations.pandoc.models import (
     ConversionDetails,
     ConversionMetrics,
     ConversionTask,
     FileInfo,
 )
-from quack_core.integrations.pandoc.operations.html_to_md import post_process_markdown
-from quack_core.integrations.pandoc.operations.utils import (
+from zeo_core.integrations.pandoc.operations.html_to_md import post_process_markdown
+from zeo_core.integrations.pandoc.operations.utils import (
     check_conversion_ratio,
     check_file_size,
     get_file_info,
@@ -34,7 +34,7 @@ from quack_core.integrations.pandoc.operations.utils import (
     validate_html_structure,
     verify_pandoc,
 )
-from quack_core.integrations.pandoc.service import PandocIntegration
+from zeo_core.integrations.pandoc.service import PandocIntegration
 
 
 def test_integration_with_custom_config_path() -> None:
@@ -54,13 +54,13 @@ def test_integration_with_custom_config_path() -> None:
     mock_fs.create_directory = MagicMock(return_value=SimpleNamespace(success=True))
 
     with (
-        patch("quack_core.core.paths.service", MagicMock(expand_user_vars=lambda x: x)),
+        patch("zeo_core.core.paths.service", MagicMock(expand_user_vars=lambda x: x)),
         patch(
-            "quack_core.integrations.pandoc.service.PandocConfigProvider",
+            "zeo_core.integrations.pandoc.service.PandocConfigProvider",
             return_value=mock_config_provider,
         ),
         patch(
-            "quack_core.integrations.pandoc.service.verify_pandoc",
+            "zeo_core.integrations.pandoc.service.verify_pandoc",
             return_value="2.11.0",
         ),
     ):
@@ -93,9 +93,9 @@ def test_integration_with_custom_output_dir() -> None:
     mock_provider.expand_user_vars.side_effect = lambda x: x
 
     with (
-        patch("quack_core.core.paths.service", MagicMock(expand_user_vars=lambda x: x)),
+        patch("zeo_core.core.paths.service", MagicMock(expand_user_vars=lambda x: x)),
         patch(
-            "quack_core.integrations.pandoc.service.verify_pandoc",
+            "zeo_core.integrations.pandoc.service.verify_pandoc",
             return_value="2.11.0",
         ),
     ):
@@ -135,14 +135,14 @@ def test_integration_initialize_with_invalid_config() -> None:
     integration.fs_service = mock_fs
 
     with patch(
-        "quack_core.integrations.pandoc.service.verify_pandoc", return_value="2.11.0"
+        "zeo_core.integrations.pandoc.service.verify_pandoc", return_value="2.11.0"
     ):
         result = integration.initialize()
         # Should succeed with warnings, using default config
         assert result.success
 
 
-@patch("quack_core.core.fs.service.standalone")
+@patch("zeo_core.core.fs.service.standalone")
 def test_integration_directory_conversion_edge_cases(mock_fs: MagicMock) -> None:
     """Test directory conversion edge cases."""
     integration = PandocIntegration()
@@ -167,9 +167,9 @@ def test_integration_directory_conversion_edge_cases(mock_fs: MagicMock) -> None
     integration.fs_service = mock_fs_service
 
     with (
-        patch("quack_core.core.paths.service", MagicMock(expand_user_vars=lambda x: x)),
+        patch("zeo_core.core.paths.service", MagicMock(expand_user_vars=lambda x: x)),
         patch(
-            "quack_core.integrations.pandoc.service.verify_pandoc",
+            "zeo_core.integrations.pandoc.service.verify_pandoc",
             return_value="2.11.0",
         ),
     ):
@@ -324,7 +324,7 @@ def test_get_file_info_edge_cases(monkeypatch: MonkeyPatch) -> None:
     mock_fs.get_file_info = lambda path: SimpleNamespace(
         success=True, exists=True, size="not-a-number", modified=None
     )
-    monkeypatch.setattr("quack_core.integrations.pandoc.operations.utils.fs", mock_fs)
+    monkeypatch.setattr("zeo_core.integrations.pandoc.operations.utils.fs", mock_fs)
 
     file_info = get_file_info("test.html")
     assert file_info.size == 1024  # Default when size conversion fails
@@ -336,7 +336,7 @@ def test_get_file_info_edge_cases(monkeypatch: MonkeyPatch) -> None:
     mock_fs.get_extension = lambda path: SimpleNamespace(
         success=True, data=path.split(".")[-1]
     )
-    monkeypatch.setattr("quack_core.integrations.pandoc.operations.utils.fs", mock_fs)
+    monkeypatch.setattr("zeo_core.integrations.pandoc.operations.utils.fs", mock_fs)
 
     # Test various extensions
     extensions_mapping = {
@@ -414,7 +414,7 @@ def test_check_conversion_ratio_edge_cases() -> None:
     assert "less than" in errors[0]
 
 
-@patch("quack_core.integrations.pandoc.operations.utils.logger")
+@patch("zeo_core.integrations.pandoc.operations.utils.logger")
 def test_track_metrics_logging(mock_logger: MagicMock) -> None:
     """Test that track_metrics properly logs information."""
     metrics = ConversionMetrics()
@@ -634,20 +634,20 @@ def test_verify_pandoc_with_all_errors() -> None:
     with patch(
         "importlib.import_module", side_effect=ImportError("No module named 'pypandoc'")
     ):
-        with pytest.raises(QuackIntegrationError) as exc_info:
+        with pytest.raises(ZeoIntegrationError) as exc_info:
             verify_pandoc()
         assert "pypandoc module is not installed" in str(exc_info.value)
 
     # Test OSError
     mock_module.get_pandoc_version.side_effect = OSError("Pandoc executable not found")
     with patch.dict(sys.modules, {"pypandoc": mock_module}):
-        with pytest.raises(QuackIntegrationError) as exc_info:
+        with pytest.raises(ZeoIntegrationError) as exc_info:
             verify_pandoc()
         assert "Pandoc is not installed" in str(exc_info.value)
 
     # Test general exception
     mock_module.get_pandoc_version.side_effect = Exception("Unexpected error")
     with patch.dict(sys.modules, {"pypandoc": mock_module}):
-        with pytest.raises(QuackIntegrationError) as exc_info:
+        with pytest.raises(ZeoIntegrationError) as exc_info:
             verify_pandoc()
         assert "Error checking pandoc" in str(exc_info.value)

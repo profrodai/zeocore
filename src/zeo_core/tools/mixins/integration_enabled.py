@@ -1,0 +1,51 @@
+
+"""
+Integration support for tools (doctrine-compliant).
+Services come from ToolContext.services (runner-provided).
+"""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, TypeVar
+
+if TYPE_CHECKING:
+    from zeo_core.tools.context import ToolContext
+
+T = TypeVar("T")
+
+
+class IntegrationEnabledMixin:
+    """
+    Mixin for tools that need integration services.
+    Services must be provided by runner in ToolContext.services.
+    """
+
+    def get_service(
+        self, name: str, ctx: ToolContext, expected_type: type[T] | None = None
+    ) -> T | Any | None:  # noqa: ANN401 -- return is an arbitrary integration instance from the heterogeneous services registry; isinstance() narrows the runtime class but cannot prove T for the type checker
+        """Get a service from the context (if runner provided it)."""
+        svc = ctx.get_service(name)
+        if svc is None:
+            return None
+
+        if expected_type is not None:
+            if not isinstance(svc, expected_type):
+                raise TypeError(
+                    f"Service '{name}' is {type(svc).__name__}, "
+                    f"expected {expected_type.__name__}"
+                )
+        return svc
+
+    def require_service(
+        self, name: str, ctx: ToolContext, expected_type: type[T] | None = None
+    ) -> T | Any:  # noqa: ANN401 -- same rationale as get_service: arbitrary integration instance, isinstance() cannot prove T for the type checker
+        """Get a service from context (raises if missing)."""
+        svc = ctx.require_service(name)
+
+        if expected_type is not None:
+            if not isinstance(svc, expected_type):
+                raise TypeError(
+                    f"Service '{name}' is {type(svc).__name__}, "
+                    f"expected {expected_type.__name__}"
+                )
+        return svc

@@ -41,8 +41,8 @@ import logging
 import shutil
 from pathlib import Path
 
-from quack_core.integrations.google.mail.operations import attachments, email
-from quack_core.integrations.google.mail.operations.email import clean_filename
+from zeo_core.integrations.google.mail.operations import attachments, email
+from zeo_core.integrations.google.mail.operations.email import clean_filename
 from tests.test_integrations.google.mail.mocks import create_mock_gmail_service
 
 
@@ -63,7 +63,7 @@ class TestEmailHandleAttachmentJoinPathFixed:
 
         Direct, non-inferred evidence -- not a mock's opinion.
         """
-        from quack_core.core.fs.service import standalone
+        from zeo_core.core.fs.service import standalone
 
         result = standalone.join_path("some_dir", "file.txt")
         stringified = str(result)
@@ -128,7 +128,7 @@ class TestHandleAttachmentSplitPathCollisionFixed:
         """Ground truth, unchanged by the fix: the real return type is
         still not a plain list -- the fix unwraps via .data explicitly.
         """
-        from quack_core.core.fs.service import standalone
+        from zeo_core.core.fs.service import standalone
 
         result = standalone.split_path("test_scratch_split_path_fixed/file.txt")
         assert not isinstance(result, list), (

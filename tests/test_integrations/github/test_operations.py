@@ -5,14 +5,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from quack_core.core.errors import QuackApiError, QuackError
-from quack_core.integrations.github.models import (
+from zeo_core.core.errors import ZeoApiError, ZeoError
+from zeo_core.integrations.github.models import (
     GitHubRepo,
     GitHubUser,
     PullRequest,
     PullRequestStatus,
 )
-from quack_core.integrations.github.operations import (
+from zeo_core.integrations.github.operations import (
     add_issue_comment,
     check_repository_exists,
     create_issue,
@@ -67,7 +67,7 @@ class TestUserOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.users.make_request"
+            "zeo_core.integrations.github.operations.users.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -106,7 +106,7 @@ class TestUserOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.users.make_request"
+            "zeo_core.integrations.github.operations.users.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -160,7 +160,7 @@ class TestRepositoryOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -198,7 +198,7 @@ class TestRepositoryOperations:
         """Test starring a repository."""
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -226,7 +226,7 @@ class TestRepositoryOperations:
         """Test unstarring a repository."""
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -254,7 +254,7 @@ class TestRepositoryOperations:
         """Test checking if a repository is starred (true case)."""
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -279,10 +279,10 @@ class TestRepositoryOperations:
     def test_is_repo_starred_false(self, mock_session: MagicMock) -> None:
         """Test checking if a repository is starred (false case)."""
         # Mock make_request to raise a 404 error
-        mock_error = QuackApiError("Not found", status_code=404)
+        mock_error = ZeoApiError("Not found", status_code=404)
 
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.side_effect = mock_error
 
@@ -307,15 +307,15 @@ class TestRepositoryOperations:
     def test_is_repo_starred_other_error(self, mock_session: MagicMock) -> None:
         """Test checking if a repository is starred with a non-404 error."""
         # Mock make_request to raise a non-404 error
-        mock_error = QuackApiError("API error", status_code=500)
+        mock_error = ZeoApiError("API error", status_code=500)
 
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.side_effect = mock_error
 
             # Call operation should re-raise the error
-            with pytest.raises(QuackApiError) as excinfo:
+            with pytest.raises(ZeoApiError) as excinfo:
                 is_repo_starred(
                     session=mock_session,
                     full_name="test_owner/test-repo",
@@ -348,7 +348,7 @@ class TestRepositoryOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -384,7 +384,7 @@ class TestRepositoryOperations:
         """Test checking if a repository exists (true case)."""
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -409,10 +409,10 @@ class TestRepositoryOperations:
     def test_check_repository_exists_false(self, mock_session: MagicMock) -> None:
         """Test checking if a repository exists (false case)."""
         # Mock make_request to raise a 404 error
-        mock_error = QuackApiError("Not found", status_code=404)
+        mock_error = ZeoApiError("Not found", status_code=404)
 
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.side_effect = mock_error
 
@@ -447,7 +447,7 @@ class TestRepositoryOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -479,7 +479,7 @@ class TestRepositoryOperations:
         """Test updating repository file."""
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.repositories.make_request"
+            "zeo_core.integrations.github.operations.repositories.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -549,7 +549,7 @@ class TestPullRequestOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -642,7 +642,7 @@ class TestPullRequestOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -704,7 +704,7 @@ class TestPullRequestOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -762,7 +762,7 @@ class TestPullRequestOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -816,7 +816,7 @@ class TestPullRequestOperations:
         mock_response.json.return_value = pr_data
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -859,7 +859,7 @@ class TestPullRequestOperations:
         mock_response.json.return_value = pr_data
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -940,7 +940,7 @@ class TestPullRequestOperations:
         mock_response.json.return_value = pr_list
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -963,7 +963,7 @@ class TestPullRequestOperations:
         """Test get_pull_request's merged/closed status branches
         (lines 246-256), calling it twice with distinct fixtures."""
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             merged_data = {
                 "number": 301,
@@ -1010,14 +1010,14 @@ class TestPullRequestOperations:
         """Test merging a pull request -- covers merge_pull_request
         (lines 306-322) end to end, including the optional commit_title
         and commit_message request-body fields."""
-        from quack_core.integrations.github.operations.pull_requests import (
+        from zeo_core.integrations.github.operations.pull_requests import (
             merge_pull_request,
         )
 
         mock_response.json.return_value = {"merged": True, "sha": "abc123"}
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -1050,14 +1050,14 @@ class TestPullRequestOperations:
         """Test merge_pull_request's False-return path (a mergeable
         conflict reported by the API without an HTTP error) and the
         default-arguments branch (no commit_title/commit_message)."""
-        from quack_core.integrations.github.operations.pull_requests import (
+        from zeo_core.integrations.github.operations.pull_requests import (
             merge_pull_request,
         )
 
         mock_response.json.return_value = {"merged": False}
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -1082,7 +1082,7 @@ class TestPullRequestOperations:
     ) -> None:
         """Test adding a review to a pull request -- covers
         add_pull_request_review (lines 384-394) end to end."""
-        from quack_core.integrations.github.operations.pull_requests import (
+        from zeo_core.integrations.github.operations.pull_requests import (
             add_pull_request_review,
         )
 
@@ -1094,7 +1094,7 @@ class TestPullRequestOperations:
         mock_response.json.return_value = review_data
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -1147,7 +1147,7 @@ class TestGetPullRequestsByUser:
         """state='open' appends the is:open qualifier and results parse
         into PullRequest objects with empty repo/branch fields (the search
         API does not return head/base repo details)."""
-        from quack_core.integrations.github.operations.pull_requests import (
+        from zeo_core.integrations.github.operations.pull_requests import (
             get_pull_requests_by_user,
         )
 
@@ -1156,7 +1156,7 @@ class TestGetPullRequestsByUser:
         }
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -1187,7 +1187,7 @@ class TestGetPullRequestsByUser:
         PullRequestStatus.CLOSED (the search API path never reports
         MERGED -- confirmed by reading the source: status is only OPEN or
         CLOSED here, unlike the REST endpoints above)."""
-        from quack_core.integrations.github.operations.pull_requests import (
+        from zeo_core.integrations.github.operations.pull_requests import (
             get_pull_requests_by_user,
         )
 
@@ -1196,7 +1196,7 @@ class TestGetPullRequestsByUser:
         }
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -1220,14 +1220,14 @@ class TestGetPullRequestsByUser:
         self, mock_session: MagicMock, mock_response: MagicMock
     ) -> None:
         """state='all' (the else branch) appends no extra qualifier."""
-        from quack_core.integrations.github.operations.pull_requests import (
+        from zeo_core.integrations.github.operations.pull_requests import (
             get_pull_requests_by_user,
         )
 
         mock_response.json.return_value = {"items": []}
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -1243,22 +1243,22 @@ class TestGetPullRequestsByUser:
             call_kwargs = mock_make_request.call_args[1]
             assert call_kwargs["params"] == {"q": "is:pr author:test_user org:test_org"}
 
-    def test_make_request_failure_wraps_in_quack_error(
+    def test_make_request_failure_wraps_in_zeo_error(
         self, mock_session: MagicMock
     ) -> None:
         """The API-call failure path (lines 435-447): make_request raising
-        is caught and re-raised as QuackError, not left to propagate the
+        is caught and re-raised as ZeoError, not left to propagate the
         original exception type."""
-        from quack_core.integrations.github.operations.pull_requests import (
+        from zeo_core.integrations.github.operations.pull_requests import (
             get_pull_requests_by_user,
         )
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.side_effect = RuntimeError("boom")
 
-            with pytest.raises(QuackError, match="Failed to search for pull requests"):
+            with pytest.raises(ZeoError, match="Failed to search for pull requests"):
                 get_pull_requests_by_user(
                     session=mock_session,
                     username="test_user",
@@ -1266,24 +1266,24 @@ class TestGetPullRequestsByUser:
                     api_url="https://api.github.com",
                 )
 
-    def test_response_json_failure_wraps_in_quack_error(
+    def test_response_json_failure_wraps_in_zeo_error(
         self, mock_session: MagicMock, mock_response: MagicMock
     ) -> None:
         """The response-parsing failure path (lines 449-454): a real
         response.json() raising ValueError is caught and re-raised as
-        QuackError."""
-        from quack_core.integrations.github.operations.pull_requests import (
+        ZeoError."""
+        from zeo_core.integrations.github.operations.pull_requests import (
             get_pull_requests_by_user,
         )
 
         mock_response.json.side_effect = ValueError("not json")
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
-            with pytest.raises(QuackError, match="Failed to parse search results"):
+            with pytest.raises(ZeoError, match="Failed to parse search results"):
                 get_pull_requests_by_user(
                     session=mock_session,
                     username="test_user",
@@ -1299,7 +1299,7 @@ class TestGetPullRequestsByUser:
         on None) is caught per-item and skipped (lines 499-502) rather than
         aborting the whole call -- the well-formed sibling item still comes
         back."""
-        from quack_core.integrations.github.operations.pull_requests import (
+        from zeo_core.integrations.github.operations.pull_requests import (
             get_pull_requests_by_user,
         )
 
@@ -1311,7 +1311,7 @@ class TestGetPullRequestsByUser:
         }
 
         with patch(
-            "quack_core.integrations.github.operations.pull_requests.make_request"
+            "zeo_core.integrations.github.operations.pull_requests.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -1349,7 +1349,7 @@ class TestIssueOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.issues.make_request"
+            "zeo_core.integrations.github.operations.issues.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -1404,7 +1404,7 @@ class TestIssueOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.issues.make_request"
+            "zeo_core.integrations.github.operations.issues.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -1451,7 +1451,7 @@ class TestIssueOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.issues.make_request"
+            "zeo_core.integrations.github.operations.issues.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 
@@ -1489,7 +1489,7 @@ class TestIssueOperations:
 
         # Mock make_request
         with patch(
-            "quack_core.integrations.github.operations.issues.make_request"
+            "zeo_core.integrations.github.operations.issues.make_request"
         ) as mock_make_request:
             mock_make_request.return_value = mock_response
 

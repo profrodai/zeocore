@@ -10,9 +10,9 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.pandoc.service import PandocIntegration, create_integration
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.pandoc.service import PandocIntegration, create_integration
 
 
 @pytest.fixture
@@ -55,8 +55,8 @@ def test_pandoc_integration_name_version() -> None:
     assert not integration._initialized
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_with_mocked_verify_pandoc(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -84,7 +84,7 @@ def test_initialize_with_mocked_verify_pandoc(
     assert integration.converter is not None
 
 
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_with_verify_pandoc_error(
     mock_verify_pandoc: MagicMock, setup_mocks: tuple[SimpleNamespace, MagicMock]
 ) -> None:
@@ -97,7 +97,7 @@ def test_initialize_with_verify_pandoc_error(
     integration.fs_service = fs_stub  # type: ignore[assignment]  # SimpleNamespace duck-types FileSystemService for this test double
 
     # Mock verify_pandoc to raise an error
-    mock_verify_pandoc.side_effect = QuackIntegrationError("Pandoc not found", {})
+    mock_verify_pandoc.side_effect = ZeoIntegrationError("Pandoc not found", {})
 
     result = integration.initialize()
 
@@ -141,21 +141,21 @@ def test_is_pandoc_available() -> None:
 
     # Mock verify_pandoc to succeed
     with patch(
-        "quack_core.integrations.pandoc.service.verify_pandoc", return_value="2.11.0"
+        "zeo_core.integrations.pandoc.service.verify_pandoc", return_value="2.11.0"
     ):
         assert integration.is_pandoc_available()
         assert integration.get_pandoc_version() == "2.11.0"
 
     # Mock verify_pandoc to fail
     with patch(
-        "quack_core.integrations.pandoc.service.verify_pandoc",
-        side_effect=QuackIntegrationError("Pandoc not found", {}),
+        "zeo_core.integrations.pandoc.service.verify_pandoc",
+        side_effect=ZeoIntegrationError("Pandoc not found", {}),
     ):
         assert not integration.is_pandoc_available()
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_html_to_markdown_with_initialized_service(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -198,8 +198,8 @@ def test_html_to_markdown_with_initialized_service(
     assert mock_convert_file.call_count == 2
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_markdown_to_docx_with_initialized_service(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -242,8 +242,8 @@ def test_markdown_to_docx_with_initialized_service(
     assert mock_convert_file.call_count == 2
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_with_initialized_service(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -296,7 +296,7 @@ def test_convert_directory_with_initialized_service(
     assert mock_convert_batch.call_count == 2
 
 
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_find_files_real_fs_service(
     mock_verify_pandoc: MagicMock,
     tmp_path: Path,
@@ -323,7 +323,7 @@ def test_convert_directory_find_files_real_fs_service(
     (tmp_path / "a.html").write_text("<p>hello</p>")
     (tmp_path / "b.html").write_text("<p>world</p>")
 
-    from quack_core.core.fs.service import FileSystemService
+    from zeo_core.core.fs.service import FileSystemService
 
     mock_verify_pandoc.return_value = "2.11.0"
 
@@ -364,7 +364,7 @@ def test_convert_directory_find_files_real_fs_service(
     assert "unexpected keyword argument 'directory'" not in (result.error or "")
 
 
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_builds_real_tasks_multi_file(
     mock_verify_pandoc: MagicMock,
     tmp_path: Path,
@@ -394,7 +394,7 @@ def test_convert_directory_builds_real_tasks_multi_file(
     (tmp_path / "b.html").write_text("<p>bravo</p>")
     (tmp_path / "c.html").write_text("<p>charlie</p>")
 
-    from quack_core.core.fs.service import FileSystemService
+    from zeo_core.core.fs.service import FileSystemService
 
     mock_verify_pandoc.return_value = "2.11.0"
 
@@ -469,7 +469,7 @@ def test_init_fs_service_cwd_failure_falls_back_to_tempdir() -> None:
     """
     import tempfile
 
-    from quack_core.core.fs.service import FileSystemService as RealFsService
+    from zeo_core.core.fs.service import FileSystemService as RealFsService
 
     call_count = 0
     original_init = RealFsService.__init__
@@ -514,24 +514,24 @@ def test_resolve_path_str_failure_returns_original() -> None:
 
 def test_require_config_provider_raises_when_none() -> None:
     """Covers service.py:150-154 -- _require_config_provider must raise
-    QuackIntegrationError if self.config_provider is ever None, defending
+    ZeoIntegrationError if self.config_provider is ever None, defending
     an invariant __init__ is supposed to guarantee (a concrete
     PandocConfigProvider is always constructed).
     """
     integration = PandocIntegration()
     integration.config_provider = None
 
-    with pytest.raises(QuackIntegrationError, match="unexpectedly None"):
+    with pytest.raises(ZeoIntegrationError, match="unexpectedly None"):
         integration._require_config_provider()
 
 
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_config_provider_none_returns_error_result(
     mock_verify_pandoc: MagicMock, setup_mocks: tuple[SimpleNamespace, MagicMock]
 ) -> None:
     """Covers service.py:182, 207-211 -- initialize()'s config-loading try
     block calls _require_config_provider(); if config_provider was somehow
-    reset to None, that raises QuackIntegrationError, which the surrounding
+    reset to None, that raises ZeoIntegrationError, which the surrounding
     except Exception in initialize() must catch and turn into a structured
     error IntegrationResult (not propagate).
     """
@@ -551,8 +551,8 @@ def test_initialize_config_provider_none_returns_error_result(
     assert "Invalid configuration" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_expand_user_vars_failure_falls_back_to_original(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -594,8 +594,8 @@ def test_initialize_expand_user_vars_failure_falls_back_to_original(
     assert created_dirs == ["~/some_output"]
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_create_directory_failure_returns_error_result(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -632,7 +632,7 @@ def test_initialize_create_directory_failure_returns_error_result(
     assert "disk full" in result.error
 
 
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_filesystem_setup_unexpected_exception(
     mock_verify_pandoc: MagicMock, setup_mocks: tuple[SimpleNamespace, MagicMock]
 ) -> None:
@@ -665,8 +665,8 @@ def test_initialize_filesystem_setup_unexpected_exception(
     assert "expand blew up" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_converter_construction_failure(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -690,7 +690,7 @@ def test_initialize_converter_construction_failure(
     )
 
     with patch(
-        "quack_core.integrations.pandoc.service.DocumentConverter",
+        "zeo_core.integrations.pandoc.service.DocumentConverter",
         side_effect=RuntimeError("converter blew up"),
     ):
         result = integration.initialize()
@@ -708,8 +708,8 @@ def test_is_available_false_when_not_initialized() -> None:
     assert integration.is_available() is False
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_is_available_true_after_successful_initialize(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -733,8 +733,8 @@ def test_is_available_true_after_successful_initialize(
     assert integration.is_available() is True
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_html_to_markdown_converter_raises_exception(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -770,8 +770,8 @@ def test_html_to_markdown_converter_raises_exception(
     assert "conversion exploded" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_markdown_to_docx_converter_raises_exception(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -807,8 +807,8 @@ def test_markdown_to_docx_converter_raises_exception(
     assert "conversion exploded" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_path_is_not_a_directory(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -842,8 +842,8 @@ def test_convert_directory_path_is_not_a_directory(
     assert "Path is not a directory" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_no_valid_tasks(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -876,7 +876,7 @@ def test_convert_directory_no_valid_tasks(
     integration.initialize()
 
     with patch(
-        "quack_core.integrations.pandoc.operations.get_file_info",
+        "zeo_core.integrations.pandoc.operations.get_file_info",
         side_effect=RuntimeError("cannot stat file"),
     ):
         result = integration.convert_directory("input_dir", "markdown")
@@ -886,8 +886,8 @@ def test_convert_directory_no_valid_tasks(
     assert "No valid conversion tasks could be created" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_unexpected_exception(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -923,8 +923,8 @@ def test_convert_directory_unexpected_exception(
     assert "find_files exploded" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_config_load_failure_warns_but_continues(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -957,8 +957,8 @@ def test_initialize_config_load_failure_warns_but_continues(
     assert integration._initialized
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_initialize_output_dir_override_applied(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -996,8 +996,8 @@ def test_initialize_output_dir_override_applied(
     assert created_dirs == ["overridden_output"]
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_html_to_markdown_converter_none_after_initialized(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -1006,7 +1006,7 @@ def test_html_to_markdown_converter_none_after_initialized(
     """Covers service.py:323-327 -- defensive guard: if the integration is
     somehow marked _initialized=True but self.converter is None (an
     invariant violation that should never happen via the public API), the
-    resulting QuackIntegrationError must be caught by html_to_markdown's own
+    resulting ZeoIntegrationError must be caught by html_to_markdown's own
     except block and surfaced as a structured error result.
     """
     fs_stub, mock_paths_service = setup_mocks
@@ -1030,8 +1030,8 @@ def test_html_to_markdown_converter_none_after_initialized(
     assert "converter is unexpectedly None" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_markdown_to_docx_converter_none_after_initialized(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -1039,7 +1039,7 @@ def test_markdown_to_docx_converter_none_after_initialized(
 ) -> None:
     """Covers service.py:361-365 -- same defensive guard as html_to_markdown,
     exercised for markdown_to_docx: converter is None despite _initialized
-    being True, the resulting QuackIntegrationError is caught and surfaced
+    being True, the resulting ZeoIntegrationError is caught and surfaced
     as a structured error result.
     """
     fs_stub, mock_paths_service = setup_mocks
@@ -1063,8 +1063,8 @@ def test_markdown_to_docx_converter_none_after_initialized(
     assert "converter is unexpectedly None" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_converter_none_after_initialized(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -1077,7 +1077,7 @@ def test_convert_directory_converter_none_after_initialized(
     (service.py:249-252), so this invariant violation cannot occur via the
     public API -- forced directly here, same discipline as the two sibling
     tests immediately above. Unlike html_to_markdown/markdown_to_docx,
-    convert_directory has no dedicated `except QuackIntegrationError`
+    convert_directory has no dedicated `except ZeoIntegrationError`
     clause -- the raise is caught by its own generic `except Exception`
     (service.py:519-522) and surfaced with the "Directory conversion
     failed" prefix.
@@ -1111,8 +1111,8 @@ def test_convert_directory_converter_none_after_initialized(
     assert "converter is unexpectedly None" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_input_dir_not_found(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -1146,8 +1146,8 @@ def test_convert_directory_input_dir_not_found(
     assert "Input directory not found" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_find_files_reports_failure(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -1185,8 +1185,8 @@ def test_convert_directory_find_files_reports_failure(
     assert "glob failed" in result.error
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_convert_directory_no_files_found_matching_pattern(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -1257,8 +1257,8 @@ def test_default_output_path_same_dir_same_basename_target_extension() -> None:
     assert integration._default_output_path("report.html", ".md") == "report.md"
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_html_to_markdown_output_path_none_synthesizes_real_default(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,
@@ -1300,8 +1300,8 @@ def test_html_to_markdown_output_path_none_synthesizes_real_default(
     )
 
 
-@patch("quack_core.core.fs.service.standalone.expand_user_vars")
-@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+@patch("zeo_core.core.fs.service.standalone.expand_user_vars")
+@patch("zeo_core.integrations.pandoc.service.verify_pandoc")
 def test_markdown_to_docx_output_path_none_synthesizes_real_default(
     mock_verify_pandoc: MagicMock,
     mock_expand_user_vars: MagicMock,

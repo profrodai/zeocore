@@ -3,7 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.integrations.github import (
+from zeo_core.integrations.github import (
     GitHubIntegration,
     create_integration,
 )
@@ -53,7 +53,7 @@ def test_module_has_no_lazy_loading_or_auto_registration() -> None:
     moved away from everywhere else (mock-path-drift-fix SOW-04's own
     named finding).
     """
-    import quack_core.integrations.github as github_module
+    import zeo_core.integrations.github as github_module
 
     assert not hasattr(github_module, "__getattr__")
     assert not hasattr(github_module, "registry")
@@ -86,21 +86,21 @@ def test_module_init() -> None:
     mock_integration = MagicMock(spec=GitHubIntegration)
 
     with patch(
-        "quack_core.integrations.github.create_integration",
+        "zeo_core.integrations.github.create_integration",
         return_value=mock_integration,
     ):
-        import quack_core.integrations.github as github_module
+        import zeo_core.integrations.github as github_module
 
         produced = github_module.create_integration()
         assert produced is mock_integration
 
 
 def test_lazy_loading() -> None:
-    """Test lazy loading of quackster-related classes."""
-    import quack_core.integrations.github
+    """Test lazy loading of zeoster-related classes."""
+    import zeo_core.integrations.github
 
     # Mock __getattr__ on the module
-    original_getattr = getattr(quack_core.integrations.github, "__getattr__", None)
+    original_getattr = getattr(zeo_core.integrations.github, "__getattr__", None)
 
     # Add a temporary __getattr__ function for testing
     def mock_getattr(name: str) -> str:
@@ -109,33 +109,33 @@ def test_lazy_loading() -> None:
         if name == "GitHubTeachingAdapter":
             return "MockGitHubTeachingAdapter"
         raise AttributeError(
-            f"module 'quack_core.integrations.github' has no attribute '{name}'"
+            f"module 'zeo_core.integrations.github' has no attribute '{name}'"
         )
 
     # Apply the mock
     try:
-        quack_core.integrations.github.__getattr__ = mock_getattr  # type: ignore[method-assign]
+        zeo_core.integrations.github.__getattr__ = mock_getattr  # type: ignore[method-assign]
 
         # Test accessing lazy-loaded attributes
-        assert quack_core.integrations.github.GitHubGrader == "MockGitHubGrader"  # type: ignore[attr-defined]
+        assert zeo_core.integrations.github.GitHubGrader == "MockGitHubGrader"  # type: ignore[attr-defined]
         assert (
-            quack_core.integrations.github.GitHubTeachingAdapter  # type: ignore[attr-defined]
+            zeo_core.integrations.github.GitHubTeachingAdapter  # type: ignore[attr-defined]
             == "MockGitHubTeachingAdapter"
         )
     finally:
         # Restore original if it existed
         if original_getattr:
-            quack_core.integrations.github.__getattr__ = original_getattr  # type: ignore[method-assign]
+            zeo_core.integrations.github.__getattr__ = original_getattr  # type: ignore[method-assign]
         else:
-            delattr(quack_core.integrations.github, "__getattr__")
+            delattr(zeo_core.integrations.github, "__getattr__")
 
 
 def test_getattr_unknown_attribute() -> None:
     """Test that __getattr__ raises AttributeError for unknown attributes."""
-    import quack_core.integrations.github
+    import zeo_core.integrations.github
 
     # Mock __getattr__ on the module
-    original_getattr = getattr(quack_core.integrations.github, "__getattr__", None)
+    original_getattr = getattr(zeo_core.integrations.github, "__getattr__", None)
 
     # Add a temporary __getattr__ function for testing
     def mock_getattr(name: str) -> str:
@@ -144,22 +144,22 @@ def test_getattr_unknown_attribute() -> None:
         if name == "GitHubTeachingAdapter":
             return "MockGitHubTeachingAdapter"
         raise AttributeError(
-            f"module 'quack_core.integrations.github' has no attribute '{name}'"
+            f"module 'zeo_core.integrations.github' has no attribute '{name}'"
         )
 
     # Apply the mock
     try:
-        quack_core.integrations.github.__getattr__ = mock_getattr  # type: ignore[method-assign]
+        zeo_core.integrations.github.__getattr__ = mock_getattr  # type: ignore[method-assign]
 
         # Test accessing unknown attribute
         # We are intentionally accessing a non-existent attribute to test the
         # error handling
         # noinspection PyUnresolvedReferences
         with pytest.raises(AttributeError):
-            _ = quack_core.integrations.github.NonExistentAttribute  # type: ignore[attr-defined]
+            _ = zeo_core.integrations.github.NonExistentAttribute  # type: ignore[attr-defined]
     finally:
         # Restore original if it existed
         if original_getattr:
-            quack_core.integrations.github.__getattr__ = original_getattr  # type: ignore[method-assign]
+            zeo_core.integrations.github.__getattr__ = original_getattr  # type: ignore[method-assign]
         else:
-            delattr(quack_core.integrations.github, "__getattr__")
+            delattr(zeo_core.integrations.github, "__getattr__")

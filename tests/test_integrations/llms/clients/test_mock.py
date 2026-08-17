@@ -7,8 +7,8 @@ educational purposes.
 
 from unittest.mock import MagicMock, patch
 
-from quack_core.integrations.llms.clients.mock import MockLLMClient
-from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from zeo_core.integrations.llms.clients.mock import MockLLMClient
+from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 
 
 class TestMockLLMClient:

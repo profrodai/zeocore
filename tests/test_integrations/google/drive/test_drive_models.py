@@ -4,7 +4,7 @@ Tests for Google Drive models.
 
 import pytest
 from pydantic import ValidationError
-from quack_core.integrations.google.drive.models import DriveFile, DriveFolder
+from zeo_core.integrations.google.drive.models import DriveFile, DriveFolder
 
 
 class TestDriveModels:

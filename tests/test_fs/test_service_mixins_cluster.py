@@ -7,7 +7,7 @@ modules.
 
 Every test instantiates a REAL FileSystemService(base_dir=temp_dir) against
 a real pytest temp_dir fixture and a real filesystem. No mock stands in for
-any quack_core function or method under test -- this is the same discipline
+any zeo_core function or method under test -- this is the same discipline
 round 1/round 2 used for utility_operations.py and standalone.py. Nothing in
 this cluster calls an external network/SDK boundary, so RULING-235's
 boundary-mock question does not apply here; it applies to the
@@ -17,8 +17,8 @@ integrations/ clusters this stream picks up next.
 from pathlib import Path
 
 import pytest
-from quack_core.core.fs.plugin import QuackFSPlugin, create_plugin
-from quack_core.core.fs.service import FileSystemService
+from zeo_core.core.fs.plugin import ZeoFSPlugin, create_plugin
+from zeo_core.core.fs.service import FileSystemService
 
 
 class TestDirectoryOperationsMixin:
@@ -516,9 +516,9 @@ class TestPathOperationsMixin:
         self, temp_dir: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         service = FileSystemService(base_dir=temp_dir)
-        monkeypatch.setenv("QUACK_TEST_VAR", "expanded_value")
+        monkeypatch.setenv("ZEO_TEST_VAR", "expanded_value")
 
-        result = service.expand_user_vars_raw("$QUACK_TEST_VAR/sub")
+        result = service.expand_user_vars_raw("$ZEO_TEST_VAR/sub")
 
         assert result.ok is True
         assert result.data is not None
@@ -528,10 +528,10 @@ class TestPathOperationsMixin:
         self, temp_dir: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         service = FileSystemService(base_dir=temp_dir)
-        monkeypatch.setenv("QUACK_TEST_VAR2", "aliased_value")
+        monkeypatch.setenv("ZEO_TEST_VAR2", "aliased_value")
 
-        raw = service.expand_user_vars_raw("$QUACK_TEST_VAR2")
-        via_alias = service.expand_user_vars("$QUACK_TEST_VAR2")
+        raw = service.expand_user_vars_raw("$ZEO_TEST_VAR2")
+        via_alias = service.expand_user_vars("$ZEO_TEST_VAR2")
 
         assert via_alias.data == raw.data
 
@@ -770,23 +770,23 @@ class TestFileSystemServiceAliases:
 
 
 class TestFsPlugin:
-    """fs/plugin.py's QuackFSPlugin -- delegates to a real FileSystemService,
+    """fs/plugin.py's ZeoFSPlugin -- delegates to a real FileSystemService,
     no mock of the service being delegated to."""
 
-    def test_create_plugin_returns_quack_fs_plugin(self, temp_dir: Path) -> None:
+    def test_create_plugin_returns_zeo_fs_plugin(self, temp_dir: Path) -> None:
         plugin = create_plugin()
 
-        assert isinstance(plugin, QuackFSPlugin)
+        assert isinstance(plugin, ZeoFSPlugin)
         assert plugin.name == "fs"
 
     def test_plugin_uses_provided_service(self, temp_dir: Path) -> None:
         service = FileSystemService(base_dir=temp_dir)
-        plugin = QuackFSPlugin(service=service)
+        plugin = ZeoFSPlugin(service=service)
 
         assert plugin._service is service
 
     def test_plugin_defaults_to_get_service_when_none(self) -> None:
-        plugin = QuackFSPlugin()
+        plugin = ZeoFSPlugin()
 
         # get_service() is the real module-level singleton -- confirms the
         # plugin did not silently receive None.
@@ -796,7 +796,7 @@ class TestFsPlugin:
         self, temp_dir: Path
     ) -> None:
         service = FileSystemService(base_dir=temp_dir)
-        plugin = QuackFSPlugin(service=service)
+        plugin = ZeoFSPlugin(service=service)
         target = temp_dir / "plugin_rt.txt"
 
         write_result = plugin.write_text(target, "plugin content")
@@ -810,7 +810,7 @@ class TestFsPlugin:
         self, temp_dir: Path
     ) -> None:
         service = FileSystemService(base_dir=temp_dir)
-        plugin = QuackFSPlugin(service=service)
+        plugin = ZeoFSPlugin(service=service)
         target = temp_dir / "plugin.yaml"
 
         write_result = plugin.write_yaml(target, {"plugin": True})
@@ -822,7 +822,7 @@ class TestFsPlugin:
 
     def test_plugin_create_directory_real(self, temp_dir: Path) -> None:
         service = FileSystemService(base_dir=temp_dir)
-        plugin = QuackFSPlugin(service=service)
+        plugin = ZeoFSPlugin(service=service)
         target = temp_dir / "plugin_dir"
 
         result = plugin.create_directory(target)
@@ -842,14 +842,14 @@ class TestFsUtilsDeprecatedShim:
 
         # Drop any cached import so the module-level warnings.warn() at
         # import time actually fires again for this test.
-        sys.modules.pop("quack_core.core.fs.utils", None)
+        sys.modules.pop("zeo_core.core.fs.utils", None)
 
         with pytest.warns(DeprecationWarning, match="deprecated"):
-            importlib.import_module("quack_core.core.fs.utils")
+            importlib.import_module("zeo_core.core.fs.utils")
 
     def test_utils_reexports_standalone_public_surface(self, temp_dir: Path) -> None:
-        import quack_core.core.fs.utils as fs_utils
-        from quack_core.core.fs.service import standalone
+        import zeo_core.core.fs.utils as fs_utils
+        from zeo_core.core.fs.service import standalone
 
         # The wildcard re-export must actually make standalone's public
         # names reachable from the deprecated shim -- confirms it's a real

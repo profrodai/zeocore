@@ -6,13 +6,13 @@ import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackPluginError
-from quack_core.modules.discovery import LoadResult, PluginLoader
-from quack_core.modules.protocols import QuackPluginMetadata, QuackPluginProtocol
+from zeo_core.core.errors import ZeoPluginError
+from zeo_core.modules.discovery import LoadResult, PluginLoader
+from zeo_core.modules.protocols import ZeoPluginMetadata, ZeoPluginProtocol
 
 
 # Mock plugin implementation for testing
-class MockPlugin(QuackPluginProtocol):
+class MockPlugin(ZeoPluginProtocol):
     """Mock plugin implementation for testing."""
 
     @property
@@ -23,9 +23,9 @@ class MockPlugin(QuackPluginProtocol):
     def name(self) -> str:
         return "mock_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
+    def get_metadata(self) -> ZeoPluginMetadata:
         """Get plugin metadata."""
-        return QuackPluginMetadata(
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -46,11 +46,11 @@ class TestPluginLoader:
         """Test loading modules from entry points.
 
         discovery.py does `from importlib.metadata import entry_points`, binding
-        its own local name in quack_core.modules.discovery's namespace at import
+        its own local name in zeo_core.modules.discovery's namespace at import
         time. Patching "importlib.metadata.entry_points" (the origin) does not
         affect that already-bound local reference - the real entry_points() ran
         instead, picking up this package's genuinely-registered
-        "quack_core.modules" entry points (config/fs/paths/prompt, 4 total) for
+        "zeo_core.modules" entry points (config/fs/paths/prompt, 4 total) for
         the default group, or nothing for a group like "test.modules" that has no
         real registrations - either way, not the mock. Patch where it is USED.
         """
@@ -63,7 +63,7 @@ class TestPluginLoader:
         mock_ep1.load.return_value = mock_factory
 
         with patch(
-            "quack_core.modules.discovery.entry_points", return_value=[mock_ep1]
+            "zeo_core.modules.discovery.entry_points", return_value=[mock_ep1]
         ) as mock_entry_points:
             plugins = loader.load_entry_points("test.modules")
             assert len(plugins) == 1
@@ -73,14 +73,14 @@ class TestPluginLoader:
             mock_factory.assert_called_once()
 
         with patch(
-            "quack_core.modules.discovery.entry_points", return_value=[mock_ep1]
+            "zeo_core.modules.discovery.entry_points", return_value=[mock_ep1]
         ):
             mock_ep1.load.side_effect = Exception("Test error")
             plugins = loader.load_entry_points("test.modules")
             assert len(plugins) == 0
 
         with patch(
-            "quack_core.modules.discovery.entry_points",
+            "zeo_core.modules.discovery.entry_points",
             side_effect=Exception("Test error"),
         ):
             plugins = loader.load_entry_points("test.modules")
@@ -118,12 +118,12 @@ class TestPluginLoader:
         mock_module.__name__ = "test.module"
         with patch.dict(sys.modules, {"test.module": mock_module}):
             with patch("importlib.import_module", return_value=mock_module):
-                with pytest.raises(QuackPluginError):
+                with pytest.raises(ZeoPluginError):
                     loader.load_plugin("test.module")
 
         # Test import error.
         with patch("importlib.import_module", side_effect=ImportError("Test error")):
-            with pytest.raises(QuackPluginError):
+            with pytest.raises(ZeoPluginError):
                 loader.load_plugin("test.module")
 
         # Test error creating plugin.
@@ -131,7 +131,7 @@ class TestPluginLoader:
         mock_module.create_plugin = MagicMock(side_effect=Exception("Test error"))
         with patch.dict(sys.modules, {"test.module": mock_module}):
             with patch("importlib.import_module", return_value=mock_module):
-                with pytest.raises(QuackPluginError):
+                with pytest.raises(ZeoPluginError):
                     loader.load_plugin("test.module")
 
         # Test plugin without name attribute.
@@ -143,7 +143,7 @@ class TestPluginLoader:
         mock_module.create_plugin = MagicMock(return_value=PluginNoName())
         with patch.dict(sys.modules, {"test.module": mock_module}):
             with patch("importlib.import_module", return_value=mock_module):
-                with pytest.raises(QuackPluginError):
+                with pytest.raises(ZeoPluginError):
                     loader.load_plugin("test.module")
 
     def test_load_plugins(self) -> None:
@@ -164,7 +164,7 @@ class TestPluginLoader:
             assert mock_load.call_count == 2
 
         with patch.object(loader, "load_plugin") as mock_load:
-            mock_load.side_effect = [mock_plugin1, QuackPluginError("Test error")]
+            mock_load.side_effect = [mock_plugin1, ZeoPluginError("Test error")]
             plugins = loader.load_plugins(["test.module1", "test.module2"])
             assert len(plugins) == 1
             assert plugins[0] is mock_plugin1
@@ -196,7 +196,7 @@ class TestPluginLoader:
     def test_validate_plugin_missing_plugin_id_with_get_metadata(self) -> None:
         """Covers discovery.py:161 -- a plugin that DOES implement a callable
         get_metadata() but has no plugin_id attribute at all must raise
-        AttributeError (wrapped as QuackPluginError), per the "new module"
+        AttributeError (wrapped as ZeoPluginError), per the "new module"
         contract enforced by that branch.
         """
         loader = PluginLoader()
@@ -204,21 +204,21 @@ class TestPluginLoader:
         class PluginNoPluginId:
             name = "no_id_plugin"
 
-            def get_metadata(self) -> QuackPluginMetadata:
-                return QuackPluginMetadata(
+            def get_metadata(self) -> ZeoPluginMetadata:
+                return ZeoPluginMetadata(
                     name="no_id_plugin",
                     version="1.0.0",
                     description="Missing plugin_id",
                     capabilities=[],
                 )
 
-        with pytest.raises(QuackPluginError, match="valid plugin info"):
+        with pytest.raises(ZeoPluginError, match="valid plugin info"):
             loader._validate_plugin(PluginNoPluginId(), "test.module")  # type: ignore[arg-type]
 
     def test_validate_plugin_get_metadata_returns_dict(self) -> None:
         """Covers discovery.py:169-170 -- get_metadata() returning a plain
-        dict (not a QuackPluginMetadata instance) must be coerced via
-        QuackPluginMetadata(**metadata) rather than rejected.
+        dict (not a ZeoPluginMetadata instance) must be coerced via
+        ZeoPluginMetadata(**metadata) rather than rejected.
         """
         loader = PluginLoader()
 
@@ -241,8 +241,8 @@ class TestPluginLoader:
 
     def test_validate_plugin_get_metadata_returns_invalid_type(self) -> None:
         """Covers discovery.py:171-172 -- get_metadata() returning something
-        that is neither a QuackPluginMetadata nor a dict must raise TypeError
-        (wrapped as QuackPluginError).
+        that is neither a ZeoPluginMetadata nor a dict must raise TypeError
+        (wrapped as ZeoPluginError).
         """
         loader = PluginLoader()
 
@@ -253,7 +253,7 @@ class TestPluginLoader:
             def get_metadata(self) -> str:
                 return "not a metadata object"
 
-        with pytest.raises(QuackPluginError, match="must return a QuackPluginMetadata"):
+        with pytest.raises(ZeoPluginError, match="must return a ZeoPluginMetadata"):
             loader._validate_plugin(PluginBadMetadataType(), "test.module")  # type: ignore[arg-type]
 
     def test_validate_plugin_fallback_plugin_id_from_module_path(self) -> None:
@@ -267,11 +267,11 @@ class TestPluginLoader:
             plugin_id = "actual_id"
             name = "plugin_with_none_metadata_id"
 
-            def get_metadata(self) -> QuackPluginMetadata:
+            def get_metadata(self) -> ZeoPluginMetadata:
                 # Deliberately omit plugin_id so metadata.model_dump()
                 # yields plugin_id=None, forcing the fallback-to-module_path
                 # branch at line 183.
-                return QuackPluginMetadata(
+                return ZeoPluginMetadata(
                     name="plugin_with_none_metadata_id",
                     version="1.0.0",
                     description="No plugin_id in metadata",
@@ -375,7 +375,7 @@ class TestPluginLoader:
         loader = PluginLoader()
 
         with patch(
-            "quack_core.modules.discovery.entry_points",
+            "zeo_core.modules.discovery.entry_points",
             side_effect=ImportError("no such group"),
         ):
             plugins = loader.load_entry_points("test.modules")
@@ -389,7 +389,7 @@ class TestPluginLoader:
         loader = PluginLoader()
 
         with patch(
-            "quack_core.modules.discovery.entry_points",
+            "zeo_core.modules.discovery.entry_points",
             side_effect=AttributeError("bad group"),
         ):
             available = loader.list_available_entry_points("test.modules")
@@ -471,16 +471,16 @@ class TestPluginLoader:
         ...) up front and returns a failed LoadResult immediately.
         """
         with patch(
-            "quack_core.modules.discovery.entry_points",
+            "zeo_core.modules.discovery.entry_points",
             side_effect=ImportError("bad group"),
         ):
-            from quack_core.modules import load_enabled_entry_points
+            from zeo_core.modules import load_enabled_entry_points
 
             result = load_enabled_entry_points(enabled=["fs"], group="bogus.group")
             assert result.success is False
             assert any("Failed to load entry points" in e for e in result.errors)
 
-    @patch("quack_core.modules.discovery.entry_points")
+    @patch("zeo_core.modules.discovery.entry_points")
     def test_load_enabled_entry_points_non_strict_all_warnings_fails(
         self, mock_entry_points: MagicMock
     ) -> None:
@@ -489,7 +489,7 @@ class TestPluginLoader:
         was missing from the entry point map), overall success flips to
         False and the error-summary log branch executes.
         """
-        from quack_core.modules import load_enabled_entry_points, registry
+        from zeo_core.modules import load_enabled_entry_points, registry
 
         registry.clear()
         mock_entry_points.return_value = []
@@ -532,7 +532,7 @@ class TestPluginLoader:
         result = LoadResult(success=True)
 
         with patch.object(
-            loader, "load_plugin", side_effect=QuackPluginError("load failed")
+            loader, "load_plugin", side_effect=ZeoPluginError("load failed")
         ):
             keep_going = loader._load_one_module_path(
                 "bad.module.path", mock_registry, result, [], False, True
@@ -552,7 +552,7 @@ class TestPluginLoader:
         loader = PluginLoader()
 
         with patch.object(
-            loader, "load_plugin", side_effect=QuackPluginError("nope")
+            loader, "load_plugin", side_effect=ZeoPluginError("nope")
         ):
             result = loader.load_enabled_modules(
                 modules=["bad.module.a", "bad.module.b"],
@@ -572,10 +572,10 @@ class TestPluginLoader:
         loader = PluginLoader()
         mock_plugin = MockPlugin()
 
-        def fake_load_plugin(module_path: str) -> QuackPluginProtocol:
+        def fake_load_plugin(module_path: str) -> ZeoPluginProtocol:
             if module_path == "good.module":
                 return mock_plugin
-            raise QuackPluginError("bad module")
+            raise ZeoPluginError("bad module")
 
         with patch.object(loader, "load_plugin", side_effect=fake_load_plugin):
             result = loader.load_enabled_modules(

@@ -11,9 +11,9 @@ from typing import cast
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.google.mail.service import GoogleMailService
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.google.mail.service import GoogleMailService
 from tests.test_integrations.google.mail.mocks import (
     create_error_gmail_service,
     create_mock_gmail_service,
@@ -27,7 +27,7 @@ class TestInitializeConfigRealPathHitsBugC:
 
     Was: google/mail/service.py:194 called
     `paths.resolve_project_path(self.storage_path)` where `paths` was the
-    raw `quack_core.core.paths.service` MODULE (imported at line 12) rather
+    raw `zeo_core.core.paths.service` MODULE (imported at line 12) rather
     than a `PathService` instance -- `resolve_project_path` is an INSTANCE
     method (core/paths/service.py:64), not a module-level function. Every
     real call raised `AttributeError`, silently caught by
@@ -126,7 +126,7 @@ class TestGoogleMailService:
         service = GoogleMailService(oauth_scope=custom_scopes)
         assert service.oauth_scope == custom_scopes
 
-    @patch("quack_core.integrations.google.config.GoogleConfigProvider.load_config")
+    @patch("zeo_core.integrations.google.config.GoogleConfigProvider.load_config")
     def test_initialize_config(self, mock_load_config: MagicMock) -> None:
         """Test initializing the service configuration."""
         # Instead of mocking file _ops, mock the _initialize_config method itself
@@ -234,22 +234,22 @@ class TestGoogleMailService:
 
         # Replace the method with one that raises an exception
         def mock_initialize_with_error(self: GoogleMailService) -> dict[str, object]:
-            raise QuackIntegrationError("Storage path is required")
+            raise ZeoIntegrationError("Storage path is required")
 
         with patch.object(
             GoogleMailService, "_initialize_config", mock_initialize_with_error
         ):
-            with pytest.raises(QuackIntegrationError):
+            with pytest.raises(ZeoIntegrationError):
                 service._initialize_config()
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
-    @patch("quack_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
+    @patch("zeo_core.integrations.google.auth.GoogleAuthProvider.get_credentials")
     @patch(
-        "quack_core.integrations.google.mail.operations.auth.initialize_gmail_service"
+        "zeo_core.integrations.google.mail.operations.auth.initialize_gmail_service"
     )
-    @patch("quack_core.integrations.core.base.BaseIntegrationService.initialize")
+    @patch("zeo_core.integrations.core.base.BaseIntegrationService.initialize")
     def test_initialize(
         self,
         mock_base_init: MagicMock,
@@ -346,14 +346,14 @@ class TestGoogleMailService:
 
         # Mock the email _ops module
         with patch(
-            "quack_core.integrations.google.mail.operations.email.list_emails"
+            "zeo_core.integrations.google.mail.operations.email.list_emails"
         ) as mock_list:
             mock_list.return_value = IntegrationResult.success_result(
                 content=[{"id": "msg1"}, {"id": "msg2"}]
             )
 
             with patch(
-                "quack_core.integrations.google.mail.operations.email.build_query"
+                "zeo_core.integrations.google.mail.operations.email.build_query"
             ) as mock_build:
                 mock_build.return_value = "after:2021/01/01 label:INBOX label:IMPORTANT"
 
@@ -386,7 +386,7 @@ class TestGoogleMailService:
         # Test with error
         service.gmail_service = create_error_gmail_service()
         with patch(
-            "quack_core.integrations.google.mail.operations.email.list_emails"
+            "zeo_core.integrations.google.mail.operations.email.list_emails"
         ) as mock_list:
             mock_list.side_effect = Exception("API error")
 
@@ -424,7 +424,7 @@ class TestGoogleMailService:
 
         # Mock the email _ops module
         with patch(
-            "quack_core.integrations.google.mail.operations.email.download_email"
+            "zeo_core.integrations.google.mail.operations.email.download_email"
         ) as mock_download:
             mock_download.return_value = IntegrationResult.success_result(
                 content="/path/to/storage/email.html"
@@ -451,7 +451,7 @@ class TestGoogleMailService:
         # Test with error
         service.gmail_service = create_error_gmail_service()
         with patch(
-            "quack_core.integrations.google.mail.operations.email.download_email"
+            "zeo_core.integrations.google.mail.operations.email.download_email"
         ) as mock_download:
             mock_download.side_effect = Exception("API error")
 
@@ -478,7 +478,7 @@ class TestGoogleMailServiceCoverageGaps:
     """Additional tests for GoogleMailService covering branches not exercised
     by the pre-existing test classes above: trivial properties, the various
     `_initialize_config` failure/warning paths (mocking the `paths.PathService`
-    and `fs` boundaries per RULING-235 rather than the quack_core function
+    and `fs` boundaries per RULING-235 rather than the zeo_core function
     under test), the "service/storage_path is None" guard branches in
     `list_emails`/`download_email`, the numeric/list coercion helper edge
     cases, and `validate_config`.
@@ -501,7 +501,7 @@ class TestGoogleMailServiceCoverageGaps:
             "base init failed"
         )
         with patch(
-            "quack_core.integrations.core.base.BaseIntegrationService.initialize",
+            "zeo_core.integrations.core.base.BaseIntegrationService.initialize",
             return_value=base_failure,
         ):
             result = service.initialize()
@@ -520,14 +520,14 @@ class TestGoogleMailServiceCoverageGaps:
         service = GoogleMailService(config_path="/path/to/config.yaml")
         service.config_provider = None
         with pytest.raises(
-            QuackIntegrationError, match="no config_provider configured"
+            ZeoIntegrationError, match="no config_provider configured"
         ):
             service._require_config_provider()
 
     def test_initialize_config_load_from_file_failure(self) -> None:
         """Covers service.py:175-180 -- config_provider.load_config() failing
-        (or returning empty content) raises QuackIntegrationError, which is
-        re-raised as-is by the `except QuackIntegrationError: raise` clause
+        (or returning empty content) raises ZeoIntegrationError, which is
+        re-raised as-is by the `except ZeoIntegrationError: raise` clause
         (line 218-219) rather than being swallowed by the broader
         `except Exception` branch below it."""
         service = GoogleMailService(config_path="/path/to/config.yaml")
@@ -536,7 +536,7 @@ class TestGoogleMailServiceCoverageGaps:
         ) as mock_load_config:
             mock_load_config.return_value = MagicMock(success=False, content=None)
             with pytest.raises(
-                QuackIntegrationError, match="Failed to load configuration"
+                ZeoIntegrationError, match="Failed to load configuration"
             ):
                 service._initialize_config()
 
@@ -560,10 +560,10 @@ class TestGoogleMailServiceCoverageGaps:
             )
             with (
                 patch(
-                    "quack_core.integrations.google.mail.service.paths.PathService"
+                    "zeo_core.integrations.google.mail.service.paths.PathService"
                 ) as mock_path_service_cls,
                 patch(
-                    "quack_core.integrations.google.mail.service.fs.create_directory"
+                    "zeo_core.integrations.google.mail.service.fs.create_directory"
                 ) as mock_create_dir,
             ):
                 mock_path_service = MagicMock()
@@ -584,7 +584,7 @@ class TestGoogleMailServiceCoverageGaps:
     def test_initialize_config_no_storage_path_raises(self) -> None:
         """Covers service.py:189 -- if storage_path is still unset after
         checking both constructor param and config dict, a
-        QuackIntegrationError is raised (and caught/re-raised, so
+        ZeoIntegrationError is raised (and caught/re-raised, so
         _initialize_config surfaces it -- but the caller `initialize()`
         catches broad Exception, so we call _initialize_config directly)."""
         service = GoogleMailService(config_path="/path/to/config.yaml")
@@ -599,12 +599,12 @@ class TestGoogleMailServiceCoverageGaps:
                     # no storage_path key at all
                 },
             )
-            with pytest.raises(QuackIntegrationError, match="Storage path"):
+            with pytest.raises(ZeoIntegrationError, match="Storage path"):
                 service._initialize_config()
 
     def test_initialize_config_resolve_project_path_failure(self) -> None:
         """Covers service.py:202 -- resolve_project_path() returning a
-        failed PathResult raises QuackIntegrationError with the resolver's
+        failed PathResult raises ZeoIntegrationError with the resolver's
         error message embedded."""
         service = GoogleMailService(
             client_secrets_file="/path/to/secrets.json",
@@ -612,7 +612,7 @@ class TestGoogleMailServiceCoverageGaps:
             storage_path="/bad/storage/path",
         )
         with patch(
-            "quack_core.integrations.google.mail.service.paths.PathService"
+            "zeo_core.integrations.google.mail.service.paths.PathService"
         ) as mock_path_service_cls:
             mock_path_service = MagicMock()
             mock_path_service.resolve_project_path.return_value = MagicMock(
@@ -620,7 +620,7 @@ class TestGoogleMailServiceCoverageGaps:
             )
             mock_path_service_cls.return_value = mock_path_service
 
-            with pytest.raises(QuackIntegrationError, match="resolution boom"):
+            with pytest.raises(ZeoIntegrationError, match="resolution boom"):
                 service._initialize_config()
 
     def test_initialize_config_create_directory_warning(self) -> None:
@@ -633,10 +633,10 @@ class TestGoogleMailServiceCoverageGaps:
         )
         with (
             patch(
-                "quack_core.integrations.google.mail.service.paths.PathService"
+                "zeo_core.integrations.google.mail.service.paths.PathService"
             ) as mock_path_service_cls,
             patch(
-                "quack_core.integrations.google.mail.service.fs.create_directory"
+                "zeo_core.integrations.google.mail.service.fs.create_directory"
             ) as mock_create_dir,
             patch.object(service.logger, "warning") as mock_warn,
         ):
@@ -656,9 +656,9 @@ class TestGoogleMailServiceCoverageGaps:
             assert "Could not create storage directory" in mock_warn.call_args[0][0]
 
     def test_initialize_config_unexpected_exception_returns_none(self) -> None:
-        """Covers service.py:220-222 -- a non-QuackIntegrationError exception
+        """Covers service.py:220-222 -- a non-ZeoIntegrationError exception
         raised anywhere in the try block is logged and swallowed to None
-        (rather than propagating), distinct from the QuackIntegrationError
+        (rather than propagating), distinct from the ZeoIntegrationError
         re-raise path covered by the other tests above."""
         service = GoogleMailService(
             client_secrets_file="/path/to/secrets.json",
@@ -667,7 +667,7 @@ class TestGoogleMailServiceCoverageGaps:
         )
         with (
             patch(
-                "quack_core.integrations.google.mail.service.paths.PathService"
+                "zeo_core.integrations.google.mail.service.paths.PathService"
             ) as mock_path_service_cls,
             patch.object(service.logger, "error") as mock_error,
         ):

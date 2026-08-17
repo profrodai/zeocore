@@ -1,5 +1,5 @@
 """
-Tests for quack_core.core.fs.service.standalone — the module-level convenience
+Tests for zeo_core.core.fs.service.standalone — the module-level convenience
 wrappers that delegate to the process-wide `get_service()` singleton.
 
 quackverse-coverage-90: this module carried 57% coverage (43/100 stmts missed)
@@ -19,8 +19,8 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
-from quack_core.core.fs.service import standalone
-from quack_core.core.fs.service.factory import create_service
+from zeo_core.core.fs.service import standalone
+from zeo_core.core.fs.service.factory import create_service
 
 
 @pytest.fixture(autouse=True)
@@ -28,7 +28,7 @@ def _isolated_singleton(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> Generator[None, None, None]:
     """Point the get_service() singleton at a fresh tmp_path for every test."""
-    from quack_core.core.fs.service import get_service
+    from zeo_core.core.fs.service import get_service
 
     monkeypatch.chdir(tmp_path)
     get_service.cache_clear()

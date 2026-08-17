@@ -11,8 +11,8 @@ scenarios.
 from pathlib import Path
 
 import pytest
-from quack_core.core.fs import WriteResult
-from quack_core.core.fs.service import FileSystemService
+from zeo_core.core.fs import WriteResult
+from zeo_core.core.fs.service import FileSystemService
 
 
 # A helper function to create a temporary directory for testing.
@@ -29,7 +29,7 @@ class TestAtomicWrapping:
     def fs_service(self, temp_test_dir: Path) -> FileSystemService:
         # Anchor the service's base_dir sandbox at the test's own temp directory.
         # FileSystemService() (zero-arg) defaults base_dir to Path.cwd() and
-        # rejects any absolute path outside it (QuackPathOutsideBaseDirError,
+        # rejects any absolute path outside it (ZeoPathOutsideBaseDirError,
         # a deliberate security boundary, not a bug -- see service/base.py's
         # _normalize_input_path/coerce_path). tmp_path-derived paths are always
         # outside the repo checkout cwd, so the un-anchored construction this

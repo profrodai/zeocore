@@ -1,1 +1,1 @@
-"""Test package for quack_core.integrations.google module."""
+"""Test package for zeo_core.integrations.google module."""

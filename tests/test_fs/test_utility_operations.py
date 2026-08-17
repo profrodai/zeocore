@@ -1,5 +1,5 @@
 """
-Tests for quack_core.core.fs.service.utility_operations.UtilityOperationsMixin,
+Tests for zeo_core.core.fs.service.utility_operations.UtilityOperationsMixin,
 exercised through the real FileSystemService (the concrete class that mixes it
 in — see service/full_class.py).
 
@@ -16,7 +16,7 @@ conftest fixtures) — no mocks standing in for the filesystem or the service.
 
 from pathlib import Path
 
-from quack_core.core.fs.service import FileSystemService
+from zeo_core.core.fs.service import FileSystemService
 
 
 class TestGetUniqueFilename:
@@ -53,14 +53,14 @@ class TestCreateTempFile:
         assert created.suffix == ".log"
         assert created.parent == temp_dir.resolve()
 
-    def test_defaults_to_quack_tmp_under_base_dir(self, temp_dir: Path) -> None:
+    def test_defaults_to_zeo_tmp_under_base_dir(self, temp_dir: Path) -> None:
         service = FileSystemService(base_dir=temp_dir)
         result = service.create_temp_file()
         assert result.success is True
         assert result.data is not None
         created = Path(result.data)
         assert created.exists()
-        assert created.parent == (temp_dir.resolve() / ".quack" / "tmp")
+        assert created.parent == (temp_dir.resolve() / ".zeo" / "tmp")
 
     def test_error_path_directory_is_a_file_not_a_dir(self, temp_dir: Path) -> None:
         service = FileSystemService(base_dir=temp_dir)
@@ -83,14 +83,14 @@ class TestCreateTempDirectory:
         assert created.is_dir()
         assert created.name.startswith("mytest_")
 
-    def test_defaults_to_quack_tmp_under_base_dir(self, temp_dir: Path) -> None:
+    def test_defaults_to_zeo_tmp_under_base_dir(self, temp_dir: Path) -> None:
         service = FileSystemService(base_dir=temp_dir)
         result = service.create_temp_directory()
         assert result.success is True
         assert result.data is not None
         created = Path(result.data)
         assert created.is_dir()
-        assert created.parent == (temp_dir.resolve() / ".quack" / "tmp")
+        assert created.parent == (temp_dir.resolve() / ".zeo" / "tmp")
 
     def test_error_path_directory_is_a_file_not_a_dir(self, temp_dir: Path) -> None:
         service = FileSystemService(base_dir=temp_dir)

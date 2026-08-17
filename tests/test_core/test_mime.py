@@ -1,12 +1,12 @@
 """
-Tests for quack_core.core.mime — MIME type and binary-detection utilities.
+Tests for zeo_core.core.mime — MIME type and binary-detection utilities.
 
 quackverse-coverage-90: this module carried 0% coverage (12 stmts, 0 tests) before
 this file. Every assertion below calls the real production function directly
 (no mocks, no stand-ins) and asserts on its actual return value.
 """
 
-from quack_core.core.mime import (
+from zeo_core.core.mime import (
     BINARY_EXTENSIONS,
     TEXT_EXTENSIONS,
     get_content_type,

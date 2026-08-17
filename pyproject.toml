@@ -1,15 +1,15 @@
-# quack-core/pyproject.toml
+# zeocore/pyproject.toml
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "quack-core"
+name = "zeocore"
 version = "0.1.0"
-description = "Core infrastructure for the Quack ecosystem of media production tools"
+description = "Core infrastructure for the Zeo ecosystem of media production tools"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "AGPL-3.0" }
+license = { text = "MIT" }
 authors = [
     { name = "Rod Rivera", email = "rod@aiproduct.engineer" }
 ]
@@ -22,7 +22,7 @@ keywords = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -104,31 +104,31 @@ all = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/ducktyper-ai/quackverse"
-"Bug Tracker" = "https://github.com/ducktyper-ai/quackverse/issues"
+"Homepage" = "https://github.com/zeroemployeeorg/zeocore"
+"Bug Tracker" = "https://github.com/zeroemployeeorg/zeocore/issues"
 
 [tool.hatch.version]
-path = "src/quack_core/__init__.py"
+path = "src/zeo_core/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/quack_core"]
+packages = ["src/zeo_core"]
 
-[project.entry-points."quack_core.modules"]
-paths = "quack_core.core.paths.plugin:create_plugin"
-fs = "quack_core.core.fs.plugin:create_plugin"
-config = "quack_core.config.plugin:create_plugin"
-prompt = "quack_core.prompt.plugin:create_plugin"
+[project.entry-points."zeo_core.modules"]
+paths = "zeo_core.core.paths.plugin:create_plugin"
+fs = "zeo_core.core.fs.plugin:create_plugin"
+config = "zeo_core.config.plugin:create_plugin"
+prompt = "zeo_core.prompt.plugin:create_plugin"
 
-[project.entry-points."quack_core.integrations"]
-github = "quack_core.integrations.github:create_integration"
-"google.mail" = "quack_core.integrations.google.mail:create_integration"
-"google.drive" = "quack_core.integrations.google.drive:create_integration"
-pandoc = "quack_core.integrations.pandoc:create_integration"
-llms = "quack_core.integrations.llms:create_integration"
+[project.entry-points."zeo_core.integrations"]
+github = "zeo_core.integrations.github:create_integration"
+"google.mail" = "zeo_core.integrations.google.mail:create_integration"
+"google.drive" = "zeo_core.integrations.google.drive:create_integration"
+pandoc = "zeo_core.integrations.pandoc:create_integration"
+llms = "zeo_core.integrations.llms:create_integration"
 
 
 [tool.coverage.run]
-source = ["quack_core"]
+source = ["zeo_core"]
 omit = ["tests/*"]
 
 [tool.coverage.report]

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from quack_core.integrations.core.results import (
+from zeo_core.integrations.core.results import (
     AuthResult,
     ConfigResult,
     IntegrationResult,
@@ -28,7 +28,7 @@ class TestBaseIntegrationService:
 
         # Patch the fs service standalone method to return the input path
         with patch(
-            "quack_core.core.fs.service.standalone.resolve_path"
+            "zeo_core.core.fs.service.standalone.resolve_path"
         ) as mock_resolve:
             mock_resolve.return_value = "/test/config.yaml"
 
@@ -95,7 +95,7 @@ class TestBaseIntegrationService:
             )
 
             service = MockIntegrationService(config_provider=config_provider)
-            with patch("quack_core.core.errors.QuackConfigurationError", Exception):
+            with patch("zeo_core.core.errors.ZeoConfigurationError", Exception):
                 result = service.initialize()
 
                 assert result.success is False

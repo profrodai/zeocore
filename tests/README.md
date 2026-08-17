@@ -1,6 +1,6 @@
-# QuackCore Tests
+# ZeoCore Tests
 
-This directory contains comprehensive tests for the QuackCore library. 
+This directory contains comprehensive tests for the ZeoCore library. 
 These tests ensure that all components work correctly in isolation and together as a system.
 
 ## Running Tests

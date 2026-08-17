@@ -8,7 +8,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import ValidationError
-from quack_core.integrations.core.results import (
+from zeo_core.integrations.core.results import (
     AuthResult,
     ConfigResult,
     IntegrationResult,

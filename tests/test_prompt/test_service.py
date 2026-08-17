@@ -1,19 +1,19 @@
 """
-Tests for quack_core.prompt.service.PromptService.
+Tests for zeo_core.prompt.service.PromptService.
 
 PromptService is the orchestration layer tying together the strategy
 registry, selector, and (optional) LLM-based enhancement. Per RULING-235,
 these tests exercise the real registry/selector/strategy machinery directly
 -- the only mocked boundary is the LLM enhancement call itself
-(quack_core.prompt._internal.enhancer.enhance_with_llm_safe), which crosses
+(zeo_core.prompt._internal.enhancer.enhance_with_llm_safe), which crosses
 into an external LLM-provider SDK boundary (network calls, API keys).
 """
 
 from unittest.mock import patch
 
 import pytest
-from quack_core.prompt.models import PromptStrategy
-from quack_core.prompt.service import PromptService
+from zeo_core.prompt.models import PromptStrategy
+from zeo_core.prompt.service import PromptService
 
 # --- __init__ / load_pack ---
 
@@ -67,7 +67,7 @@ def test_load_pack_exception_path_returns_failure() -> None:
     """
     service = PromptService(load_defaults=False)
     with patch(
-        "quack_core.prompt.packs.internal.load",
+        "zeo_core.prompt.packs.internal.load",
         side_effect=RuntimeError("boom"),
     ):
         result = service.load_pack("internal")
@@ -300,11 +300,11 @@ def test_render_unexpected_exception_is_caught_and_reported() -> None:
 def test_render_with_use_llm_true_calls_enhancer_and_sets_metadata() -> None:
     """
     Mocks only the external-SDK-adjacent enhancer boundary
-    (enhance_with_llm_safe), not any internal quack_core prompt logic.
+    (enhance_with_llm_safe), not any internal zeo_core prompt logic.
     """
     service = PromptService(load_defaults=True)
     with patch(
-        "quack_core.prompt.service.enhance_with_llm_safe",
+        "zeo_core.prompt.service.enhance_with_llm_safe",
         return_value="ENHANCED PROMPT",
     ) as mock_enhance:
         result = service.render(
@@ -325,7 +325,7 @@ def test_render_with_use_llm_true_calls_enhancer_and_sets_metadata() -> None:
 def test_render_with_use_llm_false_does_not_call_enhancer() -> None:
     service = PromptService(load_defaults=True)
     with patch(
-        "quack_core.prompt.service.enhance_with_llm_safe"
+        "zeo_core.prompt.service.enhance_with_llm_safe"
     ) as mock_enhance:
         result = service.render(
             "Summarize this", strategy_id="zero-shot-prompting", use_llm=False

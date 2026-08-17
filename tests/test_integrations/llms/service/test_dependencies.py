@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from quack_core.integrations.llms.service.dependencies import check_llm_dependencies
+from zeo_core.integrations.llms.service.dependencies import check_llm_dependencies
 
 
 class TestDependencies:

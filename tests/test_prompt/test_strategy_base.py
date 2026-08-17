@@ -2,7 +2,7 @@
 Tests for the PromptStrategy base class in strategy_base.py.
 """
 
-from quack_core.prompt.models import PromptStrategy
+from zeo_core.prompt.models import PromptStrategy
 
 
 def test_prompt_strategy_creation() -> None:

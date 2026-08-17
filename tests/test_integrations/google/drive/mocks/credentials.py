@@ -4,7 +4,7 @@ Mock credential objects for Google Drive testing.
 
 from typing import Any
 
-from quack_core.integrations.google.drive.protocols import GoogleCredentials
+from zeo_core.integrations.google.drive.protocols import GoogleCredentials
 
 
 class MockGoogleCredentials(GoogleCredentials):

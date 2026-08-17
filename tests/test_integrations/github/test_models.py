@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pytest
 from pydantic import ValidationError
-from quack_core.integrations.github.models import (
+from zeo_core.integrations.github.models import (
     GitHubRepo,
     GitHubUser,
     PullRequest,
@@ -207,7 +207,7 @@ class TestGitHubModels:
         """Test that URL objects and strings can be correctly compared."""
         from datetime import datetime
 
-        from quack_core.integrations.github.models import (
+        from zeo_core.integrations.github.models import (
             GitHubRepo,
             GitHubUser,
             PullRequest,

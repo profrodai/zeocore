@@ -5,16 +5,16 @@ Tests for Google Drive service upload _ops.
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from quack_core.core.errors import QuackApiError
-from quack_core.integrations.core.results import IntegrationResult
-from quack_core.integrations.google.drive.service import GoogleDriveService
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.google.drive.service import GoogleDriveService
 
 
 class TestGoogleDriveServiceUpload:
     """Tests for the GoogleDriveService upload _ops."""
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_upload_file(
@@ -69,7 +69,7 @@ class TestGoogleDriveServiceUpload:
             }
 
             with patch(
-                "quack_core.integrations.google.drive.service.standalone",
+                "zeo_core.integrations.google.drive.service.standalone",
                 mock_fs_service,
             ):
                 with patch.object(service, "_execute_upload", mock_execute_upload):
@@ -106,7 +106,7 @@ class TestGoogleDriveServiceUpload:
             mock_fs_service.read_binary.return_value.error = "Read error"
 
             with patch(
-                "quack_core.integrations.google.drive.service.standalone",
+                "zeo_core.integrations.google.drive.service.standalone",
                 mock_fs_service,
             ):
                 result = service.upload_file(str(test_file))
@@ -130,12 +130,12 @@ class TestGoogleDriveServiceUpload:
             mock_fs_service.read_binary.return_value = file_content_result
 
             mock_execute_upload = MagicMock()
-            mock_execute_upload.side_effect = QuackApiError(
+            mock_execute_upload.side_effect = ZeoApiError(
                 "API error", service="drive"
             )
 
             with patch(
-                "quack_core.integrations.google.drive.service.standalone",
+                "zeo_core.integrations.google.drive.service.standalone",
                 mock_fs_service,
             ):
                 with patch.object(service, "_execute_upload", mock_execute_upload):

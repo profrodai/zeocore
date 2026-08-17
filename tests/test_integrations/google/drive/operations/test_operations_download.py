@@ -6,10 +6,10 @@ import logging
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from quack_core.core.errors import QuackApiError
-from quack_core.core.fs import FileInfoResult, OperationResult, WriteResult
-from quack_core.core.paths.api.public.results import PathResult
-from quack_core.integrations.google.drive.operations import download
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.core.fs import FileInfoResult, OperationResult, WriteResult
+from zeo_core.core.paths.api.public.results import PathResult
+from zeo_core.integrations.google.drive.operations import download
 from tests.test_integrations.google.drive.mocks import (
     create_error_drive_service,
     create_mock_drive_service,
@@ -31,13 +31,13 @@ class TestDriveOperationsDownload:
             # Patch the standalone module directly as that's what's imported
             # in download.py
             patch(
-                "quack_core.integrations.google.drive.operations.download.standalone"
+                "zeo_core.integrations.google.drive.operations.download.standalone"
             ) as mock_fs,
             patch(
-                "quack_core.integrations.google.drive.operations.download.paths_service"
+                "zeo_core.integrations.google.drive.operations.download.paths_service"
             ) as mock_paths_service,
             patch(
-                "quack_core.integrations.google.drive.utils.api.execute_api_request"
+                "zeo_core.integrations.google.drive.utils.api.execute_api_request"
             ) as mock_execute,
         ):
             # Configure fs module mocks
@@ -103,7 +103,7 @@ class TestDriveOperationsDownload:
 
         # Patch the standalone module directly as it's imported in download.py
         with patch(
-            "quack_core.integrations.google.drive.operations.download.standalone"
+            "zeo_core.integrations.google.drive.operations.download.standalone"
         ) as mock_fs:
             # Setup the mock to return Path objects directly (not DataResult)
             temp_dir_path = tmp_path / "temp_dir"
@@ -125,7 +125,7 @@ class TestDriveOperationsDownload:
         local_dir = tmp_path / "local_dir"
 
         with patch(
-            "quack_core.integrations.google.drive.operations.download.paths_service"
+            "zeo_core.integrations.google.drive.operations.download.paths_service"
         ) as mock_paths_service:
             # resolve_project_path is a PathService INSTANCE method
             # (RULING-245) -- configure the PathService() instance mock.
@@ -136,7 +136,7 @@ class TestDriveOperationsDownload:
             )
 
             with patch(
-                "quack_core.integrations.google.drive.operations.download.standalone"
+                "zeo_core.integrations.google.drive.operations.download.standalone"
             ) as mock_fs:
                 # Setup mock to return a directory
                 mock_fs.get_file_info.return_value = FileInfoResult(
@@ -159,7 +159,7 @@ class TestDriveOperationsDownload:
         local_file = tmp_path / "specific_file.txt"
 
         with patch(
-            "quack_core.integrations.google.drive.operations.download.paths_service"
+            "zeo_core.integrations.google.drive.operations.download.paths_service"
         ) as mock_paths_service:
             # resolve_project_path is a PathService INSTANCE method
             # (RULING-245) -- configure the PathService() instance mock.
@@ -170,7 +170,7 @@ class TestDriveOperationsDownload:
             )
 
             with patch(
-                "quack_core.integrations.google.drive.operations.download.standalone"
+                "zeo_core.integrations.google.drive.operations.download.standalone"
             ) as mock_fs:
                 # Setup mock to return a file
                 mock_fs.get_file_info.return_value = FileInfoResult(
@@ -194,11 +194,11 @@ class TestDriveOperationsDownload:
         # Mock logger to avoid actual logging during tests
         mock_logger = MagicMock(spec=logging.Logger)
 
-        # Mock execute_api_request to raise QuackApiError
+        # Mock execute_api_request to raise ZeoApiError
         with patch(
-            "quack_core.integrations.google.drive.utils.api.execute_api_request"
+            "zeo_core.integrations.google.drive.utils.api.execute_api_request"
         ) as mock_execute:
-            mock_execute.side_effect = QuackApiError(
+            mock_execute.side_effect = ZeoApiError(
                 "Failed to get file metadata",
                 service="Google Drive",
                 api_method="files.get",
@@ -224,13 +224,13 @@ class TestDriveOperationsDownload:
             patch("googleapiclient.http.MediaIoBaseDownload") as mock_download,
             patch("io.BytesIO") as mock_bytesio,
             patch(
-                "quack_core.integrations.google.drive.operations.download.standalone"
+                "zeo_core.integrations.google.drive.operations.download.standalone"
             ) as mock_fs,
             patch(
-                "quack_core.integrations.google.drive.operations.download.paths_service"
+                "zeo_core.integrations.google.drive.operations.download.paths_service"
             ) as mock_paths_service,
             patch(
-                "quack_core.integrations.google.drive.utils.api.execute_api_request"
+                "zeo_core.integrations.google.drive.utils.api.execute_api_request"
             ) as mock_execute,
         ):
             # Configure mocks. resolve_project_path is a PathService

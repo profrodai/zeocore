@@ -6,26 +6,26 @@ Validates demo request/response schemas and demo implementations.
 NOTE: This file previously also covered a "media" capability surface
 (TimeRange, SliceVideoRequest, SlicedClipData, SliceVideoResponse,
 TranscribeRequest, TranscriptionSegment, TranscribeResponse) imported from
-`quack_core.contracts`. That surface was never implemented: no
-`quack_core.contracts.capabilities.media` module has ever existed in this
+`zeo_core.contracts`. That surface was never implemented: no
+`zeo_core.contracts.capabilities.media` module has ever existed in this
 repo's history (`capabilities/__init__.py` has always imported it inside a
 commented-out block, and `contracts/__init__.py`'s own `__all__` never
 declared the names stable). The video-processing functionality the names
 describe (`slice_video`, `probe`, `extract_frames`, ...) lives in the
-separate `quackmedia` library (see `docs/legacy/quackmedia-video.md`), not
-in `quack_core.contracts`. Per RULING-118's standard (retire speculative
+separate `zeomedia` library (see `docs/legacy/zeomedia-video.md`), not
+in `zeo_core.contracts`. Per RULING-118's standard (retire speculative
 test coverage for a module that was never built rather than build stub
 models solely to satisfy a test), the media test classes were removed
-here. If a real Capability/Tool wraps quackmedia through
-`quack_core.contracts.capabilities.media` in the future, that integration
+here. If a real Capability/Tool wraps zeomedia through
+`zeo_core.contracts.capabilities.media` in the future, that integration
 is where new coverage for these models should start.
 """
 
-from quack_core.contracts import CapabilityStatus, EchoRequest, VideoRefRequest
+from zeo_core.contracts import CapabilityStatus, EchoRequest, VideoRefRequest
 
 # Import demo implementations directly from their INTERNAL module
 # NOTE: Using underscore-prefixed module to access internal examples
-from quack_core.contracts.capabilities.demo._impl import (
+from zeo_core.contracts.capabilities.demo._impl import (
     echo_text,
     validate_video_ref,
 )
@@ -49,10 +49,10 @@ class TestDemoCapabilities:
 
     def test_echo_text_custom_greeting(self) -> None:
         """Test echo with custom greeting."""
-        request = EchoRequest(text="QuackCore", override_greeting="Welcome to")
+        request = EchoRequest(text="ZeoCore", override_greeting="Welcome to")
         result = echo_text(request)
 
-        assert result.data == "Welcome to QuackCore"
+        assert result.data == "Welcome to ZeoCore"
         assert result.metadata["greeting"] == "Welcome to"
 
     def test_validate_video_ref_supported(self) -> None:

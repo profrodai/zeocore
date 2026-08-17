@@ -4,15 +4,15 @@ Tests for Google Drive service permissions _ops.
 
 from unittest.mock import MagicMock, patch
 
-from quack_core.core.errors import QuackApiError
-from quack_core.integrations.google.drive.service import GoogleDriveService
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.integrations.google.drive.service import GoogleDriveService
 
 
 class TestGoogleDriveServicePermissions:
     """Tests for the GoogleDriveService permissions _ops."""
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_set_file_permissions(
@@ -63,7 +63,7 @@ class TestGoogleDriveServicePermissions:
         )
 
         # Test API error
-        service.drive_service.permissions().create.side_effect = QuackApiError(
+        service.drive_service.permissions().create.side_effect = ZeoApiError(
             "API error", service="drive"
         )
         result = service.set_file_permissions("file123")
@@ -72,7 +72,7 @@ class TestGoogleDriveServicePermissions:
         assert "API error" in result.error
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_get_sharing_link(
@@ -130,7 +130,7 @@ class TestGoogleDriveServicePermissions:
         assert result.content == "https://drive.google.com/file/d/file123/view"
 
         # Test API error
-        service.drive_service.files().get.side_effect = QuackApiError(
+        service.drive_service.files().get.side_effect = ZeoApiError(
             "API error", service="drive"
         )
         result = service.get_sharing_link("file123")

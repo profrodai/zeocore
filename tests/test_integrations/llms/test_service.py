@@ -8,11 +8,11 @@ initialization, configuration, and client communication.
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackIntegrationError
-from quack_core.core.fs import DataResult, FileInfoResult
-from quack_core.integrations.core.results import ConfigResult, IntegrationResult
-from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
-from quack_core.integrations.llms.service import LLMIntegration
+from zeo_core.core.errors import ZeoIntegrationError
+from zeo_core.core.fs import DataResult, FileInfoResult
+from zeo_core.integrations.core.results import ConfigResult, IntegrationResult
+from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from zeo_core.integrations.llms.service import LLMIntegration
 
 from .mocks.clients import MockClient
 
@@ -28,7 +28,7 @@ class TestLLMService:
 
         # Mock the file _ops using our fs module
         with patch(
-            "quack_core.core.fs.service.standalone.get_file_info"
+            "zeo_core.core.fs.service.standalone.get_file_info"
         ) as mock_file_info:
             file_info_result = FileInfoResult(
                 ok=True,
@@ -39,7 +39,7 @@ class TestLLMService:
             mock_file_info.return_value = file_info_result
 
             with patch(
-                "quack_core.core.fs.service.standalone.read_yaml"
+                "zeo_core.core.fs.service.standalone.read_yaml"
             ) as mock_read_yaml:
                 yaml_result = DataResult[dict](
                     ok=True,
@@ -80,7 +80,7 @@ class TestLLMService:
 
         # Test with custom parameters
         with patch(
-            "quack_core.core.fs.service.standalone.get_file_info"
+            "zeo_core.core.fs.service.standalone.get_file_info"
         ) as mock_file_info:
             # Create a proper FileInfoResult
             file_info_result = FileInfoResult(
@@ -93,7 +93,7 @@ class TestLLMService:
 
             # Also patch normalize_path to handle the config path
             with patch(
-                "quack_core.core.fs.service.standalone.normalize_path"
+                "zeo_core.core.fs.service.standalone.normalize_path"
             ) as mock_normalize_path:
                 # Create a mock Path object instead of using absolute()
                 mock_path = "/Users/rodrivera/config.yaml"
@@ -101,7 +101,7 @@ class TestLLMService:
 
                 # Also patch the BaseIntegrationService._set_config_path method
                 with patch(
-                    "quack_core.integrations.core.base.BaseIntegrationService._set_config_path"
+                    "zeo_core.integrations.core.base.BaseIntegrationService._set_config_path"
                 ):
                     # Also patch os.getcwd() to avoid FileNotFoundError
                     with patch("os.getcwd", return_value="/Users/rodrivera"):
@@ -129,7 +129,7 @@ class TestLLMService:
         """Test initializing the LLM integration."""
         # Test successful initialization
         with patch(
-            "quack_core.integrations.llms.registry.get_llm_client"
+            "zeo_core.integrations.llms.registry.get_llm_client"
         ) as mock_get_client:
             mock_client = MagicMock()
             mock_get_client.return_value = mock_client
@@ -197,7 +197,7 @@ class TestLLMService:
         # The uninitialized test needs to bypass the auto-initialize behavior
         # Create a test-specific service with specific behavior
         with patch(
-            "quack_core.integrations.llms.service.LLMIntegration.initialize"
+            "zeo_core.integrations.llms.service.LLMIntegration.initialize"
         ) as mock_init:
             # Make initialize return a failure without auto-retry
             mock_init.return_value = IntegrationResult(
@@ -231,7 +231,7 @@ class TestLLMService:
 
         # For uninitialized test, create a service with specific behavior
         with patch(
-            "quack_core.integrations.llms.service.LLMIntegration.initialize"
+            "zeo_core.integrations.llms.service.LLMIntegration.initialize"
         ) as mock_init:
             mock_init.return_value = IntegrationResult(
                 success=False, error="LLM integration not initialized"
@@ -259,7 +259,7 @@ class TestLLMService:
 
         # Test not initialized
         llm_service._initialized = False
-        with pytest.raises(QuackIntegrationError) as excinfo:
+        with pytest.raises(ZeoIntegrationError) as excinfo:
             llm_service.get_client()
 
         assert "LLM client not initialized" in str(excinfo.value)

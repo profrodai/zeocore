@@ -1,12 +1,12 @@
 """
-Tests for quack_core.core.paths.api.public.path_utils (0% covered before
+Tests for zeo_core.core.paths.api.public.path_utils (0% covered before
 this file). Pure functions, no external boundary, no mocking needed.
 """
 
 from pathlib import Path
 
-from quack_core.core.fs import DataResult, PathResult
-from quack_core.core.paths.api.public.path_utils import (
+from zeo_core.core.fs import DataResult, PathResult
+from zeo_core.core.paths.api.public.path_utils import (
     ensure_clean_path,
     extract_path_from_path_result_string,
     is_likely_drive_id,

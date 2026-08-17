@@ -11,22 +11,22 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from quack_core.core.errors import QuackQuotaExceededError
-from quack_core.integrations.core import (
+from zeo_core.core.errors import ZeoQuotaExceededError
+from zeo_core.integrations.core import (
     AuthProviderProtocol,
     AuthResult,
     ConfigProviderProtocol,
 )
-from quack_core.integrations.github.auth import GitHubAuthProvider
-from quack_core.integrations.github.client import GitHubClient
-from quack_core.integrations.github.config import GitHubConfigProvider
-from quack_core.integrations.github.models import (
+from zeo_core.integrations.github.auth import GitHubAuthProvider
+from zeo_core.integrations.github.client import GitHubClient
+from zeo_core.integrations.github.config import GitHubConfigProvider
+from zeo_core.integrations.github.models import (
     GitHubRepo,
     GitHubUser,
     PullRequest,
     PullRequestStatus,
 )
-from quack_core.integrations.github.service import GitHubIntegration
+from zeo_core.integrations.github.service import GitHubIntegration
 
 # ------------------------------
 # Environment & HTTP Client Fixtures
@@ -111,7 +111,7 @@ def patch_integration_registry() -> Generator[MagicMock, None, None]:
     mock_registry.register = MagicMock()
     mock_registry.get_integration = MagicMock(return_value="mocked_github_integration")
 
-    with patch("quack_core.integrations.core.registry", mock_registry):
+    with patch("zeo_core.integrations.core.registry", mock_registry):
         yield mock_registry
 
 
@@ -123,7 +123,7 @@ def patch_registry_register() -> Generator[MagicMock, None, None]:
     mock_registry.register = MagicMock()
 
     # Patch the entire registry module
-    with patch("quack_core.integrations.core.registry", mock_registry):
+    with patch("zeo_core.integrations.core.registry", mock_registry):
         yield mock_registry.register
 
 
@@ -437,7 +437,7 @@ def patch_requests_get() -> Generator[MagicMock, None, None]:
 def patch_make_request() -> Generator[MagicMock, None, None]:
     """Patch the make_request function for testing."""
     with patch(
-        "quack_core.integrations.github.api.api.make_request"
+        "zeo_core.integrations.github.api.api.make_request"
     ) as mock_make_request:
         mock_response = MagicMock(spec=requests.Response)
         mock_response.status_code = 200
@@ -450,9 +450,9 @@ def patch_make_request() -> Generator[MagicMock, None, None]:
 def patch_make_request_rate_limited() -> Generator[MagicMock, None, None]:
     """Patch the make_request function to simulate rate limiting."""
     with patch(
-        "quack_core.integrations.github.api.api.make_request"
+        "zeo_core.integrations.github.api.api.make_request"
     ) as mock_make_request:
-        mock_make_request.side_effect = QuackQuotaExceededError(
+        mock_make_request.side_effect = ZeoQuotaExceededError(
             message="GitHub API rate limit exceeded", service="GitHub", resource="/test"
         )
         yield mock_make_request

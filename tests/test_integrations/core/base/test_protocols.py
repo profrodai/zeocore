@@ -5,13 +5,13 @@ Tests for integration protocol interfaces.
 from collections.abc import Mapping
 from typing import Protocol, runtime_checkable
 
-from quack_core.integrations.core.protocols import (
+from zeo_core.integrations.core.protocols import (
     AuthProviderProtocol,
     ConfigProviderProtocol,
     IntegrationProtocol,
     StorageIntegrationProtocol,
 )
-from quack_core.integrations.core.results import (
+from zeo_core.integrations.core.results import (
     AuthResult,
     ConfigResult,
     IntegrationResult,

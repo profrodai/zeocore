@@ -4,15 +4,15 @@ Tests for Google Drive service listing _ops.
 
 from unittest.mock import MagicMock, patch
 
-from quack_core.core.errors import QuackApiError
-from quack_core.integrations.google.drive.service import GoogleDriveService
+from zeo_core.core.errors import ZeoApiError
+from zeo_core.integrations.google.drive.service import GoogleDriveService
 
 
 class TestGoogleDriveServiceList:
     """Tests for the GoogleDriveService listing _ops."""
 
     @patch(
-        "quack_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
+        "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     @patch.object(GoogleDriveService, "_initialize_config")
     def test_list_files(
@@ -72,7 +72,7 @@ class TestGoogleDriveServiceList:
             mock_query.assert_called_once_with("folder123", "*.txt")
 
         # Test API error
-        service.drive_service.files().list.side_effect = QuackApiError(
+        service.drive_service.files().list.side_effect = ZeoApiError(
             "API error", service="drive"
         )
         result = service.list_files()

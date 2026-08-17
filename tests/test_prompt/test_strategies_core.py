@@ -1,5 +1,5 @@
 """
-Tests for the built-in prompt strategies in quack_core.prompt.strategies.core.
+Tests for the built-in prompt strategies in zeo_core.prompt.strategies.core.
 
 Each `render_*` function is a pure string-formatting function -- these tests
 call the real functions directly with real inputs (no mocking, per RULING-235:
@@ -7,8 +7,8 @@ this package has no external SDK/network boundary), and also assert on the
 `PromptStrategy` metadata objects and `get_internal_strategies()` collector.
 """
 
-from quack_core.prompt.models import PromptStrategy
-from quack_core.prompt.strategies import core
+from zeo_core.prompt.models import PromptStrategy
+from zeo_core.prompt.strategies import core
 
 # --- Zero Shot ---
 
@@ -349,7 +349,7 @@ def test_render_react_prompting_tool_missing_keys_raises_keyerror() -> None:
     """
     PRODUCTION BUG (pinned, not fixed -- ruling required to change source):
 
-    render_react_prompting (quack_core/prompt/strategies/core.py:502-504) builds
+    render_react_prompting (zeo_core/prompt/strategies/core.py:502-504) builds
     its tools listing with `t['name']` / `t['description']` (bare dict subscript),
     unlike its sibling render_react_agentic (same file, lines 98-99) which uses
     `tool.get("name", "Unnamed Tool")` / `tool.get("description", "No description")`

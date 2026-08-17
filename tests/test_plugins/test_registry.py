@@ -5,27 +5,27 @@ Tests for the plugin registry.
 from collections.abc import Callable
 
 import pytest
-from quack_core.core.errors import QuackPluginError
-from quack_core.modules.protocols import (
+from zeo_core.core.errors import ZeoPluginError
+from zeo_core.modules.protocols import (
     CommandPluginProtocol,
     ExtensionPluginProtocol,
     ProviderPluginProtocol,
-    QuackPluginMetadata,
-    QuackPluginProtocol,
+    ZeoPluginMetadata,
+    ZeoPluginProtocol,
     WorkflowPluginProtocol,
 )
-from quack_core.modules.registry import PluginRegistry
+from zeo_core.modules.registry import PluginRegistry
 
 
-def _make_metadata(plugin_id: str, description: str) -> QuackPluginMetadata:
-    """Build a minimal QuackPluginMetadata for a test fixture plugin.
+def _make_metadata(plugin_id: str, description: str) -> ZeoPluginMetadata:
+    """Build a minimal ZeoPluginMetadata for a test fixture plugin.
 
     Factored out so each fixture's get_metadata() is a one-line delegation
     instead of a repeated multi-line literal -- keeps the enclosing test
     functions (several of which define 2+ nested fixture classes) under
     C901's complexity budget without weakening what any fixture asserts.
     """
-    return QuackPluginMetadata(
+    return ZeoPluginMetadata(
         plugin_id=plugin_id,
         name=plugin_id,
         version="1.0.0",
@@ -34,7 +34,7 @@ def _make_metadata(plugin_id: str, description: str) -> QuackPluginMetadata:
 
 
 # Mock plugin implementations for testing
-class BasicPlugin(QuackPluginProtocol):
+class BasicPlugin(ZeoPluginProtocol):
     """Basic plugin implementation for testing."""
 
     @property
@@ -45,9 +45,9 @@ class BasicPlugin(QuackPluginProtocol):
     def name(self) -> str:
         return "basic_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
+    def get_metadata(self) -> ZeoPluginMetadata:
         """Get plugin metadata."""
-        return QuackPluginMetadata(
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -67,8 +67,8 @@ class CommandPlugin(CommandPluginProtocol):
     def name(self) -> str:
         return "command_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -101,8 +101,8 @@ class WorkflowPlugin(WorkflowPluginProtocol):
     def name(self) -> str:
         return "workflow_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -135,8 +135,8 @@ class ExtensionPlugin(ExtensionPluginProtocol):
     def name(self) -> str:
         return "extension_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -161,8 +161,8 @@ class ProviderPlugin(ProviderPluginProtocol):
     def name(self) -> str:
         return "provider_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
-        return QuackPluginMetadata(
+    def get_metadata(self) -> ZeoPluginMetadata:
+        return ZeoPluginMetadata(
             plugin_id=self.plugin_id,
             name=self.name,
             version="1.0.0",
@@ -187,7 +187,7 @@ class MultiPlugin(CommandPluginProtocol, WorkflowPluginProtocol):
     def name(self) -> str:
         return "multi_plugin"
 
-    def get_metadata(self) -> QuackPluginMetadata:
+    def get_metadata(self) -> ZeoPluginMetadata:
         return _make_metadata(self.plugin_id, "Multi plugin for testing")
 
     def list_commands(self) -> list[str]:
@@ -220,7 +220,7 @@ class CommandOverridePlugin1(CommandPluginProtocol):
     def name(self) -> str:
         return "plugin1"
 
-    def get_metadata(self) -> QuackPluginMetadata:
+    def get_metadata(self) -> ZeoPluginMetadata:
         return _make_metadata(self.plugin_id, "Plugin1 for testing")
 
     def list_commands(self) -> list[str]:
@@ -244,7 +244,7 @@ class CommandOverridePlugin2(CommandPluginProtocol):
     def name(self) -> str:
         return "plugin2"
 
-    def get_metadata(self) -> QuackPluginMetadata:
+    def get_metadata(self) -> ZeoPluginMetadata:
         return _make_metadata(self.plugin_id, "Plugin2 for testing")
 
     def list_commands(self) -> list[str]:
@@ -268,7 +268,7 @@ class WorkflowOverridePlugin1(WorkflowPluginProtocol):
     def name(self) -> str:
         return "plugin1"
 
-    def get_metadata(self) -> QuackPluginMetadata:
+    def get_metadata(self) -> ZeoPluginMetadata:
         return _make_metadata(self.plugin_id, "Plugin1 for testing")
 
     def list_workflows(self) -> list[str]:
@@ -292,7 +292,7 @@ class WorkflowOverridePlugin2(WorkflowPluginProtocol):
     def name(self) -> str:
         return "plugin2"
 
-    def get_metadata(self) -> QuackPluginMetadata:
+    def get_metadata(self) -> ZeoPluginMetadata:
         return _make_metadata(self.plugin_id, "Plugin2 for testing")
 
     def list_workflows(self) -> list[str]:
@@ -329,7 +329,7 @@ class TestPluginRegistry:
         assert registry._plugins[plugin.name] is plugin
 
         # Test registering duplicate (should raise)
-        with pytest.raises(QuackPluginError):
+        with pytest.raises(ZeoPluginError):
             registry.register(plugin)
 
     def test_register_command_plugin(self) -> None:
@@ -483,7 +483,7 @@ class TestPluginRegistry:
         assert provider.name not in registry._provider_plugins
 
         # Test unregistering non-existent plugin
-        with pytest.raises(QuackPluginError):
+        with pytest.raises(ZeoPluginError):
             registry.unregister("nonexistent_plugin")
 
     def test_execute_command(self) -> None:
@@ -501,7 +501,7 @@ class TestPluginRegistry:
         assert result == "Executed cmd2"
 
         # Test executing non-existent command
-        with pytest.raises(QuackPluginError):
+        with pytest.raises(ZeoPluginError):
             registry.execute_command("nonexistent")
 
     def test_execute_workflow(self) -> None:
@@ -519,7 +519,7 @@ class TestPluginRegistry:
         assert result == "Ran flow2"
 
         # Test executing non-existent workflow
-        with pytest.raises(QuackPluginError):
+        with pytest.raises(ZeoPluginError):
             registry.execute_workflow("nonexistent")
 
     def test_plugin_getters(self) -> None:
@@ -633,8 +633,8 @@ class TestPluginRegistry:
             def name(self) -> str:
                 return "extension2"
 
-            def get_metadata(self) -> QuackPluginMetadata:
-                return QuackPluginMetadata(
+            def get_metadata(self) -> ZeoPluginMetadata:
+                return ZeoPluginMetadata(
                     plugin_id=self.plugin_id,
                     name=self.name,
                     version="1.0.0",
@@ -677,14 +677,14 @@ class TestPluginRegistry:
         assert registry.get_plugin(plugin.name) is None
 
         # Trying to unregister again should raise an error
-        with pytest.raises(QuackPluginError):
+        with pytest.raises(ZeoPluginError):
             registry.unregister(plugin.name)
 
     def test_plugin_capabilities_filtering(self) -> None:
         """Test filtering modules by capability."""
-        from quack_core.modules.protocols import QuackPluginMetadata
+        from zeo_core.modules.protocols import ZeoPluginMetadata
 
-        class CapabilityPlugin(QuackPluginProtocol):
+        class CapabilityPlugin(ZeoPluginProtocol):
             """Plugin with capabilities for testing."""
 
             def __init__(self, name: str, capabilities: list[str]) -> None:
@@ -699,8 +699,8 @@ class TestPluginRegistry:
             def name(self) -> str:
                 return self._name
 
-            def get_metadata(self) -> QuackPluginMetadata:
-                return QuackPluginMetadata(
+            def get_metadata(self) -> ZeoPluginMetadata:
+                return ZeoPluginMetadata(
                     plugin_id=self.plugin_id,
                     name=self._name,
                     version="1.0.0",
@@ -746,7 +746,7 @@ class TestPluginRegistry:
         registry = PluginRegistry()
 
         # Create our modules for testing
-        class TestPlugin(QuackPluginProtocol):
+        class TestPlugin(ZeoPluginProtocol):
             @property
             def plugin_id(self) -> str:
                 return "test_reload_plugin"
@@ -755,8 +755,8 @@ class TestPluginRegistry:
             def name(self) -> str:
                 return "test_reload_plugin"
 
-            def get_metadata(self) -> QuackPluginMetadata:
-                return QuackPluginMetadata(
+            def get_metadata(self) -> ZeoPluginMetadata:
+                return ZeoPluginMetadata(
                     plugin_id=self.plugin_id,
                     name=self.name,
                     version="1.0.0",
@@ -764,7 +764,7 @@ class TestPluginRegistry:
                     capabilities=["test"],
                 )
 
-        class UpdatedTestPlugin(QuackPluginProtocol):
+        class UpdatedTestPlugin(ZeoPluginProtocol):
             @property
             def plugin_id(self) -> str:
                 return "test_reload_plugin"
@@ -773,8 +773,8 @@ class TestPluginRegistry:
             def name(self) -> str:
                 return "test_reload_plugin"
 
-            def get_metadata(self) -> QuackPluginMetadata:
-                return QuackPluginMetadata(
+            def get_metadata(self) -> ZeoPluginMetadata:
+                return ZeoPluginMetadata(
                     plugin_id=self.plugin_id,
                     name=self.name,
                     version="1.1.0",  # Updated version
@@ -812,20 +812,20 @@ class TestPluginRegistry:
         from typing import cast
         from unittest.mock import patch
 
-        from quack_core.modules.discovery import PluginLoader
+        from zeo_core.modules.discovery import PluginLoader
 
         loader = PluginLoader()
 
         # Test plugin with valid metadata. plugin_id must be a real string:
-        # PluginInfo (discovery.py) extends QuackPluginMetadata to make plugin_id
+        # PluginInfo (discovery.py) extends ZeoPluginMetadata to make plugin_id
         # REQUIRED (not optional) - "This ensures that all validated modules have
         # a stable identifier for deterministic registration." A subclass of the
-        # QuackPluginProtocol Protocol that does not override plugin_id still
+        # ZeoPluginProtocol Protocol that does not override plugin_id still
         # passes hasattr() (the base Protocol declares the property), but calling
         # it returns None from the unimplemented base body - which then fails
         # PluginInfo's non-optional plugin_id validation. Not a code bug; the
         # fixture class here was simply incomplete relative to that contract.
-        class ValidPlugin(QuackPluginProtocol):
+        class ValidPlugin(ZeoPluginProtocol):
             @property
             def plugin_id(self) -> str:
                 return "valid_plugin"
@@ -834,8 +834,8 @@ class TestPluginRegistry:
             def name(self) -> str:
                 return "valid_plugin"
 
-            def get_metadata(self) -> QuackPluginMetadata:
-                return QuackPluginMetadata(
+            def get_metadata(self) -> ZeoPluginMetadata:
+                return ZeoPluginMetadata(
                     plugin_id=self.plugin_id,
                     name=self.name,
                     version="1.0.0",
@@ -850,19 +850,19 @@ class TestPluginRegistry:
         assert validated_plugin is valid_plugin
 
         # Test plugin with invalid metadata (missing required fields)
-        class InvalidPlugin(QuackPluginProtocol):
+        class InvalidPlugin(ZeoPluginProtocol):
             @property
             def name(self) -> str:
                 return "invalid_plugin"
 
-            def get_metadata(self) -> QuackPluginMetadata:
+            def get_metadata(self) -> ZeoPluginMetadata:
                 # In the real implementation, this would fail validation
                 # but we need a valid return type for the method signature
                 raise NotImplementedError("This should be mocked")
 
         # InvalidPlugin deliberately omits plugin_id: the whole point of this
         # fixture is exercising _validate_plugin's runtime rejection of a
-        # plugin that does not implement the full QuackPluginProtocol contract
+        # plugin that does not implement the full ZeoPluginProtocol contract
         # (see the ValidPlugin comment above). mypy strict now correctly
         # flags this exact incompleteness at the type level too -- a real
         # signal, not a false positive -- so it is silenced here, scoped to
@@ -874,10 +874,10 @@ class TestPluginRegistry:
         original_validate = loader._validate_plugin
 
         def mock_validate_that_raises(
-            plugin: QuackPluginProtocol, module_path: str
-        ) -> QuackPluginProtocol:
+            plugin: ZeoPluginProtocol, module_path: str
+        ) -> ZeoPluginProtocol:
             if plugin.name == "invalid_plugin":
-                raise QuackPluginError(
+                raise ZeoPluginError(
                     f"Plugin from module {module_path} does not have valid "
                     "plugin info: Missing version",
                     plugin_path=module_path,
@@ -895,8 +895,8 @@ class TestPluginRegistry:
                 return_value={"name": invalid_plugin.name},
                 # Missing required fields
             ):
-                # This should now raise a QuackPluginError
-                with pytest.raises(QuackPluginError):
+                # This should now raise a ZeoPluginError
+                with pytest.raises(ZeoPluginError):
                     loader._validate_plugin(invalid_plugin, "test.module")
 
         # Test plugin without get_metadata method
@@ -911,16 +911,16 @@ class TestPluginRegistry:
         # We cast to satisfy the type checker
         try:
             loader._validate_plugin(
-                cast(QuackPluginProtocol, legacy_plugin), "test.module"
+                cast(ZeoPluginProtocol, legacy_plugin), "test.module"
             )
-        except QuackPluginError:
+        except ZeoPluginError:
             pytest.fail("Legacy plugin should be accepted with minimal metadata")
 
     def test_load_builtin_plugin(self) -> None:
         """Test loading a built-in plugin."""
         from unittest.mock import MagicMock, patch
 
-        from quack_core.modules.discovery import PluginLoader
+        from zeo_core.modules.discovery import PluginLoader
 
         loader = PluginLoader()
 
@@ -933,17 +933,17 @@ class TestPluginRegistry:
         # Create a proper mock entry point
         mock_ep = MagicMock()
         mock_ep.name = "builtin_plugin"
-        mock_ep.value = "quack_core.builtin:create_plugin"
+        mock_ep.value = "zeo_core.builtin:create_plugin"
         mock_ep.load.return_value = mock_factory
 
         # Test loading from entry points. Patch where entry_points is USED
-        # (quack_core.modules.discovery), not where it is defined
+        # (zeo_core.modules.discovery), not where it is defined
         # (importlib.metadata) - discovery.py binds its own local name via
         # `from importlib.metadata import entry_points` at import time, so
         # patching the origin does not affect the already-bound reference and
-        # the real, genuinely-registered "quack_core.modules" entry points
+        # the real, genuinely-registered "zeo_core.modules" entry points
         # (config/fs/paths/prompt) would be discovered instead of this mock.
-        with patch("quack_core.modules.discovery.entry_points", return_value=[mock_ep]):
+        with patch("zeo_core.modules.discovery.entry_points", return_value=[mock_ep]):
             # Patch the validate_plugin method to not actually validate
             with patch.object(loader, "_validate_plugin", return_value=mock_plugin):
                 plugins = loader.load_entry_points()
@@ -954,7 +954,7 @@ class TestPluginRegistry:
         """Test discovering an external plugin."""
         from unittest.mock import MagicMock, patch
 
-        from quack_core.modules.discovery import PluginLoader
+        from zeo_core.modules.discovery import PluginLoader
 
         loader = PluginLoader()
 
@@ -972,7 +972,7 @@ class TestPluginRegistry:
 
         # Test loading from entry points. Same patch-target note as
         # test_load_builtin_plugin above.
-        with patch("quack_core.modules.discovery.entry_points", return_value=[mock_ep]):
+        with patch("zeo_core.modules.discovery.entry_points", return_value=[mock_ep]):
             # Patch the validate_plugin method to not actually validate
             with patch.object(loader, "_validate_plugin", return_value=mock_plugin):
                 plugins = loader.load_entry_points()

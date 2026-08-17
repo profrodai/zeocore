@@ -5,16 +5,16 @@ Tests for configuration models.
 import logging
 from unittest.mock import MagicMock, patch
 
-from quack_core.config.models import (
+from zeo_core.config.models import (
     GeneralConfig,
     LoggingConfig,
     PathsConfig,
     PluginsConfig,
-    QuackConfig,
+    ZeoConfig,
 )
-from quack_core.integrations.config import IntegrationsConfig
-from quack_core.integrations.google.config import GoogleConfig
-from quack_core.integrations.notion.config import NotionConfig
+from zeo_core.integrations.config import IntegrationsConfig
+from zeo_core.integrations.google.config import GoogleConfig
+from zeo_core.integrations.notion.config import NotionConfig
 
 
 class TestConfigModels:
@@ -51,8 +51,8 @@ class TestConfigModels:
         }
 
         # Test setup_logging method with the new implementation
-        with patch("quack_core.core.logging.configure_logger") as mock_configure_logger:
-            with patch("quack_core.core.logging.LOG_LEVELS", mock_log_levels):
+        with patch("zeo_core.core.logging.configure_logger") as mock_configure_logger:
+            with patch("zeo_core.core.logging.LOG_LEVELS", mock_log_levels):
                 # Create a mock logger to be returned
                 mock_logger = MagicMock()
                 mock_configure_logger.return_value = mock_logger
@@ -67,7 +67,7 @@ class TestConfigModels:
 
                 # Verify configure_logger called with correct params
                 mock_configure_logger.assert_called_once_with(
-                    "quack-core", level=logging.INFO, log_file=None
+                    "zeocore", level=logging.INFO, log_file=None
                 )
 
                 # Reset mocks for next test
@@ -90,7 +90,7 @@ class TestConfigModels:
 
                 # Verify correct log level was passed
                 mock_configure_logger.assert_called_once_with(
-                    "quack-core", level=logging.DEBUG, log_file=None
+                    "zeocore", level=logging.DEBUG, log_file=None
                 )
 
                 # Reset mocks for next test
@@ -103,7 +103,7 @@ class TestConfigModels:
 
                 # Verify file path passed correctly
                 mock_configure_logger.assert_called_once_with(
-                    "quack-core", level=logging.INFO, log_file=log_file
+                    "zeocore", level=logging.INFO, log_file=log_file
                 )
 
     def test_paths_config(self) -> None:
@@ -173,7 +173,7 @@ class TestConfigModels:
     def test_integrations_config(self) -> None:
         """Test the IntegrationsConfig model.
 
-        quack_core.integrations.config.IntegrationsConfig is deliberately generic
+        zeo_core.integrations.config.IntegrationsConfig is deliberately generic
         (settings: dict[str, dict[str, Any]] keyed by integration id) rather than
         carrying named per-integration fields like `google`/`notion` - its own
         docstring states this explicitly ("remains agnostic of specific
@@ -210,7 +210,7 @@ class TestConfigModels:
         """Test the GeneralConfig model."""
         # Test default values
         config = GeneralConfig()
-        assert config.project_name == "QuackCore"
+        assert config.project_name == "ZeoCore"
         assert config.environment == "development"
         assert config.debug is False
         assert config.verbose is False
@@ -247,16 +247,16 @@ class TestConfigModels:
         assert config.disabled == ["plugin3"]
         assert config.paths == [plugins_path, more_plugins_path]
 
-    def test_quack_config(self) -> None:
-        """Test the QuackConfig model.
+    def test_zeo_config(self) -> None:
+        """Test the ZeoConfig model.
 
-        QuackConfig.integrations is a plain dict[str, Any] field (config/models.py),
+        ZeoConfig.integrations is a plain dict[str, Any] field (config/models.py),
         not typed as integrations/config.py's IntegrationsConfig - core/config
         never imports the integrations package (same core-purity boundary as
         test_integrations_config above). Assert the real field type.
         """
         # Test default values
-        config = QuackConfig()
+        config = ZeoConfig()
         assert isinstance(config.general, GeneralConfig)
         assert isinstance(config.paths, PathsConfig)
         assert isinstance(config.logging, LoggingConfig)
@@ -266,7 +266,7 @@ class TestConfigModels:
 
         # Test with custom values
         base_dir = "/test/base"
-        config = QuackConfig(
+        config = ZeoConfig(
             general=GeneralConfig(project_name="TestProject"),
             paths=PathsConfig(base_dir=base_dir),
             logging=LoggingConfig(level="DEBUG"),
@@ -280,12 +280,12 @@ class TestConfigModels:
         assert config.custom == {"key": "value"}
 
         # Test setup_logging method
-        # Add the setup_logging method to the QuackConfig class
-        def mock_setup_logging(self: QuackConfig) -> None:
+        # Add the setup_logging method to the ZeoConfig class
+        def mock_setup_logging(self: ZeoConfig) -> None:
             self.logging.setup_logging()
 
         # Temporarily add the setup_logging method
-        QuackConfig.setup_logging = mock_setup_logging  # type: ignore[method-assign]
+        ZeoConfig.setup_logging = mock_setup_logging  # type: ignore[method-assign]
 
         # Now patch the logging config's setup_logging method
         with patch.object(LoggingConfig, "setup_logging") as mock_setup:
@@ -293,10 +293,10 @@ class TestConfigModels:
             mock_setup.assert_called_once()
 
         # Remove the temporary method to clean up
-        delattr(QuackConfig, "setup_logging")
+        delattr(ZeoConfig, "setup_logging")
 
         # Test to_dict method. The plugin-settings field is named "plugins"
-        # (models.py) - "modules" was never a real QuackConfig field name.
+        # (models.py) - "modules" was never a real ZeoConfig field name.
         config_dict = config.to_dict()
         assert isinstance(config_dict, dict)
         assert "general" in config_dict

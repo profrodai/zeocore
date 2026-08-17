@@ -11,7 +11,7 @@ from pathlib import Path
 import yaml
 from hypothesis import given
 from hypothesis import strategies as st
-from quack_core.core.fs.service import FileSystemService
+from zeo_core.core.fs.service import FileSystemService
 
 
 class TestFileSystemService:

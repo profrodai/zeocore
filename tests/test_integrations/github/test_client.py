@@ -3,8 +3,8 @@
 from unittest.mock import patch
 
 import pytest
-from quack_core.integrations.github.client import GitHubClient
-from quack_core.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
+from zeo_core.integrations.github.client import GitHubClient
+from zeo_core.integrations.github.models import GitHubRepo, GitHubUser, PullRequest
 
 
 @pytest.fixture
@@ -35,7 +35,7 @@ class TestGitHubClient:
         expected_headers = {
             "Authorization": "token test_token",
             "Accept": "application/vnd.github.v3+json",
-            "User-Agent": "QuackCore-GitHub-Integration",
+            "User-Agent": "ZeoCore-GitHub-Integration",
         }
         for key, value in expected_headers.items():
             assert github_client.session.headers.get(key) == value
@@ -43,7 +43,7 @@ class TestGitHubClient:
     def test_get_user_authenticated(self, github_client: GitHubClient) -> None:
         """Test getting authenticated user."""
         # Mock get_user operation
-        with patch("quack_core.integrations.github.client.get_user") as mock_get_user:
+        with patch("zeo_core.integrations.github.client.get_user") as mock_get_user:
             user = GitHubUser(
                 username="test_user",
                 url="https://github.com/test_user",
@@ -79,7 +79,7 @@ class TestGitHubClient:
     def test_get_user_specific(self, github_client: GitHubClient) -> None:
         """Test getting a specific user."""
         # Mock get_user operation
-        with patch("quack_core.integrations.github.client.get_user") as mock_get_user:
+        with patch("zeo_core.integrations.github.client.get_user") as mock_get_user:
             user = GitHubUser(
                 username="other_user",
                 url="https://github.com/other_user",
@@ -109,7 +109,7 @@ class TestGitHubClient:
     def test_get_repo(self, github_client: GitHubClient) -> None:
         """Test getting a repository."""
         # Mock get_repo operation
-        with patch("quack_core.integrations.github.client.get_repo") as mock_get_repo:
+        with patch("zeo_core.integrations.github.client.get_repo") as mock_get_repo:
             owner = GitHubUser(
                 username="test_owner", url="https://github.com/test_owner"
             )
@@ -139,7 +139,7 @@ class TestGitHubClient:
     def test_star_repo(self, github_client: GitHubClient) -> None:
         """Test starring a repository."""
         # Mock star_repo operation
-        with patch("quack_core.integrations.github.client.star_repo") as mock_star_repo:
+        with patch("zeo_core.integrations.github.client.star_repo") as mock_star_repo:
             mock_star_repo.return_value = True
 
             # Call the method
@@ -160,7 +160,7 @@ class TestGitHubClient:
         """Test unstarring a repository."""
         # Mock unstar_repo operation
         with patch(
-            "quack_core.integrations.github.client.unstar_repo"
+            "zeo_core.integrations.github.client.unstar_repo"
         ) as mock_unstar_repo:
             mock_unstar_repo.return_value = True
 
@@ -182,7 +182,7 @@ class TestGitHubClient:
         """Test checking if a repository is starred."""
         # Mock is_repo_starred operation
         with patch(
-            "quack_core.integrations.github.client.is_repo_starred"
+            "zeo_core.integrations.github.client.is_repo_starred"
         ) as mock_is_starred:
             mock_is_starred.return_value = True
 
@@ -203,7 +203,7 @@ class TestGitHubClient:
     def test_fork_repo(self, github_client: GitHubClient) -> None:
         """Test forking a repository."""
         # Mock fork_repo operation
-        with patch("quack_core.integrations.github.client.fork_repo") as mock_fork_repo:
+        with patch("zeo_core.integrations.github.client.fork_repo") as mock_fork_repo:
             owner = GitHubUser(username="test_user", url="https://github.com/test_user")
             repo = GitHubRepo(
                 name="test-repo",
@@ -236,7 +236,7 @@ class TestGitHubClient:
         """Test creating a pull request."""
         # Mock create_pull_request operation
         with patch(
-            "quack_core.integrations.github.client.create_pull_request"
+            "zeo_core.integrations.github.client.create_pull_request"
         ) as mock_create_pr:
             author = GitHubUser(
                 username="test_user", url="https://github.com/test_user"
@@ -284,7 +284,7 @@ class TestGitHubClient:
         """Test listing pull requests."""
         # Mock list_pull_requests operation
         with patch(
-            "quack_core.integrations.github.client.list_pull_requests"
+            "zeo_core.integrations.github.client.list_pull_requests"
         ) as mock_list_prs:
             author = GitHubUser(
                 username="test_user", url="https://github.com/test_user"
@@ -341,7 +341,7 @@ class TestGitHubClient:
         """Test getting a pull request."""
         # Mock get_pull_request operation
         with patch(
-            "quack_core.integrations.github.client.get_pull_request"
+            "zeo_core.integrations.github.client.get_pull_request"
         ) as mock_get_pr:
             author = GitHubUser(
                 username="test_user", url="https://github.com/test_user"
@@ -382,7 +382,7 @@ class TestGitHubClient:
         """Test checking if a repository exists."""
         # Mock check_repository_exists operation
         with patch(
-            "quack_core.integrations.github.client.check_repository_exists"
+            "zeo_core.integrations.github.client.check_repository_exists"
         ) as mock_check:
             mock_check.return_value = True
 
@@ -404,7 +404,7 @@ class TestGitHubClient:
         """Test getting repository file content."""
         # Mock get_repository_file_content operation
         with patch(
-            "quack_core.integrations.github.client.get_repository_file_content"
+            "zeo_core.integrations.github.client.get_repository_file_content"
         ) as mock_get_content:
             mock_get_content.return_value = ("file content", "abc123")
 
@@ -431,7 +431,7 @@ class TestGitHubClient:
         """Test updating repository file."""
         # Mock update_repository_file operation
         with patch(
-            "quack_core.integrations.github.client.update_repository_file"
+            "zeo_core.integrations.github.client.update_repository_file"
         ) as mock_update:
             mock_update.return_value = True
 
@@ -464,7 +464,7 @@ class TestGitHubClient:
     def test_create_issue(self, github_client: GitHubClient) -> None:
         """Test creating an issue."""
         # Mock create_issue operation
-        with patch("quack_core.integrations.github.client.create_issue") as mock_create:
+        with patch("zeo_core.integrations.github.client.create_issue") as mock_create:
             mock_create.return_value = {"number": 42, "title": "Test Issue"}
 
             # Call the method
@@ -494,7 +494,7 @@ class TestGitHubClient:
     def test_list_issues(self, github_client: GitHubClient) -> None:
         """Test listing issues."""
         # Mock list_issues operation
-        with patch("quack_core.integrations.github.client.list_issues") as mock_list:
+        with patch("zeo_core.integrations.github.client.list_issues") as mock_list:
             mock_list.return_value = [
                 {"number": 42, "title": "Test Issue 1"},
                 {"number": 43, "title": "Test Issue 2"},
@@ -529,7 +529,7 @@ class TestGitHubClient:
     def test_get_issue(self, github_client: GitHubClient) -> None:
         """Test getting an issue."""
         # Mock get_issue operation
-        with patch("quack_core.integrations.github.client.get_issue") as mock_get:
+        with patch("zeo_core.integrations.github.client.get_issue") as mock_get:
             mock_get.return_value = {"number": 42, "title": "Test Issue"}
 
             # Call the method
@@ -553,7 +553,7 @@ class TestGitHubClient:
         """Test adding a comment to an issue."""
         # Mock add_issue_comment operation
         with patch(
-            "quack_core.integrations.github.client.add_issue_comment"
+            "zeo_core.integrations.github.client.add_issue_comment"
         ) as mock_add:
             mock_add.return_value = {"id": 123, "body": "Test comment"}
 
@@ -579,7 +579,7 @@ class TestGitHubClient:
         """Test getting files from a pull request."""
         # Mock get_pull_request_files operation
         with patch(
-            "quack_core.integrations.github.client.get_pull_request_files"
+            "zeo_core.integrations.github.client.get_pull_request_files"
         ) as mock_get:
             mock_get.return_value = [
                 {

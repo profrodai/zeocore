@@ -5,8 +5,8 @@ Tests for the get_integration_service function.
 import unittest
 from unittest.mock import MagicMock, patch
 
-from quack_core.integrations.core import get_integration_service
-from quack_core.integrations.core.base import BaseIntegrationService
+from zeo_core.integrations.core import get_integration_service
+from zeo_core.integrations.core.base import BaseIntegrationService
 
 
 class MockDriveService(BaseIntegrationService):
@@ -34,7 +34,7 @@ class TestGetIntegrationService(unittest.TestCase):
     Test cases for get_integration_service.
     """
 
-    @patch("quack_core.integrations.core.get_global_registry")
+    @patch("zeo_core.integrations.core.get_global_registry")
     def test_get_integration_service_found(
         self, mock_get_global_registry: MagicMock
     ) -> None:
@@ -53,7 +53,7 @@ class TestGetIntegrationService(unittest.TestCase):
         self.assertEqual(result, mock_drive_service)
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
-    @patch("quack_core.integrations.core.get_global_registry")
+    @patch("zeo_core.integrations.core.get_global_registry")
     def test_get_integration_service_not_found(
         self, mock_get_global_registry: MagicMock
     ) -> None:
@@ -72,7 +72,7 @@ class TestGetIntegrationService(unittest.TestCase):
         self.assertIsNone(result)
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
-    @patch("quack_core.integrations.core.get_global_registry")
+    @patch("zeo_core.integrations.core.get_global_registry")
     def test_get_integration_service_returns_first_match(
         self, mock_get_global_registry: MagicMock
     ) -> None:
@@ -108,7 +108,7 @@ class TestGetIntegrationService(unittest.TestCase):
         self.assertEqual(result, mock_drive_service1)
         mock_registry.get_integration_by_type.assert_called_once_with(MockDriveService)
 
-    @patch("quack_core.integrations.core.get_global_registry")
+    @patch("zeo_core.integrations.core.get_global_registry")
     def test_get_integration_service_type_mismatch(
         self, mock_get_global_registry: MagicMock
     ) -> None:

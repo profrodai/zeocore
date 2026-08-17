@@ -6,7 +6,7 @@ a `_initialize_environment(tool_name: str)` method that dynamically
 `importlib.import_module`'d a tool's own module and called its module-level
 `initialize()` hook, returning an `IntegrationResult`. That method and that
 whole "dynamic module init hook" behavior do not exist anywhere in the
-current `quack_core.tools.mixins.env_init.ToolEnvInitializerMixin` (read in
+current `zeo_core.tools.mixins.env_init.ToolEnvInitializerMixin` (read in
 full from src/ before writing this file): the current mixin's public method
 is `initialize_environment(ctx: ToolContext) -> CapabilityResult[None]`, and
 it does something entirely different -- strict validation that `ctx.work_dir`
@@ -25,7 +25,7 @@ RESTAUFWAND (named here, not fixed -- out of this stream's charter to touch
 src/): `_normalize_fs_result()`'s MIGRATION COMPAT fallback reads
 `getattr(result, "data", None)` then `getattr(result, "value", None)` to
 populate `info`, but the real return type of `fs.get_file_info()` is
-`FileInfoResult` (quack_core.core.fs.results), which carries `.exists`/
+`FileInfoResult` (zeo_core.core.fs.results), which carries `.exists`/
 `.is_dir` directly on itself and has neither a `.data` nor a `.value`
 attribute anywhere in its class hierarchy (only the unrelated `DataResult`
 subclass has `.data`). Confirmed behaviorally: constructing a real, valid,
@@ -48,10 +48,10 @@ import unittest
 from unittest.mock import MagicMock
 
 import pytest
-from quack_core.contracts.common.enums import CapabilityStatus
-from quack_core.core.fs.results import FileInfoResult
-from quack_core.tools.context import ToolContext
-from quack_core.tools.mixins.env_init import ToolEnvInitializerMixin
+from zeo_core.contracts.common.enums import CapabilityStatus
+from zeo_core.core.fs.results import FileInfoResult
+from zeo_core.tools.context import ToolContext
+from zeo_core.tools.mixins.env_init import ToolEnvInitializerMixin
 
 
 def _make_tool_context(fs: MagicMock) -> ToolContext:

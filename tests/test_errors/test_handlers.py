@@ -7,8 +7,8 @@ import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackError, QuackFileNotFoundError
-from quack_core.core.errors.handlers import (
+from zeo_core.core.errors import ZeoError, ZeoFileNotFoundError
+from zeo_core.core.errors.handlers import (
     ErrorHandler,
     handle_errors,
 )
@@ -25,11 +25,11 @@ class TestErrorHandler:
         formatted = handler.format_error(error)
         assert formatted == "Simple error"
 
-    def test_format_quack_error(self) -> None:
-        """Test formatting a QuackError with context."""
+    def test_format_zeo_error(self) -> None:
+        """Test formatting a ZeoError with context."""
         handler = ErrorHandler()
         context: dict[str, object] = {"file": "test.txt", "operation": "read"}
-        error = QuackError("Test error", context=context)
+        error = ZeoError("Test error", context=context)
 
         formatted = handler.format_error(error)
         assert "Test error" in formatted
@@ -38,10 +38,10 @@ class TestErrorHandler:
         assert "operation: read" in formatted
 
     def test_format_with_original_error(self) -> None:
-        """Test formatting a QuackError with original error."""
+        """Test formatting a ZeoError with original error."""
         handler = ErrorHandler()
         orig_error = ValueError("Original error")
-        error = QuackError("Wrapped error", original_error=orig_error)
+        error = ZeoError("Wrapped error", original_error=orig_error)
 
         formatted = handler.format_error(error)
         assert "Wrapped error" in formatted
@@ -52,7 +52,7 @@ class TestErrorHandler:
         """Test printing an error with traceback."""
         mock_console = MagicMock()
         handler = ErrorHandler(console=mock_console)
-        error = QuackError("Test error")
+        error = ZeoError("Test error")
 
         # Capture the returned result string
         result = handler.print_error(error, show_traceback=True)
@@ -66,7 +66,7 @@ class TestErrorHandler:
         """Test handling an error."""
         mock_console = MagicMock()
         handler = ErrorHandler(console=mock_console)
-        error = QuackError("Test error")
+        error = ZeoError("Test error")
 
         # Capture the returned result string
         result = handler.handle_error(error, title="Custom Title")
@@ -80,7 +80,7 @@ class TestErrorHandler:
         """Test handling an error with system exit."""
         mock_console = MagicMock()
         handler = ErrorHandler(console=mock_console)
-        error = QuackError("Test error")
+        error = ZeoError("Test error")
 
         with pytest.raises(SystemExit) as excinfo:
             with patch.object(sys, "exit") as mock_exit:
@@ -127,7 +127,7 @@ class TestHandleErrorsDecorator:
         mock_console = MagicMock()
 
         with patch(
-            "quack_core.core.errors.handlers.ErrorHandler",
+            "zeo_core.core.errors.handlers.ErrorHandler",
             return_value=MagicMock(console=mock_console),
         ):
 
@@ -144,7 +144,7 @@ class TestHandleErrorsDecorator:
         mock_console = MagicMock()
 
         with patch(
-            "quack_core.core.errors.handlers.ErrorHandler",
+            "zeo_core.core.errors.handlers.ErrorHandler",
             return_value=MagicMock(console=mock_console),
         ):
 
@@ -161,7 +161,7 @@ class TestHandleErrorsDecorator:
         mock_handler = MagicMock()
 
         with patch(
-            "quack_core.core.errors.handlers.ErrorHandler", return_value=mock_handler
+            "zeo_core.core.errors.handlers.ErrorHandler", return_value=mock_handler
         ):
 
             @handle_errors(title="Custom Error Title")
@@ -180,7 +180,7 @@ class TestHandleErrorsDecorator:
         mock_handler = MagicMock()
 
         with patch(
-            "quack_core.core.errors.handlers.ErrorHandler", return_value=mock_handler
+            "zeo_core.core.errors.handlers.ErrorHandler", return_value=mock_handler
         ):
 
             @handle_errors(exit_code=2)
@@ -196,22 +196,22 @@ class TestHandleErrorsDecorator:
 
 
 class TestFileNotFoundFormatting:
-    """Tests for formatting a QuackFileNotFoundError.
+    """Tests for formatting a ZeoFileNotFoundError.
 
     Salvaged from the retired TestGlobalErrorHandler class: the module-level
     `global_error_handler` singleton was intentionally removed (see
     handlers.py's `handle_errors` docstring: "Instantiates a transient
     ErrorHandler to avoid global state") in favor of transient instances.
     The behavior this test pins - that ErrorHandler.format_error() renders a
-    QuackFileNotFoundError with its message and path - still holds and is
+    ZeoFileNotFoundError with its message and path - still holds and is
     still worth covering; it is exercised here against a local instance
     instead of the retired global one.
     """
 
     def test_format_error_file_not_found(self) -> None:
-        """Test formatting a QuackFileNotFoundError."""
+        """Test formatting a ZeoFileNotFoundError."""
         handler = ErrorHandler()
-        error = QuackFileNotFoundError("/path/to/file")
+        error = ZeoFileNotFoundError("/path/to/file")
         formatted = handler.format_error(error)
 
         assert "File or directory not found" in formatted

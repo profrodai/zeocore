@@ -8,14 +8,14 @@ ensuring they work together properly in real-world scenarios.
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.integrations.llms import (
+from zeo_core.integrations.llms import (
     ChatMessage,
     LLMOptions,
     create_integration,
     get_llm_client,
     get_mock_llm,
 )
-from quack_core.integrations.llms.clients import AnthropicClient, OpenAIClient
+from zeo_core.integrations.llms.clients import AnthropicClient, OpenAIClient
 
 
 class TestLLMIntegration:
@@ -24,7 +24,7 @@ class TestLLMIntegration:
     def test_create_integration(self) -> None:
         """Test the create_integration factory function."""
         with patch(
-            "quack_core.integrations.llms.service.LLMIntegration"
+            "zeo_core.integrations.llms.service.LLMIntegration"
         ) as mock_service:
             # Create a simple mock that matches what create_integration returns
             mock_instance = MagicMock()
@@ -119,7 +119,7 @@ class TestLLMIntegration:
     def test_module_imports(self) -> None:
         """Test all expected imports are available at module level."""
         # Import the module
-        import quack_core.integrations.llms as llms
+        import zeo_core.integrations.llms as llms
 
         # Check important classes
         assert hasattr(llms, "LLMClient")

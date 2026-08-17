@@ -1,5 +1,5 @@
 """
-Tests for quack_core.integrations.loader.
+Tests for zeo_core.integrations.loader.
 
 Boundary-mock rule (RULING-235): the only external boundary this module has
 is importlib.metadata.entry_points() (a stdlib/OS-level lookup of installed
@@ -10,12 +10,12 @@ real, using small real IntegrationProtocol-shaped stub instances.
 
 from unittest.mock import MagicMock, patch
 
-from quack_core.integrations.core.registry import IntegrationRegistry
-from quack_core.integrations.core.results import (
+from zeo_core.integrations.core.registry import IntegrationRegistry
+from zeo_core.integrations.core.results import (
     IntegrationLoadReport,
     IntegrationResult,
 )
-from quack_core.integrations.loader import (
+from zeo_core.integrations.loader import (
     DEFAULT_ENTRY_GROUP,
     _load_one_entry_point,
     list_available_entry_points,
@@ -54,27 +54,27 @@ def _make_entry_point(name: str, value: str = "pkg.module:factory") -> MagicMock
 
 class TestListAvailableEntryPoints:
     def test_lists_entry_points_metadata(self) -> None:
-        ep1 = _make_entry_point("github", "quack_core.integrations.github:factory")
-        ep2 = _make_entry_point("drive", "quack_core.integrations.google.drive:factory")
+        ep1 = _make_entry_point("github", "zeo_core.integrations.github:factory")
+        ep2 = _make_entry_point("drive", "zeo_core.integrations.google.drive:factory")
 
         mock_eps = MagicMock()
         mock_eps.select.return_value = [ep1, ep2]
 
         with patch(
-            "quack_core.integrations.loader.entry_points", return_value=mock_eps
+            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
         ):
             result = list_available_entry_points()
 
         assert result == [
             {
                 "integration_id": "github",
-                "value": "quack_core.integrations.github:factory",
-                "module": "quack_core.integrations.github",
+                "value": "zeo_core.integrations.github:factory",
+                "module": "zeo_core.integrations.github",
             },
             {
                 "integration_id": "drive",
-                "value": "quack_core.integrations.google.drive:factory",
-                "module": "quack_core.integrations.google.drive",
+                "value": "zeo_core.integrations.google.drive:factory",
+                "module": "zeo_core.integrations.google.drive",
             },
         ]
         mock_eps.select.assert_called_once_with(group=DEFAULT_ENTRY_GROUP)
@@ -84,7 +84,7 @@ class TestListAvailableEntryPoints:
         mock_eps.select.return_value = []
 
         with patch(
-            "quack_core.integrations.loader.entry_points", return_value=mock_eps
+            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
         ):
             result = list_available_entry_points()
 
@@ -95,7 +95,7 @@ class TestListAvailableEntryPoints:
         mock_eps.select.return_value = []
 
         with patch(
-            "quack_core.integrations.loader.entry_points", return_value=mock_eps
+            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
         ):
             list_available_entry_points(group="custom.group")
 
@@ -251,7 +251,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps.select.return_value = [ep_gh, ep_drive]
 
         with patch(
-            "quack_core.integrations.loader.entry_points", return_value=mock_eps
+            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
         ):
             report = load_enabled_entry_points(registry, ["gh", "drive"])
 
@@ -266,7 +266,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps.select.return_value = []
 
         with patch(
-            "quack_core.integrations.loader.entry_points", return_value=mock_eps
+            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
         ):
             report = load_enabled_entry_points(
                 registry, ["missing"], strict=True
@@ -286,7 +286,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps.select.return_value = [ep_present]
 
         with patch(
-            "quack_core.integrations.loader.entry_points", return_value=mock_eps
+            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
         ):
             report = load_enabled_entry_points(
                 registry, ["missing", "present"], strict=False
@@ -310,7 +310,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps.select.return_value = [ep_flaky, ep_never]
 
         with patch(
-            "quack_core.integrations.loader.entry_points", return_value=mock_eps
+            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
         ):
             report = load_enabled_entry_points(
                 registry, ["flaky", "never_reached"], strict=True
@@ -331,7 +331,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps.select.return_value = [ep]
 
         with patch(
-            "quack_core.integrations.loader.entry_points", return_value=mock_eps
+            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
         ):
             report = load_enabled_entry_points(
                 registry, ["noinit"], initialize=False
@@ -346,7 +346,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps.select.return_value = []
 
         with patch(
-            "quack_core.integrations.loader.entry_points", return_value=mock_eps
+            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
         ):
             report = load_enabled_entry_points(registry, [])
 
@@ -360,7 +360,7 @@ class TestLoadEnabledEntryPoints:
         mock_eps.select.return_value = []
 
         with patch(
-            "quack_core.integrations.loader.entry_points", return_value=mock_eps
+            "zeo_core.integrations.loader.entry_points", return_value=mock_eps
         ):
             load_enabled_entry_points(registry, [], group="custom.group")
 

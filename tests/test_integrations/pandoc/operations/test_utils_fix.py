@@ -9,8 +9,8 @@ import time
 from typing import Any
 from unittest.mock import patch
 
-from quack_core.integrations.pandoc import ConversionMetrics, PandocConfig
-from quack_core.integrations.pandoc.operations.utils import safe_convert_to_int
+from zeo_core.integrations.pandoc import ConversionMetrics, PandocConfig
+from zeo_core.integrations.pandoc.operations.utils import safe_convert_to_int
 
 
 def patched_check_file_size(
@@ -164,15 +164,15 @@ def apply_utils_patches() -> list[Any]:
     """
     patches: list[Any] = [
         patch(
-            "quack_core.integrations.pandoc.operations.utils.check_file_size",
+            "zeo_core.integrations.pandoc.operations.utils.check_file_size",
             patched_check_file_size,
         ),
         patch(
-            "quack_core.integrations.pandoc.operations.utils.check_conversion_ratio",
+            "zeo_core.integrations.pandoc.operations.utils.check_conversion_ratio",
             patched_check_conversion_ratio,
         ),
         patch(
-            "quack_core.integrations.pandoc.operations.utils.track_metrics",
+            "zeo_core.integrations.pandoc.operations.utils.track_metrics",
             patched_track_metrics,
         ),
     ]

@@ -1,5 +1,5 @@
 """
-Tests for quack_core.core.registry — the operation registry (Operation,
+Tests for zeo_core.core.registry — the operation registry (Operation,
 OperationRegistry, get_registry/reset_registry, invoke_operation).
 
 quackverse-coverage-90: this module carried 78% coverage (18/81 stmts missed)
@@ -13,7 +13,7 @@ import asyncio
 
 import pytest
 from pydantic import BaseModel, ValidationError
-from quack_core.core.registry import (
+from zeo_core.core.registry import (
     Operation,
     OperationRegistry,
     get_registry,

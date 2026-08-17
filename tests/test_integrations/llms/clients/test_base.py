@@ -11,13 +11,13 @@ from typing import cast
 from unittest.mock import MagicMock, patch
 
 import pytest
-from quack_core.core.errors import QuackApiError, QuackIntegrationError
+from zeo_core.core.errors import ZeoApiError, ZeoIntegrationError
 
 # Import IntegrationResult for testing
-from quack_core.integrations.core.results import (
+from zeo_core.integrations.core.results import (
     IntegrationResult,
 )
-from quack_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
 from tests.test_integrations.llms.mocks.clients import MockClient
 
 
@@ -165,7 +165,7 @@ class TestLLMClient:
 
         # Test with API error
         with patch.object(mock_client, "_chat_with_provider") as mock_chat:
-            mock_chat.side_effect = QuackApiError("API error", "TestService")
+            mock_chat.side_effect = ZeoApiError("API error", "TestService")
             result = mock_client.chat(messages)
             assert result.success is False
             assert result.error is not None
@@ -173,7 +173,7 @@ class TestLLMClient:
 
         # Test with integration error
         with patch.object(mock_client, "_chat_with_provider") as mock_chat:
-            mock_chat.side_effect = QuackIntegrationError("Integration error")
+            mock_chat.side_effect = ZeoIntegrationError("Integration error")
             result = mock_client.chat(messages)
             assert result.success is False
             assert result.error is not None
@@ -205,7 +205,7 @@ class TestLLMClient:
         # For the successful case, use the class method to create a
         # proper IntegrationResult.
         mock_provider = MagicMock()
-        error = QuackApiError("Rate limit exceeded", "TestService")
+        error = ZeoApiError("Rate limit exceeded", "TestService")
         mock_provider.side_effect = [
             error,
             error,
@@ -240,7 +240,7 @@ class TestLLMClient:
         )
 
         mock_provider = MagicMock()
-        mock_provider.side_effect = QuackApiError("Rate limit exceeded", "TestService")
+        mock_provider.side_effect = ZeoApiError("Rate limit exceeded", "TestService")
 
         with patch.object(client, "_chat_with_provider", mock_provider):
             with patch.object(time, "sleep") as mock_sleep:
@@ -323,5 +323,5 @@ class TestLLMClient:
             mock_client._normalize_messages(invalid_message)
 
         # Test with dictionary missing required fields
-        with pytest.raises(QuackIntegrationError):
+        with pytest.raises(ZeoIntegrationError):
             mock_client._normalize_messages([{}])

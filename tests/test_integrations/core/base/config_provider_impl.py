@@ -4,7 +4,7 @@ Implementation classes for testing config providers.
 
 from typing import Any
 
-from quack_core.integrations.core.base import BaseConfigProvider
+from zeo_core.integrations.core.base import BaseConfigProvider
 
 
 class MockConfigProvider(BaseConfigProvider):
