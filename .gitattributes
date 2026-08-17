@@ -1,0 +1,16 @@
+# Normalize line endings to LF for all text files, regardless of the
+# contributor's platform (Windows checkouts default to CRLF otherwise,
+# which causes noisy whole-file diffs on every edit).
+* text=auto eol=lf
+
+# Treat these as binary — never line-ending-normalize, never diff as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.whl binary
+*.tar.gz binary
+
+# Collapse generated/vendored files out of GitHub's diff view by default.
+uv.lock -diff linguist-generated=true
