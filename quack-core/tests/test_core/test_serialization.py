@@ -104,6 +104,19 @@ class TestNormalizeForJsonDataclass:
         p = Point(x=1, y=2)
         assert normalize_for_json(p) == {"x": 1, "y": 2}
 
+    def test_dataclass_type_does_not_raise_typeerror_from_asdict(self) -> None:
+        # is_dataclass() is True for both an instance AND a bare dataclass
+        # *type* (Point, not Point(...)) -- asdict() only accepts instances
+        # and raises TypeError on a type. A bare type must fall through to
+        # the same unknown-type handling any other unsupported value gets,
+        # not raise TypeError out of the dataclass branch (RULING-277 Bug 3).
+        with pytest.raises(TypeError, match="not JSON-serializable"):
+            normalize_for_json(Point)
+
+    def test_dataclass_type_stringified_with_fallback(self) -> None:
+        result = normalize_for_json(Point, allow_string_fallback=True)
+        assert result == str(Point)
+
 
 class TestNormalizeForJsonSequences:
     def test_list_recurses_over_elements(self) -> None:

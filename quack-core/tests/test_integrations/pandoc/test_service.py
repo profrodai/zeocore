@@ -1238,3 +1238,106 @@ def test_create_integration_factory_function() -> None:
 
     integration_with_output = create_integration(output_dir="custom_output")
     assert integration_with_output._init_output_dir == "custom_output"
+
+
+def test_default_output_path_same_dir_same_basename_target_extension() -> None:
+    """Covers service.py's _default_output_path -- RULING-277 Bug 4: when a
+    caller omits output_path, html_to_markdown/markdown_to_docx must
+    synthesize one in the same directory as input_path, with the same base
+    filename and the target format's own extension, rather than letting
+    output_path=None reach DocumentConverter.convert_file (which requires
+    str and previously raised TypeError for real, unmocked callers).
+    """
+    integration = PandocIntegration()
+
+    assert integration._default_output_path(
+        "/some/dir/report.html", ".md"
+    ) == "/some/dir/report.md"
+    assert integration._default_output_path(
+        "docs/notes.md", ".docx"
+    ) == "docs/notes.docx"
+    # No directory component at all -- os.path.dirname("") is "", and
+    # os.path.join("", ...) still yields the correct same-dir-as-input result.
+    assert integration._default_output_path("report.html", ".md") == "report.md"
+
+
+@patch("quack_core.core.fs.service.standalone.expand_user_vars")
+@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+def test_html_to_markdown_output_path_none_synthesizes_real_default(
+    mock_verify_pandoc: MagicMock,
+    mock_expand_user_vars: MagicMock,
+    setup_mocks: tuple[SimpleNamespace, MagicMock],
+) -> None:
+    """RULING-277 Bug 4 regression: calling html_to_markdown with no
+    output_path must not let None reach convert_file. Only convert_file
+    itself is a spy (no real pandoc binary is available in this test
+    environment); the output_path synthesis (_default_output_path) is the
+    real, unmocked production code under test here -- the exact newly-
+    guarded branch, exercised the way this chain's own precedent
+    (test_resolve_file_details_mime_type_fallback, google-drive cluster,
+    commit f85dc26b) tests a guarded branch rather than leaving it dead.
+    """
+    fs_stub, mock_paths_service = setup_mocks
+    mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
+
+    integration = PandocIntegration()
+    integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub  # type: ignore[assignment]
+    assert integration.config_provider is not None
+    integration.config_provider.load_config = MagicMock(  # type: ignore[method-assign]
+        return_value=IntegrationResult(success=True, content={})
+    )
+    integration.initialize()
+
+    assert integration.converter is not None
+    mock_convert_file = MagicMock(
+        return_value=IntegrationResult(success=True, content="input.md")
+    )
+    integration.converter.convert_file = mock_convert_file  # type: ignore[method-assign]
+
+    result = integration.html_to_markdown("some/dir/input.html")
+
+    assert result.success
+    mock_convert_file.assert_called_once_with(
+        "some/dir/input.html", "some/dir/input.md", "markdown"
+    )
+
+
+@patch("quack_core.core.fs.service.standalone.expand_user_vars")
+@patch("quack_core.integrations.pandoc.service.verify_pandoc")
+def test_markdown_to_docx_output_path_none_synthesizes_real_default(
+    mock_verify_pandoc: MagicMock,
+    mock_expand_user_vars: MagicMock,
+    setup_mocks: tuple[SimpleNamespace, MagicMock],
+) -> None:
+    """RULING-277 Bug 4 regression, markdown_to_docx twin of the
+    html_to_markdown test above: no output_path must synthesize a real
+    default (same dir, same basename, .docx extension) rather than let None
+    reach convert_file.
+    """
+    fs_stub, mock_paths_service = setup_mocks
+    mock_verify_pandoc.return_value = "2.11.0"
+    mock_expand_user_vars.side_effect = lambda x: x
+
+    integration = PandocIntegration()
+    integration.paths_service = mock_paths_service
+    integration.fs_service = fs_stub  # type: ignore[assignment]
+    assert integration.config_provider is not None
+    integration.config_provider.load_config = MagicMock(  # type: ignore[method-assign]
+        return_value=IntegrationResult(success=True, content={})
+    )
+    integration.initialize()
+
+    assert integration.converter is not None
+    mock_convert_file = MagicMock(
+        return_value=IntegrationResult(success=True, content="input.docx")
+    )
+    integration.converter.convert_file = mock_convert_file  # type: ignore[method-assign]
+
+    result = integration.markdown_to_docx("some/dir/input.md")
+
+    assert result.success
+    mock_convert_file.assert_called_once_with(
+        "some/dir/input.md", "some/dir/input.docx", "docx"
+    )

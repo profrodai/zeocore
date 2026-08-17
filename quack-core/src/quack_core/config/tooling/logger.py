@@ -91,6 +91,9 @@ def get_logger(tool_name: str) -> logging.Logger:
 
 def log_teaching(logger: logging.Logger, message: str, level: str = "INFO") -> None:
     """Log a Teaching Mode message for the tool."""
-    from quack_core.core.logging import log_teaching as core_log_teaching
+    # core/logging/__init__.py's __all__ deliberately lists only get_logger/
+    # configure_logger/LOG_LEVELS/LogLevel; log_teaching is not re-exported,
+    # so it is imported from its true location directly (RULING-277 Bug 2).
+    from quack_core.core.logging.config import log_teaching as core_log_teaching
 
     core_log_teaching(logger, message, level)

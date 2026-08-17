@@ -3,60 +3,48 @@
 # === QV-LLM:END ===
 
 """
-Tests for quack_core._dev.run_local (0% covered before this file, and
-PINS A REAL PRODUCTION BUG -- the module is currently unimportable).
+Tests for quack_core._dev.run_local (0% covered before RULING-277 Bug 1's
+fix, and previously an ImportError-pinning test for the bug this ruling
+authorized fixing).
 
 This is a DEV-ONLY manual orchestrator script (module docstring: "Use this
 to test chains of capabilities without spinning up n8n") -- but the
 coverage gate does not exempt _dev/ (checked pyproject.toml: only
-"tests/*" is omitted), so it counts, and being "dev-only" doesn't make a
-broken import acceptable.
+"tests/*" is omitted), so it counts.
 
-BUG (found writing this coverage pass, NOT fixed here -- a ruling must
-authorize any production fix, per this stream's charter):
-
-quack_core/_dev/run_local.py line 16 does:
-    from quack_core.contracts.capabilities.demo import EchoRequest, echo_text
-
-But quack_core/contracts/capabilities/demo/__init__.py's own docstring
-says, verbatim: "NOTE: Demo implementations are NOT exported from this
-module. They are internal examples only[...] See _impl.py for reference
-implementations (prefixed with _ to mark as internal)." Its __all__ is
-literally `["EchoRequest", "VideoRefRequest"]` -- models only. echo_text
-lives in demo/_impl.py, never re-exported from demo/__init__.py.
-
-Effect: `import quack_core._dev.run_local` raises ImportError immediately
-(verified directly, unmocked):
-    >>> from quack_core._dev.run_local import run_flow
-    ImportError: cannot import name 'echo_text' from
-    'quack_core.contracts.capabilities.demo'
-
-The module's own run_flow() can never execute -- this script is currently
-100 percent broken, not merely uncovered. The likely correct fix (not
-applied here) is importing echo_text from
-quack_core.contracts.capabilities.demo._impl instead of the package's
-public __init__, matching the "DO NOT export implementations" contract
-the package itself documents.
+FORMER BUG (RULING-277 Bug 1, fixed): quack_core/_dev/run_local.py line 16
+used to do `from quack_core.contracts.capabilities.demo import EchoRequest,
+echo_text`, but quack_core/contracts/capabilities/demo/__init__.py's own
+docstring says, verbatim: "NOTE: Demo implementations are NOT exported from
+this module... See _impl.py for reference implementations." echo_text was
+never re-exported, so the module was 100 percent unimportable. RULING-277
+authorized importing echo_text from
+quack_core.contracts.capabilities.demo._impl directly instead, matching
+that docstring's own "for reference/testing only" carve-out for a
+_dev/-only script. This file now exercises the fixed, real import and
+run_flow() successfully, replacing the prior ImportError-pinning test per
+that test's own instruction.
 """
 
-import pytest
 
+class TestRunLocalModule:
+    def test_module_imports_successfully(self) -> None:
+        """RULING-277 Bug 1 regression: the module must import cleanly now
+        that echo_text is pulled from its true (_impl) location."""
+        import importlib
 
-class TestRunLocalModuleImportBug:
-    def test_module_import_raises_import_error_bug(self) -> None:
-        """PINS the current (broken) behavior. Once a ruling authorizes
-        fixing run_local.py's import to pull echo_text from
-        quack_core.contracts.capabilities.demo._impl (matching the
-        package's own documented "implementations are not exported"
-        contract), this test must be replaced with one that imports and
-        exercises run_flow() successfully -- not left passing on a
-        now-stale ImportError."""
-        with pytest.raises(ImportError, match="echo_text"):
-            import importlib
+        import quack_core._dev.run_local as run_local_module
 
-            import quack_core._dev.run_local as run_local_module
+        importlib.reload(run_local_module)
+        assert hasattr(run_local_module, "run_flow")
 
-            importlib.reload(run_local_module)
+    def test_run_flow_executes_successfully(self) -> None:
+        """The module's own run_flow() -- previously unreachable -- now
+        runs end to end against the real (unmocked) echo_text
+        implementation, exercising all three of its steps."""
+        from quack_core._dev.run_local import run_flow
+
+        run_flow()
 
     def test_the_underlying_implementation_the_script_wants_to_call_does_work(
         self,
