@@ -191,8 +191,11 @@ def normalize_for_json(
         except ImportError:
             pass  # Pydantic not available, continue
 
-    # Dataclasses
-    if is_dataclass(data):
+    # Dataclasses (instances only -- is_dataclass() is also True for a
+    # dataclass *type*, but asdict() requires an instance and raises
+    # TypeError on a type; a bare type falls through to the unknown-type
+    # handling below, same as any other unsupported value (RULING-277 Bug 3).
+    if is_dataclass(data) and not isinstance(data, type):
         return asdict(data)
 
     # Safe auto-conversions (common types: Path, datetime, Enum)
