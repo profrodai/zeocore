@@ -3,81 +3,194 @@
 # === QV-LLM:END ===
 
 """
-Example usage of the QuackCore tools.
+Example usage of the quack_core.tools capability-authoring framework
+(Ring B, Doctrine v3).
 
-This example demonstrates how to create a custom QuackTool plugin
-using the QuackCore tools.
+This example demonstrates how to build a custom, doctrine-compliant tool:
+
+1. A tool subclassing BaseQuackTool that implements run(request, ctx).
+2. JSON transform + statistics business logic (process_content /
+   _calculate_statistics -- plain Python, no framework coupling).
+3. Optional Google Drive integration via IntegrationEnabledMixin, reading
+   the service out of ctx.services (runner-provided) rather than resolving
+   it itself.
+4. Pre/post-run hooks via LifecycleMixin.
+5. A runnable main() that stands in for what a real runner (Ring C) would
+   do: build a ToolContext, construct a request, call tool.run(), and
+   persist the CapabilityResult's data.
+
+NOTE ON WHAT CHANGED FROM THE OLD EXAMPLE:
+Doctrine v3 removed OutputFormatMixin entirely (see
+quack_core.tools.mixins.output_handler's own module docstring) -- output
+persistence is now the exclusive responsibility of the runner (Ring C), not
+the tool. This example therefore no longer has the tool itself pick an
+output format or write files; instead run() returns structured data inside
+CapabilityResult, and main() (playing the runner's role) is the one that
+decides to serialize it to disk. This is a narrower teaching surface than
+the old example's YAMLOutputWriter, by design -- Ring B tools do not own
+output format under the current architecture.
+
+Run this file directly to see it work end to end against a small, real
+JSON fixture:
+
+    python examples/toolkit_usage.py
 """
 
+from __future__ import annotations
+
 import json
+import tempfile
+from pathlib import Path
 from typing import Any
 
-from quack_core.integrations.core import IntegrationResult
-
-# Import the specific Google Drive service
-# Note: This is just for the example, in a real implementation you'd
-# use the actual import path for GoogleDriveService
+from pydantic import BaseModel
+from quack_core.config.tooling.logger import get_logger
+from quack_core.contracts import CapabilityResult
+from quack_core.core.fs import get_service as get_fs_service
 from quack_core.integrations.google.drive import GoogleDriveService
 from quack_core.tools import (
-    BaseQuackToolPlugin,
+    BaseQuackTool,
     IntegrationEnabledMixin,
-    OutputFormatMixin,
-    QuackToolLifecycleMixin,
+    LifecycleMixin,
+    ToolContext,
 )
-from quack_core.workflow.output import YAMLOutputWriter
 
 
-class ExampleTool(
-    IntegrationEnabledMixin[GoogleDriveService],
-    OutputFormatMixin,
-    QuackToolLifecycleMixin,
-    BaseQuackToolPlugin,
-):
+class ExampleToolRequest(BaseModel):
     """
-    Example QuackTool plugin that demonstrates the QuackCore tools.
+    Request model for ExampleTool.run().
+
+    Args:
+        input_path: Path to a JSON file to read and process.
+        calculate_stats: Whether to compute statistics over the data.
+        upload_to_drive: Whether to attempt a Google Drive upload of the
+            processed result (requires a "google_drive" service in
+            ctx.services; silently skipped, not an error, if absent).
+        drive_folder_id: Optional destination folder ID for the upload.
+    """
+
+    input_path: str
+    calculate_stats: bool = True
+    upload_to_drive: bool = False
+    drive_folder_id: str | None = None
+
+
+class ExampleToolResponse(BaseModel):
+    """Response payload carried inside CapabilityResult.data."""
+
+    processed: dict[str, Any]
+    uploaded_file_id: str | None = None
+
+
+class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseQuackTool):
+    """
+    Example doctrine-compliant tool.
 
     This tool:
-    1. Reads a JSON file
-    2. Transforms the data in a simple way
-    3. Outputs the result as YAML
-    4. Optionally uploads to Google Drive if integration is available
+    1. Reads a JSON file (path supplied via the request).
+    2. Transforms the data by attaching identity metadata and, optionally,
+       computed statistics.
+    3. Optionally uploads the transformed result to Google Drive, if a
+       "google_drive" service was provided by the runner in
+       ctx.services and the request asks for it.
+
+    Demonstrates IntegrationEnabledMixin (service lookup from ctx.services)
+    and LifecycleMixin (pre_run/post_run hooks) alongside BaseQuackTool's
+    required run(request, ctx) contract.
     """
 
-    def __init__(self) -> None:
-        """
-        Initialize the ExampleTool.
-        """
-        super().__init__("example_tool", "1.0.0")
+    name = "example_tool"
+    version = "1.0.0"
 
-    def initialize_plugin(self) -> None:
-        """
-        Initialize plugin-specific resources and dependencies.
-        """
-        # Resolve the Google Drive integration service
-        self._drive_service = self.resolve_integration(GoogleDriveService)
+    def pre_run(
+        self, request: ExampleToolRequest, ctx: ToolContext
+    ) -> CapabilityResult[None]:
+        """Log intent before running. Validation stays in run()/is_available()."""
+        logger = ctx.require_logger()
+        if logger is not None:
+            logger.info(f"[{self.name}] pre-run: about to process {request.input_path}")
+        return CapabilityResult.ok(data=None, msg="Pre-run checks passed")
 
-        if self._drive_service:
-            self.logger.info("Google Drive integration is available")
-        else:
-            self.logger.info("Google Drive integration is not available")
+    def post_run(
+        self,
+        request: ExampleToolRequest,
+        result: CapabilityResult[Any],
+        ctx: ToolContext,
+    ) -> CapabilityResult[Any]:
+        """Log outcome after running. Passes the result through unchanged."""
+        logger = ctx.require_logger()
+        if logger is not None:
+            logger.info(f"[{self.name}] post-run: status={result.status}")
+        return result
 
-    def _get_output_extension(self) -> str:
+    def run(
+        self, request: ExampleToolRequest, ctx: ToolContext
+    ) -> CapabilityResult[ExampleToolResponse]:
         """
-        Get the file extension for output files.
+        Execute the example capability: read, transform, optionally upload.
+
+        Args:
+            request: Typed request naming the input file and options.
+            ctx: Runner-provided, immutable tool context.
 
         Returns:
-            str: File extension (with leading dot) for output files
+            CapabilityResult wrapping an ExampleToolResponse.
         """
-        return ".yaml"
+        logger = ctx.require_logger()
 
-    def get_output_writer(self) -> YAMLOutputWriter:
-        """
-        Get the output writer for this tool.
+        try:
+            raw = Path(request.input_path).read_text(encoding="utf-8")
+        except OSError as e:
+            return CapabilityResult.fail_from_exc(
+                msg=f"Could not read input file: {request.input_path}",
+                code="QC_IO_NOT_FOUND",
+                exc=e,
+            )
 
-        Returns:
-            YAMLOutputWriter: A YAML output writer
-        """
-        return YAMLOutputWriter()
+        try:
+            content = json.loads(raw)
+        except json.JSONDecodeError as e:
+            return CapabilityResult.fail_from_exc(
+                msg=f"Input file is not valid JSON: {request.input_path}",
+                code="QC_VAL_INVALID_JSON",
+                exc=e,
+            )
+
+        processed = self.process_content(
+            content, {"calculate_stats": request.calculate_stats}
+        )
+
+        uploaded_file_id: str | None = None
+        if request.upload_to_drive:
+            drive = self.get_service(
+                "google_drive", ctx, expected_type=GoogleDriveService
+            )
+            if drive is None:
+                if logger is not None:
+                    logger.info(
+                        f"[{self.name}] Google Drive upload requested but no "
+                        "'google_drive' service was provided in ctx.services "
+                        "-- skipping upload, not treated as an error."
+                    )
+            else:
+                upload_result = self._upload_processed(
+                    drive, processed, request.drive_folder_id, ctx
+                )
+                if upload_result.success:
+                    uploaded_file_id = upload_result.content
+                elif logger is not None:
+                    logger.warning(
+                        f"[{self.name}] Google Drive upload failed: "
+                        f"{upload_result.error}"
+                    )
+
+        return CapabilityResult.ok(
+            data=ExampleToolResponse(
+                processed=processed, uploaded_file_id=uploaded_file_id
+            ),
+            msg="Processing completed",
+            metadata={"tool": f"{self.name} v{self.version}"},
+        )
 
     def process_content(
         self,
@@ -87,32 +200,27 @@ class ExampleTool(
         """
         Process content with this tool.
 
-        This method takes the content of a JSON file and transforms it
-        by adding a "processed_by" field and calculating statistics.
+        Takes the content of a JSON file and transforms it by adding a
+        "processed_by" field and, optionally, calculated statistics.
 
         Args:
-            content: The loaded content to process (JSON data)
-            options: Dictionary of processing options
+            content: The loaded content to process (JSON data).
+            options: Dictionary of processing options.
 
         Returns:
-            dict[str, Any]: The processed content
+            The processed content.
         """
-        self.logger.info(f"Processing content with options: {options}")
-
         # If content is a string (raw JSON), parse it
         if isinstance(content, str):
             content = json.loads(content)
 
-        # Add processing metadata
-        result = {
+        result: dict[str, Any] = {
             "processed_by": f"{self.name} v{self.version}",
             "original_data": content,
         }
 
-        # Add statistics if requested
-        if options.get("calculate_stats", False):
-            stats = self._calculate_statistics(content)
-            result["statistics"] = stats
+        if options.get("calculate_stats", False) and isinstance(content, dict):
+            result["statistics"] = self._calculate_statistics(content)
 
         return result
 
@@ -120,27 +228,24 @@ class ExampleTool(
         """
         Calculate statistics from the data.
 
-        This is a simple example that calculates:
+        Computes:
         - Number of keys in the data
         - Types of values
         - Depth of the data structure
 
         Args:
-            data: The data to analyze
+            data: The data to analyze.
 
         Returns:
-            dict[str, Any]: The calculated statistics
+            The calculated statistics.
         """
-        # Count keys
         num_keys = len(data)
 
-        # Count value types
-        value_types = {}
+        value_types: dict[str, int] = {}
         for value in data.values():
             value_type = type(value).__name__
             value_types[value_type] = value_types.get(value_type, 0) + 1
 
-        # Calculate depth
         def get_depth(d: Any, level: int = 1) -> int:  # noqa: ANN401 -- genuinely dynamic: recurses into arbitrary JSON-shaped values (dict/list/scalar), same data domain as content above
             if not isinstance(d, dict):
                 return level
@@ -156,112 +261,116 @@ class ExampleTool(
             "depth": depth,
         }
 
-    def pre_run(self) -> IntegrationResult:
+    def _upload_processed(
+        self,
+        drive: GoogleDriveService,
+        processed: dict[str, Any],
+        folder_id: str | None,
+        ctx: ToolContext,
+    ) -> Any:  # noqa: ANN401 -- returns GoogleDriveService.upload_file's own IntegrationResult[str]; not re-exported through this module's typed surface
         """
-        Prepare before running the tool.
-
-        Returns:
-            IntegrationResult: Result of the preparation process
-        """
-        self.logger.info("Running pre-run checks...")
-        return IntegrationResult.success_result(
-            message="Pre-run checks completed successfully"
-        )
-
-    def post_run(self) -> IntegrationResult:
-        """
-        Clean up after running the tool.
-
-        Returns:
-            IntegrationResult: Result of the cleanup process
-        """
-        self.logger.info("Running post-run cleanup...")
-        return IntegrationResult.success_result(
-            message="Post-run cleanup completed successfully"
-        )
-
-    def upload(
-        self, file_path: str, destination: str | None = None
-    ) -> IntegrationResult:
-        """
-        Upload a file to Google Drive.
+        Write the processed result to a temp file and upload it to Drive.
 
         Args:
-            file_path: Path to the file to upload
-            destination: Optional folder ID in Google Drive
+            drive: Resolved Google Drive integration service.
+            processed: The processed content to upload.
+            folder_id: Optional destination folder ID.
+            ctx: Tool context (used for the work directory).
 
         Returns:
-            IntegrationResult: Result of the upload operation
+            IntegrationResult from GoogleDriveService.upload_file.
         """
-        if not self._drive_service:
-            return IntegrationResult.error_result(
-                error="Google Drive integration not available",
-                message="Cannot upload file without Google Drive integration",
-            )
-
-        try:
-            self.logger.info(f"Uploading {file_path} to Google Drive...")
-
-            # Use the drive service to upload the file
-            upload_result = self._drive_service.upload_file(
-                file_path=file_path,
-                folder_id=destination,
-            )
-
-            if upload_result.success:
-                return IntegrationResult.success_result(
-                    content=upload_result.content,
-                    message="File uploaded successfully to Google Drive",
-                )
-            else:
-                return IntegrationResult.error_result(
-                    error=upload_result.error,
-                    message="Failed to upload file to Google Drive",
-                )
-        except Exception as e:
-            self.logger.exception("Error uploading file to Google Drive")
-            return IntegrationResult.error_result(
-                error=str(e), message="Error uploading file to Google Drive"
-            )
+        upload_path = Path(ctx.work_dir) / f"{self.name}_output.json"
+        upload_path.write_text(json.dumps(processed, indent=2), encoding="utf-8")
+        return drive.upload_file(
+            file_path=str(upload_path),
+            parent_folder_id=folder_id,
+        )
 
 
 def main() -> None:
     """
-    Example of using the ExampleTool.
+    Example of using ExampleTool end to end.
+
+    Plays the role a real runner (Ring C) would play: builds a ToolContext,
+    constructs a request, invokes the tool's lifecycle (pre_run -> run ->
+    post_run), and persists the result -- none of which the tool itself is
+    responsible for under Doctrine v3.
     """
-    # Create an instance of the tool
-    tool = ExampleTool()
+    with tempfile.TemporaryDirectory(prefix="quack_toolkit_usage_") as tmp:
+        tmp_dir = Path(tmp)
+        work_dir = tmp_dir / "work"
+        output_dir = tmp_dir / "output"
+        work_dir.mkdir()
+        output_dir.mkdir()
 
-    # Initialize the tool
-    init_result = tool.initialize()
-    if not init_result.success:
-        print(f"Failed to initialize tool: {init_result.error}")
-        return
-
-    print(f"Tool initialized: {init_result.message}")
-
-    # Process a file
-    process_result = tool.process_file(
-        "example_data.json", options={"calculate_stats": True}
-    )
-
-    if not process_result.success:
-        print(f"Failed to process file: {process_result.error}")
-        return
-
-    print(f"File processed: {process_result.message}")
-    print(f"Output file: {process_result.content.output_file}")
-
-    # Optionally upload the result
-    if tool.integration:
-        upload_result = tool.upload(
-            process_result.content.output_file, destination="my_folder_id"
+        # Write a small, realistic input fixture.
+        input_path = tmp_dir / "example_data.json"
+        input_path.write_text(
+            json.dumps(
+                {
+                    "project": "quackverse",
+                    "version": 3,
+                    "tags": ["doctrine", "example"],
+                    "nested": {"enabled": True},
+                }
+            ),
+            encoding="utf-8",
         )
 
-        if upload_result.success:
-            print(f"File uploaded: {upload_result.message}")
-        else:
-            print(f"Failed to upload file: {upload_result.error}")
+        logger = get_logger("example_tool")
+        fs = get_fs_service()
+
+        ctx = ToolContext(
+            run_id="example-run-001",
+            tool_name="example_tool",
+            tool_version="1.0.0",
+            logger=logger,
+            fs=fs,
+            work_dir=str(work_dir),
+            output_dir=str(output_dir),
+            # No "google_drive" entry: demonstrates the graceful-skip path.
+            # A real runner wires ctx.services={"google_drive": GoogleDriveService(...)}
+            # once the integration is configured.
+            services={},
+        )
+
+        tool = ExampleTool()
+
+        init_result = tool.initialize(ctx)
+        if init_result.status != "success":
+            print(f"Failed to initialize tool: {init_result.human_message}")
+            return
+        print(f"Tool initialized: {init_result.human_message}")
+
+        request = ExampleToolRequest(
+            input_path=str(input_path),
+            calculate_stats=True,
+            upload_to_drive=True,  # will gracefully skip: no drive service wired
+        )
+
+        pre_result = tool.pre_run(request, ctx)
+        if pre_result.status != "success":
+            print(f"Pre-run failed: {pre_result.human_message}")
+            return
+
+        run_result = tool.run(request, ctx)
+        run_result = tool.post_run(request, run_result, ctx)
+
+        if run_result.status != "success":
+            print(f"Failed to process file: {run_result.human_message}")
+            return
+
+        assert run_result.data is not None  # noqa: S101 -- narrows Optional for the demo print below; status==success guarantees data is populated per run()'s own contract
+        print(f"File processed: {run_result.human_message}")
+        print(f"Uploaded file id: {run_result.data.uploaded_file_id!r}")
+
+        # The runner's job, not the tool's: persist the result.
+        output_file = output_dir / "example_data.processed.json"
+        output_file.write_text(
+            json.dumps(run_result.data.processed, indent=2), encoding="utf-8"
+        )
+        print(f"Output written to: {output_file}")
 
 
 if __name__ == "__main__":
