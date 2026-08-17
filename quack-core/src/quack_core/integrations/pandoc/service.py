@@ -10,6 +10,7 @@ specialized converters.
 """
 
 import logging
+import os
 from typing import Any
 
 from quack_core.core.errors import QuackIntegrationError
@@ -139,6 +140,26 @@ class PandocIntegration(BaseIntegrationService):
         if result.success and result.path is not None:
             return str(result.path)
         return path
+
+    def _default_output_path(self, input_path: str, extension: str) -> str:
+        """Synthesize an output path when the caller did not supply one.
+
+        Same directory and base filename as `input_path`, with `extension`
+        (e.g. ".md", ".docx") swapped in -- the same "derive from source
+        filename, target-format extension" rule `DocumentConverter.
+        _resolve_batch_output_path` already uses for batch conversions
+        (RULING-277 Bug 4).
+
+        Args:
+            input_path: Resolved path to the source file.
+            extension: Target extension, including the leading dot.
+
+        Returns:
+            str: The synthesized output path.
+        """
+        directory = os.path.dirname(input_path)
+        name, _ = os.path.splitext(os.path.basename(input_path))
+        return os.path.join(directory, name + extension)
 
     def _require_config_provider(self) -> ConfigProviderProtocol:
         """Return `self.config_provider`, narrowed to non-None.
@@ -317,6 +338,8 @@ class PandocIntegration(BaseIntegrationService):
             input_path = self._resolve_path_str(input_path)
             if output_path:
                 output_path = self._resolve_path_str(output_path)
+            else:
+                output_path = self._default_output_path(input_path, ".md")
 
             # Use converter - signature is:
             # convert_file(input_path, output_path, output_format)
@@ -355,6 +378,8 @@ class PandocIntegration(BaseIntegrationService):
             input_path = self._resolve_path_str(input_path)
             if output_path:
                 output_path = self._resolve_path_str(output_path)
+            else:
+                output_path = self._default_output_path(input_path, ".docx")
 
             # Use converter - signature is:
             # convert_file(input_path, output_path, output_format)
