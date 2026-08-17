@@ -57,6 +57,7 @@ import pytest
 import yaml
 
 from zeo_core.core.errors import ZeoIOError
+from zeo_core.core.fs._ops import write_ops
 from zeo_core.core.fs._ops.base import FileSystemOperations
 
 
@@ -538,6 +539,28 @@ class TestFileSystemOperations:
         unchanged (`_internal.file_ops._read_file_text` does a plain
         `open()`, no except clause), so no ZeoIOError wrapping applies at
         this layer either.
+
+        NOTE (py3.10 patch-target fix): the write_ops patch below uses
+        patch.object(write_ops, "_atomic_write", ...) against the already
+        `from ... import write_ops`-imported module object, rather than the
+        dotted string "zeo_core.core.fs._ops.write_ops._atomic_write".
+        unittest.mock's dotted-string resolution differs by Python version:
+        on 3.11+, pkgutil.resolve_name resolves "zeo_core.core.fs._ops" via
+        importlib.import_module (sys.modules lookup), bypassing attribute
+        access on the parent package entirely. On 3.10, mock._dot_lookup
+        walks each component with plain getattr() -- so
+        getattr(zeo_core.core.fs, "_ops") is attempted, which lands on this
+        package's own doctrine-enforcement __getattr__ guard (see
+        zeo_core/core/fs/__init__.py: `del globals()["_ops"]` deliberately
+        removes the real bound submodule attribute so plain attribute
+        access is forced through __getattr__, which then raises
+        AttributeError for any "_internal"/"_ops"-prefixed name). That
+        raise is unconditional and deterministic -- confirmed to reproduce
+        even on a fresh interpreter with no prior zeo_core import -- so the
+        dotted-string form of this patch target could never work on 3.10.
+        Patching the already-imported module object directly sidesteps the
+        guarded attribute-walk and resolves identically (and correctly) on
+        every supported Python version.
         """
         operations = FileSystemOperations()
 
@@ -549,9 +572,7 @@ class TestFileSystemOperations:
             assert "permission denied" in str(perm_excinfo.value).lower()
 
         # Test IO error during atomic write
-        with patch(
-            "zeo_core.core.fs._ops.write_ops._atomic_write"
-        ) as mock_atomic_write:
+        with patch.object(write_ops, "_atomic_write") as mock_atomic_write:
             mock_atomic_write.side_effect = ZeoIOError("IO error")
             with pytest.raises(ZeoIOError) as io_excinfo:
                 operations._write_text(temp_dir / "io_error.txt", "content")

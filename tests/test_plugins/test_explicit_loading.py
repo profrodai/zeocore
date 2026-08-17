@@ -61,15 +61,85 @@ class TestImportSideEffects(unittest.TestCase):
         SAME class objects they started with, instead of inheriting whatever
         fresh reload test_import_does_not_register_plugins/
         test_import_exports_expected_api triggered.
+
+        Restoring sys.modules alone is NOT sufficient. CPython's import
+        machinery, on `import zeo_core.modules.discovery` (triggered
+        transitively by this class's own test bodies re-importing
+        zeo_core.modules), unconditionally does
+        `setattr(sys.modules["zeo_core.modules"], "discovery", <new module>)`
+        -- rebinding the PARENT package's attribute to the freshly reloaded
+        submodule object. That rebind is a side effect of the import
+        statement itself, entirely separate from the sys.modules dict, and
+        restoring sys.modules does not touch it: the parent package's
+        __dict__["discovery"] is left pointing at the reloaded module even
+        after sys.modules["zeo_core.modules.discovery"] is restored to the
+        original.
+        On Python 3.11+, this dangling attribute is harmless because
+        pkgutil.resolve_name (used by mock.patch's target resolution there)
+        re-resolves each dotted component via importlib.import_module, which
+        consults sys.modules directly. On Python 3.10, mock.patch resolves
+        dotted targets via unittest.mock._dot_lookup, which walks parent
+        attributes with plain getattr() and only falls back to __import__ on
+        AttributeError -- so it silently finds and patches the STALE
+        reloaded submodule instead of the restored original, while the rest
+        of the (already-imported, unpurged) code still runs against the
+        original. That divergence is real and version-specific: confirmed
+        directly, not merely inferred. Without this fix, subsequent
+        `@patch("zeo_core.modules.discovery.entry_points")` call sites in
+        this file's own later classes patch a submodule object nothing else
+        references, so their mocks are never observed, and calls fall
+        through to the real (env-installed) entry points instead.
+        Re-setting the parent packages' attributes back onto the restored
+        submodules closes that gap on every supported Python version.
         """
         # Drop whatever got (re)imported during the test
         reimported = [
             key for key in sys.modules.keys() if key.startswith("zeo_core.modules")
         ]
-        for module in reimported:
-            del sys.modules[module]
+        # Capture identities of the reloaded modules BEFORE they're dropped
+        # from sys.modules below -- needed for the parent-attribute identity
+        # check further down, which must compare against what the reload
+        # actually put on the parent package, not what's there after we've
+        # already restored the originals.
+        reimported_modules = {key: sys.modules[key] for key in reimported}
+        for module_name in reimported:
+            del sys.modules[module_name]
         # Restore exactly what was there before setUp ran
         sys.modules.update(self._saved_modules)
+        # Re-bind each restored submodule as an attribute of its parent
+        # package, undoing the reload's setattr(parent, child_name, ...) so
+        # getattr-based dotted lookups (e.g. mock.patch on Python 3.10) see
+        # the restored original, not the reloaded module the import
+        # machinery left attached to the parent package.
+        #
+        # Only rebind names that were actually reimported (present in
+        # `reimported`, computed above) -- that is precisely the set of
+        # dotted names the import machinery just rebound on the parent
+        # package as a side effect of the test body's own `import
+        # zeo_core.modules`. And only rebind when the parent's CURRENT
+        # attribute is still literally the stale reloaded module object
+        # (identity check against `reimported_modules`) -- zeo_core.modules
+        # also has attributes like `registry` that are NOT submodule
+        # bindings, they're `from zeo_core.modules.registry import
+        # registry` re-exports of a PluginRegistry INSTANCE that happens to
+        # share its final name segment with the submodule itself
+        # (zeo_core.modules.registry the module vs. zeo_core.modules.registry
+        # the instance attribute). That re-export runs again during the
+        # test's own `import zeo_core.modules` and already correctly
+        # rebinds `registry` to the new instance, so its current value is
+        # never the stale MODULE object -- the identity check leaves it
+        # alone, avoiding the clobber a blanket setattr would cause.
+        for key, module in self._saved_modules.items():
+            if key not in reimported_modules:
+                continue
+            parent_name, _, child_name = key.rpartition(".")
+            parent = self._saved_modules.get(parent_name) or sys.modules.get(
+                parent_name
+            )
+            if parent is None:
+                continue
+            if getattr(parent, child_name, None) is reimported_modules[key]:
+                setattr(parent, child_name, module)
 
     def test_import_does_not_register_plugins(self) -> None:
         """

@@ -128,22 +128,44 @@ def fs_stub(monkeypatch: MonkeyPatch) -> SimpleNamespace:
         success=True, path=os.path.abspath(path) if path else "/dummy/path"
     )
 
-    # Set the standalone attribute directly in the module
-    # This is the critical change - we need to directly set the attribute on the module
-    # sys.modules[...] is typed ModuleType, which has no static `standalone`
-    # attribute -- this is a deliberate dynamic monkeypatch of a real (or
-    # synthetic) module object, not a typo, so the lookup is bound through an
-    # Any-typed local once rather than per-attribute-access ignored.
-    fs_service_mod: Any = sys.modules["zeo_core.core.fs.service"]
-    fs_service_mod.standalone = stub
-
-    # The line above alone does NOT reach every consumer: each pandoc module
-    # binds its own local `fs` name at import time via
-    # `from zeo_core.core.fs.service import standalone as fs`, so
-    # reassigning sys.modules[...].standalone after that import has already
-    # happened never touches the already-bound local alias (mock-path-drift-fix
-    # SOW-02 Finding 2). Patch the alias directly on every module that binds
-    # it, so this one shared, autouse fixture actually reaches all of them.
+    # NOTE (py3.10 patch-target-collision fix): this fixture used to also do
+    # `sys.modules["zeo_core.core.fs.service"].standalone = stub` here --
+    # permanently overwriting the REAL standalone module's package-level
+    # attribute binding with this test double, with no restore (a plain
+    # attribute assignment, not monkeypatch.setattr, so it leaked past this
+    # fixture's own teardown into every later test in the process).
+    #
+    # That clobber was never actually needed: production code does not call
+    # the free-standing `zeo_core.core.fs.service.standalone.*` functions at
+    # all anymore -- every pandoc module reads filesystem operations through
+    # its own locally-aliased `fs` name (`from zeo_core.core.fs.service
+    # import standalone as fs`), which the per-module monkeypatch.setattr
+    # loop below already covers correctly and reversibly.
+    #
+    # Worse, leaving the real `standalone` package attribute permanently
+    # aliased to this SimpleNamespace stub actively broke every
+    # `@patch("zeo_core.core.fs.service.standalone....")` call site in this
+    # test package on Python 3.10 specifically: unittest.mock's dotted-path
+    # resolution differs by version. On 3.11+, pkgutil.resolve_name
+    # resolves each component via importlib.import_module (a sys.modules
+    # lookup), so it always reaches the REAL standalone.py module,
+    # unaffected by this fixture. On 3.10, mock._dot_lookup walks parent
+    # attributes with plain getattr(), so it found this fixture's stub
+    # instead -- meaning @patch("...standalone.expand_user_vars") would
+    # silently patch (and clobber) an attribute on THIS SimpleNamespace
+    # (which is also `integration.fs_service` in these tests), stomping
+    # over the test's own properly-configured fs_service double, rather
+    # than patching the (unused) real module. Confirmed directly: this was
+    # the exact cause of the "'str' object has no attribute 'success'"
+    # failures on 3.10 across test_service.py, test_pandoc_integration.py,
+    # and test_pandoc_integration_edge_cases.py.
+    #
+    # Each pandoc module binds its own local `fs` name at import time via
+    # `from zeo_core.core.fs.service import standalone as fs`, so patching
+    # sys.modules[...].standalone after that import has already happened
+    # never touches the already-bound local alias anyway (mock-path-drift-fix
+    # SOW-02 Finding 2) -- patching the alias directly on every module that
+    # binds it, as done below, is both necessary and sufficient.
     import zeo_core.integrations.pandoc.config as _pandoc_config
     import zeo_core.integrations.pandoc.converter as _pandoc_converter
     import zeo_core.integrations.pandoc.operations.html_to_md as _pandoc_html_to_md
