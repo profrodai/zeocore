@@ -11,6 +11,7 @@ ensuring proper initialization and operation.
 
 import os
 from pathlib import Path
+from typing import cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -185,7 +186,7 @@ class TestGoogleMailService:
             config = mock_load_config.return_value.content
             # Simulate the resolver behavior
             self.storage_path = "/resolved/config/storage"
-            return config
+            return cast(dict[str, object], config)
 
         # Replace the service method with our mocked version
         with patch.object(
@@ -211,7 +212,7 @@ class TestGoogleMailService:
             self.storage_path = "/resolved/config/storage"
             # Log a warning (we'll patch the logger to verify this)
             self.logger.warning("Could not create storage directory: Permission denied")
-            return config
+            return cast(dict[str, object], config)
 
         # Replace the service method with our mocked version
         with (

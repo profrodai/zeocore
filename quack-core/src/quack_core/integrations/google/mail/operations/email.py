@@ -70,7 +70,7 @@ def build_query(days_back: int = 7, labels: list[str] | None = None) -> str:
         Gmail search query string.
     """
     after_date = (datetime.now() - timedelta(days=days_back)).strftime("%Y/%m/%d")
-    query_parts = []
+    query_parts: list[str] = []
     if labels:
         query_parts.extend(f"label:{label}" for label in labels)
     query_parts.append(f"after:{after_date}")
@@ -105,7 +105,7 @@ def list_emails(
             "users.messages.list",
         )
         response = cast(GmailResponse, response_obj)
-        messages = response.get("messages", [])
+        messages: list[Mapping] = response.get("messages", [])
         return IntegrationResult.success_result(
             content=messages,
             message=f"Listed {len(messages)} emails",
@@ -167,8 +167,8 @@ def download_email(
                 f"Message {msg_id} could not be retrieved"
             )
 
-        payload = cast(GmailResponse, message).get("payload", {})
-        headers = cast(GmailResponse, payload).get("headers", [])
+        payload: Mapping = cast(GmailResponse, message).get("payload", {})
+        headers: list[Mapping] = cast(GmailResponse, payload).get("headers", [])
         subject = _extract_header(headers, "subject", "No Subject")
         sender = _extract_header(headers, "from", "unknown@sender")
         timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
@@ -280,7 +280,7 @@ def _extract_header(headers: Sequence[Mapping], name: str, default: str) -> str:
     """
     for header in headers:
         if header.get("name", "").lower() == name.lower():
-            return header.get("value", default)
+            return str(header.get("value", default))
     return default
 
 
