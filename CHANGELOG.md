@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Google Calendar integration** (`zeo_core.integrations.google.calendar`,
+  `zeocore[calendar]` extra): read (`list_calendars`, `get_calendar`,
+  `list_events` with date-range filtering, `get_event`) and write
+  (`create_event`, `update_event`, `delete_event`) surface, reusing the
+  same OAuth (`InstalledAppFlow` + local-server) flow and
+  `GoogleAuthProvider`/`GoogleConfigProvider` the Drive and Gmail
+  integrations already use — no new auth or config mechanism. See
+  [`examples/calendar_usage.py`](examples/calendar_usage.py) and
+  [`docs/tutorials/calendar-integration.md`](docs/tutorials/calendar-integration.md).
+- `zeo_core.integrations.google` now also re-exports `GoogleCalendarService`,
+  `Calendar`, and `CalendarEvent` at the shallow path (alongside the
+  existing `GoogleDriveService`/`GoogleMailService` re-exports).
+
+### Named, not fixed (recorded per circle-of-control)
+
+- `zeo_core.integrations.google.drive.operations/*` (`list_files.py`,
+  `upload.py`, `download.py`, `folder.py`, `permissions.py`) is dead code:
+  confirmed by a repo-wide grep that nothing outside drive's own test
+  suite imports it — `drive/service.py`'s public methods duplicate the
+  same logic inline rather than calling into `operations/`. Pre-existing,
+  not introduced by the Calendar integration (which does not replicate
+  this pattern), and out of this work's own scope to fix.
+- `GoogleDriveService`/`GoogleCalendarService`'s real `integration_id`
+  property (`"googledrive"`/`"googlecalendar"`, derived from
+  `name.lower().replace(" ", ".")`) does not match the dotted
+  `pyproject.toml` entry-point table key (`"google.drive"`/
+  `"google.calendar"`) — the two are different strings by a pre-existing
+  pattern (confirmed identical for `GoogleDriveService`), not a defect
+  introduced by the Calendar integration.
+
 ## [0.2.0] - 2026-08-20
 
 ### BREAKING

@@ -71,6 +71,21 @@ class GoogleMailConfig(GoogleBaseConfig):
     gmail_user_id: str = Field(default="me", description="User ID to use for Gmail API")
 
 
+class GoogleCalendarConfig(GoogleBaseConfig):
+    """Configuration model for Google Calendar integration."""
+
+    calendar_id: str = Field(
+        default="primary", description="Default calendar ID to operate against"
+    )
+    max_results: int = Field(
+        default=250, description="Default page size for event list queries"
+    )
+    time_zone: str | None = Field(
+        default=None,
+        description="Default IANA time zone for events created without one",
+    )
+
+
 class GoogleConfigProvider(BaseConfigProvider):
     """Configuration provider for Google integrations."""
 
@@ -95,6 +110,7 @@ class GoogleConfigProvider(BaseConfigProvider):
         self._config_models = {
             "drive": GoogleDriveConfig,
             "mail": GoogleMailConfig,
+            "calendar": GoogleCalendarConfig,
         }
 
     @property
@@ -237,6 +253,12 @@ class GoogleConfigProvider(BaseConfigProvider):
                 "include_subject": False,
                 "include_sender": False,
             }
+        elif self.service == "calendar":
+            defaults = {
+                "calendar_id": "primary",
+                "max_results": 250,
+                "time_zone": None,
+            }
         else:
             return
 
@@ -308,6 +330,13 @@ class GoogleConfigProvider(BaseConfigProvider):
                 "gmail_labels": [],
                 "gmail_days_back": 7,
                 "gmail_user_id": "me",
+            }
+        elif self.service == "calendar":
+            return {
+                **base_config,
+                "calendar_id": "primary",
+                "max_results": 250,
+                "time_zone": None,
             }
 
         return base_config

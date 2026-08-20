@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**ZeoCore** is a capability-authoring framework and infrastructure library for Python. It provides a typed base for writing tools (`BaseZeoTool`, `ToolContext`, `CapabilityResult`), plus shared infrastructure for path resolution, filesystem operations, configuration management, plugin discovery, integrations with third-party services (Google Drive, Gmail, Notion, Pandoc, jupytext, ffmpeg, LLM providers, GitHub), and adapters for exposing your tools over HTTP or MCP (for Claude Code, Cursor, and other MCP-native coding agents). **Requires Python 3.13 or newer.**
+**ZeoCore** is a capability-authoring framework and infrastructure library for Python. It provides a typed base for writing tools (`BaseZeoTool`, `ToolContext`, `CapabilityResult`), plus shared infrastructure for path resolution, filesystem operations, configuration management, plugin discovery, integrations with third-party services (Google Drive, Gmail, Google Calendar, Notion, Pandoc, jupytext, ffmpeg, LLM providers, GitHub), and adapters for exposing your tools over HTTP or MCP (for Claude Code, Cursor, and other MCP-native coding agents). **Requires Python 3.13 or newer.**
 
 ZeoCore is designed for developers building automation tools, content pipelines, and integrations that need consistent configuration, filesystem, and error-handling behavior without re-solving those problems per project.
 
@@ -33,6 +33,9 @@ pip install "zeocore[drive]"
 
 # For Gmail integration
 pip install "zeocore[gmail]"
+
+# For Google Calendar integration
+pip install "zeocore[calendar]"
 
 # For Notion integration
 pip install "zeocore[notion]"
@@ -73,7 +76,7 @@ Safe and consistent filesystem operations with error handling and structured res
 Extensible plugin discovery and explicit-loading registration framework.
 
 ### `zeo_core.integrations`
-Interfaces to third-party services (Google Drive, Gmail, Notion, Pandoc, GitHub, jupytext, ffmpeg, LLM providers) through a clean adapter layer. Database integrations (BigQuery, Supabase, SQLite) were evaluated and explicitly not built -- see CHANGELOG.md.
+Interfaces to third-party services (Google Drive, Gmail, Google Calendar, Notion, Pandoc, GitHub, jupytext, ffmpeg, LLM providers) through a clean adapter layer. Database integrations (BigQuery, Supabase, SQLite) were evaluated and explicitly not built -- see CHANGELOG.md.
 
 ### `zeo_core.core.errors`
 Structured error handling system with typed exceptions for improved developer experience.
@@ -252,6 +255,38 @@ if emails_result.success:
         if download_result.success:
             print(f"Email saved to: {download_result.content}")
 ```
+
+### Working with Google Calendar Integration
+
+```python
+from zeo_core.integrations.google.calendar import GoogleCalendarService
+
+# Initialize service
+calendar_service = GoogleCalendarService(
+    client_secrets_file="path/to/client_secrets.json",
+    credentials_file="path/to/credentials.json",
+)
+calendar_service.initialize()
+
+# List upcoming events on the primary calendar
+events_result = calendar_service.list_events(time_min="2026-08-20T00:00:00Z")
+if events_result.success:
+    for event in events_result.content:
+        print(f"Event: {event.summary} ({event.id})")
+
+# Create an event
+created = calendar_service.create_event(
+    summary="Team sync",
+    start={"dateTime": "2026-08-21T10:00:00-07:00", "timeZone": "America/Los_Angeles"},
+    end={"dateTime": "2026-08-21T10:30:00-07:00", "timeZone": "America/Los_Angeles"},
+)
+if created.success:
+    print(f"Created event: {created.content.id}")
+```
+
+Auth is the same OAuth (`InstalledAppFlow` + local-server) flow Drive and
+Gmail already use -- no separate credential setup. Requires the `calendar`
+extra (`pip install "zeocore[calendar]"`).
 
 ### Working with Notion Integration
 

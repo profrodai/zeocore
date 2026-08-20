@@ -102,6 +102,11 @@ drive = [
     "google-auth-httplib2>=0.1.0",
     "google-auth-oauthlib>=0.4.0",
 ]
+calendar = [
+    "google-api-python-client>=2.0.0",
+    "google-auth-httplib2>=0.1.0",
+    "google-auth-oauthlib>=0.4.0",
+]
 pandoc = ["pypandoc", "beautifulsoup4"]
 llms = ["tiktoken", "openai", "anthropic"]
 github = ["requests"]
@@ -162,6 +167,7 @@ prompt = "zeo_core.prompt.plugin:create_plugin"
 github = "zeo_core.integrations.github:create_integration"
 "google.mail" = "zeo_core.integrations.google.mail:create_integration"
 "google.drive" = "zeo_core.integrations.google.drive:create_integration"
+"google.calendar" = "zeo_core.integrations.google.calendar:create_integration"
 pandoc = "zeo_core.integrations.pandoc:create_integration"
 llms = "zeo_core.integrations.llms:create_integration"
 ffmpeg = "zeo_core.integrations.ffmpeg:create_integration"
@@ -216,6 +222,8 @@ ignore = ["UP040", "UP042", "UP046", "UP047"]
 "**/tests/**/*.py" = ["S101"]  # Disable S101 (assert warning) in test files
 "src/zeo_core/integrations/google/drive/protocols.py" = ["N803"]  # N803: structurally types the real googleapiclient Resource object, whose fileId keyword we do not control -- monorepo RULING-233, ported as-is (still applies: same file, same third-party contract)
 "tests/test_integrations/google/drive/mocks/*.py" = ["N803"]  # N803: subclasses/mocks protocols.py's real-API-matching Protocol, and live tests call fileId= as a keyword today -- monorepo RULING-233, ported as-is
+"src/zeo_core/integrations/google/calendar/protocols.py" = ["N803"]  # N803: structurally types the real googleapiclient Calendar v3 Resource object, whose calendarId/eventId keywords we do not control -- same RULING-233 rationale as drive/protocols.py, calendarId/eventId are camelCase in the real API too
+"tests/test_integrations/google/calendar/*.py" = ["N803"]  # N803: mocks call calendarId=/eventId= as keywords, matching the real googleapiclient Resource shape -- same RULING-233 rationale as the drive mocks equivalent
 
 [tool.black]
 line-length = 88
