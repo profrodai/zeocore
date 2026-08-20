@@ -103,6 +103,10 @@ Optional integrations ship as extras, so you only install what you use:
 - [`examples/error_handling.py`](examples/error_handling.py) — the
   `ZeoError` family, and how a tool reports a failure it expects versus one
   it doesn't.
+- [`examples/config_usage.py`](examples/config_usage.py) — `load_config()`'s
+  three real behaviors: default-locations lookup (never raises), an
+  explicit path that doesn't exist (raises `ZeoConfigurationError`, by
+  design), and an explicit path to a real file (succeeds).
 - [`examples/mcp_server_usage.py`](examples/mcp_server_usage.py) — expose a
   tool as an MCP server (`zeocore[mcp]`) for Claude Code, Cursor, and other
   MCP-native agents, with zero MCP-specific code in the tool itself.
@@ -126,7 +130,9 @@ already stale.
 | `zeo_core.adapters` | Optional adapters for exposing tools over a network: HTTP (FastAPI-based REST) and MCP (Model Context Protocol, for Claude Code/Cursor/other MCP-native agents). |
 
 See [GET-STARTED.md](GET-STARTED.md) for a fuller walkthrough of each area,
-including the configuration file format and error-handling patterns.
+including the configuration file format and error-handling patterns. See
+[llms.txt](llms.txt) for a condensed summary of this package intended for
+coding agents / LLM context windows.
 
 ## Quality bar
 

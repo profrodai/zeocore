@@ -106,16 +106,31 @@ agents. See "Exposing Tools as an MCP Server" below and
 ```python
 from zeo_core.config import load_config, ZeoConfig
 
-# Load configuration from default locations
+# Load configuration from default locations. This does NOT raise even if
+# no config file exists anywhere (an empty project directory, a fresh
+# clone, etc) -- it falls back to built-in defaults plus any environment
+# variables, and returns a valid ZeoConfig.
 config = load_config()
 
 # Access configuration values
 project_name = config.general.project_name
 log_level = config.logging.level
 
-# Load configuration from specific file
-custom_config = load_config("path/to/custom_config.yaml")
+# Load configuration from a specific file -- ONLY if that path actually
+# exists. Unlike the no-argument form above, an explicit path is a
+# promise the file is there: load_config() raises ZeoConfigurationError
+# if it isn't. The line below is illustrative (a real path is needed, not
+# this placeholder) -- see examples/config_usage.py for the same call
+# made runnable end to end, including this exact failure mode caught on
+# purpose.
+custom_config = load_config("path/to/custom_config.yaml")  # illustrative path
 ```
+
+Run [`examples/config_usage.py`](examples/config_usage.py) to see all
+three real behaviors end to end from a fresh directory: the no-argument
+default-locations lookup (doesn't raise), an explicit path that doesn't
+exist (does raise, by design), and an explicit path to a real file this
+script writes first (succeeds).
 
 ### Path Resolution
 
@@ -584,20 +599,31 @@ lifecycle hooks and an optional integration.
 #### Configuration Not Found
 
 ```
-ZeoConfigurationError: Configuration file not found in default locations.
+ZeoConfigurationError: Configuration file not found: <path>
 ```
 
-**Solution**: Create a configuration file in one of these locations:
+This is raised only when you pass `load_config()` an **explicit** path
+that doesn't exist -- `load_config()` called with no argument never
+raises this; it silently falls back to built-in defaults (and any
+environment variables) if none of the default locations have a file.
+If you're seeing this error, you (or a caller) passed a specific path:
+
+```python
+from zeo_core.config import load_config
+
+config = load_config("path/to/config.yaml")  # <-- this path must exist
+```
+
+**Solution**: Either drop the explicit path and let `load_config()` use
+its defaults, or create a real configuration file at one of these
+locations before passing it:
 - `./zeo_config.yaml`
 - `./config/zeo_config.yaml`
 - `~/.zeo/config.yaml`
 
-Or specify the configuration path explicitly:
-
-```python
-from zeo_core.config import load_config
-config = load_config("path/to/config.yaml")
-```
+See [`examples/config_usage.py`](examples/config_usage.py) for all three
+behaviors (default lookup, missing explicit path, real explicit path)
+demonstrated end to end.
 
 #### Authentication Errors with Google Services
 
