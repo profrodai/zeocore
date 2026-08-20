@@ -6,7 +6,12 @@ from typing import Any
 from zeo_core.core.errors import ZeoApiError, ZeoIntegrationError
 from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.integrations.llms.clients.base import LLMClient
-from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from zeo_core.integrations.llms.models import (
+    ChatMessage,
+    LLMOptions,
+    RoleType,
+    ToolDefinition,
+)
 
 
 class AnthropicClient(LLMClient):
@@ -147,8 +152,12 @@ class AnthropicClient(LLMClient):
             str: Model name to use for requests
         """
         if not self._model:
-            # Set default model if not specified
-            self._model = "claude-3-opus-20240229"
+            # Set default model if not specified. claude-3-opus-20240229 was
+            # retired 2026-01-05 (zeocore-integrations-gap-SOW-01 s3 finding
+            # 1). claude-sonnet-5 is the current, non-retired, balanced-cost
+            # default -- same role gpt-4o plays for OpenAIClient.model and
+            # llama3 plays for OllamaClient.model, not the priciest tier.
+            self._model = "claude-sonnet-5"
         return self._model
 
     def _convert_message_to_anthropic(self, message: ChatMessage) -> dict:
@@ -167,11 +176,120 @@ class AnthropicClient(LLMClient):
             "content": message.content or "",
         }
 
+    def _convert_tools_to_anthropic(
+        self, tools: list[ToolDefinition]
+    ) -> list[dict[str, Any]]:
+        """
+        Convert the shared, OpenAI-function-shaped ToolDefinition models
+        (LLMOptions.tools) into Anthropic's native tool-use request shape.
+
+        The shared model layer stores each tool as
+        {"type": "function", "function": {"name", "description",
+        "parameters"}} (see ToolDefinition/FunctionDefinition in
+        llms/models.py) because that shape passes through unchanged for
+        OpenAI (LLMOptions.to_openai_params() just calls t.model_dump()).
+        Anthropic's Messages API takes a flat {"name", "description",
+        "input_schema"} shape instead -- no "type"/"function" wrapper, and
+        the JSON-schema field is named "input_schema", not "parameters".
+        This method does that field remap; it does not change what the
+        caller writes in LLMOptions.tools.
+
+        Args:
+            tools: Tool definitions from LLMOptions.tools.
+
+        Returns:
+            list[dict]: Tool definitions in Anthropic's native request shape.
+        """
+        anthropic_tools = []
+        for tool in tools:
+            function = tool.function
+            anthropic_tools.append(
+                {
+                    "name": function.name,
+                    "description": function.description or "",
+                    "input_schema": function.parameters
+                    or {"type": "object", "properties": {}},
+                }
+            )
+        return anthropic_tools
+
+    def _prepare_request_params(self, options: LLMOptions) -> dict[str, Any]:
+        """
+        Build the Anthropic-specific request params derived from LLMOptions.
+
+        Split out of _chat_with_provider to keep that method's cyclomatic
+        complexity under the ruff C901 gate (max 10) -- adding tools/
+        cache_control wiring pushed the inline version to 12.
+
+        Args:
+            options: Options for the completion request.
+
+        Returns:
+            dict[str, Any]: Params to splat into client.messages.create /
+                client.messages.stream, alongside model/messages/system/
+                max_tokens/temperature.
+        """
+        # dict[str, Any], not the float-literal-inferred narrower type mypy
+        # would otherwise assign -- splatted into the third-party
+        # client.messages.create(**params) call, same no-local-protocol
+        # reasoning as the constructor kwargs in _get_client.
+        params: dict[str, Any] = {
+            "top_p": options.top_p,
+        }
+
+        if options.stop:
+            params["stop_sequences"] = options.stop
+
+        # Tool-use passthrough. LLMOptions.tools exists in the shared model
+        # layer and is already read by LLMOptions.to_openai_params() for
+        # the OpenAI path (models.py, to_openai_params) but was never read
+        # here -- zeocore-integrations-gap-SOW-01 s3 finding 2. Converted
+        # to Anthropic's native {"name", "description", "input_schema"}
+        # tool shape; see _convert_tools_to_anthropic for why a conversion
+        # is needed rather than a raw model_dump() (unlike the OpenAI path,
+        # whose wire shape already matches ToolDefinition).
+        if options.tools:
+            params["tools"] = self._convert_tools_to_anthropic(options.tools)
+
+        return params
+
+    def _build_system_param(
+        self, system_message: str | None, options: LLMOptions
+    ) -> str | list[dict[str, Any]] | None:
+        """
+        Build the `system` param, applying prompt-caching if requested.
+
+        Prompt caching: LLMOptions.cache_system_prompt marks the system
+        prompt as cacheable via Anthropic's cache_control breakpoint
+        mechanism -- zeocore-integrations-gap-SOW-01 s3 finding 3 (no
+        cache_control/prompt-caching wiring existed at all). Per the
+        Anthropic API, cache_control attaches to a content block, not a
+        bare string, so a cacheable system prompt is sent as a one-block
+        content list rather than plain text.
+
+        Args:
+            system_message: The system message content, if any.
+            options: Options for the completion request.
+
+        Returns:
+            The system param as Anthropic expects it -- a bare string, a
+            cache_control-annotated content-block list, or None.
+        """
+        if options.cache_system_prompt and system_message:
+            return [
+                {
+                    "type": "text",
+                    "text": system_message,
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ]
+        return system_message
+
     def _handle_streaming(
         self,
         client: Any,  # noqa: ANN401 -- the third-party anthropic.Anthropic SDK client object; no local protocol exists for it
         model: str,
-        system: str | None,
+        system: str | list[dict[str, Any]] | None,
         messages: list[dict],
         params: dict,
         callback: Callable[[str], None] | None,
@@ -322,8 +440,8 @@ class AnthropicClient(LLMClient):
         try:
             client = self._get_client()
 
-            # Convert messages to the format expected by Anthropic
-            system_message = None
+            # Convert messages to the format expected by Anthropic.
+            system_message: str | None = None
             anthropic_messages = []
 
             for msg in messages:
@@ -332,17 +450,8 @@ class AnthropicClient(LLMClient):
                 else:
                     anthropic_messages.append(self._convert_message_to_anthropic(msg))
 
-            # Prepare parameters for Anthropic API call. dict[str, Any],
-            # not the float-literal-inferred narrower type mypy would
-            # otherwise assign -- splatted into the third-party
-            # client.messages.create(**params) call below, same
-            # no-local-protocol reasoning as the constructor kwargs above.
-            params: dict[str, Any] = {
-                "top_p": options.top_p,
-            }
-
-            if options.stop:
-                params["stop_sequences"] = options.stop
+            params = self._prepare_request_params(options)
+            system_param = self._build_system_param(system_message, options)
 
             # Override model if specified in options
             model = options.model or self.model
@@ -354,7 +463,7 @@ class AnthropicClient(LLMClient):
 
             if options.stream:
                 response_text = self._handle_streaming(
-                    client, model, system_message, anthropic_messages, params, callback
+                    client, model, system_param, anthropic_messages, params, callback
                 )
                 return IntegrationResult.success_result(response_text)
             else:
@@ -362,7 +471,7 @@ class AnthropicClient(LLMClient):
                 response = client.messages.create(
                     model=model,
                     messages=anthropic_messages,
-                    system=system_message,
+                    system=system_param,
                     max_tokens=options.max_tokens or 1024,
                     temperature=options.temperature,
                     **params,

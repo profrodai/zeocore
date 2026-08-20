@@ -46,7 +46,12 @@ class AnthropicConfig(BaseModel):
         "https://api.anthropic.com", description="Anthropic API base URL"
     )
     default_model: str = Field(
-        "claude-3-opus-20240229", description="Default model to use"
+        # claude-3-opus-20240229 was retired 2026-01-05
+        # (zeocore-integrations-gap-SOW-01 s3 finding 1 covered
+        # clients/anthropic.py's own default; this is the same defect class
+        # in AnthropicConfig, caught in zeocore-anthropic-client-fix).
+        "claude-sonnet-5",
+        description="Default model to use",
     )
 
 

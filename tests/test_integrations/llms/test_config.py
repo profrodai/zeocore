@@ -46,7 +46,7 @@ class TestLLMConfig:
         config = AnthropicConfig()
         assert config.api_key is None
         assert config.api_base == "https://api.anthropic.com"
-        assert config.default_model == "claude-3-opus-20240229"
+        assert config.default_model == "claude-sonnet-5"
 
         # Test with custom values
         config = AnthropicConfig(

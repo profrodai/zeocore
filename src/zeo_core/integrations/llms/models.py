@@ -117,6 +117,14 @@ class LLMOptions(BaseModel):
     )
     seed: int | None = Field(None, description="Random seed for deterministic results")
     stream: bool = Field(False, description="Whether to stream the response")
+    cache_system_prompt: bool = Field(
+        False,
+        description=(
+            "Mark the system prompt as cacheable on providers that support "
+            "prompt caching (e.g. Anthropic's cache_control breakpoints). "
+            "Provider-agnostic: no-op on providers without caching support."
+        ),
+    )
     timeout: int = Field(60, description="Request timeout in seconds")
     retry_count: int = Field(3, description="Number of retries for failed requests")
     initial_retry_delay: float = Field(

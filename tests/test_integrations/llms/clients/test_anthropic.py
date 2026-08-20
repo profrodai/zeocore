@@ -18,7 +18,13 @@ from tests.test_integrations.llms.mocks.anthropic import (
 )
 from zeo_core.core.errors import ZeoApiError, ZeoIntegrationError
 from zeo_core.integrations.llms.clients.anthropic import AnthropicClient
-from zeo_core.integrations.llms.models import ChatMessage, LLMOptions, RoleType
+from zeo_core.integrations.llms.models import (
+    ChatMessage,
+    FunctionDefinition,
+    LLMOptions,
+    RoleType,
+    ToolDefinition,
+)
 
 
 class TestAnthropicClient:
@@ -139,9 +145,12 @@ class TestAnthropicClient:
         client = AnthropicClient(model="claude-3-sonnet-20240229")
         assert client.model == "claude-3-sonnet-20240229"
 
-        # Test with default model
+        # Test with default model -- claude-3-opus-20240229 is retired
+        # (2026-01-05); claude-sonnet-5 is the current default
+        # (zeocore-anthropic-client-fix, per zeocore-integrations-gap-SOW-01
+        # s3 finding 1).
         client = AnthropicClient()
-        assert client.model == "claude-3-opus-20240229"
+        assert client.model == "claude-sonnet-5"
 
     def test_convert_message_to_anthropic(self) -> None:
         """Test converting ChatMessage to Anthropic format."""
@@ -407,3 +416,196 @@ class TestAnthropicClient:
             )
 
         assert "Anthropic API error: Streaming error" in str(excinfo.value)
+
+    def test_convert_tools_to_anthropic(self) -> None:
+        """Test converting shared ToolDefinition models to Anthropic's tool shape."""
+        client = AnthropicClient()
+
+        tools = [
+            ToolDefinition(
+                type="function",
+                function=FunctionDefinition(
+                    name="get_weather",
+                    description="Get current weather for a location",
+                    parameters={
+                        "type": "object",
+                        "properties": {"location": {"type": "string"}},
+                        "required": ["location"],
+                    },
+                ),
+            )
+        ]
+
+        anthropic_tools = client._convert_tools_to_anthropic(tools)
+
+        assert anthropic_tools == [
+            {
+                "name": "get_weather",
+                "description": "Get current weather for a location",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {"location": {"type": "string"}},
+                    "required": ["location"],
+                },
+            }
+        ]
+        # Anthropic's native shape has no "type"/"function" wrapper and no
+        # "parameters" key -- confirm the OpenAI-shaped wrapper is gone.
+        assert "type" not in anthropic_tools[0]
+        assert "function" not in anthropic_tools[0]
+        assert "parameters" not in anthropic_tools[0]
+
+    def test_convert_tools_to_anthropic_missing_optional_fields(self) -> None:
+        """Test tool conversion falls back sanely when optional fields are absent."""
+        client = AnthropicClient()
+
+        tools = [
+            ToolDefinition(
+                type="function",
+                function=FunctionDefinition(name="no_op"),
+            )
+        ]
+
+        anthropic_tools = client._convert_tools_to_anthropic(tools)
+
+        assert anthropic_tools == [
+            {
+                "name": "no_op",
+                "description": "",
+                "input_schema": {"type": "object", "properties": {}},
+            }
+        ]
+
+    def test_chat_with_provider_tools_reach_request(
+        self, anthropic_client: AnthropicClient
+    ) -> None:
+        """Test that LLMOptions.tools reaches the constructed request payload."""
+        messages = [ChatMessage(role=RoleType.USER, content="What's the weather?")]
+        options = LLMOptions(
+            max_tokens=100,
+            tools=[
+                ToolDefinition(
+                    type="function",
+                    function=FunctionDefinition(
+                        name="get_weather",
+                        description="Get current weather for a location",
+                        parameters={
+                            "type": "object",
+                            "properties": {"location": {"type": "string"}},
+                            "required": ["location"],
+                        },
+                    ),
+                )
+            ],
+        )
+
+        mock_response = MockAnthropicResponse(
+            content="Let me check.", model="claude-sonnet-5"
+        )
+
+        with patch.object(anthropic_client, "_get_client") as mock_get_client:
+            mock_client = MagicMock()
+            mock_client.messages.create.return_value = mock_response
+            mock_get_client.return_value = mock_client
+
+            result = anthropic_client._chat_with_provider(messages, options)
+
+            assert result.success is True
+
+            call_kwargs = mock_client.messages.create.call_args.kwargs
+            assert "tools" in call_kwargs
+            assert call_kwargs["tools"] == [
+                {
+                    "name": "get_weather",
+                    "description": "Get current weather for a location",
+                    "input_schema": {
+                        "type": "object",
+                        "properties": {"location": {"type": "string"}},
+                        "required": ["location"],
+                    },
+                }
+            ]
+
+    def test_chat_with_provider_no_tools_omits_tools_param(
+        self, anthropic_client: AnthropicClient
+    ) -> None:
+        """Test that no tools param is sent when LLMOptions.tools is unset."""
+        messages = [ChatMessage(role=RoleType.USER, content="Hello")]
+        options = LLMOptions(max_tokens=100)
+
+        mock_response = MockAnthropicResponse(
+            content="Hi there.", model="claude-sonnet-5"
+        )
+
+        with patch.object(anthropic_client, "_get_client") as mock_get_client:
+            mock_client = MagicMock()
+            mock_client.messages.create.return_value = mock_response
+            mock_get_client.return_value = mock_client
+
+            anthropic_client._chat_with_provider(messages, options)
+
+            call_kwargs = mock_client.messages.create.call_args.kwargs
+            assert "tools" not in call_kwargs
+
+    def test_chat_with_provider_cache_control_reaches_request(
+        self, anthropic_client: AnthropicClient
+    ) -> None:
+        """Test that cache_system_prompt puts a cache_control breakpoint on system."""
+        messages = [
+            ChatMessage(role=RoleType.SYSTEM, content="You are a helpful assistant."),
+            ChatMessage(role=RoleType.USER, content="Hello"),
+        ]
+        options = LLMOptions(max_tokens=100, cache_system_prompt=True)
+
+        mock_response = MockAnthropicResponse(
+            content="Hi there.", model="claude-sonnet-5"
+        )
+
+        with patch.object(anthropic_client, "_get_client") as mock_get_client:
+            mock_client = MagicMock()
+            mock_client.messages.create.return_value = mock_response
+            mock_get_client.return_value = mock_client
+
+            result = anthropic_client._chat_with_provider(messages, options)
+
+            assert result.success is True
+
+            call_kwargs = mock_client.messages.create.call_args.kwargs
+            assert call_kwargs["system"] == [
+                {
+                    "type": "text",
+                    "text": "You are a helpful assistant.",
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ]
+
+    def test_chat_with_provider_cache_control_disabled_by_default(
+        self, anthropic_client: AnthropicClient
+    ) -> None:
+        """Test that system prompt stays a plain string when caching isn't requested."""
+        messages = [
+            ChatMessage(role=RoleType.SYSTEM, content="You are a helpful assistant."),
+            ChatMessage(role=RoleType.USER, content="Hello"),
+        ]
+        options = LLMOptions(max_tokens=100)
+
+        mock_response = MockAnthropicResponse(
+            content="Hi there.", model="claude-sonnet-5"
+        )
+
+        with patch.object(anthropic_client, "_get_client") as mock_get_client:
+            mock_client = MagicMock()
+            mock_client.messages.create.return_value = mock_response
+            mock_get_client.return_value = mock_client
+
+            anthropic_client._chat_with_provider(messages, options)
+
+            call_kwargs = mock_client.messages.create.call_args.kwargs
+            assert call_kwargs["system"] == "You are a helpful assistant."
+
+    def test_build_system_param_no_system_message(self) -> None:
+        """Test cache_system_prompt is a no-op when there is no system message."""
+        client = AnthropicClient()
+        options = LLMOptions(cache_system_prompt=True)
+
+        assert client._build_system_param(None, options) is None
