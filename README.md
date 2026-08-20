@@ -71,6 +71,14 @@ pattern.
 
 ## Install
 
+**Requires Python 3.13 or newer.** This is a breaking change if you're
+coming from an earlier ZeoCore release: the floor moved from `>=3.10` to
+`>=3.13` this cycle (Python 3.10 is inside its own final EOL window,
+reaching full end-of-life October 2026, and the `ffmpeg`/`mcp` extras
+below need a newer interpreter to resolve cleanly). If you're pinned to
+an older Python, stay on a pre-floor-bump release; otherwise upgrade
+your interpreter before installing.
+
 ```bash
 pip install zeocore
 ```
@@ -83,15 +91,19 @@ Optional integrations ship as extras, so you only install what you use:
 | `zeocore[drive]` | Google Drive |
 | `zeocore[gmail]` | Gmail |
 | `zeocore[google]` | Drive + Gmail auth plumbing together |
-| `zeocore[notion]` | Notion |
+| `zeocore[notion]` | Notion (read + write) |
 | `zeocore[pandoc]` | Document conversion via Pandoc |
-| `zeocore[llms]` | OpenAI / Anthropic / tiktoken clients |
+| `zeocore[llms]` | OpenAI / Anthropic / tiktoken clients — chat, tool-calling, prompt caching |
+| `zeocore[jupytext]` | Script ↔ Jupyter notebook conversion |
+| `zeocore[ffmpeg]` | Media probing/transcoding via the org's `ffmpeg-zeo` package |
 | `zeocore[http]` | FastAPI-based HTTP adapter for exposing tools over REST |
 | `zeocore[mcp]` | MCP adapter for exposing tools to Claude Code, Cursor, and other MCP-native agents |
 | `zeocore[all]` | Every integration above, no `http`/`mcp`/`dev`/`lint` |
 
 `dev` and `lint` extras exist too, for contributors — see
-[CONTRIBUTING.md](CONTRIBUTING.md).
+[CONTRIBUTING.md](CONTRIBUTING.md). `mcp`/`mcp-dev` are real, separate
+extras — `zeocore[all]` does **not** pull in the MCP adapter; install
+`zeocore[mcp]` explicitly alongside it (e.g. `zeocore[all,mcp]`).
 
 ## More examples
 
@@ -110,6 +122,13 @@ Optional integrations ship as extras, so you only install what you use:
 - [`examples/mcp_server_usage.py`](examples/mcp_server_usage.py) — expose a
   tool as an MCP server (`zeocore[mcp]`) for Claude Code, Cursor, and other
   MCP-native agents, with zero MCP-specific code in the tool itself.
+- [`examples/notion_usage.py`](examples/notion_usage.py) — real Notion
+  read/write calls (search, query a database, create a page, append
+  blocks), with a graceful skip when `NOTION_TOKEN` isn't set.
+- [`examples/jupytext_usage.py`](examples/jupytext_usage.py) — round-trip
+  a percent-format script to a notebook and back.
+- [`examples/ffmpeg_usage.py`](examples/ffmpeg_usage.py) — probe,
+  transcode, and thumbnail a synthetic test video generated on the fly.
 
 Every example is runnable as-is: `python examples/<name>.py`. None of them
 are illustrative fragments — each one actually executes and prints real
@@ -124,14 +143,17 @@ already stale.
 | `zeo_core.contracts` | The data contracts tools speak — `CapabilityResult`, artifact/manifest models, common enums and IDs. |
 | `zeo_core.core` | Filesystem operations, path resolution, a typed error hierarchy, MIME detection, serialization, logging, an operation registry. |
 | `zeo_core.config` | YAML/env-var configuration loading and per-tool config models. |
-| `zeo_core.integrations` | Adapters for GitHub, Google Drive/Mail, LLM providers, Notion, Pandoc, and a database layer. |
+| `zeo_core.integrations` | Adapters for GitHub, Google Drive/Mail, LLM providers (OpenAI/Anthropic/Ollama — chat, tool-calling, prompt caching), Notion (read + write), Pandoc, jupytext (script ↔ notebook), and ffmpeg (media probing/transcoding, via the org's `ffmpeg-zeo` package). Database integrations (BigQuery, Supabase, SQLite) were evaluated and explicitly **not built** this round — see [CHANGELOG.md](CHANGELOG.md). |
 | `zeo_core.modules` | Plugin discovery and explicit-loading registry. |
 | `zeo_core.prompt` | Prompt template selection and enhancement utilities. |
 | `zeo_core.adapters` | Optional adapters for exposing tools over a network: HTTP (FastAPI-based REST) and MCP (Model Context Protocol, for Claude Code/Cursor/other MCP-native agents). |
 
 See [GET-STARTED.md](GET-STARTED.md) for a fuller walkthrough of each area,
-including the configuration file format and error-handling patterns. See
-[llms.txt](llms.txt) for a condensed summary of this package intended for
+including the configuration file format and error-handling patterns.
+[docs/tutorials/](docs/tutorials/) has longer, worked tutorials — building
+an app with Claude Code/Cursor against zeocore's MCP server, and the
+Notion integration end to end (auth setup through a real read + write
+example). See [llms.txt](llms.txt) for a condensed summary of this package intended for
 coding agents / LLM context windows.
 
 ## Quality bar

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**ZeoCore** is a capability-authoring framework and infrastructure library for Python. It provides a typed base for writing tools (`BaseZeoTool`, `ToolContext`, `CapabilityResult`), plus shared infrastructure for path resolution, filesystem operations, configuration management, plugin discovery, and integrations with third-party services (Google Drive, Gmail, Notion, Pandoc, LLM providers, GitHub).
+**ZeoCore** is a capability-authoring framework and infrastructure library for Python. It provides a typed base for writing tools (`BaseZeoTool`, `ToolContext`, `CapabilityResult`), plus shared infrastructure for path resolution, filesystem operations, configuration management, plugin discovery, integrations with third-party services (Google Drive, Gmail, Notion, Pandoc, jupytext, ffmpeg, LLM providers, GitHub), and adapters for exposing your tools over HTTP or MCP (for Claude Code, Cursor, and other MCP-native coding agents). **Requires Python 3.13 or newer.**
 
 ZeoCore is designed for developers building automation tools, content pipelines, and integrations that need consistent configuration, filesystem, and error-handling behavior without re-solving those problems per project.
 
@@ -73,7 +73,7 @@ Safe and consistent filesystem operations with error handling and structured res
 Extensible plugin discovery and explicit-loading registration framework.
 
 ### `zeo_core.integrations`
-Interfaces to third-party services (Google Drive, Gmail, Notion, Pandoc, GitHub, LLM providers) through a clean adapter layer.
+Interfaces to third-party services (Google Drive, Gmail, Notion, Pandoc, GitHub, jupytext, ffmpeg, LLM providers) through a clean adapter layer. Database integrations (BigQuery, Supabase, SQLite) were evaluated and explicitly not built -- see CHANGELOG.md.
 
 ### `zeo_core.core.errors`
 Structured error handling system with typed exceptions for improved developer experience.
@@ -252,6 +252,248 @@ if emails_result.success:
         if download_result.success:
             print(f"Email saved to: {download_result.content}")
 ```
+
+### Working with Notion Integration
+
+Notion's own auth model is a single bearer **integration token** (not
+OAuth) -- create one at
+[notion.so/my-integrations](https://www.notion.so/my-integrations), then
+share the specific page or database you want it to touch with that
+integration from Notion's UI (a token with no pages shared to it can
+authenticate but sees nothing). Set the token via the `NOTION_TOKEN`
+environment variable.
+
+Requires the `notion` extra (`pip install "zeocore[notion]"`).
+
+**A real config file must exist** at one of `load_config()`'s default
+locations (`./zeo_config.yaml`, `./config/zeo_config.yaml`,
+`~/.zeo/config.yaml`) for `NotionIntegration.initialize()` to succeed --
+unlike `load_config()` itself, this integration's config provider does
+not fall back to defaults when no file is found at all. An empty
+`notion: {}` block is enough; `NOTION_TOKEN` fills in the token value.
+
+```python
+from zeo_core.integrations.notion import NotionIntegration
+
+# config_path is a constructor arg -- NotionIntegration(), not a bare
+# create_integration() call, when you need to point at a specific file.
+notion = NotionIntegration(config_path="path/to/zeo_config.yaml")
+init_result = notion.initialize()
+if not init_result.success:
+    print(f"Failed to initialize: {init_result.error}")
+
+# Read: search everything shared with this integration
+search_result = notion.search(query="Project")
+if search_result.success:
+    for obj in search_result.content or []:
+        print(f"{obj['object']}: {obj['id']}")
+
+# Read: query a database (handles the 2025-09-03 database -> data-source
+# API change internally -- you pass a database_id like always)
+query_result = notion.query_database(
+    "your-database-id",
+    filter={"property": "Status", "select": {"equals": "Done"}},
+)
+
+# Write: create a page under an existing parent page
+create_result = notion.create_page(
+    parent={"type": "page_id", "page_id": "your-parent-page-id"},
+    properties={"title": [{"text": {"content": "New page"}}]},
+)
+if create_result.success:
+    new_page = create_result.content
+    print(f"Created page: {new_page.id}")
+
+    # Write: append a block to the page just created
+    notion.append_blocks(
+        new_page.id,
+        children=[
+            {
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {
+                    "rich_text": [{"type": "text", "text": {"content": "Hello."}}]
+                },
+            }
+        ],
+    )
+```
+
+Every method returns an `IntegrationResult` (`.success`, `.content`,
+`.error`, `.message` -- the same shape `zeo_core.integrations.pandoc` and
+every other integration in this table uses, distinct from the
+`CapabilityResult` your own tools return). Errors from the Notion API
+(bad token, page not found, rate limits) are caught and surfaced as
+`.error` strings, not raised exceptions.
+
+Two lower-level methods (`list_data_sources`, `query_data_source`) exist
+only on the raw client (`zeo_core.integrations.notion.NotionClient`), not
+on `NotionIntegration` -- needed only if a single database has more than
+one data source, which `query_database`/`create_database_entry` handle
+transparently for the common single-data-source case.
+
+See [`examples/notion_usage.py`](examples/notion_usage.py) for a fully
+runnable version, including the graceful-skip path when `NOTION_TOKEN`
+isn't set.
+
+### Working with Jupytext Integration (script <-> notebook conversion)
+
+Converts between percent-format Python scripts (`# %%`-delimited cells,
+diff-friendly, plain text) and Jupyter notebooks. This is the exact
+operation the org's own `quackslides` app uses for its exercise content:
+`script_to_notebook()` is the primary, most-used direction.
+
+Requires the `jupytext` extra (`pip install "zeocore[jupytext]"`). No
+external binary and no required config -- `initialize()` falls back to
+defaults cleanly with zero config file present (unlike Notion/ffmpeg
+above/below).
+
+```python
+from zeo_core.integrations.jupytext import create_integration
+
+jupytext = create_integration()
+init_result = jupytext.initialize()
+if not init_result.success:
+    print(f"Failed to initialize: {init_result.error}")
+
+# script -> notebook (percent-format .py in, .ipynb out)
+result = jupytext.script_to_notebook("exercise_01.py")
+if result.success:
+    print(f"Notebook written to: {result.content}")
+
+# notebook -> script (the natural inverse; percent format by default)
+result = jupytext.notebook_to_script("exercise_01.ipynb")
+if result.success:
+    print(f"Script written to: {result.content}")
+```
+
+`output_path` is optional on both methods -- when omitted, it's
+synthesized from `input_path` (same directory, `.ipynb`/`.py` extension
+swapped). See [`examples/jupytext_usage.py`](examples/jupytext_usage.py)
+for a fully runnable round trip.
+
+### Working with FFmpeg Integration (media probing/transcoding)
+
+Wraps the org's own [`ffmpeg-zeo`](https://pypi.org/project/ffmpeg-zeo/)
+PyPI package, not the raw `ffmpeg` binary directly -- `ffmpeg-zeo`
+resolves real `ffmpeg`/`ffprobe` binaries (from `PATH`, or by downloading
+them if configured to) and this integration calls a curated subset of its
+"recipes."
+
+Requires the `ffmpeg` extra (`pip install "zeocore[ffmpeg]"`).
+`ffmpeg-zeo` itself needs Python >=3.12 -- comfortably under zeocore's own
+`>=3.13` floor, so this installs cleanly with no version straddling.
+
+Like Notion, a real config file must exist at a default location (or be
+passed via `config_path=`) for `initialize()` to succeed -- an empty
+`ffmpeg: {}` block is enough.
+
+```python
+from zeo_core.integrations.ffmpeg import FFmpegIntegration
+
+ffmpeg = FFmpegIntegration(config_path="path/to/zeo_config.yaml")
+init_result = ffmpeg.initialize()
+if not init_result.success:
+    print(f"Failed to initialize: {init_result.error}")
+
+# Probe: real ffprobe under the hood -- raw ffprobe JSON plus derived
+# convenience keys (has_video, width, height, video_codec, ...)
+probe_result = ffmpeg.probe("input.mp4")
+if probe_result.success:
+    info = probe_result.content
+    print(f"{info['width']}x{info['height']}, codec={info['video_codec']}")
+
+# Transcode to H.264 at a given quality/preset
+transcode_result = ffmpeg.transcode_h264("input.mp4", crf=23, preset="medium")
+
+# Extract audio, generate a thumbnail
+audio_result = ffmpeg.extract_audio("input.mp4", codec="copy")
+thumb_result = ffmpeg.thumbnail("input.mp4", time=1.0)
+```
+
+All four operation methods return `IntegrationResult[str]` (`.content` is
+the output file path); `probe()` returns `IntegrationResult[dict]`.
+`ffmpeg.metrics` (a `RenderMetrics` instance) accumulates
+`total_attempts`/`successful_renders`/`failed_renders` across calls on
+the same integration instance. See
+[`examples/ffmpeg_usage.py`](examples/ffmpeg_usage.py) for a fully
+runnable version that generates its own synthetic test video via
+ffmpeg's `lavfi` source, so it needs no external media file.
+
+### Working with LLM Providers (chat, tool-calling, prompt caching)
+
+`zeo_core.integrations.llms` is provider-agnostic at the call site: every
+client (`anthropic`, `openai`, `ollama`, plus a `mock` for tests)
+implements the same `LLMProviderProtocol` (`chat()`, `count_tokens()`,
+`.model`). Requires the `llms` extra (`pip install "zeocore[llms]"`).
+
+```python
+from zeo_core.integrations.llms.registry import get_llm_client
+from zeo_core.integrations.llms.models import (
+    ChatMessage,
+    RoleType,
+    LLMOptions,
+    ToolDefinition,
+    FunctionDefinition,
+)
+
+client = get_llm_client(provider="anthropic")  # api_key defaults to
+                                                # ANTHROPIC_API_KEY env var
+print(client.model)  # "claude-sonnet-5" -- the current, non-retired default
+
+messages = [
+    ChatMessage(role=RoleType.SYSTEM, content="You are a helpful assistant."),
+    ChatMessage(role=RoleType.USER, content="What's the weather in Boston?"),
+]
+
+options = LLMOptions(
+    max_tokens=1024,
+    # Marks the system prompt cacheable via Anthropic's cache_control:
+    # ephemeral breakpoints -- a real cost/latency win on repeated calls
+    # sharing the same system prompt. Provider-agnostic option; a no-op
+    # on providers without caching support (OpenAI, Ollama).
+    cache_system_prompt=True,
+    tools=[
+        ToolDefinition(
+            type="function",
+            function=FunctionDefinition(
+                name="get_weather",
+                description="Get current weather for a location",
+                parameters={
+                    "type": "object",
+                    "properties": {"location": {"type": "string"}},
+                    "required": ["location"],
+                },
+            ),
+        )
+    ],
+)
+
+result = client.chat(messages, options)
+if result.success:
+    print(result.content)
+else:
+    print(result.error)
+```
+
+`chat()` returns `IntegrationResult[str]` -- always plain text, never a
+raised exception (retries and error conversion happen internally).
+
+**Known gap, stated plainly rather than glossed over:** tool definitions
+sent via `LLMOptions.tools` reach the Anthropic API correctly (verified:
+`ToolDefinition` is converted to Anthropic's flat
+`{name, description, input_schema}` shape and appears in the real request
+payload). But if the model responds with a `tool_use` content block
+instead of plain text, `chat()`'s current response parsing only reads
+`response.content[0].text` -- it does not extract or return the
+`tool_use` block's `name`/`input`/`id`. There is a model
+(`zeo_core.integrations.llms.models.LLMResult`, with a `tool_calls`
+field) built for exactly this, but no client constructs one; `chat()`'s
+return type is `IntegrationResult[str]`, with no field for a tool call.
+**Request-side tool-calling works; response-side tool-call extraction
+does not yet** -- a caller who needs the model's tool_use block has to
+drop below the provider-agnostic protocol to the raw SDK client. Tracked
+as follow-up work, not silently worked around here.
 
 ### Exposing Tools as an MCP Server
 
