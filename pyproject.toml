@@ -165,6 +165,7 @@ github = "zeo_core.integrations.github:create_integration"
 pandoc = "zeo_core.integrations.pandoc:create_integration"
 llms = "zeo_core.integrations.llms:create_integration"
 ffmpeg = "zeo_core.integrations.ffmpeg:create_integration"
+notion = "zeo_core.integrations.notion:create_integration"
 
 
 [tool.isort]
