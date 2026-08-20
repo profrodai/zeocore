@@ -77,6 +77,17 @@ make test-module M=test_fs   # run one module's tests with coverage
   untyped code isn't actually gated.
 - **Import architecture**: `import-linter` enforces the directional
   contracts declared in `.importlinter` (checked by `make arch-check`).
+- **Canonical import paths**: `zeo_core.tools`'s mixins
+  (`IntegrationEnabledMixin`, `LifecycleMixin`, `ToolEnvInitializerMixin`)
+  are implemented under `zeo_core.tools.mixins.*` but should always be
+  imported from `zeo_core.tools` directly (`from zeo_core.tools import
+  LifecycleMixin`, not `from zeo_core.tools.mixins.lifecycle import
+  LifecycleMixin`). Set `ZEO_WARN_NONCANONICAL_IMPORTS=1` in your dev/CI
+  environment to get a `FutureWarning` when this is violated -- it's
+  opt-in (not on by default) because it cannot reliably distinguish a
+  non-canonical import from the package's own internal bootstrap; see
+  `zeo_core/tools/mixins/__init__.py`'s module docstring for the full
+  reasoning.
 - **No test-detection in production code**: production code (`src/zeo_core`)
   must never branch on whether it's running under test (no
   `inspect.stack()`, no `"pytest" in sys.modules`, etc). `make hygiene-check`

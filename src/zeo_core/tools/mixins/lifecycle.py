@@ -1,6 +1,15 @@
 """
 Lifecycle hooks for tools (doctrine-compliant).
 
+⚠️ DO NOT import LifecycleMixin from this module ⚠️
+This is an internal implementation file. The canonical import path is:
+    ✅ from zeo_core.tools import LifecycleMixin
+    ❌ from zeo_core.tools.mixins.lifecycle import LifecycleMixin
+See zeo_core/tools/mixins/__init__.py's module docstring for why (opt in
+to ZEO_WARN_NONCANONICAL_IMPORTS=1 to get a runtime FutureWarning on the
+non-canonical path too, though it cannot fire in every case -- this
+docstring is the reliable signal).
+
 All hooks return CapabilityResult and receive ToolContext.
 """
 

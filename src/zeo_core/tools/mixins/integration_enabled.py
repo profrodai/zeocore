@@ -1,6 +1,15 @@
 """
 Integration support for tools (doctrine-compliant).
 Services come from ToolContext.services (runner-provided).
+
+⚠️ DO NOT import IntegrationEnabledMixin from this module ⚠️
+This is an internal implementation file. The canonical import path is:
+    ✅ from zeo_core.tools import IntegrationEnabledMixin
+    ❌ from zeo_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
+See zeo_core/tools/mixins/__init__.py's module docstring for why (opt in
+to ZEO_WARN_NONCANONICAL_IMPORTS=1 to get a runtime FutureWarning on the
+non-canonical path too, though it cannot fire in every case -- this
+docstring is the reliable signal).
 """
 
 from __future__ import annotations

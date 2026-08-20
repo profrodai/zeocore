@@ -21,6 +21,37 @@ ENFORCEMENT STRATEGY (Must-fix #4 - WARNING ONLY):
    - Import-time ImportError breaks too much tooling
    - Use linter-based enforcement instead (see below)
 
+WHY THE DEFAULT STAYS SILENT (investigated and confirmed, not just
+inherited, during the zeocore-legibility-fixes stream -- see
+CHANGELOG.md's Unreleased section): zeo_core.tools/__init__.py (the
+canonical re-export site) imports from zeo_core.tools.mixins.env_init at
+its own module scope. Because Python always fully imports a parent
+package before any of its submodules, this means EVERY import of
+anything under zeo_core.tools.* -- whether it is the canonical
+`from zeo_core.tools import LifecycleMixin` or a non-canonical
+`from zeo_core.tools.mixins import LifecycleMixin` -- causes
+zeo_core.tools/__init__.py to run first, which in turn causes this
+module's body (including this warning check) to execute as a side
+effect. There is no way for code running inside this module to tell
+those two cases apart: they produce an identical call stack, and no
+sentinel set by zeo_core.tools/__init__.py can help either, because by
+the time ANY import of zeo_core.tools.mixins.* resolves, the module is
+already fully bootstrapped and cached -- the check-then-import ordering
+below only ever executes once, on whichever import (canonical or not)
+happens to be first in the process. A default-on warning was tried and
+reverted after confirming it fires unconditionally on the fully correct,
+documented `import zeo_core.tools` / `from zeo_core.tools import X` path
+too -- which would be strictly worse than today's silent default (a
+guaranteed false positive on every canonical import, versus zero signal
+on a plausible-but-wrong one). Given that a runtime check cannot
+distinguish the two cases, the actual fix for "an agent that greps the
+repo tree and imports directly from a leaf module gets no signal" lives
+where static reading (not runtime execution) can see it: see the banner
+docstrings at the top of env_init.py, integration_enabled.py, and
+lifecycle.py, which an agent opening any of those files via grep/IDE
+navigation -- the discovery path this concern is actually about -- sees
+immediately, with no import required to trigger it.
+
 RECOMMENDED ENFORCEMENT (linter rules, not import-time behavior):
 
 Use static analysis tools to enforce canonical imports:
