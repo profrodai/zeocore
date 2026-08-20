@@ -99,7 +99,7 @@ class MockOpenAIStreamingResponse(MockStreamingGenerator):
         self.chunks = list(self._generate_all_chunks())
         self.current_index = 0
 
-    def _generate_all_chunks(self) -> Generator[dict[str, Any], None, None]:
+    def _generate_all_chunks(self) -> Generator[dict[str, Any]]:
         """Generate all chunks at once."""
         # Split the response into chunks
         chunks = [

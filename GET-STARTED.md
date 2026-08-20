@@ -14,7 +14,7 @@ This documentation helps you get started with ZeoCore and use its features in yo
 
 ### Prerequisites
 
-- Python 3.10 or higher
+- Python 3.13 or higher
 - pip package manager
 
 ### Basic Installation

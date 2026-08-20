@@ -4,7 +4,7 @@ Tests for envelope models (CapabilityResult, CapabilityError, CapabilityLogEvent
 Validates invariants, convenience methods, and JSON serialization.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import pytest
@@ -94,10 +94,10 @@ class TestCapabilityLogEvent:
 
         # Check timestamp properties (not exact value to avoid flakiness)
         assert isinstance(log.timestamp, datetime)
-        assert log.timestamp.tzinfo == timezone.utc
+        assert log.timestamp.tzinfo == UTC
 
         # Timestamp should be recent (within last 10 seconds for CI tolerance)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         delta = (now - log.timestamp).total_seconds()
         assert 0 <= delta < 10.0, f"Timestamp delta too large: {delta}s"
 

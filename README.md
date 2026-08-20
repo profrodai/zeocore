@@ -140,11 +140,12 @@ coding agents / LLM context windows.
 - **2005 tests**, 90%+ coverage, enforced as a hard CI floor
   (`--cov-fail-under=90`) — a pull request that drops coverage fails the
   gate.
-- **CI runs the full suite on Python 3.10, 3.11, 3.12, and 3.13** on every
-  push, not just whatever version the maintainer happens to have installed.
-  That matrix has already caught and fixed three genuine cross-version
-  stdlib behavior differences before they shipped — see
-  [CHANGELOG.md](CHANGELOG.md) for specifics.
+- **CI runs the full suite on Python 3.13** (zeocore's minimum-supported
+  interpreter) on every push, not just whatever version the maintainer
+  happens to have installed. An earlier, wider 3.10-3.13 matrix caught and
+  fixed three genuine cross-version stdlib behavior differences before they
+  shipped — see [CHANGELOG.md](CHANGELOG.md) for specifics — before the
+  floor moved to 3.13.
 - Production code is not allowed to detect that it's under test (a
   dedicated CI check fails the build if it finds `"pytest" in sys.modules`
   or similar) — if a test needs different behavior, it injects it, rather

@@ -18,7 +18,7 @@ class TestGoogleDriveServiceDownload:
     """Tests for GoogleDriveService download _ops."""
 
     @pytest.fixture
-    def drive_service(self) -> Generator[GoogleDriveService, None, None]:
+    def drive_service(self) -> Generator[GoogleDriveService]:
         """Set up a Google Drive service with mocked dependencies."""
         with patch(
             "zeo_core.integrations.google.drive.service.paths_service"

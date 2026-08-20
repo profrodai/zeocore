@@ -35,7 +35,7 @@ from zeo_core.integrations.github.service import GitHubIntegration
 
 
 @pytest.fixture
-def mock_environment_token() -> Generator[None, None, None]:
+def mock_environment_token() -> Generator[None]:
     """Fixture to provide a mock GitHub token in the environment."""
     original = os.environ.get("GITHUB_TOKEN")
     os.environ["GITHUB_TOKEN"] = "mock-github-token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
@@ -104,7 +104,7 @@ def mock_rate_limited_client() -> MagicMock:
 
 
 @pytest.fixture
-def patch_integration_registry() -> Generator[MagicMock, None, None]:
+def patch_integration_registry() -> Generator[MagicMock]:
     """Patch the integration registry for testing."""
     mock_registry = MagicMock()
     mock_registry.integrations = []
@@ -117,7 +117,7 @@ def patch_integration_registry() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def patch_registry_register() -> Generator[MagicMock, None, None]:
+def patch_registry_register() -> Generator[MagicMock]:
     """Patch the registry register method."""
     # Create a mock registry that has the register method
     mock_registry = MagicMock()
@@ -418,7 +418,7 @@ def mock_rate_limited_response() -> MagicMock:
 
 
 @pytest.fixture
-def patch_requests_get() -> Generator[MagicMock, None, None]:
+def patch_requests_get() -> Generator[MagicMock]:
     """Patch requests.get for testing."""
     with patch("requests.get") as mock_get:
         mock_response = MagicMock()
@@ -435,7 +435,7 @@ def patch_requests_get() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def patch_make_request() -> Generator[MagicMock, None, None]:
+def patch_make_request() -> Generator[MagicMock]:
     """Patch the make_request function for testing."""
     with patch(
         "zeo_core.integrations.github.api.api.make_request"
@@ -448,7 +448,7 @@ def patch_make_request() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def patch_make_request_rate_limited() -> Generator[MagicMock, None, None]:
+def patch_make_request_rate_limited() -> Generator[MagicMock]:
     """Patch the make_request function to simulate rate limiting."""
     with patch(
         "zeo_core.integrations.github.api.api.make_request"

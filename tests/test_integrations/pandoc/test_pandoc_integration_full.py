@@ -38,7 +38,7 @@ from zeo_core.integrations.pandoc.service import PandocIntegration
 
 # Fixtures for monkeypatching filesystem service
 @pytest.fixture(autouse=True)
-def fs_stub(monkeypatch: MonkeyPatch) -> Generator[SimpleNamespace, None, None]:
+def fs_stub(monkeypatch: MonkeyPatch) -> Generator[SimpleNamespace]:
     """
     Stub out the zeo_core.core.fs.service.standalone methods for file _ops.
     """

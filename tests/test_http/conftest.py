@@ -17,7 +17,7 @@ from zeo_core.core.registry import OperationRegistry
 
 
 @pytest.fixture
-def job_store() -> Generator[InMemoryJobStore, None, None]:
+def job_store() -> Generator[InMemoryJobStore]:
     """Create a fresh job store for testing."""
     store = InMemoryJobStore()
     yield store
@@ -78,7 +78,7 @@ def test_registry() -> OperationRegistry:
 @pytest.fixture
 def job_runner(
     test_registry: OperationRegistry, job_store: InMemoryJobStore
-) -> Generator[ThreadPoolJobRunner, None, None]:
+) -> Generator[ThreadPoolJobRunner]:
     """Create a job runner for testing."""
     runner = ThreadPoolJobRunner(registry=test_registry, store=job_store, max_workers=2)
     yield runner
@@ -86,7 +86,7 @@ def job_runner(
 
 
 @pytest.fixture(autouse=True)
-def clear_job_state(job_store: InMemoryJobStore) -> Generator[None, None, None]:
+def clear_job_state(job_store: InMemoryJobStore) -> Generator[None]:
     """Clear job state before and after each test."""
     job_store.clear()
     yield

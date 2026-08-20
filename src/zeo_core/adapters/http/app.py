@@ -34,7 +34,7 @@ async def cleanup_task(store: JobStore, ttl_seconds: int) -> None:
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     """
     Lifespan context manager for startup/shutdown.
 

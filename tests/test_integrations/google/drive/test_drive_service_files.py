@@ -18,7 +18,7 @@ class TestGoogleDriveServiceFiles:
     """Tests for the GoogleDriveService file _ops."""
 
     @pytest.fixture
-    def drive_service(self) -> Generator[GoogleDriveService, None, None]:
+    def drive_service(self) -> Generator[GoogleDriveService]:
         """Set up a Google Drive service with mocked dependencies."""
         # Mock the paths service
         with patch(
@@ -314,7 +314,7 @@ class TestGoogleDriveServiceRealPathService:
     `_resolve_download_path` (the download path)."""
 
     @pytest.fixture
-    def real_drive_service(self) -> Generator[GoogleDriveService, None, None]:
+    def real_drive_service(self) -> Generator[GoogleDriveService]:
         """A GoogleDriveService with only auth/config mocked -- paths_service
         and standalone are the REAL modules, untouched."""
         with patch.object(GoogleDriveService, "_initialize_config") as mock_init:

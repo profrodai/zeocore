@@ -1,5 +1,5 @@
 import mimetypes
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -9,8 +9,8 @@ def _get_file_timestamp(path: Path) -> float:
 
 def _get_iso_timestamps(path: Path) -> tuple[str, str]:
     stat = path.stat()
-    m_iso = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat()
-    c_iso = datetime.fromtimestamp(stat.st_ctime, tz=timezone.utc).isoformat()
+    m_iso = datetime.fromtimestamp(stat.st_mtime, tz=UTC).isoformat()
+    c_iso = datetime.fromtimestamp(stat.st_ctime, tz=UTC).isoformat()
     return m_iso, c_iso
 
 

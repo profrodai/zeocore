@@ -5,7 +5,7 @@ Validates invariants, time ordering, and JSON fixtures.
 """
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -274,7 +274,7 @@ class TestRunManifest:
 
     def test_manifest_timing_consistency(self) -> None:
         """Test that manifest validates time ordering."""
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         finished = started + timedelta(seconds=45)
 
         manifest = RunManifest(
@@ -290,7 +290,7 @@ class TestRunManifest:
 
     def test_manifest_invalid_time_order(self) -> None:
         """Test that finished_at must be >= started_at."""
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         finished = started - timedelta(seconds=10)  # Finished before started!
 
         with pytest.raises(ValidationError) as exc_info:
@@ -305,7 +305,7 @@ class TestRunManifest:
 
     def test_manifest_duration_mismatch(self) -> None:
         """Test that duration_sec must match timestamps."""
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         finished = started + timedelta(seconds=45)
 
         with pytest.raises(ValidationError) as exc_info:

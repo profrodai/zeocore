@@ -27,7 +27,7 @@ from zeo_core.core.fs.service.factory import create_service
 @pytest.fixture(autouse=True)
 def _isolated_singleton(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> Generator[None, None, None]:
+) -> Generator[None]:
     """Point the get_service() singleton at a fresh tmp_path for every test."""
     from zeo_core.core.fs.service import get_service
 

@@ -58,7 +58,7 @@ from zeo_core.integrations.google.drive.service import GoogleDriveService
 
 
 @pytest.fixture
-def real_drive_service() -> Generator[GoogleDriveService, None, None]:
+def real_drive_service() -> Generator[GoogleDriveService]:
     """A GoogleDriveService with only auth/config construction mocked --
     paths_service and standalone are the REAL modules, untouched. Matches
     the fixture already established in
@@ -780,7 +780,7 @@ class TestResolveFileDetailsErrorPaths:
     left uncovered rather than faked."""
 
     @pytest.fixture
-    def service(self) -> Generator[GoogleDriveService, None, None]:
+    def service(self) -> Generator[GoogleDriveService]:
         with patch.object(GoogleDriveService, "_initialize_config") as mock_init:
             mock_init.return_value = {
                 "client_secrets_file": "/fake/test/dir/mock_secrets.json",
@@ -1138,7 +1138,7 @@ class TestEnsureInitializedGuards:
     to auto-initialize."""
 
     @pytest.fixture
-    def uninitialized_service(self) -> Generator[GoogleDriveService, None, None]:
+    def uninitialized_service(self) -> Generator[GoogleDriveService]:
         with patch.object(GoogleDriveService, "_initialize_config") as mock_init:
             mock_init.return_value = {
                 "client_secrets_file": "/fake/test/dir/mock_secrets.json",

@@ -5,7 +5,7 @@ Provides standardized UTC timestamp generation.
 All contracts use UTC to avoid timezone ambiguity.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 def utcnow() -> datetime:
@@ -20,7 +20,7 @@ def utcnow() -> datetime:
         >>> ts.tzinfo == timezone.utc
         True
     """
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def utcnow_iso() -> str:
