@@ -34,6 +34,25 @@ def test_mail_service_reachable_from_google_package() -> None:
     assert google.GoogleMailService is GoogleMailService
 
 
+def test_calendar_service_reachable_from_google_package() -> None:
+    """GoogleCalendarService is importable one level shallower, matching
+    drive/mail's own established re-export convention (see this file's
+    own module docstring for why that convention exists)."""
+    assert hasattr(google, "GoogleCalendarService")
+    assert "GoogleCalendarService" in google.__all__
+
+    from zeo_core.integrations.google.calendar import GoogleCalendarService
+
+    assert google.GoogleCalendarService is GoogleCalendarService
+
+
+def test_calendar_models_reachable() -> None:
+    """Calendar/CalendarEvent are re-exported alongside the service class,
+    matching DriveFile/DriveFolder's own precedent."""
+    assert hasattr(google, "Calendar")
+    assert hasattr(google, "CalendarEvent")
+
+
 def test_auth_and_config_providers_still_reachable() -> None:
     """Pre-existing exports must not regress."""
     assert hasattr(google, "GoogleAuthProvider")

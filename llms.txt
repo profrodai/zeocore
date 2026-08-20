@@ -22,13 +22,16 @@ under examples/ — every one of them is runnable as printed
   3.13 — the package's own floor, requires Python >=3.13).
 - [GET-STARTED.md](GET-STARTED.md): The full walkthrough — configuration,
   path resolution, filesystem operations, typed error handling, writing a
-  tool, integrations (Google Drive/Gmail, GitHub, Notion read+write,
-  Pandoc, jupytext script↔notebook conversion, ffmpeg probing/transcoding,
-  LLM providers with tool-calling and prompt caching), exposing tools over
-  HTTP or MCP, and a troubleshooting section for common exceptions.
+  tool, integrations (Google Drive/Gmail/Calendar, GitHub, Notion
+  read+write, Pandoc, jupytext script↔notebook conversion, ffmpeg
+  probing/transcoding, LLM providers with tool-calling and prompt
+  caching), exposing tools over HTTP or MCP, and a troubleshooting section
+  for common exceptions.
 - [docs/tutorials/](docs/tutorials/): worked, end-to-end tutorials —
   building an app with Claude Code/Cursor against zeocore's MCP server,
-  and the Notion integration from auth through a real read+write example.
+  the Notion integration from auth through a real read+write example, and
+  the Google Calendar integration from OAuth setup through a real
+  read+write example.
 - [CHANGELOG.md](CHANGELOG.md): Version history, including the
   quack_core -> zeo_core rename and what did/didn't change as part of it.
 - [CONTRIBUTING.md](CONTRIBUTING.md): Dev setup, the gate
@@ -55,6 +58,10 @@ under examples/ — every one of them is runnable as printed
 - [examples/notion_usage.py](examples/notion_usage.py): Real Notion
   read/write calls (search, query a database, create a page, append
   blocks), with a graceful skip when `NOTION_TOKEN` isn't set.
+- [examples/calendar_usage.py](examples/calendar_usage.py): Real Google
+  Calendar read/write calls (list calendars, list/create/update/delete
+  events), with a graceful skip when
+  `ZEO_GOOGLE_CALENDAR_CLIENT_SECRETS` isn't set.
 - [examples/jupytext_usage.py](examples/jupytext_usage.py): Round-trip a
   percent-format script to a notebook and back
   (`script_to_notebook()`/`notebook_to_script()`).
@@ -84,7 +91,9 @@ under examples/ — every one of them is runnable as printed
   resolution), `core.errors` (the `ZeoError` typed exception hierarchy),
   plus MIME detection, serialization, and logging helpers.
 - `zeo_core.integrations`: `google.drive` (`GoogleDriveService`),
-  `google.mail` (`GoogleMailService`) — both also re-exported one level
+  `google.mail` (`GoogleMailService`), `google.calendar`
+  (`GoogleCalendarService`, read+write: calendars, events with date-range
+  filtering, create/update/delete) — all three also re-exported one level
   shallower at `zeo_core.integrations.google` — plus `github`, `notion`
   (read + write, bearer-token auth), `pandoc`, `jupytext`
   (`script_to_notebook`/`notebook_to_script`), `ffmpeg` (`probe`,

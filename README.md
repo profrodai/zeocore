@@ -90,6 +90,7 @@ Optional integrations ship as extras, so you only install what you use:
 | `zeocore[github]` | GitHub API integration |
 | `zeocore[drive]` | Google Drive |
 | `zeocore[gmail]` | Gmail |
+| `zeocore[calendar]` | Google Calendar (read + write) |
 | `zeocore[google]` | Drive + Gmail auth plumbing together |
 | `zeocore[notion]` | Notion (read + write) |
 | `zeocore[pandoc]` | Document conversion via Pandoc |
@@ -125,6 +126,10 @@ extras — `zeocore[all]` does **not** pull in the MCP adapter; install
 - [`examples/notion_usage.py`](examples/notion_usage.py) — real Notion
   read/write calls (search, query a database, create a page, append
   blocks), with a graceful skip when `NOTION_TOKEN` isn't set.
+- [`examples/calendar_usage.py`](examples/calendar_usage.py) — real Google
+  Calendar read/write calls (list calendars, list/create/update/delete
+  events), with a graceful skip when no OAuth client-secrets file is
+  configured.
 - [`examples/jupytext_usage.py`](examples/jupytext_usage.py) — round-trip
   a percent-format script to a notebook and back.
 - [`examples/ffmpeg_usage.py`](examples/ffmpeg_usage.py) — probe,
@@ -143,7 +148,7 @@ already stale.
 | `zeo_core.contracts` | The data contracts tools speak — `CapabilityResult`, artifact/manifest models, common enums and IDs. |
 | `zeo_core.core` | Filesystem operations, path resolution, a typed error hierarchy, MIME detection, serialization, logging, an operation registry. |
 | `zeo_core.config` | YAML/env-var configuration loading and per-tool config models. |
-| `zeo_core.integrations` | Adapters for GitHub, Google Drive/Mail, LLM providers (OpenAI/Anthropic/Ollama — chat, tool-calling, prompt caching), Notion (read + write), Pandoc, jupytext (script ↔ notebook), and ffmpeg (media probing/transcoding, via the org's `ffmpeg-zeo` package). Database integrations (BigQuery, Supabase, SQLite) were evaluated and explicitly **not built** this round — see [CHANGELOG.md](CHANGELOG.md). |
+| `zeo_core.integrations` | Adapters for GitHub, Google Drive/Mail/Calendar, LLM providers (OpenAI/Anthropic/Ollama — chat, tool-calling, prompt caching), Notion (read + write), Pandoc, jupytext (script ↔ notebook), and ffmpeg (media probing/transcoding, via the org's `ffmpeg-zeo` package). Database integrations (BigQuery, Supabase, SQLite) were evaluated and explicitly **not built** this round — see [CHANGELOG.md](CHANGELOG.md). |
 | `zeo_core.modules` | Plugin discovery and explicit-loading registry. |
 | `zeo_core.prompt` | Prompt template selection and enhancement utilities. |
 | `zeo_core.adapters` | Optional adapters for exposing tools over a network: HTTP (FastAPI-based REST) and MCP (Model Context Protocol, for Claude Code/Cursor/other MCP-native agents). |
@@ -151,9 +156,11 @@ already stale.
 See [GET-STARTED.md](GET-STARTED.md) for a fuller walkthrough of each area,
 including the configuration file format and error-handling patterns.
 [docs/tutorials/](docs/tutorials/) has longer, worked tutorials — building
-an app with Claude Code/Cursor against zeocore's MCP server, and the
+an app with Claude Code/Cursor against zeocore's MCP server, the
 Notion integration end to end (auth setup through a real read + write
-example). See [llms.txt](llms.txt) for a condensed summary of this package intended for
+example), and the [Google Calendar integration](docs/tutorials/calendar-integration.md)
+end to end (OAuth setup through a real read + write example). See
+[llms.txt](llms.txt) for a condensed summary of this package intended for
 coding agents / LLM context windows.
 
 ## Quality bar

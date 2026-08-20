@@ -105,7 +105,7 @@ install: ## Install zeocore (editable)
 .PHONY: install-all
 install-all: install ## Install zeocore with all optional integrations
 	@echo "${BLUE}Installing optional integration dependencies...${RESET}"
-	uv pip install -e ".[gmail,notion,google,drive,pandoc,llms,github,http,ffmpeg,jupytext,mcp,mcp-dev]" --python $(PYTHON)
+	uv pip install -e ".[gmail,notion,google,drive,calendar,pandoc,llms,github,http,ffmpeg,jupytext,mcp,mcp-dev]" --python $(PYTHON)
 	@echo "${GREEN}All integration dependencies installed${RESET}"
 
 .PHONY: install-dev
