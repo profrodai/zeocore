@@ -108,6 +108,7 @@ drive = [
 pandoc = ["pypandoc", "beautifulsoup4"]
 llms = ["tiktoken", "openai", "anthropic"]
 github = ["requests"]
+jupytext = ["jupytext>=1.16.0", "nbformat>=5.10.0"]
 all = [
     "google-api-python-client>=2.0.0",
     "google-auth-httplib2>=0.1.0",
@@ -118,6 +119,8 @@ all = [
     "tiktoken",
     "openai",
     "anthropic",
+    "jupytext>=1.16.0",
+    "nbformat>=5.10.0",
     "requests",
 ]
 
@@ -162,6 +165,7 @@ github = "zeo_core.integrations.github:create_integration"
 "google.drive" = "zeo_core.integrations.google.drive:create_integration"
 pandoc = "zeo_core.integrations.pandoc:create_integration"
 llms = "zeo_core.integrations.llms:create_integration"
+jupytext = "zeo_core.integrations.jupytext:create_integration"
 
 
 [tool.isort]
