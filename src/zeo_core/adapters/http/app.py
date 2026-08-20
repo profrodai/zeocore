@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from zeo_core import __version__ as _zeo_core_version
 from zeo_core.adapters.http.config import HttpAdapterConfig
 from zeo_core.adapters.http.routes import health, jobs, operations
 from zeo_core.core.jobs import InMemoryJobStore, JobStore, ThreadPoolJobRunner
@@ -109,7 +110,7 @@ def create_app(
 
     app = FastAPI(
         title="ZeoCore API",
-        version="0.1.0",
+        version=_zeo_core_version,
         description="HTTP API for ZeoCore _ops",
         lifespan=lifespan,
     )

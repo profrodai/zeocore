@@ -22,6 +22,7 @@ from typing import Any
 from mcp.server import MCPServer
 from pydantic import ValidationError
 
+from zeo_core import __version__ as _zeo_core_version
 from zeo_core.core.logging import get_logger
 from zeo_core.core.registry import (
     Operation,
@@ -92,7 +93,7 @@ def create_server(
     registry: OperationRegistry | None = None,
     *,
     name: str = "zeocore",
-    version: str = "0.1.0",
+    version: str = _zeo_core_version,
 ) -> MCPServer:
     """
     Create an MCP server exposing every operation currently in the registry.
@@ -135,7 +136,7 @@ def run(
     registry: OperationRegistry | None = None,
     *,
     name: str = "zeocore",
-    version: str = "0.1.0",
+    version: str = _zeo_core_version,
 ) -> None:
     """
     Create a server from the registry and run it over stdio.
