@@ -109,6 +109,7 @@ pandoc = ["pypandoc", "beautifulsoup4"]
 llms = ["tiktoken", "openai", "anthropic"]
 github = ["requests"]
 ffmpeg = ["ffmpeg-zeo>=0.1.0"]
+jupytext = ["jupytext>=1.16.0", "nbformat>=5.10.0"]
 all = [
     "google-api-python-client>=2.0.0",
     "google-auth-httplib2>=0.1.0",
@@ -119,6 +120,8 @@ all = [
     "tiktoken",
     "openai",
     "anthropic",
+    "jupytext>=1.16.0",
+    "nbformat>=5.10.0",
     "requests",
     "ffmpeg-zeo>=0.1.0",
 ]
@@ -166,6 +169,7 @@ pandoc = "zeo_core.integrations.pandoc:create_integration"
 llms = "zeo_core.integrations.llms:create_integration"
 ffmpeg = "zeo_core.integrations.ffmpeg:create_integration"
 notion = "zeo_core.integrations.notion:create_integration"
+jupytext = "zeo_core.integrations.jupytext:create_integration"
 
 
 [tool.isort]
