@@ -36,45 +36,76 @@ class TestConfigureLoggerFileHandler:
         caller -- ModelConfig.setup_logging and setup_tool_logging both
         always pass one).
         """
-        # The fs service's singleton base_dir defaults to Path.cwd(); chdir
-        # into tmp_path so a relative log_file resolves (and sandboxes)
-        # inside a real, disposable directory -- no mocking of the fs layer.
+        # The fs service's singleton (zeo_core.core.fs.service.get_service(),
+        # functools.lru_cache(maxsize=1)) captures base_dir = Path.cwd() ONCE,
+        # at first construction anywhere in the process -- not per-call. In a
+        # full-suite run some earlier test (e.g.
+        # test_mcp_adapter.py::TestRegisterTool::
+        # test_registered_tool_invocation_round_trips_through_registry, via
+        # build_tool_context()'s get_fs_service() call) may have already
+        # constructed the singleton against the real repo cwd, before this
+        # test's own monkeypatch.chdir ever runs. configure_logger's
+        # log_file branch calls standalone.split_path/join_path/
+        # create_directory, all of which delegate to that already-frozen
+        # singleton -- so create_directory silently creates nested/logdir
+        # under the STALE base_dir while logging.FileHandler (which reads
+        # the real OS cwd directly, unaffected by the singleton) opens the
+        # relative path under tmp_path, whose parent was never created
+        # there: FileNotFoundError. Order-dependent, not flake -- confirmed
+        # via bisection (RULING-323 s3 Defect A) and reproduced directly:
+        # get_service() called once, cwd changed, get_service() called
+        # again returns the SAME base_dir. Clearing the cache both before
+        # and after (matching tests/test_fs/test_standalone.py's own
+        # _isolated_singleton fixture and its documented rationale) forces
+        # a fresh singleton bound to tmp_path for this test and prevents
+        # this test's own chdir'd singleton from leaking into whatever
+        # test runs next.
+        from zeo_core.core.fs.service import get_service
+
+        get_service.cache_clear()
         monkeypatch.chdir(tmp_path)
 
-        logger = configure_logger(
-            "ruling242_test_logger",
-            log_file="nested/logdir/app.log",
-            force=True,
-        )
+        try:
+            logger = configure_logger(
+                "ruling242_test_logger",
+                log_file="nested/logdir/app.log",
+                force=True,
+            )
 
-        file_handlers = [
-            h for h in logger.handlers if isinstance(h, logging.FileHandler)
-        ]
-        assert len(file_handlers) == 1, (
-            f"expected exactly one FileHandler, got handlers={logger.handlers!r}"
-        )
+            file_handlers = [
+                h for h in logger.handlers if isinstance(h, logging.FileHandler)
+            ]
+            assert len(file_handlers) == 1, (
+                f"expected exactly one FileHandler, got handlers={logger.handlers!r}"
+            )
 
-        # The parent directory must have actually been created by the
-        # split_path/join_path/create_directory chain, not just have
-        # avoided crashing.
-        expected_path = tmp_path / "nested" / "logdir" / "app.log"
-        assert Path(file_handlers[0].baseFilename) == expected_path.resolve()
-        assert expected_path.parent.is_dir()
+            # The parent directory must have actually been created by the
+            # split_path/join_path/create_directory chain, not just have
+            # avoided crashing.
+            expected_path = tmp_path / "nested" / "logdir" / "app.log"
+            assert Path(file_handlers[0].baseFilename) == expected_path.resolve()
+            assert expected_path.parent.is_dir()
 
-        # Behavioral proof, not just presence: a real log line must reach
-        # the real file.
-        logger.info("ruling242 real write check")
-        for h in logger.handlers:
-            h.flush()
-        content = expected_path.read_text()
-        assert "ruling242 real write check" in content
+            # Behavioral proof, not just presence: a real log line must reach
+            # the real file.
+            logger.info("ruling242 real write check")
+            for h in logger.handlers:
+                h.flush()
+            content = expected_path.read_text()
+            assert "ruling242 real write check" in content
 
-        # Cleanup: close handlers so the FileHandler doesn't hold the fd
-        # open past the test (tmp_path is auto-cleaned by pytest, but a
-        # held-open handle on a removed dir is its own footgun).
-        for h in list(logger.handlers):
-            logger.removeHandler(h)
-            h.close()
+            # Cleanup: close handlers so the FileHandler doesn't hold the fd
+            # open past the test (tmp_path is auto-cleaned by pytest, but a
+            # held-open handle on a removed dir is its own footgun).
+            for h in list(logger.handlers):
+                logger.removeHandler(h)
+                h.close()
+        finally:
+            # Drop the tmp_path-anchored singleton this test constructed so
+            # it can never leak into a later test's own get_service() call
+            # -- the exact leak this test itself was a victim of (RULING-323
+            # s3 Defect A). Runs even if an assertion above failed.
+            get_service.cache_clear()
 
     def test_configure_logger_no_log_file_has_no_file_handler(self) -> None:
         """Sanity check: the console-only path (log_file=None) is unaffected.
