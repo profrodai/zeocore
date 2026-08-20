@@ -1,0 +1,107 @@
+# ZeoCore
+
+> A typed capability-authoring framework for Python. Write a tool once —
+> validated input, one method of real work, a structured result — and run
+> it inside any runner that respects the contract. Every tool takes a
+> typed Pydantic request, runs against an immutable `ToolContext`, and
+> returns a `CapabilityResult` (success/skip/error, never a bare
+> exception or an untyped dict). PyPI distribution name: `zeocore`;
+> import name: `zeo_core`.
+
+Start here, in order: read README.md for the 60-second shape and the
+"why a typed result" rationale, then GET-STARTED.md for a full
+module-by-module walkthrough (config, paths, filesystem, errors,
+integrations, MCP/HTTP adapters), then copy the closest-matching file
+under examples/ — every one of them is runnable as printed
+(`python examples/<name>.py`), not an illustrative fragment.
+
+## Core docs
+
+- [README.md](README.md): Quick start, install/extras table, module
+  overview, quality bar (mypy --strict, 90%+ coverage, tests on Python
+  3.10-3.13).
+- [GET-STARTED.md](GET-STARTED.md): The full walkthrough — configuration,
+  path resolution, filesystem operations, typed error handling, writing a
+  tool, integrations (Google Drive/Gmail, GitHub, Notion, Pandoc, LLM
+  providers), exposing tools over HTTP or MCP, and a troubleshooting
+  section for common exceptions.
+- [CHANGELOG.md](CHANGELOG.md): Version history, including the
+  quack_core -> zeo_core rename and what did/didn't change as part of it.
+- [CONTRIBUTING.md](CONTRIBUTING.md): Dev setup, the gate
+  (`make verify` / `make verify-full`), code style, canonical import
+  paths.
+
+## Examples (all runnable as-is)
+
+- [examples/minimal_tool.py](examples/minimal_tool.py): The smallest
+  possible tool — no mixins, no services, just `run()`.
+- [examples/toolkit_usage.py](examples/toolkit_usage.py): The full
+  picture — lifecycle hooks, an optional integration, graceful
+  degradation when a service isn't configured.
+- [examples/error_handling.py](examples/error_handling.py): The
+  `ZeoError` family and `@wrap_io_errors`, for failures a tool didn't
+  expect (as opposed to `CapabilityResult.fail()`, for failures it did).
+- [examples/config_usage.py](examples/config_usage.py): `load_config()`'s
+  three real behaviors — default-locations lookup (never raises), an
+  explicit missing path (raises `ZeoConfigurationError` by design), and
+  an explicit real path (succeeds).
+- [examples/mcp_server_usage.py](examples/mcp_server_usage.py): Expose a
+  tool as an MCP server for Claude Code, Cursor, and other MCP-native
+  agents, with zero MCP-specific code in the tool itself.
+
+## Package surface (import paths)
+
+- `zeo_core` (top level): `BaseZeoTool`, `ToolContext`, `ZeoToolProtocol`,
+  `CapabilityResult`, and the three optional mixins
+  (`IntegrationEnabledMixin`, `LifecycleMixin`, `ToolEnvInitializerMixin`)
+  — the tool-authoring surface, re-exported for single-import
+  convenience. Everything else below is its own import; this top level
+  intentionally does not re-export config/core/integrations/modules.
+- `zeo_core.tools`: same tool-authoring surface as the top level (the
+  canonical, explicit path). Do not import from `zeo_core.tools.mixins.*`
+  submodules directly — use `zeo_core.tools` (or the top-level package).
+- `zeo_core.contracts`: `CapabilityResult`, `CapabilityError`, artifact
+  and manifest models (`ArtifactRef`, `RunManifest`, `StorageRef`, ...),
+  common enums/IDs. Machine-readable codes on `CapabilityResult` and
+  `CapabilityError` use the `ZEO_<AREA>_<DETAIL>` convention (`ZC_` and
+  legacy `QC_` are also accepted for backward compatibility).
+- `zeo_core.config`: `load_config()`, `ZeoConfig` and its component
+  models, YAML + environment-variable configuration loading.
+- `zeo_core.core`: `core.fs` (filesystem ops), `core.paths` (path
+  resolution), `core.errors` (the `ZeoError` typed exception hierarchy),
+  plus MIME detection, serialization, and logging helpers.
+- `zeo_core.integrations`: `google.drive` (`GoogleDriveService`),
+  `google.mail` (`GoogleMailService`) — both also re-exported one level
+  shallower at `zeo_core.integrations.google` — plus `github`, `notion`,
+  `pandoc`, and `llms` (OpenAI/Anthropic clients).
+- `zeo_core.adapters`: `adapters.http` (FastAPI REST adapter,
+  `zeocore[http]`) and `adapters.mcp` (MCP server adapter,
+  `zeocore[mcp]`), both reading from the same `OperationRegistry`.
+- `zeo_core.modules`: Plugin discovery and explicit-loading registry.
+- `zeo_core.prompt`: Prompt template selection and enhancement.
+
+## Conventions worth knowing before you guess
+
+- Tools report expected failure/skip conditions via
+  `CapabilityResult.ok()` / `.skip()` / `.fail()` / `.fail_from_exc()` —
+  not by raising. Raise only for genuinely exceptional cases, using the
+  `zeo_core.core.errors` `ZeoError` family.
+- `load_config()` with no argument never raises, even in a directory with
+  no config file anywhere — it falls back to built-in defaults. It only
+  raises `ZeoConfigurationError` when given an *explicit* path that
+  doesn't exist.
+- Optional integrations are pip extras (see README.md's extras table);
+  importing an integration's service class before installing its extra
+  fails at the point the extra's third-party package is actually used,
+  not always at import time — check the specific submodule.
+- Full type coverage: `mypy --strict` is clean across `src/` and `tests/`
+  (this is the gate, not aspirational) — trust the type signatures.
+
+## Machine-readable interfaces
+
+- `py.typed` is shipped (PEP 561) — mypy/pyright get real types with no
+  stub package needed.
+- `zeo_core.adapters.http`'s FastAPI app exposes an OpenAPI schema at the
+  usual FastAPI routes (`/openapi.json`) when that adapter is running;
+  there is no static, pre-generated OpenAPI/JSON-Schema artifact checked
+  into this repo as of this writing.
