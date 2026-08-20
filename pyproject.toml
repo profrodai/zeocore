@@ -108,6 +108,7 @@ drive = [
 pandoc = ["pypandoc", "beautifulsoup4"]
 llms = ["tiktoken", "openai", "anthropic"]
 github = ["requests"]
+ffmpeg = ["ffmpeg-zeo>=0.1.0"]
 all = [
     "google-api-python-client>=2.0.0",
     "google-auth-httplib2>=0.1.0",
@@ -119,6 +120,7 @@ all = [
     "openai",
     "anthropic",
     "requests",
+    "ffmpeg-zeo>=0.1.0",
 ]
 
 [project.urls]
@@ -162,6 +164,7 @@ github = "zeo_core.integrations.github:create_integration"
 "google.drive" = "zeo_core.integrations.google.drive:create_integration"
 pandoc = "zeo_core.integrations.pandoc:create_integration"
 llms = "zeo_core.integrations.llms:create_integration"
+ffmpeg = "zeo_core.integrations.ffmpeg:create_integration"
 
 
 [tool.isort]
