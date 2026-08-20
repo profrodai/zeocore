@@ -9,7 +9,7 @@ a CapabilityResult to enable machine branching and audit trails.
 """
 
 from datetime import datetime
-from typing import Any, Generic, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -35,13 +35,27 @@ class CapabilityResult(BaseModel, Generic[T]):
     Invariants:
         - If status == error, then error must be present AND machine_message
           must be present
-        - If status == error, then machine_message must start with QC_
+        - If status == error, then machine_message must start with a
+          recognized prefix (ZEO_ preferred; QC_/ZC_ accepted, see below)
         - If status == success, then error must be None AND machine_message
           should be None
         - If status == skipped, then error must be None AND machine_message
           must be present
-        - If status == skipped, then machine_message must start with QC_
-        - If machine_message is present, it must start with QC_
+        - If status == skipped, then machine_message must start with a
+          recognized prefix (ZEO_ preferred; QC_/ZC_ accepted, see below)
+        - If machine_message is present, it must start with a recognized
+          prefix (ZEO_ preferred; QC_/ZC_ accepted, see below)
+
+    Machine-message / error-code prefix:
+        New code should use ``ZEO_<AREA>_<DETAIL>`` (matches the package
+        name, zeo_core). ``QC_<AREA>_<DETAIL>`` is still accepted -- it is
+        the convention this package's capabilities used before the
+        pre-extraction rename from ``quack_core`` to ``zeo_core``, and it
+        remains valid on purpose (not a leftover bug) because orchestrators
+        already branch on `QC_*` codes emitted by existing tools; widening
+        the validator to also accept `ZEO_`/`ZC_` was chosen over a hard
+        rename so no existing call site or downstream consumer breaks.
+        ``ZC_`` is accepted as a short-form alias of ``ZEO_``.
 
     Usage Pattern:
         Tools should use the helper methods (.ok(), .skip(), .fail()) rather
@@ -56,7 +70,7 @@ class CapabilityResult(BaseModel, Generic[T]):
         >>> # Skip
         >>> result = CapabilityResult.skip(
         ...     reason="Video too short for processing",
-        ...     code="QC_VAL_TOO_SHORT"
+        ...     code="ZEO_VAL_TOO_SHORT"
         ... )
 
         >>> # Error
@@ -65,7 +79,7 @@ class CapabilityResult(BaseModel, Generic[T]):
         ... except Exception as e:
         ...     result = CapabilityResult.fail_from_exc(
         ...         msg="Failed to process video",
-        ...         code="QC_IO_ERROR",
+        ...         code="ZEO_IO_ERROR",
         ...         exc=e
         ...     )
     """
@@ -106,7 +120,8 @@ class CapabilityResult(BaseModel, Generic[T]):
     machine_message: str | None = Field(
         None,
         description=(
-            "Machine-readable code for orchestrator branching (must start with QC_)"
+            "Machine-readable code for orchestrator branching "
+            "(must start with ZEO_, ZC_, or the legacy QC_)"
         ),
     )
 
@@ -124,14 +139,23 @@ class CapabilityResult(BaseModel, Generic[T]):
         description="Additional context (tool, version, config, etc.)",
     )
 
+    #: Recognized machine-message / error-code prefixes. ZEO_ is the
+    #: preferred, current convention (matches the zeo_core package name);
+    #: QC_ is accepted for backward compatibility with call sites and
+    #: orchestrators that predate the quack_core -> zeo_core rename; ZC_ is
+    #: accepted as ZEO_'s short-form alias. See CapabilityResult's class
+    #: docstring for the full rationale.
+    MACHINE_MESSAGE_PREFIXES: ClassVar[tuple[str, ...]] = ("ZEO_", "ZC_", "QC_")
+
     @field_validator("machine_message")
     @classmethod
     def validate_machine_message_format(cls, v: str | None) -> str | None:
-        """Ensure machine_message follows QC_* convention when present."""
-        if v is not None and not v.startswith("QC_"):
+        """Ensure machine_message follows a recognized *_ convention when present."""
+        if v is not None and not v.startswith(cls.MACHINE_MESSAGE_PREFIXES):
             raise ValueError(
-                f"machine_message must start with 'QC_', got: {v}. "
-                "Use format: QC_<AREA>_<DETAIL> (e.g., QC_VAL_TOO_SHORT)"
+                f"machine_message must start with one of "
+                f"{cls.MACHINE_MESSAGE_PREFIXES}, got: {v}. "
+                "Use format: ZEO_<AREA>_<DETAIL> (e.g., ZEO_VAL_TOO_SHORT)"
             )
         return v
 
@@ -234,7 +258,8 @@ class CapabilityResult(BaseModel, Generic[T]):
 
         Args:
             reason: Human-readable explanation for the skip
-            code: Machine-readable skip code (must start with QC_)
+            code: Machine-readable skip code (must start with ZEO_, ZC_, or
+                the legacy QC_ -- see MACHINE_MESSAGE_PREFIXES)
             metadata: Optional metadata dict
             run_id: Optional run_id to reuse (should match manifest run_id)
 
@@ -244,7 +269,7 @@ class CapabilityResult(BaseModel, Generic[T]):
         Example:
             >>> result = CapabilityResult.skip(
             ...     reason="Video duration under 10 seconds",
-            ...     code="QC_VAL_TOO_SHORT"
+            ...     code="ZEO_VAL_TOO_SHORT"
             ... )
         """
         kwargs = {
@@ -272,7 +297,8 @@ class CapabilityResult(BaseModel, Generic[T]):
 
         Args:
             msg: Human-readable error message
-            code: Machine-readable error code (must start with QC_)
+            code: Machine-readable error code (must start with ZEO_, ZC_, or
+                the legacy QC_ -- see MACHINE_MESSAGE_PREFIXES)
             exception: Optional exception that caused the error
             metadata: Optional metadata dict
             logs: Optional log events from execution
@@ -284,7 +310,7 @@ class CapabilityResult(BaseModel, Generic[T]):
         Example:
             >>> result = CapabilityResult.fail(
             ...     msg="Failed to read video file",
-            ...     code="QC_IO_NOT_FOUND",
+            ...     code="ZEO_IO_NOT_FOUND",
             ...     exception=FileNotFoundError("/data/video.mp4")
             ... )
         """
@@ -321,7 +347,8 @@ class CapabilityResult(BaseModel, Generic[T]):
 
         Args:
             msg: Human-readable error message
-            code: Machine-readable error code (must start with QC_)
+            code: Machine-readable error code (must start with ZEO_, ZC_, or
+                the legacy QC_ -- see MACHINE_MESSAGE_PREFIXES)
             exc: Exception that caused the error
             metadata: Optional metadata dict
             run_id: Optional run_id to reuse (should match manifest run_id)
@@ -335,7 +362,7 @@ class CapabilityResult(BaseModel, Generic[T]):
             ... except IOError as e:
             ...     result = CapabilityResult.fail_from_exc(
             ...         msg="Video processing failed",
-            ...         code="QC_IO_ERROR",
+            ...         code="ZEO_IO_ERROR",
             ...         exc=e
             ...     )
         """

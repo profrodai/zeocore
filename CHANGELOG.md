@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- `CapabilityResult.machine_message` and `CapabilityError.code` now accept
+  `ZEO_<AREA>_<DETAIL>` (new preferred prefix, matching the `zeo_core`
+  package name) and `ZC_<AREA>_<DETAIL>` (short-form alias), in addition to
+  the legacy `QC_<AREA>_<DETAIL>` inherited from the pre-extraction
+  `quack_core` package. Previously only `QC_` was accepted, which
+  contradicted this file's own 0.1.0 "full mechanical rename" claim below
+  (see that entry's amendment) and had no documented reason for surviving
+  the rename. This is a backward-compatible widening, not a breaking
+  change: all 0.1.0 code using `QC_*` codes continues to validate
+  unchanged. All of this package's own internal call sites
+  (`tools/mixins/env_init.py`, `contracts/capabilities/demo/_impl.py`,
+  `examples/toolkit_usage.py`, `contracts/EXAMPLES.md`) were migrated to
+  `ZEO_*` to lead by example.
+
 ## [0.1.0] - 2026-08-17
 
 Initial extraction from the quackverse monorepo as a standalone,
@@ -38,7 +56,12 @@ MIT-licensed package.
 - Full mechanical rename from the monorepo's `quack_core` package to
   `zeo_core` (PyPI distribution name: `zeocore`), including class names
   (`Quack*` -> `Zeo*`), environment variable prefixes, and config file
-  keys.
+  keys. **Amendment (see Unreleased):** this rename did not originally
+  extend to the `QC_*` machine-message/error-code prefix enforced by
+  `CapabilityResult`/`CapabilityError`'s validators, which kept rejecting
+  anything but `QC_` -- contradicting "full" above. Fixed by widening
+  those validators to also accept `ZEO_`/`ZC_`, rather than retroactively
+  editing this historical entry.
 - Fixed a broken version-sourcing path and a production test-detection bug
   found during the extraction (see git history for detail).
 

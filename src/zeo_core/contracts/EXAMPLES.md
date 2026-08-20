@@ -36,12 +36,12 @@ print(result.data)  # {"transcription": "Hello, world!"}
 # Video too short for processing
 result = CapabilityResult.skip(
     reason="Video duration (3.5s) is below minimum threshold (10s)",
-    code="QC_VAL_TOO_SHORT",
+    code="ZEO_VAL_TOO_SHORT",
     metadata={"duration_sec": 3.5, "threshold_sec": 10},
 )
 
 print(result.status)  # CapabilityStatus.skipped
-print(result.machine_message)  # QC_VAL_TOO_SHORT
+print(result.machine_message)  # ZEO_VAL_TOO_SHORT
 ```
 
 ### Error Result
@@ -53,13 +53,13 @@ try:
 except FileNotFoundError as e:
     result = CapabilityResult.fail_from_exc(
         msg="Video file not found",
-        code="QC_IO_NOT_FOUND",
+        code="ZEO_IO_NOT_FOUND",
         exc=e,
         metadata={"path": "/invalid/path.mp4"},
     )
 
 print(result.status)  # CapabilityStatus.error
-print(result.error.code)  # QC_IO_NOT_FOUND
+print(result.error.code)  # ZEO_IO_NOT_FOUND
 ```
 
 ---
@@ -238,7 +238,7 @@ def slice_video_tool(
         # Validate input
         if not request.clips:
             return CapabilityResult.skip(
-                reason="No clips specified", code="QC_VAL_NO_CLIPS"
+                reason="No clips specified", code="ZEO_VAL_NO_CLIPS"
             )
 
         # Process clips (implementation in Ring B, not shown)
@@ -294,7 +294,7 @@ def slice_video_tool(
 
     except Exception as e:
         return CapabilityResult.fail_from_exc(
-            msg="Video slicing failed", code="QC_SLICE_ERROR", exc=e
+            msg="Video slicing failed", code="ZEO_SLICE_ERROR", exc=e
         )
 ```
 
@@ -373,27 +373,35 @@ class VideoProcessingWorkflow:
 
 ### Error Codes Convention
 
+`ZEO_<AREA>_<DETAIL>` is the current, preferred convention (matches the
+`zeo_core` package name). `CapabilityResult`/`CapabilityError`'s validators
+also accept `ZC_<AREA>_<DETAIL>` (short-form alias) and the legacy
+`QC_<AREA>_<DETAIL>` (predates this package's rename from `quack_core`;
+kept valid so existing orchestrator branching logic and any external
+consumer of `QC_*` codes keep working -- this is a widened validator, not
+a strict rename).
+
 ```python
 # Configuration errors
-QC_CFG_ERROR  # Generic config error
-QC_CFG_MISSING  # Missing required config
-QC_CFG_INVALID  # Invalid config value
+ZEO_CFG_ERROR  # Generic config error
+ZEO_CFG_MISSING  # Missing required config
+ZEO_CFG_INVALID  # Invalid config value
 
 # I/O errors
-QC_IO_NOT_FOUND  # File not found
-QC_IO_READ_ERROR  # Failed to read file
-QC_IO_WRITE_ERROR  # Failed to write file
-QC_IO_DECODE_ERROR  # Failed to decode media
+ZEO_IO_NOT_FOUND  # File not found
+ZEO_IO_READ_ERROR  # Failed to read file
+ZEO_IO_WRITE_ERROR  # Failed to write file
+ZEO_IO_DECODE_ERROR  # Failed to decode media
 
 # Network errors
-QC_NET_TIMEOUT  # Network timeout
-QC_NET_UNAVAILABLE  # Service unavailable
+ZEO_NET_TIMEOUT  # Network timeout
+ZEO_NET_UNAVAILABLE  # Service unavailable
 
 # Validation errors
-QC_VAL_INVALID  # Generic validation error
-QC_VAL_TOO_SHORT  # Input too short
-QC_VAL_TOO_LONG  # Input too long
-QC_VAL_UNSUPPORTED  # Unsupported format
+ZEO_VAL_INVALID  # Generic validation error
+ZEO_VAL_TOO_SHORT  # Input too short
+ZEO_VAL_TOO_LONG  # Input too long
+ZEO_VAL_UNSUPPORTED  # Unsupported format
 ```
 
 ### Artifact Roles Convention

@@ -1,6 +1,15 @@
 """
 Environment validation mixin for tools.
 
+⚠️ DO NOT import ToolEnvInitializerMixin from this module ⚠️
+This is an internal implementation file. The canonical import path is:
+    ✅ from zeo_core.tools import ToolEnvInitializerMixin
+    ❌ from zeo_core.tools.mixins.env_init import ToolEnvInitializerMixin
+See zeo_core/tools/mixins/__init__.py's module docstring for why (opt in
+to ZEO_WARN_NONCANONICAL_IMPORTS=1 to get a runtime FutureWarning on the
+non-canonical path too, though it cannot fire in every case -- this
+docstring is the reliable signal).
+
 DOCTRINE STRICT MODE:
 This mixin VALIDATES existence only. It does NOT create directories.
 Runner creates all directories. Tools fail if they don't exist.
@@ -121,14 +130,14 @@ class ToolEnvInitializerMixin:
         if not success:
             return CapabilityResult.fail_from_exc(
                 msg=f"Failed to check {name} directory: {error}",
-                code=f"QC_ENV_{name.upper()}_DIR_CHECK_ERROR",
+                code=f"ZEO_ENV_{name.upper()}_DIR_CHECK_ERROR",
                 exc=Exception(error or "Unknown error"),
             )
 
         if info is None:
             return CapabilityResult.fail_from_exc(
                 msg=f"FS returned no info for {name} directory: {path}",
-                code=f"QC_ENV_{name.upper()}_DIR_NO_INFO",
+                code=f"ZEO_ENV_{name.upper()}_DIR_NO_INFO",
                 exc=Exception("FileInfo data is None"),
             )
 
@@ -138,7 +147,7 @@ class ToolEnvInitializerMixin:
                 msg=f"FS contract breach: FileInfo missing 'exists' attribute. "
                 f"Cannot validate {name} directory. "
                 f"FileInfo contract requires .exists: bool attribute.",
-                code="QC_ENV_FS_CONTRACT_INCOMPLETE",
+                code="ZEO_ENV_FS_CONTRACT_INCOMPLETE",
                 exc=Exception("FileInfo.exists not available - FS contract breach"),
             )
 
@@ -148,7 +157,7 @@ class ToolEnvInitializerMixin:
                     f"{name.capitalize()} directory does not exist: {path}. "
                     f"Runner must create it."
                 ),
-                code=f"QC_ENV_{name.upper()}_DIR_MISSING",
+                code=f"ZEO_ENV_{name.upper()}_DIR_MISSING",
                 exc=Exception(f"{name.capitalize()} directory missing"),
             )
 
@@ -158,14 +167,14 @@ class ToolEnvInitializerMixin:
                 msg=f"FS contract breach: FileInfo missing 'is_dir' attribute. "
                 f"Cannot validate {name} directory type. "
                 f"FileInfo contract requires .is_dir: bool attribute.",
-                code="QC_ENV_FS_CONTRACT_INCOMPLETE",
+                code="ZEO_ENV_FS_CONTRACT_INCOMPLETE",
                 exc=Exception("FileInfo.is_dir not available - FS contract breach"),
             )
 
         if not info.is_dir:
             return CapabilityResult.fail_from_exc(
                 msg=f"{name.capitalize()} path exists but is not a directory: {path}",
-                code=f"QC_ENV_{name.upper()}_DIR_NOT_DIR",
+                code=f"ZEO_ENV_{name.upper()}_DIR_NOT_DIR",
                 exc=Exception(f"{name.capitalize()} path is not a directory"),
             )
 
@@ -207,5 +216,5 @@ class ToolEnvInitializerMixin:
 
         except Exception as e:
             return CapabilityResult.fail_from_exc(
-                msg="Environment validation failed", code="QC_ENV_INIT_ERROR", exc=e
+                msg="Environment validation failed", code="ZEO_ENV_INIT_ERROR", exc=e
             )

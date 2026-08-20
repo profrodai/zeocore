@@ -34,8 +34,8 @@ class TestCapabilityError:
         assert error.message == "File not found"
         assert error.details["path"] == "/data/missing.mp4"
 
-    def test_error_code_must_start_with_qc(self) -> None:
-        """Test that error codes must follow QC_* convention."""
+    def test_error_code_must_start_with_recognized_prefix(self) -> None:
+        """Test that error codes must follow a recognized ZEO_/ZC_/QC_ convention."""
         with pytest.raises(ValidationError) as exc_info:
             CapabilityError(code="INVALID_CODE", message="Test error")
 
@@ -44,6 +44,20 @@ class TestCapabilityError:
         assert len(errors) == 1
         assert errors[0]["loc"] == ("code",)
         assert errors[0]["type"] == "value_error"
+
+    @pytest.mark.parametrize(
+        "code", ["ZEO_IO_NOT_FOUND", "ZC_IO_NOT_FOUND", "QC_IO_NOT_FOUND"]
+    )
+    def test_error_code_accepts_all_recognized_prefixes(self, code: str) -> None:
+        """ZEO_ (preferred), ZC_ (alias), and legacy QC_ are all accepted.
+
+        QC_ predates this package's rename from quack_core to zeo_core and
+        remains valid on purpose -- widening the validator (rather than a
+        hard rename) keeps existing call sites and orchestrator branching
+        logic working.
+        """
+        error = CapabilityError(code=code, message="Test error")
+        assert error.code == code
 
     def test_error_serialization(self) -> None:
         """Test error serialization to JSON."""
@@ -137,6 +151,31 @@ class TestCapabilityResult:
         assert result.error is not None
         assert result.error.details["type"] == "ValueError"
         assert result.error.details["str"] == "Invalid input"
+
+    @pytest.mark.parametrize(
+        "code", ["ZEO_VAL_TOO_SHORT", "ZC_VAL_TOO_SHORT", "QC_VAL_TOO_SHORT"]
+    )
+    def test_skip_accepts_all_recognized_prefixes(self, code: str) -> None:
+        """skip()'s machine_message accepts ZEO_ (preferred), ZC_, and QC_."""
+        result: CapabilityResult[Any] = CapabilityResult.skip(
+            reason="Video too short", code=code
+        )
+        assert result.machine_message == code
+
+    @pytest.mark.parametrize("code", ["ZEO_IO_ERROR", "ZC_IO_ERROR", "QC_IO_ERROR"])
+    def test_fail_accepts_all_recognized_prefixes(self, code: str) -> None:
+        """fail()'s machine_message/error.code accept ZEO_ (preferred), ZC_, and QC_."""
+        result: CapabilityResult[Any] = CapabilityResult.fail(
+            msg="Processing failed", code=code
+        )
+        assert result.machine_message == code
+        assert result.error is not None
+        assert result.error.code == code
+
+    def test_machine_message_rejects_unrecognized_prefix(self) -> None:
+        """A code with no recognized prefix still hard-fails, unchanged behavior."""
+        with pytest.raises(ValidationError):
+            CapabilityResult.fail(msg="Processing failed", code="BOGUS_CODE")
 
     def test_error_status_requires_error_field(self) -> None:
         """Test that error status requires error field."""

@@ -69,5 +69,5 @@ class TestDemoCapabilities:
         result = validate_video_ref(request)
 
         assert result.status == CapabilityStatus.skipped
-        assert result.machine_message == "QC_VAL_UNSUPPORTED_PROVIDER"
+        assert result.machine_message == "ZEO_VAL_UNSUPPORTED_PROVIDER"
         assert "not from a supported provider" in result.human_message

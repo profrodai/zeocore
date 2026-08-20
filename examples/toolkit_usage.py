@@ -138,7 +138,7 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseZeoTool):
         except OSError as e:
             return CapabilityResult.fail_from_exc(
                 msg=f"Could not read input file: {request.input_path}",
-                code="QC_IO_NOT_FOUND",
+                code="ZEO_IO_NOT_FOUND",
                 exc=e,
             )
 
@@ -147,7 +147,7 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseZeoTool):
         except json.JSONDecodeError as e:
             return CapabilityResult.fail_from_exc(
                 msg=f"Input file is not valid JSON: {request.input_path}",
-                code="QC_VAL_INVALID_JSON",
+                code="ZEO_VAL_INVALID_JSON",
                 exc=e,
             )
 

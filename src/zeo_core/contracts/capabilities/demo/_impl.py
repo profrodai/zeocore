@@ -79,7 +79,7 @@ def validate_video_ref(req: VideoRefRequest) -> CapabilityResult[bool]:
         >>> result.status
         <CapabilityStatus.skipped: 'skipped'>
         >>> result.machine_message
-        'QC_VAL_UNSUPPORTED_PROVIDER'
+        'ZEO_VAL_UNSUPPORTED_PROVIDER'
     """
     supported_providers = ["youtube.com", "drive.google.com", "vimeo.com"]
 
@@ -90,7 +90,7 @@ def validate_video_ref(req: VideoRefRequest) -> CapabilityResult[bool]:
                 "URL is not from a supported provider. Supported: "
                 f"{', '.join(supported_providers)}"
             ),
-            code="QC_VAL_UNSUPPORTED_PROVIDER",
+            code="ZEO_VAL_UNSUPPORTED_PROVIDER",
         )
 
     return CapabilityResult.ok(
