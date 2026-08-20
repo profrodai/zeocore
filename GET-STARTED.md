@@ -45,6 +45,13 @@ pip install "zeocore[dev]"
 
 # For all Google-related functionality
 pip install "zeocore[google]"
+
+# For the HTTP adapter (expose tools over REST)
+pip install "zeocore[http]"
+
+# For the MCP adapter (expose tools to Claude Code, Cursor, and other
+# MCP-native coding agents)
+pip install "zeocore[mcp]"
 ```
 
 ---
@@ -81,6 +88,14 @@ optional mixins (`IntegrationEnabledMixin`, `LifecycleMixin`,
 ### `zeo_core.contracts`
 The data contracts tools speak: `CapabilityResult`, artifact/manifest
 models, and common enums/IDs used across the framework.
+
+### `zeo_core.adapters`
+Optional network-facing adapters, both reading from the same
+`OperationRegistry` (`zeo_core.core.registry`): `adapters.http` (FastAPI,
+`zeocore[http]`) exposes tools over REST; `adapters.mcp` (`zeocore[mcp]`)
+exposes them as MCP tools for Claude Code, Cursor, and other MCP-native
+agents. See "Exposing Tools as an MCP Server" below and
+[`examples/mcp_server_usage.py`](examples/mcp_server_usage.py).
 
 ---
 
@@ -222,6 +237,57 @@ if emails_result.success:
         if download_result.success:
             print(f"Email saved to: {download_result.content}")
 ```
+
+### Exposing Tools as an MCP Server
+
+Every consuming app in this org is built by an MCP-native coding agent
+(Claude Code, Cursor, etc.). `zeo_core.adapters.mcp` lets those agents call
+your tools directly, with **zero MCP-specific code required in the tool
+itself**: any ordinary `BaseZeoTool` becomes an MCP tool by registering it,
+because `register_tool()` mechanically derives the MCP tool's schema from
+the tool's own `run(request: <PydanticModel>, ctx)` type hint.
+
+Requires the `mcp` extra (`pip install "zeocore[mcp]"`).
+
+```python
+from zeo_core.adapters.mcp import create_server, register_tool
+from zeo_core.contracts import CapabilityResult
+from zeo_core.tools import BaseZeoTool, ToolContext
+from pydantic import BaseModel
+
+
+class WordCountRequest(BaseModel):
+    text: str
+
+
+class WordCountTool(BaseZeoTool):
+    name = "word_count"
+
+    def run(self, request: WordCountRequest, ctx: ToolContext) -> CapabilityResult:
+        return CapabilityResult.ok(data={"word_count": len(request.text.split())})
+
+
+# Register your tool -- no MCP code in the tool class above.
+register_tool(WordCountTool())
+
+# Build the server and run it over stdio (the transport Claude Code,
+# Cursor, and most MCP-native agents speak by default).
+server = create_server(name="my-zeocore-app")
+```
+
+Save the snippet above (minus the last comment) to a file, e.g.
+`mcp_entrypoint.py`, and add `server.run()` at the bottom so running the
+file directly starts the server. Then point your agent's MCP client config
+at it (Claude Code: `claude mcp add my-zeocore-app -- python
+mcp_entrypoint.py`). See
+[`examples/mcp_server_usage.py`](examples/mcp_server_usage.py) for a fully
+runnable version, including calling the resulting tool through the real
+`mcp` SDK client.
+
+`create_server()` reads from the SAME `OperationRegistry`
+(`zeo_core.core.registry`) that `zeo_core.adapters.http` reads from --
+registering a tool once with `register_tool()` makes it reachable from
+both the HTTP and MCP adapters, not just one.
 
 ### Error Handling
 

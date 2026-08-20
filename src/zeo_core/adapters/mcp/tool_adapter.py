@@ -206,7 +206,16 @@ def register_tool(
             "and no explicit name= was given to register_tool()."
         )
 
-    doc = inspect.getdoc(tool.__class__)
+    # tool.__class__.__dict__ (NOT inspect.getdoc, which walks the MRO) --
+    # a concrete tool with no docstring of its own must not silently
+    # inherit BaseZeoTool's own class docstring as its description; an
+    # honest empty string is correct there, not framework boilerplate
+    # mislabeling the tool to whatever agent reads it over MCP.
+    # inspect.cleandoc() still normalizes indentation/leading blank lines
+    # (raw __doc__ typically starts "\n    text..." for a multi-line
+    # docstring) -- only the MRO walk-up is what's being avoided here.
+    raw_doc = tool.__class__.__dict__.get("__doc__")
+    doc = inspect.cleandoc(raw_doc) if raw_doc else None
     resolved_description = description or (doc.splitlines()[0] if doc else "")
 
     def _invoke(request: BaseModel) -> dict[str, Any]:

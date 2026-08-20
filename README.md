@@ -87,7 +87,8 @@ Optional integrations ship as extras, so you only install what you use:
 | `zeocore[pandoc]` | Document conversion via Pandoc |
 | `zeocore[llms]` | OpenAI / Anthropic / tiktoken clients |
 | `zeocore[http]` | FastAPI-based HTTP adapter for exposing tools over REST |
-| `zeocore[all]` | Every integration above, no `http`/`dev`/`lint` |
+| `zeocore[mcp]` | MCP adapter for exposing tools to Claude Code, Cursor, and other MCP-native agents |
+| `zeocore[all]` | Every integration above, no `http`/`mcp`/`dev`/`lint` |
 
 `dev` and `lint` extras exist too, for contributors — see
 [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -102,6 +103,9 @@ Optional integrations ship as extras, so you only install what you use:
 - [`examples/error_handling.py`](examples/error_handling.py) — the
   `ZeoError` family, and how a tool reports a failure it expects versus one
   it doesn't.
+- [`examples/mcp_server_usage.py`](examples/mcp_server_usage.py) — expose a
+  tool as an MCP server (`zeocore[mcp]`) for Claude Code, Cursor, and other
+  MCP-native agents, with zero MCP-specific code in the tool itself.
 
 Every example is runnable as-is: `python examples/<name>.py`. None of them
 are illustrative fragments — each one actually executes and prints real
@@ -119,7 +123,7 @@ already stale.
 | `zeo_core.integrations` | Adapters for GitHub, Google Drive/Mail, LLM providers, Notion, Pandoc, and a database layer. |
 | `zeo_core.modules` | Plugin discovery and explicit-loading registry. |
 | `zeo_core.prompt` | Prompt template selection and enhancement utilities. |
-| `zeo_core.adapters` | An optional HTTP adapter (FastAPI-based) for exposing tools over a REST API. |
+| `zeo_core.adapters` | Optional adapters for exposing tools over a network: HTTP (FastAPI-based REST) and MCP (Model Context Protocol, for Claude Code/Cursor/other MCP-native agents). |
 
 See [GET-STARTED.md](GET-STARTED.md) for a fuller walkthrough of each area,
 including the configuration file format and error-handling patterns.

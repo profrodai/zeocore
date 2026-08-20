@@ -121,6 +121,28 @@ class TestRegisterTool:
         op = registry.get_or_error("word_count_test")
         assert op.description == ("A real, minimal BaseZeoTool -- the same shape as")
 
+    def test_description_is_honestly_empty_when_tool_has_no_own_docstring(
+        self, registry: OperationRegistry
+    ) -> None:
+        """
+        A tool with no docstring of its own must get an empty description,
+        NOT silently inherit BaseZeoTool's own class docstring via MRO
+        walk-up -- that would mislabel the tool with unrelated framework
+        boilerplate to whatever agent reads it over MCP.
+        """
+
+        class UndocumentedTool(BaseZeoTool):
+            name = "undocumented_tool"
+
+            def run(
+                self, request: WordCountRequest, ctx: ToolContext
+            ) -> CapabilityResult[None]:
+                return CapabilityResult.ok(data=None)
+
+        register_tool(UndocumentedTool(), registry=registry)
+        op = registry.get_or_error("undocumented_tool")
+        assert op.description == ""
+
     def test_explicit_name_and_description_override_defaults(
         self, registry: OperationRegistry
     ) -> None:
