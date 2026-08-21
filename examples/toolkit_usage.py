@@ -1,10 +1,14 @@
+# === QV-LLM:BEGIN ===
+# path: examples/toolkit_usage.py
+# === QV-LLM:END ===
+
 """
-Example usage of the zeo_core.tools capability-authoring framework
+Example usage of the quack_core.tools capability-authoring framework
 (Ring B, Doctrine v3).
 
 This example demonstrates how to build a custom, doctrine-compliant tool:
 
-1. A tool subclassing BaseZeoTool that implements run(request, ctx).
+1. A tool subclassing BaseQuackTool that implements run(request, ctx).
 2. JSON transform + statistics business logic (process_content /
    _calculate_statistics -- plain Python, no framework coupling).
 3. Optional Google Drive integration via IntegrationEnabledMixin, reading
@@ -15,14 +19,16 @@ This example demonstrates how to build a custom, doctrine-compliant tool:
    do: build a ToolContext, construct a request, call tool.run(), and
    persist the CapabilityResult's data.
 
-NOTE ON TOOL VS. RUNNER RESPONSIBILITIES:
-Doctrine v3 has no OutputFormatMixin (see
-zeo_core.tools.mixins.output_handler's own module docstring) -- output
-persistence is the exclusive responsibility of the runner (Ring C), not the
-tool. This example's tool therefore never picks an output format or writes
-files itself; instead run() returns structured data inside CapabilityResult,
-and main() (playing the runner's role) is the one that decides to serialize
-it to disk.
+NOTE ON WHAT CHANGED FROM THE OLD EXAMPLE:
+Doctrine v3 removed OutputFormatMixin entirely (see
+quack_core.tools.mixins.output_handler's own module docstring) -- output
+persistence is now the exclusive responsibility of the runner (Ring C), not
+the tool. This example therefore no longer has the tool itself pick an
+output format or write files; instead run() returns structured data inside
+CapabilityResult, and main() (playing the runner's role) is the one that
+decides to serialize it to disk. This is a narrower teaching surface than
+the old example's YAMLOutputWriter, by design -- Ring B tools do not own
+output format under the current architecture.
 
 Run this file directly to see it work end to end against a small, real
 JSON fixture:
@@ -38,13 +44,12 @@ from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel
-
-from zeo_core.config.tooling.logger import get_logger
-from zeo_core.contracts import CapabilityResult
-from zeo_core.core.fs import get_service as get_fs_service
-from zeo_core.integrations.google.drive import GoogleDriveService
-from zeo_core.tools import (
-    BaseZeoTool,
+from quack_core.config.tooling.logger import get_logger
+from quack_core.contracts import CapabilityResult
+from quack_core.core.fs import get_service as get_fs_service
+from quack_core.integrations.google.drive import GoogleDriveService
+from quack_core.tools import (
+    BaseQuackTool,
     IntegrationEnabledMixin,
     LifecycleMixin,
     ToolContext,
@@ -77,7 +82,7 @@ class ExampleToolResponse(BaseModel):
     uploaded_file_id: str | None = None
 
 
-class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseZeoTool):
+class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseQuackTool):
     """
     Example doctrine-compliant tool.
 
@@ -90,7 +95,7 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseZeoTool):
        ctx.services and the request asks for it.
 
     Demonstrates IntegrationEnabledMixin (service lookup from ctx.services)
-    and LifecycleMixin (pre_run/post_run hooks) alongside BaseZeoTool's
+    and LifecycleMixin (pre_run/post_run hooks) alongside BaseQuackTool's
     required run(request, ctx) contract.
     """
 
@@ -138,7 +143,7 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseZeoTool):
         except OSError as e:
             return CapabilityResult.fail_from_exc(
                 msg=f"Could not read input file: {request.input_path}",
-                code="ZEO_IO_NOT_FOUND",
+                code="QC_IO_NOT_FOUND",
                 exc=e,
             )
 
@@ -147,7 +152,7 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseZeoTool):
         except json.JSONDecodeError as e:
             return CapabilityResult.fail_from_exc(
                 msg=f"Input file is not valid JSON: {request.input_path}",
-                code="ZEO_VAL_INVALID_JSON",
+                code="QC_VAL_INVALID_JSON",
                 exc=e,
             )
 
@@ -292,7 +297,7 @@ def main() -> None:
     post_run), and persists the result -- none of which the tool itself is
     responsible for under Doctrine v3.
     """
-    with tempfile.TemporaryDirectory(prefix="zeo_toolkit_usage_") as tmp:
+    with tempfile.TemporaryDirectory(prefix="quack_toolkit_usage_") as tmp:
         tmp_dir = Path(tmp)
         work_dir = tmp_dir / "work"
         output_dir = tmp_dir / "output"
@@ -304,7 +309,7 @@ def main() -> None:
         input_path.write_text(
             json.dumps(
                 {
-                    "project": "zeocore",
+                    "project": "quackverse",
                     "version": 3,
                     "tags": ["doctrine", "example"],
                     "nested": {"enabled": True},
