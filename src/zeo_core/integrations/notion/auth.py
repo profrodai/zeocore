@@ -219,5 +219,9 @@ class NotionAuthProvider(BaseAuthProvider):
         if self._user_info:
             credentials["user_info"] = self._user_info
 
-        result = fs.write_json(self.credentials_file, credentials, atomic=True)
+        # 0600: this file holds a live bearer token (RULING-356 s4.4 item 4 /
+        # config-secrets-hardening charter item 3).
+        result = fs.write_json(
+            self.credentials_file, credentials, atomic=True, mode=0o600
+        )
         return result.success

@@ -285,7 +285,9 @@ class GoogleAuthProvider(BaseAuthProvider):
 
         try:
             data = serialize_credentials(credentials)
-            result = standalone.write_json(self.credentials_file, data)
+            # 0600: this file holds a live OAuth credential (RULING-356 s4.4
+            # item 4 / config-secrets-hardening charter item 3).
+            result = standalone.write_json(self.credentials_file, data, mode=0o600)
             if not result.success:
                 self.logger.error(f"Failed to write credentials: {result.error}")
                 return False

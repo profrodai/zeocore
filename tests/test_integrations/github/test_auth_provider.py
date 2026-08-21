@@ -64,7 +64,10 @@ Boundary mocked in every test below: the GitHub REST API HTTP call
 """
 
 import json
+import os
+import platform
 import shutil
+import stat
 import tempfile
 from collections.abc import Generator
 from pathlib import Path
@@ -454,6 +457,26 @@ class TestSaveCredentials:
         assert github_creds_relpath.exists()
         saved = json.loads(github_creds_relpath.read_text())
         assert saved["token"] == "save-me"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+
+    @pytest.mark.skipif(platform.system() == "Windows", reason="POSIX file modes only")
+    def test_save_credentials_writes_file_at_mode_0600(
+        self, github_creds_relpath: Path
+    ) -> None:
+        """config-secrets-hardening charter item 3 / RULING-356 s4.4 item 4:
+        github/auth.py:240 must pass mode=0600 through to the fs write path
+        so a live GitHub token never lands world- or group-readable."""
+        provider = GitHubAuthProvider(
+            credentials_file=str(github_creds_relpath), http_client=FakeHTTPClient()
+        )
+        provider.token = "save-me-mode"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+
+        old_umask = os.umask(0o022)
+        try:
+            assert provider.save_credentials() is True
+        finally:
+            os.umask(old_umask)
+
+        assert stat.S_IMODE(github_creds_relpath.stat().st_mode) == 0o600
 
 
 class TestLoadCredentialsPrivate:

@@ -682,6 +682,8 @@ if batch_result.success:
 ### Creating Custom Configuration
 
 ```python
+import os
+
 from pydantic import BaseModel, Field
 from zeo_core.config.models import ZeoConfig
 
@@ -691,9 +693,19 @@ class MyAppConfig(BaseModel):
     endpoint: str = Field("https://api.example.com", description="API endpoint")
     timeout: int = Field(30, description="Request timeout in seconds")
 
-# Add to ZeoConfig
+# Secrets are never constructed inline and never dumped to YAML/JSON --
+# read them from the environment (see .env.example / "Environment
+# Variables" below). Keep the MyAppConfig instance itself out of any
+# model_dump() that gets persisted to disk.
+my_app_config = MyAppConfig(api_key=os.environ["MY_APP_API_KEY"])
+
+# Add ONLY non-secret settings to ZeoConfig.custom -- ZeoConfig gets
+# committed as YAML, so a secret placed here is written to a tracked file.
 config = ZeoConfig()
-config.custom["my_app"] = MyAppConfig(api_key="your-api-key").model_dump()
+config.custom["my_app"] = {
+    "endpoint": my_app_config.endpoint,
+    "timeout": my_app_config.timeout,
+}
 
 # Save configuration
 from zeo_core.config.loader import merge_configs
@@ -741,10 +753,13 @@ plugins:
   paths:
     - "./modules"
 
-# Custom application-specific configuration
+# Custom application-specific configuration.
+# NOTE: no secrets here. This file is YAML and gets committed by default.
+# Put settings here; put secrets in `.env` (copy `.env.example`, which IS
+# gitignored) and read them from the environment at runtime -- see
+# "Secrets and .env" below.
 custom:
   my_app:
-    api_key: "your-api-key"
     endpoint: "https://api.example.com"
     timeout: 30
 ```
@@ -770,6 +785,23 @@ export ZEO_INTEGRATIONS__GOOGLE__CREDENTIALS_FILE=/etc/zeo/credentials.json
 
 `ZEO_ENV` is separate: it's read by `zeo_core.config.utils.get_env()` (not by
 `load_config()` itself) and defaults to `"development"`.
+
+### Secrets and `.env`
+
+**Secrets go in `.env`; settings go in YAML.** Copy the `.env.example` at the
+repo root to `.env` and fill in real values -- `.env` (and `.env.*`) is
+already gitignored, so a secret placed there is never committed, unlike a
+YAML config file. This is the documented split for the whole library:
+`NOTION_TOKEN`, `GITHUB_TOKEN`, `OPENAI_API_KEY`, and `ANTHROPIC_API_KEY` are
+all read directly from the process environment by their respective
+integrations, no `ZEO_` prefix needed.
+
+ZeoCore does **not** load `.env` files on import -- that stays your
+shell's/tooling's job (`uv run --env-file .env ...`, a `python-dotenv` call
+in your own entrypoint, your process manager, or your deployment platform's
+env injection). Once a variable is in the process environment, ZeoCore's
+integrations and `ZEO_SECTION__KEY` overrides read it exactly the same way
+regardless of how it got there.
 
 ## Integration Authentication
 
@@ -823,7 +855,8 @@ my_project/
 
 ### Configuration Management
 
-- Keep sensitive data (API keys, secrets) out of your configuration files
+- Keep sensitive data (API keys, secrets) out of your configuration files --
+  put them in `.env` (see "Secrets and `.env`" above), never in a YAML file
 - Use environment variables for sensitive information and deployment-specific settings
 - Create environment-specific configuration files for different environments (development, staging, production)
 - Validate configuration at startup to catch issues early

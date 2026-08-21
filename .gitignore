@@ -43,5 +43,17 @@ htmlcov/
 *.pem
 *.key
 
+# ZeoCore default config-YAML locations (RULING-356 s4.2 / config-secrets-hardening
+# charter item 2). Defense in depth: config YAML is not the documented home for
+# secrets (that's .env), but a junior who ignores the docs and types a key here
+# must be stopped by a rule, not by their own attention. Covers the two default
+# locations that are actually repo-relative per config/loader.py:52-57
+# (DEFAULT_CONFIG_LOCATIONS); ~/.zeo/config.yaml and /etc/zeo/config.yaml are
+# outside any repo tree and cannot be covered by a repo-local .gitignore.
+# Narrowed to the exact default filename/path so a legitimately-tracked file
+# under examples/ (e.g. a sample config meant to be committed) is unaffected.
+/zeo_config.yaml
+/config/zeo_config.yaml
+
 # Jupyter
 .ipynb_checkpoints/

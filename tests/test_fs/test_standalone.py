@@ -15,6 +15,9 @@ mocking of the service itself: the singleton is real, the filesystem calls
 are real, only the *directory* is redirected.
 """
 
+import os
+import platform
+import stat
 from collections.abc import Generator
 from pathlib import Path
 
@@ -178,6 +181,88 @@ class TestYamlJsonRoundtrip:
         read_result = standalone.read_json(target)
         assert read_result.success is True
         assert read_result.data == data
+
+
+@pytest.mark.skipif(platform.system() == "Windows", reason="POSIX file modes only")
+class TestWriteJsonMode:
+    """Regression coverage for the `mode:` parameter added to the fs write
+    path (config-secrets-hardening charter item 3 / RULING-356 s4.4 item 4).
+
+    The real defect: `_atomic_write` preserved a pre-existing loose file mode
+    forever and never tightened it, and the non-atomic branch (`open()`) was
+    umask-governed and could land a new file at 0644. `mode=` closes both --
+    covered here via `standalone.write_json`, the entry point the three
+    credential writers (google/notion/github auth.py) actually call. All
+    writes land inside `tmp_path`, which `_isolated_singleton` above points
+    the fs service's `base_dir` at, so `allow_absolute=False` never fires.
+    """
+
+    def test_mode_none_preserves_default_atomic_new_file_mode(
+        self, tmp_path: Path
+    ) -> None:
+        """Regression guard: omitting `mode` must not change existing
+        behaviour -- a brand-new file written atomically is already born
+        0600 by construction (mkstemp), with no explicit mode passed."""
+        target = tmp_path / "no_mode.json"
+        result = standalone.write_json(target, {"token": "x"}, atomic=True)
+        assert result.success is True
+        assert stat.S_IMODE(target.stat().st_mode) == 0o600
+
+    def test_mode_0600_applied_on_atomic_write(self, tmp_path: Path) -> None:
+        target = tmp_path / "creds_atomic.json"
+        result = standalone.write_json(
+            target, {"token": "secret"}, atomic=True, mode=0o600
+        )
+        assert result.success is True
+        assert stat.S_IMODE(target.stat().st_mode) == 0o600
+
+    def test_mode_0600_applied_on_non_atomic_write(self, tmp_path: Path) -> None:
+        """Covers the branch the charter calls out explicitly: atomic=False
+        routes through plain open() and is umask-governed (probed at 0644
+        under umask 0o022 with no explicit mode) -- a fix covering only the
+        atomic branch ships with this hole open."""
+        old_umask = os.umask(0o022)
+        try:
+            target = tmp_path / "creds_nonatomic.json"
+            result = standalone.write_json(
+                target, {"token": "secret"}, atomic=False, mode=0o600
+            )
+        finally:
+            os.umask(old_umask)
+        assert result.success is True
+        assert stat.S_IMODE(target.stat().st_mode) == 0o600
+
+    def test_mode_0600_tightens_a_preexisting_loose_file(self, tmp_path: Path) -> None:
+        """The actual bug fixed: _atomic_write used to PRESERVE a pre-existing
+        loose mode forever on every overwrite. A credential file that somehow
+        landed at 0644 (e.g. written before this fix, or copied in) must be
+        tightened to 0600 the next time a credential writer saves to it --
+        not have its looseness re-blessed."""
+        target = tmp_path / "loose_creds.json"
+        target.write_text("{}")
+        os.chmod(target, 0o644)
+        assert stat.S_IMODE(target.stat().st_mode) == 0o644
+
+        result = standalone.write_json(
+            target, {"token": "refreshed"}, atomic=True, mode=0o600
+        )
+        assert result.success is True
+        assert stat.S_IMODE(target.stat().st_mode) == 0o600
+
+    def test_mode_none_still_preserves_a_preexisting_loose_file(
+        self, tmp_path: Path
+    ) -> None:
+        """Control for the above: general-purpose callers that never pass
+        `mode` (pandoc/jupytext/gmail output) must keep the OLD
+        preserve-current semantics unchanged -- this fix must not become a
+        blanket 0600 floor."""
+        target = tmp_path / "unrelated_output.json"
+        target.write_text("{}")
+        os.chmod(target, 0o644)
+
+        result = standalone.write_json(target, {"data": "not a secret"}, atomic=True)
+        assert result.success is True
+        assert stat.S_IMODE(target.stat().st_mode) == 0o644
 
 
 class TestPathHelpers:

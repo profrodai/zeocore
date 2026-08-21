@@ -30,8 +30,11 @@ def write_text(
     encoding: str = "utf-8",
     atomic: bool = True,
     calculate_checksum: bool = False,
+    mode: int | None = None,
 ) -> WriteResult:
-    return get_service().write_text(path, content, encoding, atomic, calculate_checksum)
+    return get_service().write_text(
+        path, content, encoding, atomic, calculate_checksum, mode=mode
+    )
 
 
 def read_bytes(path: FsPathLike) -> ReadResult[bytes]:
@@ -47,8 +50,11 @@ def write_bytes(
     content: bytes,
     atomic: bool = True,
     calculate_checksum: bool = False,
+    mode: int | None = None,
 ) -> WriteResult:
-    return get_service().write_bytes(path, content, atomic, calculate_checksum)
+    return get_service().write_bytes(
+        path, content, atomic, calculate_checksum, mode=mode
+    )
 
 
 # Legacy alias
@@ -109,9 +115,12 @@ def read_yaml(path: FsPathLike) -> DataResult[dict[str, Any]]:
 
 
 def write_yaml(
-    path: FsPathLike, data: dict[str, Any], atomic: bool = True
+    path: FsPathLike,
+    data: dict[str, Any],
+    atomic: bool = True,
+    mode: int | None = None,
 ) -> WriteResult:
-    return get_service().write_yaml(path, data, atomic)
+    return get_service().write_yaml(path, data, atomic, mode=mode)
 
 
 def read_json(path: FsPathLike) -> DataResult[dict[str, Any]]:
@@ -119,9 +128,13 @@ def read_json(path: FsPathLike) -> DataResult[dict[str, Any]]:
 
 
 def write_json(
-    path: FsPathLike, data: dict[str, Any], atomic: bool = True, indent: int = 2
+    path: FsPathLike,
+    data: dict[str, Any],
+    atomic: bool = True,
+    indent: int = 2,
+    mode: int | None = None,
 ) -> WriteResult:
-    return get_service().write_json(path, data, atomic, indent)
+    return get_service().write_json(path, data, atomic, indent, mode=mode)
 
 
 def split_path(path: FsPathLike) -> DataResult[list[str]]:
