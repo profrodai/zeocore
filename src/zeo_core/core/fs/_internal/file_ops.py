@@ -38,21 +38,42 @@ def _read_file_bytes(path: Path) -> bytes:
         return f.read()
 
 
-def _write_file_text(path: Path, content: str, encoding: str = "utf-8") -> Path:
+def _write_file_text(
+    path: Path, content: str, encoding: str = "utf-8", mode: int | None = None
+) -> Path:
     _ensure_directory(path.parent)
     with open(path, "w", encoding=encoding) as f:
         f.write(content)
+    if mode is not None:
+        os.chmod(path, mode)
     return path
 
 
-def _write_file_bytes(path: Path, content: bytes) -> Path:
+def _write_file_bytes(path: Path, content: bytes, mode: int | None = None) -> Path:
     _ensure_directory(path.parent)
     with open(path, "wb") as f:
         f.write(content)
+    if mode is not None:
+        os.chmod(path, mode)
     return path
 
 
-def _atomic_write(path: Path, content: bytes) -> Path:
+def _atomic_write(path: Path, content: bytes, mode: int | None = None) -> Path:
+    """Write `content` to `path` via a temp file + `os.replace`.
+
+    Mode semantics (RULING-356 s4.4 item 4 / config-secrets-hardening charter
+    item 3): `mode` defaults to `None`, which PRESERVES the pre-existing file's
+    mode when overwriting (or the temp file's own mkstemp-assigned 0600 mode
+    for a brand-new file) -- unchanged from the historical behaviour so
+    general-purpose infra (pandoc/jupytext/gmail output) keeps its semantics.
+    When a caller passes an explicit `mode` (the three credential writers pass
+    0600), that mode is applied to the temp file BEFORE `os.replace`, so it is
+    also the mode of the file that lands at `path` -- and it is applied
+    unconditionally, INCLUDING when overwriting a pre-existing file whose mode
+    was looser. That is the actual defect this parameter fixes: absent an
+    explicit `mode`, a pre-existing loose mode (e.g. 0644) was preserved
+    forever across every future write and never tightened.
+    """
     _ensure_directory(path.parent)
     temp_dir = path.parent
     temp_file = None
@@ -67,7 +88,12 @@ def _atomic_write(path: Path, content: bytes) -> Path:
         temp_file = Path(temp_path_str)
         with os.fdopen(fd, "wb") as f:
             f.write(content)
-        if existing_mode is not None:
+        if mode is not None:
+            try:
+                os.chmod(temp_file, mode)
+            except OSError:
+                pass
+        elif existing_mode is not None:
             try:
                 os.chmod(temp_file, existing_mode)
             except OSError:

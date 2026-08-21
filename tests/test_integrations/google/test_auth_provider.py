@@ -300,6 +300,12 @@ class TestGoogleAuthProvider:
 
             assert provider._save_credentials_to_file(creds)
             mock_write_json.assert_called_once()
+            # config-secrets-hardening charter item 3 / RULING-356 s4.4 item
+            # 4: google/auth.py:288 must pass mode=0600 through to the fs
+            # write path so a live OAuth credential never lands world- or
+            # group-readable.
+            _, call_kwargs = mock_write_json.call_args
+            assert call_kwargs.get("mode") == 0o600
 
 
 class TestGoogleAuthProviderCoverageGaps:

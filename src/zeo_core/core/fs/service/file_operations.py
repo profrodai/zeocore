@@ -53,11 +53,12 @@ class FileOperationsMixin:
         encoding: str = "utf-8",
         atomic: bool = True,
         calculate_checksum: bool = False,
+        mode: int | None = None,
     ) -> WriteResult:
         try:
             norm_path = self._normalize_input_path(path)
             result_path = self.operations._write_text(
-                norm_path, content, encoding, atomic
+                norm_path, content, encoding, atomic, mode=mode
             )
             bytes_written = len(content.encode(encoding))
             checksum = None
@@ -111,10 +112,13 @@ class FileOperationsMixin:
         content: bytes,
         atomic: bool = True,
         calculate_checksum: bool = False,
+        mode: int | None = None,
     ) -> WriteResult:
         try:
             norm_path = self._normalize_input_path(path)
-            result_path = self.operations._write_binary(norm_path, content, atomic)
+            result_path = self.operations._write_binary(
+                norm_path, content, atomic, mode=mode
+            )
             bytes_written = len(content)
             checksum = None
             if calculate_checksum:

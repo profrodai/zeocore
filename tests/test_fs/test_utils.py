@@ -27,6 +27,7 @@ than imported here:
 
 import os
 import platform
+import stat
 import tempfile
 from hashlib import sha256
 from pathlib import Path
@@ -664,6 +665,38 @@ class TestFileUtilities:
         with patch("os.replace", side_effect=OSError("Test error")):
             with pytest.raises(OSError):
                 _atomic_write(file_path, b"failure content")
+
+    @pytest.mark.skipif(platform.system() == "Windows", reason="POSIX file modes only")
+    def test_atomic_write_mode_tightens_a_preexisting_loose_file(
+        self, temp_dir: Path
+    ) -> None:
+        """Direct _internal-layer regression for the config-secrets-hardening
+        charter item 3 fix: `_atomic_write` used to preserve whatever mode a
+        pre-existing file already had, forever, even across a write that
+        passes an explicit tighter `mode`. Now an explicit `mode` always wins,
+        including on overwrite of a looser pre-existing file."""
+        file_path = temp_dir / "loose.bin"
+        file_path.write_bytes(b"old")
+        os.chmod(file_path, 0o644)
+        assert stat.S_IMODE(file_path.stat().st_mode) == 0o644
+
+        _atomic_write(file_path, b"new secret bytes", mode=0o600)
+        assert stat.S_IMODE(file_path.stat().st_mode) == 0o600
+
+    @pytest.mark.skipif(platform.system() == "Windows", reason="POSIX file modes only")
+    def test_atomic_write_mode_none_preserves_current_on_overwrite(
+        self, temp_dir: Path
+    ) -> None:
+        """Control: the historical preserve-current behaviour is unchanged
+        when no explicit `mode` is passed -- this fix is not a blanket 0600
+        floor for every _atomic_write caller (pandoc/jupytext/gmail output
+        rely on preserve-current)."""
+        file_path = temp_dir / "loose_unmanaged.bin"
+        file_path.write_bytes(b"old")
+        os.chmod(file_path, 0o644)
+
+        _atomic_write(file_path, b"new bytes")
+        assert stat.S_IMODE(file_path.stat().st_mode) == 0o644
 
     def test_safe_copy(self, temp_dir: Path) -> None:
         """Test safe file copying."""

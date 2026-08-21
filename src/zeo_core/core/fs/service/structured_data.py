@@ -52,11 +52,17 @@ class StructuredDataMixin:
             )
 
     def write_yaml(
-        self, path: FsPathLike, data: dict[str, Any], atomic: bool = True
+        self,
+        path: FsPathLike,
+        data: dict[str, Any],
+        atomic: bool = True,
+        mode: int | None = None,
     ) -> WriteResult:
         try:
             normalized_path = self._normalize_input_path(path)
-            result_path = self.operations._write_yaml(normalized_path, data, atomic)
+            result_path = self.operations._write_yaml(
+                normalized_path, data, atomic, mode=mode
+            )
             self.logger.debug(f"Wrote YAML to {result_path}")
             return WriteResult(ok=True, path=result_path, message="Wrote YAML")
         except Exception as e:
@@ -110,11 +116,12 @@ class StructuredDataMixin:
         data: dict[str, Any],
         atomic: bool = True,
         indent: int = 2,
+        mode: int | None = None,
     ) -> WriteResult:
         try:
             normalized_path = self._normalize_input_path(path)
             result_path = self.operations._write_json(
-                normalized_path, data, atomic, indent
+                normalized_path, data, atomic, indent, mode=mode
             )
             self.logger.debug(f"Wrote JSON to {result_path}")
             return WriteResult(ok=True, path=result_path, message="Wrote JSON")

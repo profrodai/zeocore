@@ -10,18 +10,29 @@ from zeo_core.core.fs._internal.safe_ops import _safe_copy, _safe_delete, _safe_
 
 class WriteOperationsMixin:
     def _write_text(
-        self, path: Path, content: str, encoding: str = "utf-8", atomic: bool = True
+        self,
+        path: Path,
+        content: str,
+        encoding: str = "utf-8",
+        atomic: bool = True,
+        mode: int | None = None,
     ) -> Path:
         if atomic:
-            return _atomic_write(path, content.encode(encoding))
+            return _atomic_write(path, content.encode(encoding), mode=mode)
         else:
-            return _write_file_text(path, content, encoding)
+            return _write_file_text(path, content, encoding, mode=mode)
 
-    def _write_binary(self, path: Path, content: bytes, atomic: bool = True) -> Path:
+    def _write_binary(
+        self,
+        path: Path,
+        content: bytes,
+        atomic: bool = True,
+        mode: int | None = None,
+    ) -> Path:
         if atomic:
-            return _atomic_write(path, content)
+            return _atomic_write(path, content, mode=mode)
         else:
-            return _write_file_bytes(path, content)
+            return _write_file_bytes(path, content, mode=mode)
 
     def _copy(self, src: Path, dst: Path, overwrite: bool = False) -> Path:
         return _safe_copy(src, dst, overwrite)

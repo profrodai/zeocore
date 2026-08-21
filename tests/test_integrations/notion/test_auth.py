@@ -1,7 +1,9 @@
 """Tests for Notion authentication provider."""
 
 import os
+import platform
 import shutil
+import stat
 from collections.abc import Generator
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -186,6 +188,27 @@ class TestNotionAuthProvider:
             creds = provider2.get_credentials()
             assert isinstance(creds, dict)
             assert creds["token"] == "round_trip_token"  # noqa: S105
+
+    @pytest.mark.skipif(platform.system() == "Windows", reason="POSIX file modes only")
+    def test_save_credentials_writes_file_at_mode_0600(
+        self, notion_creds_relpath: Path, fake_factory: MagicMock
+    ) -> None:
+        """config-secrets-hardening charter item 3 / RULING-356 s4.4 item 4:
+        notion/auth.py:222 must pass mode=0600 through to the fs write path
+        so a live bearer token never lands world- or group-readable."""
+        creds_file = notion_creds_relpath
+        provider = NotionAuthProvider(
+            credentials_file=str(creds_file), sdk_client_factory=fake_factory
+        )
+        provider.authenticate(token="mode_check_token")  # noqa: S106 -- test fixture, fake credential value
+
+        old_umask = os.umask(0o022)
+        try:
+            assert provider.save_credentials() is True
+        finally:
+            os.umask(old_umask)
+
+        assert stat.S_IMODE(creds_file.stat().st_mode) == 0o600
 
     def test_save_credentials_no_token_returns_false(self) -> None:
         provider = NotionAuthProvider()

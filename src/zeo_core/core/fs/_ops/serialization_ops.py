@@ -25,13 +25,17 @@ class SerializationOperationsMixin:
         return data
 
     def _write_yaml(
-        self, path: Path, data: dict[str, Any], atomic: bool = True
+        self,
+        path: Path,
+        data: dict[str, Any],
+        atomic: bool = True,
+        mode: int | None = None,
     ) -> Path:
         if not YAML_AVAILABLE:
             raise ImportError("PyYAML is not available")
         content = yaml.safe_dump(data, default_flow_style=False, sort_keys=False)
         # Relies on WriteOperationsMixin._write_text
-        return self._write_text(path, content, atomic=atomic)  # type: ignore
+        return self._write_text(path, content, atomic=atomic, mode=mode)  # type: ignore
 
     def _read_json(self, path: Path) -> dict[str, Any]:
         # Relies on ReadOperationsMixin._read_text
@@ -41,8 +45,13 @@ class SerializationOperationsMixin:
         return data
 
     def _write_json(
-        self, path: Path, data: dict[str, Any], atomic: bool = True, indent: int = 2
+        self,
+        path: Path,
+        data: dict[str, Any],
+        atomic: bool = True,
+        indent: int = 2,
+        mode: int | None = None,
     ) -> Path:
         content = json.dumps(data, indent=indent, ensure_ascii=False)
         # Relies on WriteOperationsMixin._write_text
-        return self._write_text(path, content, atomic=atomic)  # type: ignore
+        return self._write_text(path, content, atomic=atomic, mode=mode)  # type: ignore
