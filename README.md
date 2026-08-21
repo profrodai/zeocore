@@ -140,6 +140,12 @@ are illustrative fragments — each one actually executes and prints real
 output, because a code sample that's never run is a code sample that's
 already stale.
 
+Examples that need a credential (`NOTION_TOKEN`, `GITHUB_TOKEN`, an LLM API
+key, …) read it from the process environment. Copy [`.env.example`](.env.example)
+to `.env`, fill in real values, and load it however your shell/tooling
+prefers (e.g. `uv run --env-file .env ...`) — see GET-STARTED.md's "Secrets
+and `.env`" section for the full split between secrets and settings.
+
 ## What's in the package
 
 | Module | What it's for |

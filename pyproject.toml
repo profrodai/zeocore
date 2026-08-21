@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "zeocore"
-version = "0.3.0"
+version = "0.4.0"
 description = "Core infrastructure for the Zeo ecosystem of media production tools"
 readme = "README.md"
 requires-python = ">=3.13"

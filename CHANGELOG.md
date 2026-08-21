@@ -5,6 +5,80 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-08-21
+
+### Changed
+
+- **`.env` adopted as the documented home for secrets** (RULING-356). Not a
+  runtime change — zeocore already merges `os.environ` over YAML config, so
+  this changes where a byte is typed, not what the process does with it. It
+  is adopted because YAML config files get committed by default and `.env`
+  files do not, and this library's stated audience is junior: defaults are
+  the whole product for that audience. A new [`.env.example`](.env.example)
+  ships at the repo root with placeholder values for `NOTION_TOKEN`,
+  `GITHUB_TOKEN`, `OPENAI_API_KEY`, and `ANTHROPIC_API_KEY`. `.env` is not
+  loaded on import — that stays the caller's shell/tooling, a deliberate
+  fence (see "Named, not fixed" below).
+- **`GET-STARTED.md` fixed — the highest-severity item in this release.**
+  The documented "Creating Custom Configuration" walkthrough was teaching a
+  junior to construct a secret inline (`MyAppConfig(api_key="your-api-key")`)
+  and then `.model_dump()` it into a `ZeoConfig.custom` dict that gets
+  persisted to a committed YAML file. A second, previously-uncited instance
+  in the same file's "Configuration File Format" section embedded a literal
+  `api_key: "your-api-key"` in a worked YAML example. Both rewritten to read
+  the secret from the environment and keep it out of anything persisted to
+  disk. `README.md` was swept for the same shape; no instance found there.
+- **`.gitignore` now anchors the two repo-relative default config
+  locations** (`/zeo_config.yaml`, `/config/zeo_config.yaml`, per
+  `config/loader.py:52-57`). Defense in depth: a junior who ignores the docs
+  and types a secret into config YAML is now stopped by a rule rather than
+  their own attention. Verified with `git check-ignore -v` / `git add
+  --dry-run`, not by reading the pattern.
+
+### Fixed
+
+- **Credential files are now written `0600`.** A `mode: int | None = None`
+  parameter threads through the fs write chain
+  (`write_json`/`write_yaml`/`write_bytes`/`write_text`, both the atomic and
+  non-atomic branches); default is preserve-current, so general-purpose
+  infra (pandoc/jupytext/gmail output, etc.) is unchanged. The three
+  credential writers (`google/auth.py`, `notion/auth.py`, `github/auth.py`)
+  now pass `mode=0o600` explicitly. The real defect: `_atomic_write`
+  preserved a pre-existing loose file mode forever, with no path to tighten
+  it, on every subsequent write. New files were already born `0600` under
+  this repo's own umask probe — this is not a create-at-`0644` fix; that
+  defect does not exist.
+
+### Named, not fixed (recorded per circle-of-control)
+
+- **The env-writeback opt-in** (`zeo_core.integrations.llms.config.
+  LLMConfigProvider._setup_environment_variables`, `llms/config.py:228-273`)
+  copies an `api_key` found in loaded YAML config into `os.environ` when the
+  corresponding env var isn't already set. Real, and ranked, but sized this
+  round rather than changed: only **one gated production call site**
+  reaches it (`prompt/_internal/enhancer.py:27`, itself behind an explicit
+  `use_llm` opt-in at its only caller, `prompt/service.py:161`); the other
+  construction site, `llms/__init__.py:73`'s `create_integration()`, is dead
+  code — `modules/discovery.py` looks only for `create_plugin` and states so
+  in its own comment. `get_llm_client` (`llms/registry.py:41`), the
+  function GET-STARTED.md's own worked example actually uses, does not go
+  through this path at all. Default-OFF for this behaviour is still a
+  breaking change; this release only narrows the estimate from an
+  `[INFERRED]` broad surface to one enumerated, already-gated site.
+- **Typed secret models (`SecretStr`) cannot be applied as-is.** `ZeoConfig`
+  (`models.py:100-138`) has no secret-shaped field to type — `integrations`
+  and `custom` are both untyped `dict[str, Any]`, and secrets flow through
+  them structurally the same as any other config value. Adopting
+  `SecretStr` is a design decision about how to shape that dict, not a
+  drop-in annotation change, and stays open.
+- **Two of the four default config locations are outside any repo-local
+  `.gitignore`'s reach.** `config/loader.py:52-57` also names
+  `~/.zeo/config.yaml` and `/etc/zeo/config.yaml`; a secret typed into
+  either is not covered by this release's `.gitignore` patterns or by any
+  mechanism in this repo, because neither path is inside a git working
+  tree. `.env` remains the documented, gitignore-independent mitigation
+  regardless of which config location is in use.
+
 ## [0.3.0] - 2026-08-20
 
 ### Added
