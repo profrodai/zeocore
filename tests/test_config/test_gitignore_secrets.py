@@ -35,10 +35,32 @@ def _repo_root() -> Path:
     raise RuntimeError("no .git found walking up from test file")
 
 
-def _check_ignore(rel_path: str) -> tuple[int, str]:
+def _check_ignore(rel_path: str, *, no_index: bool = False) -> tuple[int, str]:
+    """Run `git check-ignore -v` and return (exit_code, stdout).
+
+    Semantics MEASURED on git 2.55.0, not assumed (two wrong guesses were
+    made and corrected before these notes were written):
+
+    - WITHOUT `--no-index`: git skips ignore rules for TRACKED files, so a
+      tracked path always exits 1 with empty output no matter what
+      `.gitignore` says. An assertion on a tracked path therefore cannot
+      fail -- verified by mutation: deleting `!.env.example` did not turn
+      such a test red.
+    - WITH `--no-index`: the rules are consulted regardless of tracking, and
+      exit 0 means SOME pattern matched -- INCLUDING a negation. So exit code
+      alone cannot distinguish "ignored" from "whitelisted"; the winning rule
+      printed in the output is the real signal.
+
+    Hence: use `no_index=True` for any tracked path, and assert on WHICH rule
+    won rather than on the exit code alone.
+    """
     root = _repo_root()
+    argv = [shutil.which("git") or "git", "check-ignore", "-v"]
+    if no_index:
+        argv.append("--no-index")
+    argv.append(rel_path)
     proc = subprocess.run(  # noqa: S603 -- fixed argv, resolved git binary, test-only, no shell
-        [shutil.which("git") or "git", "check-ignore", "-v", rel_path],
+        argv,
         cwd=root,
         capture_output=True,
         text=True,
@@ -106,36 +128,69 @@ class TestEnvExampleStillWhitelisted:
     (.gitignore:42 before this change) must survive untouched -- it is the
     one file secrets docs point users at to copy.
 
-    NOTE on `git check-ignore` semantics, learned writing this test: `-v`
-    reports exit 0 whenever ANY pattern matches the path, INCLUDING a
-    negation (`!`) pattern -- exit 0 does not by itself mean "ignored". The
-    real behavioural signal for a negated match is that the LAST matching
-    line is the `!`-prefixed one; `git status --porcelain` / `git add -n`
-    confirm the actual outcome directly and are used here instead of relying
-    on exit-code alone.
+    See `_check_ignore`'s docstring for the measured `git check-ignore`
+    semantics these assertions rely on.
+
+    An earlier revision asserted via `git add --dry-run`, which prints
+    `add '<path>'` only for an UNTRACKED file. It passed while `.env.example`
+    was still uncommitted and failed for every reader afterwards -- an
+    assertion on a transient state rather than on the property. The
+    replacement asserts on which gitignore rule WINS, and is mutation-tested:
+    deleting `!.env.example` from `.gitignore` turns it red.
     """
 
-    def test_env_example_is_trackable_per_git_add_dry_run(self) -> None:
+    def test_env_example_rule_is_not_ignored_when_untracked(self) -> None:
+        """The whitelist RULE must survive, tested where git will actually
+        evaluate it.
+
+        `--no-index` is load-bearing. Once a file is tracked, git skips
+        ignore rules for it entirely and `check-ignore` returns 1 no matter
+        what `.gitignore` says -- so asserting on the tracked path passes
+        even with `!.env.example` deleted (verified by mutation: removing the
+        negation did not fail the assertion). `--no-index` forces the rules
+        to be consulted, which is the thing under test.
+        """
+        code, output = _check_ignore(".env.example", no_index=True)
+        assert code == 0, (
+            "expected a matching rule to be reported under --no-index; "
+            f"got exit={code} output={output!r}"
+        )
+        assert output.endswith("!.env.example\t.env.example"), (
+            "the WINNING rule for `.env.example` must be the `!` whitelist, "
+            f"not an ignore rule; got: {output!r}"
+        )
+
+    def test_a_plain_dotenv_is_still_ignored_when_untracked(self) -> None:
+        """Control for the test above: same code path, opposite expectation.
+        If this ever returns 1, the `.env` rules have stopped working and the
+        test above would be passing vacuously."""
+        code, output = _check_ignore(".env.local", no_index=True)
+        assert code == 0, (
+            f"`.env.local` must match an ignore rule; got exit={code} output={output!r}"
+        )
+        assert not output.startswith("!") and "!.env.example" not in output, (
+            f"`.env.local` must be IGNORED, not whitelisted; got: {output!r}"
+        )
+
+    def test_env_example_is_actually_tracked(self) -> None:
+        """Complements the rule check with the outcome: the file is really in
+        the index, not merely ignorable-in-principle."""
         root = _repo_root()
         proc = subprocess.run(  # noqa: S603
-            [shutil.which("git") or "git", "add", "--dry-run", ".env.example"],
+            [
+                shutil.which("git") or "git",
+                "ls-files",
+                "--error-unmatch",
+                ".env.example",
+            ],
             cwd=root,
             capture_output=True,
             text=True,
             check=False,
         )
-        assert proc.returncode == 0
-        assert "add '.env.example'" in proc.stdout, (
-            "`git add -n .env.example` did not report it as addable -- "
+        assert proc.returncode == 0, (
+            ".env.example must be tracked in the index -- "
             f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
-        )
-
-    def test_env_example_check_ignore_last_match_is_the_negation(self) -> None:
-        code, output = _check_ignore(".env.example")
-        assert code == 0
-        assert output.endswith("!.env.example\t.env.example"), (
-            "expected the whitelist negation to be the (last) matching "
-            f"rule; got: {output!r}"
         )
 
     def test_env_itself_is_still_ignored(self) -> None:
