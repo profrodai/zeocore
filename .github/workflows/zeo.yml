@@ -25,7 +25,12 @@ jobs:
         run: uv tool install zero-employee
 
       - name: Corpus-wide integrity check (ruling/SOW n-collisions)
-        run: uv tool run --from zero-employee zeo --commit-check-corpus
+        run: |
+          if [ -f "claude-md/CLAUDE.md" ]; then
+            uv tool run --from zero-employee zeo --commit-check-corpus
+          else
+            echo "No claude-md/CLAUDE.md marker — this repo is not a zeo corpus root, nothing to check."
+          fi
 
       - name: Per-file commit-check (changed sow/ and ruling/ files)
         env:
