@@ -1,0 +1,82 @@
+name: zeo
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  zeo:
+    name: zeo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install zero-employee (zeo)
+        run: uv tool install zero-employee
+
+      - name: Corpus-wide integrity check (ruling/SOW n-collisions)
+        run: |
+          if [ -f "claude-md/CLAUDE.md" ]; then
+            uv tool run --from zero-employee zeo --commit-check-corpus
+          else
+            echo "No claude-md/CLAUDE.md marker — this repo is not a zeo corpus root, nothing to check."
+          fi
+
+      - name: Per-file commit-check (changed sow/ and ruling/ files)
+        env:
+          NO_COLOR: "1"
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+            RANGE="${BASE}...${HEAD}"
+          else
+            BEFORE="${{ github.event.before }}"
+            if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              RANGE=""
+            else
+              RANGE="${BEFORE}...${{ github.sha }}"
+            fi
+          fi
+
+          if [ -n "$RANGE" ]; then
+            CHANGED=$(git diff --name-only --diff-filter=ACM "$RANGE" -- | grep -E '(^|/)(sow|ruling)/.*\.md$' || true)
+          else
+            CHANGED=$(git ls-files | grep -E '(^|/)(sow|ruling)/.*\.md$' || true)
+          fi
+
+          if [ -z "$CHANGED" ]; then
+            echo "No sow/ or ruling/ .md files changed in this range — nothing to lint."
+            exit 0
+          fi
+
+          echo "Files to check:"
+          echo "$CHANGED"
+          echo ""
+
+          FAILED=0
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            [ -f "$f" ] || continue
+            echo "-- checking $f --"
+            if ! uv tool run --from zero-employee zeo --commit-check "$f"; then
+              echo "-- FAILED: $f --"
+              FAILED=1
+            fi
+          done <<< "$CHANGED"
+
+          if [ "$FAILED" -ne 0 ]; then
+            echo "One or more sow/ruling files failed zeo --commit-check." >&2
+            exit 1
+          fi
