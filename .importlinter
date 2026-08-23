@@ -19,6 +19,7 @@
 
 [importlinter]
 root_package = zeo_core
+include_external_packages = true
 
 [importlinter:contract:capabilities-not-import-tools]
 name = Capabilities must not import Tools
@@ -52,3 +53,13 @@ source_modules =
     zeo_core.core.fs._ops
 forbidden_modules =
     zeo_core.core.fs.results
+
+[importlinter:contract:no-sovereign-or-governance-imports]
+name = ZeoCore must not import Sovereign Agent or Zero Employee
+type = forbidden
+source_modules =
+    zeo_core
+forbidden_modules =
+    sovereign_agent
+    zero_employee
+

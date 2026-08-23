@@ -41,7 +41,9 @@ under examples/ — every one of them is runnable as printed
 ## Examples (all runnable as-is)
 
 - [examples/minimal_tool.py](examples/minimal_tool.py): The smallest
-  possible tool — no mixins, no services, just `run()`.
+  possible class tool — no mixins, no services, just `run()`.
+- [examples/capability_authoring.py](examples/capability_authoring.py):
+  Canonical `@capability` function authoring and `CapabilityRegistry`.
 - [examples/toolkit_usage.py](examples/toolkit_usage.py): The full
   picture — lifecycle hooks, an optional integration, graceful
   degradation when a service isn't configured.
@@ -78,13 +80,18 @@ under examples/ — every one of them is runnable as printed
   convenience. Everything else below is its own import; this top level
   intentionally does not re-export config/core/integrations/modules.
 - `zeo_core.tools`: same tool-authoring surface as the top level (the
-  canonical, explicit path). Do not import from `zeo_core.tools.mixins.*`
-  submodules directly — use `zeo_core.tools` (or the top-level package).
-- `zeo_core.contracts`: `CapabilityResult`, `CapabilityError`, artifact
-  and manifest models (`ArtifactRef`, `RunManifest`, `StorageRef`, ...),
-  common enums/IDs. Machine-readable codes on `CapabilityResult` and
-  `CapabilityError` use the `ZEO_<AREA>_<DETAIL>` convention (`ZC_` and
-  legacy `QC_` are also accepted for backward compatibility).
+  canonical, explicit path), plus `@capability`, `CapabilityRegistry`,
+  `invoke_sync`/`invoke_async`, and `tool_to_capability`. Do not import
+  from `zeo_core.tools.mixins.*` submodules directly.
+- `zeo_core.contracts`: `CapabilityId`, `CapabilityDefinition`,
+  `CapabilityManifest`, `CapabilityResult`, `CapabilityOutcome`,
+  `CapabilityError`, artifact and manifest models, common enums/IDs.
+  Machine-readable codes use `ZEO_<AREA>_<DETAIL>` (`ZC_` and legacy
+  `QC_` accepted). Effects are declarations, not authorization.
+- `zeo_core.adapters`: `adapters.http`, `adapters.mcp` (both can bind a
+  capability into `OperationRegistry`), and `adapters.llm_tools`
+  (OpenAI-compatible function projection; never silently weakens input
+  JSON Schema).
 - `zeo_core.config`: `load_config()`, `ZeoConfig` and its component
   models, YAML + environment-variable configuration loading.
 - `zeo_core.core`: `core.fs` (filesystem ops), `core.paths` (path
@@ -106,9 +113,6 @@ under examples/ — every one of them is runnable as printed
   gap: tool_use response blocks aren't parsed back into structured
   output yet). Database integrations (BigQuery/Supabase/SQLite) were
   evaluated and explicitly not built — do not assume they exist.
-- `zeo_core.adapters`: `adapters.http` (FastAPI REST adapter,
-  `zeocore[http]`) and `adapters.mcp` (MCP server adapter,
-  `zeocore[mcp]`), both reading from the same `OperationRegistry`.
 - `zeo_core.modules`: Plugin discovery and explicit-loading registry.
 - `zeo_core.prompt`: Prompt template selection and enhancement.
 

@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-08-23
+
+### Added
+
+- Canonical capability contracts: `CapabilityId`, `CapabilityDefinition`,
+  `CapabilityManifest`, `CapabilityEffects` / `ConcurrencyMode` /
+  `EffectKind`, `CapabilityRequirements`, typed `RequestGuard`,
+  `CapabilityInvocationRecord`, and `CapabilityOutcome` (fine-grained
+  outcome layered on the existing three-way `CapabilityStatus`).
+- `@capability` function authoring, `CapabilityRegistry`,
+  `invoke_sync` / `invoke_async`, and OpenAI function-tool projection in
+  `zeo_core.adapters.llm_tools`.
+- Representative catalog capabilities (local add, filesystem checksum,
+  GitHub file read, calendar create, pandoc markdown-to-docx wrappers).
+- Sovereign consumption contract pack (`zeo_core.contract_pack`, tests
+  under `tests/contract_pack/`) with no `sovereign_agent` import.
+- Symbol audit and replacement-readiness reports under `docs/reports/`.
+
+### Changed
+
+- Package version aligned at `0.5.0` (`pyproject.toml` and
+  `zeo_core.__version__`). Contracts module version is `1.1.0`.
+- Ecosystem Python ruling recorded: forthcoming Zero Employee releases
+  align on Python 3.13; ZeoCore does not restore 3.12 CI.
+
+### Compatibility
+
+- Existing `BaseZeoTool.run()`, HTTP, and MCP `register_tool` paths remain.
+- `CapabilityResult.ok` / `.skip` / `.fail` set default outcomes so
+  current tools need no changes.
+- Effects are declarations, not authorization. Human approval is not a
+  capability result state.
+
 ## [0.4.0] - 2026-08-21
 
 ### Changed

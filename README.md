@@ -112,7 +112,10 @@ extras — `zeocore[all]` does **not** pull in the MCP adapter; install
   picture: lifecycle hooks, an optional integration, graceful degradation
   when a service isn't configured.
 - [`examples/minimal_tool.py`](examples/minimal_tool.py) — the smallest
-  possible tool: no mixins, no services, just `run()`.
+  possible class tool: no mixins, no services, just `run()`.
+- [`examples/capability_authoring.py`](examples/capability_authoring.py) —
+  the canonical `@capability` function surface with a typed request model
+  and `CapabilityRegistry`.
 - [`examples/error_handling.py`](examples/error_handling.py) — the
   `ZeoError` family, and how a tool reports a failure it expects versus one
   it doesn't.
@@ -150,8 +153,9 @@ and `.env`" section for the full split between secrets and settings.
 
 | Module | What it's for |
 |---|---|
-| `zeo_core.tools` | The framework itself — `BaseZeoTool`, `ToolContext`, and optional mixins (`IntegrationEnabledMixin`, `LifecycleMixin`, `ToolEnvInitializerMixin`). |
-| `zeo_core.contracts` | The data contracts tools speak — `CapabilityResult`, artifact/manifest models, common enums and IDs. |
+| `zeo_core.tools` | The framework itself — `BaseZeoTool`, `@capability`, `ToolContext`, `CapabilityRegistry`, and optional mixins (`IntegrationEnabledMixin`, `LifecycleMixin`, `ToolEnvInitializerMixin`). |
+| `zeo_core.contracts` | The data contracts tools speak — `CapabilityId`, `CapabilityDefinition`, `CapabilityResult`, `CapabilityOutcome`, artifact/manifest models, common enums and IDs. |
+| `zeo_core.adapters` | Optional adapters: HTTP, MCP, and `llm_tools` (OpenAI-compatible function projection from one `CapabilityManifest`). |
 | `zeo_core.core` | Filesystem operations, path resolution, a typed error hierarchy, MIME detection, serialization, logging, an operation registry. |
 | `zeo_core.config` | YAML/env-var configuration loading and per-tool config models. |
 | `zeo_core.integrations` | Adapters for GitHub, Google Drive/Mail/Calendar, LLM providers (OpenAI/Anthropic/Ollama — chat, tool-calling, prompt caching), Notion (read + write), Pandoc, jupytext (script ↔ notebook), and ffmpeg (media probing/transcoding, via the org's `ffmpeg-zeo` package). Database integrations (BigQuery, Supabase, SQLite) were evaluated and explicitly **not built** this round — see [CHANGELOG.md](CHANGELOG.md). |

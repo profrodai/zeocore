@@ -54,7 +54,7 @@ Example:
             return CapabilityResult.ok(data=result, msg="Success")
 """
 
-__version__ = "0.3.0"
+__version__ = "0.5.0"
 
 # Core classes
 from zeo_core.contracts.envelopes.result import CapabilityResult

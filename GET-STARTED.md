@@ -885,22 +885,45 @@ my_project/
 
 ### Creating a New Tool
 
-Tools are the primary extension point: subclass `BaseZeoTool`, implement
+ZeoCore defines reusable capabilities. A runner (for example Sovereign
+Agent) invokes and supervises them. Organizational authorization lives
+in Zero Employee — a capability's `effects` field is a **declaration**,
+not a permission grant.
+
+Canonical function authoring:
+
+```python
+from zeo_core.contracts import CapabilityExample, CapabilityResult, EffectKind
+from zeo_core.tools import ToolContext, bound_capability_of, capability, invoke_sync
+from zeo_core.tools.catalog import AddRequest, AddResponse
+
+@capability(
+    id="math.add@1.0.0",
+    description="Add two decimal numbers.",
+    effects={EffectKind.READ},
+    examples=(CapabilityExample(request={"left": "1", "right": "2"}, response={"sum": "3"}),),
+)
+def add(request: AddRequest, ctx: ToolContext) -> CapabilityResult[AddResponse]:
+    ...
+```
+
+Class tools remain supported: subclass `BaseZeoTool`, implement
 `run(request, ctx) -> CapabilityResult`, and optionally mix in
-`IntegrationEnabledMixin` (for service lookup) or `LifecycleMixin` (for
-pre/post-run hooks).
+`IntegrationEnabledMixin` or `LifecycleMixin`. Register a class tool as
+a capability with `tool_to_capability` once it declares examples.
 
-1. Define a Pydantic request model for your tool's input.
-2. Subclass `BaseZeoTool`, set `name`/`version`, implement `run()`.
+1. Define Pydantic request and response models (JSON Schema is generated
+   from those models — not from shallow annotations).
+2. Implement either `@capability` or `BaseZeoTool.run()`.
 3. Return a `CapabilityResult` (via `.ok()`, `.fail()`, `.fail_from_exc()`,
-   or `.skip()`) -- never raise for expected failure modes.
+   `.skip()`, or `.unavailable()`) -- never raise for expected failure
+   modes. Fine-grained `CapabilityOutcome` maps onto success/skipped/error.
 4. Use `zeo_core.core.errors`' `ZeoError` family for exceptional cases.
-5. Leverage `zeo_core.config` for settings your tool needs.
+5. Look up integrations with `ctx.require_service(...)`. Absence of a
+   declared service fails closed; do not fall back to ambient host access.
 
-See [`examples/minimal_tool.py`](examples/minimal_tool.py) for the smallest
-complete version of this pattern, and
-[`examples/toolkit_usage.py`](examples/toolkit_usage.py) for one that adds
-lifecycle hooks and an optional integration.
+See [`examples/capability_authoring.py`](examples/capability_authoring.py)
+and [`examples/minimal_tool.py`](examples/minimal_tool.py).
 
 ## Troubleshooting
 

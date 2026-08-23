@@ -46,29 +46,40 @@ from zeo_core.contracts.artifacts import (
 # internal-only and not exported; Media capability models below remain
 # commented out to match __all__, which does not yet declare them stable)
 from zeo_core.contracts.capabilities import (
+    CapabilityDefinition,
+    CapabilityDeprecation,
+    CapabilityEffects,
+    CapabilityExample,
+    CapabilityId,
+    CapabilityInvocationRecord,
+    CapabilityManifest,
+    CapabilityRequirements,
     # Demo (models only)
     EchoRequest,
-    # SlicedClipData,
-    # SliceVideoRequest,
-    # SliceVideoResponse,
-    # Media
-    # TimeRange,
-    # TranscribeRequest,
-    # TranscribeResponse,
-    # TranscriptionSegment,
+    FilesystemRequirement,
+    GuardIssue,
+    GuardResult,
+    NetworkRequirement,
+    RequestGuard,
     VideoRefRequest,
+    schemas_from_models,
 )
 from zeo_core.contracts.common import (  # Versions; Enums; IDs; Time
     ARTIFACT_SCHEMA_VERSION,
+    CAPABILITY_MANIFEST_SCHEMA_VERSION,
     CONTRACTS_VERSION,
     ENVELOPE_VERSION,
     MANIFEST_VERSION,
     ArtifactKind,
+    CapabilityOutcome,
     CapabilityStatus,
     ChecksumAlgorithm,
+    ConcurrencyMode,
+    EffectKind,
     LogLevel,
     StorageScheme,
     generate_artifact_id,
+    generate_invocation_id,
     generate_run_id,
     is_valid_uuid,
     utcnow,
@@ -88,6 +99,9 @@ __all__ = [
     # --- Common ---
     # Enums
     "CapabilityStatus",
+    "CapabilityOutcome",
+    "EffectKind",
+    "ConcurrencyMode",
     "LogLevel",
     "ArtifactKind",
     "StorageScheme",
@@ -95,6 +109,7 @@ __all__ = [
     # IDs
     "generate_run_id",
     "generate_artifact_id",
+    "generate_invocation_id",
     "is_valid_uuid",
     # Time
     "utcnow",
@@ -104,6 +119,7 @@ __all__ = [
     "MANIFEST_VERSION",
     "ARTIFACT_SCHEMA_VERSION",
     "ENVELOPE_VERSION",
+    "CAPABILITY_MANIFEST_SCHEMA_VERSION",
     # --- Envelopes ---
     "CapabilityResult",
     "CapabilityError",
@@ -128,4 +144,19 @@ __all__ = [
     # Demo (models only, not implementations)
     "EchoRequest",
     "VideoRefRequest",
+    # Canonical capability contracts
+    "CapabilityId",
+    "CapabilityDefinition",
+    "CapabilityExample",
+    "CapabilityEffects",
+    "CapabilityRequirements",
+    "CapabilityDeprecation",
+    "NetworkRequirement",
+    "FilesystemRequirement",
+    "GuardIssue",
+    "GuardResult",
+    "RequestGuard",
+    "CapabilityManifest",
+    "CapabilityInvocationRecord",
+    "schemas_from_models",
 ]
