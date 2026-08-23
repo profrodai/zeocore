@@ -44,6 +44,7 @@ class BaseZeoTool(ABC):
     # Class attributes (optional - can be overridden in __init__)
     name: str | None = None
     version: str = "1.0.0"  # Default version
+    namespace: str = "zeo"
 
     # Internal flag to track frozen state (Recommendation #2)
     _identity_frozen: bool

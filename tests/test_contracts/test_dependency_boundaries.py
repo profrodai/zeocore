@@ -26,6 +26,9 @@ class DependencyChecker:
         "dataclasses",
         "functools",
         "itertools",
+        "hashlib",
+        "re",
+        "__future__",
     }
 
     ALLOWED_THIRD_PARTY = {"pydantic"}

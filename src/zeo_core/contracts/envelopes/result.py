@@ -13,13 +13,24 @@ from typing import Any, ClassVar, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from zeo_core.contracts.common.enums import CapabilityStatus
+from zeo_core.contracts.common.enums import CapabilityOutcome, CapabilityStatus
 from zeo_core.contracts.common.ids import generate_run_id
 from zeo_core.contracts.common.time import utcnow
 from zeo_core.contracts.envelopes.error import CapabilityError
 from zeo_core.contracts.envelopes.log import CapabilityLogEvent
 
 T = TypeVar("T")
+
+OUTCOME_TO_STATUS: dict[CapabilityOutcome, CapabilityStatus] = {
+    CapabilityOutcome.success: CapabilityStatus.success,
+    CapabilityOutcome.policy_skipped: CapabilityStatus.skipped,
+    CapabilityOutcome.unavailable: CapabilityStatus.skipped,
+    CapabilityOutcome.guard_rejected: CapabilityStatus.error,
+    CapabilityOutcome.integration_failure: CapabilityStatus.error,
+    CapabilityOutcome.invalid_return: CapabilityStatus.error,
+    CapabilityOutcome.unexpected_exception: CapabilityStatus.error,
+    CapabilityOutcome.cancelled: CapabilityStatus.error,
+}
 
 
 class CapabilityResult(BaseModel, Generic[T]):
@@ -91,6 +102,15 @@ class CapabilityResult(BaseModel, Generic[T]):
     # Core status
     status: CapabilityStatus = Field(
         ..., description="Execution status for machine branching"
+    )
+
+    outcome: CapabilityOutcome | None = Field(
+        None,
+        description=(
+            "Fine-grained outcome. Defaults from status for legacy constructors: "
+            "success→success, skipped→policy_skipped, error→integration_failure. "
+            "The invoke helper always sets this explicitly."
+        ),
     )
 
     # Payload (the actual value produced by the capability)
@@ -195,7 +215,21 @@ class CapabilityResult(BaseModel, Generic[T]):
                     "status=skipped requires machine_message for branching"
                 )
 
+        self._coerce_outcome()
         return self
+
+    def _coerce_outcome(self) -> None:
+        if self.outcome is None:
+            if self.status == CapabilityStatus.success:
+                self.outcome = CapabilityOutcome.success
+            elif self.status == CapabilityStatus.skipped:
+                self.outcome = CapabilityOutcome.policy_skipped
+            else:
+                self.outcome = CapabilityOutcome.integration_failure
+        elif OUTCOME_TO_STATUS[self.outcome] != self.status:
+            raise ValueError(
+                f"outcome {self.outcome} is incompatible with status {self.status}"
+            )
 
     # Convenience constructors
 
@@ -232,6 +266,7 @@ class CapabilityResult(BaseModel, Generic[T]):
         """
         kwargs = {
             "status": CapabilityStatus.success,
+            "outcome": CapabilityOutcome.success,
             "data": data,
             "human_message": msg,
             "metadata": metadata or {},
@@ -274,6 +309,27 @@ class CapabilityResult(BaseModel, Generic[T]):
         """
         kwargs = {
             "status": CapabilityStatus.skipped,
+            "outcome": CapabilityOutcome.policy_skipped,
+            "human_message": reason,
+            "machine_message": code,
+            "metadata": metadata or {},
+        }
+        if run_id is not None:
+            kwargs["run_id"] = run_id
+        return cls(**kwargs)
+
+    @classmethod
+    def unavailable(
+        cls,
+        reason: str,
+        code: str = "ZEO_CAP_UNAVAILABLE",
+        metadata: dict[str, Any] | None = None,
+        run_id: str | None = None,
+    ) -> "CapabilityResult[T]":
+        """Create a skipped result because a declared dependency is missing."""
+        kwargs: dict[str, Any] = {
+            "status": CapabilityStatus.skipped,
+            "outcome": CapabilityOutcome.unavailable,
             "human_message": reason,
             "machine_message": code,
             "metadata": metadata or {},
@@ -291,6 +347,7 @@ class CapabilityResult(BaseModel, Generic[T]):
         metadata: dict[str, Any] | None = None,
         logs: list[CapabilityLogEvent] | None = None,
         run_id: str | None = None,
+        outcome: CapabilityOutcome = CapabilityOutcome.integration_failure,
     ) -> "CapabilityResult[T]":
         """
         Create an error result.
@@ -323,6 +380,7 @@ class CapabilityResult(BaseModel, Generic[T]):
 
         kwargs = {
             "status": CapabilityStatus.error,
+            "outcome": outcome,
             "human_message": msg,
             "machine_message": code,
             "error": CapabilityError(code=code, message=msg, details=err_details),
@@ -367,5 +425,10 @@ class CapabilityResult(BaseModel, Generic[T]):
             ...     )
         """
         return cls.fail(
-            msg=msg, code=code, exception=exc, metadata=metadata, run_id=run_id
+            msg=msg,
+            code=code,
+            exception=exc,
+            metadata=metadata,
+            run_id=run_id,
+            outcome=CapabilityOutcome.unexpected_exception,
         )

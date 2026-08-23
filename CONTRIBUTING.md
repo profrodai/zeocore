@@ -88,6 +88,10 @@ make test-module M=test_fs   # run one module's tests with coverage
   non-canonical import from the package's own internal bootstrap; see
   `zeo_core/tools/mixins/__init__.py`'s module docstring for the full
   reasoning.
+- **Examples**: files under `examples/` must import `zeo_core` (never a
+  predecessor package name) and be runnable with `python examples/<name>.py`.
+  Credential-gated examples may skip with a printed reason; they must not
+  crash on a missing extra if they document that extra.
 - **No test-detection in production code**: production code (`src/zeo_core`)
   must never branch on whether it's running under test (no
   `inspect.stack()`, no `"pytest" in sys.modules`, etc). `make hygiene-check`
@@ -118,7 +122,8 @@ make test-module M=test_fs   # run one module's tests with coverage
 ## Reporting issues
 
 Please open a GitHub issue with a clear description, steps to reproduce (for
-bugs), and your Python/zeocore version.
+bugs), and your Python/zeocore version. For vulnerabilities, see
+[SECURITY.md](SECURITY.md) — do not file a public issue.
 
 ## Releasing (maintainers)
 
@@ -147,8 +152,8 @@ token is stored as a repo secret for either index.
    workflow waits, but a failure here is still real signal, not a fluke to
    ignore).
 
-**One-time setup**, before the very first release, on each index's own web
-UI (not something a CI workflow can do for itself):
+**Trusted publisher setup** (one-time, on each index's web UI — not something
+a CI workflow can do for itself):
 
 - https://pypi.org/manage/account/publishing/
 - https://test.pypi.org/manage/account/publishing/

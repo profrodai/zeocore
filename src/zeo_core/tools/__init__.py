@@ -47,14 +47,42 @@ Example: EchoTool is a tool that provides the "echo" capability,
 """
 
 # Core classes
+from zeo_core.tools.adapter import ToolAdapterError, tool_to_capability
+from zeo_core.tools.authoring import (
+    CapabilityAuthoringError,
+    bound_capability_of,
+    capability,
+)
 from zeo_core.tools.base import BaseZeoTool
+from zeo_core.tools.capability_protocol import ZeoCapability
 from zeo_core.tools.context import ToolContext
+from zeo_core.tools.definition_builder import build_definition, coordination_key
+from zeo_core.tools.invoke import (
+    BoundCapability,
+    invocation_record,
+    invoke_async,
+    invoke_sync,
+    resource_coordination_key,
+)
 from zeo_core.tools.mixins.env_init import ToolEnvInitializerMixin
 
 # Mixins (all exported at top level for single import path)
 from zeo_core.tools.mixins.integration_enabled import IntegrationEnabledMixin
 from zeo_core.tools.mixins.lifecycle import LifecycleMixin
+from zeo_core.tools.operations import register_capability_operation
 from zeo_core.tools.protocol import ZeoToolProtocol
+from zeo_core.tools.registry import (
+    CapabilityProvenance,
+    CapabilityRegistry,
+    CapabilityRegistryError,
+    get_capability_registry,
+    reset_capability_registry,
+)
+from zeo_core.tools.services import (
+    NeverCancelled,
+    RecordingArtifactSink,
+    SystemClock,
+)
 
 # Backward compatibility alias
 ZeoToolLifecycleMixin = LifecycleMixin
@@ -64,6 +92,28 @@ __all__ = [
     "BaseZeoTool",
     "ToolContext",
     "ZeoToolProtocol",
+    "ZeoCapability",
+    "BoundCapability",
+    "capability",
+    "bound_capability_of",
+    "CapabilityAuthoringError",
+    "tool_to_capability",
+    "ToolAdapterError",
+    "build_definition",
+    "coordination_key",
+    "invoke_sync",
+    "invoke_async",
+    "invocation_record",
+    "resource_coordination_key",
+    "CapabilityRegistry",
+    "CapabilityRegistryError",
+    "CapabilityProvenance",
+    "get_capability_registry",
+    "reset_capability_registry",
+    "register_capability_operation",
+    "SystemClock",
+    "NeverCancelled",
+    "RecordingArtifactSink",
     # Mixins
     "IntegrationEnabledMixin",
     "LifecycleMixin",

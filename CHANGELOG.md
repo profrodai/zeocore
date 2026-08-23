@@ -5,6 +5,69 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-08-23
+
+ZeoCore is the canonical capability-authoring and capability-contract
+library for the Zero Employee ecosystem. Sovereign Agent is **not** moved
+into this package. Short announcement: [RELEASE_NOTES.md](RELEASE_NOTES.md).
+Adopter path: install → [`examples/capability_authoring.py`](examples/capability_authoring.py)
+→ [GET-STARTED Capabilities](GET-STARTED.md#capabilities) → HTTP/MCP examples.
+
+### Added
+
+- Canonical capability contracts: `CapabilityId` (`namespace.name@semver`),
+  `CapabilityDefinition`, `CapabilityManifest`, `CapabilityEffects` /
+  `ConcurrencyMode` / `EffectKind`, `CapabilityRequirements`, typed
+  `RequestGuard` / `GuardResult`, `CapabilityInvocationRecord` (digests +
+  redaction, not execution receipts), and `CapabilityOutcome` layered on
+  the existing three-way `CapabilityStatus`. See
+  [`src/zeo_core/contracts/README.md`](src/zeo_core/contracts/README.md).
+- `@capability` function authoring, `CapabilityRegistry` (including
+  `zeo_core.capabilities` entry points), `invoke_sync` / `invoke_async`,
+  `tool_to_capability`, and `register_capability_operation` for HTTP/MCP.
+- OpenAI function-tool projection in `zeo_core.adapters.llm_tools`
+  (`project_openai_tool`): refuses unsupported JSON Schema instead of
+  silently weakening it.
+- Representative catalog capabilities under `zeo_core.tools.catalog`
+  (local add, filesystem checksum, GitHub file read, calendar create,
+  pandoc markdown-to-docx). Reference implementations, not a public API.
+- Sovereign consumption contract pack (`zeo_core.contract_pack`, tests
+  under `tests/contract_pack/`) with no `sovereign_agent` import.
+- Runnable examples: `capability_authoring.py`, `capability_guards.py`,
+  `tool_to_capability.py`, `llm_tools_usage.py`, rewritten
+  `http_adapter_usage.py`. Tutorial:
+  [`docs/tutorials/capability-authoring.md`](docs/tutorials/capability-authoring.md).
+- Symbol audit and replacement-readiness reports under `docs/reports/`
+  (maintainer/ecosystem, not end-user docs).
+
+### Changed
+
+- Package version aligned at `0.5.0` (`pyproject.toml` and
+  `zeo_core.__version__`). Contracts module version is `1.1.0`.
+- Ecosystem Python ruling recorded: forthcoming Zero Employee releases
+  align on Python 3.13; ZeoCore does not restore 3.12 CI.
+- README / GET-STARTED / `llms.txt` lead with `@capability` as the
+  canonical authoring surface. `BaseZeoTool` remains fully supported.
+
+### Compatibility
+
+- Existing `BaseZeoTool.run()`, HTTP, and MCP `register_tool` paths remain.
+- `CapabilityResult.ok` / `.skip` / `.fail` set default outcomes so
+  current tools need no changes. `.unavailable()` is the skip path for
+  missing declared services.
+- Effects are declarations, not authorization. Human approval is not a
+  capability result state.
+
+### Named, not fixed
+
+- `zeo_core.tools.compat.sovereign_style_capability` exists for
+  keyword-argument functions migrating from Sovereign Agent style. It is
+  transitional, not canonical. No deletion timeline in this release.
+- LLM provider `chat()` still does not parse `tool_use` response blocks
+  into structured `tool_calls` (request-side tool-calling works). Same
+  gap as 0.4.x; `adapters.llm_tools` projects *ZeoCore* capabilities
+  outward and does not close that inbound parse gap.
+
 ## [0.4.0] - 2026-08-21
 
 ### Changed
@@ -295,6 +358,8 @@ MIT-licensed package.
   own test suite, and this package has never had a public release, so no
   back-compat was owed for it.
 
+[0.5.0]: https://github.com/zeroemployeeorg/zeocore/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/zeroemployeeorg/zeocore/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/zeroemployeeorg/zeocore/releases/tag/v0.3.0
 [0.2.0]: https://github.com/zeroemployeeorg/zeocore/releases/tag/v0.2.0
 [0.1.0]: https://github.com/zeroemployeeorg/zeocore/releases/tag/v0.1.0

@@ -1,37 +1,25 @@
-# === QV-LLM:BEGIN ===
-# path: examples/toolkit_usage.py
-# === QV-LLM:END ===
-
 """
-Example usage of the quack_core.tools capability-authoring framework
-(Ring B, Doctrine v3).
+Example usage of the zeo_core.tools capability-authoring framework.
 
 This example demonstrates how to build a custom, doctrine-compliant tool:
 
-1. A tool subclassing BaseQuackTool that implements run(request, ctx).
+1. A tool subclassing BaseZeoTool that implements run(request, ctx).
 2. JSON transform + statistics business logic (process_content /
    _calculate_statistics -- plain Python, no framework coupling).
 3. Optional Google Drive integration via IntegrationEnabledMixin, reading
    the service out of ctx.services (runner-provided) rather than resolving
    it itself.
 4. Pre/post-run hooks via LifecycleMixin.
-5. A runnable main() that stands in for what a real runner (Ring C) would
-   do: build a ToolContext, construct a request, call tool.run(), and
-   persist the CapabilityResult's data.
+5. A runnable main() that stands in for what a real runner would do: build
+   a ToolContext, construct a request, call tool.run(), and persist the
+   CapabilityResult's data.
 
-NOTE ON WHAT CHANGED FROM THE OLD EXAMPLE:
-Doctrine v3 removed OutputFormatMixin entirely (see
-quack_core.tools.mixins.output_handler's own module docstring) -- output
-persistence is now the exclusive responsibility of the runner (Ring C), not
-the tool. This example therefore no longer has the tool itself pick an
-output format or write files; instead run() returns structured data inside
-CapabilityResult, and main() (playing the runner's role) is the one that
-decides to serialize it to disk. This is a narrower teaching surface than
-the old example's YAMLOutputWriter, by design -- Ring B tools do not own
-output format under the current architecture.
+Output persistence is the runner's job, not the tool's. This example
+therefore does not have the tool pick an output format or write files;
+run() returns structured data inside CapabilityResult, and main() decides
+to serialize it to disk.
 
-Run this file directly to see it work end to end against a small, real
-JSON fixture:
+Run this file directly:
 
     python examples/toolkit_usage.py
 """
@@ -44,12 +32,13 @@ from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel
-from quack_core.config.tooling.logger import get_logger
-from quack_core.contracts import CapabilityResult
-from quack_core.core.fs import get_service as get_fs_service
-from quack_core.integrations.google.drive import GoogleDriveService
-from quack_core.tools import (
-    BaseQuackTool,
+
+from zeo_core.config.tooling.logger import get_logger
+from zeo_core.contracts import CapabilityResult
+from zeo_core.core.fs import get_service as get_fs_service
+from zeo_core.integrations.google.drive import GoogleDriveService
+from zeo_core.tools import (
+    BaseZeoTool,
     IntegrationEnabledMixin,
     LifecycleMixin,
     ToolContext,
@@ -82,7 +71,7 @@ class ExampleToolResponse(BaseModel):
     uploaded_file_id: str | None = None
 
 
-class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseQuackTool):
+class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseZeoTool):
     """
     Example doctrine-compliant tool.
 
@@ -95,7 +84,7 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseQuackTool):
        ctx.services and the request asks for it.
 
     Demonstrates IntegrationEnabledMixin (service lookup from ctx.services)
-    and LifecycleMixin (pre_run/post_run hooks) alongside BaseQuackTool's
+    and LifecycleMixin (pre_run/post_run hooks) alongside BaseZeoTool's
     required run(request, ctx) contract.
     """
 
@@ -143,7 +132,7 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseQuackTool):
         except OSError as e:
             return CapabilityResult.fail_from_exc(
                 msg=f"Could not read input file: {request.input_path}",
-                code="QC_IO_NOT_FOUND",
+                code="ZEO_IO_NOT_FOUND",
                 exc=e,
             )
 
@@ -152,7 +141,7 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseQuackTool):
         except json.JSONDecodeError as e:
             return CapabilityResult.fail_from_exc(
                 msg=f"Input file is not valid JSON: {request.input_path}",
-                code="QC_VAL_INVALID_JSON",
+                code="ZEO_VAL_INVALID_JSON",
                 exc=e,
             )
 
@@ -210,7 +199,6 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseQuackTool):
         Returns:
             The processed content.
         """
-        # If content is a string (raw JSON), parse it
         if isinstance(content, str):
             content = json.loads(content)
 
@@ -232,12 +220,6 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseQuackTool):
         - Number of keys in the data
         - Types of values
         - Depth of the data structure
-
-        Args:
-            data: The data to analyze.
-
-        Returns:
-            The calculated statistics.
         """
         num_keys = len(data)
 
@@ -246,7 +228,7 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseQuackTool):
             value_type = type(value).__name__
             value_types[value_type] = value_types.get(value_type, 0) + 1
 
-        def get_depth(d: Any, level: int = 1) -> int:  # noqa: ANN401 -- genuinely dynamic: recurses into arbitrary JSON-shaped values (dict/list/scalar), same data domain as content above
+        def get_depth(d: Any, level: int = 1) -> int:  # noqa: ANN401 -- recurses into arbitrary JSON-shaped values
             if not isinstance(d, dict):
                 return level
             if not d:
@@ -267,19 +249,8 @@ class ExampleTool(IntegrationEnabledMixin, LifecycleMixin, BaseQuackTool):
         processed: dict[str, Any],
         folder_id: str | None,
         ctx: ToolContext,
-    ) -> Any:  # noqa: ANN401 -- returns GoogleDriveService.upload_file's own IntegrationResult[str]; not re-exported through this module's typed surface
-        """
-        Write the processed result to a temp file and upload it to Drive.
-
-        Args:
-            drive: Resolved Google Drive integration service.
-            processed: The processed content to upload.
-            folder_id: Optional destination folder ID.
-            ctx: Tool context (used for the work directory).
-
-        Returns:
-            IntegrationResult from GoogleDriveService.upload_file.
-        """
+    ) -> Any:  # noqa: ANN401 -- returns GoogleDriveService.upload_file's own IntegrationResult[str]
+        """Write the processed result to a temp file and upload it to Drive."""
         upload_path = Path(ctx.work_dir) / f"{self.name}_output.json"
         upload_path.write_text(json.dumps(processed, indent=2), encoding="utf-8")
         return drive.upload_file(
@@ -292,24 +263,22 @@ def main() -> None:
     """
     Example of using ExampleTool end to end.
 
-    Plays the role a real runner (Ring C) would play: builds a ToolContext,
+    Plays the role a real runner would play: builds a ToolContext,
     constructs a request, invokes the tool's lifecycle (pre_run -> run ->
-    post_run), and persists the result -- none of which the tool itself is
-    responsible for under Doctrine v3.
+    post_run), and persists the result.
     """
-    with tempfile.TemporaryDirectory(prefix="quack_toolkit_usage_") as tmp:
+    with tempfile.TemporaryDirectory(prefix="zeo_toolkit_usage_") as tmp:
         tmp_dir = Path(tmp)
         work_dir = tmp_dir / "work"
         output_dir = tmp_dir / "output"
         work_dir.mkdir()
         output_dir.mkdir()
 
-        # Write a small, realistic input fixture.
         input_path = tmp_dir / "example_data.json"
         input_path.write_text(
             json.dumps(
                 {
-                    "project": "quackverse",
+                    "project": "zeocore",
                     "version": 3,
                     "tags": ["doctrine", "example"],
                     "nested": {"enabled": True},
@@ -330,8 +299,6 @@ def main() -> None:
             work_dir=str(work_dir),
             output_dir=str(output_dir),
             # No "google_drive" entry: demonstrates the graceful-skip path.
-            # A real runner wires ctx.services={"google_drive": GoogleDriveService(...)}
-            # once the integration is configured.
             services={},
         )
 
@@ -361,11 +328,10 @@ def main() -> None:
             print(f"Failed to process file: {run_result.human_message}")
             return
 
-        assert run_result.data is not None  # noqa: S101 -- narrows Optional for the demo print below; status==success guarantees data is populated per run()'s own contract
+        assert run_result.data is not None  # noqa: S101 -- narrows Optional for the demo print
         print(f"File processed: {run_result.human_message}")
         print(f"Uploaded file id: {run_result.data.uploaded_file_id!r}")
 
-        # The runner's job, not the tool's: persist the result.
         output_file = output_dir / "example_data.processed.json"
         output_file.write_text(
             json.dumps(run_result.data.processed, indent=2), encoding="utf-8"

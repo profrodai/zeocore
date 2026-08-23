@@ -28,6 +28,16 @@ def generate_run_id() -> str:
     return str(uuid.uuid4())
 
 
+def generate_invocation_id() -> str:
+    """
+    Generate a unique capability invocation identifier.
+
+    Runners may supply their own ID. This helper exists for library tests
+    and runners that want a UUID4 default.
+    """
+    return str(uuid.uuid4())
+
+
 def generate_artifact_id() -> str:
     """
     Generate a unique artifact identifier.

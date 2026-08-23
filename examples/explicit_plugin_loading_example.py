@@ -1,409 +1,76 @@
-# === QV-LLM:BEGIN ===
-# path: examples/explicit_plugin_loading_example.py
-# === QV-LLM:END ===
-
-
 """
-Example: Explicit Plugin Loading Best Practices
+Explicit plugin loading: discover without instantiating, then load by id.
 
-This example demonstrates the recommended patterns for using the
-refactored QuackCore plugin system with explicit loading.
+Importing ``zeo_core.modules`` has no side effects. Call
+``list_available_entry_points`` / ``load_enabled_entry_points`` yourself.
 
-Key concepts demonstrated:
-1. Discovery without instantiation
-2. Explicit, controlled loading
-3. Configuration-driven plugin enablement
-4. Error handling and validation
-5. Plugin lifecycle management
+Run:
+
+    python examples/explicit_plugin_loading_example.py
 """
 
-import logging
-from typing import Any
+from __future__ import annotations
 
-# Configure logging to see what's happening
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+from zeo_core.modules import (
+    list_available_entry_points,
+    load_enabled_entry_points,
+    registry,
 )
-logger = logging.getLogger(__name__)
-
-
-def example_1_discovery() -> None:
-    """
-    Example 1: Discover available modules without loading them.
-
-    This is useful for:
-    - Showing users what modules are available
-    - Validating configuration before loading
-    - Building plugin selection UIs
-    """
-    print("\n" + "=" * 70)
-    print("EXAMPLE 1: Discovery Without Loading")
-    print("=" * 70 + "\n")
-
-    from quack_core.modules import list_available_entry_points, registry
-
-    # Verify registry is empty (no auto-loading)
-    print(f"Registry state before discovery: {len(registry.list_ids())} modules")
-
-    # Discover what's available
-    available = list_available_entry_points()
-
-    print(f"\nDiscovered {len(available)} available modules:")
-    for ep in available:
-        print(f"  - {ep.plugin_id} (from {ep.value})")
-
-    # Registry should still be empty (discovery doesn't instantiate)
-    print(f"\nRegistry state after discovery: {len(registry.list_ids())} modules")
-    print("✓ Discovery completed without side effects")
-
-
-def example_2_explicit_loading() -> None:
-    """
-    Example 2: Explicitly load specific modules.
-
-    This is the recommended approach for application startup.
-    """
-    print("\n" + "=" * 70)
-    print("EXAMPLE 2: Explicit Loading")
-    print("=" * 70 + "\n")
-
-    from quack_core.modules import load_enabled_entry_points, registry
-
-    # Clear any previous state
-    registry.clear()
-
-    # Define which modules to load
-    enabled_plugins = ["fs", "paths", "config"]
-
-    print(f"Loading modules: {enabled_plugins}")
-
-    # Load with strict error handling
-    result = load_enabled_entry_points(
-        enabled=enabled_plugins,
-        strict=True,
-        auto_register=True,
-    )
-
-    # Check results
-    if result.success:
-        print(f"✓ Successfully loaded {len(result.loaded)} modules:")
-        for plugin_id in result.loaded:
-            plugin = registry.get_plugin(plugin_id)
-            if plugin is None:
-                # get_plugin's return type is nullable for the general
-                # lookup-by-id case; a plugin_id fresh out of result.loaded
-                # is expected to be registered, but the API can't promise
-                # that statically, so narrow explicitly rather than assume.
-                print(f"  - {plugin_id}: (registered but lookup returned None)")
-                continue
-            metadata = plugin.get_metadata()
-            print(f"  - {plugin_id}: {metadata.name} v{metadata.version}")
-    else:
-        print(f"✗ Loading failed with {len(result.errors)} errors:")
-        for error in result.errors:
-            print(f"  - {error}")
-
-    # Show warnings even on success
-    if result.warnings:
-        print(f"\n⚠ {len(result.warnings)} warnings:")
-        for warning in result.warnings:
-            print(f"  - {warning}")
-
-
-def example_3_error_handling() -> None:
-    """
-    Example 3: Error handling in strict vs. non-strict mode.
-
-    Demonstrates the difference between fail-fast and continue-on-error.
-    """
-    print("\n" + "=" * 70)
-    print("EXAMPLE 3: Error Handling (Strict vs. Non-Strict)")
-    print("=" * 70 + "\n")
-
-    from quack_core.modules import load_enabled_entry_points, registry
-
-    # Clear previous state
-    registry.clear()
-
-    # Plugins to load (includes one that doesn't exist)
-    plugins_with_typo = ["fs", "patsss", "config"]  # "patsss" doesn't exist
-
-    print("Attempting to load modules with a typo:")
-    print(f"  {plugins_with_typo}\n")
-
-    # Try in strict mode first
-    print("--- STRICT MODE (fail-fast) ---")
-    registry.clear()
-
-    result_strict = load_enabled_entry_points(
-        enabled=plugins_with_typo,
-        strict=True,
-    )
-
-    if result_strict.success:
-        print(f"✓ Loaded: {result_strict.loaded}")
-    else:
-        print(f"✗ Failed: {result_strict.errors[0]}")
-        print(f"  Loaded: {result_strict.loaded} (none - rolled back)")
-
-    print(f"  Registry has {len(registry.list_ids())} modules")
-
-    # Try in non-strict mode
-    print("\n--- NON-STRICT MODE (continue-on-error) ---")
-    registry.clear()
-
-    result_relaxed = load_enabled_entry_points(
-        enabled=plugins_with_typo,
-        strict=False,
-    )
-
-    if result_relaxed.success:
-        print(f"✓ Partially loaded: {result_relaxed.loaded}")
-    else:
-        print(f"⚠ Completed with warnings: {result_relaxed.loaded}")
-
-    if result_relaxed.warnings:
-        print(f"  Warnings: {result_relaxed.warnings[0]}")
-
-    print(f"  Registry has {len(registry.list_ids())} modules")
-
-
-def example_4_configuration_driven() -> None:
-    """
-    Example 4: Load modules based on configuration.
-
-    This is the recommended pattern for production applications.
-    """
-    print("\n" + "=" * 70)
-    print("EXAMPLE 4: Configuration-Driven Loading")
-    print("=" * 70 + "\n")
-
-    from quack_core.modules import load_enabled_entry_points, registry
-
-    # Clear previous state
-    registry.clear()
-
-    # Simulated configuration (in practice, load from YAML/JSON). Explicitly
-    # typed dict[str, Any]: this dict genuinely mixes value shapes (a str, a
-    # nested dict) across its keys, so mypy's own narrower inference
-    # (Collection[str] for the nested "modules" value) isn't a bug to work
-    # around -- it's an honest reflection of an untyped, heterogeneous
-    # literal. Any is correct here, not a loophole.
-    config: dict[str, Any] = {
-        "environment": "production",
-        "modules": {
-            "enabled": ["fs", "paths", "config"],
-            "strict_loading": True,
-        },
-    }
-
-    print(f"Loading configuration for: {config['environment']}")
-    print(f"Enabled modules: {config['modules']['enabled']}")
-    print(f"Strict mode: {config['modules']['strict_loading']}\n")
-
-    # Load based on config
-    result = load_enabled_entry_points(
-        enabled=config["modules"]["enabled"],
-        strict=config["modules"]["strict_loading"],
-    )
-
-    if result.success:
-        print(f"✓ Application ready with {len(result.loaded)} modules")
-
-        # Verify specific capabilities
-        print("\nVerifying capabilities:")
-
-        # Check if we have filesystem support
-        if registry.is_registered("fs"):
-            print("  ✓ Filesystem plugin available")
-
-        # Check if we have path utilities
-        if registry.is_registered("paths"):
-            print("  ✓ Path utilities available")
-
-        # List all available commands (if any command modules loaded)
-        commands = registry.list_commands()
-        if commands:
-            print(f"  ✓ {len(commands)} commands available: {commands}")
-    else:
-        print(f"✗ Application startup failed: {result.errors}")
-        print("  Cannot continue - exiting")
-        # In real app: sys.exit(1)
-
-
-def example_5_plugin_metadata() -> None:
-    """
-    Example 5: Working with plugin metadata and capabilities.
-
-    Shows how to query plugin information and find modules by capability.
-    """
-    print("\n" + "=" * 70)
-    print("EXAMPLE 5: Plugin Metadata and Capabilities")
-    print("=" * 70 + "\n")
-
-    from quack_core.modules import load_enabled_entry_points, registry
-
-    # Clear and load some modules
-    registry.clear()
-    load_enabled_entry_points(["fs", "paths", "config"])
-
-    print("Loaded modules:\n")
-
-    for plugin_id in registry.list_ids():
-        plugin = registry.get_plugin(plugin_id)
-        if plugin is None:
-            # list_ids() enumerates the registry's own keys, so a lookup by
-            # one of those ids is not expected to miss -- but get_plugin's
-            # return type is nullable for the general case, so narrow
-            # explicitly rather than assume.
-            print(f"Plugin: {plugin_id} (registered but lookup returned None)")
-            continue
-        metadata = plugin.get_metadata()
-
-        print(f"Plugin: {plugin_id}")
-        print(f"  Name: {metadata.name}")
-        print(f"  Version: {metadata.version}")
-        print(f"  Description: {metadata.description}")
-
-        if metadata.author:
-            print(f"  Author: {metadata.author}")
-
-        if metadata.capabilities:
-            print(f"  Capabilities: {', '.join(metadata.capabilities)}")
-
-        print()
-
-    # Find modules by capability
-    print("Finding modules with 'filesystem' capability:")
-    fs_plugins = registry.find_plugins_by_capability("filesystem")
-
-    if fs_plugins:
-        for plugin in fs_plugins:
-            print(f"  - {plugin.plugin_id}")
-    else:
-        print("  (none found)")
-
-
-def example_6_lifecycle_management() -> None:
-    """
-    Example 6: Plugin lifecycle management.
-
-    Demonstrates loading, unloading, and reloading modules.
-    """
-    print("\n" + "=" * 70)
-    print("EXAMPLE 6: Plugin Lifecycle Management")
-    print("=" * 70 + "\n")
-
-    from quack_core.modules import load_enabled_entry_points, registry
-
-    # Start fresh
-    registry.clear()
-    print("Starting with empty registry")
-    print(f"  Plugins: {registry.list_ids()}\n")
-
-    # Load initial set
-    print("Loading initial modules: ['fs', 'paths']")
-    load_enabled_entry_points(["fs", "paths"])
-    print(f"  Plugins: {registry.list_ids()}\n")
-
-    # Unload one plugin
-    print("Unloading 'paths' plugin")
-    registry.unregister("paths")
-    print(f"  Plugins: {registry.list_ids()}\n")
-
-    # Load additional plugin
-    print("Loading 'config' plugin")
-    load_enabled_entry_points(["config"])
-    print(f"  Plugins: {registry.list_ids()}\n")
-
-    # Clear all
-    print("Clearing all modules")
-    registry.clear()
-    print(f"  Plugins: {registry.list_ids()}\n")
-
-    print("✓ Lifecycle management complete")
-
-
-def example_7_testing_pattern() -> None:
-    """
-    Example 7: Testing pattern with isolated plugin state.
-
-    Shows how to structure tests with proper plugin isolation.
-    """
-    print("\n" + "=" * 70)
-    print("EXAMPLE 7: Testing Pattern")
-    print("=" * 70 + "\n")
-
-    from quack_core.modules import load_enabled_entry_points, registry
-
-    def simulate_test_case_1() -> None:
-        """Simulated test case 1."""
-        # setUp: Clean state
-        registry.clear()
-
-        # Load only what this test needs
-        load_enabled_entry_points(["fs"])
-
-        # Test logic
-        assert registry.is_registered("fs"), "FS plugin should be loaded"
-        assert not registry.is_registered("paths"), "Paths should not be loaded"
-
-        print("✓ Test case 1 passed")
-
-        # tearDown: Clean up
-        registry.clear()
-
-    def simulate_test_case_2() -> None:
-        """Simulated test case 2."""
-        # setUp: Clean state
-        registry.clear()
-
-        # This test needs different modules
-        load_enabled_entry_points(["paths", "config"])
-
-        # Test logic
-        assert not registry.is_registered("fs"), "FS should not be loaded"
-        assert registry.is_registered("paths"), "Paths plugin should be loaded"
-        assert registry.is_registered("config"), "Config plugin should be loaded"
-
-        print("✓ Test case 2 passed")
-
-        # tearDown: Clean up
-        registry.clear()
-
-    print("Running isolated test cases:\n")
-    simulate_test_case_1()
-    simulate_test_case_2()
-
-    print("\n✓ All tests passed with proper isolation")
 
 
 def main() -> None:
-    """Run all examples."""
-    print("\n" + "=" * 70)
-    print("QuackCore Explicit Plugin Loading Examples")
-    print("=" * 70)
+    registry.clear()
+    print("registry before discovery:", len(registry.list_ids()))
 
-    examples = [
-        ("Discovery", example_1_discovery),
-        ("Explicit Loading", example_2_explicit_loading),
-        ("Error Handling", example_3_error_handling),
-        ("Configuration-Driven", example_4_configuration_driven),
-        ("Plugin Metadata", example_5_plugin_metadata),
-        ("Lifecycle Management", example_6_lifecycle_management),
-        ("Testing Pattern", example_7_testing_pattern),
-    ]
+    available = list_available_entry_points()
+    print(f"discovered {len(available)} entry points:")
+    for ep in available[:8]:
+        print(f"  - {ep.plugin_id} ({ep.value})")
+    if len(available) > 8:
+        print(f"  ... {len(available) - 8} more")
+    print("registry after discovery:", len(registry.list_ids()))
 
-    for name, example_func in examples:
-        try:
-            example_func()
-        except Exception as e:
-            logger.error(f"Example '{name}' failed: {e}", exc_info=True)
+    enabled = ["fs", "paths", "config"]
+    print("\nloading:", enabled)
+    result = load_enabled_entry_points(
+        enabled=enabled, strict=True, auto_register=True
+    )
+    if result.success:
+        print("loaded:", result.loaded)
+        for plugin_id in result.loaded:
+            plugin = registry.get_plugin(plugin_id)
+            if plugin is None:
+                print(f"  - {plugin_id}: lookup returned None")
+                continue
+            name = getattr(plugin, "name", type(plugin).__name__)
+            print(f"  - {plugin_id}: {name}")
+    else:
+        print("errors:", result.errors)
 
-    print("\n" + "=" * 70)
-    print("Examples Complete")
-    print("=" * 70 + "\n")
+    print("\nstrict mode with a typo:")
+    registry.clear()
+    typo = load_enabled_entry_points(
+        enabled=["fs", "patsss"],
+        strict=True,
+        auto_register=True,
+    )
+    print("success:", typo.success, "errors:", typo.errors, "loaded:", typo.loaded)
+
+    print("\nnon-strict mode with a typo:")
+    registry.clear()
+    relaxed = load_enabled_entry_points(
+        enabled=["fs", "patsss"],
+        strict=False,
+        auto_register=True,
+    )
+    print(
+        "success:",
+        relaxed.success,
+        "warnings:",
+        relaxed.warnings,
+        "loaded:",
+        relaxed.loaded,
+    )
 
 
 if __name__ == "__main__":

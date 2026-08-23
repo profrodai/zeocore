@@ -192,3 +192,15 @@ class ToolContext(BaseModel):
                 f"Available services: {list(self.services.keys())}"
             )
         return service
+
+    def get_clock(self) -> Any:  # noqa: ANN401 -- optional runner clock; default is constructed by invoke helper
+        """Return the injected clock service, if any."""
+        return self.get_service("clock")
+
+    def get_cancellation(self) -> Any:  # noqa: ANN401 -- optional cancellation token
+        """Return the injected cancellation service, if any."""
+        return self.get_service("cancellation")
+
+    def get_artifact_sink(self) -> Any:  # noqa: ANN401 -- optional artifact emitter
+        """Return the injected artifact sink, if any."""
+        return self.get_service("artifacts")

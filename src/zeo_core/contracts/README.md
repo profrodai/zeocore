@@ -10,7 +10,7 @@ The `zeo_core.contracts` module defines the **canonical data contracts** for the
 - Envelopes (results, errors, log events)
 - Artifacts (references, metadata, storage)
 - Run manifests (inputs, outputs, intermediates)
-- Capability request/response schemas
+- Capability identity, definitions, manifests, guards, and invocation records
 
 ✅ **Minimal helpers** that do NOT orchestrate:
 - ID generation (UUID only)
@@ -64,6 +64,10 @@ Breaking changes require:
 2. Migration guide in changelog
 3. Version bump in `CONTRACTS_VERSION`
 
+Runnable authoring (decorator, registry, invoke) lives in
+[`examples/capability_authoring.py`](../../../examples/capability_authoring.py).
+More contract snippets: [`EXAMPLES.md`](EXAMPLES.md).
+
 ## Usage Examples
 
 ```python
@@ -112,6 +116,14 @@ This enables:
 - **Pluggable storage**: Local → S3 → GCS without changing contracts
 - **Machine branching**: n8n routes by `role` and `kind`, not file inspection
 - **Audit trails**: Full provenance from manifest metadata
+
+### Canonical capability contracts (0.5.0)
+
+`CapabilityId`, `CapabilityDefinition`, `CapabilityManifest`,
+`RequestGuard` / `GuardResult`, and `CapabilityInvocationRecord` live
+here. They are Pydantic-only: no tools, core, or integration imports.
+`CapabilityOutcome` maps onto the existing three-way `CapabilityStatus`
+for orchestrator branching. Human approval is not a capability result.
 
 ## Contributing
 

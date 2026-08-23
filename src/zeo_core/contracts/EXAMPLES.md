@@ -9,6 +9,11 @@ This document provides practical examples of using the contracts module.
 3. [Building Manifests](#building-manifests)
 4. [Tool Implementation Pattern](#tool-implementation-pattern)
 5. [Orchestrator Pattern](#orchestrator-pattern)
+6. [Capability identity](#capability-identity)
+7. [Definition and manifest](#definition-and-manifest)
+8. [Outcome vs status](#outcome-vs-status)
+9. [Request guards](#request-guards)
+10. [Invocation records](#invocation-records)
 
 ---
 
@@ -488,8 +493,75 @@ def test_load_manifest_fixture():
 
 ---
 
+## Capability identity
+
+```python
+from zeo_core.contracts import CapabilityId
+
+ident = CapabilityId.parse("demo.greet@1.0.0")
+assert ident.namespace == "demo"
+assert ident.name == "greet"
+assert ident.canonical() == "demo.greet@1.0.0"
+```
+
+## Definition and manifest
+
+`CapabilityDefinition` is built from Pydantic models (via
+`schemas_from_models` / `build_definition` in `zeo_core.tools`). Export a
+provider-neutral discovery document with:
+
+```python
+from zeo_core.contracts import CapabilityManifest
+
+manifest = CapabilityManifest.from_definition(cap.definition)
+```
+
+## Outcome vs status
+
+```python
+from zeo_core.contracts import CapabilityOutcome, CapabilityResult, CapabilityStatus
+
+ok = CapabilityResult.ok(data={"n": 1})
+assert ok.status == CapabilityStatus.success
+assert ok.outcome == CapabilityOutcome.success
+
+missing = CapabilityResult.unavailable(reason="github service not wired")
+assert missing.status == CapabilityStatus.skipped
+assert missing.outcome == CapabilityOutcome.unavailable
+```
+
+## Request guards
+
+```python
+from zeo_core.contracts import GuardIssue, GuardResult
+
+
+class NonEmptyNameGuard:
+    def check(self, request):
+        if not request.name.strip():
+            return GuardResult.reject(
+                "name must not be blank",
+                issues=(GuardIssue(path="name", message="blank"),),
+            )
+        return GuardResult.accept()
+```
+
+Guards must not perform I/O or request human approval. Wire them on
+`@capability(..., guards=(...))`. See
+[`examples/capability_guards.py`](../../../examples/capability_guards.py).
+
+## Invocation records
+
+`CapabilityInvocationRecord` is audit evidence a runner may persist
+(digests + redaction), not an organizational execution receipt. Helpers:
+`canonical_json`, `digest_payload`, `redact_value`,
+`generate_invocation_id`. The invoke helper
+`zeo_core.tools.invocation_record` fills one from a completed call.
+
+---
+
 ## See Also
 
-- [README.md](README.md) - Architecture and boundaries
-- [Doctrine v3 Documentation](../docs/doctrine-v3.md) - Ring architecture
-- [API Reference](../docs/api-reference.md) - Complete API docs
+- [README.md](README.md) — architecture and boundaries
+- [`examples/capability_authoring.py`](../../../examples/capability_authoring.py)
+- [GET-STARTED Capabilities](../../../GET-STARTED.md#capabilities)

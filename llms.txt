@@ -8,11 +8,10 @@
 > exception or an untyped dict). PyPI distribution name: `zeocore`;
 > import name: `zeo_core`.
 
-Start here, in order: read README.md for the 60-second shape and the
-"why a typed result" rationale, then GET-STARTED.md for a full
-module-by-module walkthrough (config, paths, filesystem, errors,
-integrations, MCP/HTTP adapters), then copy the closest-matching file
-under examples/ — every one of them is runnable as printed
+Start here, in order: read README.md for the 60-second `@capability`
+shape, then GET-STARTED.md (especially Capabilities), then
+docs/tutorials/capability-authoring.md, then copy the closest-matching
+file under examples/ — every one of them is runnable as printed
 (`python examples/<name>.py`), not an illustrative fragment.
 
 ## Core docs
@@ -22,52 +21,55 @@ under examples/ — every one of them is runnable as printed
   3.13 — the package's own floor, requires Python >=3.13).
 - [GET-STARTED.md](GET-STARTED.md): The full walkthrough — configuration,
   path resolution, filesystem operations, typed error handling, writing a
-  tool, integrations (Google Drive/Gmail/Calendar, GitHub, Notion
-  read+write, Pandoc, jupytext script↔notebook conversion, ffmpeg
-  probing/transcoding, LLM providers with tool-calling and prompt
-  caching), exposing tools over HTTP or MCP, and a troubleshooting section
-  for common exceptions.
-- [docs/tutorials/](docs/tutorials/): worked, end-to-end tutorials —
-  building an app with Claude Code/Cursor against zeocore's MCP server,
-  the Notion integration from auth through a real read+write example, and
-  the Google Calendar integration from OAuth setup through a real
-  read+write example.
-- [CHANGELOG.md](CHANGELOG.md): Version history, including the
-  quack_core -> zeo_core rename and what did/didn't change as part of it.
+  capability (`@capability` / `BaseZeoTool`), integrations (Google
+  Drive/Gmail/Calendar, GitHub, Notion, Pandoc, jupytext, ffmpeg, LLM
+  providers), exposing tools over HTTP or MCP, OpenAI function
+  projection, and a troubleshooting section.
+- [docs/README.md](docs/README.md): tutorial index vs maintainer reports.
+- [docs/tutorials/capability-authoring.md](docs/tutorials/capability-authoring.md):
+  define → register → invoke → project OpenAI → bind HTTP/MCP.
+- [docs/tutorials/](docs/tutorials/): MCP with Claude Code/Cursor, Notion,
+  Google Calendar.
+- [CHANGELOG.md](CHANGELOG.md): Version history (Keep a Changelog).
+  RELEASE_NOTES.md is the short 0.5.0 announcement; CHANGELOG.md is the
+  full history.
 - [CONTRIBUTING.md](CONTRIBUTING.md): Dev setup, the gate
   (`make verify` / `make verify-full`), code style, canonical import
   paths.
+- [SECURITY.md](SECURITY.md): How to report vulnerabilities.
 
 ## Examples (all runnable as-is)
 
+- [examples/capability_authoring.py](examples/capability_authoring.py):
+  Canonical `@capability` function authoring and `CapabilityRegistry`.
+- [examples/capability_guards.py](examples/capability_guards.py):
+  `RequestGuard` rejecting a request before the handler runs.
+- [examples/tool_to_capability.py](examples/tool_to_capability.py):
+  Adapt `BaseZeoTool` → `BoundCapability`.
+- [examples/llm_tools_usage.py](examples/llm_tools_usage.py):
+  `project_openai_tool` from a `CapabilityManifest` (or typed refusal).
 - [examples/minimal_tool.py](examples/minimal_tool.py): The smallest
-  possible tool — no mixins, no services, just `run()`.
-- [examples/toolkit_usage.py](examples/toolkit_usage.py): The full
-  picture — lifecycle hooks, an optional integration, graceful
-  degradation when a service isn't configured.
+  possible class tool — no mixins, no services, just `run()`.
+- [examples/toolkit_usage.py](examples/toolkit_usage.py): Lifecycle
+  hooks, optional integration, graceful skip when a service isn't wired.
 - [examples/error_handling.py](examples/error_handling.py): The
-  `ZeoError` family and `@wrap_io_errors`, for failures a tool didn't
-  expect (as opposed to `CapabilityResult.fail()`, for failures it did).
+  `ZeoError` family and `@wrap_io_errors`.
 - [examples/config_usage.py](examples/config_usage.py): `load_config()`'s
-  three real behaviors — default-locations lookup (never raises), an
-  explicit missing path (raises `ZeoConfigurationError` by design), and
-  an explicit real path (succeeds).
+  three real behaviors.
+- [examples/http_adapter_usage.py](examples/http_adapter_usage.py): Bind
+  a capability into `OperationRegistry` and hit FastAPI (`zeocore[http]`).
 - [examples/mcp_server_usage.py](examples/mcp_server_usage.py): Expose a
-  tool as an MCP server for Claude Code, Cursor, and other MCP-native
-  agents, with zero MCP-specific code in the tool itself.
-- [examples/notion_usage.py](examples/notion_usage.py): Real Notion
-  read/write calls (search, query a database, create a page, append
-  blocks), with a graceful skip when `NOTION_TOKEN` isn't set.
-- [examples/calendar_usage.py](examples/calendar_usage.py): Real Google
-  Calendar read/write calls (list calendars, list/create/update/delete
-  events), with a graceful skip when
-  `ZEO_GOOGLE_CALENDAR_CLIENT_SECRETS` isn't set.
-- [examples/jupytext_usage.py](examples/jupytext_usage.py): Round-trip a
-  percent-format script to a notebook and back
-  (`script_to_notebook()`/`notebook_to_script()`).
+  tool as an MCP server (`zeocore[mcp]`).
+- [examples/explicit_plugin_loading_example.py](examples/explicit_plugin_loading_example.py):
+  Discover and load plugins without import-time side effects.
+- [examples/notion_usage.py](examples/notion_usage.py): Notion read/write,
+  skip when `NOTION_TOKEN` isn't set.
+- [examples/calendar_usage.py](examples/calendar_usage.py): Google
+  Calendar read/write, skip when OAuth isn't configured.
+- [examples/jupytext_usage.py](examples/jupytext_usage.py): Script ↔
+  notebook round-trip.
 - [examples/ffmpeg_usage.py](examples/ffmpeg_usage.py): Probe, transcode,
-  and thumbnail a synthetic test video generated on the fly (wraps the
-  org's `ffmpeg-zeo` package).
+  thumbnail a synthetic test video.
 
 ## Package surface (import paths)
 
@@ -78,13 +80,18 @@ under examples/ — every one of them is runnable as printed
   convenience. Everything else below is its own import; this top level
   intentionally does not re-export config/core/integrations/modules.
 - `zeo_core.tools`: same tool-authoring surface as the top level (the
-  canonical, explicit path). Do not import from `zeo_core.tools.mixins.*`
-  submodules directly — use `zeo_core.tools` (or the top-level package).
-- `zeo_core.contracts`: `CapabilityResult`, `CapabilityError`, artifact
-  and manifest models (`ArtifactRef`, `RunManifest`, `StorageRef`, ...),
-  common enums/IDs. Machine-readable codes on `CapabilityResult` and
-  `CapabilityError` use the `ZEO_<AREA>_<DETAIL>` convention (`ZC_` and
-  legacy `QC_` are also accepted for backward compatibility).
+  canonical, explicit path), plus `@capability`, `CapabilityRegistry`,
+  `invoke_sync`/`invoke_async`, and `tool_to_capability`. Do not import
+  from `zeo_core.tools.mixins.*` submodules directly.
+- `zeo_core.contracts`: `CapabilityId`, `CapabilityDefinition`,
+  `CapabilityManifest`, `CapabilityResult`, `CapabilityOutcome`,
+  `CapabilityError`, artifact and manifest models, common enums/IDs.
+  Machine-readable codes use `ZEO_<AREA>_<DETAIL>` (`ZC_` and legacy
+  `QC_` accepted). Effects are declarations, not authorization.
+- `zeo_core.adapters`: `adapters.http`, `adapters.mcp` (both can bind a
+  capability into `OperationRegistry`), and `adapters.llm_tools`
+  (OpenAI-compatible function projection; never silently weakens input
+  JSON Schema).
 - `zeo_core.config`: `load_config()`, `ZeoConfig` and its component
   models, YAML + environment-variable configuration loading.
 - `zeo_core.core`: `core.fs` (filesystem ops), `core.paths` (path
@@ -106,18 +113,21 @@ under examples/ — every one of them is runnable as printed
   gap: tool_use response blocks aren't parsed back into structured
   output yet). Database integrations (BigQuery/Supabase/SQLite) were
   evaluated and explicitly not built — do not assume they exist.
-- `zeo_core.adapters`: `adapters.http` (FastAPI REST adapter,
-  `zeocore[http]`) and `adapters.mcp` (MCP server adapter,
-  `zeocore[mcp]`), both reading from the same `OperationRegistry`.
+- `zeo_core.contract_pack`: `PACK_VERSION` / `PACK_SCHEMA` for ecosystem
+  consumption tests; does not import `sovereign_agent`.
 - `zeo_core.modules`: Plugin discovery and explicit-loading registry.
 - `zeo_core.prompt`: Prompt template selection and enhancement.
+- `zeo_core.tools.catalog`: in-tree **reference** capabilities, not a
+  public API. `zeo_core.tools.compat.sovereign_style_capability` is
+  transitional, not canonical.
 
 ## Conventions worth knowing before you guess
 
 - Tools report expected failure/skip conditions via
-  `CapabilityResult.ok()` / `.skip()` / `.fail()` / `.fail_from_exc()` —
-  not by raising. Raise only for genuinely exceptional cases, using the
-  `zeo_core.core.errors` `ZeoError` family.
+  `CapabilityResult.ok()` / `.skip()` / `.unavailable()` / `.fail()` /
+  `.fail_from_exc()` — not by raising. Fine-grained `CapabilityOutcome`
+  maps onto success/skipped/error. Raise only for genuinely exceptional
+  cases, using the `zeo_core.core.errors` `ZeoError` family.
 - `load_config()` with no argument never raises, even in a directory with
   no config file anywhere — it falls back to built-in defaults. It only
   raises `ZeoConfigurationError` when given an *explicit* path that

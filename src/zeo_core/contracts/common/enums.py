@@ -5,7 +5,7 @@ These enums define controlled vocabularies for status codes,
 artifact types, and other categorical values.
 """
 
-from enum import Enum
+from enum import Enum, StrEnum
 
 
 class CapabilityStatus(str, Enum):
@@ -18,6 +18,47 @@ class CapabilityStatus(str, Enum):
     success = "success"  # Capability completed successfully
     skipped = "skipped"  # Capability was intentionally skipped (policy decision)
     error = "error"  # Capability failed with an error
+
+
+class CapabilityOutcome(StrEnum):
+    """
+    Fine-grained invocation outcome.
+
+    Maps onto CapabilityStatus for orchestrator branching (success / skipped /
+    error) while distinguishing guard rejection, unavailability, expected
+    integration failure, invalid returns, unexpected exceptions, and observed
+    cancellation. Human approval and externally imposed timeouts are not
+    outcomes.
+    """
+
+    success = "success"
+    policy_skipped = "policy_skipped"
+    unavailable = "unavailable"
+    guard_rejected = "guard_rejected"
+    integration_failure = "integration_failure"
+    invalid_return = "invalid_return"
+    unexpected_exception = "unexpected_exception"
+    cancelled = "cancelled"
+
+
+class EffectKind(StrEnum):
+    """Declared side-effect kind. Declarations are not permission grants."""
+
+    READ = "read"
+    WRITE = "write"
+    DELETE = "delete"
+    EXTERNAL_COMMUNICATION = "external_communication"
+    FINANCIAL = "financial"
+    SECURITY_SENSITIVE = "security_sensitive"
+
+
+class ConcurrencyMode(StrEnum):
+    """Declared coordination requirement. The runner owns locks."""
+
+    PARALLEL_SAFE = "parallel_safe"
+    SERIAL_PER_CAPABILITY = "serial_per_capability"
+    SERIAL_PER_RESOURCE = "serial_per_resource"
+    EXCLUSIVE = "exclusive"
 
 
 class LogLevel(str, Enum):
