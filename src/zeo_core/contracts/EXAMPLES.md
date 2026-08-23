@@ -535,6 +535,7 @@ assert missing.outcome == CapabilityOutcome.unavailable
 ```python
 from zeo_core.contracts import GuardIssue, GuardResult
 
+
 class NonEmptyNameGuard:
     def check(self, request):
         if not request.name.strip():
