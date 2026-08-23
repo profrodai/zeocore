@@ -64,6 +64,10 @@ Breaking changes require:
 2. Migration guide in changelog
 3. Version bump in `CONTRACTS_VERSION`
 
+Runnable authoring (decorator, registry, invoke) lives in
+[`examples/capability_authoring.py`](../../../examples/capability_authoring.py).
+More contract snippets: [`EXAMPLES.md`](EXAMPLES.md).
+
 ## Usage Examples
 
 ```python

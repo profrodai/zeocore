@@ -1,5 +1,9 @@
 # Sovereign Agent capability-replacement readiness
 
+> Maintainer / ecosystem document — not end-user documentation. See
+> [docs/README.md](../README.md).
+
+
 **ZeoCore release:** 0.5.0 (`zeo_core.__version__`)
 **Contracts:** `CONTRACTS_VERSION` 1.1.0, manifest schema 1.0
 **Python ruling:** ZeoCore stays `>=3.13`; forthcoming ecosystem releases

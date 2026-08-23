@@ -1,9 +1,21 @@
 # zeocore 0.5.0
 
+This file is the short release announcement. Full history is in
+[CHANGELOG.md](CHANGELOG.md) (Keep a Changelog).
+
 Capability consolidation: ZeoCore is the canonical capability-authoring and
 capability-contract library for the Zero Employee ecosystem. Sovereign Agent
 is not moved into this package. Existing `BaseZeoTool`, HTTP, and MCP callers
 keep working.
+
+## Adopter path
+
+1. `pip install zeocore` (Python 3.13+).
+2. Run [`examples/capability_authoring.py`](examples/capability_authoring.py).
+3. Read [GET-STARTED.md — Capabilities](GET-STARTED.md#capabilities).
+4. Bind HTTP (`examples/http_adapter_usage.py`, extra `zeocore[http]`) or
+   MCP (`examples/mcp_server_usage.py`, extra `zeocore[mcp]`). Project to
+   OpenAI function tools with `examples/llm_tools_usage.py`.
 
 ## Ownership
 

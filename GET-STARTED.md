@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**ZeoCore** is a capability-authoring framework and infrastructure library for Python. It provides a typed base for writing tools (`BaseZeoTool`, `ToolContext`, `CapabilityResult`), plus shared infrastructure for path resolution, filesystem operations, configuration management, plugin discovery, integrations with third-party services (Google Drive, Gmail, Google Calendar, Notion, Pandoc, jupytext, ffmpeg, LLM providers, GitHub), and adapters for exposing your tools over HTTP or MCP (for Claude Code, Cursor, and other MCP-native coding agents). **Requires Python 3.13 or newer.**
+**ZeoCore** is a capability-authoring framework and infrastructure library for Python. It provides a typed base for writing capabilities (`@capability`, `BaseZeoTool`, `ToolContext`, `CapabilityResult`), plus shared infrastructure for path resolution, filesystem operations, configuration management, plugin discovery, integrations with third-party services (Google Drive, Gmail, Google Calendar, Notion, Pandoc, jupytext, ffmpeg, LLM providers, GitHub), and adapters for exposing your tools over HTTP, MCP, or OpenAI-compatible function tools. **Requires Python 3.13 or newer.**
 
 ZeoCore is designed for developers building automation tools, content pipelines, and integrations that need consistent configuration, filesystem, and error-handling behavior without re-solving those problems per project.
 
@@ -82,23 +82,145 @@ Interfaces to third-party services (Google Drive, Gmail, Google Calendar, Notion
 Structured error handling system with typed exceptions for improved developer experience.
 
 ### `zeo_core.tools`
-The capability-authoring framework itself: `BaseZeoTool`, `ToolContext`, and
-optional mixins (`IntegrationEnabledMixin`, `LifecycleMixin`,
-`ToolEnvInitializerMixin`) for building doctrine-compliant tools. See
-[`examples/toolkit_usage.py`](examples/toolkit_usage.py) and
-[`examples/minimal_tool.py`](examples/minimal_tool.py).
+The capability-authoring framework: `@capability` functions,
+`CapabilityRegistry`, `invoke_sync` / `invoke_async`, `BaseZeoTool`,
+`ToolContext`, `tool_to_capability`, and optional mixins
+(`IntegrationEnabledMixin`, `LifecycleMixin`, `ToolEnvInitializerMixin`).
+See [Capabilities](#capabilities) below,
+[`examples/capability_authoring.py`](examples/capability_authoring.py),
+and [`examples/minimal_tool.py`](examples/minimal_tool.py).
 
 ### `zeo_core.contracts`
-The data contracts tools speak: `CapabilityResult`, artifact/manifest
-models, and common enums/IDs used across the framework.
+The data contracts tools speak: `CapabilityId`, `CapabilityDefinition`,
+`CapabilityManifest`, `CapabilityResult`, `CapabilityOutcome`, request
+guards, invocation records, plus artifact/manifest models. See
+[`src/zeo_core/contracts/README.md`](src/zeo_core/contracts/README.md) and
+[`src/zeo_core/contracts/EXAMPLES.md`](src/zeo_core/contracts/EXAMPLES.md).
 
 ### `zeo_core.adapters`
-Optional network-facing adapters, both reading from the same
+Optional adapters, both HTTP and MCP reading from the same
 `OperationRegistry` (`zeo_core.core.registry`): `adapters.http` (FastAPI,
 `zeocore[http]`) exposes tools over REST; `adapters.mcp` (`zeocore[mcp]`)
 exposes them as MCP tools for Claude Code, Cursor, and other MCP-native
-agents. See "Exposing Tools as an MCP Server" below and
-[`examples/mcp_server_usage.py`](examples/mcp_server_usage.py).
+agents; `adapters.llm_tools` projects a `CapabilityManifest` to an
+OpenAI-compatible function tool (and **refuses** unsupported JSON Schema
+instead of silently stripping it). See
+[`examples/http_adapter_usage.py`](examples/http_adapter_usage.py),
+[`examples/mcp_server_usage.py`](examples/mcp_server_usage.py), and
+[`examples/llm_tools_usage.py`](examples/llm_tools_usage.py).
+
+---
+
+## Capabilities
+
+ZeoCore **defines** capabilities. A runner (for example Sovereign Agent)
+invokes and supervises them. Organizational authorization lives in Zero
+Employee — a capability's `effects` field is a **declaration**, not a
+permission grant. Human approval is not a capability result state.
+
+Identity is `namespace.name@semver` (`CapabilityId`). JSON Schema is
+generated from Pydantic request/response models, not from shallow
+annotations. Every capability needs at least one `CapabilityExample`.
+
+Canonical function authoring:
+
+```python
+from zeo_core.contracts import CapabilityExample, CapabilityResult, EffectKind
+from zeo_core.tools import (
+    CapabilityRegistry,
+    ToolContext,
+    bound_capability_of,
+    capability,
+    invoke_sync,
+)
+from pydantic import BaseModel
+
+
+class GreetRequest(BaseModel):
+    name: str
+
+
+class GreetResponse(BaseModel):
+    message: str
+
+
+@capability(
+    id="demo.greet@1.0.0",
+    description="Greet a person by name.",
+    effects={EffectKind.READ},
+    examples=(
+        CapabilityExample(
+            request={"name": "World"},
+            response={"message": "Hello, World!"},
+        ),
+    ),
+)
+def greet(request: GreetRequest, ctx: ToolContext) -> CapabilityResult[GreetResponse]:
+    return CapabilityResult.ok(data=GreetResponse(message=f"Hello, {request.name}!"))
+
+
+cap = bound_capability_of(greet)
+registry = CapabilityRegistry()
+registry.register(cap)
+result = invoke_sync(cap, GreetRequest(name="World"), ctx)
+```
+
+`invoke_async` is the same pipeline for `async def` handlers. Register
+third-party capabilities via the `zeo_core.capabilities` entry-point group
+(`CapabilityRegistry.load_entry_points()`).
+
+Class tools remain supported: subclass `BaseZeoTool`, implement
+`run(request, ctx) -> CapabilityResult`, and adapt with
+`tool_to_capability` once the class declares examples. See
+[`examples/tool_to_capability.py`](examples/tool_to_capability.py).
+
+### Status vs outcome
+
+Orchestrators still branch on three-way `CapabilityStatus`
+(success / skipped / error). Fine-grained `CapabilityOutcome` layers on
+top:
+
+| Constructor | Typical outcome | Status |
+|---|---|---|
+| `.ok()` | `success` | success |
+| `.skip()` | `policy_skipped` | skipped |
+| `.unavailable()` | `unavailable` | skipped |
+| `.fail()` / `.fail_from_exc()` | `integration_failure` (default) | error |
+
+Guards and the invoke helper can also produce `guard_rejected`,
+`invalid_return`, `unexpected_exception`, and `cancelled`. Existing
+`.ok()` / `.skip()` / `.fail()` callers do not need to set `outcome`.
+
+### Request guards vs Pydantic
+
+Pydantic validates **shape**. A `RequestGuard` is a side-effect-free
+policy check over an already-validated request model (`GuardResult.accept`
+/ `.reject`). A rejected guard maps to `CapabilityOutcome.guard_rejected`
+and the handler body does not run. See
+[`examples/capability_guards.py`](examples/capability_guards.py).
+
+### Manifests, LLM tools, HTTP/MCP
+
+`CapabilityManifest.from_definition(cap.definition)` is the
+provider-neutral discovery document. `project_openai_tool(manifest)` in
+`zeo_core.adapters.llm_tools` projects it to an OpenAI function tool, or
+returns a typed incompatibility instead of dropping keywords. See
+[`examples/llm_tools_usage.py`](examples/llm_tools_usage.py).
+
+`register_capability_operation` binds a `BoundCapability` into
+`OperationRegistry` so HTTP and MCP can invoke the same request model.
+See [`examples/http_adapter_usage.py`](examples/http_adapter_usage.py).
+
+`zeo_core.tools.catalog` holds **reference** implementations (add,
+checksum, GitHub read, calendar create, pandoc). It is not a public API.
+`zeo_core.tools.compat.sovereign_style_capability` is a **transitional**
+adapter for keyword-argument functions — not the canonical surface.
+
+Ecosystem runners can pin `zeo_core.contract_pack` (`PACK_VERSION`,
+`PACK_SCHEMA`) without importing Sovereign Agent.
+
+Worked walkthrough:
+[docs/tutorials/capability-authoring.md](docs/tutorials/capability-authoring.md).
 
 ---
 
@@ -579,7 +701,36 @@ runnable version, including calling the resulting tool through the real
 `create_server()` reads from the SAME `OperationRegistry`
 (`zeo_core.core.registry`) that `zeo_core.adapters.http` reads from --
 registering a tool once with `register_tool()` makes it reachable from
-both the HTTP and MCP adapters, not just one.
+both the HTTP and MCP adapters, not just one. Capabilities registered
+with `register_capability_operation` use that same registry.
+
+### Exposing Tools over HTTP
+
+Requires the `http` extra (`pip install "zeocore[http]"`). Bind a
+capability (or keep using `OperationRegistry.register` for older
+callables), then `create_app` / `run`:
+
+```python
+from zeo_core.adapters.http import HttpAdapterConfig, create_app, run
+from zeo_core.core.registry import OperationRegistry
+from zeo_core.tools import bound_capability_of, register_capability_operation
+
+# greet is a @capability function; make_ctx returns ToolContext
+ops = OperationRegistry()
+register_capability_operation(
+    bound_capability_of(greet),
+    registry=ops,
+    context_factory=make_ctx,
+    name="greet",
+)
+# create_app(HttpAdapterConfig(auth_token=None), registry=ops, ...)
+# run(HttpAdapterConfig(host="127.0.0.1", port=8080))
+```
+
+The runnable example uses FastAPI's `TestClient` so
+`python examples/http_adapter_usage.py` returns instead of blocking on
+uvicorn. Auth is off when `auth_token` is `None`; otherwise send
+`Authorization: Bearer <token>`. OpenAPI is at `/openapi.json`.
 
 ### Error Handling
 
@@ -890,34 +1041,15 @@ Agent) invokes and supervises them. Organizational authorization lives
 in Zero Employee — a capability's `effects` field is a **declaration**,
 not a permission grant.
 
-Canonical function authoring:
-
-```python
-from zeo_core.contracts import CapabilityExample, CapabilityResult, EffectKind
-from zeo_core.tools import ToolContext, bound_capability_of, capability, invoke_sync
-from zeo_core.tools.catalog import AddRequest, AddResponse
-
-@capability(
-    id="math.add@1.0.0",
-    description="Add two decimal numbers.",
-    effects={EffectKind.READ},
-    examples=(CapabilityExample(request={"left": "1", "right": "2"}, response={"sum": "3"}),),
-)
-def add(request: AddRequest, ctx: ToolContext) -> CapabilityResult[AddResponse]:
-    ...
-```
-
-Class tools remain supported: subclass `BaseZeoTool`, implement
-`run(request, ctx) -> CapabilityResult`, and optionally mix in
-`IntegrationEnabledMixin` or `LifecycleMixin`. Register a class tool as
-a capability with `tool_to_capability` once it declares examples.
+See [Capabilities](#capabilities) for the full authoring, guard, outcome,
+and adapter walkthrough. Short checklist:
 
 1. Define Pydantic request and response models (JSON Schema is generated
    from those models — not from shallow annotations).
 2. Implement either `@capability` or `BaseZeoTool.run()`.
 3. Return a `CapabilityResult` (via `.ok()`, `.fail()`, `.fail_from_exc()`,
    `.skip()`, or `.unavailable()`) -- never raise for expected failure
-   modes. Fine-grained `CapabilityOutcome` maps onto success/skipped/error.
+   modes.
 4. Use `zeo_core.core.errors`' `ZeoError` family for exceptional cases.
 5. Look up integrations with `ctx.require_service(...)`. Absence of a
    declared service fails closed; do not fall back to ambient host access.
@@ -994,7 +1126,11 @@ ZeoFileNotFoundError: Could not find project root directory
 
 ## API Reference
 
-For detailed API documentation, refer to the inline documentation in the code or generate API documentation using a tool like Sphinx.
+There is no generated Sphinx site yet. Use inline docstrings,
+[llms.txt](llms.txt) for a condensed import map, and
+[`src/zeo_core/contracts/README.md`](src/zeo_core/contracts/README.md) /
+[`EXAMPLES.md`](src/zeo_core/contracts/EXAMPLES.md) for the contracts
+kernel.
 
 ---
 

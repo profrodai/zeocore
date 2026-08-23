@@ -1,5 +1,9 @@
 # ZC-1 — Capability symbol-level audit
 
+> Maintainer / ecosystem document — not end-user documentation. See
+> [docs/README.md](../README.md).
+
+
 **Source:** `zeroemployeeorg/sovereign-agent` (inspected locally, not imported).
 **Target:** `zeroemployeeorg/zeocore` 0.5.0 capability consolidation.
 **Rule:** no source symbol is moved or copied without a recorded disposition.

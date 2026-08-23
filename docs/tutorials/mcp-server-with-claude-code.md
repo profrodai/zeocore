@@ -88,7 +88,10 @@ class TextStatsTool(BaseZeoTool):
 
 Note what's absent: no `mcp` import, no schema hand-written, no
 decorator. If you already have zeocore tools from before the MCP adapter
-existed, they need no changes at all to become MCP-callable.
+existed, they need no changes at all to become MCP-callable. Function
+capabilities (`@capability`) bind through `register_capability_operation`
+onto the same `OperationRegistry`; see
+[capability-authoring.md](capability-authoring.md).
 
 ## Step 2 — register the tool and build a server
 
