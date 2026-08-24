@@ -59,8 +59,13 @@ make format        # auto-fix formatting with ruff + isort (mutates files)
 make lint           # ruff check + format --check
 make typecheck       # mypy --strict
 make test-fast       # pytest without coverage
+make test-docs       # documentation links + safe beginner example smoke tests
 make test-module M=test_fs   # run one module's tests with coverage
 ```
+
+`make test-docs` is a focused inner-loop target. The full `make verify` test
+step already discovers `tests/test_docs`, so documentation tests run there
+exactly once without a separate gate step.
 
 ## Code style
 
@@ -92,6 +97,15 @@ make test-module M=test_fs   # run one module's tests with coverage
   predecessor package name) and be runnable with `python examples/<name>.py`.
   Credential-gated examples may skip with a printed reason; they must not
   crash on a missing extra if they document that extra.
+- **Documentation links**: use repository-relative links in user-facing
+  Markdown so local readers and GitHub resolve the same files. Include heading
+  fragments when linking to a section, and run `make test-docs` after moving
+  or renaming documentation.
+- **Beginner examples**: keep the credential-free onboarding examples
+  deterministic, offline, and runnable with the base install. If their
+  intentional output changes, update the expected output in
+  `tests/test_docs/test_examples.py`. Do not add credential, OAuth, server,
+  ffmpeg, or optional-extra examples to that smoke-test allowlist.
 - **No test-detection in production code**: production code (`src/zeo_core`)
   must never branch on whether it's running under test (no
   `inspect.stack()`, no `"pytest" in sys.modules`, etc). `make hygiene-check`

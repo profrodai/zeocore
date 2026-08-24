@@ -133,7 +133,7 @@ all = [
 [project.urls]
 "Homepage" = "https://github.com/zeroemployeeorg/zeocore"
 "Bug Tracker" = "https://github.com/zeroemployeeorg/zeocore/issues"
-"Documentation" = "https://github.com/zeroemployeeorg/zeocore/blob/main/GET-STARTED.md"
+"Documentation" = "https://github.com/zeroemployeeorg/zeocore/blob/main/docs/README.md"
 "Changelog" = "https://github.com/zeroemployeeorg/zeocore/blob/main/CHANGELOG.md"
 
 [tool.hatch.version]

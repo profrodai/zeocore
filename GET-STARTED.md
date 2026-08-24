@@ -1,61 +1,102 @@
-# ZeoCore Documentation
+# ZeoCore Manual
+
+> **New to ZeoCore? Don't start here.** Read
+> [QUICKSTART.md](QUICKSTART.md) first — it takes you from an empty folder
+> to a running capability in about ten minutes, including installing
+> Python 3.13 and creating a virtual environment, and explains every line
+> of the code you write. This page is the reference manual you come back to
+> afterwards.
+
+Where each document fits: [README.md](README.md) is the one-page overview,
+[QUICKSTART.md](QUICKSTART.md) is the hands-on first hour,
+[docs/README.md](docs/README.md) is the guided learning path with tutorials,
+and this manual covers everything in depth.
+
+## Contents
+
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Core Modules Overview](#core-modules-overview)
+- [Capabilities](#capabilities) — the authoring surface, and the section to
+  read if you only read one
+  - [Status vs outcome](#status-vs-outcome)
+  - [Request guards vs Pydantic](#request-guards-vs-pydantic)
+  - [Manifests, LLM tools, HTTP/MCP](#manifests-llm-tools-httpmcp)
+- [Getting Started](#getting-started) — configuration, paths, filesystem,
+  plugins, and every integration
+  - [Basic Configuration Setup](#basic-configuration-setup)
+  - [Path Resolution](#path-resolution) ·
+    [File Operations](#file-operations) ·
+    [Using Plugins](#using-plugins)
+  - Integrations:
+    [Google Drive](#working-with-google-drive-integration) ·
+    [Gmail](#working-with-gmail-integration) ·
+    [Google Calendar](#working-with-google-calendar-integration) ·
+    [Notion](#working-with-notion-integration) ·
+    [Jupytext](#working-with-jupytext-integration-script-to-notebook-conversion) ·
+    [FFmpeg](#working-with-ffmpeg-integration-media-probingtranscoding) ·
+    [LLM providers](#working-with-llm-providers-chat-tool-calling-prompt-caching)
+  - Adapters: [MCP server](#exposing-tools-as-an-mcp-server) ·
+    [HTTP](#exposing-tools-over-http)
+- [Advanced Usage](#advanced-usage) — custom plugins, Pandoc, custom config
+- [Configuration File Format](#configuration-file-format)
+- [Environment Variables](#environment-variables) — including
+  [Secrets and `.env`](#secrets-and-env)
+- [Integration Authentication](#integration-authentication)
+- [Best Practices](#best-practices)
+- [Extending ZeoCore](#extending-zeocore)
+- [Troubleshooting](#troubleshooting)
+- [API Reference](#api-reference)
+- [Contributing](#contributing)
+
+---
 
 ## Introduction
 
-**ZeoCore** is a capability-authoring framework and infrastructure library for Python. It provides a typed base for writing capabilities (`@capability`, `BaseZeoTool`, `ToolContext`, `CapabilityResult`), plus shared infrastructure for path resolution, filesystem operations, configuration management, plugin discovery, integrations with third-party services (Google Drive, Gmail, Google Calendar, Notion, Pandoc, jupytext, ffmpeg, LLM providers, GitHub), and adapters for exposing your tools over HTTP, MCP, or OpenAI-compatible function tools. **Requires Python 3.13 or newer.**
+**ZeoCore** is a capability-authoring framework and infrastructure library
+for Python. It gives you a typed base for writing capabilities
+(`@capability`, `BaseZeoTool`, `ToolContext`, `CapabilityResult`), plus the
+shared infrastructure around them: path resolution, filesystem operations,
+configuration management, plugin discovery, integrations with third-party
+services (Google Drive, Gmail, Google Calendar, Notion, Pandoc, jupytext,
+ffmpeg, LLM providers, GitHub), and adapters that expose your tools over
+HTTP, MCP, or as OpenAI-compatible function tools.
 
-ZeoCore is designed for developers building automation tools, content pipelines, and integrations that need consistent configuration, filesystem, and error-handling behavior without re-solving those problems per project.
+It's aimed at developers building automation tools, content pipelines, and
+integrations that need consistent configuration, filesystem, and
+error-handling behavior without re-solving those problems in every project.
 
-This documentation helps you get started with ZeoCore and use its features in your own applications. See also [`examples/`](examples/) for runnable, verified example scripts.
+Most of what's documented here has a runnable counterpart in
+[`examples/`](examples/), and those scripts are verified, not illustrative
+fragments.
 
 ---
 
 ## Installation
 
-### Prerequisites
-
-- Python 3.13 or higher
-- pip package manager
-
-### Basic Installation
+**Requires Python 3.13 or newer**, and pip. If you need help installing
+either one, or setting up a virtual environment,
+[QUICKSTART.md](QUICKSTART.md) walks through it step by step for
+macOS/Linux and Windows.
 
 ```bash
 pip install zeocore
 ```
 
-### Optional Dependencies
-
-ZeoCore provides optional dependency groups tailored to specific integrations:
+Integrations ship as optional extras, so you install only what you use:
 
 ```bash
-# For Google Drive integration
-pip install "zeocore[drive]"
-
-# For Gmail integration
-pip install "zeocore[gmail]"
-
-# For Google Calendar integration
-pip install "zeocore[calendar]"
-
-# For Notion integration
-pip install "zeocore[notion]"
-
-# For Pandoc document conversion
-pip install "zeocore[pandoc]"
-
-# For development (includes testing tools)
-pip install "zeocore[dev]"
-
-# For all Google-related functionality
-pip install "zeocore[google]"
-
-# For the HTTP adapter (expose tools over REST)
-pip install "zeocore[http]"
-
-# For the MCP adapter (expose tools to Claude Code, Cursor, and other
-# MCP-native coding agents)
-pip install "zeocore[mcp]"
+pip install "zeocore[notion]"     # a single integration
+pip install "zeocore[google]"     # Drive + Gmail auth plumbing
+pip install "zeocore[http]"       # FastAPI adapter, expose tools over REST
+pip install "zeocore[mcp]"        # MCP adapter for Claude Code, Cursor, etc.
+pip install "zeocore[all,mcp]"    # everything (note: [all] excludes mcp)
 ```
+
+The full extras table is in the
+[README](README.md#optional-integrations). Each integration section below
+names the extra it needs. Contributors additionally want the `dev` and
+`lint` extras — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
@@ -112,6 +153,10 @@ instead of silently stripping it). See
 ---
 
 ## Capabilities
+
+> Haven't written one yet? [QUICKSTART.md](QUICKSTART.md#step-5-write-your-first-capability)
+> builds a working capability line by line and explains each piece. This
+> section assumes you've done that, or can read the code below comfortably.
 
 ZeoCore **defines** capabilities. A runner (for example Sovereign Agent)
 invokes and supervises them. Organizational authorization lives in Zero
@@ -225,6 +270,11 @@ Worked walkthrough:
 ---
 
 ## Getting Started
+
+The sections below are task-oriented and independent — read the one you
+need. They cover the infrastructure around your capabilities:
+configuration, paths, filesystem, plugins, each integration, and the HTTP
+and MCP adapters.
 
 ### Basic Configuration Setup
 
@@ -493,7 +543,7 @@ See [`examples/notion_usage.py`](examples/notion_usage.py) for a fully
 runnable version, including the graceful-skip path when `NOTION_TOKEN`
 isn't set.
 
-### Working with Jupytext Integration (script <-> notebook conversion)
+### Working with Jupytext Integration (script to notebook conversion)
 
 Converts between percent-format Python scripts (`# %%`-delimited cells,
 diff-friendly, plain text) and Jupyter notebooks. This is the exact
@@ -984,6 +1034,8 @@ else:
 
 ---
 
+## Best Practices
+
 ### Project Structure
 
 Follow this recommended project structure when using ZeoCore:
@@ -1058,6 +1110,12 @@ See [`examples/capability_authoring.py`](examples/capability_authoring.py)
 and [`examples/minimal_tool.py`](examples/minimal_tool.py).
 
 ## Troubleshooting
+
+Installation and first-capability problems (wrong Python version, an
+inactive virtual environment, `ModuleNotFoundError: No module named
+'zeo_core'`, decorator errors) are covered in
+[QUICKSTART.md's common errors table](QUICKSTART.md#common-errors). The
+issues below are the runtime ones you hit later.
 
 ### Common Issues
 
