@@ -71,6 +71,7 @@ help: ## Show this help message
 	@echo '  ${GREEN}make hygiene-check${RESET}    - fail if production code detects tests'
 	@echo '  ${GREEN}make test${RESET}             - pytest with coverage (runs ONCE)'
 	@echo '  ${GREEN}make test-fast${RESET}        - pytest without coverage (quick inner loop)'
+	@echo '  ${GREEN}make test-docs${RESET}        - documentation links + safe example smoke tests'
 	@echo '  ${GREEN}make build${RESET}            - python -m build (sdist + wheel)'
 	@echo ''
 	@echo '${YELLOW}Inspection:${RESET}'
@@ -247,6 +248,11 @@ test: ## Run tests with coverage (ONCE)
 test-fast: ## Run tests without coverage (quick inner-loop feedback)
 	@echo "${BLUE}Running tests (no coverage)...${RESET}"
 	$(PYTHON) -m pytest $(TESTS) $(PYTEST_ARGS)
+
+.PHONY: test-docs
+test-docs: ## Check documentation links and safe beginner examples
+	@echo "${BLUE}Checking documentation and beginner examples...${RESET}"
+	$(PYTHON) -m pytest $(TESTS)/test_docs $(PYTEST_ARGS)
 
 .PHONY: test-module
 test-module: ## Run one module's tests: make test-module M=test_integrations/pandoc

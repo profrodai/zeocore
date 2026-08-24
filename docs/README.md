@@ -1,20 +1,139 @@
-# Docs
+# ZeoCore Documentation
 
-## Tutorials (adopters)
+This is the learning hub. It tells you what to read, in what order, and what
+each piece is for.
 
-- [Capability authoring](tutorials/capability-authoring.md) — `@capability`,
-  registry, invoke, OpenAI projection, HTTP/MCP binding.
+**Brand new to ZeoCore?** Go straight to
+[QUICKSTART.md](../QUICKSTART.md) — it installs Python 3.13, sets up a
+virtual environment, and gets a capability running on your machine in about
+ten minutes.
+
+## The learning path
+
+Work through these in order. Each step assumes the one before it.
+
+| # | Read | Time | You'll be able to |
+|---|---|---|---|
+| 1 | [README.md](../README.md) | 5 min | Say what ZeoCore is, who it's for, and how a capability is shaped. |
+| 2 | [QUICKSTART.md](../QUICKSTART.md) | 10 min | Install ZeoCore and run your own capability, and explain every line of it. |
+| 3 | [Concepts](concepts.md) | 15 min | Understand capabilities, contracts, context, and where the runner's job begins. |
+| 4 | [Capability authoring tutorial](tutorials/capability-authoring.md) | 20 min | Register capabilities, add guards, build manifests, and bind to adapters. |
+| 5 | [Results and errors](tutorials/results-and-errors.md) | 20 min | Choose correctly between returning a result and raising an exception. |
+| 6 | [Context, configuration, and files](tutorials/context-config-files.md) | 20 min | Wire `ToolContext`, `load_config()`, and filesystem access together. |
+| 7 | [GET-STARTED.md](../GET-STARTED.md) | reference | Use paths, plugins, integrations, and adapters in depth. |
+| 8 | An integration tutorial ([MCP](tutorials/mcp-server-with-claude-code.md), [Notion](tutorials/notion-integration.md), or [Calendar](tutorials/calendar-integration.md)) | 20 min | Connect your capability to the outside world. |
+
+Unfamiliar term along the way? The [glossary](glossary.md) defines them in
+one place.
+
+## Tutorials
+
+Step-by-step guides for people building on ZeoCore.
+
+**Core**
+
+- [Author your first capability](tutorials/capability-authoring.md) —
+  `@capability`, the registry, invoking, OpenAI projection, and HTTP/MCP
+  binding. **Start here after the quickstart.**
+- [Results and errors](tutorials/results-and-errors.md) — the difference
+  between an expected outcome and a bug, and how each is reported.
+- [Context, configuration, and files](tutorials/context-config-files.md) —
+  `ToolContext`, configuration loading, and filesystem access, and how they
+  relate.
+
+**Integrations and adapters**
+
 - [MCP server with Claude Code / Cursor](tutorials/mcp-server-with-claude-code.md)
-- [Notion integration](tutorials/notion-integration.md)
-- [Google Calendar integration](tutorials/calendar-integration.md)
+  — expose your tools to MCP-native coding agents.
+- [Notion integration](tutorials/notion-integration.md) — read and write
+  Notion pages and databases.
+- [Google Calendar integration](tutorials/calendar-integration.md) — OAuth
+  setup, reading and creating events.
 
-Start with [README.md](../README.md) and [GET-STARTED.md](../GET-STARTED.md).
-Runnable scripts live under [`examples/`](../examples/).
+## Runnable examples
+
+Every script in [`examples/`](../examples/) runs as-is with
+`python examples/<name>.py`. None are illustrative fragments. Some need an
+optional extra installed (noted below); the credential-backed ones skip
+gracefully when the credential isn't set, rather than crashing.
+
+**Authoring the core surface**
+
+- [`capability_authoring.py`](../examples/capability_authoring.py) — the
+  canonical `@capability` function, registry, and `invoke_sync`.
+- [`minimal_tool.py`](../examples/minimal_tool.py) — the smallest class-based
+  tool: no mixins, no services, just `run()`.
+- [`tool_to_capability.py`](../examples/tool_to_capability.py) — adapt a
+  `BaseZeoTool` class into a `BoundCapability`.
+- [`capability_guards.py`](../examples/capability_guards.py) — a
+  `RequestGuard` rejecting a request before the handler body runs.
+- [`toolkit_usage.py`](../examples/toolkit_usage.py) — lifecycle hooks, an
+  optional integration, and a graceful skip when a service isn't wired.
+
+**Infrastructure**
+
+- [`config_usage.py`](../examples/config_usage.py) — `load_config()`'s three
+  real behaviors, including the failure mode caught on purpose.
+- [`error_handling.py`](../examples/error_handling.py) — the `ZeoError`
+  family and when to raise instead of returning a result.
+- [`explicit_plugin_loading_example.py`](../examples/explicit_plugin_loading_example.py)
+  — discover and load plugins with no import-time side effects.
+
+**Exposing capabilities**
+
+- [`llm_tools_usage.py`](../examples/llm_tools_usage.py) — project a
+  `CapabilityManifest` to an OpenAI function tool, or refuse cleanly.
+- [`http_adapter_usage.py`](../examples/http_adapter_usage.py) — bind a
+  capability into `OperationRegistry` and exercise the FastAPI app
+  (`zeocore[http]`).
+- [`mcp_server_usage.py`](../examples/mcp_server_usage.py) — expose a tool as
+  an MCP server (`zeocore[mcp]`).
+
+**Integrations**
+
+- [`notion_usage.py`](../examples/notion_usage.py) — Notion read/write,
+  skipped when `NOTION_TOKEN` isn't set.
+- [`calendar_usage.py`](../examples/calendar_usage.py) — Google Calendar
+  read/write, skipped when OAuth isn't configured.
+- [`jupytext_usage.py`](../examples/jupytext_usage.py) — script ↔ notebook
+  round-trip.
+- [`ffmpeg_usage.py`](../examples/ffmpeg_usage.py) — probe, transcode, and
+  thumbnail a synthetic test video it generates itself.
+
+## Reference
+
+- [API reference](reference/api.md) — the public surface, symbol by symbol,
+  and which import paths are supported.
+- [Concepts](concepts.md) — the model behind the API: capabilities,
+  contracts, context, and the runner boundary.
+- [Glossary](glossary.md) — one-line definitions of the vocabulary used
+  throughout these docs.
+- [GET-STARTED.md](../GET-STARTED.md) — the full manual, and the place to
+  look things up once you're past the tutorials. Includes a
+  [troubleshooting section](../GET-STARTED.md#troubleshooting).
+- [`src/zeo_core/contracts/README.md`](../src/zeo_core/contracts/README.md) —
+  the contracts kernel: identities, definitions, manifests, results.
+- [`src/zeo_core/contracts/EXAMPLES.md`](../src/zeo_core/contracts/EXAMPLES.md)
+  — worked contract examples.
+- [llms.txt](../llms.txt) — a condensed import map for coding agents.
+- [CHANGELOG.md](../CHANGELOG.md) — what changed, and which things were
+  deliberately not built.
+
+There is no generated API site yet — [reference/api.md](reference/api.md),
+inline docstrings, and the contracts kernel are the API reference.
+
+## Contributing
+
+[CONTRIBUTING.md](../CONTRIBUTING.md) covers dev environment setup
+(`make setup`), the verification gate (`make verify`), and how to submit a
+change. Conduct expectations are in
+[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md); security reports go through
+[SECURITY.md](../SECURITY.md).
 
 ## Maintainer / ecosystem reports
 
-These are **not** end-user documentation. They record how ZeoCore relates
-to Sovereign Agent and the Zero Employee ecosystem.
+These are **not** end-user documentation. They record how ZeoCore relates to
+Sovereign Agent and the wider Zero Employee ecosystem.
 
 - [Capability symbol audit](reports/capability-symbol-audit.md)
 - [Sovereign Agent replacement readiness](reports/sovereign-agent-capability-replacement-readiness.md)

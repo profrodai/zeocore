@@ -6,10 +6,53 @@
 [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/zeroemployeeorg/zeocore)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**A typed capability-authoring framework for Python.** Declare a capability
-once — namespaced identity, Pydantic request/response, declared effects,
-structured result — and invoke it from a runner, an HTTP API, MCP, or an
-LLM tool list. SPDX: `MIT`.
+**ZeoCore is a Python framework for writing capabilities: small, typed,
+named units of work that anything can call.**
+
+You write a function once — giving it an identity, a typed request and
+response, a declaration of its side effects, and a structured result — and
+that same function can then be run by a script, served over HTTP, exposed to
+an MCP-native coding agent like Claude Code or Cursor, or handed to an LLM as
+a callable tool. You don't rewrite it for each destination.
+
+**New here? Start with the [Quickstart](QUICKSTART.md).** It takes you from
+an empty folder to a running capability in about ten minutes, and assumes no
+prior knowledge of ZeoCore.
+
+## Who this is for
+
+- **Students and newcomers** learning how to structure real Python tools —
+  typed inputs, explicit error handling, no hidden global state.
+- **Developers** building automation, content pipelines, or integrations who
+  don't want to re-solve configuration, filesystem, and error handling in
+  every project.
+- **Teams** in the Zero Employee ecosystem who need one authoring surface
+  that runners, HTTP services, and agents can all consume.
+
+You should be comfortable writing Python functions and classes. You do *not*
+need prior experience with Pydantic, MCP, or agent frameworks.
+
+## Requirements
+
+**Python 3.13 or newer.** That's the only hard requirement. (The floor moved
+from `>=3.10` to `>=3.13` in an earlier cycle; if you're pinned to an older
+interpreter, stay on a pre-floor-bump release.)
+
+Not sure what you have? Run `python3 --version` on macOS/Linux or
+`py --version` on Windows. The [Quickstart](QUICKSTART.md#step-1-check-your-python-version)
+walks through installing 3.13 if you need it.
+
+## Install
+
+```bash
+pip install zeocore
+# or, with uv
+uv pip install zeocore
+```
+
+The package is `zeocore`; the module you import is `zeo_core`.
+
+## Your first capability
 
 ```python
 import logging
@@ -57,46 +100,93 @@ with TemporaryDirectory() as tmp:
         output_dir=tmp,
     )
     result = invoke_sync(bound_capability_of(greet), GreetRequest(name="World"), ctx)
-    print(result.data.message)  # Hello, World!
+    print(result.status.value, "|", result.data.message)
 ```
 
-Class-based tools still work: subclass `BaseZeoTool`, implement
-`run(request, ctx) -> CapabilityResult`, and optionally adapt with
-`tool_to_capability`. See [`examples/minimal_tool.py`](examples/minimal_tool.py)
-and [`examples/tool_to_capability.py`](examples/tool_to_capability.py).
+Expected output:
 
-Every capability takes a typed request, runs against an immutable
-`ToolContext` (logger, filesystem, config, and any services the runner
-wires in), and returns a `CapabilityResult` — success, skip, or error,
-always structured. mypy checks it end to end.
-
-## Why a typed result instead of "just raise an exception"
-
-Exceptions are for things the *caller* didn't expect. A `CapabilityResult`
-is for things the *tool* expects and needs to report cleanly: validation
-failed, a downstream API returned an error, an optional integration wasn't
-configured. Callers get one shape to check (`result.status`, plus
-fine-grained `result.outcome`) instead of a `try`/`except` matrix, and a
-runner orchestrating many tools can log, retry, or persist every result the
-same way.
-
-If a tool *does* hit something genuinely exceptional, ZeoCore's typed error
-hierarchy (`ZeoError` and its subclasses) gives you catchable types instead
-of parsing a string. See [`examples/error_handling.py`](examples/error_handling.py).
-
-## Install
-
-**Requires Python 3.13 or newer.** The floor moved from `>=3.10` to
-`>=3.13` in an earlier cycle. If you're pinned to an older Python, stay on
-a pre-floor-bump release.
-
-```bash
-pip install zeocore
-# or
-uv pip install zeocore
+```
+success | Hello, World!
 ```
 
-Optional integrations ship as extras, so you only install what you use:
+Line-by-line explanation of that script lives in
+[QUICKSTART.md](QUICKSTART.md#what-each-part-of-that-file-does).
+
+## The mental model
+
+Four ideas carry the whole framework.
+
+**1. A capability is identified, not just named.** Identity is
+`namespace.name@semver` (`demo.greet@1.0.0`), so versions can coexist and
+callers can pin one.
+
+**2. The request and response are Pydantic models.** JSON Schema is generated
+from those models, which is how HTTP, MCP, and LLM adapters can call your
+capability without you hand-writing schema for each.
+
+**3. Everything from the outside world arrives via `ToolContext`.** Logger,
+filesystem, config, and any services the caller wired in — your capability
+asks the context instead of reaching for ambient global state. Absence of a
+declared service fails closed.
+
+**4. Expected failures are returned, not raised.** A `CapabilityResult` is
+success, skip, or error, always structured. Exceptions are for what the
+*caller* didn't expect; a `CapabilityResult` is for what the *tool* expects
+and needs to report cleanly — validation failed, a downstream API errored, an
+optional integration wasn't configured. Callers get one shape to check
+(`result.status`, plus fine-grained `result.outcome`) instead of a
+`try`/`except` matrix, so a runner orchestrating many tools can log, retry,
+or persist every result the same way. For genuinely exceptional cases,
+ZeoCore's typed `ZeoError` hierarchy gives you catchable types instead of
+string parsing — see [`examples/error_handling.py`](examples/error_handling.py).
+
+Class-based tools are still supported: subclass `BaseZeoTool`, implement
+`run(request, ctx) -> CapabilityResult`, and adapt with `tool_to_capability`.
+See [`examples/minimal_tool.py`](examples/minimal_tool.py) and
+[`examples/tool_to_capability.py`](examples/tool_to_capability.py).
+
+mypy checks all of it end to end.
+
+## Learn ZeoCore
+
+| Start here | What it gives you |
+|---|---|
+| [QUICKSTART.md](QUICKSTART.md) | Install Python 3.13, make a venv, write and run your first capability. No prior knowledge assumed. |
+| [docs/README.md](docs/README.md) | The learning hub: tutorials, a guided path through the examples, and reference material. |
+| [docs/tutorials/capability-authoring.md](docs/tutorials/capability-authoring.md) | The canonical authoring tutorial — registry, guards, manifests, adapter binding. |
+| [GET-STARTED.md](GET-STARTED.md) | The full manual: configuration, paths, filesystem, plugins, every integration, adapters, troubleshooting. |
+| [docs/reference/api.md](docs/reference/api.md) | The public API surface, symbol by symbol, and which import paths are supported. |
+| [llms.txt](llms.txt) | A condensed import map for coding agents. |
+
+## Examples
+
+Every example under [`examples/`](examples/) is a real, runnable script —
+none are illustrative fragments. Run any of them with
+`python examples/<name>.py`.
+
+- [`capability_authoring.py`](examples/capability_authoring.py) — canonical
+  `@capability` authoring, registry, and `invoke_sync`.
+- [`minimal_tool.py`](examples/minimal_tool.py) — the smallest class tool: no
+  mixins, no services, just `run()`.
+- [`capability_guards.py`](examples/capability_guards.py) — a `RequestGuard`
+  rejecting a request before the handler runs.
+- [`error_handling.py`](examples/error_handling.py) — the `ZeoError` family.
+- [`config_usage.py`](examples/config_usage.py) — `load_config()`'s three
+  real behaviors.
+
+The [docs hub](docs/README.md#runnable-examples) indexes all fifteen,
+grouped by topic.
+
+Examples that need a credential (`NOTION_TOKEN`, `GITHUB_TOKEN`, an LLM API
+key, …) read it from the process environment. Copy
+[`.env.example`](.env.example) to `.env`, fill in real values, and load it
+however your shell or tooling prefers (e.g. `uv run --env-file .env ...`) —
+see [GET-STARTED.md's "Secrets and `.env`"](GET-STARTED.md#secrets-and-env)
+section.
+
+## Optional integrations
+
+Integrations ship as extras, so you install only what you use:
 
 | Extra | What it adds |
 |---|---|
@@ -114,54 +204,10 @@ Optional integrations ship as extras, so you only install what you use:
 | `zeocore[mcp]` | MCP adapter for exposing tools to Claude Code, Cursor, and other MCP-native agents |
 | `zeocore[all]` | Every integration above, no `http`/`mcp`/`dev`/`lint` |
 
-`dev` and `lint` extras exist too, for contributors — see
-[CONTRIBUTING.md](CONTRIBUTING.md) (`make setup`, then `make verify`).
-`mcp`/`mcp-dev` are real, separate extras — `zeocore[all]` does **not**
-pull in the MCP adapter; install `zeocore[mcp]` explicitly (e.g.
-`zeocore[all,mcp]`).
-
-## More examples
-
-- [`examples/capability_authoring.py`](examples/capability_authoring.py) —
-  canonical `@capability` authoring, registry, and `invoke_sync`.
-- [`examples/capability_guards.py`](examples/capability_guards.py) —
-  `RequestGuard` rejecting a request before the handler runs.
-- [`examples/tool_to_capability.py`](examples/tool_to_capability.py) —
-  adapt a `BaseZeoTool` class into a `BoundCapability`.
-- [`examples/llm_tools_usage.py`](examples/llm_tools_usage.py) —
-  project a `CapabilityManifest` to an OpenAI function tool (or refuse).
-- [`examples/minimal_tool.py`](examples/minimal_tool.py) — the smallest
-  class tool: no mixins, no services, just `run()`.
-- [`examples/toolkit_usage.py`](examples/toolkit_usage.py) — lifecycle
-  hooks, an optional integration, graceful skip when a service isn't wired.
-- [`examples/error_handling.py`](examples/error_handling.py) — the
-  `ZeoError` family.
-- [`examples/config_usage.py`](examples/config_usage.py) —
-  `load_config()`'s three real behaviors.
-- [`examples/http_adapter_usage.py`](examples/http_adapter_usage.py) —
-  bind a capability into `OperationRegistry` and exercise the FastAPI app
-  (`zeocore[http]`).
-- [`examples/mcp_server_usage.py`](examples/mcp_server_usage.py) — expose
-  a tool as an MCP server (`zeocore[mcp]`).
-- [`examples/explicit_plugin_loading_example.py`](examples/explicit_plugin_loading_example.py) —
-  discover and load plugins without import-time side effects.
-- [`examples/notion_usage.py`](examples/notion_usage.py) — Notion
-  read/write, skipped when `NOTION_TOKEN` isn't set.
-- [`examples/calendar_usage.py`](examples/calendar_usage.py) — Google
-  Calendar read/write, skipped when OAuth isn't configured.
-- [`examples/jupytext_usage.py`](examples/jupytext_usage.py) — script ↔
-  notebook round-trip.
-- [`examples/ffmpeg_usage.py`](examples/ffmpeg_usage.py) — probe,
-  transcode, and thumbnail a synthetic test video.
-
-Every example is runnable as-is: `python examples/<name>.py`. None of them
-are illustrative fragments.
-
-Examples that need a credential (`NOTION_TOKEN`, `GITHUB_TOKEN`, an LLM API
-key, …) read it from the process environment. Copy [`.env.example`](.env.example)
-to `.env`, fill in real values, and load it however your shell/tooling
-prefers (e.g. `uv run --env-file .env ...`) — see GET-STARTED.md's "Secrets
-and `.env`" section.
+`mcp` and `mcp-dev` are real, separate extras — `zeocore[all]` does **not**
+pull in the MCP adapter. Install it explicitly (e.g. `zeocore[all,mcp]`).
+The `dev` and `lint` extras are for contributors; see
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## What's in the package
 
@@ -177,48 +223,46 @@ and `.env`" section.
 | `zeo_core.prompt` | Prompt template selection and enhancement utilities. |
 | `zeo_core.contract_pack` | Versioned consumption contract pack for ecosystem runners (no `sovereign_agent` import). |
 
-See [GET-STARTED.md](GET-STARTED.md) for a module-by-module walkthrough,
-including the [Capabilities](GET-STARTED.md#capabilities) section.
-[docs/](docs/README.md) indexes tutorials (MCP, Notion, Calendar,
-[capability authoring](docs/tutorials/capability-authoring.md)) separately
-from maintainer reports.
-[llms.txt](llms.txt) is a condensed summary for coding agents.
+[GET-STARTED.md](GET-STARTED.md#core-modules-overview) walks through these
+module by module.
 
 ## Quality bar
 
 - **mypy --strict**, clean across the whole source tree.
 - **2494 tests**, 90%+ coverage, enforced as a hard CI floor
-  (`--cov-fail-under=90`) — a pull request that drops coverage fails the
-  gate.
-- **CI runs the full suite on Python 3.13** (zeocore's minimum-supported
+  (`--cov-fail-under=90`) — a pull request that drops coverage fails the gate.
+- **CI runs the full suite on Python 3.13** (the minimum supported
   interpreter) on every push.
-- Production code is not allowed to detect that it's under test (a
-  dedicated CI check fails the build if it finds `"pytest" in sys.modules`
-  or similar).
+- Production code is not allowed to detect that it's under test (a dedicated
+  CI check fails the build if it finds `"pytest" in sys.modules` or similar).
 
 ## Project status
 
 ZeoCore **0.5.0** is a beta library: the API is typed and tested, and this
 release is the canonical capability-authoring surface for the Zero Employee
-ecosystem. The surface may still shift before 1.0. Issues, questions, and
-API feedback are welcome.
+ecosystem. The surface may still shift before 1.0. Issues, questions, and API
+feedback are welcome.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for dev environment setup, the
-verification gate (`make verify`), and how to submit a change. This project
-follows the [Contributor Covenant](CODE_OF_CONDUCT.md).
+New contributors start at [CONTRIBUTING.md](CONTRIBUTING.md), which covers
+dev environment setup (`make setup`), the verification gate (`make verify`),
+and how to submit a change. This project follows the
+[Contributor Covenant](CODE_OF_CONDUCT.md). Security reports go through
+[SECURITY.md](SECURITY.md).
 
 ## Project links
 
 [PyPI](https://pypi.org/project/zeocore/) ·
 [Source](https://github.com/zeroemployeeorg/zeocore) ·
 [Issues](https://github.com/zeroemployeeorg/zeocore/issues) ·
+[Quickstart](QUICKSTART.md) ·
+[Docs](docs/README.md) ·
+[Manual](GET-STARTED.md) ·
 [Changelog](CHANGELOG.md) ·
-[Get started](GET-STARTED.md) ·
 [Contributing](CONTRIBUTING.md) ·
 [Security](SECURITY.md)
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). SPDX: `MIT`.
