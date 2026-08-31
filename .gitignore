@@ -57,3 +57,10 @@ htmlcov/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Machine-local doctrine symlinks -> sibling zeroemployeeorg/org checkout.
+# zeocore is an implementation repo; canonical doctrine lives in the org corpus.
+# These links escape the repo and would DANGLE in any clone without org as a
+# sibling, so they are deliberately never tracked (see CLAUDE.md).
+/roles
+/authoring
