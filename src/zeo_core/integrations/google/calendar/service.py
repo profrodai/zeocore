@@ -29,6 +29,7 @@ from typing import Any
 from zeo_core.core.errors import (
     ZeoApiError,
     ZeoBaseAuthError,
+    ZeoIntegrationError,
 )
 from zeo_core.integrations.core.base import BaseIntegrationService
 from zeo_core.integrations.core.results import IntegrationResult
@@ -79,18 +80,22 @@ class GoogleCalendarService(BaseIntegrationService, CalendarIntegrationProtocol)
             log_level=log_level,
         )
 
-        self.config: dict[str, Any] = self._initialize_config(
-            client_secrets_file, credentials_file, calendar_id
-        )
+        # Config resolution (and the GoogleAuthProvider construction that
+        # depends on it) is deferred to initialize(), matching
+        # google/mail/service.py's pattern -- __init__ must not raise for a
+        # caller who has no config file yet and intends to supply one before
+        # calling initialize(). Doing this work here instead made
+        # construction from a fresh directory with no config raise
+        # unconditionally (RULING-409 s3), which is the defect this SOW
+        # exists to remove.
+        self._init_client_secrets_file = client_secrets_file
+        self._init_credentials_file = credentials_file
+        self._init_calendar_id = calendar_id
+        self.config: dict[str, Any] = {}
         self.scopes: list[str] = scopes or self.SCOPES
-        self.auth_provider = GoogleAuthProvider(
-            client_secrets_file=self.config["client_secrets_file"],
-            credentials_file=self.config["credentials_file"],
-            scopes=self.scopes,
-            log_level=log_level,
-        )
+        self.auth_provider: GoogleAuthProvider | None = None
         self.calendar_service: Any = None
-        self.default_calendar_id: str = self.config.get("calendar_id") or "primary"
+        self.default_calendar_id: str = calendar_id or "primary"
 
     @property
     def name(self) -> str:
@@ -164,15 +169,53 @@ class GoogleCalendarService(BaseIntegrationService, CalendarIntegrationProtocol)
             IntegrationResult: Result of initialization.
         """
         try:
+            # Config resolution and GoogleAuthProvider construction are
+            # deferred here from __init__ (matching google/mail/service.py
+            # and google/drive/service.py) so that a caller with no config
+            # file yet can still construct the service and supply one
+            # before calling initialize(). This runs BEFORE
+            # super().initialize() -- not after, unlike mail -- because
+            # base.py's own initialize() independently attempts
+            # config_provider.load_config() whenever self.config is still
+            # falsy, which would otherwise force a config FILE to exist on
+            # disk even when the caller passed explicit client_secrets_file/
+            # credentials_file params, breaking the already-supported
+            # explicit-params path (confirmed failing empirically before
+            # this ordering fix: this service's own existing test suite,
+            # which constructs with explicit params and no config file,
+            # failed with "Configuration file not found" once
+            # super().initialize() ran first). Populating self.config here
+            # first makes base.py's `if not self.config` guard skip its own
+            # load attempt.
+            if not self._initialized:
+                try:
+                    self.config = self._initialize_config(
+                        self._init_client_secrets_file,
+                        self._init_credentials_file,
+                        self._init_calendar_id,
+                    )
+                except ZeoIntegrationError as e:
+                    self.logger.error(f"Failed to initialize configuration: {e}")
+                    return IntegrationResult.error_result(
+                        f"Failed to initialize configuration: {e}"
+                    )
+                self.default_calendar_id = self.config.get("calendar_id") or "primary"
+                self.auth_provider = GoogleAuthProvider(
+                    client_secrets_file=self.config["client_secrets_file"],
+                    credentials_file=self.config["credentials_file"],
+                    scopes=self.scopes,
+                    log_level=self.log_level,
+                )
+
             init_result = super().initialize()
             if not init_result.success:
                 return init_result
 
             # self.auth_provider is typed AuthProviderProtocol | None on the
-            # base class, but __init__ always constructs and assigns a real
-            # GoogleAuthProvider before initialize() can run -- never None
-            # for this concrete class. Narrow explicitly, same reasoning as
-            # drive/service.py's identical guard.
+            # base class, but is always constructed above, a few lines into
+            # this method, before this point can run -- never None here.
+            # Narrow explicitly, same reasoning as drive/service.py's
+            # identical guard.
             if self.auth_provider is None:
                 return IntegrationResult.error_result(
                     "GoogleCalendarService has no auth_provider configured"

@@ -15,7 +15,14 @@ class TestGoogleDriveServiceInit:
         "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     def test_init(self, mock_verify: MagicMock) -> None:
-        """Test initializing the drive service."""
+        """Test initializing the drive service.
+
+        Config resolution is deferred to initialize() (matching
+        google/mail/service.py, RULING-409 s6c step 1) so that __init__
+        itself never raises for a caller with no config file yet -- so
+        service.config is only populated after initialize() runs, not
+        immediately after construction.
+        """
         # Bypass verification
         mock_verify.return_value = None
 
@@ -27,11 +34,21 @@ class TestGoogleDriveServiceInit:
         )
 
         assert service.name == "GoogleDrive"
-        assert service.config["client_secrets_file"] == "/path/to/secrets.json"
-        assert service.config["credentials_file"] == "/path/to/credentials.json"
-        assert service.config["shared_folder_id"] == "folder123"
+        assert service.config == {}
+        assert service.auth_provider is None
         assert service.scopes == GoogleDriveService.SCOPES
         assert service._initialized is False
+
+        # _initialize_config itself (invoked directly, matching what
+        # initialize() does internally) still resolves the same merged
+        # config -- this is the piece deferred out of __init__, not a
+        # behavior change to what it resolves to.
+        resolved = service._initialize_config(
+            "/path/to/secrets.json", "/path/to/credentials.json", "folder123"
+        )
+        assert resolved["client_secrets_file"] == "/path/to/secrets.json"
+        assert resolved["credentials_file"] == "/path/to/credentials.json"
+        assert resolved["shared_folder_id"] == "folder123"
 
         # Test with custom scopes
         custom_scopes = ["https://www.googleapis.com/auth/drive.readonly"]
@@ -49,15 +66,21 @@ class TestGoogleDriveServiceInit:
     def test_init_always_constructs_real_config_and_auth_providers(
         self, mock_verify: MagicMock
     ) -> None:
-        """config_provider and auth_provider are never None after __init__.
+        """config_provider is never None after __init__; auth_provider is
+        None until initialize() runs.
 
         Regression coverage for the None-narrowing added to
-        _initialize_config and initialize(): both attributes are typed
-        ConfigProviderProtocol | None / AuthProviderProtocol | None on the
-        base class, but GoogleDriveService.__init__ always constructs and
-        assigns real instances before either is used. This asserts that
-        contract directly (not mocked) so the narrowing's "unreachable for
-        this concrete class" claim is a checked fact, not an assumption.
+        _initialize_config and initialize(): config_provider is typed
+        ConfigProviderProtocol | None on the base class, but
+        GoogleDriveService.__init__ always constructs and assigns a real
+        instance before it is used, so that narrowing is unreachable for
+        this concrete class -- asserted directly (not mocked) so the claim
+        is a checked fact. auth_provider, by contrast, is deliberately
+        deferred to initialize() (RULING-409 s6c step 1, matching
+        google/mail/service.py) so __init__ never raises for a caller with
+        no config file yet -- it is None right after construction and only
+        becomes real once initialize() has resolved a config to build it
+        from.
         """
         mock_verify.return_value = None
 
@@ -67,10 +90,13 @@ class TestGoogleDriveServiceInit:
         )
 
         assert service.config_provider is not None
-        assert service.auth_provider is not None
-        # Real object identity, not a stub -- confirms these are genuine
-        # GoogleConfigProvider/GoogleAuthProvider instances, not sentinels.
+        assert service.auth_provider is None
+        # Real object identity, not a stub -- confirms this is a genuine
+        # GoogleConfigProvider instance, not a sentinel.
         assert type(service.config_provider).__name__ == "GoogleConfigProvider"
+
+        service.initialize()
+        assert service.auth_provider is not None
         assert type(service.auth_provider).__name__ == "GoogleAuthProvider"
 
     @patch(
@@ -101,7 +127,14 @@ class TestGoogleDriveServiceInit:
     def test_initialize_config(
         self, mock_load_config: MagicMock, mock_verify: MagicMock
     ) -> None:
-        """Test initializing the service configuration."""
+        """Test the service configuration resolution logic.
+
+        _initialize_config's merge logic (explicit params / file config /
+        invalid-config-falls-back-to-default) is unchanged by the
+        __init__-to-initialize() deferral -- only WHEN it runs moved, not
+        WHAT it resolves to. Exercised by calling it directly, the same way
+        initialize() now does, rather than through __init__ side effects.
+        """
         # Bypass verification
         mock_verify.return_value = None
 
@@ -112,9 +145,12 @@ class TestGoogleDriveServiceInit:
             shared_folder_id="folder123",
         )
 
-        assert service.config["client_secrets_file"] == "/path/to/secrets.json"
-        assert service.config["credentials_file"] == "/path/to/credentials.json"
-        assert service.config["shared_folder_id"] == "folder123"
+        resolved = service._initialize_config(
+            "/path/to/secrets.json", "/path/to/credentials.json", "folder123"
+        )
+        assert resolved["client_secrets_file"] == "/path/to/secrets.json"
+        assert resolved["credentials_file"] == "/path/to/credentials.json"
+        assert resolved["shared_folder_id"] == "folder123"
 
         # Test with config from file
         mock_load_config.return_value.success = True
@@ -125,9 +161,10 @@ class TestGoogleDriveServiceInit:
         }
 
         service = GoogleDriveService(config_path="/path/to/config.yaml")
-        assert service.config["client_secrets_file"] == "/config/secrets.json"
-        assert service.config["credentials_file"] == "/config/credentials.json"
-        assert service.config["shared_folder_id"] == "config_folder"
+        resolved = service._initialize_config(None, None, None)
+        assert resolved["client_secrets_file"] == "/config/secrets.json"
+        assert resolved["credentials_file"] == "/config/credentials.json"
+        assert resolved["shared_folder_id"] == "config_folder"
 
         # Test with invalid config (should use default)
         mock_load_config.return_value.success = False
@@ -141,8 +178,9 @@ class TestGoogleDriveServiceInit:
             }
 
             service = GoogleDriveService(config_path="/invalid/config.yaml")
-            assert service.config["client_secrets_file"] == "/default/secrets.json"
-            assert service.config["credentials_file"] == "/default/credentials.json"
+            resolved = service._initialize_config(None, None, None)
+            assert resolved["client_secrets_file"] == "/default/secrets.json"
+            assert resolved["credentials_file"] == "/default/credentials.json"
 
     @patch(
         "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"

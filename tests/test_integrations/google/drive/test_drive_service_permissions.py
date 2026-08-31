@@ -29,8 +29,15 @@ class TestGoogleDriveServicePermissions:
             "default_share_access": "commenter",
         }
 
-        # Create service with mocked dependencies
+        # Create service with mocked dependencies. Config resolution moved
+        # from __init__ into initialize() (RULING-409 s6c step 1), and this
+        # test bypasses initialize() entirely (setting _initialized/
+        # drive_service directly), so service.config -- previously
+        # populated by __init__'s own call to the now-mocked
+        # _initialize_config -- must be set explicitly here to the same
+        # value the mock would have produced.
         service = GoogleDriveService()
+        service.config = mock_init_config.return_value
         service._initialized = True
         service.drive_service = MagicMock()
 

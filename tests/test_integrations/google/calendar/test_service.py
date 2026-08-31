@@ -55,6 +55,12 @@ class TestGoogleCalendarServiceInit:
         "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
     )
     def test_init(self, mock_verify: MagicMock) -> None:
+        """Config resolution is deferred to initialize() (matching
+        google/mail/service.py and google/drive/service.py, RULING-409
+        s6c step 1) so __init__ itself never raises for a caller with no
+        config file yet -- service.config stays empty until initialize()
+        runs; default_calendar_id is set eagerly from the raw constructor
+        arg though, since it needs no config-file resolution."""
         mock_verify.return_value = None
 
         service = GoogleCalendarService(
@@ -64,12 +70,18 @@ class TestGoogleCalendarServiceInit:
         )
 
         assert service.name == "GoogleCalendar"
-        assert service.config["client_secrets_file"] == "/path/to/secrets.json"
-        assert service.config["credentials_file"] == "/path/to/credentials.json"
-        assert service.config["calendar_id"] == "team@example.com"
+        assert service.config == {}
+        assert service.auth_provider is None
         assert service.scopes == GoogleCalendarService.SCOPES
         assert service.default_calendar_id == "team@example.com"
         assert service._initialized is False
+
+        resolved = service._initialize_config(
+            "/path/to/secrets.json", "/path/to/credentials.json", "team@example.com"
+        )
+        assert resolved["client_secrets_file"] == "/path/to/secrets.json"
+        assert resolved["credentials_file"] == "/path/to/credentials.json"
+        assert resolved["calendar_id"] == "team@example.com"
 
     @patch(
         "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
@@ -88,14 +100,22 @@ class TestGoogleCalendarServiceInit:
     def test_init_always_constructs_real_config_and_auth_providers(
         self, mock_verify: MagicMock
     ) -> None:
+        """config_provider is never None after __init__; auth_provider is
+        deferred to initialize() (RULING-409 s6c step 1, matching
+        google/mail/service.py and google/drive/service.py) so it is None
+        right after construction and only becomes real once initialize()
+        has resolved a config to build it from."""
         mock_verify.return_value = None
         service = GoogleCalendarService(
             client_secrets_file="/path/to/secrets.json",
             credentials_file="/path/to/credentials.json",
         )
         assert service.config_provider is not None
-        assert service.auth_provider is not None
+        assert service.auth_provider is None
         assert type(service.config_provider).__name__ == "GoogleConfigProvider"
+
+        service.initialize()
+        assert service.auth_provider is not None
         assert type(service.auth_provider).__name__ == "GoogleAuthProvider"
 
     @patch(
@@ -125,9 +145,10 @@ class TestGoogleCalendarServiceInit:
         }
 
         service = GoogleCalendarService(config_path="/path/to/config.yaml")
-        assert service.config["client_secrets_file"] == "/config/secrets.json"
-        assert service.config["credentials_file"] == "/config/credentials.json"
-        assert service.config["calendar_id"] == "config-cal@example.com"
+        resolved = service._initialize_config(None, None, None)
+        assert resolved["client_secrets_file"] == "/config/secrets.json"
+        assert resolved["credentials_file"] == "/config/credentials.json"
+        assert resolved["calendar_id"] == "config-cal@example.com"
 
     @patch(
         "zeo_core.integrations.google.auth.GoogleAuthProvider._verify_client_secrets_file"
@@ -148,8 +169,9 @@ class TestGoogleCalendarServiceInit:
                 "calendar_id": "primary",
             }
             service = GoogleCalendarService(config_path="/invalid/config.yaml")
-            assert service.config["client_secrets_file"] == "/default/secrets.json"
-            assert service.config["credentials_file"] == "/default/credentials.json"
+            resolved = service._initialize_config(None, None, None)
+            assert resolved["client_secrets_file"] == "/default/secrets.json"
+            assert resolved["credentials_file"] == "/default/credentials.json"
 
 
 class TestGoogleCalendarServiceInitializeLifecycle:
