@@ -90,6 +90,15 @@ class GoogleCalendarConfig(GoogleBaseConfig):
     )
 
 
+class GoogleDocsConfig(GoogleBaseConfig):
+    """Configuration model for Google Docs integration."""
+
+    document_id: str | None = Field(
+        default=None,
+        description="Default document ID to operate against, if any",
+    )
+
+
 class GoogleConfigProvider(BaseConfigProvider):
     """Configuration provider for Google integrations."""
 
@@ -115,6 +124,7 @@ class GoogleConfigProvider(BaseConfigProvider):
             "drive": GoogleDriveConfig,
             "mail": GoogleMailConfig,
             "calendar": GoogleCalendarConfig,
+            "docs": GoogleDocsConfig,
         }
 
     @property
@@ -263,6 +273,10 @@ class GoogleConfigProvider(BaseConfigProvider):
                 "max_results": 250,
                 "time_zone": None,
             }
+        elif self.service == "docs":
+            defaults = {
+                "document_id": None,
+            }
         else:
             return
 
@@ -360,6 +374,11 @@ class GoogleConfigProvider(BaseConfigProvider):
                 "calendar_id": "primary",
                 "max_results": 250,
                 "time_zone": None,
+            }
+        elif self.service == "docs":
+            return {
+                **base_config,
+                "document_id": None,
             }
 
         return base_config
