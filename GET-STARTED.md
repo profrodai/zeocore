@@ -1022,14 +1022,60 @@ it got there.
 
 ## Integration Authentication
 
-### Google API Setup
+This section is written for a reader with **no terminal experience and no
+prior developer-portal account** -- every step names the exact page, field,
+and button, not just the general shape of the flow. It covers every
+platform that has ZeoCore integration code today (Google, Notion, GitHub),
+plus the two platforms chartered for the next phase of social connectors
+(Bluesky, LinkedIn), whose portal-side token acquisition does not depend on
+whether the connector code has landed yet. Platforms not listed here
+(Instagram, TikTok, Threads, X, YouTube) are **not yet covered** --
+their acquisition flows have open, unverified questions (see "A note on
+what is not here" at the end of this section) and this guide does not
+guess at a flow it cannot confirm.
 
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project
-3. Enable the APIs you need (Drive API, Gmail API, etc.)
-4. Create OAuth 2.0 credentials
-5. Download the client secrets JSON file
-6. Use the client secrets file path in your ZeoCore configuration
+**The one rule that applies to every platform below: the value you obtain
+goes in `.env`, never in a YAML config file.** `zeo_config.yaml` and any
+other config file are settings, and settings are meant to be committed;
+`.env` is gitignored specifically so a secret placed there is never
+committed by accident (see "Secrets and `.env`" above). Copy
+`.env.example` to `.env` and fill in the values this section gives you --
+do not type a real value into `.env.example` itself, which ships with the
+repo and is meant to stay a template.
+
+### Google API Setup (Drive, Gmail, Calendar)
+
+**A developer app is required.** Unlike Bluesky below, there is no
+account-settings shortcut -- every Google integration in ZeoCore
+authenticates through a Google Cloud project you create yourself.
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/) and
+   sign in with the Google account whose Drive, Gmail, or Calendar you want
+   ZeoCore to access.
+2. If you don't already have a project, click the project dropdown at the
+   top of the page, then **New Project**. Give it any name -- this is a
+   free container Google uses to group your API access and credentials,
+   not a paid product.
+3. In the left sidebar, go to **APIs & Services -> Library**, and enable
+   each API you actually need: **Google Drive API** for `drive`, **Gmail
+   API** for `mail`, **Google Calendar API** for `calendar`. Enabling an
+   API you don't use costs nothing, but there is no reason to enable more
+   than you need.
+4. Go to **APIs & Services -> OAuth consent screen**. Google requires this
+   before it will issue credentials -- fill in an app name, your email as
+   the support contact, and your email again as a developer contact. When
+   asked for a **publishing status**, leave it at **Testing** -- do not
+   attempt to publish or submit for verification for personal use. Under
+   the **Audience** / **Test users** section, add your own Google account
+   email. This step matters (see the approval-barrier note below).
+5. Go to **APIs & Services -> Credentials**, click **+ Create Credentials
+   -> OAuth client ID**, choose **Desktop app** as the application type
+   (this matches the loopback flow ZeoCore's `GoogleAuthProvider` already
+   uses -- see `google/auth.py`, which calls
+   `InstalledAppFlow.run_local_server(port=0)`), and give it a name.
+6. Click **Download JSON** on the credential you just created. This file
+   is your `client_secrets_file` -- save it somewhere outside any git
+   repository, e.g. `~/.zeo/google_client_secret.json`.
 
 ```python
 from zeo_core.integrations.google.auth import GoogleAuthProvider
@@ -1037,6 +1083,9 @@ from zeo_core.integrations.google.auth import GoogleAuthProvider
 auth_provider = GoogleAuthProvider(
     client_secrets_file="path/to/client_secrets.json",
     credentials_file="path/to/store/credentials.json",
+    # Drive's own default SCOPES (google/drive/service.py) request
+    # "auth/drive", "auth/drive.file", and "auth/drive.metadata.readonly"
+    # together -- pass a narrower list here if your use case only reads.
     scopes=["https://www.googleapis.com/auth/drive.file"]
 )
 
@@ -1047,6 +1096,203 @@ if auth_result.success:
 else:
     print(f"Authentication failed: {auth_result.error}")
 ```
+
+The `client_secrets_file` and `credentials_file` paths can also be set via
+`.env` instead of hardcoded, matching every other platform in this section:
+
+```bash
+# .env
+GOOGLE_CLIENT_SECRETS_FILE=/absolute/path/to/client_secrets.json
+GOOGLE_CREDENTIALS_FILE=/absolute/path/to/credentials.json
+```
+
+(these are read via the `ZEO_INTEGRATIONS__GOOGLE__CLIENT_SECRETS_FILE` /
+`ZEO_INTEGRATIONS__GOOGLE__CREDENTIALS_FILE` environment variables described
+under "Environment Variables" above -- `.env` is simply where you set them
+so they load automatically via `load_dotenv_file()`.)
+
+**The approval barrier, stated honestly.** Leaving the OAuth consent screen
+in **Testing** status (step 4) is deliberate, not a shortcut you'll need to
+fix later: a project in Testing works indefinitely for accounts you've
+added as test users (up to 100), with no submission, no review, and no
+waiting. What you get by *not* verifying: per widely-reported behavior of
+Google's Testing mode (not confirmed against Google's own documentation
+verbatim, so treat this paragraph as reported rather than quoted), a
+refresh token issued to a test user can expire sooner than a verified
+app's would, which shows up as needing to re-run the browser
+authentication step again after some weeks rather than never. That is a
+re-login, not a silent failure -- `auth_result.success` will be `False`
+and you will know. **Verification is a separate, much larger process**
+Google reserves for apps that will be used by people outside your own
+test-user list; a single-user ZeoCore setup does not need it, and this
+guide does not walk through it.
+
+### GitHub Personal Access Token
+
+**A developer app is not needed** in the OAuth-app sense, but you do need
+to generate a token from your own account settings -- there is no
+account-level "app password" shortcut the way Bluesky has one.
+
+1. Sign in to [github.com](https://github.com) and click your profile
+   picture in the top-right corner, then **Settings**.
+2. In the left sidebar, scroll to the bottom and click **Developer
+   settings**.
+3. In the left sidebar, click **Personal access tokens -> Fine-grained
+   tokens**, then click **Generate new token**.
+4. Give the token a name, set an **Expiration** (GitHub caps this at 366
+   days -- you will need to generate a new one when it lapses), and under
+   **Resource owner** choose your own account.
+5. Under **Repository access**, choose **Only select repositories** and
+   pick the specific repositories ZeoCore should be able to touch, unless
+   you genuinely need every repository you own.
+6. Under **Permissions -> Repository permissions**, grant only what your
+   use case needs -- e.g. **Contents: Read-only** to read files, or
+   **Contents: Read and write** plus **Issues: Read and write** if ZeoCore
+   will also file or update issues on your behalf.
+7. Click **Generate token**, then **copy the token immediately** -- GitHub
+   shows it exactly once and cannot display it again afterward.
+
+```bash
+# .env
+GITHUB_TOKEN=your-github-token
+```
+
+### Notion Integration Token
+
+**A developer app is not needed.** Notion calls this an "internal
+integration," and it is a single bearer token, not an OAuth flow.
+
+1. Sign in to Notion and go to
+   [notion.so/my-integrations](https://www.notion.so/my-integrations).
+2. Click **+ New integration**. Give it a name and pick the workspace it
+   belongs to (only workspace owners can see this page and create one).
+3. After creation, find the **Internal Integration Secret** on the
+   integration's page and copy it -- this is your token.
+4. **This step is easy to miss and the integration will see nothing
+   without it**: the token alone does not grant access to any of your
+   Notion content. Open the specific page or database you want ZeoCore to
+   read or write, click the **•••** menu in the top right, scroll to
+   **Connections**, and add the integration you just created by name. A
+   token with no pages shared to it authenticates successfully and returns
+   empty results -- not an error -- which reads as ZeoCore being broken
+   when the real cause is this step being skipped.
+
+```bash
+# .env
+NOTION_TOKEN=your-notion-integration-token
+```
+
+### Bluesky App Password
+
+**No developer app is needed at all.** This is the one platform in this
+section where the credential comes straight from your own account's
+settings -- no portal, no project, no review.
+
+1. Sign in to [bsky.app](https://bsky.app) in a browser.
+2. Click **Settings**, then **Privacy and Security**, then **App
+   Passwords**.
+3. Click **Add App Password**, give it any name (e.g. "zeocore"), and
+   click **Create App Password**.
+4. Copy the password immediately -- it is shown in the form
+   `xxxx-xxxx-xxxx-xxxx` and, like GitHub's token, is not shown again.
+   Note this is deliberately *not* your normal Bluesky login password: an
+   app password can post and read on your behalf but cannot delete your
+   account or migrate it elsewhere, so a leaked app password is a smaller
+   loss than a leaked account password.
+
+```bash
+# .env
+BLUESKY_IDENTIFIER=your-handle.bsky.social
+BLUESKY_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx
+```
+
+`BLUESKY_IDENTIFIER` is the handle you sign in with (or the email tied to
+the account); `BLUESKY_APP_PASSWORD` is what you just created, never your
+real account password.
+
+**No silent-failure mode.** Unlike the approval-gated platforms elsewhere
+in this guide, Bluesky does not have a "post accepted but hidden" state --
+a post either appears on your account or the request fails outright, so
+there is nothing to double-check beyond looking at the post.
+
+### LinkedIn (personal profile posting)
+
+**A developer app is required**, but this is the self-serve **Share on
+LinkedIn** product, confirmed live against Microsoft's own LinkedIn API
+documentation -- **not** the Community Management API and **not** the
+Marketing Developer Platform partner track. That distinction matters: the
+partner track is a formal application that can take months and requires a
+registered legal entity; the flow below requires neither and is typically
+usable the same day.
+
+1. Sign in to LinkedIn, then go to
+   [developer.linkedin.com](https://developer.linkedin.com) and click **My
+   apps** in the top right, then **Create app**.
+2. Fill in an app name and, in the **LinkedIn Page** field, provide a
+   company/organization Page. **LinkedIn requires every app to be
+   associated with a Page, even one that will only post to your own
+   personal profile** -- if you don't already have one, the create-app
+   form lets you create one on the spot, and you'll be its admin
+   automatically, so this does not require anyone else's approval. Add a
+   privacy policy URL (a single page stating you don't share user data is
+   sufficient for a personal-use app) and a logo, then accept the terms
+   and create the app.
+3. Open your new app, go to the **Products** tab, and add the **Share on
+   LinkedIn** product. Confirmed live: this product is self-serve and
+   grants the `w_member_social` scope with no manual review -- unlike
+   most other LinkedIn products on that same tab, which do require review.
+4. Go to the **Auth** tab and note the **Client ID** and **Client
+   Secret** -- these are your app's credentials.
+5. On the same **Auth** tab, add an **Authorized redirect URL**. ZeoCore's
+   shared OAuth2 helper for platforms like this one is not built yet (it
+   is chartered, not shipped, as of this writing) and its exact redirect
+   handling is still an open design question -- if you're setting this up
+   ahead of that helper landing, `http://localhost:8080` (or any local
+   port) is the conventional placeholder for a desktop-app flow like
+   Google's above; confirm the actual value once the connector ships.
+
+```bash
+# .env
+LINKEDIN_CLIENT_ID=your-linkedin-client-id
+LINKEDIN_CLIENT_SECRET=your-linkedin-client-secret
+```
+
+**Why the exact product matters.** Requesting `w_member_social` through
+the Community Management API's application process instead of through
+**Share on LinkedIn**'s Products tab is the wrong-portal mistake this
+guide exists to prevent -- it routes a same-day task through a
+partner-review process that was never necessary for posting to your own
+profile.
+
+**Not yet covered by this guide:** the actual OAuth 2.0 authorization-code
+exchange that turns a Client ID/Secret into a usable access token. That
+exchange is part of the not-yet-built `oauth2.py` helper
+(`social-connectors-DESIGN-01`), which is still an open design question as
+of this writing (loopback listener vs. manual code paste vs. both). The
+steps above get you the portal-side credential; the code-side flow will be
+documented alongside that helper when it ships.
+
+### A note on what is not here
+
+Instagram, TikTok, Threads, X, and YouTube are not documented in this
+section. Each has at least one open, unverified question standing between
+"documented" and "confidently correct" -- for example, whether Threads
+has the same tester-account exception Instagram does, TikTok's
+domain-verification requirement, YouTube's upload quota, and X's
+pay-per-post pricing (X's pricing pages are JavaScript-rendered and could
+not be confirmed by live fetch). **A confident wrong instruction is worse
+than an absent one**: getting a portal flow wrong can send a reader down a
+weeks-long application process for something that should take minutes, so
+this guide states the gap rather than guessing. These will be added as
+each is verified and its connector is chartered.
+
+One honest warning that does apply in advance: on platforms that require
+app review (this affects TikTok and YouTube specifically, confirmed from
+their own documentation), an unaudited or unverified app's uploads can be
+silently restricted to private/self-only visibility while the API itself
+still returns a success response. A green result from the API is not
+proof a post is publicly visible on those platforms -- when connectors for
+them ship, check the post itself, not just the response.
 
 ---
 

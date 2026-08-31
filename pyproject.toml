@@ -127,6 +127,12 @@ calendar = [
 pandoc = ["pypandoc", "beautifulsoup4"]
 llms = ["tiktoken", "openai", "anthropic"]
 github = ["requests"]
+# `platformdirs` here for the same reason the four Google-family extras
+# above declare it: BlueskyConfigProvider/BlueskyAuthProvider resolve their
+# default credentials path through it unconditionally
+# (zeo_core.integrations.social.bluesky.credential_paths), same computation,
+# same shared per-user root.
+bluesky = ["requests", "platformdirs>=4.0.0"]
 ffmpeg = ["ffmpeg-zeo>=0.1.0"]
 jupytext = ["jupytext>=1.16.0", "nbformat>=5.10.0"]
 all = [
@@ -188,11 +194,13 @@ github = "zeo_core.integrations.github:create_integration"
 "google.mail" = "zeo_core.integrations.google.mail:create_integration"
 "google.drive" = "zeo_core.integrations.google.drive:create_integration"
 "google.calendar" = "zeo_core.integrations.google.calendar:create_integration"
+"google.docs" = "zeo_core.integrations.google.docs:create_integration"
 pandoc = "zeo_core.integrations.pandoc:create_integration"
 llms = "zeo_core.integrations.llms:create_integration"
 ffmpeg = "zeo_core.integrations.ffmpeg:create_integration"
 notion = "zeo_core.integrations.notion:create_integration"
 jupytext = "zeo_core.integrations.jupytext:create_integration"
+"social.bluesky" = "zeo_core.integrations.social.bluesky:create_integration"
 
 
 [tool.isort]
