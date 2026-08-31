@@ -10,6 +10,8 @@ It adheres to a strict "Kernel" philosophy:
 
 from typing import Any
 
+from zeo_core.config.dotenv_loader import load_dotenv_file
+
 # Import all models directly for users of this package
 from zeo_core.config.models import (
     GeneralConfig,
@@ -119,6 +121,7 @@ __all__ = [
     "PluginsConfig",
     # Functions
     "load_config",
+    "load_dotenv_file",
     "merge_configs",
     "get_env",
     "get_config_value",

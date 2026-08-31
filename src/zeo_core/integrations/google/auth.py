@@ -13,9 +13,24 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 from zeo_core.core.errors import ZeoIntegrationError
-from zeo_core.core.fs.service import standalone
+
+# `standalone` is not called directly in this module anymore (the six I/O
+# call sites route through credential_paths.py's *_with_fallback helpers,
+# which import their own reference to the same module object) -- kept
+# imported here ONLY so `unittest.mock.patch("...auth.standalone.X")`, used
+# throughout this file's own test suite, still resolves `standalone` as an
+# attribute of this module to patch through. Patching an attribute on this
+# shared module object affects every importer, including credential_paths.py.
+from zeo_core.core.fs.service import standalone  # noqa: F401
 from zeo_core.integrations.core.base import BaseAuthProvider
 from zeo_core.integrations.core.results import AuthResult
+from zeo_core.integrations.google.credential_paths import (
+    create_directory_with_fallback,
+    get_file_info_with_fallback,
+    parent_directory_with_fallback,
+    read_json_with_fallback,
+    write_json_with_fallback,
+)
 from zeo_core.integrations.google.serialization import serialize_credentials
 
 
@@ -44,7 +59,7 @@ class GoogleAuthProvider(BaseAuthProvider):
         return "GoogleAuth"
 
     def _verify_client_secrets_file(self) -> None:
-        file_info = standalone.get_file_info(self.client_secrets_file)
+        file_info = get_file_info_with_fallback(self.client_secrets_file)
         if not file_info.success or not file_info.exists:
             raise ZeoIntegrationError(
                 f"Client secrets file not found: {self.client_secrets_file}",
@@ -128,7 +143,7 @@ class GoogleAuthProvider(BaseAuthProvider):
             str | None: The redirect URI or None if it couldn't be extracted
         """
         try:
-            json_result = standalone.read_json(self.client_secrets_file)
+            json_result = read_json_with_fallback(self.client_secrets_file)
             if not json_result.success:
                 self.logger.warning(
                     f"Failed to read client secrets: {json_result.error}"
@@ -166,11 +181,11 @@ class GoogleAuthProvider(BaseAuthProvider):
         if self.credentials_file is None:
             return None
 
-        file_info = standalone.get_file_info(self.credentials_file)
+        file_info = get_file_info_with_fallback(self.credentials_file)
         if not file_info.exists:
             return None
 
-        json_result = standalone.read_json(self.credentials_file)
+        json_result = read_json_with_fallback(self.credentials_file)
         if not json_result.success:
             self.logger.warning(f"Failed to load credentials: {json_result.error}")
             return None
@@ -187,10 +202,56 @@ class GoogleAuthProvider(BaseAuthProvider):
             creds: Credentials = Credentials.from_authorized_user_info(
                 credential_data, self.scopes
             )
-            return creds
         except ValueError as e:
             self.logger.warning(f"Invalid credential data: {e}")
             return None
+
+        if not self._has_sufficient_scopes(credential_data, creds):
+            # RULING-406 gate one: Credentials.from_authorized_user_info
+            # stamps the REQUESTED scopes (self.scopes) onto the returned
+            # object regardless of what was actually GRANTED on disk -- a
+            # token granted drive-only, loaded with spreadsheets requested,
+            # comes back with creds.scopes == ['.../spreadsheets'],
+            # expired False, valid True. That passes both checks
+            # authenticate() makes (expired/valid) and then 403s at
+            # runtime. The only trustworthy signal is the GRANTED scopes
+            # recorded in the credential file itself at save time
+            # (serialize_credentials writes them), compared against what
+            # this provider actually needs -- not what the SDK object
+            # claims after being constructed with self.scopes as a hint.
+            self.logger.info(
+                "Existing credentials do not cover all requested scopes; "
+                "forcing re-consent"
+            )
+            return None
+
+        return creds
+
+    def _has_sufficient_scopes(
+        self, credential_data: dict[str, object], creds: Credentials
+    ) -> bool:
+        """
+        Validate GRANTED scopes against REQUESTED scopes on the load path.
+
+        `credential_data["scopes"]` is the set of scopes that were actually
+        granted and persisted the last time this credential was saved
+        (serialize_credentials always writes `creds.scopes`, itself sourced
+        from the OAuth server's token response at authorize/refresh time --
+        never from a caller's request). `self.scopes` is what THIS provider
+        instance was constructed to need. If self.scopes is empty, no
+        specific scope was ever requested, so nothing to insufficient-check.
+        """
+        if not self.scopes:
+            return True
+
+        granted = credential_data.get("scopes")
+        if not isinstance(granted, list):
+            # No recorded grant to check against -- fail closed, force
+            # re-consent rather than trust an un-attributed credential.
+            return False
+
+        granted_set = set(granted)
+        return set(self.scopes).issubset(granted_set)
 
     def _build_auth_result(self, creds: Credentials, message: str) -> AuthResult:
         expiry_dt = getattr(creds, "expiry", None)
@@ -259,24 +320,14 @@ class GoogleAuthProvider(BaseAuthProvider):
             self.logger.warning("No credentials file specified, cannot save")
             return False
 
-        split_result = standalone.split_path(self.credentials_file)
-        if not split_result.success or split_result.data is None:
-            self.logger.error(f"Failed to split path: {split_result.error}")
+        directory_path = parent_directory_with_fallback(self.credentials_file)
+        if directory_path is None:
+            self.logger.error(f"Failed to split path: {self.credentials_file}")
             return False
 
-        # Extract the components and remove the last one (filename)
-        path_components = split_result.data[:-1]
-        if path_components:
-            # Join them back together to get the directory path
-            join_result = standalone.join_path(*path_components)
-
-            if not join_result.success or join_result.data is None:
-                self.logger.error(f"Failed to join directory path: {join_result.error}")
-                return False
-            directory_path: str = join_result.data
-
+        if directory_path:
             # Create the directory
-            result = standalone.create_directory(directory_path, exist_ok=True)
+            result = create_directory_with_fallback(directory_path, exist_ok=True)
             if not result.success:
                 self.logger.error(
                     f"Failed to create credentials directory: {result.error}"
@@ -287,7 +338,7 @@ class GoogleAuthProvider(BaseAuthProvider):
             data = serialize_credentials(credentials)
             # 0600: this file holds a live OAuth credential (RULING-356 s4.4
             # item 4 / config-secrets-hardening charter item 3).
-            result = standalone.write_json(self.credentials_file, data, mode=0o600)
+            result = write_json_with_fallback(self.credentials_file, data, mode=0o600)
             if not result.success:
                 self.logger.error(f"Failed to write credentials: {result.error}")
                 return False

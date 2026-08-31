@@ -179,35 +179,59 @@ class TestGoogleConfigProvider:
             assert provider.validate_config(valid_config) is False
 
     def test_get_default_config(self) -> None:
-        """Test getting default configuration."""
-        # Test drive defaults
-        provider = GoogleConfigProvider("drive")
-        defaults = provider.get_default_config()
+        """Test getting default configuration.
 
-        assert defaults["client_secrets_file"] == "config/google_client_secret.json"
-        assert defaults["credentials_file"] == "config/google_credentials.json"
-        assert defaults["shared_folder_id"] is None
-        assert defaults["team_drive_id"] is None
-        assert defaults["default_share_access"] == "reader"
-        assert defaults["public_sharing"] is True
+        RULING-407/408: the two file paths now come from
+        credential_paths.resolve_credentials_path/resolve_client_secret_path,
+        which run the one-shot migration and return the platformdirs-based
+        new default (never the old CWD-relative `config/google_*.json`
+        strings). standalone.get_file_info is mocked to report "nothing at
+        either location" so no real disk I/O happens and no migration notice
+        prints -- this test is about the SHAPE of the returned defaults, not
+        the migration mechanics (see test_credential_paths.py for those).
+        """
+        from zeo_core.integrations.google.credential_paths import (
+            default_client_secret_path,
+            default_credentials_path,
+        )
 
-        # Test mail defaults
-        provider = GoogleConfigProvider("mail")
-        defaults = provider.get_default_config()
+        expected_secret_path = default_client_secret_path()
+        expected_creds_path = default_credentials_path()
 
-        assert defaults["client_secrets_file"] == "config/google_client_secret.json"
-        assert defaults["credentials_file"] == "config/google_credentials.json"
-        assert defaults["gmail_labels"] == []
-        assert defaults["gmail_days_back"] == 7
-        assert defaults["gmail_user_id"] == "me"
+        with patch(
+            "zeo_core.integrations.google.credential_paths.standalone.get_file_info"
+        ) as mock_info:
+            mock_info.return_value.success = True
+            mock_info.return_value.exists = False
 
-        # Test other service defaults
-        provider = GoogleConfigProvider("other")
-        defaults = provider.get_default_config()
+            # Test drive defaults
+            provider = GoogleConfigProvider("drive")
+            defaults = provider.get_default_config()
 
-        assert defaults["client_secrets_file"] == "config/google_client_secret.json"
-        assert defaults["credentials_file"] == "config/google_credentials.json"
-        assert len(defaults) == 2  # Only contains the base config
+            assert defaults["client_secrets_file"] == expected_secret_path
+            assert defaults["credentials_file"] == expected_creds_path
+            assert defaults["shared_folder_id"] is None
+            assert defaults["team_drive_id"] is None
+            assert defaults["default_share_access"] == "reader"
+            assert defaults["public_sharing"] is True
+
+            # Test mail defaults
+            provider = GoogleConfigProvider("mail")
+            defaults = provider.get_default_config()
+
+            assert defaults["client_secrets_file"] == expected_secret_path
+            assert defaults["credentials_file"] == expected_creds_path
+            assert defaults["gmail_labels"] == []
+            assert defaults["gmail_days_back"] == 7
+            assert defaults["gmail_user_id"] == "me"
+
+            # Test other service defaults
+            provider = GoogleConfigProvider("other")
+            defaults = provider.get_default_config()
+
+            assert defaults["client_secrets_file"] == expected_secret_path
+            assert defaults["credentials_file"] == expected_creds_path
+            assert len(defaults) == 2  # Only contains the base config
 
     def test_resolve_config_paths(self) -> None:
         """Test resolving paths in configuration."""

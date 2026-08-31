@@ -18,12 +18,30 @@ any FUTURE accidental edit to the drive/mail branches (not just this
 stream's own change) is caught too.
 """
 
+from unittest.mock import patch
+
 from zeo_core.integrations.google.config import (
     GoogleCalendarConfig,
     GoogleConfigProvider,
     GoogleDriveConfig,
     GoogleMailConfig,
 )
+from zeo_core.integrations.google.credential_paths import (
+    default_client_secret_path,
+    default_credentials_path,
+)
+
+# RULING-407/408 moved the two default file paths off the CWD-relative
+# `config/google_*.json` strings this test originally pinned (see class
+# docstring below) onto platformdirs-based per-user defaults, migrated
+# on first use. The dispatch-regression PROPERTY this class exists to pin
+# -- "adding the calendar arm changes nothing about drive/mail's existing
+# fields" -- is unaffected by that unrelated change, so the expected dicts
+# below now reference the live resolver functions instead of the literal
+# pre-migration strings, with standalone.get_file_info mocked to report
+# "nothing at either location" so no real disk I/O happens.
+_EXPECTED_SECRET_PATH = default_client_secret_path()
+_EXPECTED_CREDS_PATH = default_credentials_path()
 
 
 class TestConfigDispatchRegression:
@@ -31,25 +49,37 @@ class TestConfigDispatchRegression:
     calendar arm -- the mandatory regression proof."""
 
     def test_drive_get_default_config_unchanged(self) -> None:
-        provider = GoogleConfigProvider("drive")
-        assert provider.get_default_config() == {
-            "client_secrets_file": "config/google_client_secret.json",
-            "credentials_file": "config/google_credentials.json",
-            "shared_folder_id": None,
-            "team_drive_id": None,
-            "default_share_access": "reader",
-            "public_sharing": True,
-        }
+        with patch(
+            "zeo_core.integrations.google.credential_paths.standalone.get_file_info"
+        ) as mock_info:
+            mock_info.return_value.success = True
+            mock_info.return_value.exists = False
+
+            provider = GoogleConfigProvider("drive")
+            assert provider.get_default_config() == {
+                "client_secrets_file": _EXPECTED_SECRET_PATH,
+                "credentials_file": _EXPECTED_CREDS_PATH,
+                "shared_folder_id": None,
+                "team_drive_id": None,
+                "default_share_access": "reader",
+                "public_sharing": True,
+            }
 
     def test_mail_get_default_config_unchanged(self) -> None:
-        provider = GoogleConfigProvider("mail")
-        assert provider.get_default_config() == {
-            "client_secrets_file": "config/google_client_secret.json",
-            "credentials_file": "config/google_credentials.json",
-            "gmail_labels": [],
-            "gmail_days_back": 7,
-            "gmail_user_id": "me",
-        }
+        with patch(
+            "zeo_core.integrations.google.credential_paths.standalone.get_file_info"
+        ) as mock_info:
+            mock_info.return_value.success = True
+            mock_info.return_value.exists = False
+
+            provider = GoogleConfigProvider("mail")
+            assert provider.get_default_config() == {
+                "client_secrets_file": _EXPECTED_SECRET_PATH,
+                "credentials_file": _EXPECTED_CREDS_PATH,
+                "gmail_labels": [],
+                "gmail_days_back": 7,
+                "gmail_user_id": "me",
+            }
 
     def test_drive_add_service_specific_defaults_unchanged(self) -> None:
         provider = GoogleConfigProvider("drive")
@@ -129,14 +159,20 @@ class TestGoogleCalendarConfig:
         assert provider._config_models["calendar"] is GoogleCalendarConfig
 
     def test_calendar_get_default_config(self) -> None:
-        provider = GoogleConfigProvider("calendar")
-        assert provider.get_default_config() == {
-            "client_secrets_file": "config/google_client_secret.json",
-            "credentials_file": "config/google_credentials.json",
-            "calendar_id": "primary",
-            "max_results": 250,
-            "time_zone": None,
-        }
+        with patch(
+            "zeo_core.integrations.google.credential_paths.standalone.get_file_info"
+        ) as mock_info:
+            mock_info.return_value.success = True
+            mock_info.return_value.exists = False
+
+            provider = GoogleConfigProvider("calendar")
+            assert provider.get_default_config() == {
+                "client_secrets_file": _EXPECTED_SECRET_PATH,
+                "credentials_file": _EXPECTED_CREDS_PATH,
+                "calendar_id": "primary",
+                "max_results": 250,
+                "time_zone": None,
+            }
 
     def test_calendar_add_service_specific_defaults(self) -> None:
         provider = GoogleConfigProvider("calendar")
