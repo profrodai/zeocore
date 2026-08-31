@@ -148,4 +148,4 @@ class DocsRequestBuilder:
         Returns:
             The requests, ordered highest-index-first.
         """
-        return sorted(self._requests, key=_request_sort_index)
+        return sorted(self._requests, key=_request_sort_index, reverse=True)
