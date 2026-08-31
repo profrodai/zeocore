@@ -35,22 +35,29 @@ from zeo_core.integrations.loader import (
 
 @pytest.fixture
 def bare_construction_env() -> Iterator[None]:
-    """`GoogleCalendarService.__init__` (following drive/service.py's own
-    eager-config precedent exactly, unlike notion's deferred-to-initialize()
-    shape) calls `GoogleConfigProvider.load_config()` immediately, which
-    raises if no config file exists anywhere in the fs sandbox's default
-    locations -- the identical, pre-existing constraint drive's own
-    `create_integration()` has (verified directly: a bare
-    `zeo_core.integrations.google.drive.create_integration()` call raises
-    the same `ZeoConfigurationError` under the same condition, same repo
-    root, same sandbox). This fixture writes a scratch config file INSIDE
-    the repo's fs sandbox (RULING-237 s2.1 rejects absolute paths outside
-    the configured base directory -- a tmp_path fixture's own /tmp location
-    would be refused), matching examples/notion_usage.py's own
-    `./tmp_notion_example` scratch-dir convention, and mocks
-    `_verify_client_secrets_file` so the OAuth client-secrets file need not
-    exist for real, mirroring drive/mail's own test convention exactly.
-    Cleaned up in a finally so no scratch file leaks into the repo."""
+    """Historical note (RULING-409 s6c step 1): `GoogleCalendarService
+    .__init__` used to call `GoogleConfigProvider.load_config()`
+    immediately, which raised if no config file existed anywhere in the fs
+    sandbox's default locations -- drive/service.py had the identical
+    defect, and a bare `create_integration()` call for either raised
+    `ZeoConfigurationError` under that condition. Both were migrated to
+    resolve config inside `initialize()` instead (matching mail's
+    always-correct shape, and notion's own deferred-to-initialize()
+    precedent), so a bare `create_integration()` call for calendar/drive/
+    mail all now construct without raising from a directory with no config
+    file at all. This fixture's scratch config file is kept anyway: several
+    tests in this file call `initialize()` (directly or via the loader with
+    `initialize=True` elsewhere in this suite), which still needs a real,
+    resolvable config to authenticate against, and this file's own
+    conventions favor writing one over mocking `_initialize_config`. This
+    fixture writes it INSIDE the repo's fs sandbox (RULING-237 s2.1 rejects
+    absolute paths outside the configured base directory -- a tmp_path
+    fixture's own /tmp location would be refused), matching
+    examples/notion_usage.py's own `./tmp_notion_example` scratch-dir
+    convention, and mocks `_verify_client_secrets_file` so the OAuth
+    client-secrets file need not exist for real, mirroring drive/mail's own
+    test convention exactly. Cleaned up in a finally so no scratch file
+    leaks into the repo."""
     scratch_dir = Path("./tmp_calendar_registration_test")
     scratch_dir.mkdir(exist_ok=True)
     config_path = scratch_dir / "zeo_config.yaml"

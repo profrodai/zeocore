@@ -575,7 +575,13 @@ class TestInitializeConfigEdgeBranches:
     def test_initialize_config_raises_when_default_config_invalid(self) -> None:
         """Line 135: config load fails AND the default config itself fails
         validate_config -- must raise ZeoIntegrationError rather than
-        silently returning an invalid default."""
+        silently returning an invalid default.
+
+        _initialize_config is invoked directly, not via __init__: config
+        resolution moved to initialize() (RULING-409 s6c step 1), so
+        __init__ alone no longer triggers this raise -- it is unreachable
+        from bare construction now, by design, which is the whole point of
+        the migration this test's own charter belongs to."""
         with (
             patch(
                 "zeo_core.integrations.google.config.GoogleConfigProvider.load_config"
@@ -594,11 +600,12 @@ class TestInitializeConfigEdgeBranches:
                 "zeo_core.integrations.google.auth.GoogleAuthProvider."
                 "_verify_client_secrets_file"
             ):
+                service = GoogleDriveService()
                 with pytest.raises(
                     ZeoIntegrationError,
                     match="default configuration is invalid",
                 ):
-                    GoogleDriveService()
+                    service._initialize_config(None, None, None)
 
     def test_initialize_config_overrides_loaded_config_fields(self) -> None:
         """Lines 143/145/147: when a config file loads successfully, each
@@ -632,13 +639,14 @@ class TestInitializeConfigEdgeBranches:
                     shared_folder_id="override_folder",
                     config_path="/path/to/config.yaml",
                 )
+                resolved = service._initialize_config(None, None, "override_folder")
 
         # client_secrets_file/credentials_file were NOT passed, so they
         # keep the loaded values (lines 142/144 conditions are False);
         # shared_folder_id WAS passed, so line 147 fires and overrides it.
-        assert service.config["client_secrets_file"] == "/loaded/secrets.json"
-        assert service.config["credentials_file"] == "/loaded/credentials.json"
-        assert service.config["shared_folder_id"] == "override_folder"
+        assert resolved["client_secrets_file"] == "/loaded/secrets.json"
+        assert resolved["credentials_file"] == "/loaded/credentials.json"
+        assert resolved["shared_folder_id"] == "override_folder"
 
     def test_initialize_config_overrides_each_field_independently(self) -> None:
         """Lines 143 and 145 specifically: client_secrets_file and
@@ -664,8 +672,11 @@ class TestInitializeConfigEdgeBranches:
                     client_secrets_file="/override/secrets.json",
                     config_path="/path/to/config.yaml",
                 )
-        assert service.config["client_secrets_file"] == "/override/secrets.json"
-        assert service.config["credentials_file"] == "/loaded/credentials.json"
+                resolved = service._initialize_config(
+                    "/override/secrets.json", None, None
+                )
+        assert resolved["client_secrets_file"] == "/override/secrets.json"
+        assert resolved["credentials_file"] == "/loaded/credentials.json"
 
         with patch(
             "zeo_core.integrations.google.config.GoogleConfigProvider.load_config"
@@ -687,8 +698,11 @@ class TestInitializeConfigEdgeBranches:
                     credentials_file="/override/credentials.json",
                     config_path="/path/to/config.yaml",
                 )
-        assert service.config["client_secrets_file"] == "/loaded/secrets.json"
-        assert service.config["credentials_file"] == "/override/credentials.json"
+                resolved = service._initialize_config(
+                    None, "/override/credentials.json", None
+                )
+        assert resolved["client_secrets_file"] == "/loaded/secrets.json"
+        assert resolved["credentials_file"] == "/override/credentials.json"
 
 
 class TestInitializeEdgeBranches:
@@ -714,15 +728,29 @@ class TestInitializeEdgeBranches:
     the bug list."""
 
     def test_initialize_returns_error_when_auth_provider_none(self) -> None:
-        with patch(
-            "zeo_core.integrations.google.auth.GoogleAuthProvider."
-            "_verify_client_secrets_file"
+        """Config resolution and GoogleAuthProvider construction moved into
+        initialize() itself (RULING-409 s6c step 1), so simply setting
+        service.auth_provider = None before calling initialize() no longer
+        reaches this guard -- initialize() unconditionally reconstructs a
+        real auth_provider first, clobbering the override. Patch the
+        GoogleAuthProvider constructor at its call site in service.py
+        directly, forcing the structurally-defensive None case the same
+        way test_initialize_config_raises_when_config_provider_none (above
+        in this file) forces its own otherwise-unreachable guard."""
+        with (
+            patch(
+                "zeo_core.integrations.google.auth.GoogleAuthProvider."
+                "_verify_client_secrets_file"
+            ),
+            patch(
+                "zeo_core.integrations.google.drive.service.GoogleAuthProvider",
+                return_value=None,
+            ),
         ):
             service = GoogleDriveService(
                 client_secrets_file="/path/to/secrets.json",
                 credentials_file="/path/to/credentials.json",
             )
-            service.auth_provider = None
 
             result = service.initialize()
 
