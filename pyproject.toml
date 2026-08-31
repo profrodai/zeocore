@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "zeocore"
-version = "0.5.0"
+version = "0.6.0"
 description = "Typed capability-authoring framework for Python — contracts, @capability tools, and adapters"
 keywords = [
     "automation",

@@ -194,7 +194,8 @@ Integrations ship as extras, so you install only what you use:
 | `zeocore[drive]` | Google Drive |
 | `zeocore[gmail]` | Gmail |
 | `zeocore[calendar]` | Google Calendar (read + write) |
-| `zeocore[google]` | Drive + Gmail auth plumbing together |
+| `zeocore[google]` | Drive + Gmail + **Docs** auth plumbing together |
+| `zeocore[bluesky]` | Bluesky posting via an app password — no OAuth, no developer app |
 | `zeocore[notion]` | Notion (read + write) |
 | `zeocore[pandoc]` | Document conversion via Pandoc |
 | `zeocore[llms]` | OpenAI / Anthropic / tiktoken clients — chat, tool-calling, prompt caching |

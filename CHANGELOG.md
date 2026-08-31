@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-08-31
+
+Two new integrations and the credential handling to support them safely.
+Short announcement: [RELEASE_NOTES.md](RELEASE_NOTES.md). Adopter path:
+install -> [GET-STARTED.md](GET-STARTED.md) token guide -> construct an
+integration -> post.
+
+### Added
+
+- **Google Docs integration** (`zeo_core.integrations.google.docs`): full
+  `documents.v1` surface -- `get_document`, `create_document`, `batch_update`,
+  plus `get_document_text` with a recursive body walk that includes tables.
+  Index-free `replace_text` / `append_text` are the headline editing methods;
+  the request builder reverse-sorts by index internally so earlier edits cannot
+  invalidate later ones.
+- **Bluesky integration** (`zeo_core.integrations.social.bluesky`), the first
+  provider under a new `integrations/social/` package. Authenticates with an
+  app password -- no OAuth, no developer app, no approval. Rich-text facets are
+  computed from UTF-8 byte offsets, so links and mentions survive emoji.
+- **Token-acquisition guide** in [GET-STARTED.md](GET-STARTED.md) for Bluesky,
+  LinkedIn, Google, Notion and GitHub: which portal, which product, which
+  scopes, and where the value goes. Flows that could not be verified are marked
+  as unverified rather than guessed.
+- `.env` is now actually loaded (`zeo_core.config.load_dotenv_file`). It was
+  documented as the home for secrets but inert.
+
+### Changed
+
+- **Credential files move out of the working directory** to an OS-appropriate
+  per-user location via `platformdirs`. A legacy credential is migrated once,
+  with an explicit notice; differing contents in both locations refuses and
+  instructs rather than guessing. Credential writes are `0600` and atomic.
+- OAuth credentials are now validated against **granted** scopes, not requested
+  ones. A cached token missing a scope previously reported valid and failed at
+  the first API call.
+
+### Fixed
+
+- `drive` and `calendar` resolved configuration in `__init__`, so constructing
+  either from a directory with no config file raised before a caller could
+  supply one. Both now defer to `initialize()`, matching `mail`. All five
+  integrations construct from a fresh directory.
+- `google_credentials.json` and `google_client_secret.json` were not gitignored
+  while the settings YAML was -- the settings file was protected and the live
+  token was not.
+
 ## [0.5.0] - 2026-08-23
 
 ZeoCore is the canonical capability-authoring and capability-contract
