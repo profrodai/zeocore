@@ -35,6 +35,12 @@ dependencies = [
     "tqdm",
     "Jinja2",
     "pydantic[email]",
+    # RULING-407 item 4 (zeocore org corpus, 2026-08-31): .env.example has
+    # always documented `.env` as "the documented home for secrets in
+    # ZeoCore," but nothing loaded it -- python-dotenv makes that real via
+    # zeo_core.config.load_dotenv_file(). Core, not an extra: every
+    # integration reads its own secrets from os.environ, not just Google's.
+    "python-dotenv>=1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -86,10 +92,16 @@ lint = [
     # import-linter enforces the directional import contracts in .importlinter.
     "import-linter>=2.5",
 ]
+# All four Google-family extras below share `platformdirs`: RULING-408
+# (DESIGN-01 approach C) computes the credentials/client-secret default
+# location through it (zeo_core.integrations.google.credential_paths),
+# and that module is imported unconditionally by google/config.py and
+# google/auth.py -- shared by drive, mail (the `gmail` extra), and calendar.
 gmail = [
     "google-api-python-client>=2.0.0",
     "google-auth-httplib2>=0.1.0",
     "google-auth-oauthlib>=0.4.0",
+    "platformdirs>=4.0.0",
 ]
 notion = [
     "notion-client>=1.0.0",
@@ -98,16 +110,19 @@ google = [
     "google-api-python-client>=2.0.0",
     "google-auth-httplib2>=0.1.0",
     "google-auth-oauthlib>=0.4.0",
+    "platformdirs>=4.0.0",
 ]
 drive = [
     "google-api-python-client>=2.0.0",
     "google-auth-httplib2>=0.1.0",
     "google-auth-oauthlib>=0.4.0",
+    "platformdirs>=4.0.0",
 ]
 calendar = [
     "google-api-python-client>=2.0.0",
     "google-auth-httplib2>=0.1.0",
     "google-auth-oauthlib>=0.4.0",
+    "platformdirs>=4.0.0",
 ]
 pandoc = ["pypandoc", "beautifulsoup4"]
 llms = ["tiktoken", "openai", "anthropic"]
@@ -118,6 +133,7 @@ all = [
     "google-api-python-client>=2.0.0",
     "google-auth-httplib2>=0.1.0",
     "google-auth-oauthlib>=0.4.0",
+    "platformdirs>=4.0.0",
     "notion-client>=1.0.0",
     "pypandoc",
     "beautifulsoup4",

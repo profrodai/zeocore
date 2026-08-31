@@ -997,12 +997,28 @@ YAML config file. This is the documented split for the whole library:
 all read directly from the process environment by their respective
 integrations, no `ZEO_` prefix needed.
 
-ZeoCore does **not** load `.env` files on import -- that stays your
-shell's/tooling's job (`uv run --env-file .env ...`, a `python-dotenv` call
-in your own entrypoint, your process manager, or your deployment platform's
-env injection). Once a variable is in the process environment, ZeoCore's
-integrations and `ZEO_SECTION__KEY` overrides read it exactly the same way
-regardless of how it got there.
+ZeoCore does **not** load `.env` files on import (no implicit I/O on import,
+per `zeo_core.config`'s own Kernel philosophy) -- but it does provide a real,
+working loader you call explicitly:
+
+```python
+from zeo_core.config import load_dotenv_file
+
+load_dotenv_file()  # searches upward from CWD for a `.env` file, once, early
+```
+
+Call it once in your own entrypoint, before anything reads a secret. It
+never overwrites a variable already present in the process environment
+(`override=False` by default), so a value your shell or process manager set
+explicitly is never silently replaced by the `.env` file's copy. This
+replaces the previous "wire it up yourself" guidance
+(`uv run --env-file .env ...`, a hand-rolled `python-dotenv` call, your
+process manager, or your deployment platform's env injection all still work
+too, if you'd rather not call this function) -- `python-dotenv` is now a
+declared core dependency, not something you need to add yourself. Once a
+variable is in the process environment, ZeoCore's integrations and
+`ZEO_SECTION__KEY` overrides read it exactly the same way regardless of how
+it got there.
 
 ## Integration Authentication
 

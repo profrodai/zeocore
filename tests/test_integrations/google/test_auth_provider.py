@@ -758,3 +758,181 @@ class TestGoogleAuthProviderCoverageGaps:
             mock_auth.return_value = AuthResult(success=True, token="x")  # noqa: S106 -- fake test value
             with pytest.raises(ZeoIntegrationError, match="no credentials were set"):
                 provider.get_credentials()
+
+
+class TestGoogleAuthProviderScopeSufficiency:
+    """RULING-406 gate one / RULING-408: `_load_existing_credentials` must
+    validate GRANTED scopes (recorded in the credential file at save time)
+    against REQUESTED scopes (self.scopes), not trust
+    `Credentials.from_authorized_user_info`'s own `.scopes`/`.expired`/
+    `.valid` -- that SDK call stamps the REQUESTED scopes onto the returned
+    object regardless of what was actually granted, so a token granted
+    drive-only, loaded with spreadsheets requested, comes back with
+    `creds.scopes == ['.../spreadsheets']`, `expired False`, `valid True`:
+    it passes both of authenticate()'s only checks and then 403s at
+    runtime. This is the exact defect the org ledger records as VERIFIED
+    (auth-scope-defect-passes-the-only-gate, zeocore@f315f97f) by executing
+    it, not reading it -- test_insufficient_scope_defect_reproduced_live
+    below re-executes that same defect against the REAL google-auth SDK
+    (not a MagicMock) as the ground truth this whole feature exists to
+    catch, before testing the fix that catches it.
+    """
+
+    def _make_provider(self, scopes: list[str]) -> GoogleAuthProvider:
+        with patch(
+            "zeo_core.integrations.google.auth.standalone.get_file_info"
+        ) as mock_info:
+            mock_info.return_value.success = True
+            mock_info.return_value.exists = True
+            return GoogleAuthProvider(
+                client_secrets_file="/path/to/secrets.json",
+                credentials_file="/path/to/credentials.json",
+                scopes=scopes,
+            )
+
+    def test_insufficient_scope_defect_reproduced_live(self) -> None:
+        """The bytes the org ledger's first row claims VERIFIED, re-executed
+        here against the real SDK (no mocks) as a standing regression proof
+        that the defect this feature exists to catch is real, not assumed:
+        a drive-only-granted credential, loaded with spreadsheets
+        requested, comes back scopes==REQUESTED (not granted),
+        expired=False, valid=True."""
+        from google.oauth2.credentials import Credentials
+
+        granted_only_drive = {
+            "token": "tok",  # noqa: S106 -- fake test value
+            "refresh_token": "rtok",  # noqa: S106 -- fake test value
+            "client_id": "cid",
+            "client_secret": "csecret",  # noqa: S106 -- fake test value
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "scopes": ["https://www.googleapis.com/auth/drive"],
+            "expiry": "2099-01-01T00:00:00Z",
+        }
+        requested_spreadsheets = ["https://www.googleapis.com/auth/spreadsheets"]
+
+        creds = Credentials.from_authorized_user_info(
+            granted_only_drive, requested_spreadsheets
+        )
+
+        # This IS the defect: the object claims the REQUESTED scope, not
+        # the drive-only scope actually on disk, and reports itself usable.
+        assert creds.scopes == requested_spreadsheets
+        assert creds.expired is False
+        assert creds.valid is True
+        # ...which is exactly why authenticate()'s old expired/valid-only
+        # gate could not have caught this -- both checks pass.
+
+    def test_load_existing_credentials_returns_none_when_scope_insufficient(
+        self,
+    ) -> None:
+        """The fix: _load_existing_credentials itself must catch what the
+        expired/valid checks cannot, by comparing the file's recorded
+        `scopes` (granted) against self.scopes (requested) BEFORE trusting
+        the loaded credential -- forcing a return of None (which
+        authenticate() already treats as "start a new flow, i.e. re-consent")
+        when spreadsheets was requested but only drive was ever granted."""
+        provider = self._make_provider(
+            scopes=["https://www.googleapis.com/auth/spreadsheets"]
+        )
+
+        # Deliberately NOT mocking google.oauth2.credentials.Credentials
+        # here: this must be a complete, real-SDK-valid authorized_user_info
+        # payload (matching test_insufficient_scope_defect_reproduced_live's
+        # own shape) so that if the scope-sufficiency check under test were
+        # ever deleted, the real Credentials.from_authorized_user_info call
+        # would succeed and return a usable (mis-scoped) credential rather
+        # than raising ValueError for an unrelated reason (missing fields)
+        # that would make this test pass for the WRONG reason -- exactly
+        # the class of test RULING-357 s6 warns cannot actually fail.
+        with (
+            patch(
+                "zeo_core.integrations.google.auth.standalone.get_file_info"
+            ) as mock_info,
+            patch(
+                "zeo_core.integrations.google.auth.standalone.read_json"
+            ) as mock_read,
+        ):
+            mock_info.return_value = MagicMock(exists=True)
+            mock_read.return_value = MagicMock(
+                success=True,
+                data={
+                    "token": "tok",  # noqa: S106 -- fake test value
+                    "refresh_token": "rtok",  # noqa: S106 -- fake test value
+                    "client_id": "cid",
+                    "client_secret": "csecret",  # noqa: S106 -- fake test value
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                    "scopes": ["https://www.googleapis.com/auth/drive"],
+                    "expiry": "2099-01-01T00:00:00Z",
+                },
+            )
+
+            result = provider._load_existing_credentials()
+
+            assert result is None
+
+    def test_load_existing_credentials_returns_creds_when_scope_sufficient(
+        self,
+    ) -> None:
+        """The non-regression half: a credential granting a superset of
+        what's requested (or exactly what's requested) still loads
+        normally -- this feature must narrow the happy path, not remove
+        it."""
+        provider = self._make_provider(
+            scopes=["https://www.googleapis.com/auth/drive.file"]
+        )
+
+        built_creds = mock_credentials(token="loaded")  # noqa: S106 -- fake test value
+        with (
+            patch(
+                "zeo_core.integrations.google.auth.standalone.get_file_info"
+            ) as mock_info,
+            patch(
+                "zeo_core.integrations.google.auth.standalone.read_json"
+            ) as mock_read,
+            patch("zeo_core.integrations.google.auth.Credentials") as mock_creds_class,
+        ):
+            mock_info.return_value = MagicMock(exists=True)
+            mock_read.return_value = MagicMock(
+                success=True,
+                data={
+                    "token": "tok",  # noqa: S106 -- fake test value
+                    "scopes": [
+                        "https://www.googleapis.com/auth/drive",
+                        "https://www.googleapis.com/auth/drive.file",
+                    ],
+                },
+            )
+            mock_creds_class.from_authorized_user_info.return_value = built_creds
+
+            result = provider._load_existing_credentials()
+
+            assert result is built_creds
+
+    def test_has_sufficient_scopes_no_scopes_requested_is_always_sufficient(
+        self,
+    ) -> None:
+        """A provider constructed with no explicit scopes never had a
+        specific requirement to fall short of -- self.scopes == [] must
+        short-circuit to sufficient rather than fail-closed on an empty
+        request, matching every pre-existing test that constructs a
+        provider without a scopes= kwarg."""
+        provider = self._make_provider(scopes=[])
+        assert provider._has_sufficient_scopes({"scopes": []}, MagicMock()) is True
+        assert (
+            provider._has_sufficient_scopes(
+                {"scopes": ["https://www.googleapis.com/auth/drive"]}, MagicMock()
+            )
+            is True
+        )
+
+    def test_has_sufficient_scopes_missing_scopes_key_fails_closed(self) -> None:
+        """credential_data with no recorded `scopes` list at all (malformed,
+        or written by something other than serialize_credentials) has no
+        grant to check against -- fail closed and force re-consent, rather
+        than trust an un-attributed credential."""
+        provider = self._make_provider(scopes=["https://www.googleapis.com/auth/drive"])
+        assert provider._has_sufficient_scopes({}, MagicMock()) is False
+        assert (
+            provider._has_sufficient_scopes({"scopes": "not-a-list"}, MagicMock())
+            is False
+        )

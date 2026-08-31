@@ -13,6 +13,10 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from zeo_core.config.loader import _normalize_path
 from zeo_core.integrations.core.base import BaseConfigProvider
+from zeo_core.integrations.google.credential_paths import (
+    resolve_client_secret_path,
+    resolve_credentials_path,
+)
 
 
 class GoogleBaseConfig(BaseModel):
@@ -308,12 +312,31 @@ class GoogleConfigProvider(BaseConfigProvider):
         """
         Get default configuration values for Google services.
 
+        The two file paths run through the RULING-407/408 one-shot credential
+        migration (credential_paths.resolve_*): the pre-migration defaults
+        (`config/google_*.json`) resolved CWD-relative, so authorizing from a
+        fresh directory silently wrote a live OAuth token wherever the caller
+        happened to be standing. The migrated defaults are OS-appropriate
+        per-user paths (platformdirs); a pre-existing token at the OLD
+        location is moved there explicitly (never silently -- a notice is
+        printed) the first time this runs and nothing needs migrating on
+        every call after. See credential_paths.py for the full contract,
+        including the refuse-and-instruct behavior on ambiguity
+        (CredentialMigrationAmbiguousError) when a differing credential exists at
+        both locations.
+
         Returns:
             dict[str, Any]: Default configuration values
+
+        Raises:
+            CredentialMigrationAmbiguousError: a credential exists at BOTH the
+                legacy and the new location with differing contents.
+                RULING-408 ruled this must never be guessed at -- the caller
+                is expected to resolve it by hand and is told both paths.
         """
         base_config = {
-            "client_secrets_file": "config/google_client_secret.json",
-            "credentials_file": "config/google_credentials.json",
+            "client_secrets_file": resolve_client_secret_path(),
+            "credentials_file": resolve_credentials_path(),
         }
 
         if self.service == "drive":
