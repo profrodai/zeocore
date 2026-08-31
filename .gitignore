@@ -41,6 +41,16 @@ htmlcov/
 .env.*
 !.env.example
 *.pem
+
+# Credential artefacts the LIBRARY ITSELF writes (RULING-407 item 0).
+# zeo_config.yaml and .env were already covered; these two were NOT, so the
+# SETTINGS file was protected while the LIVE OAUTH TOKEN was committable.
+# Unanchored on purpose: google/config.py defaults these CWD-RELATIVE, so they
+# land under whatever directory the user was standing in, not only ./config/.
+# DEFENCE-IN-DEPTH ONLY -- NOT the root fix. A PyPI user has no git at all;
+# the real fix is moving the defaults out of cwd (RULING-407 item 1/2).
+google_credentials.json
+google_client_secret.json
 *.key
 
 # ZeoCore default config-YAML locations (RULING-356 s4.2 / config-secrets-hardening
