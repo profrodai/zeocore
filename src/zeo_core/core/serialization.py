@@ -240,5 +240,5 @@ def is_json_safe(data: Any, allow_pydantic: bool = True) -> bool:  # noqa: ANN40
             data, allow_pydantic=allow_pydantic, allow_string_fallback=False
         )
         return True
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return False

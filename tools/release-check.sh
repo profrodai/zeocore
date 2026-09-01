@@ -165,9 +165,23 @@ RETRY_WAIT_SECONDS=2  # doubles each retry: 2s, 4s -- brief, since this
 probe_with_retry() {
     local url="$1"
     local attempt=1
-    local status wait_s=$RETRY_WAIT_SECONDS
+    local status wait_s=$RETRY_WAIT_SECONDS curl_exit
     while [ "$attempt" -le "$RETRY_ATTEMPTS" ]; do
-        status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$url" 2>/dev/null || echo "000")
+        # curl already writes "000" to stdout AND exits non-zero on a
+        # connection failure (verified: --max-time'd/unresolvable host ->
+        # stdout "000", exit 6). `|| echo "000"` only fires when curl's
+        # OWN invocation fails to run at all, which is a different,
+        # rarer case -- for the connection-failure case both the `-w`
+        # output and the `|| echo` fire, and command substitution
+        # concatenates them into "000000" (6 chars), not a valid status.
+        # Capture curl's exit status explicitly and only synthesize
+        # "000" when curl's stdout is not already a clean 3-digit code,
+        # so every return path yields exactly 3 characters.
+        status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$url" 2>/dev/null)
+        curl_exit=$?
+        if [ "$curl_exit" -ne 0 ] || ! [[ "$status" =~ ^[0-9]{3}$ ]]; then
+            status="000"
+        fi
         if [ "$status" = "200" ] || [ "$status" = "404" ]; then
             echo "$status"
             return

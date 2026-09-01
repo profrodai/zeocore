@@ -46,7 +46,7 @@ def _unwrap_result_like(obj: FsPathLike) -> str | None:
         if isinstance(obj.data, (str, Path)) or hasattr(obj.data, "__fspath__"):
             try:
                 return _extract_path_str(obj.data)
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 pass
 
     if hasattr(obj, "path") and obj.path is not None:
@@ -163,7 +163,7 @@ def safe_path_str(obj: FsPathLike, default: str | None = None) -> str | None:
     """
     try:
         return _extract_path_str(obj)
-    except (TypeError, ValueError, AttributeError):
+    except TypeError, ValueError, AttributeError:
         return default
 
 
@@ -181,5 +181,5 @@ def extract_path_from_result(obj: FsPathLike) -> Path | None:
     """
     try:
         return coerce_path(obj)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return None

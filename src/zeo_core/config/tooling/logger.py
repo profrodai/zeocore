@@ -34,7 +34,7 @@ def setup_tool_logging(
     level_name = log_level.upper()
     try:
         level = LOG_LEVELS[LogLevel(level_name)]
-    except (ValueError, KeyError):
+    except ValueError, KeyError:
         level = logging.INFO
 
     # Create directory if it doesn't exist
