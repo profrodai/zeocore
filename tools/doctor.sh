@@ -12,7 +12,7 @@
 set -uo pipefail
 
 REPO_ROOT="${1:?doctor.sh: missing repo_root argument}"
-VENV_PYTHON="${2:?doctor.sh: missing venv_python_path argument}"
+PROJECT_VENV_PYTHON="${2:?doctor.sh: missing venv_python_path argument}"
 VENV_NAME="${3:?doctor.sh: missing venv_dir_name argument}"
 
 cd "$REPO_ROOT" || { echo "doctor: cannot cd to $REPO_ROOT"; exit 1; }
@@ -52,6 +52,78 @@ warn() {
 
 echo "${BLUE}zeocore doctor — checking this machine is ready to work on zeocore${RESET}"
 echo ""
+
+# ------------------------------------------------------------------
+# 0. Resolve WHICH virtual environment to diagnose. doctor used to look
+#    ONLY at the project's own ${VENV_NAME}/ and report "no virtual
+#    environment" whenever a perfectly good venv was active from
+#    anywhere else (~/.virtualenvs, conda, direnv, `uv venv --path`,
+#    ...) -- the tool exhibiting the exact failure it exists to catch:
+#    a confident report derived from looking in exactly one place.
+#
+#    Resolution order (first match wins):
+#      1. $VIRTUAL_ENV (the standard venv/virtualenv activation contract)
+#      2. $CONDA_PREFIX (conda's equivalent -- it never sets VIRTUAL_ENV)
+#      3. whatever `python3` resolves to on PATH, IF it looks like a venv
+#         interpreter (sibling pyvenv.cfg) rather than a bare system python
+#      4. fall back to the project's ${VENV_NAME}/ -- unchanged default
+#
+#    Whichever source wins, VENV_PYTHON is what every check below uses --
+#    so a venv found via any route gets the SAME downstream checks a
+#    default-layout venv always got. USING_PROJECT_VENV tracks whether it
+#    is the project's own ${VENV_NAME}/, so check 3 can say plainly which
+#    interpreter is being diagnosed when it is NOT.
+# ------------------------------------------------------------------
+VENV_PYTHON=""
+VENV_SOURCE=""
+
+venv_python_candidate() {
+    # Given a venv root, print its python if executable, else nothing.
+    local root="$1"
+    if [ -x "${root}/bin/python" ]; then
+        echo "${root}/bin/python"
+    elif [ -x "${root}/bin/python3" ]; then
+        echo "${root}/bin/python3"
+    fi
+}
+
+if [ -n "${VIRTUAL_ENV:-}" ]; then
+    CANDIDATE=$(venv_python_candidate "$VIRTUAL_ENV")
+    if [ -n "$CANDIDATE" ]; then
+        VENV_PYTHON="$CANDIDATE"
+        VENV_SOURCE="\$VIRTUAL_ENV (${VIRTUAL_ENV})"
+    fi
+fi
+
+if [ -z "$VENV_PYTHON" ] && [ -n "${CONDA_PREFIX:-}" ]; then
+    CANDIDATE=$(venv_python_candidate "$CONDA_PREFIX")
+    if [ -n "$CANDIDATE" ]; then
+        VENV_PYTHON="$CANDIDATE"
+        VENV_SOURCE="\$CONDA_PREFIX (${CONDA_PREFIX})"
+    fi
+fi
+
+if [ -z "$VENV_PYTHON" ] && command -v python3 >/dev/null 2>&1; then
+    ON_PATH=$(command -v python3)
+    # A venv interpreter has a pyvenv.cfg one directory up from bin/. A
+    # bare system/pyenv python3 does not -- this is what keeps us from
+    # treating an ordinary system python3 on PATH as "the active venv".
+    ON_PATH_ROOT=$(dirname "$(dirname "$ON_PATH")")
+    if [ -f "${ON_PATH_ROOT}/pyvenv.cfg" ]; then
+        VENV_PYTHON="$ON_PATH"
+        VENV_SOURCE="python3 on PATH (${ON_PATH})"
+    fi
+fi
+
+if [ -z "$VENV_PYTHON" ]; then
+    VENV_PYTHON="$PROJECT_VENV_PYTHON"
+    VENV_SOURCE="${VENV_NAME}/ (default project layout)"
+    USING_PROJECT_VENV=1
+elif [ "$VENV_PYTHON" = "$PROJECT_VENV_PYTHON" ] || [ "$(cd "$(dirname "$VENV_PYTHON")/.." 2>/dev/null && pwd -P || true)" = "$(cd "$(dirname "$PROJECT_VENV_PYTHON")/.." 2>/dev/null && pwd -P || true)" ]; then
+    USING_PROJECT_VENV=1
+else
+    USING_PROJECT_VENV=0
+fi
 
 # ------------------------------------------------------------------
 # 1. Python floor. Read the SAME source of truth pyproject.toml uses
@@ -106,10 +178,18 @@ echo ""
 # 3. Virtual environment present.
 # ------------------------------------------------------------------
 if [ -x "$VENV_PYTHON" ]; then
-    pass "virtual environment found at ${VENV_NAME}/"
+    if [ "$USING_PROJECT_VENV" -eq 1 ]; then
+        pass "virtual environment found at ${VENV_NAME}/"
+    else
+        pass "virtual environment found (NOT ${VENV_NAME}/ -- see note)"
+        warn "diagnosing a non-default environment" \
+             "resolved via ${VENV_SOURCE}" \
+             "doctor is reporting on ${VENV_PYTHON}, which is NOT this project's ${VENV_NAME}/. Every check below is about THIS interpreter. If that is not the environment you meant to check, deactivate it (or unset VIRTUAL_ENV/CONDA_PREFIX) and re-run, or run 'make env'/'make setup' to also have a project-local ${VENV_NAME}/."
+    fi
 else
-    fail "no virtual environment" "test -x ${VENV_PYTHON}" \
-         "Run 'make env' to create it, or 'make setup' to create it and install everything."
+    fail "no virtual environment" \
+         "checked \$VIRTUAL_ENV, \$CONDA_PREFIX, python3 on PATH, and ${PROJECT_VENV_PYTHON} -- none found" \
+         "Run 'make env' to create ${VENV_NAME}/, or 'make setup' to create it and install everything -- or activate an existing environment (e.g. 'source <path>/bin/activate') before running 'make doctor'."
 fi
 echo ""
 
@@ -118,7 +198,11 @@ echo ""
 # ------------------------------------------------------------------
 if [ -x "$VENV_PYTHON" ]; then
     if "$VENV_PYTHON" -c "import zeo_core" >/dev/null 2>&1; then
-        pass "zeo_core imports cleanly from ${VENV_NAME}/"
+        if [ "$USING_PROJECT_VENV" -eq 1 ]; then
+            pass "zeo_core imports cleanly from ${VENV_NAME}/"
+        else
+            pass "zeo_core imports cleanly from the active environment (${VENV_PYTHON})"
+        fi
     else
         fail "zeo_core is not installed / does not import" \
              "${VENV_PYTHON} -c 'import zeo_core'" \
