@@ -54,7 +54,33 @@ Example:
             return CapabilityResult.ok(data=result, msg="Success")
 """
 
-__version__ = "0.5.0"
+import importlib.metadata as _importlib_metadata
+
+try:
+    # Single source of truth: pyproject.toml's [project] version. Deriving
+    # here means the installed distribution's metadata and this module's
+    # __version__ can never disagree -- there is only one place left to
+    # edit. A hand-maintained literal desynchronised silently across three
+    # releases (RULING-414): real PyPI 0.4.0 shipped __version__ == "0.3.0",
+    # and 0.5.0 was only "correct" by coincidence of an unrelated edit.
+    __version__ = _importlib_metadata.version("zeocore")
+except _importlib_metadata.PackageNotFoundError as _exc:  # pragma: no cover
+    # Verified rather than assumed (2026-09-01): every documented install
+    # path (`make install`/`make setup`, `pip install zeocore`, even a bare
+    # `pip install -e . --no-deps`) registers distribution metadata. And
+    # `import zeo_core` itself cannot succeed without that install having
+    # happened, because this module unconditionally imports pydantic-backed
+    # submodules below -- there is no "source checkout, zero install, but
+    # somehow importable" path in this repo to fall back for. So this is
+    # NOT a quiet default: a version string here would be indistinguishable
+    # from a real one and would silently defeat the very drift this module
+    # exists to prevent (RULING-414 §3). Fail loudly and name the fix.
+    raise RuntimeError(
+        "zeo_core is importable but has no installed distribution metadata "
+        "(importlib.metadata.version('zeocore') raised "
+        f"PackageNotFoundError: {_exc}). This should not be reachable: run "
+        "`pip install -e .` or `make install` and re-import."
+    ) from _exc
 
 # Core classes
 from zeo_core.contracts.envelopes.result import CapabilityResult

@@ -6,7 +6,16 @@ only showed the zeo_core.tools surface (BaseZeoTool, ToolContext, mixins)
 and not CapabilityResult, even though every example's run() signature
 depends on it and README.md's module table presents contracts as an
 equally discoverable top-level module.
+
+Also covers RULING-414: the published package misreported its own version
+for three releases running (real PyPI 0.4.0 shipped __version__ == "0.3.0";
+TestPyPI 0.6.0 shipped __version__ == "0.5.0") because __version__ was a
+hand-maintained literal with nothing asserting it matched the distribution
+that was actually built and published. `grep -rl __version__ tests/`
+returned zero files before this test existed.
 """
+
+import importlib.metadata
 
 import zeo_core
 
@@ -44,3 +53,23 @@ def test_all_matches_actual_attributes() -> None:
     """Every name in __all__ must actually resolve on the module."""
     for name in zeo_core.__all__:
         assert hasattr(zeo_core, name)
+
+
+def test_version_matches_installed_distribution_metadata() -> None:
+    """zeo_core.__version__ must agree with the installed distribution's version.
+
+    RULING-414: real PyPI 0.4.0 shipped `zeo_core.__version__ == "0.3.0"`, and
+    TestPyPI 0.6.0 shipped `zeo_core.__version__ == "0.5.0"` -- a hardcoded
+    literal in src/zeo_core/__init__.py that drifted from pyproject.toml's
+    `[project] version` because nothing tied them together and nothing
+    tested it. `__version__` is now derived from
+    `importlib.metadata.version("zeocore")` (the same value hatchling/pip
+    publish as the distribution's version), so there is exactly one place
+    left to edit and this test is what makes a re-introduced literal fail
+    instead of silently shipping.
+
+    This is a *behavioral* check, not a presence check: it asserts the two
+    values are equal, not merely that `__version__` exists or is importable
+    (a `hasattr`/`import` check would have passed on 0.4.0/0.6.0 too).
+    """
+    assert zeo_core.__version__ == importlib.metadata.version("zeocore")
