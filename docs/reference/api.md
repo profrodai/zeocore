@@ -914,7 +914,7 @@ Declared in [`pyproject.toml`](../../pyproject.toml); `pip install "zeocore[name
 | `all` | Every integration above — **not** `http` or `mcp`; use `zeocore[all,mcp]` |
 | `dev`, `lint`, `http-dev`, `mcp-dev` | Contributor tooling — see [CONTRIBUTING.md](../../CONTRIBUTING.md) |
 
-Python **3.13 or newer** is required.
+Python **3.14 or newer** is required.
 
 Credentials are read from the process environment, never from committed
 YAML: `NOTION_TOKEN`, `GITHUB_TOKEN`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`

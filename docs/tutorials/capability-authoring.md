@@ -13,12 +13,12 @@ By the end, you will be able to:
 - register and invoke a `BoundCapability`; and
 - inspect the structured `CapabilityResult`.
 
-ZeoCore requires Python 3.13 or newer. From the repository root, install the
+ZeoCore requires Python 3.14 or newer. From the repository root, install the
 project and run the canonical example:
 
 ```bash
-python3.13 -m pip install -e .
-python3.13 examples/capability_authoring.py
+python3.14 -m pip install -e .
+python3.14 examples/capability_authoring.py
 ```
 
 Expected output:

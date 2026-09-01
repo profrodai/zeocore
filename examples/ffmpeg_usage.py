@@ -11,9 +11,9 @@ binary directly) -- ffmpeg-zeo resolves real ffmpeg/ffprobe binaries
 integration calls a small, curated set of its "recipes": probe, convert,
 transcode_h264, extract_audio, thumbnail.
 
-ffmpeg-zeo itself requires Python >=3.12; zeocore's own floor is >=3.13
-(this cycle's floor bump), so that gap is closed -- the extra installs
-cleanly on any zeocore-supported interpreter, no version straddling.
+ffmpeg-zeo itself requires Python >=3.12; zeocore's own floor is >=3.14,
+comfortably above that, so the extra installs cleanly on any
+zeocore-supported interpreter, no version straddling.
 
 This example needs a real ffmpeg/ffprobe on PATH (or resolvable via
 ffmpeg-zeo's own download mechanism) to do anything -- it generates a tiny

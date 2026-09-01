@@ -1,6 +1,6 @@
 # ZeoCore concepts
 
-ZeoCore is a Python 3.13+ framework for defining typed capabilities. It owns
+ZeoCore is a Python 3.14+ framework for defining typed capabilities. It owns
 the contracts and authoring surface; a separate runner owns execution policy
 and the runtime environment.
 
