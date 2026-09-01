@@ -14,8 +14,8 @@ cd zeocore
 make setup
 ```
 
-`make setup` creates a `.venv` (Python 3.13 by default -- see `PYTHON_VERSION`
-in the Makefile; the package itself requires 3.13+), installs `zeocore` in
+`make setup` creates a `.venv` (Python 3.14 by default -- see `PYTHON_VERSION`
+in the Makefile; the package itself requires 3.14+), installs `zeocore` in
 editable mode with all optional integrations, and installs the `dev` and
 `lint` extras. Activate it with:
 

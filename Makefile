@@ -58,6 +58,7 @@ help: ## Show this help message
 	@echo '${YELLOW}Setup:${RESET}'
 	@echo '  ${GREEN}make setup${RESET}            - Full dev environment (env + install + dev tools)'
 	@echo '  ${GREEN}make check-env${RESET}        - Verify installation'
+	@echo '  ${GREEN}make doctor${RESET}           - Is this machine ready? Checks everything, reports every finding + fix'
 	@echo ''
 	@echo '${YELLOW}THE GATE (run before every commit):${RESET}'
 	@echo '  ${GREEN}make verify${RESET}           - format-check + ruff + mypy + hygiene + tests (fast gate)'
@@ -73,6 +74,7 @@ help: ## Show this help message
 	@echo '  ${GREEN}make test-fast${RESET}        - pytest without coverage (quick inner loop)'
 	@echo '  ${GREEN}make test-docs${RESET}        - documentation links + safe example smoke tests'
 	@echo '  ${GREEN}make build${RESET}            - python -m build (sdist + wheel)'
+	@echo '  ${GREEN}make release-check${RESET}    - Pre-tag gate: version/floor agreement, CHANGELOG, index availability'
 	@echo ''
 	@echo '${YELLOW}Inspection:${RESET}'
 	@echo '  ${GREEN}make structure${RESET}        - Project structure + hotspots'
@@ -144,6 +146,33 @@ check-env: ## Check that the virtual environment is active and working
 	@$(PYTHON) -c "import zeo_core; print(f'zeo_core: {zeo_core.__file__}')" 2>/dev/null || \
 	  echo "${YELLOW}zeo_core not importable yet — run 'make install'${RESET}"
 	@echo "${GREEN}Environment check complete${RESET}"
+
+# ============================================================
+# DOCTOR — "is my machine ready to work on/release zeocore?"
+# ============================================================
+# Unlike every other target here, doctor NEVER stops at the first problem
+# (KEEP_GOING by construction, not a flag): it runs every check, counts the
+# failures, and prints a full report so a beginner sees everything wrong in
+# ONE pass instead of playing whack-a-mole with `make setup` one error at a
+# time. Each finding is printed with its FIX right next to it — the
+# audience is someone who has never debugged a Python environment before.
+.PHONY: doctor
+doctor: ## Check this machine is ready to develop/release zeocore (never stops at the first problem)
+	@bash tools/doctor.sh "$(REPO_ROOT)" "$(PYTHON)" "$(VENV_NAME)"
+
+# ============================================================
+# RELEASE-CHECK — the pre-tag gate (RULING-414)
+# ============================================================
+# Answers: is trunk actually ready to tag and publish? Version agreement,
+# floor agreement, a CHANGELOG entry for the version about to ship, and
+# whether that version is already burned on either index -- the exact
+# check that would have caught RULING-414's TestPyPI collision in one
+# second instead of two failed publish runs. Same KEEP_GOING contract as
+# `make doctor`: every check runs, the report is complete, exit code is
+# the failure count.
+.PHONY: release-check
+release-check: ## Pre-tag gate: version + floor agreement, CHANGELOG entry, index availability
+	@bash tools/release-check.sh "$(REPO_ROOT)" "$(PYTHON)"
 
 # ============================================================
 # THE GATE — verify / verify-full
