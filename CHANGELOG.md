@@ -24,6 +24,24 @@ integration -> post.
   provider under a new `integrations/social/` package. Authenticates with an
   app password -- no OAuth, no developer app, no approval. Rich-text facets are
   computed from UTF-8 byte offsets, so links and mentions survive emoji.
+- **Google Sheets integration** (`zeo_core.integrations.google.sheets`):
+  reading and writing cell ranges over the Sheets v4 API, same
+  `IntegrationResult` shape as every other integration.
+- **Google Slides integration** (`zeo_core.integrations.google.slides`):
+  presentation and page access over the Slides v1 API.
+- **Tutorials for the integrations**, under [docs/tutorials/](docs/tutorials/) and
+  indexed from [docs/README.md](docs/README.md) --
+  [Google Docs](docs/tutorials/google-docs-integration.md) and
+  [Bluesky](docs/tutorials/bluesky-integration.md) join Calendar, Notion, MCP,
+  capability authoring, results-and-errors, and context/config/files. Every code
+  block in the two new ones was executed against the installed package before
+  being written, not transcribed from source.
+- **`make doctor`** -- a readiness check that reports what an environment is
+  missing rather than failing opaquely.
+- **`make release-check`** -- pre-tag gate over version identity, the Python
+  floor across every file that states it, the CHANGELOG entry, and index
+  availability on both real PyPI and TestPyPI, each probe carrying a positive
+  control so an unreachable index cannot read as a free filename.
 - **Token-acquisition guide** in [GET-STARTED.md](GET-STARTED.md) for Bluesky,
   LinkedIn, Google, Notion and GitHub: which portal, which product, which
   scopes, and where the value goes. Flows that could not be verified are marked
