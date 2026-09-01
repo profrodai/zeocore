@@ -16,7 +16,7 @@ keywords = [
     "workflows",
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = { text = "MIT" }
 authors = [
     { name = "Rod Rivera", email = "rod@aiproduct.engineer" }
@@ -25,7 +25,7 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
@@ -261,7 +261,7 @@ target-version = ["py313"]
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]
-python_version = "3.13"
+python_version = "3.14"
 # explicit_package_bases + mypy_path = "src": without this, mypy's CLI-target
 # walk finds src/__init__.py (this repo has one, a hatch-build artifact of
 # the flat src/ layout) and treats "src" as a package-name segment, naming

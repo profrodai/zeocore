@@ -24,7 +24,7 @@ ordinary account settings — no OAuth, no developer app, no approval wait.
 
 ## Adopter path
 
-1. `pip install "zeocore[google,bluesky]"` (Python 3.13+).
+1. `pip install "zeocore[google,bluesky]"` (Python 3.14+).
 2. Get your tokens: [GET-STARTED.md](GET-STARTED.md) now walks through the
    developer portal for Bluesky, LinkedIn, Google, Notion and GitHub — which
    product to pick, which scopes to ask for, and where the value goes.

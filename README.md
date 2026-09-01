@@ -34,13 +34,13 @@ need prior experience with Pydantic, MCP, or agent frameworks.
 
 ## Requirements
 
-**Python 3.13 or newer.** That's the only hard requirement. (The floor moved
-from `>=3.10` to `>=3.13` in an earlier cycle; if you're pinned to an older
-interpreter, stay on a pre-floor-bump release.)
+**Python 3.14 or newer.** That's the only hard requirement. (The floor moved
+to `>=3.14` in 0.6.0, matching sovereign-agent; if you're pinned to an older
+interpreter, stay on 0.5.0, which requires `>=3.13`.)
 
 Not sure what you have? Run `python3 --version` on macOS/Linux or
 `py --version` on Windows. The [Quickstart](QUICKSTART.md#step-1-check-your-python-version)
-walks through installing 3.13 if you need it.
+walks through installing 3.14 if you need it.
 
 ## Install
 
@@ -151,7 +151,7 @@ mypy checks all of it end to end.
 
 | Start here | What it gives you |
 |---|---|
-| [QUICKSTART.md](QUICKSTART.md) | Install Python 3.13, make a venv, write and run your first capability. No prior knowledge assumed. |
+| [QUICKSTART.md](QUICKSTART.md) | Install Python 3.14, make a venv, write and run your first capability. No prior knowledge assumed. |
 | [docs/README.md](docs/README.md) | The learning hub: tutorials, a guided path through the examples, and reference material. |
 | [docs/tutorials/capability-authoring.md](docs/tutorials/capability-authoring.md) | The canonical authoring tutorial — registry, guards, manifests, adapter binding. |
 | [GET-STARTED.md](GET-STARTED.md) | The full manual: configuration, paths, filesystem, plugins, every integration, adapters, troubleshooting. |
