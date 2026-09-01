@@ -55,21 +55,45 @@ def test_all_matches_actual_attributes() -> None:
         assert hasattr(zeo_core, name)
 
 
-def test_version_matches_installed_distribution_metadata() -> None:
-    """zeo_core.__version__ must agree with the installed distribution's version.
+def test_package_identity_the_shipped_artifact_must_agree_with_its_own_metadata() -> (
+    None
+):
+    """THE PACKAGE MUST KNOW WHAT VERSION IT IS. If this is red, DO NOT SHIP.
 
-    RULING-414: real PyPI 0.4.0 shipped `zeo_core.__version__ == "0.3.0"`, and
-    TestPyPI 0.6.0 shipped `zeo_core.__version__ == "0.5.0"` -- a hardcoded
-    literal in src/zeo_core/__init__.py that drifted from pyproject.toml's
-    `[project] version` because nothing tied them together and nothing
-    tested it. `__version__` is now derived from
-    `importlib.metadata.version("zeocore")` (the same value hatchling/pip
-    publish as the distribution's version), so there is exactly one place
-    left to edit and this test is what makes a re-introduced literal fail
-    instead of silently shipping.
+    Deliberately not named like a `test_version_*` handling test: `pytest -k
+    version` currently collects 60+ OTHER tests that exercise version
+    *parsing/comparison/handling* logic and pass cleanly regardless of this
+    defect. NONE of them test version *identity* -- whether the running
+    package's own __version__ agrees with the metadata of the distribution
+    it was actually installed/published as. That distinction was invisible
+    from a green suite, which is exactly why real PyPI 0.4.0 is LIVE, RIGHT
+    NOW, shipping `zeo_core.__version__ == "0.3.0"` (confirmed by installing
+    it from the index and importing it) -- and TestPyPI 0.6.0 shipped
+    `__version__ == "0.5.0"`. Both releases passed `make verify`'s full
+    eight-stage gate. This is the one test that would have caught either.
+
+    RULING-414 (zeocore org corpus, 2026-09-01): `src/zeo_core/__init__.py`
+    hardcoded `__version__` as a literal that drifted silently from
+    `pyproject.toml`'s `[project] version` because nothing tied them
+    together. Confirmed red against UNMODIFIED trunk before the fix
+    (zeocore@6f271337: `__version__ = "0.5.0"` vs installed metadata
+    `0.6.0"` -- `AssertionError: assert '0.5.0' == '0.6.0'`), then fixed by
+    deriving `__version__` from `importlib.metadata.version("zeocore")`
+    (RULING-415 §0 item 2: derive, don't hand-maintain a literal beside a
+    test) so there is exactly one source of truth left to edit.
 
     This is a *behavioral* check, not a presence check: it asserts the two
-    values are equal, not merely that `__version__` exists or is importable
-    (a `hasattr`/`import` check would have passed on 0.4.0/0.6.0 too).
+    values are EQUAL, not merely that `__version__` exists or is importable
+    (a `hasattr`/`import` check would have passed on 0.3.0/0.4.0/0.5.0/0.6.0
+    identically -- presence was never the gap).
     """
-    assert zeo_core.__version__ == importlib.metadata.version("zeocore")
+    assert zeo_core.__version__ == importlib.metadata.version("zeocore"), (
+        f"PACKAGE IDENTITY MISMATCH, DO NOT SHIP: zeo_core.__version__ "
+        f"({zeo_core.__version__!r}) does not match the installed "
+        f"distribution's own metadata "
+        f"({importlib.metadata.version('zeocore')!r}). This is the exact "
+        "RULING-414 defect (real PyPI 0.4.0 is live today reporting "
+        "__version__ '0.3.0'). Fix: __version__ must be derived from "
+        "importlib.metadata.version('zeocore') in src/zeo_core/__init__.py, "
+        "never a hand-maintained literal."
+    )
