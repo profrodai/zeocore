@@ -47,10 +47,18 @@ echo "  ${BLUE}pyproject.toml version: ${PYPROJECT_VERSION:-<unparseable>}${RESE
 echo ""
 
 # ------------------------------------------------------------------
-# 1. Version agreement: zeo_core.__version__ == pyproject.toml version.
-#    (Same fact test_package_init.py's test_version_matches_installed_
-#    distribution_metadata asserts, run here from the CLI so this gate
-#    does not require pytest to have been run first.)
+# 1. PACKAGE IDENTITY: zeo_core.__version__ == pyproject.toml version.
+#    (Same fact tests/test_package_init.py's
+#    test_package_identity_the_shipped_artifact_must_agree_with_its_own_metadata
+#    asserts, run here from the CLI so this gate does not require pytest to
+#    have been run first.)
+#
+#    This is NOT an ordinary test failure if it goes red. RULING-414: real
+#    PyPI 0.4.0 is LIVE TODAY shipping zeo_core.__version__ == "0.3.0"; the
+#    package did not know its own version, and make verify's full 8-stage
+#    gate passed over it anyway. A red here means DO NOT SHIP, full stop --
+#    it is answered by fixing __version__'s derivation, never by rerunning
+#    or ignoring the check.
 # ------------------------------------------------------------------
 if [ -z "$PYPROJECT_VERSION" ]; then
     fail "cannot read pyproject.toml version" \
@@ -64,11 +72,11 @@ elif [ -x "$VENV_PYTHON" ]; then
              "${VENV_PYTHON} -c 'import zeo_core; print(zeo_core.__version__)'" \
              "Run 'make install' so zeocore is installed in this venv, then re-run."
     elif [ "$RUNTIME_VERSION" = "$PYPROJECT_VERSION" ] && [ "$METADATA_VERSION" = "$PYPROJECT_VERSION" ]; then
-        pass "version agrees everywhere: pyproject=${PYPROJECT_VERSION}, zeo_core.__version__=${RUNTIME_VERSION}, installed metadata=${METADATA_VERSION}"
+        pass "PACKAGE IDENTITY OK: pyproject=${PYPROJECT_VERSION}, zeo_core.__version__=${RUNTIME_VERSION}, installed metadata=${METADATA_VERSION} all agree"
     else
-        fail "version DISAGREES across sources" \
-             "pyproject=${PYPROJECT_VERSION} vs zeo_core.__version__=${RUNTIME_VERSION} vs installed metadata=${METADATA_VERSION}" \
-             "This is the exact RULING-414 defect. Reinstall ('make install') so the editable install picks up pyproject.toml's version, then re-run."
+        fail "PACKAGE IDENTITY MISMATCH -- DO NOT SHIP (this is not an ordinary test failure)" \
+             "pyproject=${PYPROJECT_VERSION} vs zeo_core.__version__=${RUNTIME_VERSION} vs installed metadata=${METADATA_VERSION} -- these must be IDENTICAL, not merely all present" \
+             "This is the exact RULING-414 defect: the package does not know its own version. __version__ must be derived from importlib.metadata.version('zeocore') in src/zeo_core/__init__.py, never a hand-maintained literal. Reinstall ('make install') so the editable install picks up pyproject.toml's version, then re-run -- if it still disagrees after reinstalling, the derivation itself is broken or was reverted."
     fi
 else
     fail "no virtual environment to check against" "test -x ${VENV_PYTHON}" \
@@ -157,9 +165,23 @@ RETRY_WAIT_SECONDS=2  # doubles each retry: 2s, 4s -- brief, since this
 probe_with_retry() {
     local url="$1"
     local attempt=1
-    local status wait_s=$RETRY_WAIT_SECONDS
+    local status wait_s=$RETRY_WAIT_SECONDS curl_exit
     while [ "$attempt" -le "$RETRY_ATTEMPTS" ]; do
-        status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$url" 2>/dev/null || echo "000")
+        # curl already writes "000" to stdout AND exits non-zero on a
+        # connection failure (verified: --max-time'd/unresolvable host ->
+        # stdout "000", exit 6). `|| echo "000"` only fires when curl's
+        # OWN invocation fails to run at all, which is a different,
+        # rarer case -- for the connection-failure case both the `-w`
+        # output and the `|| echo` fire, and command substitution
+        # concatenates them into "000000" (6 chars), not a valid status.
+        # Capture curl's exit status explicitly and only synthesize
+        # "000" when curl's stdout is not already a clean 3-digit code,
+        # so every return path yields exactly 3 characters.
+        status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$url" 2>/dev/null)
+        curl_exit=$?
+        if [ "$curl_exit" -ne 0 ] || ! [[ "$status" =~ ^[0-9]{3}$ ]]; then
+            status="000"
+        fi
         if [ "$status" = "200" ] || [ "$status" = "404" ]; then
             echo "$status"
             return
