@@ -99,6 +99,24 @@ class GoogleDocsConfig(GoogleBaseConfig):
     )
 
 
+class GoogleSheetsConfig(GoogleBaseConfig):
+    """Configuration model for Google Sheets integration."""
+
+    spreadsheet_id: str | None = Field(
+        default=None,
+        description="Default spreadsheet ID to operate against, if any",
+    )
+
+
+class GoogleSlidesConfig(GoogleBaseConfig):
+    """Configuration model for Google Slides integration."""
+
+    presentation_id: str | None = Field(
+        default=None,
+        description="Default presentation ID to operate against, if any",
+    )
+
+
 class GoogleConfigProvider(BaseConfigProvider):
     """Configuration provider for Google integrations."""
 
@@ -125,6 +143,8 @@ class GoogleConfigProvider(BaseConfigProvider):
             "mail": GoogleMailConfig,
             "calendar": GoogleCalendarConfig,
             "docs": GoogleDocsConfig,
+            "sheets": GoogleSheetsConfig,
+            "slides": GoogleSlidesConfig,
         }
 
     @property
@@ -277,6 +297,14 @@ class GoogleConfigProvider(BaseConfigProvider):
             defaults = {
                 "document_id": None,
             }
+        elif self.service == "sheets":
+            defaults = {
+                "spreadsheet_id": None,
+            }
+        elif self.service == "slides":
+            defaults = {
+                "presentation_id": None,
+            }
         else:
             return
 
@@ -379,6 +407,16 @@ class GoogleConfigProvider(BaseConfigProvider):
             return {
                 **base_config,
                 "document_id": None,
+            }
+        elif self.service == "sheets":
+            return {
+                **base_config,
+                "spreadsheet_id": None,
+            }
+        elif self.service == "slides":
+            return {
+                **base_config,
+                "presentation_id": None,
             }
 
         return base_config
