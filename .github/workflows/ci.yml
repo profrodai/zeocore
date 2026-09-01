@@ -8,6 +8,29 @@ name: CI
 # creates the venv -- done via `PYTHON_VERSION=<matrix version>` on the make
 # command line, which overrides the Makefile's own `PYTHON_VERSION := 3.14`
 # default (make command-line assignments win over `:=` in the makefile).
+#
+# RULING-413: a required status-check context must not carry a version,
+# because a legitimate matrix change (dropping an old Python floor) then
+# emits a context the branch ruleset can never see, deadlocking the repo
+# against its own required check with no error message anywhere. The
+# job below is version-bearing (`verify (py3.14)`) purely because the
+# ruleset still requires that exact string today. The `verify-stable` job
+# is the stable, version-independent context this ruling calls for --
+# a `needs:` aggregation job (RULING-413 s1's own named shape) whose
+# job id is `verify-stable` but whose emitted CONTEXT NAME is the literal
+# string `verify` (RULING-413 s1's own worked example of the right shape),
+# distinct from the matrix job's `verify (py3.14)` context so both can be
+# required simultaneously during the transition with no name collision.
+# It adds no extra gate work -- it only reports once every matrix leg of
+# the job above is green. Once the ruleset's required context is switched
+# from `verify (py3.14)` to `verify` (Master, out of band -- a branch-
+# ruleset edit is outside this workflow's authority and outside a
+# stream's, per CLAUDE.md s8), the matrix job above and this comment both
+# stay exactly as they are -- it is the real gate; `verify` is only ever
+# a thin, additive alias over it, never a replacement for it. A later
+# cleanup pass may rename the matrix job's own context once nothing
+# requires the old string, but that is optional tidiness, not part of
+# closing the open item.
 
 on:
   push:
@@ -42,3 +65,11 @@ jobs:
 
       - name: make verify (format-check, lint, mypy strict, arch-check, hygiene-check, hygiene-secrets, plugin-boundary, tests+coverage)
         run: make verify
+
+  verify-stable:
+    name: verify
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: All verify matrix legs passed
+        run: echo "verify -- every verify (py...) matrix leg reported success"
