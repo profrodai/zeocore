@@ -3,7 +3,7 @@
 > **New to ZeoCore? Don't start here.** Read
 > [QUICKSTART.md](QUICKSTART.md) first — it takes you from an empty folder
 > to a running capability in about ten minutes, including installing
-> Python 3.13 and creating a virtual environment, and explains every line
+> Python 3.14 and creating a virtual environment, and explains every line
 > of the code you write. This page is the reference manual you come back to
 > afterwards.
 
@@ -74,7 +74,7 @@ fragments.
 
 ## Installation
 
-**Requires Python 3.13 or newer**, and pip. If you need help installing
+**Requires Python 3.14 or newer**, and pip. If you need help installing
 either one, or setting up a virtual environment,
 [QUICKSTART.md](QUICKSTART.md) walks through it step by step for
 macOS/Linux and Windows.
@@ -589,7 +589,7 @@ them if configured to) and this integration calls a curated subset of its
 
 Requires the `ffmpeg` extra (`pip install "zeocore[ffmpeg]"`).
 `ffmpeg-zeo` itself needs Python >=3.12 -- comfortably under zeocore's own
-`>=3.13` floor, so this installs cleanly with no version straddling.
+`>=3.14` floor, so this installs cleanly with no version straddling.
 
 Like Notion, a real config file must exist at a default location (or be
 passed via `config_path=`) for `initialize()` to succeed -- an empty

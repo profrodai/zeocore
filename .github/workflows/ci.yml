@@ -6,7 +6,7 @@ name: CI
 # so local and CI behavior cannot drift apart. The only per-job deviation is
 # selecting the matrix Python version, which has to happen before `make setup`
 # creates the venv -- done via `PYTHON_VERSION=<matrix version>` on the make
-# command line, which overrides the Makefile's own `PYTHON_VERSION := 3.13`
+# command line, which overrides the Makefile's own `PYTHON_VERSION := 3.14`
 # default (make command-line assignments win over `:=` in the makefile).
 
 on:
@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.13"]
+        python-version: ["3.14"]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
