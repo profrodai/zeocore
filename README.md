@@ -230,9 +230,9 @@ module by module.
 ## Quality bar
 
 - **mypy --strict**, clean across the whole source tree.
-- **2494 tests**, 90%+ coverage, enforced as a hard CI floor
+- **2944 tests**, 90%+ coverage, enforced as a hard CI floor
   (`--cov-fail-under=90`) — a pull request that drops coverage fails the gate.
-- **CI runs the full suite on Python 3.13** (the minimum supported
+- **CI runs the full suite on Python 3.14** (the minimum supported
   interpreter) on every push.
 - Production code is not allowed to detect that it's under test (a dedicated
   CI check fails the build if it finds `"pytest" in sys.modules` or similar).
