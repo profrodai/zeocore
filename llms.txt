@@ -18,7 +18,7 @@ file under examples/ — every one of them is runnable as printed
 
 - [README.md](README.md): Quick start, install/extras table, module
   overview, quality bar (mypy --strict, 90%+ coverage, tests on Python
-  3.13 — the package's own floor, requires Python >=3.13).
+  3.14 — the package's own floor, requires Python >=3.14).
 - [GET-STARTED.md](GET-STARTED.md): The full walkthrough — configuration,
   path resolution, filesystem operations, typed error handling, writing a
   capability (`@capability` / `BaseZeoTool`), integrations (Google

@@ -21,7 +21,7 @@ walkthroughs, see [GET-STARTED.md](../GET-STARTED.md) and
 
 ## Before you start
 
-**Python 3.13+ and ZeoCore installed.** From a clone:
+**Python 3.14+ and ZeoCore installed.** From a clone:
 
 ```bash
 pip install -e .            # base install: the eight offline examples below

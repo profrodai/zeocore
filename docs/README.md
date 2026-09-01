@@ -4,7 +4,7 @@ This is the learning hub. It tells you what to read, in what order, and what
 each piece is for.
 
 **Brand new to ZeoCore?** Go straight to
-[QUICKSTART.md](../QUICKSTART.md) — it installs Python 3.13, sets up a
+[QUICKSTART.md](../QUICKSTART.md) — it installs Python 3.14, sets up a
 virtual environment, and gets a capability running on your machine in about
 ten minutes.
 

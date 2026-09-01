@@ -93,7 +93,7 @@ raises `ZeoConfigurationError`. Run
 a caught missing-path error, and a real YAML file end to end:
 
 ```bash
-python3.13 examples/config_usage.py
+python3.14 examples/config_usage.py
 ```
 
 Configuration is not a named `ToolContext` field. The runner decides which
