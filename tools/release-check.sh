@@ -195,8 +195,57 @@ probe_with_retry() {
     echo "$status"  # exhausted retries; report the last status seen
 }
 
+# pick_control_version <json_url_base> <target_version> <changelog_versions...>
+# -> prints a version to use as the control, or nothing if none could be
+#    confirmed live.
+#
+# A control is only proof of reachability if it (a) is NOT the version
+# under test and (b) is independently confirmed live on THIS index, right
+# now -- a hardcoded literal satisfies neither guarantee forever. Walk
+# CHANGELOG.md's version history (already newest-first, Keep a Changelog
+# order -- the same file and order check 3 above already depends on),
+# skip the target itself, and probe each older release in turn until one
+# is confirmed 200. This self-heals as releases accumulate instead of
+# drifting into a hardcoded value that eventually collides with the
+# target -- which is exactly what happened here: the control was a
+# literal "0.6.0" and the 0.6.0 release made it, silently, the same
+# version as the target it was meant to independently verify against.
+pick_control_version() {
+    local json_url_base="$1" target_version="$2"
+    shift 2
+    local candidate status
+    for candidate in "$@"; do
+        if [ "$candidate" = "$target_version" ]; then
+            continue
+        fi
+        status=$(probe_with_retry "${json_url_base}/${candidate}/json")
+        if [ "$status" = "200" ]; then
+            echo "$candidate"
+            return
+        fi
+    done
+    # none found; caller treats an empty result as control failure
+}
+
 check_index() {
     local index_name="$1" json_url_base="$2" control_version="$3" target_version="$4"
+
+    # A control equal to the target proves nothing about reachability --
+    # it would just be probing the target twice and calling the second
+    # probe a "control". This must never happen silently; refuse instead
+    # of running a degenerate check that reads exactly like a real one.
+    if [ -z "$control_version" ]; then
+        fail "${index_name}: no control version available for ${target_version}" \
+             "pick_control_version found no CHANGELOG.md entry other than ${target_version} that is confirmed live on ${index_name}" \
+             "This index has no prior release to probe as a control (first-ever publish?), or every candidate failed to resolve. Check network/DNS, or verify manually: GET ${json_url_base}/<some known-published version>/json -> 200."
+        return
+    fi
+    if [ "$control_version" = "$target_version" ]; then
+        fail "${index_name}: control version equals target version (${target_version})" \
+             "pick_control_version returned the target itself, which is a caller bug -- the target must be excluded before a candidate is ever probed" \
+             "This is exactly the degenerate case Amendment 1 forbids: a control that IS the target proves nothing about reachability. Fix pick_control_version's exclusion of target_version; do not bypass this check."
+        return
+    fi
 
     local control_status
     control_status=$(probe_with_retry "${json_url_base}/${control_version}/json")
@@ -232,16 +281,37 @@ if [ -z "$PYPROJECT_VERSION" ]; then
     fail "cannot check index availability" "pyproject version was unparseable (see check 1)" \
          "Fix check 1 first."
 else
-    # Controls are PER-INDEX and independently verified live (2026-09-01):
-    #   real PyPI  zeocore 0.5.0 -> 200  (valid control for pypi.org)
-    #   TestPyPI   zeocore 0.5.0 -> 404  (USELESS -- never published there)
-    #   TestPyPI   zeocore 0.6.0 -> 200  (valid control for test.pypi.org)
-    # A shared control across both indices would silently break on
-    # TestPyPI (0.5.0 there is a 404, which reads exactly like a correct
-    # "free" answer) -- that is why the control's own status is asserted
-    # above rather than assumed.
-    check_index "real PyPI" "https://pypi.org/pypi/zeocore" "0.5.0" "$PYPROJECT_VERSION"
-    check_index "TestPyPI" "https://test.pypi.org/pypi/zeocore" "0.6.0" "$PYPROJECT_VERSION"
+    # CONTROLS ARE DERIVED, NEVER HARDCODED (fixed 2026-09-01). The
+    # previous form used fixed literals ("0.5.0" for real PyPI, "0.6.0"
+    # for TestPyPI) chosen by a live probe at the time they were written.
+    # That is exactly the kind of constant that goes stale: the moment
+    # PYPROJECT_VERSION itself reached "0.6.0", the TestPyPI control
+    # silently became the SAME STRING as the target it was meant to
+    # independently verify against -- provably degenerate, not merely
+    # theoretically so (see the release-smoke-verifies-nothing SOW chain
+    # for the live trace: both probes hit the identical URL).
+    #
+    # Instead, read CHANGELOG.md's version history (already newest-first,
+    # Keep a Changelog order -- the same file and order check 3 already
+    # depends on) and hand the ordered list to pick_control_version,
+    # which excludes the target and probes candidates until one is
+    # confirmed live on THAT index. Real PyPI and TestPyPI genuinely
+    # differ in publish history (0.3.0-0.5.0 never reached TestPyPI --
+    # verified live 2026-09-01), so each index picks its own control
+    # independently rather than sharing one value.
+    # A while-read loop rather than `mapfile` -- mapfile is bash 4+ only
+    # and macOS ships bash 3.2 by default, which this script must still
+    # run under for a developer's local `make release-check`.
+    CHANGELOG_VERSIONS=()
+    while IFS= read -r line; do
+        CHANGELOG_VERSIONS+=("$line")
+    done < <(grep -oE '^## \[[0-9]+\.[0-9]+\.[0-9]+\]' CHANGELOG.md | sed -E 's/^## \[(.*)\]$/\1/')
+
+    PYPI_CONTROL=$(pick_control_version "https://pypi.org/pypi/zeocore" "$PYPROJECT_VERSION" "${CHANGELOG_VERSIONS[@]}")
+    check_index "real PyPI" "https://pypi.org/pypi/zeocore" "$PYPI_CONTROL" "$PYPROJECT_VERSION"
+
+    TESTPYPI_CONTROL=$(pick_control_version "https://test.pypi.org/pypi/zeocore" "$PYPROJECT_VERSION" "${CHANGELOG_VERSIONS[@]}")
+    check_index "TestPyPI" "https://test.pypi.org/pypi/zeocore" "$TESTPYPI_CONTROL" "$PYPROJECT_VERSION"
 fi
 echo ""
 

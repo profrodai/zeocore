@@ -77,6 +77,9 @@ jobs:
     name: build sdist + wheel
     needs: verify
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.built-version.outputs.version }}
+      python-floor: ${{ steps.python-floor.outputs.floor }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -92,6 +95,54 @@ jobs:
 
       - name: make build (python -m build -> sdist + wheel in dist/)
         run: make build
+
+      - name: Read the version this run actually built
+        id: built-version
+        # Read it from the sdist FILENAME rather than re-parsing
+        # pyproject.toml with a second regex -- this is a fact about the
+        # artifact that is about to be published, not a re-derivation of
+        # one, and it is identical whether this run was triggered by a
+        # tag push (ref = refs/tags/vX.Y.Z) or a workflow_dispatch on a
+        # branch (ref = refs/heads/main, no version in the ref at all).
+        # Exactly one sdist is expected in dist/; fail loudly rather than
+        # silently taking the wrong match if that is ever not true.
+        run: |
+          shopt -s nullglob
+          sdists=(dist/*.tar.gz)
+          if [ "${#sdists[@]}" -ne 1 ]; then
+            echo "::error::expected exactly one sdist in dist/, found ${#sdists[@]}: ${sdists[*]}"
+            exit 1
+          fi
+          filename=$(basename "${sdists[0]}")
+          # zeocore-0.6.1.tar.gz -> 0.6.1
+          version="${filename#zeocore-}"
+          version="${version%.tar.gz}"
+          if [ -z "$version" ]; then
+            echo "::error::could not extract a version from sdist filename: ${filename}"
+            exit 1
+          fi
+          echo "built version: ${version} (from ${filename})"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Read the Python floor this version declares
+        id: python-floor
+        # Same '>=X.Y' shape tests/test_release_consistency.py already
+        # assumes and asserts every other floor-bearing file agrees
+        # with -- one parse shape, not a second one invented here. The
+        # smoke-test job installs on this floor rather than whatever
+        # Python the runner defaults to, which is the root cause this
+        # job exists to close: a bare `uv venv` on a runner whose default
+        # is below the floor lets uv's resolver silently backsolve to an
+        # old release instead of failing.
+        run: |
+          spec=$(grep -E '^requires-python' pyproject.toml | sed -E 's/.*"(.*)"/\1/')
+          floor=$(echo "$spec" | sed -E 's/>=([0-9]+\.[0-9]+).*/\1/')
+          if ! [[ "$floor" =~ ^[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::could not parse a >=X.Y floor out of requires-python = \"${spec}\""
+            exit 1
+          fi
+          echo "python floor: ${floor} (from requires-python = \"${spec}\")"
+          echo "floor=${floor}" >> "$GITHUB_OUTPUT"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -156,7 +207,7 @@ jobs:
 
   smoke-test:
     name: smoke-test the published package
-    needs: [publish-testpypi, publish-pypi]
+    needs: [build, publish-testpypi, publish-pypi]
     # Runs if EITHER publish job ran and succeeded; skipped entirely (not
     # failed) if a given publish job didn't run because its target wasn't
     # selected -- `always()` plus explicit result checks, since `needs`
@@ -167,9 +218,32 @@ jobs:
       always() &&
       (needs.publish-testpypi.result == 'success' || needs.publish-pypi.result == 'success')
     runs-on: ubuntu-latest
+    env:
+      # The version THIS RUN published, read from the built sdist filename
+      # (the build job's own output), never from "latest" and never
+      # re-derived from the git ref -- a ref alone cannot tell a tag push
+      # apart from a workflow_dispatch on main, and "latest on the index"
+      # is exactly the hole that let this job install and bless zeocore
+      # 0.1.0 on three separate real runs (v0.5.0, v0.6.0, and the
+      # 2026-08-31 TestPyPI dispatch) while believing it had verified
+      # whatever had just been published.
+      EXPECTED_VERSION: ${{ needs.build.outputs.version }}
+      PYTHON_FLOOR: ${{ needs.build.outputs.python-floor }}
     steps:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
+
+      - name: Fail loudly if the expected version or floor is missing
+        run: |
+          if [ -z "${EXPECTED_VERSION}" ]; then
+            echo "::error::build job produced no version output -- cannot smoke-test without knowing what was published"
+            exit 1
+          fi
+          if [ -z "${PYTHON_FLOOR}" ]; then
+            echo "::error::build job produced no python-floor output -- cannot smoke-test without knowing the published floor"
+            exit 1
+          fi
+          echo "expecting zeocore==${EXPECTED_VERSION} on Python >=${PYTHON_FLOOR}"
 
       - name: Wait for index propagation
         run: sleep 30
@@ -177,36 +251,57 @@ jobs:
       - name: Install from PyPI and smoke-test
         if: needs.publish-pypi.result == 'success'
         run: |
-          uv venv /tmp/smoke-pypi
-          # Install unpinned (whatever is latest on PyPI right now, which is
-          # what this job just published) rather than pinning to a version
-          # parsed from the git ref -- this job can run from either a tag
-          # push (ref = refs/tags/vX.Y.Z) or a manual workflow_dispatch on a
-          # branch (ref = refs/heads/main, no version in the ref at all), so
-          # deriving a version from the ref is unreliable by construction.
-          uv pip install --python /tmp/smoke-pypi/bin/python zeocore
+          # Pinned to the FLOOR, never a bare `uv venv` -- a bare venv
+          # takes the runner's default interpreter (3.12 on
+          # ubuntu-latest today), which is BELOW every floor zeocore has
+          # ever shipped except 0.1.0's, so an unpinned interpreter lets
+          # uv's resolver silently backsolve to the oldest release that
+          # still satisfies 3.12 instead of failing outright. That
+          # silent backsolve is the exact defect this job exists to
+          # catch, so the job's own interpreter must not be capable of
+          # triggering it.
+          uv venv --python "${PYTHON_FLOOR}" /tmp/smoke-pypi
+          # Pinned to the exact version this run published, never
+          # unpinned/"latest" -- see EXPECTED_VERSION's comment above.
+          uv pip install --python /tmp/smoke-pypi/bin/python --no-cache "zeocore==${EXPECTED_VERSION}"
           /tmp/smoke-pypi/bin/python -c "
+          import sys
           import zeo_core
-          print('installed version:', zeo_core.__version__)
+          expected = '${EXPECTED_VERSION}'
+          installed = zeo_core.__version__
+          print('expected version:', expected)
+          print('installed version:', installed)
+          if installed != expected:
+              print(f'MISMATCH: this run published {expected} but the index installed {installed} -- DO NOT trust this release', file=sys.stderr)
+              sys.exit(1)
           from zeo_core.tools import BaseZeoTool, ToolContext
           from zeo_core.contracts import CapabilityResult
           print('import OK: BaseZeoTool, ToolContext, CapabilityResult')
+          print('SMOKE TEST PASSED: zeocore==' + installed + ' installs and imports on the published floor')
           "
 
       - name: Install from TestPyPI and smoke-test
         if: needs.publish-testpypi.result == 'success' && needs.publish-pypi.result != 'success'
         run: |
-          uv venv /tmp/smoke-testpypi
-          uv pip install --python /tmp/smoke-testpypi/bin/python \
+          uv venv --python "${PYTHON_FLOOR}" /tmp/smoke-testpypi
+          uv pip install --python /tmp/smoke-testpypi/bin/python --no-cache \
             --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
-            zeocore
+            "zeocore==${EXPECTED_VERSION}"
           /tmp/smoke-testpypi/bin/python -c "
+          import sys
           import zeo_core
-          print('installed version:', zeo_core.__version__)
+          expected = '${EXPECTED_VERSION}'
+          installed = zeo_core.__version__
+          print('expected version:', expected)
+          print('installed version:', installed)
+          if installed != expected:
+              print(f'MISMATCH: this run published {expected} but the index installed {installed} -- DO NOT trust this release', file=sys.stderr)
+              sys.exit(1)
           from zeo_core.tools import BaseZeoTool, ToolContext
           from zeo_core.contracts import CapabilityResult
           print('import OK: BaseZeoTool, ToolContext, CapabilityResult')
+          print('SMOKE TEST PASSED: zeocore==' + installed + ' installs and imports on the published floor')
           "
 
   # --------------------------------------------------------------------------
