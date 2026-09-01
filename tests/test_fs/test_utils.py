@@ -894,7 +894,7 @@ class TestFileUtilities:
                     test_path.touch()  # Create the file if possible
                     resolved = _resolve_path(test_path)
                     assert resolved.is_absolute()
-                except (OSError, UnicodeEncodeError):
+                except OSError, UnicodeEncodeError:
                     # If we can't create the file, just verify path construction
                     assert test_path.parent == tmp_path
         except Exception as e:

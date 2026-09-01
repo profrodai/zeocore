@@ -142,7 +142,7 @@ def _handle_http_error(
         error_data = response.json()
         if "message" in error_data:
             error_message = error_data["message"]
-    except (ValueError, KeyError, AttributeError):
+    except ValueError, KeyError, AttributeError:
         pass
 
     raise ZeoApiError(

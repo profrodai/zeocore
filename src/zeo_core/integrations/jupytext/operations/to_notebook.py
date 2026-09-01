@@ -67,7 +67,7 @@ def _read_source(input_path: str) -> tuple[str, int]:
 
     try:
         size = int(getattr(file_info, "size", 0) or 0)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         size = 0
 
     read_result = fs.read_text(input_path, encoding="utf-8")
@@ -164,7 +164,7 @@ def _write_notebook_file(notebook: Any, output_path: str) -> int:  # noqa: ANN40
     if bytes_written is not None:
         try:
             return int(bytes_written)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             pass
     return len(ipynb_text.encode("utf-8"))
 

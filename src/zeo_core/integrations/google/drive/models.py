@@ -66,7 +66,7 @@ class DriveFile(BaseModel):
                 created_time = datetime.fromisoformat(
                     response["createdTime"].replace("Z", "+00:00")
                 )
-            except (ValueError, TypeError):
+            except ValueError, TypeError:
                 pass
 
         modified_time = None
@@ -75,7 +75,7 @@ class DriveFile(BaseModel):
                 modified_time = datetime.fromisoformat(
                     response["modifiedTime"].replace("Z", "+00:00")
                 )
-            except (ValueError, TypeError):
+            except ValueError, TypeError:
                 pass
 
         # Extract permissions
@@ -98,7 +98,7 @@ class DriveFile(BaseModel):
         if "size" in response:
             try:
                 size = int(response["size"])
-            except (ValueError, TypeError):
+            except ValueError, TypeError:
                 pass
 
         return cls(

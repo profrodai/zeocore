@@ -155,7 +155,7 @@ def get_file_info(path: str, format_hint: str | None = None) -> NotebookInfo:
 
     try:
         size = int(getattr(file_info, "size", 0) or 0)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         size = 0
 
     fmt = format_hint or guess_format_from_path(path)

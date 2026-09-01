@@ -333,7 +333,7 @@ class AnthropicClient(LLMClient):
                             collected_content.append(chunk.delta.text)
                             if callback:
                                 callback(chunk.delta.text)
-            except (AttributeError, TypeError):
+            except AttributeError, TypeError:
                 # If context manager protocol isn't supported (e.g., in tests),
                 # try to use the stream directly as an iterator
                 for chunk in stream:
