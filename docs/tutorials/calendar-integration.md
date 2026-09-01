@@ -13,7 +13,7 @@ here.
 Requires the `calendar` extra:
 
 ```bash
-pip install "zeocore[calendar]"
+uv pip install "zeocore[calendar]"
 ```
 
 ## Step 1 — Google Cloud OAuth setup

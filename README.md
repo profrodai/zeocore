@@ -45,9 +45,9 @@ walks through installing 3.14 if you need it.
 ## Install
 
 ```bash
-pip install zeocore
-# or, with uv
 uv pip install zeocore
+# or, without uv
+pip install zeocore
 ```
 
 The package is `zeocore`; the module you import is `zeo_core`.
@@ -162,7 +162,7 @@ mypy checks all of it end to end.
 
 Every example under [`examples/`](examples/) is a real, runnable script —
 none are illustrative fragments. Run any of them with
-`python examples/<name>.py`.
+`uv run examples/<name>.py`.
 
 - [`capability_authoring.py`](examples/capability_authoring.py) — canonical
   `@capability` authoring, registry, and `invoke_sync`.

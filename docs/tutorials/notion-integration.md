@@ -13,7 +13,7 @@ being written here.
 Requires the `notion` extra:
 
 ```bash
-pip install "zeocore[notion]"
+uv pip install "zeocore[notion]"
 ```
 
 ## Step 1 — create an integration token

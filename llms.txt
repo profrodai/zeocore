@@ -12,7 +12,7 @@ Start here, in order: read README.md for the 60-second `@capability`
 shape, then GET-STARTED.md (especially Capabilities), then
 docs/tutorials/capability-authoring.md, then copy the closest-matching
 file under examples/ — every one of them is runnable as printed
-(`python examples/<name>.py`), not an illustrative fragment.
+(`uv run examples/<name>.py`), not an illustrative fragment.
 
 ## Core docs
 

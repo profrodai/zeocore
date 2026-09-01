@@ -5,7 +5,7 @@ illustrative fragments, and none require you to fill in a placeholder before
 they do something.
 
 ```bash
-python examples/<name>.py
+uv run examples/<name>.py
 ```
 
 Run them **from the repository root**: several write scratch files relative
@@ -24,9 +24,9 @@ walkthroughs, see [GET-STARTED.md](../GET-STARTED.md) and
 **Python 3.14+ and ZeoCore installed.** From a clone:
 
 ```bash
-pip install -e .            # base install: the eight offline examples below
-pip install -e ".[all]"     # every integration extra
-pip install -e ".[http]"    # single extras, as needed
+uv pip install -e .            # base install: the eight offline examples below
+uv pip install -e ".[all]"     # every integration extra
+uv pip install -e ".[http]"    # single extras, as needed
 ```
 
 **Extras.** Seven scripts need an optional extra. Each one says so in its
@@ -37,7 +37,7 @@ environment — never from a config file. Copy [`.env.example`](../.env.example)
 to `.env`, fill in real values, and load it however your tooling prefers:
 
 ```bash
-uv run --env-file .env python examples/notion_usage.py
+uv run --env-file .env examples/notion_usage.py
 ```
 
 **Nothing here is destructive to your machine.** Scripts that need scratch
@@ -61,7 +61,7 @@ The smallest legal tool: subclass `BaseZeoTool`, implement
 optional behavior.
 
 ```bash
-python examples/minimal_tool.py
+uv run examples/minimal_tool.py
 ```
 
 Builds a `ToolContext` in a temp directory (playing the runner's role),
@@ -74,7 +74,7 @@ declared effects, and one example; then `bound_capability_of()` and
 `invoke_sync()`, with a `CapabilityRegistry` in between.
 
 ```bash
-python examples/capability_authoring.py
+uv run examples/capability_authoring.py
 ```
 
 Prints `Hello, World!` — deliberately boring output for a script whose point
@@ -87,7 +87,7 @@ Pydantic checks shape; a guard checks whether the request should be allowed
 to run at all.
 
 ```bash
-python examples/capability_guards.py
+uv run examples/capability_guards.py
 ```
 
 Invokes the capability twice. The good request prints its slug; the blank
@@ -101,7 +101,7 @@ one prints `guard_rejected`, `ZEO_CAP_GUARD_REJECTED`, and
 tool gains registry, manifest, and adapter support without being rewritten.
 
 ```bash
-python examples/tool_to_capability.py
+uv run examples/tool_to_capability.py
 ```
 
 Calls the same tool both ways — `tool.run()` directly and `invoke_sync()`
@@ -116,7 +116,7 @@ modes and one success, including the `@wrap_io_errors` decorator that
 converts stray builtins into typed `ZeoError` subclasses.
 
 ```bash
-python examples/error_handling.py
+uv run examples/error_handling.py
 ```
 
 Prints four labeled scenarios — missing file, invalid JSON, missing required
@@ -130,7 +130,7 @@ The one confusing thing about configuration, made explicit: calling
 explicit path that does not exist always does.
 
 ```bash
-python examples/config_usage.py
+uv run examples/config_usage.py
 ```
 
 Prints all three paths in order: built-in defaults with no config file
@@ -144,7 +144,7 @@ without instantiating), explicit loading, and how `strict=True` differs from
 `strict=False` when an id is misspelled.
 
 ```bash
-python examples/explicit_plugin_loading_example.py
+uv run examples/explicit_plugin_loading_example.py
 ```
 
 Lists the four built-in entry points (`config`, `fs`, `paths`, `prompt`),
@@ -160,7 +160,7 @@ capability into an OpenAI function tool. No API key, no network, no extra —
 this is pure schema work.
 
 ```bash
-python examples/llm_tools_usage.py
+uv run examples/llm_tools_usage.py
 ```
 
 Prints the projected function name (`demo_greet_v1_0_0`), description, and
@@ -191,7 +191,7 @@ Layers `IntegrationEnabledMixin` (service lookup from `ctx.services`) and
 computes statistics, and *optionally* uploads to Drive.
 
 ```bash
-python examples/toolkit_usage.py
+uv run examples/toolkit_usage.py
 ```
 
 Requests the upload with no `google_drive` service wired into the context, so
@@ -209,7 +209,7 @@ Binds a capability into `OperationRegistry` with
 server would, and drives it with `TestClient`.
 
 ```bash
-python examples/http_adapter_usage.py
+uv run examples/http_adapter_usage.py
 ```
 
 Prints three `200` responses: `/health/live`, `/ops` listing the registered
@@ -227,7 +227,7 @@ reading its `run()` type hint. The tool class here is identical to
 `minimal_tool.py`'s: nothing about a tool changes to make it MCP-reachable.
 
 ```bash
-python examples/mcp_server_usage.py
+uv run examples/mcp_server_usage.py
 ```
 
 Registers the tool, creates the server, lists `['word_count']` through the
@@ -249,7 +249,7 @@ so all four are safe to run before you have set anything up.
 **Credentials:** none. Fully local.
 
 ```bash
-python examples/jupytext_usage.py
+uv run examples/jupytext_usage.py
 ```
 
 Writes a percent-format `.py` into `./tmp_jupytext_example/`, converts it to
@@ -266,7 +266,7 @@ integration's `initialize()` returns a failure result and the script prints
 mechanism.
 
 ```bash
-python examples/ffmpeg_usage.py
+uv run examples/ffmpeg_usage.py
 ```
 
 Generates a one-second synthetic test video with ffmpeg's `lavfi` source (no
@@ -285,8 +285,8 @@ from Notion's UI (creating the token is not enough; Notion's model requires
 explicitly sharing each page or database with it).
 
 ```bash
-python examples/notion_usage.py                       # skips, shows the call shapes
-NOTION_TOKEN=secret_xxx python examples/notion_usage.py   # live
+uv run examples/notion_usage.py                       # skips, shows the call shapes
+NOTION_TOKEN=secret_xxx uv run examples/notion_usage.py   # live
 ```
 
 Without the token: prints a skip notice and the exact calling shapes for
@@ -309,9 +309,9 @@ Credentials → OAuth client ID → *Desktop app*, with the Calendar API enabled
 on that project). There is no single-token shortcut here, unlike Notion.
 
 ```bash
-python examples/calendar_usage.py                     # skips, shows the call shapes
+uv run examples/calendar_usage.py                     # skips, shows the call shapes
 ZEO_GOOGLE_CALENDAR_CLIENT_SECRETS=/path/to/client_secrets.json \
-    python examples/calendar_usage.py                 # live: opens a browser
+    uv run examples/calendar_usage.py                 # live: opens a browser
 ```
 
 Without the file: prints a skip notice plus the calling shapes for

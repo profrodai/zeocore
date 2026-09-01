@@ -17,8 +17,8 @@ ZeoCore requires Python 3.14 or newer. From the repository root, install the
 project and run the canonical example:
 
 ```bash
-python3.14 -m pip install -e .
-python3.14 examples/capability_authoring.py
+uv pip install -e .
+uv run examples/capability_authoring.py
 ```
 
 Expected output:

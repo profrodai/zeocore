@@ -24,7 +24,7 @@ code paths end to end, from a fresh directory, with no manual setup:
 
 Run this file directly:
 
-    python examples/config_usage.py
+    uv run examples/config_usage.py
 """
 
 from __future__ import annotations

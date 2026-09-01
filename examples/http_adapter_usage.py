@@ -3,7 +3,7 @@ Bind a capability into OperationRegistry and exercise the HTTP adapter.
 
 Requires the 'http' extra:
 
-    pip install "zeocore[http]"
+    uv pip install "zeocore[http]"
 
 This example does not start uvicorn. It builds the FastAPI app the same
 way a server would, then uses TestClient to hit /health and POST /ops.
@@ -14,7 +14,7 @@ To run a real server instead:
 
 Run:
 
-    python examples/http_adapter_usage.py
+    uv run examples/http_adapter_usage.py
 """
 
 from __future__ import annotations
@@ -68,7 +68,7 @@ def main() -> None:
         from zeo_core.adapters.http import HttpAdapterConfig, create_app
     except ImportError:
         print(
-            "HTTP adapter requires FastAPI. Install with: pip install 'zeocore[http]'",
+            "HTTP adapter requires FastAPI. Install with: uv pip install 'zeocore[http]'",
             file=sys.stderr,
         )
         sys.exit(0)
