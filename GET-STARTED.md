@@ -74,23 +74,23 @@ fragments.
 
 ## Installation
 
-**Requires Python 3.14 or newer**, and pip. If you need help installing
-either one, or setting up a virtual environment,
+**Requires Python 3.14 or newer**, and [`uv`](https://docs.astral.sh/uv/). If
+you need help installing either one, or setting up a virtual environment,
 [QUICKSTART.md](QUICKSTART.md) walks through it step by step for
 macOS/Linux and Windows.
 
 ```bash
-pip install zeocore
+uv pip install zeocore
 ```
 
 Integrations ship as optional extras, so you install only what you use:
 
 ```bash
-pip install "zeocore[notion]"     # a single integration
-pip install "zeocore[google]"     # Drive + Gmail auth plumbing
-pip install "zeocore[http]"       # FastAPI adapter, expose tools over REST
-pip install "zeocore[mcp]"        # MCP adapter for Claude Code, Cursor, etc.
-pip install "zeocore[all,mcp]"    # everything (note: [all] excludes mcp)
+uv pip install "zeocore[notion]"     # a single integration
+uv pip install "zeocore[google]"     # Drive + Gmail auth plumbing
+uv pip install "zeocore[http]"       # FastAPI adapter, expose tools over REST
+uv pip install "zeocore[mcp]"        # MCP adapter for Claude Code, Cursor, etc.
+uv pip install "zeocore[all,mcp]"    # everything (note: [all] excludes mcp)
 ```
 
 The full extras table is in the
@@ -458,7 +458,7 @@ if created.success:
 
 Auth is the same OAuth (`InstalledAppFlow` + local-server) flow Drive and
 Gmail already use -- no separate credential setup. Requires the `calendar`
-extra (`pip install "zeocore[calendar]"`).
+extra (`uv pip install "zeocore[calendar]"`).
 
 ### Working with Notion Integration
 
@@ -470,7 +470,7 @@ integration from Notion's UI (a token with no pages shared to it can
 authenticate but sees nothing). Set the token via the `NOTION_TOKEN`
 environment variable.
 
-Requires the `notion` extra (`pip install "zeocore[notion]"`).
+Requires the `notion` extra (`uv pip install "zeocore[notion]"`).
 
 **A real config file must exist** at one of `load_config()`'s default
 locations (`./zeo_config.yaml`, `./config/zeo_config.yaml`,
@@ -550,7 +550,7 @@ diff-friendly, plain text) and Jupyter notebooks. This is the exact
 operation the org's own `quackslides` app uses for its exercise content:
 `script_to_notebook()` is the primary, most-used direction.
 
-Requires the `jupytext` extra (`pip install "zeocore[jupytext]"`). No
+Requires the `jupytext` extra (`uv pip install "zeocore[jupytext]"`). No
 external binary and no required config -- `initialize()` falls back to
 defaults cleanly with zero config file present (unlike Notion/ffmpeg
 above/below).
@@ -587,7 +587,7 @@ resolves real `ffmpeg`/`ffprobe` binaries (from `PATH`, or by downloading
 them if configured to) and this integration calls a curated subset of its
 "recipes."
 
-Requires the `ffmpeg` extra (`pip install "zeocore[ffmpeg]"`).
+Requires the `ffmpeg` extra (`uv pip install "zeocore[ffmpeg]"`).
 `ffmpeg-zeo` itself needs Python >=3.12 -- comfortably under zeocore's own
 `>=3.14` floor, so this installs cleanly with no version straddling.
 
@@ -632,7 +632,7 @@ ffmpeg's `lavfi` source, so it needs no external media file.
 `zeo_core.integrations.llms` is provider-agnostic at the call site: every
 client (`anthropic`, `openai`, `ollama`, plus a `mock` for tests)
 implements the same `LLMProviderProtocol` (`chat()`, `count_tokens()`,
-`.model`). Requires the `llms` extra (`pip install "zeocore[llms]"`).
+`.model`). Requires the `llms` extra (`uv pip install "zeocore[llms]"`).
 
 ```python
 from zeo_core.integrations.llms.registry import get_llm_client
@@ -711,7 +711,7 @@ itself**: any ordinary `BaseZeoTool` becomes an MCP tool by registering it,
 because `register_tool()` mechanically derives the MCP tool's schema from
 the tool's own `run(request: <PydanticModel>, ctx)` type hint.
 
-Requires the `mcp` extra (`pip install "zeocore[mcp]"`).
+Requires the `mcp` extra (`uv pip install "zeocore[mcp]"`).
 
 ```python
 from zeo_core.adapters.mcp import create_server, register_tool
@@ -756,7 +756,7 @@ with `register_capability_operation` use that same registry.
 
 ### Exposing Tools over HTTP
 
-Requires the `http` extra (`pip install "zeocore[http]"`). Bind a
+Requires the `http` extra (`uv pip install "zeocore[http]"`). Bind a
 capability (or keep using `OperationRegistry.register` for older
 callables), then `create_app` / `run`:
 
@@ -778,7 +778,7 @@ register_capability_operation(
 ```
 
 The runnable example uses FastAPI's `TestClient` so
-`python examples/http_adapter_usage.py` returns instead of blocking on
+`uv run examples/http_adapter_usage.py` returns instead of blocking on
 uvicorn. Auth is off when `auth_token` is `None`; otherwise send
 `Authorization: Bearer <token>`. OpenAPI is at `/openapi.json`.
 

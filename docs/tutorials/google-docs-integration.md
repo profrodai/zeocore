@@ -11,7 +11,7 @@ block below was executed against the installed package before being
 written here.
 
 ```bash
-pip install "zeocore[calendar]"
+uv pip install "zeocore[calendar]"
 ```
 
 (There is no separate `docs` extra — Docs shares its Google API

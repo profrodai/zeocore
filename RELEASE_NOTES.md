@@ -21,7 +21,7 @@ Read the text of a Google Doc and publish it to Bluesky, from a clean install,
 without a developer portal for the Bluesky side:
 
 ```bash
-pip install "zeocore[calendar,bluesky]"
+uv pip install "zeocore[calendar,bluesky]>=0.6.0"
 ```
 
 ```python
@@ -29,7 +29,7 @@ from zeo_core.integrations.google.docs import create_integration as docs
 from zeo_core.integrations.social.bluesky import create_integration as bluesky
 ```
 
-**The Google modules live behind an extra.** A base `pip install zeocore` does
+**The Google modules live behind an extra.** A base `uv pip install zeocore` does
 not pull the Google API client, so `zeo_core.integrations.google.*` will not
 import until you install `[calendar]`, `[google]`, `[drive]`, `[gmail]` or
 `[all]` -- they share one dependency set, and there is no separate `docs`,
@@ -64,7 +64,7 @@ package before it was written down**, including the errors you will hit first.
 
 ## Adopter path
 
-1. `pip install "zeocore[calendar,bluesky]"` (Python 3.14+).
+1. `uv pip install "zeocore[calendar,bluesky]>=0.6.0"` (Python 3.14+).
 2. Get your tokens: [GET-STARTED.md](GET-STARTED.md) walks through the developer
    portal for Bluesky, LinkedIn, Google, Notion and GitHub -- which product to
    pick, which scopes to ask for, and where the value goes.

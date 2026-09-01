@@ -21,7 +21,7 @@ to serialize it to disk.
 
 Run this file directly:
 
-    python examples/toolkit_usage.py
+    uv run examples/toolkit_usage.py
 """
 
 from __future__ import annotations

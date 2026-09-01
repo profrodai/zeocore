@@ -3,7 +3,7 @@ Example: reading and writing Notion content with zeo_core.integrations.notion.
 
 Requires the 'notion' extra:
 
-    pip install "zeocore[notion]"
+    uv pip install "zeocore[notion]"
 
 Auth is a single bearer "integration token" (Notion's own model -- create
 one at https://www.notion.so/my-integrations, then share the specific
@@ -31,8 +31,8 @@ workspace with at least one shared page to see the live path run.
 
 Run this file directly:
 
-    python examples/notion_usage.py
-    NOTION_TOKEN=secret_xxx python examples/notion_usage.py
+    uv run examples/notion_usage.py
+    NOTION_TOKEN=secret_xxx uv run examples/notion_usage.py
 """
 
 from __future__ import annotations

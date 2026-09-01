@@ -57,7 +57,7 @@ Step-by-step guides for people building on ZeoCore.
 ## Runnable examples
 
 Every script in [`examples/`](../examples/) runs as-is with
-`python examples/<name>.py`. None are illustrative fragments. Some need an
+`uv run examples/<name>.py`. None are illustrative fragments. Some need an
 optional extra installed (noted below); the credential-backed ones skip
 gracefully when the credential isn't set, rather than crashing.
 

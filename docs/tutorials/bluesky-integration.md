@@ -12,7 +12,7 @@ offsets.**
 Requires the `bluesky` extra:
 
 ```bash
-pip install "zeocore[bluesky]"
+uv pip install "zeocore[bluesky]"
 ```
 
 ## Step 1 — the first error you will hit, and what it means

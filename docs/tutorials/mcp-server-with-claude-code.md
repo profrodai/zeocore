@@ -12,7 +12,7 @@ illustrative pseudocode.
 If you haven't yet, install the `mcp` extra:
 
 ```bash
-pip install "zeocore[mcp]"
+uv pip install "zeocore[mcp]"
 ```
 
 ## The mental model, in one paragraph

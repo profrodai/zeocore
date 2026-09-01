@@ -8,23 +8,48 @@ you start. Every command below can be copied and pasted as-is. Pick the tab
 that matches your machine — **macOS / Linux** or **Windows** — and follow it
 top to bottom.
 
-If something goes wrong, jump to [Common errors](#common-errors) at the
-bottom. Most first-run problems are on that list.
+This guide uses [`uv`](https://docs.astral.sh/uv/), a fast Python package
+and version manager, for every install and run step. If something goes
+wrong, jump to [Common errors](#common-errors) at the bottom. Most first-run
+problems are on that list.
 
 **Contents**
 
-1. [Step 1: Check your Python version](#step-1-check-your-python-version)
-2. [Step 2: Install Python 3.14 (only if you need it)](#step-2-install-python-314-only-if-you-need-it)
-3. [Step 3: Make a project folder and a virtual environment](#step-3-make-a-project-folder-and-a-virtual-environment)
-4. [Step 4: Install ZeoCore](#step-4-install-zeocore)
-5. [Step 5: Write your first capability](#step-5-write-your-first-capability)
-6. [Step 6: Run it](#step-6-run-it)
-7. [What each part of that file does](#what-each-part-of-that-file-does)
-8. [Try changing something](#try-changing-something)
-9. [Common errors](#common-errors)
-10. [Where to go next](#where-to-go-next)
+1. [Step 0: Install uv](#step-0-install-uv)
+2. [Step 1: Check your Python version](#step-1-check-your-python-version)
+3. [Step 2: Install Python 3.14 (only if you need it)](#step-2-install-python-314-only-if-you-need-it)
+4. [Step 3: Make a project folder and a virtual environment](#step-3-make-a-project-folder-and-a-virtual-environment)
+5. [Step 4: Install ZeoCore](#step-4-install-zeocore)
+6. [Step 5: Write your first capability](#step-5-write-your-first-capability)
+7. [Step 6: Run it](#step-6-run-it)
+8. [What each part of that file does](#what-each-part-of-that-file-does)
+9. [Try changing something](#try-changing-something)
+10. [Common errors](#common-errors)
+11. [Where to go next](#where-to-go-next)
 
 ---
+
+## Step 0: Install uv
+
+**macOS / Linux**
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+macOS with [Homebrew](https://brew.sh) works too: `brew install uv`.
+
+**Windows (PowerShell)**
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Close and reopen your terminal, then confirm it installed:
+
+```bash
+uv --version
+```
 
 ## Step 1: Check your Python version
 
@@ -51,7 +76,18 @@ If you see an older version such as `Python 3.11.9`, or a
 
 ## Step 2: Install Python 3.14 (only if you need it)
 
-Choose **one** of the options for your platform.
+**Any platform, recommended** — since you already have `uv` from
+[Step 0](#step-0-install-uv), let it fetch an interpreter for you without
+touching your system Python:
+
+```bash
+uv python install 3.14
+```
+
+Re-run the check from Step 1. You should see `Python 3.14.x`.
+
+**Alternative: install Python 3.14 yourself**, if you'd rather manage the
+interpreter outside uv. Choose **one** of the options for your platform.
 
 **macOS**
 
@@ -84,15 +120,6 @@ Or download the installer from
 matters — tick **"Add python.exe to PATH"** on the first screen of the
 installer.
 
-**Any platform, using [uv](https://docs.astral.sh/uv/)**
-
-If you already have `uv` (a fast Python package and version manager), it can
-fetch an interpreter for you without touching your system Python:
-
-```bash
-uv python install 3.14
-```
-
 Now close and reopen your terminal, then re-run the check from Step 1. You
 should see `Python 3.14.x`.
 
@@ -108,7 +135,7 @@ per project and "activate" it in each new terminal session.
 ```bash
 mkdir zeocore-quickstart
 cd zeocore-quickstart
-python3.14 -m venv .venv
+uv venv --python 3.14
 source .venv/bin/activate
 ```
 
@@ -117,7 +144,7 @@ source .venv/bin/activate
 ```powershell
 mkdir zeocore-quickstart
 cd zeocore-quickstart
-py -3.14 -m venv .venv
+uv venv --python 3.14
 .venv\Scripts\Activate.ps1
 ```
 
@@ -126,17 +153,16 @@ py -3.14 -m venv .venv
 ```cmd
 mkdir zeocore-quickstart
 cd zeocore-quickstart
-py -3.14 -m venv .venv
+uv venv --python 3.14
 .venv\Scripts\activate.bat
 ```
 
-If you installed Python with `uv` in Step 2, the `python3.14` command may not
-be on your PATH. Use uv's own equivalent instead, from inside the project
-folder:
+If you installed Python 3.14 yourself in Step 2 instead of letting uv fetch
+it, the system interpreter also works:
 
 ```bash
-uv venv --python 3.14
-source .venv/bin/activate      # Windows PowerShell: .venv\Scripts\Activate.ps1
+python3.14 -m venv .venv          # Windows: py -3.14 -m venv .venv
+source .venv/bin/activate         # Windows PowerShell: .venv\Scripts\Activate.ps1
 ```
 
 Your prompt should now start with `(.venv)`. That prefix is how you know the
@@ -163,8 +189,7 @@ With the environment active (you still see `(.venv)`), install the package.
 The same command works on every platform:
 
 ```bash
-python -m pip install --upgrade pip
-python -m pip install zeocore
+uv pip install zeocore
 ```
 
 Note the two spellings, because they are easy to mix up:
@@ -186,7 +211,7 @@ Expected output — a version number such as:
 
 Integrations like Notion, Google Drive, or the HTTP and MCP adapters are
 optional extras you install only when you need them, e.g.
-`python -m pip install "zeocore[notion]"`. You need none of them for this
+`uv pip install "zeocore[notion]"`. You need none of them for this
 quickstart. The full list is in the
 [README's integrations table](README.md#optional-integrations).
 
@@ -374,7 +399,7 @@ Small experiments, in increasing order of interest:
 | What you see | What it means | Fix |
 |---|---|---|
 | `ERROR: Package 'zeocore' requires a different Python` | Your interpreter is older than 3.14. | Redo [Step 2](#step-2-install-python-314-only-if-you-need-it), then rebuild the venv with the 3.14 interpreter. |
-| `ModuleNotFoundError: No module named 'zeo_core'` | Either the venv isn't active, or you installed into a different Python. | Re-activate the venv ([Step 3](#step-3-make-a-project-folder-and-a-virtual-environment)) and re-run `python -m pip install zeocore`. |
+| `ModuleNotFoundError: No module named 'zeo_core'` | Either the venv isn't active, or you installed into a different Python. | Re-activate the venv ([Step 3](#step-3-make-a-project-folder-and-a-virtual-environment)) and re-run `uv pip install zeocore`. |
 | `ModuleNotFoundError: No module named 'zeocore'` | You imported the package name instead of the module name. | Import `zeo_core`, with the underscore. |
 | `.venv\Scripts\Activate.ps1 cannot be loaded because running scripts is disabled` | PowerShell's execution policy. | `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`, then activate again. |
 | `capability id must look like 'namespace.name@1.0.0', got 'greet'` | The `id` is missing its namespace or version. | Use the full three-part form, e.g. `demo.greet@1.0.0`. |
@@ -401,6 +426,6 @@ you ran and the full error text.
   — the natural next tutorial after this page: registries, guards, manifests,
   and adapter binding.
 - [`examples/`](examples/) — every example is a real script you can run with
-  `python examples/<name>.py`.
+  `uv run examples/<name>.py`.
 - [CONTRIBUTING.md](CONTRIBUTING.md) — set up a dev environment and send a
   change back.
