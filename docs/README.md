@@ -21,7 +21,7 @@ Work through these in order. Each step assumes the one before it.
 | 5 | [Results and errors](tutorials/results-and-errors.md) | 20 min | Choose correctly between returning a result and raising an exception. |
 | 6 | [Context, configuration, and files](tutorials/context-config-files.md) | 20 min | Wire `ToolContext`, `load_config()`, and filesystem access together. |
 | 7 | [GET-STARTED.md](../GET-STARTED.md) | reference | Use paths, plugins, integrations, and adapters in depth. |
-| 8 | An integration tutorial ([MCP](tutorials/mcp-server-with-claude-code.md), [Notion](tutorials/notion-integration.md), or [Calendar](tutorials/calendar-integration.md)) | 20 min | Connect your capability to the outside world. |
+| 8 | An integration tutorial ([MCP](tutorials/mcp-server-with-claude-code.md), [Notion](tutorials/notion-integration.md), [Calendar](tutorials/calendar-integration.md), [Google Docs](tutorials/google-docs-integration.md), or [Bluesky](tutorials/bluesky-integration.md)) | 20 min | Connect your capability to the outside world. |
 
 Unfamiliar term along the way? The [glossary](glossary.md) defines them in
 one place.
@@ -49,6 +49,10 @@ Step-by-step guides for people building on ZeoCore.
   Notion pages and databases.
 - [Google Calendar integration](tutorials/calendar-integration.md) — OAuth
   setup, reading and creating events.
+- [Google Docs integration](tutorials/google-docs-integration.md) — reading
+  document text, creating documents, and batch edits.
+- [Bluesky integration](tutorials/bluesky-integration.md) — posting, and why
+  link positions are UTF-8 byte offsets.
 
 ## Runnable examples
 
