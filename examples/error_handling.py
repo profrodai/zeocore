@@ -21,7 +21,7 @@ bare strings. This example shows:
 
 Run this file directly to see all three failure modes handled end to end:
 
-    python examples/error_handling.py
+    uv run examples/error_handling.py
 """
 
 from __future__ import annotations

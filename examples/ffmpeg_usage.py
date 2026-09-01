@@ -3,7 +3,7 @@ Example: probing and transcoding media with zeo_core.integrations.ffmpeg.
 
 Requires the 'ffmpeg' extra:
 
-    pip install "zeocore[ffmpeg]"
+    uv pip install "zeocore[ffmpeg]"
 
 This wraps the org's own ffmpeg-zeo PyPI package (not the raw ffmpeg
 binary directly) -- ffmpeg-zeo resolves real ffmpeg/ffprobe binaries
@@ -23,7 +23,7 @@ one.
 
 Run this file directly:
 
-    python examples/ffmpeg_usage.py
+    uv run examples/ffmpeg_usage.py
 """
 
 from __future__ import annotations

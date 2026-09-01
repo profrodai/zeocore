@@ -94,7 +94,7 @@ exactly once without a separate gate step.
   `zeo_core/tools/mixins/__init__.py`'s module docstring for the full
   reasoning.
 - **Examples**: files under `examples/` must import `zeo_core` (never a
-  predecessor package name) and be runnable with `python examples/<name>.py`.
+  predecessor package name) and be runnable with `uv run examples/<name>.py`.
   Credential-gated examples may skip with a printed reason; they must not
   crash on a missing extra if they document that extra.
 - **Documentation links**: use repository-relative links in user-facing

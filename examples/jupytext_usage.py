@@ -4,7 +4,7 @@ with zeo_core.integrations.jupytext.
 
 Requires the 'jupytext' extra:
 
-    pip install "zeocore[jupytext]"
+    uv pip install "zeocore[jupytext]"
 
 This mirrors how the org's own quackslides app uses jupytext today: author
 exercises as plain, diff-friendly ``.py`` files in percent format
@@ -24,7 +24,7 @@ which the fs service would correctly reject as outside the sandbox.
 
 Run this file directly, from the repo root:
 
-    python examples/jupytext_usage.py
+    uv run examples/jupytext_usage.py
 """
 
 from __future__ import annotations

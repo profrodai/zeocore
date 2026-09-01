@@ -4,7 +4,7 @@ zeo_core.integrations.google.calendar.
 
 Requires the 'calendar' extra:
 
-    pip install "zeocore[calendar]"
+    uv pip install "zeocore[calendar]"
 
 Auth is the same OAuth (`InstalledAppFlow` + local-server) flow
 `zeo_core.integrations.google.drive`/`google.mail` already use -- reused
@@ -37,9 +37,9 @@ for subsequent runs).
 
 Run this file directly:
 
-    python examples/calendar_usage.py
+    uv run examples/calendar_usage.py
     ZEO_GOOGLE_CALENDAR_CLIENT_SECRETS=/path/to/client_secrets.json \\
-        python examples/calendar_usage.py
+        uv run examples/calendar_usage.py
 """
 
 from __future__ import annotations

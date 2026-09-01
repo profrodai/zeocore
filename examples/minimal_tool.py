@@ -13,7 +13,7 @@ run().
 
 Run this file directly:
 
-    python examples/minimal_tool.py
+    uv run examples/minimal_tool.py
 """
 
 from __future__ import annotations

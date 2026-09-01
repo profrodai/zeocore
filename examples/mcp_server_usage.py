@@ -3,7 +3,7 @@ Example: exposing a zeo_core.tools tool as an MCP server.
 
 Requires the 'mcp' extra:
 
-    pip install "zeocore[mcp]"
+    uv pip install "zeocore[mcp]"
 
 This example demonstrates the "zeotools are MCP-native by default" half of
 zeo_core.adapters.mcp: WordCountTool below is a completely ordinary
@@ -33,7 +33,7 @@ config at:
 
 Run this file directly to see the full round trip:
 
-    python examples/mcp_server_usage.py
+    uv run examples/mcp_server_usage.py
 """
 
 from __future__ import annotations

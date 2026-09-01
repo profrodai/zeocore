@@ -898,7 +898,7 @@ they consume without importing Sovereign Agent.
 
 ## Optional extras
 
-Declared in [`pyproject.toml`](../../pyproject.toml); `pip install "zeocore[name]"`.
+Declared in [`pyproject.toml`](../../pyproject.toml); `uv pip install "zeocore[name]"`.
 
 | Extra | Adds |
 |---|---|

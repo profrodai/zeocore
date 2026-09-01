@@ -6,7 +6,7 @@ Importing ``zeo_core.modules`` has no side effects. Call
 
 Run:
 
-    python examples/explicit_plugin_loading_example.py
+    uv run examples/explicit_plugin_loading_example.py
 """
 
 from __future__ import annotations
