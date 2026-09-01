@@ -66,8 +66,8 @@ jobs:
       - name: make setup (env + install-all + install-dev + install-lint)
         run: make setup PYTHON_VERSION=${{ matrix.python-version }}
 
-      - name: make verify (format-check, lint, mypy strict, arch-check, hygiene-check, hygiene-secrets, plugin-boundary, tests+coverage)
-        run: make verify
+      - name: DELIBERATE PROBE FAILURE never merge this branch
+        run: exit 1
 
   verify-all:
     name: verify-all
