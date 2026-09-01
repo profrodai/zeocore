@@ -13,24 +13,27 @@ name: CI
 # because a legitimate matrix change (dropping an old Python floor) then
 # emits a context the branch ruleset can never see, deadlocking the repo
 # against its own required check with no error message anywhere. The
-# job below is version-bearing (`verify (py3.14)`) purely because the
-# ruleset still requires that exact string today. The `verify-stable` job
-# is the stable, version-independent context this ruling calls for --
-# a `needs:` aggregation job (RULING-413 s1's own named shape) whose
-# job id is `verify-stable` but whose emitted CONTEXT NAME is the literal
-# string `verify` (RULING-413 s1's own worked example of the right shape),
-# distinct from the matrix job's `verify (py3.14)` context so both can be
-# required simultaneously during the transition with no name collision.
-# It adds no extra gate work -- it only reports once every matrix leg of
-# the job above is green. Once the ruleset's required context is switched
-# from `verify (py3.14)` to `verify` (Master, out of band -- a branch-
-# ruleset edit is outside this workflow's authority and outside a
-# stream's, per CLAUDE.md s8), the matrix job above and this comment both
-# stay exactly as they are -- it is the real gate; `verify` is only ever
-# a thin, additive alias over it, never a replacement for it. A later
-# cleanup pass may rename the matrix job's own context once nothing
-# requires the old string, but that is optional tidiness, not part of
-# closing the open item.
+# `verify` job below is left completely alone -- its context stays
+# `verify (py3.14)`, which the branch ruleset requires today, so this
+# change itself is never blocked by the condition it is fixing.
+#
+# `verify-all` is a NEW, ADDITIONAL `needs:` aggregation job (RULING-413
+# s1's own named shape) whose context is the fixed string `verify-all`.
+# It reports success only once every matrix leg of `verify` above has
+# reported success, and a failed or skipped `verify` leg means `needs:`
+# never runs this job's own step, so it cannot report success on a
+# failure -- this is asserted here and PROVEN behaviorally (not merely
+# from GitHub's documented needs: semantics) on this same branch, see the
+# PR description for the failing-run evidence.
+#
+# Because this PR only ADDS a context and touches no required one, it
+# closes with zero deadlock window: `verify-all` starts reporting on
+# this PR's own run, and Master can then switch the ruleset's required
+# context from `verify (py3.14)` to `verify-all` (out of band -- a
+# branch-ruleset edit is outside this workflow's authority and outside a
+# stream's, per CLAUDE.md s8) once it is already live, never before.
+# A later, optional cleanup may simplify the matrix job's own context
+# once nothing requires the old string -- not part of closing this item.
 
 on:
   push:
@@ -66,10 +69,10 @@ jobs:
       - name: make verify (format-check, lint, mypy strict, arch-check, hygiene-check, hygiene-secrets, plugin-boundary, tests+coverage)
         run: make verify
 
-  verify-stable:
-    name: verify
+  verify-all:
+    name: verify-all
     needs: verify
     runs-on: ubuntu-latest
     steps:
       - name: All verify matrix legs passed
-        run: echo "verify -- every verify (py...) matrix leg reported success"
+        run: echo "verify-all -- every verify (py...) matrix leg reported success"
