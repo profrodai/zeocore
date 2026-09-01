@@ -19,12 +19,24 @@ name: CI
 #
 # `verify-all` is a NEW, ADDITIONAL `needs:` aggregation job (RULING-413
 # s1's own named shape) whose context is the fixed string `verify-all`.
-# It reports success only once every matrix leg of `verify` above has
-# reported success, and a failed or skipped `verify` leg means `needs:`
-# never runs this job's own step, so it cannot report success on a
-# failure -- this is asserted here and PROVEN behaviorally (not merely
-# from GitHub's documented needs: semantics) on this same branch, see the
-# PR description for the failing-run evidence.
+# A bare `needs: verify` with no `if:` was tried first and rejected: GitHub
+# skips a job whose `needs:` dependency did not succeed, and a SKIPPED
+# required check is indistinguishable in the UI from one still running --
+# it never emits `failure`, only silently stops existing, which is exactly
+# the failure mode RULING-413 exists to close (a required context that
+# blocks forever without announcing itself). So this job carries `if:
+# always()` (the same pattern publish.yml's smoke-test job already uses
+# and documents in this repo) plus a step that inspects
+# `needs.verify.result` itself and exits non-zero when it is not `success`
+# -- so this required context can actually EMIT a `failure` conclusion,
+# not merely go quiet. PROVEN behaviorally, not merely asserted from
+# GitHub's documented needs:/if: semantics, on this same branch -- see the
+# PR description for both the passing-run and the failing-run check-run
+# names, read from the check-runs API, not the legacy combined-status
+# endpoint (which is unconditionally blind in this repo -- it reports
+# only legacy commit statuses, and this repo emits check-runs
+# exclusively, so /status reads `pending` on both a fully green merged
+# commit and a genuinely failing one).
 #
 # Because this PR only ADDS a context and touches no required one, it
 # closes with zero deadlock window: `verify-all` starts reporting on
@@ -72,7 +84,15 @@ jobs:
   verify-all:
     name: verify-all
     needs: verify
+    # See the RULING-413 comment above jobs: for why this needs if: always()
+    # plus an explicit needs.verify.result check rather than a bare needs:.
+    if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: All verify matrix legs passed
-        run: echo "verify-all -- every verify (py...) matrix leg reported success"
+      - name: Fail unless every verify matrix leg succeeded
+        run: |
+          if [ "${{ needs.verify.result }}" != "success" ]; then
+            echo "verify did not succeed (result: ${{ needs.verify.result }}) -- failing verify-all"
+            exit 1
+          fi
+          echo "verify-all -- every verify (py...) matrix leg reported success"
