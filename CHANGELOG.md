@@ -32,6 +32,11 @@ integration -> post.
   documented as the home for secrets but inert.
 
 ### Changed
+- **Python floor raised to 3.14** (was 3.13). This is a **breaking change**: an
+  environment on 3.13 will no longer resolve new releases. It aligns zeocore with
+  sovereign-agent 1.1.0, which already requires 3.14. Verified before landing --
+  the full suite passes on 3.14 with the same 2954 tests and no behavioural
+  difference, and mypy is clean across 295 source files at the new floor.
 
 - **Credential files move out of the working directory** to an OS-appropriate
   per-user location via `platformdirs`. A legacy credential is migrated once,
