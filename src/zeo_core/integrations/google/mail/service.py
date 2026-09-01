@@ -388,7 +388,7 @@ class GoogleMailService(BaseIntegrationService):
         try:
             if value is not None:
                 return int(value)  # type: ignore
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             pass
         return default
 
@@ -410,7 +410,7 @@ class GoogleMailService(BaseIntegrationService):
         try:
             if value is not None:
                 return float(value)  # type: ignore
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             pass
         return default
 

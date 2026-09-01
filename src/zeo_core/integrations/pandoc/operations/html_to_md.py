@@ -81,7 +81,7 @@ def _safe_file_size(file_info: object) -> int:
                 return 0
         else:
             return 0
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         raw_size = getattr(file_info, "size", None)
         logger.warning(
             f"Could not convert file size to integer: {raw_size}, using default size"
@@ -238,7 +238,7 @@ def _write_and_validate_output(
     ):
         try:
             output_size = int(write_result.bytes_written)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             raw_bytes_written = getattr(write_result, "bytes_written", None)
             logger.warning(
                 f"Could not convert bytes_written to integer: {raw_bytes_written}"
@@ -251,7 +251,7 @@ def _write_and_validate_output(
     ):
         try:
             output_size = int(output_info.size)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             raw_output_size = getattr(output_info, "size", None)
             logger.warning(f"Could not convert file size to integer: {raw_output_size}")
 
@@ -410,7 +410,7 @@ def _resolve_output_size(output_info: object, output_path: str) -> int:
             if getattr(output_info, "size", None) is not None
             else 0
         )
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         raw_output_size = getattr(output_info, "size", None)
         logger.warning(
             f"Could not convert output size to integer: {raw_output_size}, using 0"

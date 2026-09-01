@@ -105,7 +105,7 @@ class FFmpegIntegration(BaseIntegrationService):
 
         try:
             self.fs_service = fs_service or FileSystemService()
-        except (FileNotFoundError, OSError):
+        except FileNotFoundError, OSError:
             import tempfile
 
             self.fs_service = fs_service or FileSystemService(

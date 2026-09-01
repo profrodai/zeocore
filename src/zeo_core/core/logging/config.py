@@ -40,7 +40,7 @@ def _get_default_level() -> int:
     env_level = os.environ.get("ZEO_LOG_LEVEL", "INFO").upper()
     try:
         return LOG_LEVELS[LogLevel(env_level)]
-    except (ValueError, KeyError):
+    except ValueError, KeyError:
         return logging.INFO
 
 

@@ -41,7 +41,7 @@ class FileInfoOperationsMixin:
             import pwd
 
             owner = pwd.getpwuid(stat.st_uid).pw_name
-        except (ImportError, KeyError, AttributeError):
+        except ImportError, KeyError, AttributeError:
             pass
 
         m_iso, c_iso = _get_iso_timestamps(path)

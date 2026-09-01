@@ -211,7 +211,7 @@ line_length = 88
 
 [tool.ruff]
 line-length = 88
-target-version = "py313"
+target-version = "py314"
 
 [tool.ruff.format]
 quote-style = "double"
@@ -246,7 +246,16 @@ select = [
 # floor-bump change and left for a dedicated follow-up pass rather than
 # done speculatively here. Ignored explicitly, not silently uncaught: a
 # future `select` cleanup removes this block once that pass lands.
-ignore = ["UP040", "UP042", "UP046", "UP047"]
+# `target-version = "py314"` (toolchain-floor-drift-20260901: ruff/black
+# had been left at py313 when requires-python moved to >=3.14) newly
+# activates one more: UP037 (drop now-unnecessary quotes from a forward-
+# reference type annotation). 64 findings across 24 files in src/ and
+# tests/. It IS `--fix`-safe, unlike the four above, but landing 64
+# mechanical edits across 24 files is out of scope for a toolchain-config
+# fix and belongs in its own reviewable pass -- same reasoning as the
+# UP040/042/046/047 deferral above, added to the same ignore list rather
+# than silently absorbed into this change.
+ignore = ["UP037", "UP040", "UP042", "UP046", "UP047"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**/*.py" = ["S101"]  # Disable S101 (assert warning) in test files
@@ -257,7 +266,7 @@ ignore = ["UP040", "UP042", "UP046", "UP047"]
 
 [tool.black]
 line-length = 88
-target-version = ["py313"]
+target-version = ["py314"]
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]

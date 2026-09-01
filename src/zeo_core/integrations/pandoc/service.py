@@ -75,7 +75,7 @@ class PandocIntegration(BaseIntegrationService):
         # (common in tests)
         try:
             self.fs_service = fs_service or FileSystemService()
-        except (FileNotFoundError, OSError):
+        except FileNotFoundError, OSError:
             # If cwd() fails (e.g., in tests), use /tmp as base directory
             import tempfile
 

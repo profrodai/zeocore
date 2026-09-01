@@ -150,3 +150,59 @@ def test_readme_current_requirement_states_the_floor() -> None:
         f"floor ('Python {floor_str} or newer'). It may be stranded on an "
         "older floor statement."
     )
+
+
+def _pyproject_text() -> str:
+    return (REPO_ROOT / "pyproject.toml").read_text()
+
+
+def test_ruff_target_version_matches_pyproject_floor() -> None:
+    """ruff's `target-version` must track `requires-python`, not lag it.
+
+    Toolchain-floor-drift, 2026-09-01: the 3.14 floor bump (RULING-412/415)
+    landed in `requires-python`, `mypy`'s `python_version`, the CI matrix,
+    and the Makefile default -- but left `[tool.ruff] target-version` at
+    the previous floor's `py313`. `target-version` tells ruff which
+    language level to assume; pinned low, it will not apply floor-era
+    rules and can accept or rewrite code inconsistently with the
+    interpreter the package actually declares. This is the same defect
+    family RULING-415 SS3c names: a self-inconsistent declaration every
+    green gate passed over -- and this file's own six floor-agreement
+    tests did not cover it (none mention `target-version`).
+    """
+    floor = _requires_python_floor()
+    expected = f"py{floor[0]}{floor[1]}"
+    m = re.search(
+        r'(?m)^\[tool\.ruff\]\s*$.*?^target-version\s*=\s*"([^"]+)"',
+        _pyproject_text(),
+        re.DOTALL,
+    )
+    assert m, "pyproject.toml's [tool.ruff] table no longer declares a `target-version`"
+    assert m.group(1) == expected, (
+        f"[tool.ruff] target-version is {m.group(1)!r}, but the "
+        f"requires-python floor is {floor[0]}.{floor[1]} (expected {expected!r})."
+    )
+
+
+def test_black_target_version_matches_pyproject_floor() -> None:
+    """black's `target-version` must track `requires-python`, not lag it.
+
+    Same drift family as the ruff check above: black's [tool.black]
+    `target-version` list was left at the previous floor's `py313` when
+    `requires-python` moved to >=3.14.
+    """
+    floor = _requires_python_floor()
+    expected = f"py{floor[0]}{floor[1]}"
+    m = re.search(
+        r"(?m)^\[tool\.black\]\s*$.*?^target-version\s*=\s*\[([^\]]+)\]",
+        _pyproject_text(),
+        re.DOTALL,
+    )
+    assert m, (
+        "pyproject.toml's [tool.black] table no longer declares a `target-version`"
+    )
+    versions = [v.strip().strip("\"'") for v in m.group(1).split(",")]
+    assert versions == [expected], (
+        f"[tool.black] target-version is {versions!r}, but the "
+        f"requires-python floor is {floor[0]}.{floor[1]} (expected [{expected!r}])."
+    )

@@ -238,7 +238,7 @@ def safe_convert_to_int(value: Any, default: int = 0) -> int:  # noqa: ANN401 --
 
     try:
         return int(value)
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         logger.warning(
             f"Could not convert value to integer: {value}, using default {default}"
         )

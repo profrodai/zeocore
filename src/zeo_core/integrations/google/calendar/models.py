@@ -44,7 +44,7 @@ class EventDateTime(BaseModel):
                 date_time = datetime.fromisoformat(
                     response["dateTime"].replace("Z", "+00:00")
                 )
-            except (ValueError, TypeError):
+            except ValueError, TypeError:
                 pass
 
         return cls(
@@ -142,7 +142,7 @@ class CalendarEvent(BaseModel):
                 created = datetime.fromisoformat(
                     response["created"].replace("Z", "+00:00")
                 )
-            except (ValueError, TypeError):
+            except ValueError, TypeError:
                 pass
 
         updated = None
@@ -151,7 +151,7 @@ class CalendarEvent(BaseModel):
                 updated = datetime.fromisoformat(
                     response["updated"].replace("Z", "+00:00")
                 )
-            except (ValueError, TypeError):
+            except ValueError, TypeError:
                 pass
 
         attendees = [

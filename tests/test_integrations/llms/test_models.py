@@ -233,7 +233,7 @@ class TestLLMModels:
         try:
             model_config = ToolCall.model_config
             extra_forbidden = model_config.get("extra") == "forbid"
-        except (AttributeError, KeyError):
+        except AttributeError, KeyError:
             extra_forbidden = False
 
         if extra_forbidden:

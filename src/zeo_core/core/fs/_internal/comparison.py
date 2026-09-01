@@ -13,7 +13,7 @@ def _is_same_file(path1: Path, path2: Path) -> bool:
         # Fallback for non-existent paths or permission issues
         try:
             return path1.resolve() == path2.resolve()
-        except (OSError, RuntimeError):
+        except OSError, RuntimeError:
             # If resolve fails (permissions, symlink loops, etc), paths are not the same
             return False
 
