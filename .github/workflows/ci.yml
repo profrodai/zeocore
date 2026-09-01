@@ -8,6 +8,44 @@ name: CI
 # creates the venv -- done via `PYTHON_VERSION=<matrix version>` on the make
 # command line, which overrides the Makefile's own `PYTHON_VERSION := 3.14`
 # default (make command-line assignments win over `:=` in the makefile).
+#
+# RULING-413: a required status-check context must not carry a version,
+# because a legitimate matrix change (dropping an old Python floor) then
+# emits a context the branch ruleset can never see, deadlocking the repo
+# against its own required check with no error message anywhere. The
+# `verify` job below is left completely alone -- its context stays
+# `verify (py3.14)`, which the branch ruleset requires today, so this
+# change itself is never blocked by the condition it is fixing.
+#
+# `verify-all` is a NEW, ADDITIONAL `needs:` aggregation job (RULING-413
+# s1's own named shape) whose context is the fixed string `verify-all`.
+# A bare `needs: verify` with no `if:` was tried first and rejected: GitHub
+# skips a job whose `needs:` dependency did not succeed, and a SKIPPED
+# required check is indistinguishable in the UI from one still running --
+# it never emits `failure`, only silently stops existing, which is exactly
+# the failure mode RULING-413 exists to close (a required context that
+# blocks forever without announcing itself). So this job carries `if:
+# always()` (the same pattern publish.yml's smoke-test job already uses
+# and documents in this repo) plus a step that inspects
+# `needs.verify.result` itself and exits non-zero when it is not `success`
+# -- so this required context can actually EMIT a `failure` conclusion,
+# not merely go quiet. PROVEN behaviorally, not merely asserted from
+# GitHub's documented needs:/if: semantics, on this same branch -- see the
+# PR description for both the passing-run and the failing-run check-run
+# names, read from the check-runs API, not the legacy combined-status
+# endpoint (which is unconditionally blind in this repo -- it reports
+# only legacy commit statuses, and this repo emits check-runs
+# exclusively, so /status reads `pending` on both a fully green merged
+# commit and a genuinely failing one).
+#
+# Because this PR only ADDS a context and touches no required one, it
+# closes with zero deadlock window: `verify-all` starts reporting on
+# this PR's own run, and Master can then switch the ruleset's required
+# context from `verify (py3.14)` to `verify-all` (out of band -- a
+# branch-ruleset edit is outside this workflow's authority and outside a
+# stream's, per CLAUDE.md s8) once it is already live, never before.
+# A later, optional cleanup may simplify the matrix job's own context
+# once nothing requires the old string -- not part of closing this item.
 
 on:
   push:
@@ -42,3 +80,19 @@ jobs:
 
       - name: make verify (format-check, lint, mypy strict, arch-check, hygiene-check, hygiene-secrets, plugin-boundary, tests+coverage)
         run: make verify
+
+  verify-all:
+    name: verify-all
+    needs: verify
+    # See the RULING-413 comment above jobs: for why this needs if: always()
+    # plus an explicit needs.verify.result check rather than a bare needs:.
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail unless every verify matrix leg succeeded
+        run: |
+          if [ "${{ needs.verify.result }}" != "success" ]; then
+            echo "verify did not succeed (result: ${{ needs.verify.result }}) -- failing verify-all"
+            exit 1
+          fi
+          echo "verify-all -- every verify (py...) matrix leg reported success"
