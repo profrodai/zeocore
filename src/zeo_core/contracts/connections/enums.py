@@ -5,16 +5,27 @@ Consumed by: connector, connection, execution, error and receipt contracts
 in this package.
 Must NOT contain: transition logic (see transitions.py), adapter code.
 
-ExecutionState and the ALLOWED_TRANSITIONS table are grounded verbatim in
-ZC0-KERNEL-SEAM-01 disposition 12 (the audited, numbered disposition in the
-Principal brief's grounding addendum), which supersedes the earlier
-descriptive sketch in the same brief's section 5.5. Disposition 12's chain
-uses SUCCEEDED/FAILED where section 5.5 sketched CONFIRMED/REFUSED/
-FAILED_SAFE; disposition 12 is the more specific, numbered, Sparring-reviewed
-disposition and section 21.5's acceptance checks name DISPATCH_STARTED and
-AMBIGUOUS, both present in disposition 12's chain, so this module follows
-disposition 12. Recorded here rather than silently picked so a reader who
-knows section 5.5's wording is not left wondering which one shipped.
+ExecutionState is grounded in the Principal's direct ruling on
+ZC0-KERNEL-SEAM-01's state machine (msg_ebff3939, refined by msg_770124cc),
+which supersedes disposition 12's SUCCEEDED/FAILED/RECONCILED naming and
+reinstates section 5.5's REFUSED/FAILED_SAFE terminal vocabulary. The
+ruling is explicit and binding: ADD REFUSED and FAILED_SAFE; REMOVE the
+generic FAILED and RECONCILED entirely; AMBIGUOUS encodes forward to
+SUCCEEDED or FAILED_SAFE only, and only with reconciliation evidence and a
+reference to the prior ambiguous receipt/transition event -- an unresolved
+reconciliation attempt leaves the state AMBIGUOUS and appends an attempt
+record rather than self-transitioning. Recorded here, superseding the
+disposition-12 note this docstring previously carried, so a reader who
+remembers the old SUCCEEDED/FAILED/RECONCILED shape is not left wondering
+which one shipped (append-don't-revert: this replaces the prior grounding
+note rather than leaving it to contradict the code beside it).
+
+REFUSED and FAILED_SAFE also appear as members of NormalizedErrorCode
+below (REQUEST_REFUSED, FAILED_SAFE) -- that is a DIFFERENT, pre-existing
+enum describing a normalized provider-error taxonomy, not this state
+machine. A receipt in ExecutionState.FAILED_SAFE MAY carry a
+NormalizedError with code REQUEST_REFUSED or FAILED_SAFE, but the two
+enums are never interchangeable and neither reuses the other's members.
 """
 
 from __future__ import annotations
@@ -24,17 +35,39 @@ from enum import StrEnum
 
 class ExecutionState(StrEnum):
     """
-    Durable state of one execution, per ZC0-KERNEL-SEAM-01 disposition 12.
+    Durable state of one execution, per the Principal's state-machine
+    ruling (msg_ebff3939, refined by msg_770124cc).
 
     Minimum path:
         CREATED -> AUTHORIZATION_VERIFIED -> PREPARED -> DISPATCH_STARTED
-        -> SUCCEEDED | FAILED | AMBIGUOUS
+        -> SUCCEEDED | FAILED_SAFE | AMBIGUOUS
+
+    Pre-dispatch refusal path:
+        CREATED | AUTHORIZATION_VERIFIED | PREPARED -> REFUSED
+
+    REFUSED is a terminal reached only BEFORE DISPATCH_STARTED -- it is how
+    the machine records that admission or authorization declined to dispatch
+    at all. It is never reachable from DISPATCH_STARTED or from AMBIGUOUS:
+    once a provider dispatch has actually started, refusal is no longer a
+    possible outcome, only success, safe failure, or ambiguity are.
 
     AMBIGUOUS means the provider may have applied the effect but the system
-    lacks trustworthy confirmation. Reconciliation may resolve AMBIGUOUS to
-    a terminal state later, but never erases it from history (disposition
-    12) -- the transition table in transitions.py enforces this by refusing
-    any transition that treats AMBIGUOUS as if it had never happened.
+    lacks trustworthy confirmation. Reconciliation may resolve AMBIGUOUS
+    forward to SUCCEEDED or FAILED_SAFE ONLY, and only when the resolving
+    transition carries reconciliation evidence and a reference to the prior
+    ambiguous receipt/transition event -- the transition table in
+    transitions.py enforces this by refusing any transition that treats
+    AMBIGUOUS as if it had never happened. An unresolved reconciliation
+    attempt does not self-transition AMBIGUOUS back to AMBIGUOUS; it leaves
+    the state AMBIGUOUS and the attempt is appended as history instead
+    (receipt.py's reconciliation_attempts), so a failed reconciliation is
+    never mistaken for a state change and is never lost.
+
+    There is no RECONCILED state: FAILED (generic) and RECONCILED (a
+    disposition-12 state naming successful reconciliation as its own
+    terminal) are both removed by this ruling. A resolved ambiguity is
+    recorded as an ordinary SUCCEEDED or FAILED_SAFE receipt that carries
+    reconciliation evidence, not as a fourth terminal shape.
     """
 
     CREATED = "CREATED"
@@ -42,9 +75,9 @@ class ExecutionState(StrEnum):
     PREPARED = "PREPARED"
     DISPATCH_STARTED = "DISPATCH_STARTED"
     SUCCEEDED = "SUCCEEDED"
-    FAILED = "FAILED"
+    FAILED_SAFE = "FAILED_SAFE"
+    REFUSED = "REFUSED"
     AMBIGUOUS = "AMBIGUOUS"
-    RECONCILED = "RECONCILED"
 
 
 class NormalizedErrorCode(StrEnum):

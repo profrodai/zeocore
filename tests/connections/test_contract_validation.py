@@ -382,17 +382,19 @@ class TestConnectorRevisionInvariants:
 
 
 class TestExecutionReceiptInvariants:
-    def test_failed_receipt_requires_normalized_error(self, now: datetime) -> None:
-        with pytest.raises(ValidationError, match="FAILED receipt must carry"):
+    def test_failed_safe_receipt_requires_normalized_error(self, now: datetime) -> None:
+        with pytest.raises(ValidationError, match="FAILED_SAFE receipt must carry"):
             ExecutionReceipt(
                 execution_id=ExecutionId(value="exec-1"),
                 organization_id=OrganizationId(value="org-1"),
                 connection_id=ConnectionId(value="conn-1"),
-                final_state=ExecutionState.FAILED,
+                final_state=ExecutionState.FAILED_SAFE,
                 recorded_at=now,
             )
 
-    def test_non_failed_receipt_forbids_normalized_error(self, now: datetime) -> None:
+    def test_non_failed_safe_receipt_forbids_normalized_error(
+        self, now: datetime
+    ) -> None:
         with pytest.raises(ValidationError, match="only be set when final_state"):
             ExecutionReceipt(
                 execution_id=ExecutionId(value="exec-1"),
@@ -405,20 +407,133 @@ class TestExecutionReceiptInvariants:
                 recorded_at=now,
             )
 
-    def test_reconciled_receipt_requires_evidence_and_resolved_at(
+    def test_refused_receipt_does_not_require_normalized_error(
+        self, now: datetime
+    ) -> None:
+        ExecutionReceipt(
+            execution_id=ExecutionId(value="exec-1"),
+            organization_id=OrganizationId(value="org-1"),
+            connection_id=ConnectionId(value="conn-1"),
+            final_state=ExecutionState.REFUSED,
+            recorded_at=now,
+        )  # must not raise: REFUSED is not FAILED_SAFE and has no error requirement
+
+    def test_reconciled_state_no_longer_a_valid_final_state(
+        self, now: datetime
+    ) -> None:
+        # The ruling removes RECONCILED entirely. Pin that the string no
+        # longer round-trips through ExecutionState at all, so a receipt
+        # cannot even be constructed with it -- this is a stronger
+        # guarantee than a validator rejecting it, since there is no
+        # member left to reject.
+        assert "RECONCILED" not in ExecutionState.__members__
+
+    def test_resolving_receipt_requires_evidence_and_reference_and_resolved_at(
         self, now: datetime
     ) -> None:
         with pytest.raises(
             ValidationError,
-            match="RECONCILED receipt must carry reconciliation_evidence",
+            match="resolving a prior ambiguity must carry reconciliation_evidence",
         ):
             ExecutionReceipt(
                 execution_id=ExecutionId(value="exec-1"),
                 organization_id=OrganizationId(value="org-1"),
                 connection_id=ConnectionId(value="conn-1"),
-                final_state=ExecutionState.RECONCILED,
+                final_state=ExecutionState.SUCCEEDED,
                 recorded_at=now,
-            )
+                resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
+                resolved_at=now,
+            )  # reference alone, no evidence -- rejected
+
+    def test_resolving_receipt_requires_reference_even_with_evidence(
+        self, now: datetime
+    ) -> None:
+        with pytest.raises(
+            ValidationError,
+            match="must carry resolves_ambiguous_recorded_at",
+        ):
+            ExecutionReceipt(
+                execution_id=ExecutionId(value="exec-1"),
+                organization_id=OrganizationId(value="org-1"),
+                connection_id=ConnectionId(value="conn-1"),
+                final_state=ExecutionState.SUCCEEDED,
+                recorded_at=now,
+                reconciliation_evidence="queried provider ledger, effect confirmed",
+                resolved_at=now,
+            )  # evidence alone, no reference to the prior AMBIGUOUS event -- rejected
+
+    def test_resolving_receipt_valid_with_evidence_and_reference(
+        self, now: datetime
+    ) -> None:
+        ExecutionReceipt(
+            execution_id=ExecutionId(value="exec-1"),
+            organization_id=OrganizationId(value="org-1"),
+            connection_id=ConnectionId(value="conn-1"),
+            final_state=ExecutionState.SUCCEEDED,
+            recorded_at=now,
+            reconciliation_evidence="queried provider ledger, effect confirmed",
+            resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
+            resolved_at=now,
+        )  # must not raise: both evidence and reference present
+
+    def test_succeeded_via_reconciliation_cannot_skip_positive_confirmation(
+        self, now: datetime
+    ) -> None:
+        # Proof requirement 4: SUCCEEDED cannot occur without positive
+        # effect confirmation. For a SUCCEEDED receipt that resolves a
+        # prior AMBIGUOUS outcome, "positive effect confirmation" IS
+        # reconciliation_evidence -- there is no other evidence field this
+        # contract carries for that claim, so omitting it while still
+        # asserting SUCCEEDED-as-resolution must be rejected. (A bare,
+        # direct-dispatch SUCCEEDED that never passed through AMBIGUOUS is
+        # a different, unresolved claim addressed by
+        # test_resolving_receipt_valid_with_evidence_and_reference's
+        # sibling above and is not this test's target.)
+        with pytest.raises(
+            ValidationError,
+            match="resolving a prior ambiguity must carry reconciliation_evidence",
+        ):
+            ExecutionReceipt(
+                execution_id=ExecutionId(value="exec-1"),
+                organization_id=OrganizationId(value="org-1"),
+                connection_id=ConnectionId(value="conn-1"),
+                final_state=ExecutionState.SUCCEEDED,
+                recorded_at=now,
+                resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
+                resolved_at=now,
+            )  # claims resolution of an ambiguity with NO confirming evidence
+
+    def test_resolving_receipt_to_failed_safe_valid_with_evidence_and_reference(
+        self, now: datetime
+    ) -> None:
+        ExecutionReceipt(
+            execution_id=ExecutionId(value="exec-1"),
+            organization_id=OrganizationId(value="org-1"),
+            connection_id=ConnectionId(value="conn-1"),
+            final_state=ExecutionState.FAILED_SAFE,
+            normalized_error=NormalizedError(
+                code=NormalizedErrorCode.RESULT_AMBIGUOUS, message="x"
+            ),
+            recorded_at=now,
+            reconciliation_evidence="queried provider ledger, no effect found",
+            resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
+            resolved_at=now,
+        )  # must not raise: FAILED_SAFE is a valid resolution target too
+
+    def test_resolving_receipt_rejects_non_terminal_target(self, now: datetime) -> None:
+        with pytest.raises(
+            ValidationError,
+            match="may only be set on a receipt resolving to SUCCEEDED or FAILED_SAFE",
+        ):
+            ExecutionReceipt(
+                execution_id=ExecutionId(value="exec-1"),
+                organization_id=OrganizationId(value="org-1"),
+                connection_id=ConnectionId(value="conn-1"),
+                final_state=ExecutionState.AMBIGUOUS,
+                recorded_at=now,
+                reconciliation_evidence="attempted lookup",
+                resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
+            )  # an AMBIGUOUS receipt cannot carry the resolving pair
 
     def test_ambiguous_receipt_is_valid_without_resolution(self, now: datetime) -> None:
         ExecutionReceipt(
@@ -428,6 +543,60 @@ class TestExecutionReceiptInvariants:
             final_state=ExecutionState.AMBIGUOUS,
             recorded_at=now,
         )  # must not raise: an honest, unresolved AMBIGUOUS receipt is valid
+
+    def test_unresolved_attempt_stays_ambiguous_and_records_attempt_evidence(
+        self, now: datetime
+    ) -> None:
+        # Proof requirement 5: an unresolved attempt remains AMBIGUOUS
+        # without a self-transition. This receipt is the evidence trail --
+        # final_state is still AMBIGUOUS, not overwritten, and the attempt
+        # itself is retained via reconciliation_attempt_evidence.
+        receipt = ExecutionReceipt(
+            execution_id=ExecutionId(value="exec-1"),
+            organization_id=OrganizationId(value="org-1"),
+            connection_id=ConnectionId(value="conn-1"),
+            final_state=ExecutionState.AMBIGUOUS,
+            recorded_at=now,
+            reconciliation_attempt_evidence="provider ledger query timed out",
+        )
+        assert receipt.final_state == ExecutionState.AMBIGUOUS
+        assert receipt.reconciliation_evidence is None
+
+    def test_attempt_evidence_forbidden_once_resolved(self, now: datetime) -> None:
+        with pytest.raises(
+            ValidationError,
+            match="may only be set when final_state is still AMBIGUOUS",
+        ):
+            ExecutionReceipt(
+                execution_id=ExecutionId(value="exec-1"),
+                organization_id=OrganizationId(value="org-1"),
+                connection_id=ConnectionId(value="conn-1"),
+                final_state=ExecutionState.SUCCEEDED,
+                recorded_at=now,
+                reconciliation_attempt_evidence="should not appear on a resolved one",
+            )
+
+    def test_attempt_evidence_and_resolution_evidence_are_mutually_exclusive(
+        self, now: datetime
+    ) -> None:
+        # Checked ahead of the other two receipt-shape validators (see
+        # receipt.py's validator ordering note): this must reject on its
+        # own terms even though final_state AMBIGUOUS plus a resolving pair
+        # would ALSO be independently invalid.
+        with pytest.raises(
+            ValidationError,
+            match="must not carry both reconciliation_attempt_evidence",
+        ):
+            ExecutionReceipt(
+                execution_id=ExecutionId(value="exec-1"),
+                organization_id=OrganizationId(value="org-1"),
+                connection_id=ConnectionId(value="conn-1"),
+                final_state=ExecutionState.AMBIGUOUS,
+                recorded_at=now,
+                reconciliation_attempt_evidence="attempt only",
+                reconciliation_evidence="resolution too",
+                resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
+            )
 
     def test_created_state_rejected_as_final_state(self, now: datetime) -> None:
         with pytest.raises(ValidationError, match="terminal or AMBIGUOUS"):

@@ -1,5 +1,6 @@
 """
-Execution state transition table, per ZC0-KERNEL-SEAM-01 disposition 12.
+Execution state transition table, per the Principal's state-machine ruling
+(msg_ebff3939, refined by msg_770124cc), superseding disposition 12.
 
 Consumed by: the (not-yet-built) orchestration layer (step 6, out of this
 step's scope), and this step's own contract tests.
@@ -9,16 +10,26 @@ is a pure lookup table plus a pure predicate function.
 The minimum path is:
 
     CREATED -> AUTHORIZATION_VERIFIED -> PREPARED -> DISPATCH_STARTED
-    -> SUCCEEDED | FAILED | AMBIGUOUS
+    -> SUCCEEDED | FAILED_SAFE | AMBIGUOUS
 
-Disposition 12 requires the path to be durable and monotonic and requires
-that reconciliation "may resolve AMBIGUOUS but never erases it from
-history." This module expresses that second requirement as a transition
-rule: AMBIGUOUS may move forward to RECONCILED (a new state recording that
-reconciliation ran and produced a trustworthy answer), but nothing may
-transition FROM a terminal state back into the non-terminal path, and
-AMBIGUOUS is never silently overwritten by SUCCEEDED or FAILED -- only by
-the explicit RECONCILED state added in enums.py for exactly this purpose.
+Any pre-dispatch state (CREATED, AUTHORIZATION_VERIFIED, PREPARED) may
+instead move to REFUSED -- admission or authorization declining to dispatch
+at all. REFUSED is reachable ONLY before DISPATCH_STARTED: once dispatch has
+started, refusal is no longer a possible outcome (proof requirement 3), so
+DISPATCH_STARTED's outbound set does not include REFUSED.
+
+The ruling requires the path to be durable and monotonic and requires that
+reconciliation "may resolve AMBIGUOUS but never erases it from history."
+This module expresses that requirement as a transition rule: AMBIGUOUS may
+move forward to SUCCEEDED or FAILED_SAFE ONLY -- never directly from
+DISPATCH_STARTED's other outcomes, always through AMBIGUOUS's own two-target
+set -- and nothing may transition FROM a terminal state back into the
+non-terminal path. There is no RECONCILED state: a resolved ambiguity is an
+ordinary SUCCEEDED or FAILED_SAFE, distinguished from a direct dispatch
+outcome only by the receipt evidence it carries (receipt.py), not by a
+fourth terminal shape. An unresolved reconciliation attempt is not a
+transition at all -- see receipt.py's reconciliation_attempts for how that
+history is retained without moving current state.
 """
 
 from __future__ import annotations
@@ -29,20 +40,28 @@ from zeo_core.contracts.connections.enums import ExecutionState
 #: the states execution may move to FROM that key. A state with an empty
 #: set is terminal -- nothing may leave it.
 ALLOWED_TRANSITIONS: dict[ExecutionState, frozenset[ExecutionState]] = {
-    ExecutionState.CREATED: frozenset({ExecutionState.AUTHORIZATION_VERIFIED}),
-    ExecutionState.AUTHORIZATION_VERIFIED: frozenset({ExecutionState.PREPARED}),
-    ExecutionState.PREPARED: frozenset({ExecutionState.DISPATCH_STARTED}),
+    ExecutionState.CREATED: frozenset(
+        {ExecutionState.AUTHORIZATION_VERIFIED, ExecutionState.REFUSED}
+    ),
+    ExecutionState.AUTHORIZATION_VERIFIED: frozenset(
+        {ExecutionState.PREPARED, ExecutionState.REFUSED}
+    ),
+    ExecutionState.PREPARED: frozenset(
+        {ExecutionState.DISPATCH_STARTED, ExecutionState.REFUSED}
+    ),
     ExecutionState.DISPATCH_STARTED: frozenset(
         {
             ExecutionState.SUCCEEDED,
-            ExecutionState.FAILED,
+            ExecutionState.FAILED_SAFE,
             ExecutionState.AMBIGUOUS,
         }
     ),
-    ExecutionState.AMBIGUOUS: frozenset({ExecutionState.RECONCILED}),
+    ExecutionState.AMBIGUOUS: frozenset(
+        {ExecutionState.SUCCEEDED, ExecutionState.FAILED_SAFE}
+    ),
     ExecutionState.SUCCEEDED: frozenset(),
-    ExecutionState.FAILED: frozenset(),
-    ExecutionState.RECONCILED: frozenset(),
+    ExecutionState.FAILED_SAFE: frozenset(),
+    ExecutionState.REFUSED: frozenset(),
 }
 
 #: Terminal states: no outbound transition exists for any of these. Derived
@@ -55,15 +74,24 @@ TERMINAL_STATES: frozenset[ExecutionState] = frozenset(
 
 def is_allowed_transition(current: ExecutionState, proposed: ExecutionState) -> bool:
     """
-    Return True iff moving execution from `current` to `proposed` is
-    permitted by disposition 12's state machine.
+    Return True iff moving execution from `current` to `proposed` is a
+    permitted STATE-GRAPH edge under the Principal's ruling.
 
-    This is a pure predicate: it does not mutate anything, does not look at
-    wall-clock time, and does not know about connections, authorizations or
-    providers. The orchestration layer (step 6) is expected to call this
-    before persisting any state change and refuse the write if it returns
-    False -- that wiring is out of this step's scope, but the predicate it
-    will need already exists and is fully tested here.
+    This is a pure predicate over states only: it does not mutate anything,
+    does not look at wall-clock time, and does not know about connections,
+    authorizations, providers, or reconciliation evidence. In particular,
+    `is_allowed_transition(AMBIGUOUS, SUCCEEDED)` being True means that edge
+    EXISTS in the graph -- it does NOT mean a given resolution is valid.
+    The ruling's "AMBIGUOUS requires reconciliation evidence and a reference
+    to the prior ambiguous event to resolve" is a stronger, evidence-bearing
+    requirement enforced at the receipt layer (receipt.py's
+    `_resolution_requires_reconciliation_context` validator), not here --
+    this module has no evidence parameter to check it against. The
+    orchestration layer (step 6) is expected to call this graph predicate
+    before persisting any state change AND to require the receipt-level
+    evidence check before treating an AMBIGUOUS execution as resolved --
+    that wiring is out of this step's scope, but both predicates it will
+    need already exist and are fully tested here and in receipt.py.
 
     Example:
         >>> is_allowed_transition(
@@ -72,6 +100,14 @@ def is_allowed_transition(current: ExecutionState, proposed: ExecutionState) -> 
         True
         >>> is_allowed_transition(
         ...     ExecutionState.AMBIGUOUS, ExecutionState.SUCCEEDED
+        ... )
+        True
+        >>> is_allowed_transition(
+        ...     ExecutionState.PREPARED, ExecutionState.REFUSED
+        ... )
+        True
+        >>> is_allowed_transition(
+        ...     ExecutionState.DISPATCH_STARTED, ExecutionState.REFUSED
         ... )
         False
     """
