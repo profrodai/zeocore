@@ -33,6 +33,7 @@ from zeo_core.contracts.connections.errors import NormalizedError
 from zeo_core.contracts.connections.execution import Execution
 from zeo_core.contracts.connections.identity import (
     AuthorizationId,
+    ConfirmationEvidenceRef,
     ConnectionId,
     ConnectorId,
     ConnectorRevisionId,
@@ -61,6 +62,7 @@ __all__ = [
     "ExecutionId",
     "IdempotencyKey",
     "SecretRef",
+    "ConfirmationEvidenceRef",
     # Enums
     "ExecutionState",
     "NormalizedErrorCode",

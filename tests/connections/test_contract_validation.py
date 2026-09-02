@@ -27,6 +27,7 @@ from zeo_core.contracts.common.enums import EffectKind
 from zeo_core.contracts.connections import (
     AuthorizationId,
     BusinessOperation,
+    ConfirmationEvidenceRef,
     Connection,
     ConnectionId,
     ConnectionStatus,
@@ -46,6 +47,14 @@ from zeo_core.contracts.connections import (
     OrganizationId,
     RiskClass,
     SecretRef,
+)
+
+#: A syntactically valid ConfirmationEvidenceRef value, reused wherever
+#: this file needs "some legitimate reference" as a fixture value rather
+#: than testing the reference's own shape rules (that is
+#: test_confirmation_evidence_ref_shape.py's job).
+_VALID_EVIDENCE_REF = ConfirmationEvidenceRef(
+    value="zeo-evidence:v1:8f14e45f-ceea-4d4c-b90a-a4d1a4e1c5a1"
 )
 
 
@@ -456,7 +465,7 @@ class TestExecutionReceiptInvariants:
                 final_state=ExecutionState.SUCCEEDED,
                 recorded_at=now,
                 dispatch_started_at=now - timedelta(minutes=6),
-                confirmation_evidence_ref="evidence-ref-1",
+                confirmation_evidence_ref=_VALID_EVIDENCE_REF,
                 resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
                 resolved_at=now,
             )  # reference alone, no evidence -- rejected
@@ -475,7 +484,7 @@ class TestExecutionReceiptInvariants:
                 final_state=ExecutionState.SUCCEEDED,
                 recorded_at=now,
                 dispatch_started_at=now - timedelta(minutes=6),
-                confirmation_evidence_ref="evidence-ref-1",
+                confirmation_evidence_ref=_VALID_EVIDENCE_REF,
                 reconciliation_evidence="queried provider ledger, effect confirmed",
                 resolved_at=now,
             )  # evidence alone, no reference to the prior AMBIGUOUS event -- rejected
@@ -490,7 +499,7 @@ class TestExecutionReceiptInvariants:
             final_state=ExecutionState.SUCCEEDED,
             recorded_at=now,
             dispatch_started_at=now - timedelta(minutes=6),
-            confirmation_evidence_ref="evidence-ref-1",
+            confirmation_evidence_ref=_VALID_EVIDENCE_REF,
             reconciliation_evidence="queried provider ledger, effect confirmed",
             resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
             resolved_at=now,
@@ -520,7 +529,7 @@ class TestExecutionReceiptInvariants:
                 final_state=ExecutionState.SUCCEEDED,
                 recorded_at=now,
                 dispatch_started_at=now - timedelta(minutes=6),
-                confirmation_evidence_ref="evidence-ref-1",
+                confirmation_evidence_ref=_VALID_EVIDENCE_REF,
                 resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
                 resolved_at=now,
             )  # claims resolution of an ambiguity with NO confirming evidence
@@ -605,7 +614,7 @@ class TestExecutionReceiptInvariants:
                 final_state=ExecutionState.SUCCEEDED,
                 recorded_at=now,
                 dispatch_started_at=now,
-                confirmation_evidence_ref="evidence-ref-1",
+                confirmation_evidence_ref=_VALID_EVIDENCE_REF,
                 reconciliation_attempt_evidence="should not appear on a resolved one",
             )
 

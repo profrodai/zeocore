@@ -27,6 +27,7 @@ from zeo_core.contracts.common.enums import EffectKind
 from zeo_core.contracts.connections import (
     AuthorizationId,
     BusinessOperation,
+    ConfirmationEvidenceRef,
     Connection,
     ConnectionId,
     ConnectionStatus,
@@ -186,9 +187,17 @@ class TestFrozenToday:
             final_state=ExecutionState.SUCCEEDED,
             recorded_at=now,
             dispatch_started_at=now,
-            confirmation_evidence_ref="evidence-ref-1",
+            confirmation_evidence_ref=ConfirmationEvidenceRef(
+                value="zeo-evidence:v1:8f14e45f-ceea-4d4c-b90a-a4d1a4e1c5a1"
+            ),
         )
         assert_immutable(receipt, "final_state")
+
+    def test_confirmation_evidence_ref_is_frozen(self) -> None:
+        ref = ConfirmationEvidenceRef(
+            value="zeo-evidence:v1:8f14e45f-ceea-4d4c-b90a-a4d1a4e1c5a1"
+        )
+        assert_immutable(ref, "value")
 
     def test_every_exported_model_declares_frozen_config(self) -> None:
         # Belt-and-suspenders static check alongside the behavioral ones

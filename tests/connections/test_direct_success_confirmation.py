@@ -23,6 +23,7 @@ from pydantic import ValidationError
 from zeo_core.contracts.connections.enums import ExecutionState, NormalizedErrorCode
 from zeo_core.contracts.connections.errors import NormalizedError
 from zeo_core.contracts.connections.identity import (
+    ConfirmationEvidenceRef,
     ConnectionId,
     ExecutionId,
     OrganizationId,
@@ -34,6 +35,17 @@ from zeo_core.contracts.connections.transitions import (
 )
 
 CANARY = "CANARY-SECRET-zc0-direct-success-7c21"
+
+#: A syntactically valid ConfirmationEvidenceRef, reused wherever this file
+#: needs "some legitimate reference" as a fixture value. Its own shape
+#: rules (canonical prefix, lowercase v4 UUID, rejection of malformed
+#: input) are proof under test_confirmation_evidence_ref_shape.py, not
+#: here -- this file is about ExecutionReceipt's state-dependent
+#: requirements around the field, which is orthogonal to the field's own
+#: type validation.
+_VALID_EVIDENCE_REF = ConfirmationEvidenceRef(
+    value="zeo-evidence:v1:8f14e45f-ceea-4d4c-b90a-a4d1a4e1c5a1"
+)
 
 
 @pytest.fixture
@@ -74,7 +86,7 @@ class TestProof1DirectSuccessRequiresConfirmationRef:
             final_state=ExecutionState.SUCCEEDED,
             recorded_at=now,
             dispatch_started_at=now - timedelta(seconds=1),
-            confirmation_evidence_ref="evidence-store-ref-1",
+            confirmation_evidence_ref=_VALID_EVIDENCE_REF,
         )  # must not raise
 
 
@@ -109,7 +121,7 @@ class TestProof2ReconciledSuccessRequiresConfirmationRefEvenWithReconciliation:
             final_state=ExecutionState.SUCCEEDED,
             recorded_at=now,
             dispatch_started_at=now - timedelta(minutes=6),
-            confirmation_evidence_ref="evidence-store-ref-1",
+            confirmation_evidence_ref=_VALID_EVIDENCE_REF,
             reconciliation_evidence="queried provider ledger, effect confirmed",
             resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
             resolved_at=now,
@@ -130,7 +142,7 @@ class TestProof3ConfirmationRefForbiddenOnNonSucceeded:
                     code=NormalizedErrorCode.PROVIDER_UNAVAILABLE, message="x"
                 ),
                 recorded_at=now,
-                confirmation_evidence_ref="should-not-be-allowed-here",
+                confirmation_evidence_ref=_VALID_EVIDENCE_REF,
             )
 
     def test_confirmation_ref_on_refused_rejected(self, now: datetime) -> None:
@@ -144,7 +156,7 @@ class TestProof3ConfirmationRefForbiddenOnNonSucceeded:
                     code=NormalizedErrorCode.REQUEST_REFUSED, message="x"
                 ),
                 recorded_at=now,
-                confirmation_evidence_ref="should-not-be-allowed-here",
+                confirmation_evidence_ref=_VALID_EVIDENCE_REF,
             )
 
     def test_confirmation_ref_on_ambiguous_rejected(self, now: datetime) -> None:
@@ -158,16 +170,33 @@ class TestProof3ConfirmationRefForbiddenOnNonSucceeded:
                     code=NormalizedErrorCode.RESULT_AMBIGUOUS, message="x"
                 ),
                 recorded_at=now,
-                confirmation_evidence_ref="should-not-be-allowed-here",
+                confirmation_evidence_ref=_VALID_EVIDENCE_REF,
             )
 
 
 class TestProof4EmptyOrWhitespaceConfirmationRefRejected:
-    """An empty or whitespace-only confirmation reference is rejected."""
+    """An empty or whitespace-only confirmation reference is rejected.
+
+    Since msg_54b0e295's typed ConfirmationEvidenceRef, a bare `""` or
+    whitespace-only string is not even the RIGHT TYPE for this field
+    anymore -- ExecutionReceipt.confirmation_evidence_ref is
+    `ConfirmationEvidenceRef | None`, so pydantic rejects a bare str at the
+    model_type layer before ConfirmationEvidenceRef's own shape validator
+    ever runs. This is a STRONGER guarantee than the old bar (a non-empty
+    string was previously sufficient; now no bare string, empty or
+    otherwise, is accepted at all -- see
+    test_confirmation_evidence_ref_shape.py for the exhaustive coercion
+    proof this generalizes).
+    """
 
     def test_empty_string_confirmation_ref_rejected(self, now: datetime) -> None:
+        # Deliberate bare-str probe: pydantic rejects this at runtime
+        # (proven by pytest.raises below); mypy's pydantic plugin does not
+        # flag it statically for this field, a pre-existing gap recorded
+        # in the stream report, not introduced by this change.
         with pytest.raises(
-            ValidationError, match="SUCCEEDED receipt must carry a non-empty"
+            ValidationError,
+            match="valid dictionary or instance of ConfirmationEvidenceRef",
         ):
             ExecutionReceipt(
                 **_ids(),
@@ -178,8 +207,10 @@ class TestProof4EmptyOrWhitespaceConfirmationRefRejected:
             )
 
     def test_whitespace_only_confirmation_ref_rejected(self, now: datetime) -> None:
+        # Same deliberate bare-str probe as above, whitespace-only value.
         with pytest.raises(
-            ValidationError, match="SUCCEEDED receipt must carry a non-empty"
+            ValidationError,
+            match="valid dictionary or instance of ConfirmationEvidenceRef",
         ):
             ExecutionReceipt(
                 **_ids(),
@@ -203,7 +234,7 @@ class TestProof5SucceededRequiresDispatchStartedAt:
                 **_ids(),
                 final_state=ExecutionState.SUCCEEDED,
                 recorded_at=now,
-                confirmation_evidence_ref="evidence-store-ref-1",
+                confirmation_evidence_ref=_VALID_EVIDENCE_REF,
             )
 
     def test_succeeded_with_dispatch_started_at_accepted(self, now: datetime) -> None:
@@ -212,7 +243,7 @@ class TestProof5SucceededRequiresDispatchStartedAt:
             final_state=ExecutionState.SUCCEEDED,
             recorded_at=now,
             dispatch_started_at=now - timedelta(seconds=1),
-            confirmation_evidence_ref="evidence-store-ref-1",
+            confirmation_evidence_ref=_VALID_EVIDENCE_REF,
         )  # must not raise
 
 
@@ -424,7 +455,7 @@ class TestProof9CanaryAbsentFromAllSerializationChannels:
             final_state=ExecutionState.SUCCEEDED,
             recorded_at=now,
             dispatch_started_at=now - timedelta(seconds=1),
-            confirmation_evidence_ref="evidence-store-ref-1",
+            confirmation_evidence_ref=_VALID_EVIDENCE_REF,
         )
         leaks = self._leaks(clean_receipt, CANARY)
         assert not any(leaks.values()), (

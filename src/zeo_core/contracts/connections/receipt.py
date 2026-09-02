@@ -64,6 +64,7 @@ from pydantic import BaseModel, ConfigDict, model_validator
 from zeo_core.contracts.connections.enums import ExecutionState, NormalizedErrorCode
 from zeo_core.contracts.connections.errors import NormalizedError
 from zeo_core.contracts.connections.identity import (
+    ConfirmationEvidenceRef,
     ConnectionId,
     ExecutionId,
     OrganizationId,
@@ -123,14 +124,18 @@ class ExecutionReceipt(BaseModel):
     recorded_at: datetime
     dispatch_started_at: datetime | None = None
     resolved_at: datetime | None = None
-    # Non-empty, opaque pointer to durable, sanitized confirmation evidence.
-    # Required exactly when final_state is SUCCEEDED (direct or reconciled),
-    # forbidden otherwise (msg_bcb88de0's direct-success decision). Must
-    # NEVER carry a raw provider response, token, credential or any
-    # secret-bearing payload -- callers construct this from a sanitized
-    # evidence store (out of this step's scope), never from provider output
-    # directly.
-    confirmation_evidence_ref: str | None = None
+    # Typed, kernel-minted pointer to durable, sanitized confirmation
+    # evidence (Principal decision msg_54b0e295, superseding the prior bare
+    # `str | None`). Required exactly when final_state is SUCCEEDED (direct
+    # or reconciled), forbidden otherwise (msg_bcb88de0's direct-success
+    # decision, retained unchanged by msg_54b0e295). Must NEVER carry a raw
+    # provider response, token, credential or any secret-bearing payload --
+    # ConfirmationEvidenceRef's canonical-shape validation makes an
+    # ordinary provider token structurally unrepresentable here; callers
+    # construct this from a sanitized evidence store (out of this step's
+    # scope), never from provider output directly. A bare string is never
+    # silently coerced -- pydantic rejects it, it does not parse it.
+    confirmation_evidence_ref: ConfirmationEvidenceRef | None = None
     # Set together, ONLY on a receipt that resolves a prior AMBIGUOUS
     # outcome to SUCCEEDED or FAILED_SAFE. `resolves_ambiguous_recorded_at`
     # is the `recorded_at` of the specific prior AMBIGUOUS receipt this one
@@ -214,15 +219,15 @@ class ExecutionReceipt(BaseModel):
     def _confirmation_evidence_ref_matches_succeeded_state(
         self,
     ) -> ExecutionReceipt:
-        # msg_bcb88de0's direct-success decision: EVERY SUCCEEDED receipt,
-        # not only one resolving a prior AMBIGUOUS outcome, requires a
-        # non-empty confirmation_evidence_ref and is forbidden from carrying
-        # one otherwise.
+        # msg_bcb88de0's direct-success decision, retained by msg_54b0e295:
+        # EVERY SUCCEEDED receipt, not only one resolving a prior AMBIGUOUS
+        # outcome, requires a confirmation_evidence_ref and is forbidden
+        # from carrying one otherwise. ConfirmationEvidenceRef's own
+        # constructor already rejects empty/whitespace-shaped values (it
+        # cannot exist in a blank state), so this check is presence-only --
+        # the blankness case is unreachable once the field is typed.
         if self.final_state == ExecutionState.SUCCEEDED:
-            if (
-                self.confirmation_evidence_ref is None
-                or not self.confirmation_evidence_ref.strip()
-            ):
+            if self.confirmation_evidence_ref is None:
                 raise ValueError(
                     "a SUCCEEDED receipt must carry a non-empty "
                     "confirmation_evidence_ref"
