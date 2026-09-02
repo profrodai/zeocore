@@ -25,19 +25,35 @@ from zeo_core.contracts.connections.transitions import (
 
 
 class TestMinimumPath:
-    def test_created_moves_to_authorization_verified_or_refused(self) -> None:
+    def test_created_moves_to_authorization_verified_refused_or_failed_safe(
+        self,
+    ) -> None:
         assert ALLOWED_TRANSITIONS[ExecutionState.CREATED] == frozenset(
-            {ExecutionState.AUTHORIZATION_VERIFIED, ExecutionState.REFUSED}
+            {
+                ExecutionState.AUTHORIZATION_VERIFIED,
+                ExecutionState.REFUSED,
+                ExecutionState.FAILED_SAFE,
+            }
         )
 
-    def test_authorization_verified_moves_to_prepared_or_refused(self) -> None:
+    def test_authorization_verified_moves_to_prepared_refused_or_failed_safe(
+        self,
+    ) -> None:
         assert ALLOWED_TRANSITIONS[ExecutionState.AUTHORIZATION_VERIFIED] == frozenset(
-            {ExecutionState.PREPARED, ExecutionState.REFUSED}
+            {
+                ExecutionState.PREPARED,
+                ExecutionState.REFUSED,
+                ExecutionState.FAILED_SAFE,
+            }
         )
 
-    def test_prepared_moves_to_dispatch_started_or_refused(self) -> None:
+    def test_prepared_moves_to_dispatch_started_refused_or_failed_safe(self) -> None:
         assert ALLOWED_TRANSITIONS[ExecutionState.PREPARED] == frozenset(
-            {ExecutionState.DISPATCH_STARTED, ExecutionState.REFUSED}
+            {
+                ExecutionState.DISPATCH_STARTED,
+                ExecutionState.REFUSED,
+                ExecutionState.FAILED_SAFE,
+            }
         )
 
     def test_dispatch_started_moves_to_exactly_the_three_outcomes(self) -> None:
@@ -101,6 +117,63 @@ class TestRefusalOnlyBeforeDispatch:
             ExecutionState.AUTHORIZATION_VERIFIED,
             ExecutionState.PREPARED,
         }
+
+
+class TestEveryPreDispatchStateReachesBothRefusedAndFailedSafe:
+    """
+    Proof requirement 8 (msg_bcb88de0): every pre-dispatch state can reach
+    BOTH REFUSED and FAILED_SAFE, and no state at or after DISPATCH_STARTED
+    can reach REFUSED. This class asserts the REQUIRED edges are PRESENT --
+    the positive half Sparring's own withdrawn verification (msg_ac3cd799)
+    proved is not covered merely by checking forbidden edges are absent.
+    """
+
+    PRE_DISPATCH_STATES = (
+        ExecutionState.CREATED,
+        ExecutionState.AUTHORIZATION_VERIFIED,
+        ExecutionState.PREPARED,
+    )
+
+    def test_every_pre_dispatch_state_can_reach_refused(self) -> None:
+        for state in self.PRE_DISPATCH_STATES:
+            assert is_allowed_transition(state, ExecutionState.REFUSED), (
+                f"{state} must be able to reach REFUSED"
+            )
+
+    def test_every_pre_dispatch_state_can_reach_failed_safe(self) -> None:
+        for state in self.PRE_DISPATCH_STATES:
+            assert is_allowed_transition(state, ExecutionState.FAILED_SAFE), (
+                f"{state} must be able to reach FAILED_SAFE"
+            )
+
+    def test_failed_safe_appears_in_exactly_the_ruled_outbound_sets(self) -> None:
+        # FAILED_SAFE must be reachable from the three pre-dispatch states,
+        # DISPATCH_STARTED and AMBIGUOUS -- everywhere except SUCCEEDED,
+        # REFUSED and FAILED_SAFE itself (all terminal with no outbound).
+        reachable_from = {
+            state
+            for state, targets in ALLOWED_TRANSITIONS.items()
+            if ExecutionState.FAILED_SAFE in targets
+        }
+        assert reachable_from == {
+            ExecutionState.CREATED,
+            ExecutionState.AUTHORIZATION_VERIFIED,
+            ExecutionState.PREPARED,
+            ExecutionState.DISPATCH_STARTED,
+            ExecutionState.AMBIGUOUS,
+        }
+
+    def test_no_state_at_or_after_dispatch_started_can_reach_refused(self) -> None:
+        for state in (
+            ExecutionState.DISPATCH_STARTED,
+            ExecutionState.AMBIGUOUS,
+            ExecutionState.SUCCEEDED,
+            ExecutionState.FAILED_SAFE,
+            ExecutionState.REFUSED,
+        ):
+            assert not is_allowed_transition(state, ExecutionState.REFUSED), (
+                f"{state} must not be able to reach REFUSED"
+            )
 
 
 class TestAmbiguousNeverErased:

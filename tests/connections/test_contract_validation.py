@@ -407,16 +407,30 @@ class TestExecutionReceiptInvariants:
                 recorded_at=now,
             )
 
-    def test_refused_receipt_does_not_require_normalized_error(
-        self, now: datetime
-    ) -> None:
+    def test_refused_receipt_requires_normalized_error(self, now: datetime) -> None:
+        # Corrected by msg_bcb88de0: an earlier revision let REFUSED skip
+        # normalized_error. The ruling requires it -- the refusal reason IS
+        # the structured normalized_error, with no parallel field.
+        with pytest.raises(ValidationError, match="REFUSED receipt must carry"):
+            ExecutionReceipt(
+                execution_id=ExecutionId(value="exec-1"),
+                organization_id=OrganizationId(value="org-1"),
+                connection_id=ConnectionId(value="conn-1"),
+                final_state=ExecutionState.REFUSED,
+                recorded_at=now,
+            )
+
+    def test_refused_receipt_valid_with_normalized_error(self, now: datetime) -> None:
         ExecutionReceipt(
             execution_id=ExecutionId(value="exec-1"),
             organization_id=OrganizationId(value="org-1"),
             connection_id=ConnectionId(value="conn-1"),
             final_state=ExecutionState.REFUSED,
+            normalized_error=NormalizedError(
+                code=NormalizedErrorCode.REQUEST_REFUSED, message="policy declined"
+            ),
             recorded_at=now,
-        )  # must not raise: REFUSED is not FAILED_SAFE and has no error requirement
+        )  # must not raise: REFUSED with normalized_error is the ruled shape
 
     def test_reconciled_state_no_longer_a_valid_final_state(
         self, now: datetime
@@ -441,6 +455,8 @@ class TestExecutionReceiptInvariants:
                 connection_id=ConnectionId(value="conn-1"),
                 final_state=ExecutionState.SUCCEEDED,
                 recorded_at=now,
+                dispatch_started_at=now - timedelta(minutes=6),
+                confirmation_evidence_ref="evidence-ref-1",
                 resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
                 resolved_at=now,
             )  # reference alone, no evidence -- rejected
@@ -458,6 +474,8 @@ class TestExecutionReceiptInvariants:
                 connection_id=ConnectionId(value="conn-1"),
                 final_state=ExecutionState.SUCCEEDED,
                 recorded_at=now,
+                dispatch_started_at=now - timedelta(minutes=6),
+                confirmation_evidence_ref="evidence-ref-1",
                 reconciliation_evidence="queried provider ledger, effect confirmed",
                 resolved_at=now,
             )  # evidence alone, no reference to the prior AMBIGUOUS event -- rejected
@@ -471,10 +489,12 @@ class TestExecutionReceiptInvariants:
             connection_id=ConnectionId(value="conn-1"),
             final_state=ExecutionState.SUCCEEDED,
             recorded_at=now,
+            dispatch_started_at=now - timedelta(minutes=6),
+            confirmation_evidence_ref="evidence-ref-1",
             reconciliation_evidence="queried provider ledger, effect confirmed",
             resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
             resolved_at=now,
-        )  # must not raise: both evidence and reference present
+        )  # must not raise: evidence, reference AND confirmation ref present
 
     def test_succeeded_via_reconciliation_cannot_skip_positive_confirmation(
         self, now: datetime
@@ -499,6 +519,8 @@ class TestExecutionReceiptInvariants:
                 connection_id=ConnectionId(value="conn-1"),
                 final_state=ExecutionState.SUCCEEDED,
                 recorded_at=now,
+                dispatch_started_at=now - timedelta(minutes=6),
+                confirmation_evidence_ref="evidence-ref-1",
                 resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
                 resolved_at=now,
             )  # claims resolution of an ambiguity with NO confirming evidence
@@ -530,6 +552,9 @@ class TestExecutionReceiptInvariants:
                 organization_id=OrganizationId(value="org-1"),
                 connection_id=ConnectionId(value="conn-1"),
                 final_state=ExecutionState.AMBIGUOUS,
+                normalized_error=NormalizedError(
+                    code=NormalizedErrorCode.RESULT_AMBIGUOUS, message="x"
+                ),
                 recorded_at=now,
                 reconciliation_evidence="attempted lookup",
                 resolves_ambiguous_recorded_at=now - timedelta(minutes=5),
@@ -541,6 +566,9 @@ class TestExecutionReceiptInvariants:
             organization_id=OrganizationId(value="org-1"),
             connection_id=ConnectionId(value="conn-1"),
             final_state=ExecutionState.AMBIGUOUS,
+            normalized_error=NormalizedError(
+                code=NormalizedErrorCode.RESULT_AMBIGUOUS, message="x"
+            ),
             recorded_at=now,
         )  # must not raise: an honest, unresolved AMBIGUOUS receipt is valid
 
@@ -556,6 +584,9 @@ class TestExecutionReceiptInvariants:
             organization_id=OrganizationId(value="org-1"),
             connection_id=ConnectionId(value="conn-1"),
             final_state=ExecutionState.AMBIGUOUS,
+            normalized_error=NormalizedError(
+                code=NormalizedErrorCode.RESULT_AMBIGUOUS, message="x"
+            ),
             recorded_at=now,
             reconciliation_attempt_evidence="provider ledger query timed out",
         )
@@ -573,6 +604,8 @@ class TestExecutionReceiptInvariants:
                 connection_id=ConnectionId(value="conn-1"),
                 final_state=ExecutionState.SUCCEEDED,
                 recorded_at=now,
+                dispatch_started_at=now,
+                confirmation_evidence_ref="evidence-ref-1",
                 reconciliation_attempt_evidence="should not appear on a resolved one",
             )
 
@@ -592,6 +625,9 @@ class TestExecutionReceiptInvariants:
                 organization_id=OrganizationId(value="org-1"),
                 connection_id=ConnectionId(value="conn-1"),
                 final_state=ExecutionState.AMBIGUOUS,
+                normalized_error=NormalizedError(
+                    code=NormalizedErrorCode.RESULT_AMBIGUOUS, message="x"
+                ),
                 recorded_at=now,
                 reconciliation_attempt_evidence="attempt only",
                 reconciliation_evidence="resolution too",

@@ -185,6 +185,8 @@ class TestFrozenToday:
             connection_id=ConnectionId(value="conn-1"),
             final_state=ExecutionState.SUCCEEDED,
             recorded_at=now,
+            dispatch_started_at=now,
+            confirmation_evidence_ref="evidence-ref-1",
         )
         assert_immutable(receipt, "final_state")
 

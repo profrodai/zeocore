@@ -13,10 +13,25 @@ The minimum path is:
     -> SUCCEEDED | FAILED_SAFE | AMBIGUOUS
 
 Any pre-dispatch state (CREATED, AUTHORIZATION_VERIFIED, PREPARED) may
-instead move to REFUSED -- admission or authorization declining to dispatch
-at all. REFUSED is reachable ONLY before DISPATCH_STARTED: once dispatch has
-started, refusal is no longer a possible outcome (proof requirement 3), so
-DISPATCH_STARTED's outbound set does not include REFUSED.
+instead move to REFUSED or FAILED_SAFE, per the authoritative table in
+msg_ebff3939 (re-affirmed against a prior omission by msg_bcb88de0):
+
+    CREATED                -> AUTHORIZATION_VERIFIED | REFUSED | FAILED_SAFE
+    AUTHORIZATION_VERIFIED -> PREPARED | REFUSED | FAILED_SAFE
+    PREPARED               -> DISPATCH_STARTED | REFUSED | FAILED_SAFE
+    DISPATCH_STARTED       -> SUCCEEDED | FAILED_SAFE | AMBIGUOUS
+    AMBIGUOUS              -> SUCCEEDED | FAILED_SAFE
+
+REFUSED means the kernel deliberately made zero provider calls -- admission
+or authorization declined to dispatch at all. REFUSED is reachable ONLY
+before DISPATCH_STARTED: once dispatch has started, refusal is no longer a
+possible outcome (proof requirement 3), so DISPATCH_STARTED's outbound set
+does not include REFUSED. FAILED_SAFE from a pre-dispatch state means a
+known-no-effect OPERATIONAL failure occurred before any provider call was
+attempted (e.g. custody or normalization failed outright) -- distinct from
+REFUSED's deliberate zero-dispatch rejection, and distinct from a
+post-dispatch FAILED_SAFE, which instead proves a definitive provider
+response showing no effect occurred.
 
 The ruling requires the path to be durable and monotonic and requires that
 reconciliation "may resolve AMBIGUOUS but never erases it from history."
@@ -41,13 +56,25 @@ from zeo_core.contracts.connections.enums import ExecutionState
 #: set is terminal -- nothing may leave it.
 ALLOWED_TRANSITIONS: dict[ExecutionState, frozenset[ExecutionState]] = {
     ExecutionState.CREATED: frozenset(
-        {ExecutionState.AUTHORIZATION_VERIFIED, ExecutionState.REFUSED}
+        {
+            ExecutionState.AUTHORIZATION_VERIFIED,
+            ExecutionState.REFUSED,
+            ExecutionState.FAILED_SAFE,
+        }
     ),
     ExecutionState.AUTHORIZATION_VERIFIED: frozenset(
-        {ExecutionState.PREPARED, ExecutionState.REFUSED}
+        {
+            ExecutionState.PREPARED,
+            ExecutionState.REFUSED,
+            ExecutionState.FAILED_SAFE,
+        }
     ),
     ExecutionState.PREPARED: frozenset(
-        {ExecutionState.DISPATCH_STARTED, ExecutionState.REFUSED}
+        {
+            ExecutionState.DISPATCH_STARTED,
+            ExecutionState.REFUSED,
+            ExecutionState.FAILED_SAFE,
+        }
     ),
     ExecutionState.DISPATCH_STARTED: frozenset(
         {
