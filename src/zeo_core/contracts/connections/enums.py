@@ -150,3 +150,42 @@ class IdempotencyMode(StrEnum):
     PROVIDER_NATIVE = "PROVIDER_NATIVE"
     KERNEL_MANAGED = "KERNEL_MANAGED"
     NOT_IDEMPOTENT = "NOT_IDEMPOTENT"
+
+
+class AuthorizationRefusalReason(StrEnum):
+    """
+    Closed taxonomy for why an EffectAuthorizationVerifier refused to
+    verify one attempted effect, step 2 (SecretStore/ConnectionStore/
+    EffectAuthorizationVerifier protocols, no permissive default
+    implementation).
+
+    AUTHORIZATION_VERIFIED's own binding definition (Principal decision
+    msg_ebff3939) names exactly what a verifier checks: "the exact ZEO Go
+    authorization matches organization, connection, connector revision,
+    business operation, normalized request digest, expiry and replay
+    identity." Each member below is the refusal for one of those checks
+    failing, plus ABSENT for the zero-authorization case -- there is
+    deliberately no generic/catch-all member, because a verifier that could
+    refuse without saying which check failed would be exactly the kind of
+    unfalsifiable "trust me" surface disposition 2 forbids ("Zeocore
+    verifies mechanical execution conditions... it does not reconstruct
+    organizational policy").
+
+    This is a REFUSAL taxonomy, not NormalizedErrorCode: NormalizedErrorCode
+    (above) classifies a provider-side effect outcome recorded on a
+    receipt; this enum classifies a pre-dispatch verification refusal,
+    which never reaches a provider and never produces a receipt with an
+    effect outcome at all (transitions.py: REFUSED is reachable only
+    before DISPATCH_STARTED). The two enums are never interchangeable and
+    neither reuses the other's members, mirroring the existing
+    REFUSED/FAILED_SAFE note above.
+    """
+
+    ABSENT = "ABSENT"
+    ORGANIZATION_MISMATCH = "ORGANIZATION_MISMATCH"
+    CONNECTION_MISMATCH = "CONNECTION_MISMATCH"
+    CONNECTOR_REVISION_MISMATCH = "CONNECTOR_REVISION_MISMATCH"
+    OPERATION_MISMATCH = "OPERATION_MISMATCH"
+    REQUEST_DIGEST_MISMATCH = "REQUEST_DIGEST_MISMATCH"
+    EXPIRED = "EXPIRED"
+    REPLAYED = "REPLAYED"

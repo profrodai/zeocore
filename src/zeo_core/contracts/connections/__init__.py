@@ -1,18 +1,19 @@
 """
-Connections domain contracts (Ring A / Kernel), ZC0-KERNEL-SEAM-01 step 1.
+Connections domain contracts (Ring A / Kernel), ZC0-KERNEL-SEAM-01 steps 1-2.
 
 Frozen pure contracts for connectors, connections, effect authorization,
 executions, normalized errors and receipts, plus the execution state
-transition table. No adapter imports. No persistence. No secret material.
+transition table (step 1); the SecretStore, ConnectionStore and
+EffectAuthorizationVerifier protocols and their verdict/result value types
+(step 2). No adapter imports. No persistence. No secret material. No
+permissive default implementation.
 
-This package is step 1 of the seven-step binding order in
-ZC0-KERNEL-SEAM-01: SecretStore/ConnectionStore/EffectAuthorizationVerifier
-protocols (step 2), macOS Keychain custody (step 3), SQLite persistence
-(step 4), connector admission and the fake provider adapter (step 5), and
-orchestration (step 6) are deliberately NOT part of this package -- they
-belong to `zeo_core.connections` (not yet built) and later leases of this
-stream, per the packet's binding order: each step's proof surface depends
-on the previous step landing first and not being reordered.
+macOS Keychain custody (step 3), SQLite persistence (step 4), connector
+admission and the fake provider adapter (step 5), and orchestration
+(step 6) are deliberately NOT part of this package -- they belong to
+`zeo_core.connections` (not yet built) and later leases of this stream, per
+the packet's binding order: each step's proof surface depends on the
+previous step landing first and not being reordered.
 """
 
 from zeo_core.contracts.connections.authorization import EffectAuthorization
@@ -22,6 +23,7 @@ from zeo_core.contracts.connections.connector import (
     ConnectorRevision,
 )
 from zeo_core.contracts.connections.enums import (
+    AuthorizationRefusalReason,
     ConnectionHealth,
     ConnectionStatus,
     ExecutionState,
@@ -43,12 +45,22 @@ from zeo_core.contracts.connections.identity import (
     OrganizationId,
     SecretRef,
 )
+from zeo_core.contracts.connections.protocols import (
+    ConnectionStore,
+    EffectAuthorizationVerifier,
+    SecretStore,
+)
 from zeo_core.contracts.connections.receipt import ExecutionReceipt
 from zeo_core.contracts.connections.transitions import (
     ALLOWED_TRANSITIONS,
     TERMINAL_STATES,
     is_allowed_transition,
     is_terminal,
+)
+from zeo_core.contracts.connections.verdicts import (
+    AuthorizationVerdict,
+    SecretHealth,
+    SecretResolution,
 )
 
 __all__ = [
@@ -70,6 +82,7 @@ __all__ = [
     "ConnectionHealth",
     "RiskClass",
     "IdempotencyMode",
+    "AuthorizationRefusalReason",
     # Transition table
     "ALLOWED_TRANSITIONS",
     "TERMINAL_STATES",
@@ -83,4 +96,12 @@ __all__ = [
     "Execution",
     "NormalizedError",
     "ExecutionReceipt",
+    # Step-2 verdict/result value types
+    "AuthorizationVerdict",
+    "SecretHealth",
+    "SecretResolution",
+    # Step-2 protocols
+    "SecretStore",
+    "ConnectionStore",
+    "EffectAuthorizationVerifier",
 ]
