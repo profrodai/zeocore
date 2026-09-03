@@ -706,6 +706,26 @@ class TestStdinTransportProvenOnRealExecutable:
         # sample, not caught on any. This is the store's actual production
         # code path, not a hand-rolled security(1) invocation -- proving
         # the adapter itself, not just the CLI shape in isolation.
+        #
+        # RULING-423 (Sparring's PR #39 finding, re-verified by Master
+        # before relaying): a negative result from an instrument not
+        # shown, in the SAME RUN, to produce a positive is inadmissible.
+        # `assert samples > 0` alone only proves the polling LOOP ran; it
+        # does not prove `ps` can see anything at all -- a sandboxed,
+        # restricted, or hardened-runtime `ps` can run every iteration,
+        # return "" or a nonzero exit every time, and this test would
+        # certify a guarantee it never measured. So this test now runs a
+        # KNOWN-LEAKY control process ALONGSIDE the real store call,
+        # carrying a distinct canary as a genuine argv element, and
+        # requires that control canary to be OBSERVED at least once
+        # before trusting any negative result about the store's own
+        # canary. `bash -c` is deliberately NOT used for the control --
+        # bash rewrites its own argv for a `-c` script, which would make
+        # the control canary invisible via `ps` even on a fully-sighted
+        # machine and produce exactly the false negative this test exists
+        # to rule out (Master paid this once; recorded here so it is not
+        # re-paid). `sys.executable -c "..." <canary>` keeps the canary as
+        # a literal, unmodified argv element.
         from zeo_core.connections.adapters.macos_keychain import KeychainSecretStore
         from zeo_core.connections.adapters.subprocess_runner import (
             RealSubprocessRunner,
@@ -713,6 +733,7 @@ class TestStdinTransportProvenOnRealExecutable:
         from zeo_core.contracts.connections.identity import OrganizationId, SecretRef
 
         canary = f"CANARY-STORE-PUT-NO-PS-LEAK-{time.time_ns()}"
+        control_canary = f"CANARY-CONTROL-ARGV-VISIBLE-{time.time_ns()}"
         service_prefix = f"zc0-realstore-svc-{time.time_ns()}"
         store = KeychainSecretStore(
             service_prefix=service_prefix,
@@ -725,22 +746,47 @@ class TestStdinTransportProvenOnRealExecutable:
         def _do_put() -> None:
             refs.append(store.put(organization_id=org, material=canary))
 
+        control_proc = subprocess.Popen(  # noqa: S603
+            [sys.executable, "-c", "import time; time.sleep(3)", control_canary],
+        )
         thread = threading.Thread(target=_do_put)
         thread.start()
         samples = 0
+        blind_samples = 0
         leaked_samples = 0
+        control_observed = False
         deadline = time.monotonic() + 3.0
-        while thread.is_alive() and time.monotonic() < deadline:
-            all_procs = _run_ps_axww()
-            samples += 1
-            if canary in all_procs:
-                leaked_samples += 1
-        thread.join(timeout=5)
+        try:
+            while thread.is_alive() and time.monotonic() < deadline:
+                all_procs = _run_ps_axww()
+                samples += 1
+                if all_procs is None:
+                    blind_samples += 1
+                    continue
+                if control_canary in all_procs:
+                    control_observed = True
+                if canary in all_procs:
+                    leaked_samples += 1
+            thread.join(timeout=5)
+        finally:
+            control_proc.terminate()
+            control_proc.wait(timeout=5)
 
         try:
             assert samples > 0, (
                 "polling loop never sampled ps -- test is not proving anything"
             )
+            if not control_observed:
+                pytest.skip(
+                    f"process inspection unavailable: the argv-visible "
+                    f"positive control was never observed via ps -axww "
+                    f"across {samples} samples ({blind_samples} of them "
+                    f"outright blind -- nonzero exit or empty stdout). "
+                    f"Per RULING-423, a negative from an instrument that "
+                    f"cannot be shown to produce a positive in this same "
+                    f"run is inadmissible; skipping rather than passing "
+                    f"vacuously."
+                )
             assert leaked_samples == 0, (
                 f"canary observed in ps -axww on {leaked_samples}/{samples} "
                 f"samples during KeychainSecretStore.put -- the stdin "
@@ -898,8 +944,21 @@ class TestBackgroundEvidenceArgvAndEnvVarExposure:
             proc.wait(timeout=5)
 
 
-def _run_ps_axww() -> str:
+def _run_ps_axww() -> str | None:
+    """
+    Returns the process table, or None if `ps` itself could not be
+    trusted -- a nonzero exit or empty stdout means process inspection is
+    unavailable (a sandbox, a hardened runtime, a restricted container),
+    not that the process table is genuinely empty. Per RULING-423: a
+    negative result from an instrument not shown, in the same run, to
+    produce a positive is inadmissible. Returning None here instead of a
+    bare (possibly blind) string forces every caller to notice the
+    distinction rather than silently treating "couldn't check" the same
+    as "checked and found nothing."
+    """
     result = subprocess.run(  # noqa: S603, S607
         ["/bin/ps", "-axww"], capture_output=True, text=True, check=False
     )
+    if result.returncode != 0 or not result.stdout.strip():
+        return None
     return result.stdout
