@@ -193,12 +193,13 @@ class TestGitHubIntegration:
             github_service.config = {"api_url": "https://api.github.com"}
             github_service.auth_provider = mock_auth_provider
 
-            # Simulate that get_credentials returns no token.
-            mock_auth_provider.get_credentials.return_value = {  # type: ignore[attr-defined]
-                "token": None
-            }
+            # Authentication leaves the credential in provider-owned state;
+            # the service reacquires it after the status result succeeds.
+            mock_auth_provider.get_credentials.side_effect = [  # type: ignore[attr-defined]
+                {"token": None},
+                {"token": "auth_token"},  # noqa: S106 -- fake credential
+            ]
             mock_auth_provider.authenticate.return_value = AuthResult.success_result(  # type: ignore[attr-defined]
-                token="auth_token",  # noqa: S106 -- test fixture, fake credential value, not a real secret
                 message="Successfully authenticated",
             )
 
@@ -860,7 +861,6 @@ class TestGitHubIntegration:
         mock_auth = MagicMock(spec=GitHubAuthProvider)
         auth_result = MagicMock()
         auth_result.success = auth_success
-        auth_result.token = "mock_token" if auth_success else None
         auth_result.error = None if auth_success else "Authentication failed"
         mock_auth.authenticate.return_value = auth_result
         mock_auth.get_credentials.return_value = (

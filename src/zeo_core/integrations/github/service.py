@@ -161,9 +161,13 @@ class GitHubIntegration(BaseIntegrationService, GitHubIntegrationProtocol):
             if not token:
                 logger.debug("No token from get_credentials, trying authenticate()")
                 auth_result = self.auth_provider.authenticate()
-                if auth_result.success and auth_result.token:
-                    token = auth_result.token
-                else:
+                if auth_result.success:
+                    credentials = self.auth_provider.get_credentials()
+                    if isinstance(credentials, dict):
+                        token = credentials.get("token")
+                    else:
+                        token = getattr(credentials, "token", None)
+                if not token:
                     error_msg = getattr(auth_result, "error", "Authentication failed")
                     logger.error(f"Authentication failed: {error_msg}")
                     return None, IntegrationResult.error_result(

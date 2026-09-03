@@ -118,7 +118,6 @@ class NotionAuthProvider(BaseAuthProvider):
             self.authenticated = True
 
             return AuthResult.success_result(
-                token=self.token,
                 message="Successfully authenticated with Notion",
                 credentials_path=self.credentials_file,
                 content={"user_info": self._user_info},
@@ -158,7 +157,6 @@ class NotionAuthProvider(BaseAuthProvider):
             self._user_info = bot_user if isinstance(bot_user, dict) else dict(bot_user)
 
             return AuthResult.success_result(
-                token=self.token,
                 message="Notion token is still valid",
                 credentials_path=self.credentials_file,
             )

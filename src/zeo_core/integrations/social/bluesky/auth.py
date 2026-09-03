@@ -195,7 +195,6 @@ class BlueskyAuthProvider(BaseAuthProvider):
             self.authenticated = True
 
             return AuthResult.success_result(
-                token=self._access_jwt,
                 message="Successfully authenticated with Bluesky",
                 credentials_path=self.credentials_file,
                 content={"did": self.did, "handle": self.handle},

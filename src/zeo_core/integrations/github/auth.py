@@ -110,7 +110,6 @@ class GitHubAuthProvider(BaseAuthProvider):
             self.authenticated = True
 
             return AuthResult.success_result(
-                token=self.token,
                 message="Successfully authenticated with GitHub",
                 credentials_path=self.credentials_file,
                 content={"user_info": self._user_info},
@@ -162,7 +161,6 @@ class GitHubAuthProvider(BaseAuthProvider):
             self._user_info = response.json()
 
             return AuthResult.success_result(
-                token=self.token,
                 message="GitHub token is still valid",
                 credentials_path=self.credentials_file,
             )

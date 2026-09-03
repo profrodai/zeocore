@@ -95,7 +95,7 @@ class TestBlueskyAuthProviderBasics:
         )
 
         assert result.success is True
-        assert result.token == "access-tok"  # noqa: S105
+        assert provider._access_jwt == "access-tok"  # noqa: S105 -- provider-owned fake credential
         assert provider.authenticated is True
         assert provider.did == "did:plc:abc123"
         assert provider.handle == "alice.bsky.social"
