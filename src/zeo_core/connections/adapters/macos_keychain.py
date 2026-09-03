@@ -30,52 +30,52 @@ BEFORE issuing any `security` command -- never by trusting the Keychain
 item's own attributes, which `security` does not scope by caller-supplied
 organization at all.
 
-RESIDUAL DISCLOSURE CHANNEL, NOT CLOSED BY THIS ADAPTER, ESCALATED TO
-MASTER (see this stream's SOW-05): the `security` CLI has exactly two
-non-interactive ways to pass a password to `add-generic-password` --
-argv (`-w <password>`) or a hex string (`-X <hex>`, same exposure class).
-Apple's own `security add-generic-password` usage text calls `-w`/`-p`
-argv passing "insecure" and documents interactive stdin (`-w` as the last,
-valueless option) as the safe alternative -- but this stream measured
-interactive stdin directly and found it unreliable for programmatic use:
-a single newline-terminated value on stdin is read as the FIRST of two
-required confirm-match prompts, the second prompt reads EOF as an empty
-string, "passwords don't match" fires, and a THIRD read (again EOF, again
-empty) is silently accepted -- `add-generic-password` returns exit 0
-having stored an EMPTY password, not the intended material, not raising
-any error a caller could detect. That failure mode (a wrong-but-successful
-write) is worse than the argv channel it was meant to avoid, so this
-adapter uses argv `-w`. The tradeoff: for the lifetime of the `security`
-subprocess this creates, `material` is visible via `ps -ww` to any other
-process running as the same local user (verified directly: 5/5 samples of
-a concurrently polling `ps -ww` caught the exact argv value). An
-environment-variable channel was considered as a lower-exposure
-alternative and rejected on two independent grounds, both verified
-directly rather than assumed: (1) `security` has no environment-variable
-password option to receive one at all, and (2) the premise that env vars
-are less exposed than argv on macOS is ITSELF FALSE for a same-user
-caller -- `ps -wwE` shows a child process's full environment to any
-same-user local process exactly as `ps -ww` shows its argv (verified
-directly; this stream's own first pass at this comparison used a plain
-`ps eww` invocation against a backgrounded shell builtin that never
-actually propagated the test env var, produced a false negative, and
-wrongly recorded env vars as safe -- caught and corrected before this
-module shipped, see test_macos_keychain.py's
-test_environment_variables_are_shown_via_ps_capital_e_same_as_argv). There is
-therefore no lower-exposure subprocess-argument channel to move to; the
-exposure is inherent to invoking `security` as a subprocess at all, not a
-consequence of choosing argv specifically. This is a real, bounded
-(same-user, local-machine, subprocess-lifetime-only) channel that the
-protocol's "no secret material appears in... any accidental channel" bar
-does not fully close for `put` and `rotate` (the only two methods that
-carry raw `material`) given the stock `security` CLI's constraints --
-recorded here, tested explicitly
-(test_macos_keychain.py's TestArgvExposureIsRealAndBounded), and escalated
-rather than silently shipped as fully closed.
+SECRET-TRANSPORT BOUND AND ITS CORRECTION HISTORY (append-don't-revert,
+per doctrine section 5): this module's first revision shipped `put`/
+`rotate` on argv `-w <material>` and escalated the resulting `ps`
+visibility as an unclosed channel (this stream's SOW-05). That escalation
+was answered by the Principal's own step-three lease (msg_e79f76af),
+which Master had not yet passed down at the time SOW-05 was written:
+"secret material MUST NOT appear in argv, process titles, environment
+variables, command objects, repr/str, logs, exceptions, pytest output, or
+recorded subprocess diagnostics... [use] `-w` as the final option and
+supply a synthetic secret through stdin only after the stream proves that
+path works on the actual macOS executable without echo or prompt
+leakage." SOW-05 also carried a FALSE categorical claim -- "interactive
+stdin is unreliable for programmatic use" -- based on a real but narrow
+defect in that revision's OWN probe: a SINGLE newline-terminated stdin
+value leaves `add-generic-password`'s second confirm-match read at EOF,
+which genuinely does store an empty password at exit 0. Master reproduced
+this exact failure as the control case, then reproduced the CORRECT shape
+-- `secret_lines=[material, material]`, i.e. the value fed TWICE,
+matching the real double-prompt -- and it works, verified 3/3 runs,
+storage confirmed byte-exact via `find-generic-password -w`. This stream
+independently re-verified both findings against the real
+`/usr/bin/security` binary before writing this revision (see
+test_macos_keychain.py's TestStdinTransportProvenOnRealExecutable) rather
+than accepting the correction on authority alone. The single-value
+failure mode is now recorded as exactly what it is -- a caller-shape bug
+in a probe, not a platform limitation -- and `put`/`rotate` below use
+`SubprocessRunner.run_with_secret_stdin` with `secret_lines=[material,
+material]`, `-w` as the FINAL argv element (never followed by a value),
+so `material` is structurally incapable of reaching `args` -- the
+Protocol's own signature (subprocess_runner.py) separates the two
+parameters, not a comment promising the caller will behave. `-A` (broad,
+unprompted app access) is never passed; this store relies on the default
+ACL (the creating app -- `/usr/bin/security` itself, re-invoked -- stays
+trusted across calls, verified directly during recon: `-T ""` denies even
+`security`'s own later invocations and was rejected for that reason, not
+adopted).
+
+`security`'s own confirm-match prompts ("password data for new item:
+retype password for new item: ") land on stderr, never stdout, and never
+contain `material` itself -- verified directly, and asserted by
+`test_stdin_transport_diagnostics_never_carry_material_on_the_real_binary`.
 
 Must NOT contain: a permissive default, cross-organization resolution, a
-general-purpose reveal method, or any accidental echo of `material` into
-a log, exception, or return value beyond the one argv channel named above.
+general-purpose reveal method, `-A` broad access, or any accidental echo
+of `material` into argv, a process title, an environment variable, a log,
+an exception, or a return value.
 """
 
 from __future__ import annotations
@@ -193,6 +193,27 @@ class KeychainSecretStore:
     def _run_security(self, args: list[str]) -> CompletedSubprocess:
         return self._runner.run(["/usr/bin/security", *args])
 
+    def _run_security_with_secret(
+        self, args: list[str], *, material: str
+    ) -> CompletedSubprocess:
+        # `args` must never contain `material` -- callers pass ONLY the
+        # non-secret argv (ending in a bare "-w", per the Principal's
+        # bound); `material` reaches the child exclusively through
+        # `run_with_secret_stdin`'s `secret_lines` parameter, fed TWICE
+        # to satisfy security(1)'s measured confirm-match prompt (see
+        # this module's docstring and
+        # TestStdinTransportProvenOnRealExecutable). This is the ONLY
+        # place in this class that reads `material` into a call.
+        if args and args[-1] != "-w":
+            raise ValueError(
+                "secret-carrying security invocations must end in a bare "
+                "-w (interactive stdin form); got a differently-shaped "
+                "argv, which would risk material landing in argv instead"
+            )
+        return self._runner.run_with_secret_stdin(
+            ["/usr/bin/security", *args], secret_lines=[material, material]
+        )
+
     def _account_for(self, *, organization_id: OrganizationId) -> str:
         return f"{_HANDLE_PREFIX}:{organization_id.value}:{uuid.uuid4()}"
 
@@ -202,7 +223,7 @@ class KeychainSecretStore:
         if not material:
             raise ValueError("material must be non-empty")
         account = self._account_for(organization_id=organization_id)
-        result = self._run_security(
+        result = self._run_security_with_secret(
             [
                 "add-generic-password",
                 "-a",
@@ -210,12 +231,15 @@ class KeychainSecretStore:
                 "-s",
                 self._service_prefix,
                 "-w",
-                material,
-            ]
+            ],
+            material=material,
         )
         # `material` is a local variable only; it goes out of scope when
         # this method returns and is never assigned to `self` or any
-        # other object that would outlive this call.
+        # other object that would outlive this call. It was never placed
+        # on `args` above -- `_run_security_with_secret` enforces that
+        # the argv it receives ends in a bare "-w", and `material` only
+        # ever travels through `run_with_secret_stdin`'s `secret_lines`.
         if result.returncode != 0:
             raise SecretMaterialError(
                 f"keychain add-generic-password failed, exit={result.returncode} "
@@ -269,7 +293,7 @@ class KeychainSecretStore:
         if not material:
             raise ValueError("material must be non-empty")
         self._check_scope(ref=ref, organization_id=organization_id)
-        result = self._run_security(
+        result = self._run_security_with_secret(
             [
                 "add-generic-password",
                 "-a",
@@ -278,8 +302,8 @@ class KeychainSecretStore:
                 self._service_prefix,
                 "-U",
                 "-w",
-                material,
-            ]
+            ],
+            material=material,
         )
         if result.returncode != 0:
             raise SecretMaterialError(

@@ -22,16 +22,24 @@ RED-before-green documented in each class's docstring):
 2. `TestSecretStoreProtocolBehavior` -- put/resolve/rotate/delete/health
    against the fake runner, including organization-scope rejection and
    not-found handling.
-3. `TestArgvExposureIsRealAndBounded` -- the ONE channel this adapter's
-   own module docstring names as NOT fully closed (the `security` CLI has
-   no non-argv, reliable, non-interactive password-input path). This class
-   proves the exposure is real (a real subprocess, real `ps -ww`, a real
-   canary caught) rather than asserting it in prose only, and proves it is
-   BOUNDED (gone once the subprocess exits; not persisted; not the
-   Keychain's own storage, which this class also confirms never returns
-   the value except via the deliberate `.resolve()`-adjacent read path).
-   These tests are marked to skip off-macOS and where `/usr/bin/security`
-   is unavailable, and are the only tests in this file that touch a real
+3. `TestStdinTransportProvenOnRealExecutable` -- proves the Principal's
+   secret-transport bound (msg_e79f76af) against the REAL `security`
+   binary, not just the fake: `put`/`rotate`'s stdin-twice shape actually
+   stores the intended material (RED-before-green -- the single-value
+   shape this stream's earlier revision used is shown failing FIRST, as
+   the control case, before the corrected twice-fed shape is shown
+   working), argv NEVER carries material (a positive absence guarantee,
+   0/N samples across a live polling loop, not a documented exposure),
+   and `security`'s own confirm-match diagnostics on stderr never carry
+   material either. A companion class keeps the raw-CLI argv-leak
+   evidence that justified moving off argv in the first place (ground
+   truth for why the store's own real-subprocess test above asserts
+   absence rather than presence), plus the env-var exposure finding that
+   proved no lower-exposure subprocess-argument channel existed at all --
+   both now background evidence, not live exposures, since neither argv
+   nor env vars carry `material` under the current transport. These tests
+   are marked to skip off-macOS and where `/usr/bin/security` is
+   unavailable, and are the only tests in this file that touch a real
    subprocess -- everything else uses FakeSubprocessRunner and is fully
    offline/deterministic.
 """
@@ -47,6 +55,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import threading
 import time
 from datetime import UTC, datetime
 
@@ -371,15 +380,26 @@ class TestPutBehavior:
         ref = store.put(organization_id=ORG_A, material="material-1")
         assert ref.handle.startswith("zc0-kc:org-a:")
 
-    def test_put_calls_security_add_generic_password_with_material_via_argv(
+    def test_put_calls_security_add_generic_password_via_stdin_never_argv(
         self, store: KeychainSecretStore, fake_runner: FakeSubprocessRunner
     ) -> None:
+        # Positive guarantee, not a documented exposure (Principal's
+        # secret-transport bound, carried into this rev): material must
+        # go through run_with_secret_stdin, and `-w` must be the FINAL
+        # argv element with no value trailing it -- the whole point of
+        # the two-method Protocol split is that a caller cannot reach for
+        # `run`/`calls` (the argv-only channel) and pass material there
+        # by habit.
         store.put(organization_id=ORG_A, material="material-argv-check")
-        assert len(fake_runner.calls) == 1
-        call = fake_runner.calls[0]
+        assert fake_runner.calls == []
+        assert len(fake_runner.stdin_calls) == 1
+        call, line_count = fake_runner.stdin_calls[0]
         assert call[0] == "/usr/bin/security"
         assert call[1] == "add-generic-password"
-        assert "material-argv-check" in call
+        assert call[-1] == "-w"
+        assert "material-argv-check" not in call
+        assert all("material-argv-check" not in element for element in call)
+        assert line_count == 2  # fed twice, matching the real confirm-match prompt
 
     def test_put_rejects_empty_material(self, store: KeychainSecretStore) -> None:
         with pytest.raises(ValueError, match="material must be non-empty"):
@@ -439,7 +459,7 @@ class TestResolveBehavior:
 
 
 class TestRotateBehavior:
-    def test_rotate_replaces_material_and_returns_ref(
+    def test_rotate_replaces_material_and_returns_ref_via_stdin_never_argv(
         self, store: KeychainSecretStore, fake_runner: FakeSubprocessRunner
     ) -> None:
         ref = store.put(organization_id=ORG_A, material="original")
@@ -447,9 +467,13 @@ class TestRotateBehavior:
             ref=ref, organization_id=ORG_A, material="rotated-material"
         )
         assert rotated_ref.handle == ref.handle
-        rotate_call = fake_runner.calls[-1]
+        assert fake_runner.calls == []
+        rotate_call, line_count = fake_runner.stdin_calls[-1]
         assert "-U" in rotate_call
-        assert "rotated-material" in rotate_call
+        assert rotate_call[-1] == "-w"
+        assert "rotated-material" not in rotate_call
+        assert all("rotated-material" not in element for element in rotate_call)
+        assert line_count == 2
 
     def test_rotate_cross_organization_rejected(
         self, store: KeychainSecretStore
@@ -561,34 +585,248 @@ class TestStructuralConformance:
 
 
 # ===========================================================================
-# 3. ARGV EXPOSURE IS REAL AND BOUNDED (real subprocess, real ps -ww)
+# 3. STDIN TRANSPORT PROVEN ON THE REAL EXECUTABLE (Principal's bound)
 # ===========================================================================
 
 _IS_MACOS = platform.system() == "Darwin"
 _SECURITY_AVAILABLE = shutil.which("security") is not None
 
 
+def _raw_security(
+    args: list[str], *, input_text: str | None = None
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(  # noqa: S603
+        ["/usr/bin/security", *args],
+        input=input_text,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
 @pytest.mark.skipif(
     not (_IS_MACOS and _SECURITY_AVAILABLE),
-    reason="argv-exposure probes require a real macOS security(1) binary",
+    reason="stdin-transport proofs require a real macOS security(1) binary",
 )
-class TestArgvExposureIsRealAndBounded:
+class TestStdinTransportProvenOnRealExecutable:
     """
-    This adapter's own module docstring names one channel it does NOT
-    close: `material` is visible via `ps -ww` to another same-user local
-    process for the lifetime of the `security` subprocess `put`/`rotate`
-    spawn. These tests prove that claim against a REAL subprocess (not the
-    fake runner -- the fake never spawns a process, so it cannot be used
-    to prove or disprove an argv-visibility claim), and prove the exposure
-    is bounded: gone once the process exits, and never written to disk,
-    an env var, or any location besides the transient Keychain item and
-    the argv this test itself observes.
+    Principal decision msg_e79f76af, carried into this revision by
+    Master's re-brief after SOW-05: "supply a synthetic secret through
+    stdin only after the stream proves that path works on the actual
+    macOS executable without echo or prompt leakage." These tests are
+    that proof, run against the REAL `/usr/bin/security` binary (the fake
+    runner cannot prove or disprove anything about the real binary's
+    prompt/confirm-match behavior, by construction). Every item created
+    here uses a unique synthetic service/account and is deleted in
+    `finally`, matching the pattern Master's own probe used.
     """
 
-    def test_argv_material_is_visible_via_ps_during_the_subprocess_call(self) -> None:
-        argv_canary = "CANARY-ARGV-EXPOSURE-zc0-step3-9d4c"
-        account = f"zc0-argvtest-{time.time_ns()}"
-        service = "zc0-argvtest-service"
+    def test_single_stdin_value_is_the_control_case_and_fails_red(self) -> None:
+        # RED-before-green, the control case: this is SOW-05's original
+        # (falsified) claim, reproduced here as the FIRST thing this
+        # class proves, not asserted from memory. A single
+        # newline-terminated stdin value leaves the second confirm-match
+        # read at EOF; the real binary reports success (exit 0) while
+        # storing an EMPTY password, not the intended material. If this
+        # test ever stops reproducing, the platform changed and the
+        # correction this class documents needs re-verification, not
+        # silent deletion.
+        canary = f"CANARY-SINGLE-STDIN-CONTROL-{time.time_ns()}"
+        account = f"zc0-stdin-control-{time.time_ns()}"
+        service = "zc0-stdin-control-svc"
+        try:
+            add = _raw_security(
+                ["add-generic-password", "-a", account, "-s", service, "-w"],
+                input_text=f"{canary}\n",
+            )
+            assert add.returncode == 0, (
+                "expected the control case to report success at exit 0 "
+                "while silently storing the WRONG material -- that "
+                "mismatch (successful exit, wrong content) is exactly "
+                "the defect this stream's original probe measured"
+            )
+            found = _raw_security(
+                ["find-generic-password", "-a", account, "-s", service, "-w"]
+            )
+            assert found.stdout != canary, (
+                "expected the single-stdin-value shape to NOT store the "
+                "canary (it stores an empty password instead) -- if this "
+                "now matches, the platform's confirm-match behavior "
+                "changed and this class's premise needs re-checking"
+            )
+        finally:
+            _raw_security(["delete-generic-password", "-a", account, "-s", service])
+
+    def test_twice_fed_stdin_value_is_the_corrected_shape_and_passes_green(
+        self,
+    ) -> None:
+        # The corrected shape Master reproduced 3/3 and this stream
+        # independently re-verifies here: the SAME value fed TWICE
+        # (matching security(1)'s own confirm-match prompt) stores
+        # correctly, read back byte-exact via find-generic-password -w.
+        canary = f"CANARY-TWICE-STDIN-GREEN-{time.time_ns()}"
+        account = f"zc0-stdin-green-{time.time_ns()}"
+        service = "zc0-stdin-green-svc"
+        try:
+            add = _raw_security(
+                ["add-generic-password", "-a", account, "-s", service, "-w"],
+                input_text=f"{canary}\n{canary}\n",
+            )
+            assert add.returncode == 0
+            found = _raw_security(
+                ["find-generic-password", "-a", account, "-s", service, "-w"]
+            )
+            assert found.returncode == 0
+            # security(1)'s `-w` output on find-generic-password carries a
+            # trailing newline (verified directly -- an earlier shell-only
+            # probe used command substitution, which strips trailing
+            # newlines automatically and hid this); the stored VALUE is
+            # still byte-exact once that one added newline is accounted
+            # for, so this strips exactly one trailing "\n" rather than
+            # using .strip() (which would also silently hide a REAL
+            # leading/trailing-whitespace corruption in the material).
+            stdout_without_trailing_newline = (
+                found.stdout[:-1] if found.stdout.endswith("\n") else found.stdout
+            )
+            assert stdout_without_trailing_newline == canary, (
+                f"expected byte-exact storage of the canary via the "
+                f"twice-fed stdin shape (modulo security(1)'s own added "
+                f"trailing newline), got {found.stdout!r}"
+            )
+        finally:
+            _raw_security(["delete-generic-password", "-a", account, "-s", service])
+
+    def test_keychain_secret_store_put_never_leaks_material_via_ps_positive_guarantee(
+        self,
+    ) -> None:
+        # The POSITIVE guarantee, inverted from SOW-05's documented
+        # exposure: drive the REAL KeychainSecretStore (RealSubprocessRunner,
+        # not the fake) through `put`, poll `ps -ww` throughout the
+        # subprocess's lifetime, and assert the canary is absent on EVERY
+        # sample, not caught on any. This is the store's actual production
+        # code path, not a hand-rolled security(1) invocation -- proving
+        # the adapter itself, not just the CLI shape in isolation.
+        from zeo_core.connections.adapters.macos_keychain import KeychainSecretStore
+        from zeo_core.connections.adapters.subprocess_runner import (
+            RealSubprocessRunner,
+        )
+        from zeo_core.contracts.connections.identity import OrganizationId, SecretRef
+
+        canary = f"CANARY-STORE-PUT-NO-PS-LEAK-{time.time_ns()}"
+        service_prefix = f"zc0-realstore-svc-{time.time_ns()}"
+        store = KeychainSecretStore(
+            service_prefix=service_prefix,
+            runner=RealSubprocessRunner(),
+        )
+        org = OrganizationId(value=f"org-realstore-{time.time_ns()}")
+
+        refs: list[SecretRef] = []
+
+        def _do_put() -> None:
+            refs.append(store.put(organization_id=org, material=canary))
+
+        thread = threading.Thread(target=_do_put)
+        thread.start()
+        samples = 0
+        leaked_samples = 0
+        deadline = time.monotonic() + 3.0
+        while thread.is_alive() and time.monotonic() < deadline:
+            all_procs = _run_ps_axww()
+            samples += 1
+            if canary in all_procs:
+                leaked_samples += 1
+        thread.join(timeout=5)
+
+        try:
+            assert samples > 0, (
+                "polling loop never sampled ps -- test is not proving anything"
+            )
+            assert leaked_samples == 0, (
+                f"canary observed in ps -axww on {leaked_samples}/{samples} "
+                f"samples during KeychainSecretStore.put -- the stdin "
+                f"transport is supposed to make this structurally "
+                f"impossible"
+            )
+            assert refs, "put() did not complete during the polling window"
+        finally:
+            if refs:
+                _raw_security(
+                    [
+                        "delete-generic-password",
+                        "-a",
+                        refs[0].handle,
+                        "-s",
+                        service_prefix,
+                    ]
+                )
+
+    def test_stdin_transport_diagnostics_never_carry_material_on_the_real_binary(
+        self,
+    ) -> None:
+        # security(1)'s own confirm-match prompts land on stderr; this
+        # asserts directly against the real binary that neither stdout
+        # nor stderr ever contain the material itself -- only the fixed
+        # prompt text ("password data for new item: retype password for
+        # new item: ").
+        canary = f"CANARY-DIAGNOSTICS-NO-LEAK-{time.time_ns()}"
+        account = f"zc0-diag-{time.time_ns()}"
+        service = "zc0-diag-svc"
+        try:
+            add = _raw_security(
+                ["add-generic-password", "-a", account, "-s", service, "-w"],
+                input_text=f"{canary}\n{canary}\n",
+            )
+            assert canary not in add.stdout
+            assert canary not in add.stderr
+            assert "password data for new item" in add.stderr
+        finally:
+            _raw_security(["delete-generic-password", "-a", account, "-s", service])
+
+    def test_dash_a_broad_access_is_never_passed_by_the_store(self) -> None:
+        # Structural check: -A (broad, unprompted app access) must never
+        # appear on any argv this store constructs. Checked against the
+        # FAKE runner (deterministic, no real keychain needed) rather
+        # than the real binary -- this is a property of the STORE's own
+        # code, not of the platform.
+        from zeo_core.connections.adapters.macos_keychain import KeychainSecretStore
+        from zeo_core.contracts.connections.identity import OrganizationId
+
+        fake = FakeSubprocessRunner()
+        store = KeychainSecretStore(service_prefix="zc0-noA-svc", runner=fake)
+        org = OrganizationId(value="org-noA")
+        ref = store.put(organization_id=org, material="m")
+        store.resolve(ref=ref, organization_id=org)
+        store.rotate(ref=ref, organization_id=org, material="m2")
+        store.delete(ref=ref, organization_id=org)
+        store.health(ref=ref, organization_id=org)
+        all_argv = list(fake.calls) + [c for c, _n in fake.stdin_calls]
+        for call in all_argv:
+            assert "-A" not in call
+
+
+@pytest.mark.skipif(
+    not (_IS_MACOS and _SECURITY_AVAILABLE),
+    reason="background evidence probes require a real macOS security(1) binary",
+)
+class TestBackgroundEvidenceArgvAndEnvVarExposure:
+    """
+    Background evidence, not live exposures under the current transport:
+    argv `-w <value>` (this adapter's FIRST revision, superseded this
+    rev) and environment variables are both visible via `ps` to a
+    same-user local process -- this is WHY the transport moved to stdin,
+    kept here so a future reader can see the ground truth that motivated
+    the change rather than inheriting an unverified claim. Neither
+    channel carries `material` under the CURRENT transport (proven above
+    by TestStdinTransportProvenOnRealExecutable and by
+    test_dash_a_broad_access_is_never_passed_by_the_store's argv sweep).
+    """
+
+    def test_raw_argv_w_is_visible_via_ps_this_is_why_the_store_no_longer_uses_it(
+        self,
+    ) -> None:
+        argv_canary = f"CANARY-ARGV-HISTORICAL-EVIDENCE-{time.time_ns()}"
+        account = f"zc0-argvhist-{time.time_ns()}"
+        service = "zc0-argvhist-svc"
         proc = subprocess.Popen(  # noqa: S603
             [
                 "/usr/bin/security",
@@ -618,66 +856,13 @@ class TestArgvExposureIsRealAndBounded:
                     break
             proc.wait(timeout=5)
         finally:
-            subprocess.run(  # noqa: S603, S607
-                [
-                    "/usr/bin/security",
-                    "delete-generic-password",
-                    "-a",
-                    account,
-                    "-s",
-                    service,
-                ],
-                capture_output=True,
-                check=False,
-            )
+            _raw_security(["delete-generic-password", "-a", account, "-s", service])
         assert caught, (
-            "expected the argv canary to be visible via `ps -ww` while "
-            "the security subprocess was running -- if this now fails, "
-            "either macOS changed ps's behavior or the subprocess exited "
-            "before this test's poll loop ran; re-verify by hand before "
-            "treating this as proof the channel closed"
+            "expected the raw argv canary to be visible via ps -ww -- "
+            "this is historical ground evidence for why the store moved "
+            "off argv; if this now fails, re-verify before trusting the "
+            "rest of this class's premise"
         )
-
-    def test_argv_material_is_gone_from_ps_after_process_exits(self) -> None:
-        argv_canary = "CANARY-ARGV-GONE-AFTER-EXIT-zc0-step3-3e7b"
-        account = f"zc0-argvtest2-{time.time_ns()}"
-        service = "zc0-argvtest2-service"
-        try:
-            subprocess.run(  # noqa: S603, S607
-                [
-                    "/usr/bin/security",
-                    "add-generic-password",
-                    "-a",
-                    account,
-                    "-s",
-                    service,
-                    "-w",
-                    argv_canary,
-                ],
-                capture_output=True,
-                check=False,
-            )
-            all_procs = subprocess.run(  # noqa: S603, S607
-                ["/bin/ps", "-axww"], capture_output=True, text=True, check=False
-            )
-            assert argv_canary not in all_procs.stdout, (
-                "argv canary is still visible in the process table after "
-                "the security subprocess exited -- the exposure window "
-                "would not be bounded as this module's docstring claims"
-            )
-        finally:
-            subprocess.run(  # noqa: S603, S607
-                [
-                    "/usr/bin/security",
-                    "delete-generic-password",
-                    "-a",
-                    account,
-                    "-s",
-                    service,
-                ],
-                capture_output=True,
-                check=False,
-            )
 
     def test_environment_variables_are_shown_via_ps_capital_e_same_as_argv(
         self,
@@ -685,18 +870,12 @@ class TestArgvExposureIsRealAndBounded:
         # This test's own history is part of its evidence: this stream's
         # FIRST pass at comparing argv vs env-var exposure used a plain
         # `ps eww -p <pid>` against a backgrounded shell builtin, got an
-        # empty result, and wrongly concluded env vars were not exposed on
-        # macOS the way argv is. That was corrected here, with a real
-        # child PROCESS (not a shell builtin) and `-wwE`: a same-user
-        # local process CAN read another same-user process's environment
-        # via `ps -wwE`, exactly like `ps -ww` shows argv. This is the
-        # negative control for the module docstring's claim that no
-        # lower-exposure subprocess-argument channel exists to move
-        # `put`/`rotate` to -- if this test ever started passing (env
-        # vars NOT shown), that would be new information changing the
-        # docstring's own escalation, so it is asserted as a proof, not
-        # skipped as "obviously true."
-        env_canary = "CANARY-ENV-EXPOSED-zc0-step3-1a2b"
+        # empty result, and wrongly concluded env vars were not exposed
+        # on macOS the way argv is. Corrected here with a real child
+        # PROCESS and `-wwE`: a same-user local process CAN read another
+        # same-user process's environment via `ps -wwE`, exactly like
+        # `ps -ww` shows argv.
+        env_canary = f"CANARY-ENV-EXPOSED-HISTORICAL-{time.time_ns()}"
         proc = subprocess.Popen(  # noqa: S603, S607
             [sys.executable, "-c", "import time; time.sleep(1.5)"],
             env={"ZC0_TEST_ENV_CANARY": env_canary},
@@ -710,10 +889,17 @@ class TestArgvExposureIsRealAndBounded:
                 check=False,
             )
             assert env_canary in ps.stdout, (
-                "expected ps -wwE to show the child's environment to this "
-                "same-user process -- if this fails, macOS changed this "
-                "behavior and the module docstring's escalation rationale "
-                "needs re-checking, not silent adjustment of this test"
+                "expected ps -wwE to show the child's environment to "
+                "this same-user process -- if this fails, macOS changed "
+                "this behavior and the historical rationale needs "
+                "re-checking, not silent adjustment of this test"
             )
         finally:
             proc.wait(timeout=5)
+
+
+def _run_ps_axww() -> str:
+    result = subprocess.run(  # noqa: S603, S607
+        ["/bin/ps", "-axww"], capture_output=True, text=True, check=False
+    )
+    return result.stdout
