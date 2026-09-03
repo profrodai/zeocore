@@ -258,7 +258,6 @@ class GoogleAuthProvider(BaseAuthProvider):
         return AuthResult(
             success=True,
             message=message,
-            token=str(getattr(creds, "token", None)),
             expiry=int(expiry_dt.timestamp()) if expiry_dt is not None else None,
             credentials_path=str(self.credentials_file),
         )

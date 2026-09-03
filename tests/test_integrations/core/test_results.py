@@ -127,14 +127,13 @@ class TestAuthResult:
         assert result.success is True
         assert result.message == "Authentication succeeded"
         assert result.error is None
-        assert result.token is None
+        assert "token" not in AuthResult.model_fields
         assert result.expiry is None
         assert result.credentials_path is None
         assert result.content is None
 
     def test_complete_auth_result(self) -> None:
         """Test creating a complete authentication result."""
-        token = "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         expiry = 1234567890
         credentials_path = "/path/to/credentials"
         content = {"user_id": "test_user"}
@@ -142,28 +141,25 @@ class TestAuthResult:
         result = AuthResult(
             success=True,
             message="Authentication succeeded",
-            token=token,
             expiry=expiry,
             credentials_path=credentials_path,
             content=content,
         )
 
         assert result.success is True
-        assert result.token == token
+        assert "token" not in AuthResult.model_fields
         assert result.expiry == expiry
         assert result.credentials_path == credentials_path
         assert result.content == content
 
     def test_auth_success_result_factory(self) -> None:
         """Test the success_result factory method for AuthResult."""
-        token = "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
         expiry = 1234567890
         credentials_path = "/path/to/credentials"
         content = {"user_id": "test_user"}
 
         result = AuthResult.success_result(
             message="Success",
-            token=token,
             expiry=expiry,
             credentials_path=credentials_path,
             content=content,
@@ -171,7 +167,7 @@ class TestAuthResult:
 
         assert result.success is True
         assert result.message == "Success"
-        assert result.token == token
+        assert "token" not in AuthResult.model_fields
         assert result.expiry == expiry
         assert result.credentials_path == credentials_path
         assert result.content == content
@@ -180,7 +176,7 @@ class TestAuthResult:
         # Test with minimal parameters
         result = AuthResult.success_result()
         assert result.success is True
-        assert result.token is None
+        assert "token" not in AuthResult.model_fields
         assert result.expiry is None
         assert result.credentials_path is None
         assert result.content is None
@@ -192,7 +188,7 @@ class TestAuthResult:
         assert result.success is False
         assert result.message == "Additional info"
         assert result.error == "Auth failed"
-        assert result.token is None
+        assert "token" not in AuthResult.model_fields
         assert result.expiry is None
         assert result.credentials_path is None
         assert result.content is None
@@ -204,14 +200,12 @@ class TestAuthResult:
         assert result.message is None
 
     @given(
-        token=st.one_of(st.none(), st.text()),
         expiry=st.one_of(st.none(), st.integers()),
         credentials_path=st.one_of(st.none(), st.text()),
         content=st.one_of(st.none(), st.dictionaries(st.text(), st.text())),
     )
     def test_auth_result_properties(
         self,
-        token: str | None,
         expiry: int | None,
         credentials_path: str | None,
         content: dict | None,
@@ -219,13 +213,12 @@ class TestAuthResult:
         """Test AuthResult properties with hypothesis generated values."""
         result = AuthResult(
             success=True,
-            token=token,
             expiry=expiry,
             credentials_path=credentials_path,
             content=content,
         )
 
-        assert result.token == token
+        assert "token" not in AuthResult.model_fields
         assert result.expiry == expiry
         assert result.credentials_path == credentials_path
         assert result.content == content

@@ -82,9 +82,9 @@ class TestGoogleAuthProvider:
                 result = provider.authenticate()
 
                 assert result.success
-                assert result.token == "new_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
                 assert provider.authenticated
-                assert provider.auth == new_creds
+                assert provider.auth is new_creds
+                assert provider.auth.token == "new_token"  # noqa: S105 -- provider-owned fake credential
 
     def test_authenticate_with_expired_credentials(self) -> None:
         with patch(
@@ -129,8 +129,8 @@ class TestGoogleAuthProvider:
             result = provider.authenticate()
 
             assert result.success
-            assert result.token == "refreshed_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
-            assert provider.auth == refreshed_creds
+            assert provider.auth is refreshed_creds
+            assert provider.auth.token == "refreshed_token"  # noqa: S105 -- provider-owned fake credential
 
     def test_refresh_credentials(self) -> None:
         with patch(
@@ -156,7 +156,7 @@ class TestGoogleAuthProvider:
         result = provider.refresh_credentials()
         assert result.success
         assert result.message == "Credentials are valid, no refresh needed"
-        assert result.token == "valid_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert provider.auth.token == "valid_token"  # noqa: S105 -- provider-owned fake credential
 
         provider.auth = mock_credentials(
             token="refreshed",  # noqa: S106 -- test fixture, fake credential value, not a real secret
@@ -170,7 +170,7 @@ class TestGoogleAuthProvider:
             result = provider.refresh_credentials()
             assert result.success
             assert result.message == "Successfully refreshed credentials"
-            assert result.token == "refreshed"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+            assert provider.auth.token == "refreshed"  # noqa: S105 -- provider-owned fake credential
 
         broken_creds = mock_credentials(expired=True, refresh_token="yes")  # noqa: S106 -- test fixture, fake credential value, not a real secret
         broken_creds.refresh.side_effect = Exception("refresh error")
@@ -209,7 +209,7 @@ class TestGoogleAuthProvider:
             new_creds = mock_credentials(token="new")  # noqa: S106 -- test fixture, fake credential value, not a real secret
             provider.auth = new_creds
             provider.authenticated = True
-            mock_auth.return_value = AuthResult(success=True, token="new")  # noqa: S106 -- test fixture, fake credential value, not a real secret
+            mock_auth.return_value = AuthResult(success=True)
             assert provider.get_credentials() == new_creds
 
     def test_save_credentials(self) -> None:
@@ -370,8 +370,8 @@ class TestGoogleAuthProviderCoverageGaps:
 
             assert result.success
             assert result.message == "Successfully refreshed credentials"
-            assert result.token == "post_refresh"  # noqa: S105 -- fake test value
             assert provider.auth is expired_creds
+            assert provider.auth.token == "post_refresh"  # noqa: S105 -- provider-owned fake credential
             assert provider.authenticated is True
             expired_creds.refresh.assert_called_once()
             mock_request_cls.assert_called_once()
@@ -413,7 +413,8 @@ class TestGoogleAuthProviderCoverageGaps:
             result = provider.authenticate()
 
             assert result.success
-            assert result.token == "from_flow"  # noqa: S105 -- fake test value
+            assert provider.auth is new_creds
+            assert provider.auth.token == "from_flow"  # noqa: S105 -- provider-owned fake credential
             mock_flow_class.from_client_secrets_file.assert_called_once_with(
                 provider.client_secrets_file, provider.scopes
             )
@@ -755,7 +756,7 @@ class TestGoogleAuthProviderCoverageGaps:
         provider.authenticated = False
 
         with patch.object(provider, "authenticate") as mock_auth:
-            mock_auth.return_value = AuthResult(success=True, token="x")  # noqa: S106 -- fake test value
+            mock_auth.return_value = AuthResult(success=True)
             with pytest.raises(ZeoIntegrationError, match="no credentials were set"):
                 provider.get_credentials()
 

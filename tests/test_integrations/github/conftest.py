@@ -187,7 +187,6 @@ def mock_github_auth_provider() -> AuthProviderProtocol:
     # Create a successful auth result.
     auth_result = MagicMock(spec=AuthResult)
     auth_result.success = True
-    auth_result.token = "test_token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
     auth_result.message = "Successfully authenticated with GitHub"
     auth_result.error = None
 
@@ -205,7 +204,6 @@ def mock_github_auth_provider_failure() -> AuthProviderProtocol:
     # Create a failed auth result.
     auth_result = MagicMock(spec=AuthResult)
     auth_result.success = False
-    auth_result.token = None
     auth_result.message = "Authentication failed"
     auth_result.error = "No GitHub token provided"
 

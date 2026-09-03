@@ -223,7 +223,7 @@ class TestAuthenticateSuccess:
         result = provider.authenticate(token="explicit-token")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
         assert result.success is True
-        assert result.token == "explicit-token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert provider.token == "explicit-token"  # noqa: S105 -- provider-owned fake credential
         assert provider.authenticated is True
         assert provider._user_info == {"login": "octocat"}
         # confirms the real code path actually called the boundary once,
@@ -251,7 +251,7 @@ class TestAuthenticateSuccess:
         result = provider.authenticate(token="tok-abc")  # noqa: S106 -- test fixture, fake credential value, not a real secret
 
         assert result.success is True
-        assert result.token == "tok-abc"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert provider.token == "tok-abc"  # noqa: S105 -- provider-owned fake credential
         assert github_creds_relpath.exists()
         saved = json.loads(github_creds_relpath.read_text())
         assert saved["token"] == "tok-abc"  # noqa: S105 -- test fixture, fake credential value, not a real secret
@@ -268,7 +268,7 @@ class TestAuthenticateSuccess:
         result = provider.authenticate()
 
         assert result.success is True
-        assert result.token == "fallback-env-token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert provider.token == "fallback-env-token"  # noqa: S105 -- provider-owned fake credential
 
     def test_authenticate_loads_token_from_credentials_file_hits_bug_b(
         self, github_creds_relpath: Path, monkeypatch: pytest.MonkeyPatch
@@ -288,7 +288,7 @@ class TestAuthenticateSuccess:
         result = provider.authenticate()
 
         assert result.success is True
-        assert result.token == "from-file-token"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert provider.token == "from-file-token"  # noqa: S105 -- provider-owned fake credential
         assert len(fake_client.calls) == 1
         _, kwargs = fake_client.calls[0]
         assert kwargs["headers"]["Authorization"] == "token from-file-token"
@@ -381,7 +381,7 @@ class TestRefreshCredentials:
         result = provider.refresh_credentials()
 
         assert result.success is True
-        assert result.token == "still-valid"  # noqa: S105 -- test fixture, fake credential value, not a real secret
+        assert provider.token == "still-valid"  # noqa: S105 -- provider-owned fake credential
         assert provider._user_info == {"login": "z"}
 
     def test_refresh_request_exception_fails(

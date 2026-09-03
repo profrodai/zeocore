@@ -1,89 +1,143 @@
-"""
-Sparring condition 1 (SOW-01 section 3b): "The AuthResult leak is shown RED
-before it is shown fixed -- a test that FAILS on today's bytes and passes
-after."
+"""AuthResult disclosure and connections-kernel isolation proofs.
 
-Scope note, load-bearing: fixing `AuthResult` itself is explicitly OUT OF
-SCOPE for this stream (SOW-01 section 7: "It is a legacy surface; the
-packet rules legacy surfaces inadmissible for ZEOconnect but does not
-authorize their rewrite in ZC0. Recorded, not fixed... It does mean the new
-kernel must not import or re-export it, which the last acceptance check
-already covers"). So this file does two separate things, deliberately kept
-apart:
-
-1. `test_authresult_leak_is_real_and_reachable` DEMONSTRATES the leak against
-   today's bytes at `src/zeo_core/integrations/core/results.py:61` with a
-   synthetic canary, exactly as the Principal packet, Master's SOW, and
-   Sparring's review each independently reproduced it. This test is
-   EXPECTED TO STAY RED forever, on purpose -- it documents a live legacy
-   defect this stream does not fix (Chesterton's fence / circle of control:
-   fixing it is a legacy API change, which the packet's escalation boundary
-   sends back for a ruling, not something a step-1 stream does unilaterally).
-   It is marked `xfail(strict=True)` so it shows as an expected failure in
-   the gate: if it ever unexpectedly passes, that means someone fixed
-   AuthResult, and `strict=True` turns that into a loud signal to update
-   this file's status, not a silent green that hides a scope change.
-2. `TestKernelDoesNotImportOrReexportAuthResult` is the part that DOES pass
-   and IS this stream's actual acceptance evidence: it proves the new
-   `contracts/connections` package (this step's deliverable) never imports,
-   re-exports, or subclasses `AuthResult`, which is the concrete, in-scope
-   half of Sparring's condition per SOW-01 section 7's own resolution.
+The original strict xfail banked the credential disclosure defect while its
+repair remained outside ZC0 step one's scope. The operator's 2026-09-03
+directive and Principal disposition on issue #180 now authorize this repair.
+The matrix below replaces that xfail with calibrated, positive conformance:
+all 11 ruled paths must redact, while the two structural exclusions remain
+visible in the SecretRef control so the gate cannot silently widen itself.
 """
 
 from __future__ import annotations
 
+import copy
+import io
 import json
+import logging
+import pickle
+import traceback
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 import zeo_core.contracts.connections as connections_pkg
+from zeo_core.contracts.connections import SecretRef
 from zeo_core.integrations.core.results import AuthResult
 
 CANARY = "CANARY-SECRET-zc0-kernel-seam-9f3a"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "documents a live legacy defect (AuthResult.token leaks through "
-        "repr/str/model_dump/model_dump_json); fixing AuthResult is "
-        "explicitly out of ZC0 scope per SOW-01 section 7. If this ever "
-        "passes, AuthResult was fixed elsewhere -- update this test's "
-        "status, do not delete it silently (append-don't-revert)."
-    ),
+def _egress_values(model: BaseModel) -> dict[str, str | bytes]:
+    """The 13-path matrix measured by Sparring; 11 are governed."""
+    stream = io.StringIO()
+    handler = logging.StreamHandler(stream)
+    logger = logging.getLogger("authresult-disclosure-probe")
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+    try:
+        logger.info("%s", model)
+    finally:
+        logger.removeHandler(handler)
+
+    try:
+        raise RuntimeError(model)
+    except RuntimeError:
+        rendered_traceback = traceback.format_exc()
+
+    return {
+        "repr": repr(model),
+        "str": str(model),
+        "fstring": f"{model}",
+        "format": format(model),
+        "percent_s": "%s" % (model,),  # noqa: UP031 -- this path is the proof
+        "model_dump": json.dumps(model.model_dump(), default=str),
+        "model_dump_json": model.model_dump_json(),
+        "model_dump_json_mode": json.dumps(model.model_dump(mode="json"), default=str),
+        "logging_percent_s": stream.getvalue(),
+        "dict": repr(dict(model)),
+        "pickle": pickle.dumps(model),
+        "deepcopy_repr": repr(copy.deepcopy(model)),
+        "traceback": rendered_traceback,
+    }
+
+
+def _leaks(model: BaseModel, canary: str = CANARY) -> dict[str, bool]:
+    return {
+        name: (
+            canary.encode() in value if isinstance(value, bytes) else canary in value
+        )
+        for name, value in _egress_values(model).items()
+    }
+
+
+GOVERNED_PATHS = frozenset(
+    {
+        "repr",
+        "str",
+        "fstring",
+        "format",
+        "percent_s",
+        "model_dump",
+        "model_dump_json",
+        "model_dump_json_mode",
+        "logging_percent_s",
+        "deepcopy_repr",
+        "traceback",
+    }
 )
-def test_authresult_leak_is_real_and_reachable() -> None:
-    """
-    Reproduces the exact finding from the Principal packet, Master's SOW-01
-    section 0, and Sparring's review section 3b(a): a synthetic canary
-    passed as `token` survives all four serialization paths.
+STRUCTURAL_EXCLUSIONS = frozenset({"dict", "pickle"})
 
-    This assertion is written as "the leak does NOT happen" -- i.e. it
-    states the SECURE property this stream wants to eventually be true --
-    so that `xfail` reads naturally as "this secure property does not hold
-    yet" rather than inverting the logic to assert the bug positively.
-    """
-    result = AuthResult(success=True, token=CANARY)
 
-    leaks_via_model_dump = CANARY in json.dumps(
-        result.model_dump(mode="json"), default=str
+class UnredactedResult(BaseModel):
+    """Known-bad positive control for every matrix cell."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    value: object
+
+
+def test_disclosure_matrix_has_positive_and_ruled_controls() -> None:
+    positive = _leaks(UnredactedResult(value=CANARY))
+    assert all(positive.values()), f"known-bad result was not detected: {positive}"
+
+    ruled = _leaks(SecretRef(handle=CANARY))
+    assert {name for name, leaks in ruled.items() if leaks} == STRUCTURAL_EXCLUSIONS
+    assert set(ruled) == GOVERNED_PATHS | STRUCTURAL_EXCLUSIONS
+
+
+def test_authresult_rejects_bearer_token_as_a_field() -> None:
+    assert "token" not in AuthResult.model_fields
+    with pytest.raises(ValidationError):
+        AuthResult.model_validate({"success": True, "token": CANARY})
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("message", CANARY),
+        ("credentials_path", CANARY),
+        ("content", {"provider_payload": CANARY}),
+    ],
+)
+def test_authresult_fields_are_safe_on_all_11_accidental_paths(
+    field: str, value: object
+) -> None:
+    result = AuthResult(success=True, **{field: value})
+    leaks = _leaks(result)
+    governed_leaks = {name: leaks[name] for name in GOVERNED_PATHS}
+    assert not any(governed_leaks.values()), f"{field} leaked: {governed_leaks}"
+
+
+def test_authresult_trusted_direct_metadata_access_remains_exact() -> None:
+    content = {"identity": "did:example:123"}
+    result = AuthResult(
+        success=True,
+        message="authenticated",
+        credentials_path="opaque-local-location",
+        content=content,
     )
-    leaks_via_model_dump_json = CANARY in result.model_dump_json()
-    leaks_via_repr = CANARY in repr(result)
-    leaks_via_str = CANARY in str(result)
-
-    assert not (
-        leaks_via_model_dump
-        or leaks_via_model_dump_json
-        or leaks_via_repr
-        or leaks_via_str
-    ), (
-        "AuthResult.token leaked the canary via at least one serialization "
-        f"path: model_dump={leaks_via_model_dump} "
-        f"model_dump_json={leaks_via_model_dump_json} "
-        f"repr={leaks_via_repr} str={leaks_via_str}"
-    )
+    assert result.message == "authenticated"
+    assert result.credentials_path == "opaque-local-location"
+    assert result.content == content
 
 
 class TestKernelDoesNotImportOrReexportAuthResult:

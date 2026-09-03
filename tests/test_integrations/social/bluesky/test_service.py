@@ -33,7 +33,6 @@ def mock_config_provider() -> MagicMock:
 def mock_auth_provider() -> MagicMock:
     provider = MagicMock()
     provider.authenticate.return_value = AuthResult.success_result(
-        token="access-tok",  # noqa: S106 -- fake test value
         content={"did": "did:plc:abc123", "handle": "alice.bsky.social"},
     )
     provider.get_credentials.return_value = {
@@ -167,9 +166,7 @@ class TestBlueskyIntegrationLifecycle:
         from zeo_core.integrations.social.bluesky.auth import BlueskyAuthProvider
 
         with patch.object(BlueskyAuthProvider, "authenticate") as mock_authenticate:
-            mock_authenticate.return_value = AuthResult.success_result(
-                token="t"  # noqa: S106 -- fake test value
-            )
+            mock_authenticate.return_value = AuthResult.success_result()
             svc.initialize()
 
         assert isinstance(svc.auth_provider, BlueskyAuthProvider)
@@ -237,7 +234,7 @@ class TestBlueskyIntegrationPost:
         self, mock_config_provider: MagicMock
     ) -> None:
         auth_provider = MagicMock()
-        auth_provider.authenticate.return_value = AuthResult.success_result(token="t")  # noqa: S106 -- fake test value
+        auth_provider.authenticate.return_value = AuthResult.success_result()
         auth_provider.get_credentials.return_value = {}  # no did/identifier/access_jwt
         svc = BlueskyIntegration(
             config_provider=mock_config_provider, auth_provider=auth_provider
@@ -267,7 +264,7 @@ class TestBlueskyIntegrationPost:
         self, mock_config_provider: MagicMock
     ) -> None:
         auth_provider = MagicMock()
-        auth_provider.authenticate.return_value = AuthResult.success_result(token="t")  # noqa: S106 -- fake test value
+        auth_provider.authenticate.return_value = AuthResult.success_result()
         auth_provider.get_credentials.return_value = {
             "identifier": "alice.bsky.social",
             "did": None,

@@ -5,9 +5,9 @@ This module provides standardized result classes for various integration
 _ops, enhancing error handling and return values.
 """
 
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 T = TypeVar("T")  # Generic type for result content
 
@@ -59,7 +59,13 @@ class IntegrationResult(BaseModel, Generic[T]):
 
 
 class AuthResult(BaseModel):
-    """Result for authentication _ops."""
+    """Secret-safe authentication status and metadata.
+
+    Credentials remain owned by the authentication provider and are never
+    transported through this broadly serializable result object.
+    """
+
+    model_config = ConfigDict(extra="forbid")
 
     success: bool = Field(
         default=True,
@@ -74,11 +80,6 @@ class AuthResult(BaseModel):
     error: str | None = Field(
         default=None,
         description="Error message if authentication failed",
-    )
-
-    token: str | None = Field(
-        default=None,
-        description="Authentication token if available",
     )
 
     expiry: int | None = Field(
@@ -96,25 +97,27 @@ class AuthResult(BaseModel):
         description="Additional authentication content or metadata",
     )
 
-    @field_validator("token")
-    @classmethod
-    def _validate_token(
-        cls,
-        v: Any,  # noqa: ANN401 -- genuinely dynamic: pydantic field_validator receives the raw pre-validation input (str, Mock, etc), stringified below to prevent object leakage
-    ) -> str | None:
-        """
-        Validate that token is a string if provided.
-        Ensures strict serialization and prevents object leakage (e.g. Mocks).
-        """
-        if v is not None:
-            return str(v)
-        return None
+    @field_serializer("message", "credentials_path", "content")
+    def _redact_metadata(self, value: object) -> object:
+        """Redact provider metadata on Pydantic serialization paths."""
+        return None if value is None else "<redacted>"
+
+    def __repr__(self) -> str:
+        """Render status without disclosing provider metadata."""
+        return (
+            f"AuthResult(success={self.success!r}, message=<redacted>, "
+            f"error={self.error!r}, expiry={self.expiry!r}, "
+            "credentials_path=<redacted>, content=<redacted>)"
+        )
+
+    def __str__(self) -> str:
+        """Render status without disclosing provider metadata."""
+        return self.__repr__()
 
     @classmethod
     def success_result(
         cls,
         message: str | None = None,
-        token: str | None = None,
         expiry: int | None = None,
         credentials_path: str | None = None,
         content: dict | None = None,
@@ -123,7 +126,6 @@ class AuthResult(BaseModel):
             success=True,
             message=message,
             error=None,
-            token=token,
             expiry=expiry,
             credentials_path=credentials_path,
             content=content,
@@ -139,7 +141,6 @@ class AuthResult(BaseModel):
             success=False,
             message=message,
             error=error,
-            token=None,
             expiry=None,
             credentials_path=None,
             content=None,

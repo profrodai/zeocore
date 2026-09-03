@@ -78,7 +78,7 @@ class TestNotionAuthProvider:
         result = provider.authenticate(token="explicit_token")  # noqa: S106 -- test fixture, fake credential value
 
         assert result.success is True
-        assert result.token == "explicit_token"  # noqa: S105
+        assert provider.token == "explicit_token"  # noqa: S105 -- provider-owned fake credential
         assert provider.authenticated is True
         fake_factory.assert_called_once_with("explicit_token")
 
@@ -127,7 +127,7 @@ class TestNotionAuthProvider:
             result = provider.authenticate()
 
             assert result.success is True
-            assert result.token == "file_token"  # noqa: S105
+            assert provider.token == "file_token"  # noqa: S105 -- provider-owned fake credential
 
     def test_refresh_credentials_no_token(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
@@ -144,7 +144,7 @@ class TestNotionAuthProvider:
         result = provider.refresh_credentials()
 
         assert result.success is True
-        assert result.token == "good_token"  # noqa: S105
+        assert provider.token == "good_token"  # noqa: S105 -- provider-owned fake credential
 
     def test_refresh_credentials_failure(self) -> None:
         factory = MagicMock(
@@ -238,7 +238,7 @@ class TestNotionAuthProvider:
             result = provider.authenticate()
 
             assert result.success is True
-            assert result.token == "late_env_token"  # noqa: S105
+            assert provider.token == "late_env_token"  # noqa: S105 -- provider-owned fake credential
 
     def test_load_credentials_file_does_not_exist(
         self, notion_creds_relpath: Path
