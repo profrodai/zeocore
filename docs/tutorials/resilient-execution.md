@@ -1,0 +1,116 @@
+# Bounded retries and explicit fallback
+
+`invoke_sync` and `invoke_async` each make one capability invocation. Use the
+separate `zeo_core.execution` runner when a host application needs a total
+deadline, retry policy, cancellation, or an explicitly ordered fallback.
+
+The separation is deliberate: a capability defines typed business behavior;
+the host decides how many attempts it is authorized to make.
+
+## A two-attempt read-only policy
+
+```python
+from zeo_core.execution import ExecutionPolicy, OperationMode, run_sync
+
+policy = ExecutionPolicy(
+    operation_mode=OperationMode.READ_ONLY,
+    total_timeout_seconds=120,
+    attempt_timeout_seconds=90,
+    attempt_targets=("ollama-local", "openai-api"),
+    backoff_seconds=(0.5,),
+)
+
+result = run_sync(
+    policy,
+    {
+        "ollama-local": ollama_target,
+        "openai-api": openai_target,
+    },
+)
+```
+
+This policy authorizes at most two calls. The first gets at most 90 seconds.
+The second gets the smaller of 90 seconds and whatever remains from the single
+120-second total budget. Merely placing another target in the mapping does not
+authorize it: only IDs in `attempt_targets` can run.
+
+Each `SyncExecutionTarget` callback receives an `AttemptContext` containing
+the derived per-attempt timeout and remaining total budget. A network or
+subprocess adapter must apply `context.timeout_seconds` to its own I/O. The
+synchronous runner cannot safely kill arbitrary in-process Python code; its
+timeout boundary is therefore cooperative. The asynchronous runner additionally
+enforces the boundary with `asyncio.timeout`.
+
+## Failure classification
+
+Targets raise `AttemptError` with a normalized `FailureKind`. Provider error
+text is not copied into results or attempt records.
+
+```python
+from zeo_core.execution import AttemptError, FailureKind, SyncExecutionTarget
+
+
+def call_model(context):
+    try:
+        return client.complete(timeout=context.timeout_seconds)
+    except ProviderTimeout as error:
+        raise AttemptError(FailureKind.TIMEOUT) from error
+
+
+ollama_target = SyncExecutionTarget(
+    target_id="ollama-local",
+    response_type=str,
+    invoke=call_model,
+    internal_max_attempts=1,
+)
+```
+
+Timeout, transient, and rate-limit failures are retryable by the default
+classification, but only if another attempt appears in the explicit plan.
+Validation, authorization, authentication, and permanent failures can never
+be configured as retryable. Use `preflight_failure` when credentials or
+authority are known to be absent before dispatch; the runner then makes zero
+provider calls.
+
+The target's `internal_max_attempts` must be exactly one. This prevents a
+three-attempt client hidden beneath a two-attempt runner from making six calls.
+
+## Results are evidence, not exceptions
+
+`ResilientExecutionResult` has one terminal outcome:
+
+- `SUCCEEDED`: includes the value, actual selected target, execution mode, and
+  every attempt;
+- `EXHAUSTED`: the explicit attempt plan or total budget was exhausted;
+- `FAILED_SAFE`: a non-retryable failure ended without a success claim;
+- `REFUSED`: policy, authorization, validation, or target configuration barred
+  execution; or
+- `CANCELLED`: cancellation was observed before a call or during a wait.
+
+Every started attempt produces an immutable `AttemptRecord`. Records contain
+normalized machine codes and timing, never raw exception or provider text.
+Persist the returned records in the host's audit store when durability is
+required.
+
+## Cancellation and simulation
+
+Pass a `CancellationToken` whose `is_cancelled()` method reflects host state.
+Cancellation is checked before the first call, before each subsequent call,
+and in bounded slices during backoff.
+
+Simulated targets are refused unless `allow_simulated=True`. Even when allowed,
+their successful result is labeled `ExecutionMode.SIMULATED`; it can never be
+reported as live execution.
+
+## Current safety boundary
+
+This first public runner supports `READ_ONLY` and `ADVISORY` policies. It
+refuses `EFFECTFUL` before making a call. Retrying an effect after an uncertain
+timeout requires durable `DISPATCH_STARTED` state, idempotency evidence, and
+reconciliation. Those mechanics cannot be emulated safely by an in-memory
+retry loop.
+
+`sync_capability_target` and `async_capability_target` adapt an existing
+`BoundCapability` only when its declared effects are exactly `READ`. They keep
+`invoke_sync` and `invoke_async` as one-attempt leaves and make the resilient
+runner the sole retry owner.

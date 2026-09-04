@@ -215,6 +215,7 @@ The `dev` and `lint` extras are for contributors; see
 | Module | What it's for |
 |---|---|
 | `zeo_core.tools` | Authoring — `@capability`, `CapabilityRegistry`, `invoke_sync` / `invoke_async`, `BaseZeoTool`, `ToolContext`, `tool_to_capability`, optional mixins. |
+| `zeo_core.execution` | Host-side bounded execution — one total deadline, explicit retries/fallback, cancellation, truthful target identity, and sanitized attempt records for read-only/advisory work. |
 | `zeo_core.contracts` | Data contracts — `CapabilityId`, `CapabilityDefinition`, `CapabilityManifest`, `CapabilityResult`, `CapabilityOutcome`, guards, invocation records. See [contracts/README.md](src/zeo_core/contracts/README.md). |
 | `zeo_core.adapters` | Optional adapters: HTTP, MCP, and `llm_tools` (OpenAI-compatible function projection from one `CapabilityManifest`). |
 | `zeo_core.core` | Filesystem operations, path resolution, a typed error hierarchy, MIME detection, serialization, logging, an operation registry. |
