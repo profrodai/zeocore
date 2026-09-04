@@ -44,6 +44,7 @@ class AttemptContext:
     target_id: str
     timeout_seconds: float
     remaining_total_seconds: float
+    cancellation: CancellationToken
 
 
 @dataclass(frozen=True)
@@ -96,6 +97,7 @@ _FAILURE_CODES: dict[FailureKind, str] = {
     FailureKind.VALIDATION: "ZEO_EXEC_VALIDATION",
     FailureKind.AUTHORIZATION: "ZEO_EXEC_AUTHORIZATION",
     FailureKind.AUTHENTICATION: "ZEO_EXEC_AUTHENTICATION",
+    FailureKind.CANCELLED: "ZEO_EXEC_CANCELLED",
     FailureKind.PERMANENT: "ZEO_EXEC_PERMANENT",
 }
 
@@ -282,6 +284,7 @@ def run_sync(  # noqa: C901 -- explicit bounded execution state machine
             target_id=target_id,
             timeout_seconds=timeout,
             remaining_total_seconds=remaining,
+            cancellation=token,
         )
         try:
             value = target.invoke(context)
@@ -314,6 +317,8 @@ def run_sync(  # noqa: C901 -- explicit bounded execution state machine
                     backoff_before_next_seconds=delay or 0,
                 )
             )
+            if kind is FailureKind.CANCELLED or token.is_cancelled():
+                return _cancelled(attempts, ended)
             if delay is None:
                 return _failed_result(
                     kind=kind,
@@ -404,6 +409,7 @@ async def run_async(  # noqa: C901 -- sync-parity state machine
             target_id=target_id,
             timeout_seconds=timeout,
             remaining_total_seconds=remaining,
+            cancellation=token,
         )
         try:
             async with asyncio.timeout(timeout):
@@ -437,6 +443,8 @@ async def run_async(  # noqa: C901 -- sync-parity state machine
                     backoff_before_next_seconds=delay or 0,
                 )
             )
+            if kind is FailureKind.CANCELLED or token.is_cancelled():
+                return _cancelled(attempts, ended)
             if delay is None:
                 return _failed_result(
                     kind=kind,

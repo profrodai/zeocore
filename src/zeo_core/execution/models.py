@@ -27,6 +27,7 @@ class FailureKind(StrEnum):
     VALIDATION = "validation"
     AUTHORIZATION = "authorization"
     AUTHENTICATION = "authentication"
+    CANCELLED = "cancelled"
     PERMANENT = "permanent"
 
 
@@ -61,6 +62,7 @@ _NEVER_RETRY = frozenset(
         FailureKind.VALIDATION,
         FailureKind.AUTHORIZATION,
         FailureKind.AUTHENTICATION,
+        FailureKind.CANCELLED,
         FailureKind.PERMANENT,
     }
 )

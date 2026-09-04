@@ -271,6 +271,16 @@ def test_precancelled_execution_makes_zero_calls() -> None:
     assert result.attempts == ()
 
 
+def test_target_reported_cancellation_has_cancelled_terminal_state() -> None:
+    def call(_ctx: AttemptContext) -> str:
+        raise AttemptError(FailureKind.CANCELLED, dispatch_started=False)
+
+    result = run_sync(policy("a"), {"a": target("a", call)})
+
+    assert result.outcome is ExecutionOutcome.CANCELLED
+    assert result.attempts[0].failure_kind is FailureKind.CANCELLED
+
+
 def test_nested_internal_retries_are_refused_before_call() -> None:
     calls = 0
 

@@ -15,6 +15,7 @@ from zeo_core.integrations.llms.clients.anthropic import AnthropicClient
 from zeo_core.integrations.llms.clients.ollama import OllamaClient
 from zeo_core.integrations.llms.clients.openai import OpenAIClient
 from zeo_core.integrations.llms.config import LLMConfig, LLMConfigProvider
+from zeo_core.integrations.llms.execution import llm_chat_target
 from zeo_core.integrations.llms.fallback import FallbackConfig, FallbackLLMClient
 from zeo_core.integrations.llms.models import (
     ChatMessage,
@@ -23,7 +24,10 @@ from zeo_core.integrations.llms.models import (
     RoleType,
     ToolCall,
 )
-from zeo_core.integrations.llms.protocols import LLMProviderProtocol
+from zeo_core.integrations.llms.protocols import (
+    LLMProviderProtocol,
+    OneAttemptLLMProviderProtocol,
+)
 from zeo_core.integrations.llms.registry import (
     get_llm_client,
     register_llm_client,
@@ -33,6 +37,7 @@ __all__ = [
     # Main client classes
     "LLMClient",
     "OpenAIClient",
+    "llm_chat_target",
     "AnthropicClient",
     "OllamaClient",
     "MockLLMClient",
@@ -49,6 +54,7 @@ __all__ = [
     "RoleType",
     # Protocols
     "LLMProviderProtocol",
+    "OneAttemptLLMProviderProtocol",
     # Registry
     "get_llm_client",
     "register_llm_client",

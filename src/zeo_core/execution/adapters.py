@@ -37,7 +37,7 @@ def _unwrap(result: CapabilityResult[Any]) -> CapabilityResult[Any]:
     if result.outcome is CapabilityOutcome.guard_rejected:
         raise AttemptError(FailureKind.VALIDATION, dispatch_started=False)
     if result.outcome is CapabilityOutcome.cancelled:
-        raise AttemptError(FailureKind.PERMANENT, dispatch_started=False)
+        raise AttemptError(FailureKind.CANCELLED, dispatch_started=False)
     raise AttemptError(FailureKind.PERMANENT)
 
 

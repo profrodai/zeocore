@@ -14,6 +14,7 @@ from zeo_core.execution.models import (
     OperationMode,
     ResilientExecutionResult,
 )
+from zeo_core.execution.process import SubprocessInvocation, subprocess_target
 from zeo_core.execution.runner import (
     AsyncExecutionTarget,
     AttemptContext,
@@ -40,8 +41,10 @@ __all__ = [
     "OperationMode",
     "ResilientExecutionResult",
     "SyncExecutionTarget",
+    "SubprocessInvocation",
     "async_capability_target",
     "run_async",
     "run_sync",
     "sync_capability_target",
+    "subprocess_target",
 ]

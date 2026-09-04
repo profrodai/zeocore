@@ -55,3 +55,17 @@ class LLMProviderProtocol(Protocol):
     def model(self) -> str:
         """Get the model name."""
         ...
+
+
+@runtime_checkable
+class OneAttemptLLMProviderProtocol(LLMProviderProtocol, Protocol):
+    """Additive protocol for clients exposing a retry-free chat operation."""
+
+    def chat_once(
+        self,
+        messages: Sequence[ChatMessage] | Sequence[dict],
+        options: LLMOptions | None = None,
+        callback: Callable[[str], None] | None = None,
+    ) -> IntegrationResult[str]:
+        """Send exactly one chat request without provider-level retry."""
+        ...
