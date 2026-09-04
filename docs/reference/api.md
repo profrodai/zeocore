@@ -20,6 +20,7 @@ back here when you need to look something up.
 - [Stability: what this page promises](#stability)
 - [`zeo_core` — top-level authoring shortcut](#top-level)
 - [`zeo_core.tools` — capability authoring](#tools)
+- [`zeo_core.execution` — bounded retries and fallback](#execution)
 - [`zeo_core.contracts` — data contracts](#contracts)
 - [Result states: status, outcome, and error codes](#result-states)
 - [`zeo_core.core` — filesystem, paths, errors, registry](#core)
@@ -366,6 +367,46 @@ Source: [`services.py`](../../src/zeo_core/tools/services.py)
 | `CapabilityAuthoringError` | Invalid `@capability` signature or contract (subclasses `TypeError`). |
 | `ToolAdapterError` | A `BaseZeoTool` cannot be adapted (subclasses `TypeError`). |
 | `CapabilityRegistryError` | Registry contract violation (subclasses `ValueError`). |
+
+<a id="execution"></a>
+
+## `zeo_core.execution` — bounded retries and fallback
+
+Source: [`src/zeo_core/execution/`](../../src/zeo_core/execution/) ·
+Tutorial: [bounded retries and explicit fallback](../tutorials/resilient-execution.md)
+
+The public execution package wraps one-attempt callbacks with an immutable
+policy. Its principal entry points are:
+
+```python
+from zeo_core.execution import (
+    AsyncExecutionTarget,
+    AttemptContext,
+    AttemptError,
+    ExecutionPolicy,
+    SyncExecutionTarget,
+    async_capability_target,
+    run_async,
+    run_sync,
+    sync_capability_target,
+)
+```
+
+`ExecutionPolicy` declares one total timeout, one per-attempt ceiling, the
+complete ordered target plan, bounded backoff and optional jitter, retryable
+classifications, and whether explicit simulation is allowed. Its default
+retry classification does not create retries: one target ID still means one
+attempt.
+
+`run_sync` and `run_async` return `ResilientExecutionResult`, including an
+immutable record for every started attempt and the identity and execution mode
+of the target that actually succeeded. They do not retain provider exception
+text. The async runner enforces each timeout; synchronous callbacks must apply
+the supplied `AttemptContext.timeout_seconds` to their blocking I/O.
+
+`sync_capability_target` and `async_capability_target` adapt exactly-`READ`
+`BoundCapability` values. Effectful execution is currently refused because it
+requires persisted dispatch and reconciliation rather than an in-memory retry.
 
 <a id="contracts"></a>
 
