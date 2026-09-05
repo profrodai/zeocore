@@ -136,9 +136,9 @@ class GithubFileReadResponse(BaseModel):
     examples=(
         CapabilityExample(
             name="readme",
-            request={"repo": "zeroemployeeorg/zeocore", "path": "README.md"},
+            request={"repo": "profrodai/zeocore", "path": "README.md"},
             response={
-                "repo": "zeroemployeeorg/zeocore",
+                "repo": "profrodai/zeocore",
                 "path": "README.md",
                 "content": "#",
                 "sha": "0",

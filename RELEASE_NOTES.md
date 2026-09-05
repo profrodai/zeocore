@@ -92,4 +92,4 @@ first use. Nothing is deleted.
 ## Ownership
 
 Filed under the ZeoCore project. Issues and questions:
-[github.com/zeroemployeeorg/zeocore](https://github.com/zeroemployeeorg/zeocore).
+[github.com/profrodai/zeocore](https://github.com/profrodai/zeocore).

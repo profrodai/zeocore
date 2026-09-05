@@ -9,7 +9,7 @@ This repo uses [`uv`](https://github.com/astral-sh/uv) for environment and
 dependency management, wired up through `make`:
 
 ```bash
-git clone https://github.com/zeroemployeeorg/zeocore.git
+git clone https://github.com/profrodai/zeocore.git
 cd zeocore
 make setup
 ```
@@ -173,7 +173,7 @@ a CI workflow can do for itself):
 - https://test.pypi.org/manage/account/publishing/
 
 Register a trusted publisher on each with **all four** fields exact:
-repository owner `zeroemployeeorg`, repository name `zeocore`, workflow
+repository owner `profrodai`, repository name `zeocore`, workflow
 filename `publish.yml` (just the filename, not the full path), and
 environment name `pypi` (for the pypi.org entry) or `testpypi` (for the
 test.pypi.org entry). All four are baked into the OIDC token's claims and
