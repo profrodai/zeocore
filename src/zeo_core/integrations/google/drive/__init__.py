@@ -7,12 +7,14 @@ files, with a consistent interface for uploading, downloading, and managing cont
 
 from zeo_core.integrations.core.protocols import StorageIntegrationProtocol
 from zeo_core.integrations.google.drive.models import DriveFile, DriveFolder
+from zeo_core.integrations.google.drive.protocols import DriveDownloadProtocol
 from zeo_core.integrations.google.drive.service import GoogleDriveService
 
 __all__ = [
     "GoogleDriveService",
     "DriveFile",
     "DriveFolder",
+    "DriveDownloadProtocol",
     "create_integration",
 ]
 
