@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Durable effect orchestration under `zeo_core.connections`: an
+  organization-scoped SQLite store, exact fail-closed authorization verifier
+  with required signature verification and issuer/audience trust configuration, persisted
+  pre-dispatch state, one-call provider dispatch, fail-closed ambiguity,
+  reconciliation without blind redispatch, atomic outcome receipts, and
+  sanitized confirmation evidence. Connector admission closes origin, path,
+  redirect, request-field, secret-binding, and reconciliation surfaces;
+  `KeychainEffectDispatcher` confines credential material to a one-shot custody
+  callback.
+- Bounded read/advisory retries and explicit provider fallback under
+  `zeo_core.execution`, including hard subprocess deadlines, process-group
+  cleanup, cancellation, and one-attempt LLM adapters.
+
 ## [0.6.0] - 2026-08-31
 
 Two new integrations and the credential handling to support them safely.

@@ -21,6 +21,7 @@ back here when you need to look something up.
 - [`zeo_core` — top-level authoring shortcut](#top-level)
 - [`zeo_core.tools` — capability authoring](#tools)
 - [`zeo_core.execution` — bounded retries and fallback](#execution)
+- [`zeo_core.connections` — durable effect orchestration](#connections)
 - [`zeo_core.contracts` — data contracts](#contracts)
 - [Result states: status, outcome, and error codes](#result-states)
 - [`zeo_core.core` — filesystem, paths, errors, registry](#core)
@@ -421,6 +422,56 @@ Anthropic, Ollama, and mock clients as one-attempt leaves so this policy, rather
 than a nested provider loop, owns retry and fallback. The adapter trusts only
 structured status codes for failure classification; use `subprocess_target`
 when the call also needs a hard process deadline.
+
+<a id="connections"></a>
+
+## `zeo_core.connections` — durable effect orchestration
+
+Source: [`src/zeo_core/connections/`](../../src/zeo_core/connections/) ·
+Tutorial: [durable effect orchestration](../tutorials/resilient-execution.md#effectful-calls-use-durable-orchestration)
+
+```python
+from zeo_core.connections import (
+    ConnectorAdmissionError,
+    EffectDispatchResult,
+    EffectOrchestrator,
+    ExactAuthorizationVerifier,
+    KeychainEffectDispatcher,
+    KeychainSecretStore,
+    ReconciliationResult,
+    SQLiteConnectionStore,
+    validate_connector_revision,
+)
+```
+
+`SQLiteConnectionStore` is the organization-scoped durable implementation for
+connections, immutable connector revisions, execution history, append-only
+receipts, sanitized confirmation evidence, and authorization replay nonces.
+`ExactAuthorizationVerifier` refuses absent, mismatched, expired, replayed,
+wrong-audience, untrusted-issuer, or cryptographically unverifiable effect
+authorizations without reconstructing organizational policy. Construction
+requires an `AuthorizationSignatureVerifier`, an expected audience, and a
+non-empty issuer allowlist; there is no permissive default verifier.
+
+`EffectOrchestrator.execute(...)` accepts trusted organization, connection,
+revision, and operation identities separately from the authorization. It
+persists `DISPATCH_STARTED` before invoking an `EffectDispatcher`. A provider
+exception after that point records `AMBIGUOUS` and invokes the supplied
+`EffectReconciler` without redispatch. Direct and reconciled success require a
+positive confirmation digest; state, receipt, and confirmation evidence commit
+atomically.
+
+`validate_connector_revision` and the related connection/request validators
+keep execution business-operation-shaped: provider origins and paths come from
+the immutable revision, request schemas are closed, and caller-selected
+transport fields are refused. `KeychainSecretStore` keeps credential material
+in macOS Keychain; `KeychainEffectDispatcher` consumes one expiring lease and
+exposes material only inside the provider callback.
+
+`EffectDispatchResult` and `ReconciliationResult` reject raw provider detail.
+They admit only closed dispositions, normalized errors, and lowercase SHA-256
+digests. Provider-specific dispatch and reconciliation implementations are host
+wiring, not permissive defaults supplied by ZeoCore.
 
 <a id="contracts"></a>
 

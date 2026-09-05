@@ -80,9 +80,17 @@ an exception, or a return value.
 
 from __future__ import annotations
 
+import threading
 import uuid
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from zeo_core.connections.orchestration import (
+        EffectDispatchRequest,
+        EffectDispatchResult,
+    )
 
 from zeo_core.connections.adapters.subprocess_runner import (
     CompletedSubprocess,
@@ -177,6 +185,8 @@ class KeychainSecretStore:
         self._runner: SubprocessRunner = runner or RealSubprocessRunner()
         self._clock: Callable[[], datetime] = clock or (lambda: datetime.now(UTC))
         self._resolution_ttl_seconds = resolution_ttl_seconds
+        self._leases: dict[str, tuple[SecretRef, OrganizationId, datetime]] = {}
+        self._lease_lock = threading.Lock()
 
     # -- scope enforcement -------------------------------------------------
 
@@ -273,19 +283,91 @@ class KeychainSecretStore:
         # discarded (never assigned beyond this local check, never
         # returned, never logged). SecretResolution is a broker-only
         # lease: it carries `ref` and a lease id, never material. The
-        # (not-yet-built, out of this step's scope) custody-adapter-
-        # internal dispatch path is the only future caller authorized to
-        # re-resolve material behind a lease, per the protocol's own
-        # docstring.
+        # `_dispatch_with_resolution` is the only custody-internal caller
+        # authorized to re-resolve material behind this lease. Provider
+        # code reaches it through KeychainEffectDispatcher, never through a
+        # public reveal operation.
         del result
         resolved_at = self._clock()
         expires_at = resolved_at + timedelta(seconds=self._resolution_ttl_seconds)
-        return SecretResolution(
+        resolution = SecretResolution(
             ref=ref,
             lease_id=str(uuid.uuid4()),
             resolved_at=resolved_at,
             expires_at=expires_at,
         )
+        with self._lease_lock:
+            self._leases[resolution.lease_id] = (
+                ref,
+                organization_id,
+                expires_at,
+            )
+        return resolution
+
+    def _dispatch_with_resolution(
+        self,
+        *,
+        resolution: SecretResolution,
+        organization_id: OrganizationId,
+        invoke: Callable[[str], EffectDispatchResult],
+    ) -> EffectDispatchResult:
+        """Use a one-shot lease inside a provider callback and return no secret.
+
+        This is the custody-internal dispatch seam promised by
+        ``SecretResolution``. The material exists only as the callback argument;
+        the lease is consumed before invocation and every callback exception is
+        replaced with a sanitized error so traceback chaining cannot retain it.
+        """
+
+        self._check_scope(ref=resolution.ref, organization_id=organization_id)
+        with self._lease_lock:
+            registered = self._leases.pop(resolution.lease_id, None)
+        if registered is None:
+            raise SecretMaterialError("secret resolution lease is unknown or consumed")
+        registered_ref, registered_org, registered_expiry = registered
+        if registered_ref != resolution.ref or registered_org != organization_id:
+            raise SecretMaterialError("secret resolution lease binding mismatch")
+        if (
+            resolution.expires_at != registered_expiry
+            or self._clock() >= registered_expiry
+        ):
+            raise SecretMaterialError("secret resolution lease expired")
+        result = self._run_security(
+            [
+                "find-generic-password",
+                "-a",
+                resolution.ref.handle,
+                "-s",
+                self._service_prefix,
+                "-w",
+            ]
+        )
+        if result.returncode in _ITEM_NOT_FOUND_EXIT_CODES:
+            raise SecretNotFoundError(
+                f"no secret under handle {resolution.ref.handle!r}"
+            )
+        if result.returncode != 0:
+            raise SecretMaterialError(
+                "keychain dispatch resolution failed, "
+                f"exit={result.returncode} handle={resolution.ref.handle!r}"
+            )
+        material = result.stdout
+        del result
+        provider_failed = False
+        provider_result: object | None = None
+        try:
+            provider_result = invoke(material)
+        except Exception:
+            provider_failed = True
+        del material
+        if provider_failed:
+            raise SecretMaterialError("provider dispatch failed inside custody")
+        from zeo_core.connections.orchestration import EffectDispatchResult
+
+        if not isinstance(provider_result, EffectDispatchResult):
+            del provider_result
+            raise SecretMaterialError("provider returned an invalid dispatch result")
+        return provider_result
 
     def rotate(
         self, *, ref: SecretRef, organization_id: OrganizationId, material: str
@@ -371,3 +453,32 @@ class KeychainSecretStore:
             checked_at=checked_at,
             detail=f"keychain unreachable, exit={result.returncode}",
         )
+
+
+class KeychainEffectDispatcher:
+    """Provider dispatcher that confines raw material to one custody callback."""
+
+    def __init__(
+        self,
+        *,
+        store: KeychainSecretStore,
+        invoke: Callable[[str, EffectDispatchRequest], EffectDispatchResult],
+    ) -> None:
+        self._store = store
+        self._invoke = invoke
+
+    def dispatch(self, request: EffectDispatchRequest) -> EffectDispatchResult:
+        resolution = self._store.resolve(
+            ref=request.connection.secret_handle,
+            organization_id=request.organization_id,
+        )
+        result = self._store._dispatch_with_resolution(
+            resolution=resolution,
+            organization_id=request.organization_id,
+            invoke=lambda material: self._invoke(material, request),
+        )
+        from zeo_core.connections.orchestration import EffectDispatchResult
+
+        if not isinstance(result, EffectDispatchResult):  # defensive type narrowing
+            raise SecretMaterialError("provider returned an invalid dispatch result")
+        return result

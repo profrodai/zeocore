@@ -61,13 +61,24 @@ from datetime import UTC, datetime
 
 import pytest
 
+from zeo_core.connections import (
+    DispatchDisposition,
+    EffectDispatchRequest,
+    EffectDispatchResult,
+)
 from zeo_core.connections.adapters.macos_keychain import (
     CrossOrganizationAccessError,
+    KeychainEffectDispatcher,
     KeychainSecretStore,
     SecretMaterialError,
     SecretNotFoundError,
 )
-from zeo_core.contracts.connections.identity import OrganizationId
+from zeo_core.contracts.connections import Connection, ConnectorRevision
+from zeo_core.contracts.connections.identity import (
+    ExecutionId,
+    IdempotencyKey,
+    OrganizationId,
+)
 from zeo_core.contracts.connections.verdicts import SecretHealth, SecretResolution
 
 from .fake_subprocess_runner import FakeSubprocessRunner
@@ -98,6 +109,108 @@ def store(
         runner=fake_runner,
         clock=clock,
     )
+
+
+def test_one_shot_dispatch_lease_contains_material_inside_custody_only(
+    store: KeychainSecretStore,
+) -> None:
+    ref = store.put(organization_id=ORG_A, material=CANARY)
+    resolution = store.resolve(ref=ref, organization_id=ORG_A)
+    observed = False
+
+    def provider(material: str) -> EffectDispatchResult:
+        nonlocal observed
+        if material != CANARY:
+            raise RuntimeError("custody supplied different material")
+        observed = True
+        return EffectDispatchResult(
+            disposition=DispatchDisposition.CONFIRMED,
+            confirmation_digest="d" * 64,
+        )
+
+    result = store._dispatch_with_resolution(
+        resolution=resolution,
+        organization_id=ORG_A,
+        invoke=provider,
+    )
+
+    assert observed
+    assert result.confirmation_digest == "d" * 64
+    assert CANARY not in repr(result)
+    with pytest.raises(SecretMaterialError, match="unknown or consumed"):
+        store._dispatch_with_resolution(
+            resolution=resolution,
+            organization_id=ORG_A,
+            invoke=provider,
+        )
+
+
+def test_dispatch_callback_exception_is_sanitized_without_chaining(
+    store: KeychainSecretStore,
+) -> None:
+    ref = store.put(organization_id=ORG_A, material=CANARY)
+    resolution = store.resolve(ref=ref, organization_id=ORG_A)
+
+    def broken_provider(material: str) -> EffectDispatchResult:
+        raise RuntimeError(material)
+
+    with pytest.raises(SecretMaterialError, match="inside custody") as captured:
+        store._dispatch_with_resolution(
+            resolution=resolution,
+            organization_id=ORG_A,
+            invoke=broken_provider,
+        )
+
+    assert CANARY not in repr(captured.value)
+    assert captured.value.__cause__ is None
+    assert captured.value.__context__ is None
+
+
+def test_keychain_effect_dispatcher_resolves_only_inside_provider_call(
+    store: KeychainSecretStore,
+    connection: Connection,
+    connector_revision: ConnectorRevision,
+) -> None:
+    ref = store.put(organization_id=ORG_A, material=CANARY)
+    connected = connection.model_copy(
+        update={
+            "organization_id": ORG_A,
+            "connector_id": connector_revision.connector_id,
+            "connector_revision": connector_revision.revision_id,
+            "secret_handle": ref,
+        }
+    )
+    request = EffectDispatchRequest(
+        organization_id=ORG_A,
+        connection=connected,
+        connector_revision=connector_revision,
+        operation_id=connector_revision.operations[0].operation_id,
+        execution_id=ExecutionId(value="exec-keychain-dispatch"),
+        idempotency_key=IdempotencyKey(value="idem-keychain-dispatch"),
+        request_digest="sha256:" + "e" * 64,
+        request_body=b"{}",
+    )
+    material_was_available = False
+
+    def provider(
+        material: str, observed_request: EffectDispatchRequest
+    ) -> EffectDispatchResult:
+        nonlocal material_was_available
+        if material != CANARY or observed_request is not request:
+            raise RuntimeError("custody dispatch binding mismatch")
+        material_was_available = True
+        return EffectDispatchResult(
+            disposition=DispatchDisposition.CONFIRMED,
+            confirmation_digest="e" * 64,
+        )
+
+    dispatcher = KeychainEffectDispatcher(store=store, invoke=provider)
+    result = dispatcher.dispatch(request)
+
+    assert material_was_available
+    assert result.confirmation_digest == "e" * 64
+    assert CANARY not in repr(dispatcher)
+    assert CANARY not in repr(result)
 
 
 # ===========================================================================
@@ -539,8 +652,8 @@ class TestHealthBehavior:
 
     def test_delete_does_not_delete_historical_evidence_records(self) -> None:
         # This store has no method that touches execution/receipt records
-        # at all -- ConnectionStore (step 4, a separate protocol, not yet
-        # built) owns those. The acceptance check ("Keychain deletion ->
+        # at all -- ConnectionStore (step 4, a separate protocol) owns
+        # those. The acceptance check ("Keychain deletion ->
         # resolution fails closed WITHOUT deleting historical execution
         # evidence") is satisfied structurally: KeychainSecretStore has no
         # surface capable of touching evidence in the first place.
