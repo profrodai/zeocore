@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Complete Notion API `2026-03-11` integration through the official
+  `notion-client>=3.1.0` SDK: 44 current data operations spanning pages,
+  blocks, databases, data sources and templates, users, search, comments,
+  custom emoji, file uploads, views, meeting notes, and Markdown. Pagination,
+  request-size limits, bounded retry metadata, and current `in_trash` and
+  block-position semantics are explicit. Public OAuth covers authorization-code
+  exchange, refresh, introspection, and revocation while placing issued bearer
+  credentials directly into `SecretStore` custody.
 - Durable effect orchestration under `zeo_core.connections`: an
   organization-scoped SQLite store, exact fail-closed authorization verifier
   with required signature verification and issuer/audience trust configuration,
@@ -26,6 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Notion credentials now enter through environment variables or OAuth custody;
+  normal configuration and public results no longer carry raw bearer material.
+  Historical convenience methods remain available, but removed request fields
+  fail closed and ambiguous multi-data-source database calls must name the data
+  source explicitly.
 - PyPI project URLs, release instructions, public repository links, and package
   examples now point directly to `profrodai/zeocore` after the repository move.
 - Published authentication results no longer carry raw provider tokens.
