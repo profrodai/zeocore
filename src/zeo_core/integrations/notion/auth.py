@@ -8,6 +8,8 @@ from zeo_core.core.fs.service import standalone as fs
 from zeo_core.core.logging import LOG_LEVELS, LogLevel, get_logger
 from zeo_core.integrations.core import AuthResult, BaseAuthProvider
 
+from .transport import build_notion_http_client
+
 logger = get_logger(__name__)
 
 
@@ -37,6 +39,7 @@ class NotionAuthProvider(BaseAuthProvider):
         credentials_file: str | None = None,
         log_level: int = LOG_LEVELS[LogLevel.INFO],
         sdk_client_factory: Any = None,  # noqa: ANN401 -- injectable factory for testing; real default is notion_client.Client, imported lazily below (see initialize())
+        trust_env: bool = False,
     ) -> None:
         """Initialize the Notion authentication provider.
 
@@ -45,11 +48,13 @@ class NotionAuthProvider(BaseAuthProvider):
             log_level: Logging level
             sdk_client_factory: Optional factory ``(token) -> notion_client.Client``-
                 shaped callable, for testing. Defaults to the real SDK client.
+            trust_env: Whether the real SDK transport may inherit proxy settings.
         """
         super().__init__(credentials_file=credentials_file, log_level=log_level)
         self._token: str | None = None
         self._user_info: dict[str, Any] | None = None
         self._sdk_client_factory = sdk_client_factory
+        self._trust_env = trust_env
 
         env_token = os.environ.get("NOTION_TOKEN")
         if env_token:
@@ -69,7 +74,10 @@ class NotionAuthProvider(BaseAuthProvider):
 
         from notion_client import Client as NotionSDKClient
 
-        return NotionSDKClient(auth=token)
+        return NotionSDKClient(
+            auth=token,
+            client=build_notion_http_client(trust_env=self._trust_env),
+        )
 
     def authenticate(self, token: str | None = None) -> AuthResult:
         """Authenticate with Notion using an integration token.

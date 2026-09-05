@@ -231,9 +231,9 @@ module by module.
 ## Quality bar
 
 - **mypy --strict**, clean across the whole source tree.
-- **2958 tests** (a handful are environment-gated and skip/run depending on
-  what credentials or OS behavior are available), 90%+ coverage, enforced as
-  a hard CI floor
+- The **full test suite** runs on every change (a handful are environment-gated
+  and skip/run depending on credentials or OS behavior), with 90.00%+ coverage
+  enforced as a two-decimal hard CI floor
   (`--cov-fail-under=90`) — a pull request that drops coverage fails the gate.
 - **CI runs the full suite on Python 3.14** (the minimum supported
   interpreter) on every push.

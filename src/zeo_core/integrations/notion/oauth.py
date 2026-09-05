@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict
 from zeo_core.contracts.connections import OrganizationId, SecretRef, SecretStore
 
 from .client import NOTION_API_VERSION, NotionAPIError
+from .transport import build_notion_http_client
 
 
 class NotionOAuthGrant(BaseModel):
@@ -35,6 +36,7 @@ class NotionOAuthBroker:
         secret_store: SecretStore,
         organization_id: OrganizationId,
         sdk_client: Any = None,  # noqa: ANN401
+        trust_env: bool = False,
     ) -> None:
         self._secret_store = secret_store
         self._organization_id = organization_id
@@ -43,7 +45,10 @@ class NotionOAuthBroker:
         else:
             from notion_client import Client
 
-            self._sdk = Client(notion_version=NOTION_API_VERSION)
+            self._sdk = Client(
+                notion_version=NOTION_API_VERSION,
+                client=build_notion_http_client(trust_env=trust_env),
+            )
 
     def _credentials(self) -> tuple[str, str]:
         client_id = os.environ.get("NOTION_OAUTH_CLIENT_ID")

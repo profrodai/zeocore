@@ -221,15 +221,22 @@ class TestNotionAuthProvider:
         provider._token = None
         assert provider.save_credentials() is False
 
-    def test_build_client_uses_real_sdk_when_no_factory_injected(self) -> None:
-        """_build_client's real (non-injected) path constructs an actual
-        notion_client.Client -- confirms the default wiring is real."""
-        import notion_client
+    def test_build_client_uses_explicit_direct_transport_by_default(self) -> None:
+        sdk = MagicMock()
+        transport = MagicMock()
+        with (
+            patch("notion_client.Client", return_value=sdk) as sdk_factory,
+            patch(
+                "zeo_core.integrations.notion.auth.build_notion_http_client",
+                return_value=transport,
+            ) as transport_factory,
+        ):
+            provider = NotionAuthProvider()
+            client = provider._build_client("some_token")
 
-        provider = NotionAuthProvider()
-        client = provider._build_client("some_token")
-
-        assert isinstance(client, notion_client.Client)
+        assert client is sdk
+        transport_factory.assert_called_once_with(trust_env=False)
+        assert sdk_factory.call_args.kwargs["client"] is transport
 
     def test_authenticate_falls_back_to_env_token_when_no_stored_token(
         self, fake_factory: MagicMock

@@ -37,11 +37,13 @@ def call_tool(name: str, args: dict) -> str:
 MINIMAL_IPYNB_SOURCE = """{
  "cells": [
   {
+   "id": "title-cell",
    "cell_type": "markdown",
    "metadata": {},
    "source": ["## Title"]
   },
   {
+   "id": "code-cell",
    "cell_type": "code",
    "execution_count": null,
    "metadata": {},

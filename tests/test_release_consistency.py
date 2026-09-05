@@ -206,3 +206,15 @@ def test_black_target_version_matches_pyproject_floor() -> None:
         f"[tool.black] target-version is {versions!r}, but the "
         f"requires-python floor is {floor[0]}.{floor[1]} (expected [{expected!r}])."
     )
+
+
+def test_google_workspace_connector_extras_match_the_umbrella() -> None:
+    """Public connector names must not teach an unrelated installation extra."""
+    optional = _pyproject()["project"]["optional-dependencies"]
+    expected = optional["google"]
+
+    for connector in ("docs", "sheets", "slides"):
+        assert optional[connector] == expected, (
+            f"zeocore[{connector}] does not install the same shared Google "
+            "Workspace dependencies as zeocore[google]"
+        )

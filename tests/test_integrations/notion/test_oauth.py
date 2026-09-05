@@ -24,6 +24,27 @@ def _broker() -> tuple[NotionOAuthBroker, MagicMock, MagicMock]:
     return broker, sdk, store
 
 
+def test_default_sdk_wiring_uses_explicit_direct_transport() -> None:
+    store = MagicMock()
+    sdk = MagicMock()
+    transport = MagicMock()
+    with (
+        patch("notion_client.Client", return_value=sdk) as sdk_factory,
+        patch(
+            "zeo_core.integrations.notion.oauth.build_notion_http_client",
+            return_value=transport,
+        ) as transport_factory,
+    ):
+        broker = NotionOAuthBroker(
+            secret_store=store,
+            organization_id=OrganizationId(value="org-course"),
+        )
+
+    assert broker._sdk is sdk
+    transport_factory.assert_called_once_with(trust_env=False)
+    assert sdk_factory.call_args.kwargs["client"] is transport
+
+
 def test_exchange_custodies_both_tokens_and_public_grant_cannot_leak() -> None:
     broker, sdk, store = _broker()
     access, refresh = "ntn_ACCESS_CANARY", "ntn_REFRESH_CANARY"

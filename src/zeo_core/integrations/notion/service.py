@@ -1,6 +1,7 @@
 """Notion core integration service for zeo_core."""
 
 import os
+from collections.abc import Callable
 from typing import Any
 
 from zeo_core.core.logging import LOG_LEVELS, LogLevel, get_logger
@@ -39,6 +40,7 @@ class NotionIntegration(BaseIntegrationService, NotionIntegrationProtocol):
         auth_provider: AuthProviderProtocol | None = None,
         config_path: str | None = None,
         log_level: int = LOG_LEVELS[LogLevel.INFO],
+        client_factory: Callable[..., NotionClient] | None = None,
     ) -> None:
         """Initialize the Notion integration.
 
@@ -47,6 +49,8 @@ class NotionIntegration(BaseIntegrationService, NotionIntegrationProtocol):
             auth_provider: Authentication provider
             config_path: Path to configuration file
             log_level: Logging level
+            client_factory: Injectable Notion client constructor. The default
+                uses ZeoCore's explicit direct-transport policy.
         """
         if config_provider is None:
             config_provider = NotionConfigProvider(log_level=log_level)
@@ -63,6 +67,7 @@ class NotionIntegration(BaseIntegrationService, NotionIntegrationProtocol):
         )
 
         self.client: NotionClient | None = None
+        self._client_factory = client_factory or NotionClient
 
     @property
     def name(self) -> str:
@@ -202,7 +207,7 @@ class NotionIntegration(BaseIntegrationService, NotionIntegrationProtocol):
                     error="Notion configuration is not available",
                     message="Notion configuration is not available",
                 )
-            self.client = NotionClient(
+            self.client = self._client_factory(
                 token=token,
                 timeout_ms=self.config.get("timeout_ms", 60_000),
                 max_retries=self.config.get("max_retries", 3),
