@@ -34,11 +34,13 @@ implementation exists until step 3+.
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Protocol, runtime_checkable
 
 from zeo_core.contracts.connections.authorization import EffectAuthorization
 from zeo_core.contracts.connections.connection import Connection
 from zeo_core.contracts.connections.connector import ConnectorRevision
+from zeo_core.contracts.connections.evidence import ConfirmationEvidence
 from zeo_core.contracts.connections.execution import Execution
 from zeo_core.contracts.connections.identity import (
     ConfirmationEvidenceRef,
@@ -315,6 +317,76 @@ class ConnectionStore(Protocol):
         that execution belongs to `organization_id`, else an empty tuple.
         """
         ...
+
+
+@runtime_checkable
+class BrokerExecutionStore(ConnectionStore, Protocol):
+    """Complete adapter-neutral persistence surface used by orchestration."""
+
+    def get_execution_by_idempotency(
+        self,
+        *,
+        organization_id: OrganizationId,
+        connection_id: ConnectionId,
+        connector_revision: ConnectorRevisionId,
+        operation_id: str,
+        idempotency_key: str,
+    ) -> Execution | None: ...
+
+    def claim_execution(
+        self,
+        *,
+        organization_id: OrganizationId,
+        nonce: str,
+        nonce_recorded_at: datetime,
+        execution: Execution,
+    ) -> tuple[Execution, bool]: ...
+
+    def get_execution_history(
+        self, *, organization_id: OrganizationId, execution_id: ExecutionId
+    ) -> tuple[Execution, ...]: ...
+
+    def new_confirmation_evidence(
+        self,
+        *,
+        organization_id: OrganizationId,
+        execution_id: ExecutionId,
+        observed_at: datetime,
+        confirmation_digest: str,
+    ) -> ConfirmationEvidence: ...
+
+    def save_confirmation_evidence(
+        self,
+        *,
+        organization_id: OrganizationId,
+        execution_id: ExecutionId,
+        observed_at: datetime,
+        confirmation_digest: str,
+    ) -> ConfirmationEvidence: ...
+
+    def get_confirmation_evidence(
+        self,
+        *,
+        organization_id: OrganizationId,
+        evidence_ref: ConfirmationEvidenceRef,
+    ) -> ConfirmationEvidence | None: ...
+
+    def commit_outcome(
+        self,
+        *,
+        organization_id: OrganizationId,
+        execution: Execution,
+        receipt: ExecutionReceipt,
+        evidence: ConfirmationEvidence | None = None,
+    ) -> None: ...
+
+    def has_authorization_nonce(
+        self, *, organization_id: OrganizationId, nonce: str
+    ) -> bool: ...
+
+    def record_authorization_nonce(
+        self, *, organization_id: OrganizationId, nonce: str, recorded_at: datetime
+    ) -> None: ...
 
 
 @runtime_checkable

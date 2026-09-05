@@ -20,10 +20,6 @@ from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from zeo_core.connections.adapters.sqlite import (
-    ConfirmationEvidence,
-    SQLiteConnectionStore,
-)
 from zeo_core.connections.admission import (
     ConnectorAdmissionError,
     validate_connection_admission,
@@ -33,6 +29,8 @@ from zeo_core.connections.authorization import ExactAuthorizationVerifier
 from zeo_core.contracts.common.enums import EffectKind
 from zeo_core.contracts.connections import (
     AuthorizationRefusalReason,
+    BrokerExecutionStore,
+    ConfirmationEvidence,
     Connection,
     ConnectionId,
     ConnectionStatus,
@@ -159,7 +157,7 @@ class EffectOrchestrator:
     def __init__(
         self,
         *,
-        store: SQLiteConnectionStore,
+        store: BrokerExecutionStore,
         verifier: ExactAuthorizationVerifier,
         clock: Callable[[], datetime] | None = None,
     ) -> None:

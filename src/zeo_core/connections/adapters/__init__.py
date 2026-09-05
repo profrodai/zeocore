@@ -14,7 +14,6 @@ from zeo_core.connections.adapters.macos_keychain import (
     KeychainSecretStore,
 )
 from zeo_core.connections.adapters.sqlite import (
-    ConfirmationEvidence,
     ConnectionStoreError,
     SQLiteConnectionStore,
 )

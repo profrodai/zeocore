@@ -17,6 +17,7 @@ from zeo_core.connections import (
     SQLiteConnectionStore,
 )
 from zeo_core.contracts.connections import (
+    BrokerExecutionStore,
     ConfirmationEvidenceRef,
     Connection,
     ConnectionStore,
@@ -91,6 +92,7 @@ def test_store_satisfies_protocol_and_database_is_private(
     database = SQLiteConnectionStore(path)
     try:
         assert isinstance(database, ConnectionStore)
+        assert isinstance(database, BrokerExecutionStore)
         assert path.stat().st_mode & 0o777 == 0o600
     finally:
         database.close()

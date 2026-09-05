@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import sqlite3
 import threading
 import uuid
@@ -13,9 +12,10 @@ from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel
 
 from zeo_core.contracts.connections import (
+    ConfirmationEvidence,
     ConfirmationEvidenceRef,
     Connection,
     ConnectionId,
@@ -29,31 +29,11 @@ from zeo_core.contracts.connections import (
     is_allowed_transition,
 )
 
-_SHA256 = re.compile(r"\A[0-9a-f]{64}\Z")
 _SCHEMA_VERSION = 1
 
 
 class ConnectionStoreError(RuntimeError):
     """Sanitized persistence failure with no record or provider payload."""
-
-
-class ConfirmationEvidence(BaseModel):
-    """Durable sanitized proof behind a confirmation evidence reference."""
-
-    model_config = ConfigDict(frozen=True, extra="forbid")
-
-    evidence_ref: ConfirmationEvidenceRef
-    organization_id: OrganizationId
-    execution_id: ExecutionId
-    observed_at: datetime
-    confirmation_digest: str = Field(..., min_length=64, max_length=64)
-
-    @field_validator("confirmation_digest")
-    @classmethod
-    def _digest_is_lowercase_sha256(cls, value: str) -> str:
-        if not _SHA256.fullmatch(value):
-            raise ValueError("confirmation_digest must be lowercase SHA-256 hex")
-        return value
 
 
 def _json_bytes(model: BaseModel) -> str:

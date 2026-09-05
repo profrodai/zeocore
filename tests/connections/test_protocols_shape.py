@@ -46,6 +46,7 @@ from pathlib import Path
 from typing import Protocol, get_type_hints
 
 from zeo_core.contracts.connections.protocols import (
+    BrokerExecutionStore,
     ConnectionStore,
     EffectAuthorizationVerifier,
     SecretStore,
@@ -317,6 +318,38 @@ class TestOrganizationScopingBySignature:
         assert param.kind == inspect.Parameter.KEYWORD_ONLY
         hints = get_type_hints(EffectAuthorizationVerifier.verify)
         assert "OrganizationId" in str(hints["organization_id"])
+
+
+class TestBrokerExecutionStoreShape:
+    """Hosted adapters receive the complete orchestration surface."""
+
+    REQUIRED_METHODS = {
+        "claim_execution",
+        "commit_outcome",
+        "get_confirmation_evidence",
+        "get_execution_by_idempotency",
+        "get_execution_history",
+        "has_authorization_nonce",
+        "new_confirmation_evidence",
+        "record_authorization_nonce",
+        "save_confirmation_evidence",
+    }
+
+    def test_protocol_extends_connection_store_without_adapter_types(self) -> None:
+        assert issubclass(BrokerExecutionStore, ConnectionStore)
+        for method in self.REQUIRED_METHODS:
+            assert callable(getattr(BrokerExecutionStore, method))
+
+        hints = get_type_hints(BrokerExecutionStore.commit_outcome)
+        assert "sqlite" not in repr(hints).lower()
+        assert "ConfirmationEvidence" in str(hints["evidence"])
+
+    def test_all_added_methods_keep_organization_scope_keyword_only(self) -> None:
+        for name in self.REQUIRED_METHODS:
+            method = getattr(BrokerExecutionStore, name)
+            parameter = inspect.signature(method).parameters["organization_id"]
+            assert parameter.kind == inspect.Parameter.KEYWORD_ONLY
+            assert "OrganizationId" in str(get_type_hints(method)["organization_id"])
 
 
 class TestNoGenericPayloadParameter:

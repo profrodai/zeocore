@@ -33,7 +33,6 @@ from zeo_core.connections.adapters.macos_keychain import (
     KeychainSecretStore,
 )
 from zeo_core.connections.adapters.sqlite import (
-    ConfirmationEvidence,
     ConnectionStoreError,
     SQLiteConnectionStore,
 )
@@ -60,10 +59,12 @@ from zeo_core.connections.orchestration import (
     ReconciliationDisposition,
     ReconciliationResult,
 )
+from zeo_core.contracts.connections import BrokerExecutionStore, ConfirmationEvidence
 
 __all__ = [
     "AuthorizationNonceLookup",
     "AuthorizationSignatureVerifier",
+    "BrokerExecutionStore",
     "ConfirmationEvidence",
     "ConnectionStoreError",
     "ConnectorAdmissionError",
