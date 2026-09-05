@@ -176,3 +176,59 @@ accepted by this adapter because retrying after partial streamed output is not
 replay-safe. For a hard deadline around an LLM implemented as a separate
 process, use `subprocess_target`; an in-process SDK remains cooperative with its
 own configured network timeout.
+
+## Effectful calls use durable orchestration
+
+Do not put a write, post, payment, or delete operation into the read-only retry
+runner. An effect can succeed at the provider while its response is lost; a
+second attempt could duplicate it. Use `zeo_core.connections.EffectOrchestrator`
+with an admitted connection, immutable connector revision, exact
+`EffectAuthorization`, and provider-specific `EffectDispatcher` and
+`EffectReconciler` implementations.
+
+The orchestrator performs these steps in order:
+
+1. Hash the request and compare the trusted organization, connection, connector
+   revision, operation, request digest, audience, trusted issuer, expiry, replay
+   identity, and an injected cryptographic signature verdict against the
+   authorization. A refusal makes zero provider calls. The verifier has no
+   permissive default: its trust roots and signature verifier are required at
+   construction.
+2. Load the active connection and its pinned immutable revision, and confirm the
+   effectful business operation is exposed and the request is within its bound.
+3. Persist `CREATED`, `AUTHORIZATION_VERIFIED`, `PREPARED`, and then
+   `DISPATCH_STARTED`. Provider code is not entered until the last write commits.
+4. Call `dispatcher.dispatch(...)` exactly once. A direct `CONFIRMED` result must
+   carry a SHA-256 confirmation digest; a `FAILED_SAFE` result must prove no
+   effect and carry a normalized error.
+5. Treat every exception or lost result after dispatch as `AMBIGUOUS`. Persist
+   that receipt first, then call `reconciler.reconcile(...)`—never dispatch the
+   effect again. A resolution appends a new receipt pointing to the original
+   ambiguity; an unresolved attempt appends evidence while current state remains
+   `AMBIGUOUS`.
+
+`SQLiteConnectionStore` makes each outcome transition, its append-only receipt,
+and optional sanitized confirmation evidence one transaction. Confirmation
+records store only a lowercase SHA-256 digest behind a kernel-minted
+`ConfirmationEvidenceRef`; raw responses and provider exception text are not
+durable inputs. The database is created with mode `0600`, enforces
+organization-scoped reads, immutable revisions and execution identity,
+monotonic transitions, idempotency uniqueness, and one-use authorization
+nonces.
+
+The provider call remains provider-specific engineering.
+`KeychainEffectDispatcher` resolves the connection's opaque `SecretRef` into a
+one-shot, expiring lease and supplies material only to the provider callback
+inside that custody window. The callback must return `EffectDispatchResult`;
+its exceptions are replaced with a sanitized custody error, which the
+orchestrator records as post-dispatch ambiguity. Do not put credentials in the
+request, an `Execution`, a receipt, confirmation evidence, argv, or environment
+variables.
+
+Connector admission happens before any of this. `validate_connector_revision`
+rejects non-HTTPS or unlisted origins, redirects, unconstrained paths, open
+request schemas, caller-controlled transport fields, undeclared secret
+bindings, and effectful operations without reconciliation. Runtime request
+admission accepts only top-level fields declared by the closed request schema;
+provider URL, path, headers, cookies, authorization, redirects, and callback
+targets never come from request JSON.
