@@ -38,11 +38,11 @@ Quickstart::
     from zeo_core.integrations.social.bluesky import LinkSpan
 
     posted = bluesky.post(
-        "Check out zeocore: https://github.com/zeroemployeeorg/zeocore",
+        "Check out zeocore: https://github.com/profrodai/zeocore",
         links=[
             LinkSpan(
-                text="https://github.com/zeroemployeeorg/zeocore",
-                uri="https://github.com/zeroemployeeorg/zeocore",
+                text="https://github.com/profrodai/zeocore",
+                uri="https://github.com/profrodai/zeocore",
             )
         ],
     )

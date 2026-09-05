@@ -22,7 +22,7 @@ name: Publish
 #   - PyPI:     https://pypi.org/manage/account/publishing/
 #   - TestPyPI: https://test.pypi.org/manage/account/publishing/
 # For each, register a trusted publisher with EXACTLY:
-#   - repository owner: zeroemployeeorg
+#   - repository owner: profrodai
 #   - repository name:  zeocore
 #   - workflow filename: publish.yml  (not the full path, just the filename)
 #   - environment name: pypi (for the pypi.org publisher) or

@@ -1,9 +1,9 @@
 # ZeoCore
 
-[![CI](https://github.com/zeroemployeeorg/zeocore/workflows/CI/badge.svg)](https://github.com/zeroemployeeorg/zeocore/actions/workflows/ci.yml)
+[![CI](https://github.com/profrodai/zeocore/workflows/CI/badge.svg)](https://github.com/profrodai/zeocore/actions/workflows/ci.yml)
 [![PyPI version](https://img.shields.io/pypi/v/zeocore.svg)](https://pypi.org/project/zeocore/)
 [![Python versions](https://img.shields.io/pypi/pyversions/zeocore.svg)](https://pypi.org/project/zeocore/)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/zeroemployeeorg/zeocore)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/profrodai/zeocore)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **ZeoCore is a Python framework for writing capabilities: small, typed,
@@ -242,7 +242,7 @@ module by module.
 
 ## Project status
 
-ZeoCore **0.5.0** is a beta library: the API is typed and tested, and this
+ZeoCore **0.6.0** is a beta library: the API is typed and tested, and this
 release is the canonical capability-authoring surface for the Zero Employee
 ecosystem. The surface may still shift before 1.0. Issues, questions, and API
 feedback are welcome.
@@ -258,8 +258,8 @@ and how to submit a change. This project follows the
 ## Project links
 
 [PyPI](https://pypi.org/project/zeocore/) ·
-[Source](https://github.com/zeroemployeeorg/zeocore) ·
-[Issues](https://github.com/zeroemployeeorg/zeocore/issues) ·
+[Source](https://github.com/profrodai/zeocore) ·
+[Issues](https://github.com/profrodai/zeocore/issues) ·
 [Quickstart](QUICKSTART.md) ·
 [Docs](docs/README.md) ·
 [Manual](GET-STARTED.md) ·
