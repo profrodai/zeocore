@@ -30,10 +30,10 @@ from __future__ import annotations
 
 from zeo_core.connections.adapters.macos_keychain import (
     KeychainEffectDispatcher,
+    KeychainEffectReconciler,
     KeychainSecretStore,
 )
 from zeo_core.connections.adapters.sqlite import (
-    ConfirmationEvidence,
     ConnectionStoreError,
     SQLiteConnectionStore,
 )
@@ -48,6 +48,15 @@ from zeo_core.connections.authorization import (
     AuthorizationSignatureVerifier,
     ExactAuthorizationVerifier,
 )
+from zeo_core.connections.observations import (
+    ObservationDispatcher,
+    ObservationDispatchRequest,
+    ObservationDispatchResult,
+    ObservationDisposition,
+    ObservationExecutionResult,
+    ObservationOrchestrator,
+    ObservationPreflightError,
+)
 from zeo_core.connections.orchestration import (
     DispatchDisposition,
     EffectDispatcher,
@@ -60,10 +69,22 @@ from zeo_core.connections.orchestration import (
     ReconciliationDisposition,
     ReconciliationResult,
 )
+from zeo_core.contracts.connections import (
+    BrokerExecutionStore,
+    ConfirmationEvidence,
+    ObservationArtifact,
+    ObservationArtifactRef,
+    ObservationId,
+    ObservationReceipt,
+    ObservationRecord,
+    ObservationState,
+    ObservationStore,
+)
 
 __all__ = [
     "AuthorizationNonceLookup",
     "AuthorizationSignatureVerifier",
+    "BrokerExecutionStore",
     "ConfirmationEvidence",
     "ConnectionStoreError",
     "ConnectorAdmissionError",
@@ -77,7 +98,22 @@ __all__ = [
     "EffectReconciler",
     "ExactAuthorizationVerifier",
     "KeychainEffectDispatcher",
+    "KeychainEffectReconciler",
     "KeychainSecretStore",
+    "ObservationArtifact",
+    "ObservationArtifactRef",
+    "ObservationDispatchRequest",
+    "ObservationDispatchResult",
+    "ObservationDispatcher",
+    "ObservationDisposition",
+    "ObservationExecutionResult",
+    "ObservationId",
+    "ObservationOrchestrator",
+    "ObservationPreflightError",
+    "ObservationReceipt",
+    "ObservationRecord",
+    "ObservationState",
+    "ObservationStore",
     "ReconciliationDisposition",
     "ReconciliationResult",
     "SQLiteConnectionStore",

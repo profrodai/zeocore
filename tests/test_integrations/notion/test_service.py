@@ -10,6 +10,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from zeo_core.integrations.core.results import ConfigResult, IntegrationResult
+from zeo_core.integrations.notion.client import NotionClient
 from zeo_core.integrations.notion.models import NotionBlock, NotionDatabase, NotionPage
 from zeo_core.integrations.notion.service import NotionIntegration
 
@@ -29,9 +30,20 @@ def integration(
 ) -> NotionIntegration:
     """A NotionIntegration wired to a process-local fake environment token."""
     monkeypatch.setenv("NOTION_TOKEN", "test-only-token")
-    svc = NotionIntegration(config_provider=mock_config_provider, auth_provider=None)
+    fake_client = NotionClient("test-only-token", sdk_client=MagicMock())
+    client_factory = MagicMock(return_value=fake_client)
+    svc = NotionIntegration(
+        config_provider=mock_config_provider,
+        auth_provider=None,
+        client_factory=client_factory,
+    )
     result = svc.initialize()
     assert result.success is True
+    client_factory.assert_called_once_with(
+        token="test-only-token",  # noqa: S106 -- inert SDK-double fixture
+        timeout_ms=60_000,
+        max_retries=3,
+    )
     return svc
 
 

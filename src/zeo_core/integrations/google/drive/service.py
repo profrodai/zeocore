@@ -25,6 +25,11 @@ from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.integrations.google.auth import GoogleAuthProvider
 from zeo_core.integrations.google.config import GoogleConfigProvider
 from zeo_core.integrations.google.drive.models import DriveFile, DriveFolder
+from zeo_core.integrations.google.ports import (
+    DiscoveryGoogleApiClientFactory,
+    GoogleApiClientFactory,
+    GoogleCredentialSource,
+)
 
 NoneType = type(None)
 T = TypeVar("T")  # Generic type for result content
@@ -38,6 +43,10 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/drive.metadata.readonly",
     ]
+    SCOPE_PROFILES: dict[str, tuple[str, ...]] = {
+        "local-broad": tuple(SCOPES),
+        "selected-file": ("https://www.googleapis.com/auth/drive.file",),
+    }
 
     def __init__(
         self,
@@ -47,6 +56,10 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         config_path: str | None = None,
         scopes: list[str] | None = None,
         log_level: int = logging.INFO,
+        *,
+        scope_profile: str | None = None,
+        credential_source: GoogleCredentialSource | None = None,
+        client_factory: GoogleApiClientFactory | None = None,
     ) -> None:
         """
         Initialize the Google Drive integration service.
@@ -80,7 +93,24 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         self._init_credentials_file = credentials_file
         self._init_shared_folder_id = shared_folder_id
         self.config: dict[str, Any] = {}
-        self.scopes: list[str] = scopes or self.SCOPES
+        if scopes is not None and scope_profile is not None:
+            raise ValueError("scopes and scope_profile are mutually exclusive")
+        if credential_source is not None and scopes is None and scope_profile is None:
+            raise ValueError(
+                "injected Google credentials require explicit scopes or scope_profile"
+            )
+        if scope_profile is not None and scope_profile not in self.SCOPE_PROFILES:
+            raise ValueError("unknown Google Drive scope profile")
+        selected_scopes = (
+            list(self.SCOPE_PROFILES[scope_profile])
+            if scope_profile is not None
+            else scopes
+        )
+        self.scopes = (
+            list(selected_scopes) if selected_scopes is not None else self.SCOPES
+        )
+        self._credential_source = credential_source
+        self._client_factory = client_factory or DiscoveryGoogleApiClientFactory()
         self.auth_provider: GoogleAuthProvider | None = None
         self.drive_service: Any = None
         self.shared_folder_id: str | None = shared_folder_id
@@ -155,6 +185,13 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
         Returns:
             IntegrationResult: Result of initialization.
         """
+        if self._credential_source is not None:
+            return self._initialize_injected()
+        return self._initialize_local()
+
+    def _initialize_local(self) -> IntegrationResult[NoneType]:
+        """Initialize through the backwards-compatible installed-app profile."""
+
         try:
             # Config resolution and GoogleAuthProvider construction are
             # deferred here from __init__ (matching google/mail/service.py)
@@ -216,9 +253,9 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
                 )
 
             try:
-                from googleapiclient.discovery import build
-
-                self.drive_service = build("drive", "v3", credentials=credentials)
+                self.drive_service = self._client_factory.build(
+                    "drive", "v3", credentials=credentials
+                )
             except Exception as api_error:
                 raise ZeoApiError(
                     f"Failed to initialize Google Drive API: {api_error}",
@@ -243,6 +280,32 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
             return IntegrationResult.error_result(
                 f"Failed to initialize Google Drive service: {e}"
             )
+
+    def _initialize_injected(self) -> IntegrationResult[NoneType]:
+        """Build from broker-owned memory without touching auth/config files."""
+
+        if self._initialized:
+            return IntegrationResult.success_result(
+                message="Google Drive service already initialized"
+            )
+        try:
+            source = self._credential_source
+            if source is None:  # defensive narrowing
+                raise RuntimeError("credential source is unavailable")
+            credentials = source.get_credentials()
+            self.drive_service = self._client_factory.build(
+                "drive", "v3", credentials=credentials
+            )
+        except Exception:
+            self._initialized = False
+            self.logger.error("Injected Google Drive construction failed")
+            return IntegrationResult.error_result(
+                "Failed to initialize injected Google Drive service"
+            )
+        self._initialized = True
+        return IntegrationResult.success_result(
+            message="Google Drive service initialized successfully"
+        )
 
     # --- Helper Methods for Refactoring ---
 

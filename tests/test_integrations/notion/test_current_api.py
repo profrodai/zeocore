@@ -1,7 +1,7 @@
 """Behavioral contract for complete Notion API 2026-03-11 reachability."""
 
 from types import SimpleNamespace
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -81,10 +81,22 @@ def test_every_declared_operation_reaches_a_callable_sdk_endpoint() -> None:
 
 
 def test_real_sdk_is_pinned_to_current_api_and_bounded_retry() -> None:
-    client = NotionClient("not-a-live-token", max_retries=4)
+    sdk = MagicMock()
+    transport = MagicMock()
+    with (
+        patch("notion_client.Client", return_value=sdk) as sdk_factory,
+        patch(
+            "zeo_core.integrations.notion.client.build_notion_http_client",
+            return_value=transport,
+        ),
+    ):
+        client = NotionClient("not-a-live-token", max_retries=4)
 
-    assert client._sdk.options.notion_version == NOTION_API_VERSION
-    assert client._sdk.options.retry.max_retries == 4
+    assert client._sdk is sdk
+    kwargs = sdk_factory.call_args.kwargs
+    assert kwargs["notion_version"] == NOTION_API_VERSION
+    assert kwargs["retry"].max_retries == 4
+    assert kwargs["client"] is transport
 
 
 def test_paginated_result_preserves_cursor_and_iteration_reads_every_page() -> None:

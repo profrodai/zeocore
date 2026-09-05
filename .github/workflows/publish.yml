@@ -284,10 +284,30 @@ jobs:
         if: needs.publish-testpypi.result == 'success' && needs.publish-pypi.result != 'success'
         run: |
           uv venv --python "${PYTHON_FLOOR}" /tmp/smoke-testpypi
+          curl --fail --silent --show-error \
+            "https://test.pypi.org/pypi/zeocore/${EXPECTED_VERSION}/json" \
+            --output /tmp/zeocore-testpypi.json
+          wheel_url=$(/tmp/smoke-testpypi/bin/python -c "
+          import json
+          data = json.load(open('/tmp/zeocore-testpypi.json'))
+          expected = 'zeocore-${EXPECTED_VERSION}-py3-none-any.whl'
+          matches = [item['url'] for item in data['urls'] if item['filename'] == expected]
+          if len(matches) != 1:
+              raise SystemExit(f'expected exactly one {expected}, found {len(matches)}')
+          print(matches[0])
+          ")
+          case "${wheel_url}" in
+            https://test-files.pythonhosted.org/*/zeocore-${EXPECTED_VERSION}-py3-none-any.whl) ;;
+            *) echo "::error::unexpected TestPyPI wheel URL: ${wheel_url}"; exit 1 ;;
+          esac
+          # Address the staged ZeoCore wheel directly and resolve its
+          # dependencies only from PyPI. uv's safe first-index strategy makes
+          # --index-url/--extra-index-url unsuitable here: PyPI can hide the
+          # staged ZeoCore version, while reversing the indexes lets stale or
+          # hostile TestPyPI dependency names hide valid PyPI dependencies.
           uv pip install --python /tmp/smoke-testpypi/bin/python --no-cache \
-            --index-url https://test.pypi.org/simple/ \
-            --extra-index-url https://pypi.org/simple/ \
-            "zeocore==${EXPECTED_VERSION}"
+            --default-index https://pypi.org/simple/ \
+            "${wheel_url}"
           /tmp/smoke-testpypi/bin/python -c "
           import sys
           import zeo_core

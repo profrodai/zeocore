@@ -62,6 +62,7 @@ def _validate_operation(operation: BusinessOperation, permitted: set[str]) -> No
         )
     _validate_path_template(operation.path_template)
     _validate_request_schema(operation.request_schema)
+    _validate_resource_argument(operation)
     if operation.effect is EffectKind.READ:
         return
     if not operation.secret_bindings:
@@ -81,6 +82,19 @@ def _validate_operation(operation: BusinessOperation, permitted: set[str]) -> No
         )
     if not operation.reconciliation_strategy:
         raise ConnectorAdmissionError("effectful operation must declare reconciliation")
+
+
+def _validate_resource_argument(operation: BusinessOperation) -> None:
+    if operation.resource_argument is None:
+        return
+    properties = operation.request_schema["properties"]
+    if not isinstance(properties, dict):  # defended by _validate_request_schema
+        raise ConnectorAdmissionError("resource argument has no properties map")
+    resource_schema = properties.get(operation.resource_argument)
+    if not isinstance(resource_schema, dict) or resource_schema.get("type") != "string":
+        raise ConnectorAdmissionError(
+            "resource argument must name a declared string request property"
+        )
 
 
 def validate_connection_admission(

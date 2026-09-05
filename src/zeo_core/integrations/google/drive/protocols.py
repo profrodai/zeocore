@@ -7,6 +7,9 @@ ensuring proper typing throughout the codebase and avoiding the use of Any.
 
 from typing import Protocol, TypeVar, runtime_checkable
 
+from zeo_core.integrations.core.protocols import IntegrationProtocol
+from zeo_core.integrations.core.results import IntegrationResult
+
 T = TypeVar("T")  # Generic type for result content
 R = TypeVar("R", covariant=True)  # Generic type for return values
 
@@ -177,3 +180,12 @@ class GoogleCredentials(Protocol):
     client_id: str
     client_secret: str
     scopes: list[str]
+
+
+@runtime_checkable
+class DriveDownloadProtocol(IntegrationProtocol, Protocol):
+    """Narrow selected-file surface shared by local and hosted Drive services."""
+
+    def download_file(
+        self, remote_id: str, local_path: str | None = None
+    ) -> IntegrationResult[str]: ...

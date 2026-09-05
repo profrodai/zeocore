@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-05
+
+### Added
+
+- A complete adapter-neutral `BrokerExecutionStore` protocol now covers the
+  durable nonce, idempotency, evidence, and outcome surface used by
+  `EffectOrchestrator`. SQLite remains the local implementation; hosted stores
+  no longer need to import or impersonate it.
+- `ObservationOrchestrator` provides a separate durable path for admitted READ
+  operations: exact authorization and selected-resource binding, atomic
+  idempotency, bounded and sanitized inline/artifact results, immutable
+  receipts, and failed-safe timeout handling without mutation-style ambiguity.
+- The admitted `notion.page.upsert` operation includes a closed request shape,
+  deterministic marker, one-call dispatcher, read-only reconciler, and
+  Keychain custody path. A lost create response reconciles by marker without a
+  second create.
+- Hosted Notion OAuth credential dispatch accepts organization-bound
+  `SecretRef` objects for refresh, introspection, and revocation while keeping
+  raw token material inside the custody callback.
+- Google Drive and Docs accept injected credential sources and client
+  factories. The named selected-file scope profile uses only `drive.file`.
+- A credential-free ZEOconnect client boundary and local/hosted service factory
+  provide protocol-compatible Drive download, Docs read, and confirmed Bluesky
+  post services. Remote downloads are size/digest verified and local paths
+  never cross the network.
+
+### Changed
+
+- Notion SDK construction has an explicit proxy policy and disables accidental
+  ambient proxy inheritance by default. Unit tests inject provider fakes; a
+  separately selected profile may opt into ambient transport configuration.
+- Workspace connector extras now include the legible `docs`, `sheets`, and
+  `slides` aliases in addition to the shared `google` family extra.
+- Coverage is measured to two decimals and guarded by a boundary meta-test:
+  89.99 fails and 90.00 passes.
+
+### Fixed
+
+- Release gates can no longer print success after accepting a rounded
+  below-threshold coverage result.
+- The HTTP callback test now matches the real synchronous boundary and no
+  longer leaves an un-awaited mock coroutine.
+- Jupytext fixtures carry stable cell IDs instead of relying on nbformat's
+  temporary repair behavior.
+- README test-suite wording and Bluesky tutorial release evidence no longer
+  describe stale 0.6-era bytes.
+
 ## [0.7.0] - 2026-09-05
 
 ### Added
@@ -476,6 +523,7 @@ MIT-licensed package.
   own test suite, and this package has never had a public release, so no
   back-compat was owed for it.
 
+[0.8.0]: https://github.com/profrodai/zeocore/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/profrodai/zeocore/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/profrodai/zeocore/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/profrodai/zeocore/compare/v0.4.0...v0.5.0

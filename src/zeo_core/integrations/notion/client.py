@@ -17,6 +17,7 @@ from .models import (
     NotionPage,
     NotionPageResult,
 )
+from .transport import build_notion_http_client
 
 NOTION_API_VERSION = "2026-03-11"
 MAX_PAGE_SIZE = 100
@@ -151,6 +152,7 @@ class NotionClient:
         timeout_ms: int = 60_000,
         max_retries: int = 3,
         sdk_client: Any = None,
+        trust_env: bool = False,
     ) -> None:  # noqa: ANN401, E501
         if not token or not token.strip():
             raise ValueError("A non-empty Notion token is required")
@@ -166,6 +168,7 @@ class NotionClient:
                 notion_version=NOTION_API_VERSION,
                 timeout_ms=timeout_ms,
                 retry=RetryOptions(max_retries=max_retries),
+                client=build_notion_http_client(trust_env=trust_env),
             )
 
     def __repr__(self) -> str:

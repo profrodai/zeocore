@@ -11,10 +11,10 @@ from __future__ import annotations
 
 from zeo_core.connections.adapters.macos_keychain import (
     KeychainEffectDispatcher,
+    KeychainEffectReconciler,
     KeychainSecretStore,
 )
 from zeo_core.connections.adapters.sqlite import (
-    ConfirmationEvidence,
     ConnectionStoreError,
     SQLiteConnectionStore,
 )
@@ -23,6 +23,7 @@ __all__ = [
     "ConfirmationEvidence",
     "ConnectionStoreError",
     "KeychainEffectDispatcher",
+    "KeychainEffectReconciler",
     "KeychainSecretStore",
     "SQLiteConnectionStore",
 ]

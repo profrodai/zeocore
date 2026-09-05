@@ -49,6 +49,7 @@ from __future__ import annotations
 from zeo_core.integrations.google.docs.models import Color
 from zeo_core.integrations.google.docs.protocols import (
     DocsIntegrationProtocol,
+    DocsReadProtocol,
 )
 from zeo_core.integrations.google.docs.request_builder import DocsRequestBuilder
 from zeo_core.integrations.google.docs.service import GoogleDocsService
@@ -58,6 +59,7 @@ __all__ = [
     "Color",
     "DocsRequestBuilder",
     "DocsIntegrationProtocol",
+    "DocsReadProtocol",
     "create_integration",
 ]
 

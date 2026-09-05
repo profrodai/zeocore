@@ -7,7 +7,7 @@ GitHub's TestGitHubMockedIntegration pattern one directory over.
 """
 
 from typing import Any
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -293,11 +293,18 @@ class TestNotionClientWrite:
 class TestNotionClientInit:
     """Constructor / default-SDK-wiring behavior."""
 
-    def test_real_sdk_client_constructed_when_none_injected(self) -> None:
-        """Without an injected sdk_client, NotionClient builds a real
-        notion_client.Client -- confirms the wiring is real, not just that
-        the injection seam exists."""
-        import notion_client
+    def test_default_sdk_wiring_uses_explicit_direct_transport(self) -> None:
+        sdk = MagicMock()
+        transport = MagicMock()
+        with (
+            patch("notion_client.Client", return_value=sdk) as sdk_factory,
+            patch(
+                "zeo_core.integrations.notion.client.build_notion_http_client",
+                return_value=transport,
+            ) as transport_factory,
+        ):
+            client = NotionClient(token="real_token_shape")  # noqa: S106 -- fixture
 
-        client = NotionClient(token="real_token_shape")  # noqa: S106 -- test fixture
-        assert isinstance(client._sdk, notion_client.Client)
+        assert client._sdk is sdk
+        transport_factory.assert_called_once_with(trust_env=False)
+        assert sdk_factory.call_args.kwargs["client"] is transport

@@ -32,6 +32,7 @@ from zeo_core.contracts.connections.enums import (
     RiskClass,
 )
 from zeo_core.contracts.connections.errors import NormalizedError
+from zeo_core.contracts.connections.evidence import ConfirmationEvidence
 from zeo_core.contracts.connections.execution import Execution
 from zeo_core.contracts.connections.identity import (
     AuthorizationId,
@@ -41,13 +42,23 @@ from zeo_core.contracts.connections.identity import (
     ConnectorRevisionId,
     ExecutionId,
     IdempotencyKey,
+    ObservationArtifactRef,
+    ObservationId,
     OperationId,
     OrganizationId,
     SecretRef,
 )
+from zeo_core.contracts.connections.observation import (
+    ObservationArtifact,
+    ObservationReceipt,
+    ObservationRecord,
+    ObservationState,
+)
 from zeo_core.contracts.connections.protocols import (
+    BrokerExecutionStore,
     ConnectionStore,
     EffectAuthorizationVerifier,
+    ObservationStore,
     SecretStore,
 )
 from zeo_core.contracts.connections.receipt import ExecutionReceipt
@@ -72,6 +83,8 @@ __all__ = [
     "OperationId",
     "AuthorizationId",
     "ExecutionId",
+    "ObservationId",
+    "ObservationArtifactRef",
     "IdempotencyKey",
     "SecretRef",
     "ConfirmationEvidenceRef",
@@ -96,6 +109,11 @@ __all__ = [
     "Execution",
     "NormalizedError",
     "ExecutionReceipt",
+    "ConfirmationEvidence",
+    "ObservationArtifact",
+    "ObservationRecord",
+    "ObservationReceipt",
+    "ObservationState",
     # Step-2 verdict/result value types
     "AuthorizationVerdict",
     "SecretHealth",
@@ -103,5 +121,7 @@ __all__ = [
     # Step-2 protocols
     "SecretStore",
     "ConnectionStore",
+    "BrokerExecutionStore",
+    "ObservationStore",
     "EffectAuthorizationVerifier",
 ]

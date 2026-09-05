@@ -3,16 +3,17 @@
 **Created:** 2026-09-01 · **Status:** ACTIVE
 
 `zeo_core.integrations.social.bluesky` posts to Bluesky with typed,
-`IntegrationResult`-returning calls. Every block below was executed
-against the installed package (`zeocore==0.6.0`) before being written
-here. The one thing this tutorial exists to stop you from getting wrong
+`IntegrationResult`-returning calls. This tutorial targets the current
+package contract (`zeocore==0.7.0`); credential-free paths are verified by
+the documentation gate, while live publishing requires an explicit operator
+credential checkpoint. The one thing this tutorial exists to stop you from getting wrong
 silently: **link/mention positions are UTF-8 byte offsets, not character
 offsets.**
 
 Requires the `bluesky` extra:
 
 ```bash
-uv pip install "zeocore[bluesky]>=0.6.0"
+uv pip install "zeocore[bluesky]>=0.7.0"
 ```
 
 ## Step 1 — the first error you will hit, and what it means

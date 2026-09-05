@@ -430,6 +430,8 @@ class TestCallbackSigning:
 
         # Setup mock
         mock_post = AsyncMock()
+        mock_response = MagicMock()
+        mock_post.return_value = mock_response
         mock_client.return_value.__aenter__.return_value.post = mock_post
 
         # Call function
@@ -443,6 +445,7 @@ class TestCallbackSigning:
         call_kwargs = mock_post.call_args.kwargs
         assert call_kwargs["json"] == body
         assert call_kwargs["headers"]["X-Zeo-Signature"] == signature
+        mock_response.raise_for_status.assert_called_once_with()
 
 
 class TestErrorHandling:

@@ -156,3 +156,10 @@ class DocsIntegrationProtocol(IntegrationProtocol, Protocol):
         """Append `text` to the end of the document body (index-free: the
         caller never computes or passes a text index)."""
         ...
+
+
+@runtime_checkable
+class DocsReadProtocol(IntegrationProtocol, Protocol):
+    """Narrow selected-document read surface shared by local and hosted services."""
+
+    def get_document_text(self, document_id: str) -> IntegrationResult[str]: ...

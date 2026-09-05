@@ -2197,7 +2197,7 @@ wheels = [
 
 [[package]]
 name = "zeocore"
-version = "0.7.0"
+version = "0.8.0"
 source = { editable = "." }
 dependencies = [
     { name = "jinja2" },
@@ -2247,6 +2247,12 @@ dev = [
     { name = "python-docx" },
     { name = "ruff" },
     { name = "types-pyyaml" },
+]
+docs = [
+    { name = "google-api-python-client" },
+    { name = "google-auth-httplib2" },
+    { name = "google-auth-oauthlib" },
+    { name = "platformdirs" },
 ]
 drive = [
     { name = "google-api-python-client" },
@@ -2311,6 +2317,18 @@ pandoc = [
     { name = "beautifulsoup4" },
     { name = "pypandoc" },
 ]
+sheets = [
+    { name = "google-api-python-client" },
+    { name = "google-auth-httplib2" },
+    { name = "google-auth-oauthlib" },
+    { name = "platformdirs" },
+]
+slides = [
+    { name = "google-api-python-client" },
+    { name = "google-auth-httplib2" },
+    { name = "google-auth-oauthlib" },
+    { name = "platformdirs" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -2326,19 +2344,28 @@ requires-dist = [
     { name = "ffmpeg-zeo", marker = "extra == 'ffmpeg'", specifier = ">=0.1.0" },
     { name = "google-api-python-client", marker = "extra == 'all'", specifier = ">=2.0.0" },
     { name = "google-api-python-client", marker = "extra == 'calendar'", specifier = ">=2.0.0" },
+    { name = "google-api-python-client", marker = "extra == 'docs'", specifier = ">=2.0.0" },
     { name = "google-api-python-client", marker = "extra == 'drive'", specifier = ">=2.0.0" },
     { name = "google-api-python-client", marker = "extra == 'gmail'", specifier = ">=2.0.0" },
     { name = "google-api-python-client", marker = "extra == 'google'", specifier = ">=2.0.0" },
+    { name = "google-api-python-client", marker = "extra == 'sheets'", specifier = ">=2.0.0" },
+    { name = "google-api-python-client", marker = "extra == 'slides'", specifier = ">=2.0.0" },
     { name = "google-auth-httplib2", marker = "extra == 'all'", specifier = ">=0.1.0" },
     { name = "google-auth-httplib2", marker = "extra == 'calendar'", specifier = ">=0.1.0" },
+    { name = "google-auth-httplib2", marker = "extra == 'docs'", specifier = ">=0.1.0" },
     { name = "google-auth-httplib2", marker = "extra == 'drive'", specifier = ">=0.1.0" },
     { name = "google-auth-httplib2", marker = "extra == 'gmail'", specifier = ">=0.1.0" },
     { name = "google-auth-httplib2", marker = "extra == 'google'", specifier = ">=0.1.0" },
+    { name = "google-auth-httplib2", marker = "extra == 'sheets'", specifier = ">=0.1.0" },
+    { name = "google-auth-httplib2", marker = "extra == 'slides'", specifier = ">=0.1.0" },
     { name = "google-auth-oauthlib", marker = "extra == 'all'", specifier = ">=0.4.0" },
     { name = "google-auth-oauthlib", marker = "extra == 'calendar'", specifier = ">=0.4.0" },
+    { name = "google-auth-oauthlib", marker = "extra == 'docs'", specifier = ">=0.4.0" },
     { name = "google-auth-oauthlib", marker = "extra == 'drive'", specifier = ">=0.4.0" },
     { name = "google-auth-oauthlib", marker = "extra == 'gmail'", specifier = ">=0.4.0" },
     { name = "google-auth-oauthlib", marker = "extra == 'google'", specifier = ">=0.4.0" },
+    { name = "google-auth-oauthlib", marker = "extra == 'sheets'", specifier = ">=0.4.0" },
+    { name = "google-auth-oauthlib", marker = "extra == 'slides'", specifier = ">=0.4.0" },
     { name = "hatchling", marker = "extra == 'dev'" },
     { name = "httpx", marker = "extra == 'http'", specifier = ">=0.27" },
     { name = "httpx", marker = "extra == 'http-dev'", specifier = ">=0.27" },
@@ -2360,9 +2387,12 @@ requires-dist = [
     { name = "platformdirs", marker = "extra == 'all'", specifier = ">=4.0.0" },
     { name = "platformdirs", marker = "extra == 'bluesky'", specifier = ">=4.0.0" },
     { name = "platformdirs", marker = "extra == 'calendar'", specifier = ">=4.0.0" },
+    { name = "platformdirs", marker = "extra == 'docs'", specifier = ">=4.0.0" },
     { name = "platformdirs", marker = "extra == 'drive'", specifier = ">=4.0.0" },
     { name = "platformdirs", marker = "extra == 'gmail'", specifier = ">=4.0.0" },
     { name = "platformdirs", marker = "extra == 'google'", specifier = ">=4.0.0" },
+    { name = "platformdirs", marker = "extra == 'sheets'", specifier = ">=4.0.0" },
+    { name = "platformdirs", marker = "extra == 'slides'", specifier = ">=4.0.0" },
     { name = "pydantic", specifier = ">=2.6.0" },
     { name = "pydantic", marker = "extra == 'http'", specifier = ">=2" },
     { name = "pydantic", marker = "extra == 'http-dev'", specifier = ">=2" },
@@ -2388,4 +2418,4 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'http'", specifier = ">=0.30" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'http-dev'", specifier = ">=0.30" },
 ]
-provides-extras = ["http", "http-dev", "mcp", "mcp-dev", "dev", "lint", "gmail", "notion", "google", "drive", "calendar", "pandoc", "llms", "github", "bluesky", "ffmpeg", "jupytext", "all"]
+provides-extras = ["http", "http-dev", "mcp", "mcp-dev", "dev", "lint", "gmail", "notion", "google", "docs", "sheets", "slides", "drive", "calendar", "pandoc", "llms", "github", "bluesky", "ffmpeg", "jupytext", "all"]
