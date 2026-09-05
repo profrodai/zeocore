@@ -242,7 +242,7 @@ module by module.
 
 ## Project status
 
-ZeoCore **0.6.0** is a beta library: the API is typed and tested, and this
+ZeoCore **0.7.0** is a beta library: the API is typed and tested, and this
 release is the canonical capability-authoring surface for the Zero Employee
 ecosystem. The surface may still shift before 1.0. Issues, questions, and API
 feedback are welcome.
