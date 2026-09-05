@@ -104,7 +104,7 @@ gmail = [
     "platformdirs>=4.0.0",
 ]
 notion = [
-    "notion-client>=1.0.0",
+    "notion-client>=3.1.0",
 ]
 google = [
     "google-api-python-client>=2.0.0",
@@ -140,7 +140,7 @@ all = [
     "google-auth-httplib2>=0.1.0",
     "google-auth-oauthlib>=0.4.0",
     "platformdirs>=4.0.0",
-    "notion-client>=1.0.0",
+    "notion-client>=3.1.0",
     "pypandoc",
     "beautifulsoup4",
     "tiktoken",

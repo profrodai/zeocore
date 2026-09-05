@@ -1,7 +1,7 @@
 """Notion integration for zeo_core.
 
-Read + write access to Notion pages, databases, and blocks via the official
-`notion-client` SDK. Follows the same shape as `integrations.github` and
+Complete Notion API 2026-03-11 access via the official `notion-client` SDK.
+Follows the same shape as `integrations.github` and
 `integrations.google` -- a config provider, an auth provider, a thin SDK
 client wrapper, and a service class implementing `NotionIntegrationProtocol`
 -- and registers under the `zeo_core.integrations` entry-point group the
@@ -49,15 +49,23 @@ Every call returns an `IntegrationResult[T]` (`.success`, `.content`,
 from __future__ import annotations
 
 from .auth import NotionAuthProvider
-from .client import NotionClient, NotionNoDataSourceError
+from .client import (
+    NOTION_API_VERSION,
+    NotionAPIError,
+    NotionClient,
+    NotionNoDataSourceError,
+    NotionOperation,
+)
 from .config import NotionConfig, NotionConfigProvider
 from .models import (
     NotionBlock,
     NotionDatabase,
     NotionDataSource,
     NotionPage,
+    NotionPageResult,
     NotionUser,
 )
+from .oauth import NotionOAuthBroker, NotionOAuthGrant
 from .protocols import NotionIntegrationProtocol
 from .service import NotionIntegration
 
@@ -76,8 +84,14 @@ __all__ = [
     "NotionPage",
     "NotionUser",
     "NotionConfig",
+    "NotionOAuthBroker",
+    "NotionOAuthGrant",
+    "NotionPageResult",
+    "NotionOperation",
+    "NOTION_API_VERSION",
     # Errors
     "NotionNoDataSourceError",
+    "NotionAPIError",
     # Factory function
     "create_integration",
 ]

@@ -1,301 +1,331 @@
-"""Notion API client wrapper for zeo_core.
+"""Complete synchronous facade for Notion API 2026-03-11."""
 
-Wraps the official `notion-client` SDK (https://pypi.org/project/notion-client/,
-package `notion_client`, upstream `ramnes/notion-sdk-py`) rather than
-hand-rolling HTTP the way `github/client.py` does over raw `requests` --
-`notion-client` already owns retry/backoff, rate-limit handling, and error
-typing (`notion_client.errors.APIResponseError`), so this wrapper's job is
-narrowing that general SDK surface to zeocore's Result/model conventions,
-not reimplementing HTTP plumbing.
+# ruff: noqa: ANN401, A002 -- the upstream API is an intentionally heterogeneous
+# JSON surface; preserving arbitrary keyword payloads is the compatibility seam.
 
-**The 2025-09-03 API version's data-source model, and why `query_database`
-exists.** As of the Notion API version this SDK targets (`notion_client`
->=1.0.0, confirmed against the installed 3.1.0 and the 2.7.0 floor alike),
-a Notion "database" is a container for one or more "data sources," and
-querying happens against a *data source ID*, not the database ID directly
-(`notion_client.api_endpoints.DataSourcesEndpoint.query`; there is no
-`databases.query` method in this SDK generation -- confirmed by reading
-`api_endpoints.py` directly, not assumed from older docs). The overwhelming
-common case is one implicit data source per database (that's the shape
-every pre-2025 "Notion database" already had). `query_database` below
-hides that indirection: it retrieves the database, resolves its first data
-source, and queries that -- so a caller asking to "query a database with
-filters" (the plain-English, common-case ask) does not need to learn the
-data-source split unless their database genuinely has more than one source,
-in which case `list_data_sources`/`query_data_source` are available directly.
-"""
+from __future__ import annotations
 
+import json
+from collections.abc import Callable, Iterator, Mapping
+from enum import StrEnum
 from typing import Any
 
-from zeo_core.core.logging import get_logger
+from .models import (
+    NotionBlock,
+    NotionDatabase,
+    NotionDataSource,
+    NotionPage,
+    NotionPageResult,
+)
 
-from .models import NotionBlock, NotionDatabase, NotionDataSource, NotionPage
+NOTION_API_VERSION = "2026-03-11"
+MAX_PAGE_SIZE = 100
+MAX_BLOCK_CHILDREN = 1_000
+MAX_REQUEST_BYTES = 500_000
 
-logger = get_logger(__name__)
+
+class NotionNoDataSourceError(ValueError):
+    """A database has no single unambiguous data source."""
 
 
-class NotionNoDataSourceError(Exception):
-    """Raised when a database has no data source to query."""
+class NotionAPIError(RuntimeError):
+    """Credential-free normalized Notion failure."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: str = "notion_error",
+        status: int | None = None,
+        retryable: bool = False,
+        retry_after: float | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.code, self.status = code, status
+        self.retryable, self.retry_after = retryable, retry_after
+
+
+class NotionOperation(StrEnum):
+    """All public non-OAuth operations in notion-client 3.1.0."""
+
+    BLOCK_APPEND_CHILDREN = "block.append_children"
+    BLOCK_LIST_CHILDREN = "block.list_children"
+    BLOCK_QUERY_MEETING_NOTES = "block.query_meeting_notes"
+    BLOCK_RETRIEVE = "block.retrieve"
+    BLOCK_UPDATE = "block.update"
+    BLOCK_DELETE = "block.delete"
+    DATABASE_RETRIEVE = "database.retrieve"
+    DATABASE_CREATE = "database.create"
+    DATABASE_UPDATE = "database.update"
+    DATA_SOURCE_RETRIEVE = "data_source.retrieve"
+    DATA_SOURCE_QUERY = "data_source.query"
+    DATA_SOURCE_CREATE = "data_source.create"
+    DATA_SOURCE_UPDATE = "data_source.update"
+    DATA_SOURCE_LIST_TEMPLATES = "data_source.list_templates"
+    PAGE_RETRIEVE = "page.retrieve"
+    PAGE_RETRIEVE_PROPERTY = "page.retrieve_property"
+    PAGE_CREATE = "page.create"
+    PAGE_UPDATE = "page.update"
+    PAGE_RETRIEVE_MARKDOWN = "page.retrieve_markdown"
+    PAGE_UPDATE_MARKDOWN = "page.update_markdown"
+    PAGE_MOVE = "page.move"
+    USER_LIST = "user.list"
+    USER_RETRIEVE = "user.retrieve"
+    USER_ME = "user.me"
+    SEARCH = "search"
+    CUSTOM_EMOJI_LIST = "custom_emoji.list"
+    COMMENT_CREATE = "comment.create"
+    COMMENT_LIST = "comment.list"
+    COMMENT_RETRIEVE = "comment.retrieve"
+    COMMENT_UPDATE = "comment.update"
+    COMMENT_DELETE = "comment.delete"
+    FILE_UPLOAD_CREATE = "file_upload.create"
+    FILE_UPLOAD_SEND = "file_upload.send"
+    FILE_UPLOAD_COMPLETE = "file_upload.complete"
+    FILE_UPLOAD_RETRIEVE = "file_upload.retrieve"
+    FILE_UPLOAD_LIST = "file_upload.list"
+    VIEW_CREATE = "view.create"
+    VIEW_RETRIEVE = "view.retrieve"
+    VIEW_UPDATE = "view.update"
+    VIEW_DELETE = "view.delete"
+    VIEW_LIST = "view.list"
+    VIEW_QUERY_CREATE = "view_query.create"
+    VIEW_QUERY_RESULTS = "view_query.results"
+    VIEW_QUERY_DELETE = "view_query.delete"
+
+
+_PATHS: Mapping[NotionOperation, str] = {
+    NotionOperation.BLOCK_APPEND_CHILDREN: "blocks.children.append",
+    NotionOperation.BLOCK_LIST_CHILDREN: "blocks.children.list",
+    NotionOperation.BLOCK_QUERY_MEETING_NOTES: "blocks.meeting_notes.query",
+    NotionOperation.BLOCK_RETRIEVE: "blocks.retrieve",
+    NotionOperation.BLOCK_UPDATE: "blocks.update",
+    NotionOperation.BLOCK_DELETE: "blocks.delete",
+    NotionOperation.DATABASE_RETRIEVE: "databases.retrieve",
+    NotionOperation.DATABASE_CREATE: "databases.create",
+    NotionOperation.DATABASE_UPDATE: "databases.update",
+    NotionOperation.DATA_SOURCE_RETRIEVE: "data_sources.retrieve",
+    NotionOperation.DATA_SOURCE_QUERY: "data_sources.query",
+    NotionOperation.DATA_SOURCE_CREATE: "data_sources.create",
+    NotionOperation.DATA_SOURCE_UPDATE: "data_sources.update",
+    NotionOperation.DATA_SOURCE_LIST_TEMPLATES: "data_sources.list_templates",
+    NotionOperation.PAGE_RETRIEVE: "pages.retrieve",
+    NotionOperation.PAGE_RETRIEVE_PROPERTY: "pages.properties.retrieve",
+    NotionOperation.PAGE_CREATE: "pages.create",
+    NotionOperation.PAGE_UPDATE: "pages.update",
+    NotionOperation.PAGE_RETRIEVE_MARKDOWN: "pages.retrieve_markdown",
+    NotionOperation.PAGE_UPDATE_MARKDOWN: "pages.update_markdown",
+    NotionOperation.PAGE_MOVE: "pages.move",
+    NotionOperation.USER_LIST: "users.list",
+    NotionOperation.USER_RETRIEVE: "users.retrieve",
+    NotionOperation.USER_ME: "users.me",
+    NotionOperation.SEARCH: "search",
+    NotionOperation.CUSTOM_EMOJI_LIST: "custom_emojis.list",
+    NotionOperation.COMMENT_CREATE: "comments.create",
+    NotionOperation.COMMENT_LIST: "comments.list",
+    NotionOperation.COMMENT_RETRIEVE: "comments.retrieve",
+    NotionOperation.COMMENT_UPDATE: "comments.update",
+    NotionOperation.COMMENT_DELETE: "comments.delete",
+    NotionOperation.FILE_UPLOAD_CREATE: "file_uploads.create",
+    NotionOperation.FILE_UPLOAD_SEND: "file_uploads.send",
+    NotionOperation.FILE_UPLOAD_COMPLETE: "file_uploads.complete",
+    NotionOperation.FILE_UPLOAD_RETRIEVE: "file_uploads.retrieve",
+    NotionOperation.FILE_UPLOAD_LIST: "file_uploads.list",
+    NotionOperation.VIEW_CREATE: "views.create",
+    NotionOperation.VIEW_RETRIEVE: "views.retrieve",
+    NotionOperation.VIEW_UPDATE: "views.update",
+    NotionOperation.VIEW_DELETE: "views.delete",
+    NotionOperation.VIEW_LIST: "views.list",
+    NotionOperation.VIEW_QUERY_CREATE: "views.queries.create",
+    NotionOperation.VIEW_QUERY_RESULTS: "views.queries.results",
+    NotionOperation.VIEW_QUERY_DELETE: "views.queries.delete",
+}
 
 
 class NotionClient:
-    """Client for interacting with the Notion API, wrapping notion_client.Client."""
+    """Current-version Notion client with complete endpoint reachability."""
 
     def __init__(
         self,
         token: str,
         timeout_ms: int = 60_000,
         max_retries: int = 3,
-        sdk_client: Any = None,  # noqa: ANN401 -- injectable for testing; real default is notion_client.Client
-    ) -> None:
-        """Initialize the Notion client.
-
-        Args:
-            token: Notion integration token
-            timeout_ms: Request timeout in milliseconds
-            max_retries: Maximum number of retries for requests
-            sdk_client: Optional pre-built notion_client.Client (or a test
-                double satisfying the same surface), for testing.
-        """
-        self.token = token
-        self.timeout_ms = timeout_ms
-        self.max_retries = max_retries
-
+        sdk_client: Any = None,
+    ) -> None:  # noqa: ANN401, E501
+        if not token or not token.strip():
+            raise ValueError("A non-empty Notion token is required")
+        self.timeout_ms, self.max_retries = timeout_ms, max_retries
         if sdk_client is not None:
             self._sdk = sdk_client
         else:
-            from notion_client import Client as NotionSDKClient
+            from notion_client import Client as SDKClient
             from notion_client import RetryOptions
 
-            self._sdk = NotionSDKClient(
+            self._sdk = SDKClient(
                 auth=token,
+                notion_version=NOTION_API_VERSION,
                 timeout_ms=timeout_ms,
                 retry=RetryOptions(max_retries=max_retries),
             )
 
-    # ------------------------------------------------------------------
-    # Read: pages
-    # ------------------------------------------------------------------
+    def __repr__(self) -> str:
+        return (
+            f"NotionClient(api_version={NOTION_API_VERSION!r}, "
+            f"timeout_ms={self.timeout_ms}, max_retries={self.max_retries})"
+        )
+
+    @property
+    def supported_operations(self) -> frozenset[NotionOperation]:
+        return frozenset(_PATHS)
+
+    def execute(
+        self, operation: NotionOperation | str, **kwargs: Any
+    ) -> dict[str, Any]:  # noqa: ANN401
+        _assert_current_payload(kwargs)
+        try:
+            selected = NotionOperation(operation)
+        except ValueError:
+            raise ValueError("Unsupported Notion operation") from None
+        target: Any = self._sdk
+        for segment in _PATHS[selected].split("."):
+            target = getattr(target, segment)
+        return self._call(target, **kwargs)
+
+    def _call(self, function: Callable[..., Any], **kwargs: Any) -> dict[str, Any]:
+        try:
+            response = function(**kwargs)
+            return response if isinstance(response, dict) else dict(response)
+        except Exception as exc:
+            # Provider exceptions can retain request data.  The normalized
+            # error is deliberately bounded, so do not chain the original.
+            raise _normalize_error(exc) from None
+
+    def paged(
+        self,
+        operation: NotionOperation | str,
+        *,
+        page_size: int = MAX_PAGE_SIZE,
+        start_cursor: str | None = None,
+        **kwargs: Any,
+    ) -> NotionPageResult[dict[str, Any]]:  # noqa: ANN401, E501
+        _validate_page_size(page_size)
+        if start_cursor is not None:
+            kwargs["start_cursor"] = start_cursor
+        kwargs["page_size"] = page_size
+        return NotionPageResult.from_response(self.execute(operation, **kwargs))
+
+    def iterate(
+        self,
+        operation: NotionOperation | str,
+        *,
+        page_size: int = MAX_PAGE_SIZE,
+        **kwargs: Any,
+    ) -> Iterator[dict[str, Any]]:  # noqa: ANN401, E501
+        cursor: str | None = None
+        while True:
+            page = self.paged(
+                operation, page_size=page_size, start_cursor=cursor, **kwargs
+            )
+            yield from page.items
+            if not page.has_more:
+                return
+            if not page.next_cursor:
+                raise NotionAPIError(
+                    "Notion returned has_more without next_cursor",
+                    code="invalid_pagination_response",
+                )
+            cursor = page.next_cursor
 
     def get_page(self, page_id: str) -> NotionPage:
-        """Retrieve a page by ID.
-
-        Args:
-            page_id: Notion page ID
-
-        Returns:
-            NotionPage object
-
-        Raises:
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        data = self._sdk.pages.retrieve(page_id=page_id)
-        return _page_from_response(data)
+        return _page(self.execute(NotionOperation.PAGE_RETRIEVE, page_id=page_id))
 
     def list_page_blocks(
         self, page_id: str, page_size: int = 100, start_cursor: str | None = None
     ) -> tuple[list[NotionBlock], str | None]:
-        """List the top-level content blocks of a page (or any block's children).
-
-        Args:
-            page_id: Notion page or block ID
-            page_size: Max number of blocks to return in this page of results
-            start_cursor: Pagination cursor from a previous call
-
-        Returns:
-            Tuple of (blocks, next_cursor). next_cursor is None when there
-            are no more results.
-
-        Raises:
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        kwargs: dict[str, Any] = {"block_id": page_id, "page_size": page_size}
-        if start_cursor:
-            kwargs["start_cursor"] = start_cursor
-
-        data = self._sdk.blocks.children.list(**kwargs)
-        blocks = [_block_from_response(b) for b in data.get("results", [])]
-        next_cursor = data.get("next_cursor") if data.get("has_more") else None
-        return blocks, next_cursor
+        page = self.paged(
+            NotionOperation.BLOCK_LIST_CHILDREN,
+            block_id=page_id,
+            page_size=page_size,
+            start_cursor=start_cursor,
+        )
+        return [_block(item) for item in page.items], page.next_cursor
 
     def search(
         self,
         query: str | None = None,
         filter_object_type: str | None = None,
         page_size: int = 100,
+        start_cursor: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Search pages and databases shared with the integration.
-
-        Args:
-            query: Text to search for (empty/None returns all shared objects)
-            filter_object_type: Restrict results to "page" or "database"
-            page_size: Max number of results to return
-
-        Returns:
-            List of raw Notion object dicts (pages and/or databases) -- kept
-            raw rather than coerced to NotionPage/NotionDatabase because
-            search results mix both object types in one list.
-
-        Raises:
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        kwargs: dict[str, Any] = {"page_size": page_size}
+        kwargs: dict[str, Any] = {}
         if query:
             kwargs["query"] = query
         if filter_object_type:
+            if filter_object_type not in {"page", "data_source"}:
+                raise ValueError("filter_object_type must be 'page' or 'data_source'")
             kwargs["filter"] = {"property": "object", "value": filter_object_type}
-
-        data = self._sdk.search(**kwargs)
-        results: list[dict[str, Any]] = data.get("results", [])
-        return results
-
-    # ------------------------------------------------------------------
-    # Read: databases / data sources
-    # ------------------------------------------------------------------
+        return self.paged(
+            NotionOperation.SEARCH,
+            page_size=page_size,
+            start_cursor=start_cursor,
+            **kwargs,
+        ).items
 
     def get_database(self, database_id: str) -> NotionDatabase:
-        """Retrieve a database's metadata (title, properties, data sources).
-
-        Args:
-            database_id: Notion database ID
-
-        Returns:
-            NotionDatabase object
-
-        Raises:
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        data = self._sdk.databases.retrieve(database_id=database_id)
-        return _database_from_response(data)
+        return _database(
+            self.execute(NotionOperation.DATABASE_RETRIEVE, database_id=database_id)
+        )
 
     def list_data_sources(self, database_id: str) -> list[NotionDataSource]:
-        """List the data sources contained in a database.
-
-        Args:
-            database_id: Notion database ID
-
-        Returns:
-            List of NotionDataSource objects
-        """
         return self.get_database(database_id).data_sources
 
     def query_data_source(
         self,
         data_source_id: str,
-        filter: dict[str, Any] | None = None,  # noqa: A002 -- matches the Notion API's own "filter" field name; shadowing the builtin is the clearest name here (see GitHub client.py, no `filter` precedent, but same convention as notion_client's own DataSourcesEndpoint.query kwarg)
+        filter: dict[str, Any] | None = None,
         sorts: list[dict[str, Any]] | None = None,
         page_size: int = 100,
         start_cursor: str | None = None,
-    ) -> tuple[list[NotionPage], str | None]:
-        """Query a specific data source directly (bypasses database resolution).
-
-        Args:
-            data_source_id: Notion data source ID
-            filter: Notion filter object (see Notion API docs for shape)
-            sorts: List of Notion sort objects
-            page_size: Max number of results to return in this page
-            start_cursor: Pagination cursor from a previous call
-
-        Returns:
-            Tuple of (pages, next_cursor). next_cursor is None when there
-            are no more results.
-
-        Raises:
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        kwargs: dict[str, Any] = {
-            "data_source_id": data_source_id,
-            "page_size": page_size,
-        }
-        if filter:
+    ) -> tuple[list[NotionPage], str | None]:  # noqa: A002, E501
+        kwargs: dict[str, Any] = {"data_source_id": data_source_id}
+        if filter is not None:
             kwargs["filter"] = filter
-        if sorts:
+        if sorts is not None:
             kwargs["sorts"] = sorts
-        if start_cursor:
-            kwargs["start_cursor"] = start_cursor
-
-        data = self._sdk.data_sources.query(**kwargs)
-        pages = [_page_from_response(p) for p in data.get("results", [])]
-        next_cursor = data.get("next_cursor") if data.get("has_more") else None
-        return pages, next_cursor
-
-    def query_database(
-        self,
-        database_id: str,
-        filter: dict[str, Any] | None = None,  # noqa: A002 -- see query_data_source's identical noqa
-        sorts: list[dict[str, Any]] | None = None,
-        page_size: int = 100,
-        start_cursor: str | None = None,
-    ) -> tuple[list[NotionPage], str | None]:
-        """Query a database's (first / default) data source with an optional filter.
-
-        Convenience entry point for the common case (see this module's
-        docstring): resolves the database's first data source, then queries
-        it. A database with more than one data source should call
-        `list_data_sources` + `query_data_source` directly instead.
-
-        Args:
-            database_id: Notion database ID
-            filter: Notion filter object (see Notion API docs for shape)
-            sorts: List of Notion sort objects
-            page_size: Max number of results to return in this page
-            start_cursor: Pagination cursor from a previous call
-
-        Returns:
-            Tuple of (pages, next_cursor).
-
-        Raises:
-            NotionNoDataSourceError: If the database has no data source
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        database = self.get_database(database_id)
-        if not database.data_sources:
-            raise NotionNoDataSourceError(
-                f"Database {database_id} has no queryable data source"
-            )
-
-        data_source_id = database.data_sources[0].id
-        return self.query_data_source(
-            data_source_id=data_source_id,
-            filter=filter,
-            sorts=sorts,
+        page = self.paged(
+            NotionOperation.DATA_SOURCE_QUERY,
             page_size=page_size,
             start_cursor=start_cursor,
+            **kwargs,
         )
+        return [_page(item) for item in page.items], page.next_cursor
 
-    # ------------------------------------------------------------------
-    # Write: pages
-    # ------------------------------------------------------------------
+    def _sole_data_source(self, database_id: str) -> str:
+        sources = self.list_data_sources(database_id)
+        if len(sources) != 1:
+            raise NotionNoDataSourceError(
+                f"Database {database_id} has {len(sources)} data sources; "
+                "pass a data_source_id explicitly"
+            )
+        return sources[0].id
+
+    def query_database(
+        self, database_id: str, **kwargs: Any
+    ) -> tuple[list[NotionPage], str | None]:  # noqa: ANN401
+        return self.query_data_source(self._sole_data_source(database_id), **kwargs)
 
     def create_page(
         self,
         parent: dict[str, Any],
         properties: dict[str, Any],
         children: list[dict[str, Any]] | None = None,
-    ) -> NotionPage:
-        """Create a new page (in a database's data source, or under a page).
-
-        Args:
-            parent: Notion parent reference, e.g.
-                {"type": "data_source_id", "data_source_id": "..."} to create
-                a database entry, or {"type": "page_id", "page_id": "..."} to
-                create a sub-page.
-            properties: Property values for the new page (its database-entry
-                column values, or just {"title": [...]} for a plain sub-page)
-            children: Optional initial content blocks
-
-        Returns:
-            NotionPage object for the created page
-
-        Raises:
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        kwargs: dict[str, Any] = {"parent": parent, "properties": properties}
-        if children:
+        **fields: Any,
+    ) -> NotionPage:  # noqa: ANN401, E501
+        kwargs: dict[str, Any] = {"parent": parent, "properties": properties, **fields}
+        if children is not None:
+            _validate_block_payload(children)
             kwargs["children"] = children
-
-        data = self._sdk.pages.create(**kwargs)
-        return _page_from_response(data)
+        return _page(self.execute(NotionOperation.PAGE_CREATE, **kwargs))
 
     def create_database_entry(
         self,
@@ -303,152 +333,163 @@ class NotionClient:
         properties: dict[str, Any],
         children: list[dict[str, Any]] | None = None,
     ) -> NotionPage:
-        """Create a new entry (page) in a database's default data source.
-
-        Convenience wrapper over create_page that resolves the database's
-        first data source the same way query_database does, so a caller
-        adding a row to a database does not need to learn the data-source
-        split for the common single-data-source case.
-
-        Args:
-            database_id: Notion database ID
-            properties: Property values for the new entry
-            children: Optional initial content blocks
-
-        Returns:
-            NotionPage object for the created entry
-
-        Raises:
-            NotionNoDataSourceError: If the database has no data source
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        database = self.get_database(database_id)
-        if not database.data_sources:
-            raise NotionNoDataSourceError(
-                f"Database {database_id} has no data source to add an entry to"
-            )
-
         parent = {
             "type": "data_source_id",
-            "data_source_id": database.data_sources[0].id,
+            "data_source_id": self._sole_data_source(database_id),
         }
-        return self.create_page(parent=parent, properties=properties, children=children)
+        return self.create_page(parent, properties, children)
 
     def update_page(
         self,
         page_id: str,
         properties: dict[str, Any] | None = None,
         archived: bool | None = None,
-    ) -> NotionPage:
-        """Update a page's properties (a database entry's column values) or
-        archived state.
-
-        Args:
-            page_id: Notion page ID
-            properties: Property values to update
-            archived: Set True to archive (soft-delete), False to restore
-
-        Returns:
-            Updated NotionPage object
-
-        Raises:
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        kwargs: dict[str, Any] = {"page_id": page_id}
+        *,
+        in_trash: bool | None = None,
+        **fields: Any,
+    ) -> NotionPage:  # noqa: ANN401, E501
+        if archived is not None and in_trash is not None:
+            raise ValueError("Pass only in_trash; archived is a compatibility alias")
+        kwargs: dict[str, Any] = {"page_id": page_id, **fields}
         if properties is not None:
             kwargs["properties"] = properties
-        if archived is not None:
-            kwargs["archived"] = archived
-
-        data = self._sdk.pages.update(**kwargs)
-        return _page_from_response(data)
-
-    # ------------------------------------------------------------------
-    # Write: blocks
-    # ------------------------------------------------------------------
+        trash = in_trash if in_trash is not None else archived
+        if trash is not None:
+            kwargs["in_trash"] = trash
+        return _page(self.execute(NotionOperation.PAGE_UPDATE, **kwargs))
 
     def append_blocks(
-        self, block_id: str, children: list[dict[str, Any]]
+        self,
+        block_id: str,
+        children: list[dict[str, Any]],
+        *,
+        position: dict[str, Any] | None = None,
     ) -> list[NotionBlock]:
-        """Append content blocks to a page or block.
+        _validate_block_payload(children)
+        kwargs: dict[str, Any] = {"block_id": block_id, "children": children}
+        if position is not None:
+            kwargs["position"] = position
+        data = self.execute(NotionOperation.BLOCK_APPEND_CHILDREN, **kwargs)
+        return [_block(item) for item in data.get("results", [])]
 
-        Args:
-            block_id: Notion page or block ID to append under
-            children: List of Notion block objects to append (see Notion API
-                docs for block object shape, e.g.
-                {"object": "block", "type": "paragraph",
-                 "paragraph": {"rich_text": [...]}})
+    def update_block(self, block_id: str, **fields: Any) -> NotionBlock:  # noqa: ANN401
+        return _block(
+            self.execute(NotionOperation.BLOCK_UPDATE, block_id=block_id, **fields)
+        )
 
-        Returns:
-            List of NotionBlock objects that were appended
-
-        Raises:
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        data = self._sdk.blocks.children.append(block_id=block_id, children=children)
-        return [_block_from_response(b) for b in data.get("results", [])]
-
-    def update_block(self, block_id: str, **fields: Any) -> NotionBlock:  # noqa: ANN401 -- passthrough to notion_client's own type-specific block update payload (e.g. paragraph=..., to_do=...), genuinely heterogeneous per block type
-        """Update a single block's content (e.g. mark a to_do complete).
-
-        Args:
-            block_id: Notion block ID
-            **fields: Block-type-specific update payload, e.g.
-                `to_do={"checked": True}`
-
-        Returns:
-            Updated NotionBlock object
-
-        Raises:
-            notion_client.errors.APIResponseError: If the API request fails
-        """
-        data = self._sdk.blocks.update(block_id=block_id, **fields)
-        return _block_from_response(data)
+    def delete_block(self, block_id: str) -> NotionBlock:
+        return _block(self.execute(NotionOperation.BLOCK_DELETE, block_id=block_id))
 
 
-# ----------------------------------------------------------------------
-# Response -> model coercion helpers
-# ----------------------------------------------------------------------
+def _validate_page_size(page_size: int) -> None:
+    if (
+        isinstance(page_size, bool)
+        or not isinstance(page_size, int)
+        or not 1 <= page_size <= MAX_PAGE_SIZE
+    ):
+        raise ValueError("page_size must be an integer from 1 through 100")
 
 
-def _page_from_response(data: dict[str, Any]) -> NotionPage:
-    """Build a NotionPage from a raw Notion API page object."""
+def _validate_block_payload(children: list[dict[str, Any]]) -> None:
+    if len(children) > MAX_BLOCK_CHILDREN:
+        raise ValueError("A Notion request may contain at most 1000 block elements")
+    encoded = json.dumps(children, ensure_ascii=False, separators=(",", ":")).encode()
+    if len(encoded) > MAX_REQUEST_BYTES:
+        raise ValueError("A Notion request may contain at most 500000 encoded bytes")
+
+
+def _assert_current_payload(value: object) -> None:
+    """Reject fields removed from the selected wire version at any depth."""
+    if isinstance(value, dict):
+        removed = {"archived", "after"}.intersection(value)
+        if removed:
+            names = ", ".join(sorted(removed))
+            raise ValueError(f"Notion API {NOTION_API_VERSION} removed: {names}")
+        if value.get("type") == "transcription":
+            raise ValueError(
+                f"Notion API {NOTION_API_VERSION} renamed transcription "
+                "to meeting_notes"
+            )
+        for nested in value.values():
+            _assert_current_payload(nested)
+    elif isinstance(value, (list, tuple)):
+        for nested in value:
+            _assert_current_payload(nested)
+
+
+def _normalize_error(exc: Exception) -> NotionAPIError:
+    status = getattr(exc, "status", None)
+    code_value = getattr(exc, "code", None)
+    code = getattr(code_value, "value", code_value) or type(exc).__name__
+    headers, retry_after = getattr(exc, "headers", None), None
+    if headers:
+        try:
+            retry_after = float(headers.get("retry-after"))
+        except TypeError, ValueError:
+            pass
+    retryable = status == 429 or (isinstance(status, int) and status >= 500)
+    messages: dict[int | None, str] = {
+        400: "Notion rejected the request",
+        401: "Notion authentication failed",
+        403: "Notion denied the requested capability",
+        404: "Notion resource was not found or is not shared with the integration",
+        409: "Notion reported a conflict",
+        429: "Notion rate limit was exhausted after bounded retries",
+    }
+    message = messages.get(
+        status if isinstance(status, int) else None, "Notion request failed"
+    )
+    return NotionAPIError(
+        message,
+        code=str(code),
+        status=status if isinstance(status, int) else None,
+        retryable=retryable,
+        retry_after=retry_after,
+    )
+
+
+def _page(data: dict[str, Any]) -> NotionPage:
     return NotionPage(
         id=data.get("id", ""),
         url=data.get("url"),
         created_time=data.get("created_time"),
         last_edited_time=data.get("last_edited_time"),
-        archived=data.get("archived", False),
+        in_trash=data.get("in_trash", data.get("archived", False)),
         parent=data.get("parent", {}),
         properties=data.get("properties", {}),
+        raw=data,
     )
 
 
-def _database_from_response(data: dict[str, Any]) -> NotionDatabase:
-    """Build a NotionDatabase from a raw Notion API database object."""
-    title_parts = data.get("title", [])
-    title = "".join(part.get("plain_text", "") for part in title_parts)
-
-    data_sources = [
-        NotionDataSource(id=ds.get("id", ""), name=ds.get("name"))
-        for ds in data.get("data_sources", [])
+def _database(data: dict[str, Any]) -> NotionDatabase:
+    title = "".join(part.get("plain_text", "") for part in data.get("title", []))
+    sources = [
+        NotionDataSource(id=item.get("id", ""), name=item.get("name"), raw=item)
+        for item in data.get("data_sources", [])
     ]
-
     return NotionDatabase(
         id=data.get("id", ""),
         title=title,
         url=data.get("url"),
-        data_sources=data_sources,
-        properties=data.get("properties", {}),
+        in_trash=data.get("in_trash", data.get("archived", False)),
+        data_sources=sources,
+        raw=data,
     )
 
 
-def _block_from_response(data: dict[str, Any]) -> NotionBlock:
-    """Build a NotionBlock from a raw Notion API block object."""
-    block_type = data.get("type", "")
+def _block(data: dict[str, Any]) -> NotionBlock:
+    kind = data.get("type", "")
     return NotionBlock(
         id=data.get("id", ""),
-        type=block_type,
+        type=kind,
         has_children=data.get("has_children", False),
-        content=data.get(block_type, {}) if block_type else {},
+        in_trash=data.get("in_trash", data.get("archived", False)),
+        content=data.get(kind, {}) if kind else {},
+        raw=data,
     )
+
+
+# Historical private names retained for callers/tests that imported them.
+_page_from_response = _page
+_database_from_response = _database
+_block_from_response = _block

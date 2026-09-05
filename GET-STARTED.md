@@ -472,19 +472,13 @@ environment variable.
 
 Requires the `notion` extra (`uv pip install "zeocore[notion]"`).
 
-**A real config file must exist** at one of `load_config()`'s default
-locations (`./zeo_config.yaml`, `./config/zeo_config.yaml`,
-`~/.zeo/config.yaml`) for `NotionIntegration.initialize()` to succeed --
-unlike `load_config()` itself, this integration's config provider does
-not fall back to defaults when no file is found at all. An empty
-`notion: {}` block is enough; `NOTION_TOKEN` fills in the token value.
+`NOTION_TOKEN` is sufficient. Notion settings may live in YAML, but the
+credential is never copied into the loaded configuration result.
 
 ```python
 from zeo_core.integrations.notion import NotionIntegration
 
-# config_path is a constructor arg -- NotionIntegration(), not a bare
-# create_integration() call, when you need to point at a specific file.
-notion = NotionIntegration(config_path="path/to/zeo_config.yaml")
+notion = NotionIntegration()
 init_result = notion.initialize()
 if not init_result.success:
     print(f"Failed to initialize: {init_result.error}")
@@ -495,8 +489,7 @@ if search_result.success:
     for obj in search_result.content or []:
         print(f"{obj['object']}: {obj['id']}")
 
-# Read: query a database (handles the 2025-09-03 database -> data-source
-# API change internally -- you pass a database_id like always)
+# Read: query a single-source database container.
 query_result = notion.query_database(
     "your-database-id",
     filter={"property": "Status", "select": {"equals": "Done"}},
@@ -533,15 +526,12 @@ every other integration in this table uses, distinct from the
 (bad token, page not found, rate limits) are caught and surfaced as
 `.error` strings, not raised exceptions.
 
-Two lower-level methods (`list_data_sources`, `query_data_source`) exist
-only on the raw client (`zeo_core.integrations.notion.NotionClient`), not
-on `NotionIntegration` -- needed only if a single database has more than
-one data source, which `query_database`/`create_database_entry` handle
-transparently for the common single-data-source case.
+For multiple data sources, choose one explicitly with the raw client's
+`list_data_sources()` and `query_data_source()`; the convenience method refuses
+ambiguity instead of silently choosing the first source.
 
-See [`examples/notion_usage.py`](examples/notion_usage.py) for a fully
-runnable version, including the graceful-skip path when `NOTION_TOKEN`
-isn't set.
+See [`examples/notion_demo.py`](examples/notion_demo.py). Its default mode is
+credential-free and simulated; `--live-read` is explicit and never mutates.
 
 ### Working with Jupytext Integration (script to notebook conversion)
 
@@ -552,7 +542,7 @@ operation the org's own `quackslides` app uses for its exercise content:
 
 Requires the `jupytext` extra (`uv pip install "zeocore[jupytext]"`). No
 external binary and no required config -- `initialize()` falls back to
-defaults cleanly with zero config file present (unlike Notion/ffmpeg
+defaults cleanly with zero config file present (unlike ffmpeg
 above/below).
 
 ```python

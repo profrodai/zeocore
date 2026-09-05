@@ -37,14 +37,13 @@ environment — never from a config file. Copy [`.env.example`](../.env.example)
 to `.env`, fill in real values, and load it however your tooling prefers:
 
 ```bash
-uv run --env-file .env examples/notion_usage.py
+uv run --env-file .env examples/notion_demo.py --live-read
 ```
 
 **Nothing here is destructive to your machine.** Scripts that need scratch
 space use either the system temp directory or a `./tmp_*_example/` folder
-that they delete on exit. The two that write to a real external account
-(Notion, Google Calendar) create objects in *your* workspace — Calendar
-deletes its demo event afterwards; Notion leaves the page it creates.
+that they delete on exit. The Notion demo is simulated by default and its
+explicit live mode is read-only.
 
 ---
 
@@ -276,7 +275,7 @@ on stderr mixed in — that is ffmpeg talking, not an error. Missing binary:
 prints a skip message. Missing extra: `initialize()` fails with an install
 hint.
 
-### [`notion_usage.py`](notion_usage.py) — real read and write
+### [`notion_demo.py`](notion_demo.py) — simulated or explicit live read
 
 **Extra:** `zeocore[notion]`.
 **Credentials:** `NOTION_TOKEN` — an integration token from
@@ -285,17 +284,13 @@ from Notion's UI (creating the token is not enough; Notion's model requires
 explicitly sharing each page or database with it).
 
 ```bash
-uv run examples/notion_usage.py                       # skips, shows the call shapes
-NOTION_TOKEN=secret_xxx uv run examples/notion_usage.py   # live
+uv run examples/notion_demo.py --simulated
+uv run --env-file .env examples/notion_demo.py --live-read
 ```
 
-Without the token: prints a skip notice and the exact calling shapes for
-`search`, `get_page`, `get_database`, `query_database`, and `create_page`.
-With it: writes a minimal config file into `./tmp_notion_example/` (the
-Notion config provider requires *a* config file to exist), searches your
-workspace, then creates a child page under the first shared page and appends
-a paragraph block to it. The scratch directory is removed; **the created page
-is not** — delete it in Notion when you are done.
+Simulated mode exercises users, search, data sources, blocks, comments, and
+pagination without network or credentials. Live-read mode searches objects
+shared with the integration and performs no writes.
 
 Deeper walkthrough: [docs/tutorials/notion-integration.md](../docs/tutorials/notion-integration.md).
 
@@ -342,7 +337,7 @@ Deeper walkthrough: [docs/tutorials/calendar-integration.md](../docs/tutorials/c
 | [`mcp_server_usage.py`](mcp_server_usage.py) | `mcp` | — | yes |
 | [`jupytext_usage.py`](jupytext_usage.py) | `jupytext` | — | yes |
 | [`ffmpeg_usage.py`](ffmpeg_usage.py) | `ffmpeg` | `ffmpeg` binary | yes |
-| [`notion_usage.py`](notion_usage.py) | `notion` | `NOTION_TOKEN` + a shared page | skips |
+| [`notion_demo.py`](notion_demo.py) | `notion` | only for `--live-read` | yes |
 | [`calendar_usage.py`](calendar_usage.py) | `calendar` | OAuth client-secrets JSON | skips |
 
 "Offline: yes" means the script does its real work with no network access.

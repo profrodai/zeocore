@@ -99,8 +99,8 @@ gracefully when the credential isn't set, rather than crashing.
 
 **Integrations**
 
-- [`notion_usage.py`](../examples/notion_usage.py) — Notion read/write,
-  skipped when `NOTION_TOKEN` isn't set.
+- [`notion_demo.py`](../examples/notion_demo.py) — current Notion API,
+  simulated by default with an explicit read-only live mode.
 - [`calendar_usage.py`](../examples/calendar_usage.py) — Google Calendar
   read/write, skipped when OAuth isn't configured.
 - [`jupytext_usage.py`](../examples/jupytext_usage.py) — script ↔ notebook

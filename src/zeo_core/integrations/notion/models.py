@@ -1,20 +1,35 @@
 """Notion integration data models for zeo_core.
 
-These models cover the scoped surface this integration supports: pages,
-databases (queried through their default data source per the Notion API's
-2025-09-03 data-source model -- see client.py's module docstring), and
-blocks. They are deliberately NOT a full mirror of Notion's rich-text /
-property-value schema (that surface is large and callers routinely need
-only a handful of properties) -- `properties`/`raw` stay as loosely-typed
-dict passthroughs so a caller can reach anything the trimmed model does not
-name, mirroring how GitHubRepo/GitHubUser (github/models.py) model the
-common fields and leave the rest reachable via the raw API response.
+Common objects are typed while every raw payload remains reachable. This is
+intentional: Notion's property, block, view, and file unions evolve more
+quickly than ZeoCore releases, so a closed mirror would make the supposedly
+complete client discard valid current fields.
 """
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
+
+T = TypeVar("T")
+
+
+class NotionPageResult(BaseModel, Generic[T]):
+    """One cursor page, preserving pagination evidence the old API discarded."""
+
+    items: list[T] = Field(default_factory=list)
+    next_cursor: str | None = None
+    has_more: bool = False
+    raw: dict[str, Any] = Field(default_factory=dict, exclude=True, repr=False)
+
+    @classmethod
+    def from_response(cls, data: dict[str, Any]) -> "NotionPageResult[dict[str, Any]]":
+        return NotionPageResult[dict[str, Any]](
+            items=data.get("results", []),
+            next_cursor=data.get("next_cursor"),
+            has_more=bool(data.get("has_more", False)),
+            raw=data,
+        )
 
 
 class NotionUser(BaseModel):
@@ -25,6 +40,7 @@ class NotionUser(BaseModel):
     id: str = Field(description="Notion user ID")
     name: str | None = Field(default=None, description="User's display name")
     object_type: str = Field(default="user", description="Notion object type")
+    raw: dict[str, Any] = Field(default_factory=dict, exclude=True, repr=False)
 
     def __str__(self) -> str:
         """String representation of the user."""
@@ -50,13 +66,19 @@ class NotionPage(BaseModel):
     last_edited_time: datetime | None = Field(
         default=None, description="Last edit timestamp"
     )
-    archived: bool = Field(default=False, description="Whether the page is archived")
+    in_trash: bool = Field(default=False, description="Whether the page is in trash")
     parent: dict[str, Any] = Field(
         default_factory=dict, description="Parent reference (page/database/workspace)"
     )
     properties: dict[str, Any] = Field(
         default_factory=dict, description="Raw property-value map for this page"
     )
+    raw: dict[str, Any] = Field(default_factory=dict, exclude=True, repr=False)
+
+    @property
+    def archived(self) -> bool:
+        """Compatibility alias for Notion API versions before 2026-03-11."""
+        return self.in_trash
 
     def __str__(self) -> str:
         """String representation of the page."""
@@ -85,6 +107,7 @@ class NotionDataSource(BaseModel):
 
     id: str = Field(description="Notion data source ID")
     name: str | None = Field(default=None, description="Data source name")
+    raw: dict[str, Any] = Field(default_factory=dict, exclude=True, repr=False)
 
 
 class NotionDatabase(BaseModel):
@@ -95,12 +118,22 @@ class NotionDatabase(BaseModel):
     id: str = Field(description="Notion database ID")
     title: str = Field(default="", description="Database title (plain text)")
     url: str | None = Field(default=None, description="Database URL")
+    in_trash: bool = Field(
+        default=False, description="Whether the database is in trash"
+    )
     data_sources: list[NotionDataSource] = Field(
         default_factory=list, description="Data sources contained in this database"
     )
     properties: dict[str, Any] = Field(
-        default_factory=dict, description="Raw property schema for this database"
+        default_factory=dict,
+        description="Legacy database schema view; current schemas live on data sources",
     )
+    raw: dict[str, Any] = Field(default_factory=dict, exclude=True, repr=False)
+
+    @property
+    def archived(self) -> bool:
+        """Compatibility alias for Notion API versions before 2026-03-11."""
+        return self.in_trash
 
     def __str__(self) -> str:
         """String representation of the database."""
@@ -132,9 +165,16 @@ class NotionBlock(BaseModel):
     has_children: bool = Field(
         default=False, description="Whether this block has child blocks"
     )
+    in_trash: bool = Field(default=False, description="Whether the block is in trash")
     content: dict[str, Any] = Field(
         default_factory=dict, description="Type-specific block payload"
     )
+    raw: dict[str, Any] = Field(default_factory=dict, exclude=True, repr=False)
+
+    @property
+    def archived(self) -> bool:
+        """Compatibility alias for Notion API versions before 2026-03-11."""
+        return self.in_trash
 
     def __str__(self) -> str:
         """String representation of the block."""

@@ -4,12 +4,21 @@ from typing import Any, Protocol, runtime_checkable
 
 from zeo_core.integrations.core import IntegrationProtocol, IntegrationResult
 
+from .client import NotionOperation
 from .models import NotionBlock, NotionDatabase, NotionPage
 
 
 @runtime_checkable
 class NotionIntegrationProtocol(IntegrationProtocol, Protocol):
     """Protocol for Notion integration."""
+
+    def execute(
+        self,
+        operation: NotionOperation | str,
+        **kwargs: Any,  # noqa: ANN401
+    ) -> IntegrationResult[dict[str, Any]]:
+        """Execute any current public Notion operation by stable name."""
+        ...
 
     # -- Read --
 
@@ -72,7 +81,7 @@ class NotionIntegrationProtocol(IntegrationProtocol, Protocol):
         properties: dict[str, Any] | None = None,
         archived: bool | None = None,
     ) -> IntegrationResult[NotionPage]:
-        """Update a page's properties or archived state."""
+        """Update a page's properties or trash state."""
         ...
 
     def append_blocks(
