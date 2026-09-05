@@ -84,12 +84,13 @@ import threading
 import uuid
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar, cast
 
 if TYPE_CHECKING:
     from zeo_core.connections.orchestration import (
         EffectDispatchRequest,
         EffectDispatchResult,
+        ReconciliationResult,
     )
 
 from zeo_core.connections.adapters.subprocess_runner import (
@@ -111,6 +112,7 @@ _HANDLE_PREFIX = "zc0-kc"
 #: as a crash, since a caller checking `health` must get a value back, not
 #: an exception (protocol bound: "must be returned, never raised").
 _ITEM_NOT_FOUND_EXIT_CODES = frozenset({36, 44})
+_CustodyResult = TypeVar("_CustodyResult")
 
 
 class SecretMaterialError(Exception):
@@ -309,8 +311,8 @@ class KeychainSecretStore:
         *,
         resolution: SecretResolution,
         organization_id: OrganizationId,
-        invoke: Callable[[str], EffectDispatchResult],
-    ) -> EffectDispatchResult:
+        invoke: Callable[[str], _CustodyResult],
+    ) -> _CustodyResult:
         """Use a one-shot lease inside a provider callback and return no secret.
 
         This is the custody-internal dispatch seam promised by
@@ -362,12 +364,17 @@ class KeychainSecretStore:
         del material
         if provider_failed:
             raise SecretMaterialError("provider dispatch failed inside custody")
-        from zeo_core.connections.orchestration import EffectDispatchResult
+        from zeo_core.connections.orchestration import (
+            EffectDispatchResult,
+            ReconciliationResult,
+        )
 
-        if not isinstance(provider_result, EffectDispatchResult):
+        if not isinstance(
+            provider_result, (EffectDispatchResult, ReconciliationResult)
+        ):
             del provider_result
-            raise SecretMaterialError("provider returned an invalid dispatch result")
-        return provider_result
+            raise SecretMaterialError("provider returned an invalid custody result")
+        return cast("_CustodyResult", provider_result)
 
     def rotate(
         self, *, ref: SecretRef, organization_id: OrganizationId, material: str
@@ -481,4 +488,35 @@ class KeychainEffectDispatcher:
 
         if not isinstance(result, EffectDispatchResult):  # defensive type narrowing
             raise SecretMaterialError("provider returned an invalid dispatch result")
+        return result
+
+
+class KeychainEffectReconciler:
+    """Run one read-only reconciliation inside the same custody boundary."""
+
+    def __init__(
+        self,
+        *,
+        store: KeychainSecretStore,
+        invoke: Callable[[str, EffectDispatchRequest], ReconciliationResult],
+    ) -> None:
+        self._store = store
+        self._invoke = invoke
+
+    def reconcile(self, request: EffectDispatchRequest) -> ReconciliationResult:
+        resolution = self._store.resolve(
+            ref=request.connection.secret_handle,
+            organization_id=request.organization_id,
+        )
+        result = self._store._dispatch_with_resolution(
+            resolution=resolution,
+            organization_id=request.organization_id,
+            invoke=lambda material: self._invoke(material, request),
+        )
+        from zeo_core.connections.orchestration import ReconciliationResult
+
+        if not isinstance(result, ReconciliationResult):
+            raise SecretMaterialError(
+                "provider returned an invalid reconciliation result"
+            )
         return result

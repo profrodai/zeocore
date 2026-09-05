@@ -68,6 +68,18 @@ from .models import (
 from .oauth import NotionOAuthBroker, NotionOAuthGrant
 from .protocols import NotionIntegrationProtocol
 from .service import NotionIntegration
+from .upsert import (
+    NOTION_PAGE_UPSERT_OPERATION_ID,
+    NOTION_PAGE_UPSERT_REVISION_ID,
+    CitedText,
+    NotionClientPageUpsertProvider,
+    NotionPageSnapshot,
+    NotionPageUpsertDispatcher,
+    NotionPageUpsertProvider,
+    NotionPageUpsertReconciler,
+    NotionPageUpsertRequest,
+    notion_page_upsert_revision,
+)
 
 __all__ = [
     # Main classes
@@ -88,6 +100,16 @@ __all__ = [
     "NotionOAuthGrant",
     "NotionPageResult",
     "NotionOperation",
+    "CitedText",
+    "NotionPageUpsertRequest",
+    "NotionPageSnapshot",
+    "NotionPageUpsertProvider",
+    "NotionClientPageUpsertProvider",
+    "NotionPageUpsertDispatcher",
+    "NotionPageUpsertReconciler",
+    "NOTION_PAGE_UPSERT_OPERATION_ID",
+    "NOTION_PAGE_UPSERT_REVISION_ID",
+    "notion_page_upsert_revision",
     "NOTION_API_VERSION",
     # Errors
     "NotionNoDataSourceError",
