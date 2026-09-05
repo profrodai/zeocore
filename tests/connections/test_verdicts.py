@@ -162,8 +162,15 @@ class TestAuthorizationRefusalReasonIsClosed:
             r for r in AuthorizationRefusalReason if r.value.endswith("_MISMATCH")
         }
         # organization, connection, connector revision, operation, request
-        # digest -- five checked-identity fields per AUTHORIZATION_VERIFIED.
-        assert len(mismatch_reasons) == 5
+        # digest, and audience -- six checked identity/trust fields.
+        assert len(mismatch_reasons) == 6
+
+    def test_signature_and_issuer_reasons_exist(self) -> None:
+        assert AuthorizationRefusalReason.ISSUER_UNTRUSTED == "ISSUER_UNTRUSTED"
+        assert (
+            AuthorizationRefusalReason.SIGNATURE_UNVERIFIABLE
+            == "SIGNATURE_UNVERIFIABLE"
+        )
 
     def test_expiry_reason_exists(self) -> None:
         assert AuthorizationRefusalReason.EXPIRED == "EXPIRED"

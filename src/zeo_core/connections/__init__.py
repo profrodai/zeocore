@@ -11,7 +11,7 @@ orchestration, step 6). The one-way dependency direction is enforced by
 which names `zeo_core.connections.adapters` as forbidden for the contracts
 package to import -- adapters depend on contracts, never the reverse.
 
-Step 3 (this step) adds `zeo_core.connections.adapters.macos_keychain`:
+The package currently includes `zeo_core.connections.adapters.macos_keychain`,
 a `SecretStore` implementation backed by the macOS Keychain via an
 injected subprocess runner over the `security` CLI, per the packet's
 binding order item 3 ("macOS Keychain custody, injected subprocess
@@ -20,6 +20,68 @@ SOW-01 section 3a's new-dependency ruling ("`keyring`, if proposed, is a
 new dependency and returns for a ruling; the packet specifies an injected
 subprocess runner") -- so this package adds no new PyPI dependency; it
 shells out to the `security` binary that ships with macOS.
+
+It also includes `SQLiteConnectionStore`, the durable organization-scoped
+implementation of the connection, revision, execution, receipt, evidence,
+and replay-identity persistence contracts.
 """
 
 from __future__ import annotations
+
+from zeo_core.connections.adapters.macos_keychain import (
+    KeychainEffectDispatcher,
+    KeychainSecretStore,
+)
+from zeo_core.connections.adapters.sqlite import (
+    ConfirmationEvidence,
+    ConnectionStoreError,
+    SQLiteConnectionStore,
+)
+from zeo_core.connections.admission import (
+    ConnectorAdmissionError,
+    validate_connection_admission,
+    validate_connector_revision,
+    validate_operation_request,
+)
+from zeo_core.connections.authorization import (
+    AuthorizationNonceLookup,
+    AuthorizationSignatureVerifier,
+    ExactAuthorizationVerifier,
+)
+from zeo_core.connections.orchestration import (
+    DispatchDisposition,
+    EffectDispatcher,
+    EffectDispatchRequest,
+    EffectDispatchResult,
+    EffectExecutionResult,
+    EffectOrchestrator,
+    EffectPreflightError,
+    EffectReconciler,
+    ReconciliationDisposition,
+    ReconciliationResult,
+)
+
+__all__ = [
+    "AuthorizationNonceLookup",
+    "AuthorizationSignatureVerifier",
+    "ConfirmationEvidence",
+    "ConnectionStoreError",
+    "ConnectorAdmissionError",
+    "DispatchDisposition",
+    "EffectDispatchRequest",
+    "EffectDispatchResult",
+    "EffectDispatcher",
+    "EffectExecutionResult",
+    "EffectOrchestrator",
+    "EffectPreflightError",
+    "EffectReconciler",
+    "ExactAuthorizationVerifier",
+    "KeychainEffectDispatcher",
+    "KeychainSecretStore",
+    "ReconciliationDisposition",
+    "ReconciliationResult",
+    "SQLiteConnectionStore",
+    "validate_connection_admission",
+    "validate_connector_revision",
+    "validate_operation_request",
+]
