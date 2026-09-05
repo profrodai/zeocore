@@ -83,8 +83,10 @@ def _digest(value: bytes) -> str:
 
 def _surface(
     tmp_path: Path,
+    request: pytest.FixtureRequest,
 ) -> tuple[SQLiteConnectionStore, OrganizationId, EffectAuthorization, bytes]:
     store = SQLiteConnectionStore(tmp_path / "observations.sqlite3")
+    request.addfinalizer(store.close)
     organization_id = OrganizationId(value="org-member")
     connection_id = ConnectionId(value="connection-drive")
     revision_id = ConnectorRevisionId(value="google.drive.selected-file@1")
@@ -200,8 +202,10 @@ def _orchestrator(store: SQLiteConnectionStore) -> ObservationOrchestrator:
     )
 
 
-def test_observation_is_claimed_before_read_and_receipted(tmp_path: Path) -> None:
-    store, organization_id, authorization, request_body = _surface(tmp_path)
+def test_observation_is_claimed_before_read_and_receipted(
+    tmp_path: Path, request: pytest.FixtureRequest
+) -> None:
+    store, organization_id, authorization, request_body = _surface(tmp_path, request)
     dispatcher = RecordingDispatcher(
         ObservationDispatchResult(
             disposition=ObservationDisposition.CONFIRMED,
@@ -236,8 +240,10 @@ def test_observation_is_claimed_before_read_and_receipted(tmp_path: Path) -> Non
     assert isinstance(store, ObservationStore)
 
 
-def test_absent_or_expired_authorization_refuses_without_claim(tmp_path: Path) -> None:
-    store, organization_id, authorization, request_body = _surface(tmp_path)
+def test_absent_or_expired_authorization_refuses_without_claim(
+    tmp_path: Path, request: pytest.FixtureRequest
+) -> None:
+    store, organization_id, authorization, request_body = _surface(tmp_path, request)
     dispatcher = RecordingDispatcher(
         ObservationDispatchResult(
             disposition=ObservationDisposition.CONFIRMED,
@@ -276,9 +282,9 @@ def test_absent_or_expired_authorization_refuses_without_claim(tmp_path: Path) -
 
 
 def test_identical_replay_returns_prior_receipt_without_second_read(
-    tmp_path: Path,
+    tmp_path: Path, request: pytest.FixtureRequest
 ) -> None:
-    store, organization_id, authorization, request_body = _surface(tmp_path)
+    store, organization_id, authorization, request_body = _surface(tmp_path, request)
     dispatcher = RecordingDispatcher(
         ObservationDispatchResult(
             disposition=ObservationDisposition.CONFIRMED,
@@ -312,8 +318,10 @@ def test_identical_replay_returns_prior_receipt_without_second_read(
     assert len(dispatcher.calls) == 1
 
 
-def test_conflicting_idempotency_reuse_refuses_without_read(tmp_path: Path) -> None:
-    store, organization_id, authorization, request_body = _surface(tmp_path)
+def test_conflicting_idempotency_reuse_refuses_without_read(
+    tmp_path: Path, request: pytest.FixtureRequest
+) -> None:
+    store, organization_id, authorization, request_body = _surface(tmp_path, request)
     dispatcher = RecordingDispatcher(
         ObservationDispatchResult(
             disposition=ObservationDisposition.CONFIRMED,
@@ -372,9 +380,11 @@ def test_conflicting_idempotency_reuse_refuses_without_read(tmp_path: Path) -> N
     ],
 )
 def test_unbounded_or_secret_shaped_result_fails_safe_without_persisting_payload(
-    tmp_path: Path, result: ObservationDispatchResult
+    tmp_path: Path,
+    request: pytest.FixtureRequest,
+    result: ObservationDispatchResult,
 ) -> None:
-    store, organization_id, authorization, request_body = _surface(tmp_path)
+    store, organization_id, authorization, request_body = _surface(tmp_path, request)
 
     outcome = _orchestrator(store).observe(
         organization_id=organization_id,
@@ -395,8 +405,10 @@ def test_unbounded_or_secret_shaped_result_fails_safe_without_persisting_payload
     ).read_bytes().decode(errors="ignore")
 
 
-def test_provider_failure_is_failed_safe_never_ambiguous(tmp_path: Path) -> None:
-    store, organization_id, authorization, request_body = _surface(tmp_path)
+def test_provider_failure_is_failed_safe_never_ambiguous(
+    tmp_path: Path, request: pytest.FixtureRequest
+) -> None:
+    store, organization_id, authorization, request_body = _surface(tmp_path, request)
 
     result = _orchestrator(store).observe(
         organization_id=organization_id,
@@ -415,8 +427,10 @@ def test_provider_failure_is_failed_safe_never_ambiguous(tmp_path: Path) -> None
     assert result.receipt.normalized_error.code.value == "PROVIDER_UNAVAILABLE"
 
 
-def test_adapter_can_return_a_sanitized_failed_safe_result(tmp_path: Path) -> None:
-    store, organization_id, authorization, request_body = _surface(tmp_path)
+def test_adapter_can_return_a_sanitized_failed_safe_result(
+    tmp_path: Path, request: pytest.FixtureRequest
+) -> None:
+    store, organization_id, authorization, request_body = _surface(tmp_path, request)
     normalized_error = NormalizedError(
         code=NormalizedErrorCode.BUSINESS_RESOURCE_UNAVAILABLE,
         message="selected file is unavailable",
@@ -447,10 +461,11 @@ def test_adapter_can_return_a_sanitized_failed_safe_result(tmp_path: Path) -> No
 
 def test_artifact_locator_is_structural_and_artifact_size_is_bounded(
     tmp_path: Path,
+    request: pytest.FixtureRequest,
 ) -> None:
     with pytest.raises(ValidationError):
         ObservationArtifactRef(value="ya29.provider-token")
-    store, organization_id, authorization, request_body = _surface(tmp_path)
+    store, organization_id, authorization, request_body = _surface(tmp_path, request)
     dispatcher = RecordingDispatcher(
         ObservationDispatchResult(
             disposition=ObservationDisposition.CONFIRMED,
@@ -487,8 +502,9 @@ def test_artifact_locator_is_structural_and_artifact_size_is_bounded(
 
 def test_bounded_artifact_is_confirmed_and_digest_is_not_recomputed(
     tmp_path: Path,
+    request: pytest.FixtureRequest,
 ) -> None:
-    store, organization_id, authorization, request_body = _surface(tmp_path)
+    store, organization_id, authorization, request_body = _surface(tmp_path, request)
     artifact = ObservationArtifact(
         artifact_ref=ObservationArtifactRef(
             value=("zeo-observation-artifact:v1:12345678-1234-4234-9234-123456789abc")
@@ -521,8 +537,10 @@ def test_bounded_artifact_is_confirmed_and_digest_is_not_recomputed(
     assert result.receipt.result_digest == artifact.content_sha256
 
 
-def test_unselected_resource_refuses_before_provider_call(tmp_path: Path) -> None:
-    store, organization_id, authorization, _request_body = _surface(tmp_path)
+def test_unselected_resource_refuses_before_provider_call(
+    tmp_path: Path, request: pytest.FixtureRequest
+) -> None:
+    store, organization_id, authorization, _request_body = _surface(tmp_path, request)
     request_body = b'{"file_id":"not-selected"}'
     authorization = authorization.model_copy(
         update={"argument_digest": _digest(request_body)}
