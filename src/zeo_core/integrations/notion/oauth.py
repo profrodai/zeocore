@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any
+from typing import Any, Protocol, runtime_checkable
 
 from pydantic import BaseModel, ConfigDict
 
@@ -27,6 +27,41 @@ class NotionOAuthGrant(BaseModel):
     request_id: str | None = None
 
 
+class NotionTokenInspection(BaseModel):
+    """Bounded, credential-free result of inspecting a custodial token."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    active: bool
+    bot_id: str | None = None
+    workspace_id: str | None = None
+
+
+class NotionTokenRevocation(BaseModel):
+    """Credential-free acknowledgement of a custodial token revocation."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    revoked: bool
+
+
+@runtime_checkable
+class NotionOAuthCredentialDispatcher(Protocol):
+    """High-level hosted custody port; raw token material never crosses it."""
+
+    def refresh(
+        self, *, organization_id: OrganizationId, refresh_ref: SecretRef
+    ) -> NotionOAuthGrant: ...
+
+    def introspect(
+        self, *, organization_id: OrganizationId, access_ref: SecretRef
+    ) -> NotionTokenInspection: ...
+
+    def revoke(
+        self, *, organization_id: OrganizationId, access_ref: SecretRef
+    ) -> NotionTokenRevocation: ...
+
+
 class NotionOAuthBroker:
     """Run OAuth calls without returning newly issued credentials as data."""
 
@@ -37,9 +72,11 @@ class NotionOAuthBroker:
         organization_id: OrganizationId,
         sdk_client: Any = None,  # noqa: ANN401
         trust_env: bool = False,
+        credential_dispatcher: NotionOAuthCredentialDispatcher | None = None,
     ) -> None:
         self._secret_store = secret_store
         self._organization_id = organization_id
+        self._credential_dispatcher = credential_dispatcher
         if sdk_client is not None:
             self._sdk = sdk_client
         else:
@@ -111,6 +148,14 @@ class NotionOAuthBroker:
             del refresh_token
 
         return self._custody_grant(response)
+
+    def refresh_custodied_grant(self, *, refresh_ref: SecretRef) -> NotionOAuthGrant:
+        """Refresh through a tenant-bound custody implementation, never raw material."""
+
+        dispatcher = self._require_credential_dispatcher()
+        return dispatcher.refresh(
+            organization_id=self._organization_id, refresh_ref=refresh_ref
+        )
 
     def _custody_grant(self, response: dict[str, Any]) -> NotionOAuthGrant:
         """Remove credentials from a provider response and store them atomically."""
@@ -192,3 +237,28 @@ class NotionOAuthBroker:
             raise NotionAPIError(
                 "Notion OAuth revocation failed", code="oauth_revocation_failed"
             ) from None
+
+    def introspect_custodied_token(
+        self, *, access_ref: SecretRef
+    ) -> NotionTokenInspection:
+        """Inspect one tenant-bound access reference without exposing its material."""
+
+        return self._require_credential_dispatcher().introspect(
+            organization_id=self._organization_id, access_ref=access_ref
+        )
+
+    def revoke_custodied_token(self, *, access_ref: SecretRef) -> NotionTokenRevocation:
+        """Revoke one tenant-bound access reference without exposing its material."""
+
+        return self._require_credential_dispatcher().revoke(
+            organization_id=self._organization_id, access_ref=access_ref
+        )
+
+    def _require_credential_dispatcher(self) -> NotionOAuthCredentialDispatcher:
+        dispatcher = self._credential_dispatcher
+        if dispatcher is None:
+            raise NotionAPIError(
+                "Notion hosted credential dispatcher is not configured",
+                code="oauth_custody_dispatcher_missing",
+            )
+        return dispatcher

@@ -6,7 +6,14 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from zeo_core.contracts.connections import OrganizationId, SecretRef
-from zeo_core.integrations.notion import NotionAPIError, NotionOAuthBroker
+from zeo_core.integrations.notion import (
+    NotionAPIError,
+    NotionOAuthBroker,
+    NotionOAuthCredentialDispatcher,
+    NotionOAuthGrant,
+    NotionTokenInspection,
+    NotionTokenRevocation,
+)
 
 
 def _broker() -> tuple[NotionOAuthBroker, MagicMock, MagicMock]:
@@ -181,3 +188,80 @@ def test_oauth_missing_configuration_fails_without_echoing_values() -> None:
         pytest.raises(NotionAPIError, match="not configured"),
     ):
         broker.exchange(code="code")
+
+
+class RecordingCredentialDispatcher:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, OrganizationId, SecretRef]] = []
+
+    def refresh(
+        self, *, organization_id: OrganizationId, refresh_ref: SecretRef
+    ) -> NotionOAuthGrant:
+        self.calls.append(("refresh", organization_id, refresh_ref))
+        return NotionOAuthGrant(
+            access_ref=SecretRef(handle="new-access-ref"),
+            refresh_ref=SecretRef(handle="new-refresh-ref"),
+            bot_id="bot-1",
+            workspace_id="workspace-1",
+        )
+
+    def introspect(
+        self, *, organization_id: OrganizationId, access_ref: SecretRef
+    ) -> NotionTokenInspection:
+        self.calls.append(("introspect", organization_id, access_ref))
+        return NotionTokenInspection(
+            active=True, bot_id="bot-1", workspace_id="workspace-1"
+        )
+
+    def revoke(
+        self, *, organization_id: OrganizationId, access_ref: SecretRef
+    ) -> NotionTokenRevocation:
+        self.calls.append(("revoke", organization_id, access_ref))
+        return NotionTokenRevocation(revoked=True)
+
+
+def test_hosted_dispatcher_receives_only_bound_refs_and_returns_safe_models() -> None:
+    sdk = MagicMock()
+    store = MagicMock()
+    dispatcher = RecordingCredentialDispatcher()
+    organization_id = OrganizationId(value="org-hosted")
+    broker = NotionOAuthBroker(
+        secret_store=store,
+        organization_id=organization_id,
+        sdk_client=sdk,
+        credential_dispatcher=dispatcher,
+    )
+    refresh_ref = SecretRef(handle="INPUT_REFRESH_CANARY")
+    access_ref = SecretRef(handle="INPUT_ACCESS_CANARY")
+
+    grant = broker.refresh_custodied_grant(refresh_ref=refresh_ref)
+    inspection = broker.introspect_custodied_token(access_ref=access_ref)
+    revocation = broker.revoke_custodied_token(access_ref=access_ref)
+
+    assert dispatcher.calls == [
+        ("refresh", organization_id, refresh_ref),
+        ("introspect", organization_id, access_ref),
+        ("revoke", organization_id, access_ref),
+    ]
+    assert grant.access_ref.handle == "new-access-ref"
+    assert inspection.active
+    assert revocation.revoked
+    assert isinstance(dispatcher, NotionOAuthCredentialDispatcher)
+    sdk.oauth.token.assert_not_called()
+    disclosure = "\n".join(
+        (
+            repr(grant),
+            grant.model_dump_json(),
+            inspection.model_dump_json(),
+            revocation.model_dump_json(),
+        )
+    )
+    assert "INPUT_REFRESH_CANARY" not in disclosure
+    assert "INPUT_ACCESS_CANARY" not in disclosure
+
+
+def test_hosted_methods_refuse_when_no_custody_dispatcher_exists() -> None:
+    broker, _sdk, _store = _broker()
+
+    with pytest.raises(NotionAPIError, match="not configured"):
+        broker.refresh_custodied_grant(refresh_ref=SecretRef(handle="opaque-ref"))

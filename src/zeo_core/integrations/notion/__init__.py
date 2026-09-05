@@ -65,7 +65,13 @@ from .models import (
     NotionPageResult,
     NotionUser,
 )
-from .oauth import NotionOAuthBroker, NotionOAuthGrant
+from .oauth import (
+    NotionOAuthBroker,
+    NotionOAuthCredentialDispatcher,
+    NotionOAuthGrant,
+    NotionTokenInspection,
+    NotionTokenRevocation,
+)
 from .protocols import NotionIntegrationProtocol
 from .service import NotionIntegration
 from .upsert import (
@@ -97,7 +103,10 @@ __all__ = [
     "NotionUser",
     "NotionConfig",
     "NotionOAuthBroker",
+    "NotionOAuthCredentialDispatcher",
     "NotionOAuthGrant",
+    "NotionTokenInspection",
+    "NotionTokenRevocation",
     "NotionPageResult",
     "NotionOperation",
     "CitedText",
