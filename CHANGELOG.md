@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-05
+
 ### Added
 
 - Durable effect orchestration under `zeo_core.connections`: an
   organization-scoped SQLite store, exact fail-closed authorization verifier
-  with required signature verification and issuer/audience trust configuration, persisted
-  pre-dispatch state, one-call provider dispatch, fail-closed ambiguity,
+  with required signature verification and issuer/audience trust configuration,
+  persisted pre-dispatch state, one-call provider dispatch, fail-closed ambiguity,
   reconciliation without blind redispatch, atomic outcome receipts, and
   sanitized confirmation evidence. Connector admission closes origin, path,
   redirect, request-field, secret-binding, and reconciliation surfaces;
@@ -21,6 +23,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bounded read/advisory retries and explicit provider fallback under
   `zeo_core.execution`, including hard subprocess deadlines, process-group
   cleanup, cancellation, and one-attempt LLM adapters.
+
+### Changed
+
+- PyPI project URLs, release instructions, public repository links, and package
+  examples now point directly to `profrodai/zeocore` after the repository move.
+- Published authentication results no longer carry raw provider tokens.
+  Credential-bearing constructor input is rejected rather than merely hidden by
+  selected serializers.
+
+### Fixed
+
+- The publish workflow now creates the matching GitHub release only after PyPI
+  succeeds, and its clean-environment smoke test installs the exact version that
+  the workflow built instead of permitting resolver fallback to an older one.
+- The stable required `verify-all` context now fails visibly when any Python
+  matrix leg fails, avoiding a permanently pending required check after matrix
+  changes.
 
 ## [0.6.0] - 2026-08-31
 
@@ -444,6 +463,8 @@ MIT-licensed package.
   own test suite, and this package has never had a public release, so no
   back-compat was owed for it.
 
+[0.7.0]: https://github.com/profrodai/zeocore/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/profrodai/zeocore/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/profrodai/zeocore/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/profrodai/zeocore/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/profrodai/zeocore/releases/tag/v0.3.0

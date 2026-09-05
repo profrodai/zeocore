@@ -145,11 +145,9 @@ Releases go through `.github/workflows/publish.yml`, using PyPI's [trusted
 publishing](https://docs.pypi.org/trusted-publishers/) (OIDC) -- no API
 token is stored as a repo secret for either index.
 
-1. Bump the version in **both** `pyproject.toml`'s `[project] version` and
-   `src/zeo_core/__init__.py`'s `__version__` -- they must match exactly
-   (`[tool.hatch.version]` reads the latter as the single source of truth
-   at build time, but the former is what `pip`/PyPI display before the
-   package is even downloaded, so keep them in sync by hand).
+1. Bump `pyproject.toml`'s `[project] version`. It is the single source of
+   truth: installed `zeo_core.__version__` reads the distribution metadata
+   through `importlib.metadata`, so there is no second version literal to edit.
 2. Add a dated entry to `CHANGELOG.md` (Keep a Changelog format).
 3. Before cutting a real tag, stage a publish to TestPyPI to catch any
    packaging problem (or a trusted-publisher misconfiguration) somewhere
