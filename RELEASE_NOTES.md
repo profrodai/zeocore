@@ -3,7 +3,8 @@
 This file is the short release announcement. Full history is in
 [CHANGELOG.md](CHANGELOG.md).
 
-**Durable effects, bounded provider resilience, and credential-safe results.**
+**Complete Notion connectivity, durable effects, bounded provider resilience,
+and credential-safe results.**
 
 ZeoCore 0.7.0 adds two execution paths with deliberately different safety
 rules. Read-only and advisory operations can use explicit retry and fallback
@@ -11,6 +12,28 @@ plans. Effectful operations use durable state, one dispatch, and reconciliation
 instead of treating a timeout as permission to try the effect again.
 
 Python 3.14 or newer remains required.
+
+## Complete current Notion API
+
+The Notion integration now explicitly targets API version `2026-03-11` through
+`notion-client>=3.1.0`. Its 44-operation registry covers pages and page
+properties, blocks and children, databases, data sources and templates, users,
+search, comments, custom emoji, file uploads, views and queries, meeting notes,
+and page Markdown.
+
+Pagination is bounded, Notion's request-size limits are checked before
+dispatch, and removed `after`, `archived`, and `transcription` request shapes
+fail closed. The compatibility database helper refuses to guess when a
+container has zero or multiple data sources.
+
+Public OAuth applications can exchange and refresh grants, introspect tokens,
+and revoke them. Newly issued access and refresh credentials go directly into
+an injected `SecretStore`; public results contain only opaque `SecretRef`
+values and non-secret workspace metadata. Provider errors are sanitized and do
+not retain the original potentially secret-bearing exception as their cause.
+
+A simulated-by-default example demonstrates the current API without network or
+credentials. Its optional live mode is explicitly read-only.
 
 ## Durable effect orchestration
 
@@ -66,7 +89,7 @@ uv pip install "zeocore==0.7.0"
 Install only the provider extras you use, for example:
 
 ```bash
-uv pip install "zeocore[bluesky,llms]==0.7.0"
+uv pip install "zeocore[bluesky,llms,notion]==0.7.0"
 ```
 
 The public repository, issues, documentation and changelog are at
