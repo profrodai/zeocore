@@ -114,3 +114,65 @@ retry loop.
 `BoundCapability` only when its declared effects are exactly `READ`. They keep
 `invoke_sync` and `invoke_async` as one-attempt leaves and make the resilient
 runner the sole retry owner.
+
+## Hard timeouts for subprocess providers
+
+Use `subprocess_target` when a synchronous provider can hang and must be stopped
+by the host rather than trusted to observe a cooperative timeout:
+
+```python
+import json
+import sys
+
+from pydantic import BaseModel
+from zeo_core.execution import SubprocessInvocation, subprocess_target
+
+
+class Reply(BaseModel):
+    proposed_units: int
+
+
+provider = subprocess_target(
+    "local-provider",
+    SubprocessInvocation(
+        argv=(sys.executable, "-m", "my_provider"),
+        input_bytes=json.dumps(assignment).encode(),
+    ),
+    response_type=Reply,
+    parse_stdout=Reply.model_validate_json,
+)
+```
+
+The executable path must be absolute, `shell=False` is fixed, and the request
+travels on stdin rather than in process-list-visible arguments. The child does
+not inherit the host environment by default; pass a deliberately minimized
+`env` mapping only when the child needs non-secret configuration. On timeout or
+cancellation, ZeoCore terminates the whole child process group and escalates to
+a kill after the configured grace period. Child stdout, stderr, request bytes,
+and exception text are not copied into attempt evidence; only successfully
+parsed typed output becomes the result value.
+
+This boundary addresses a different problem from `run_sync` alone. The runner
+owns the policy and total budget; the subprocess target makes that budget a
+hard operating-system boundary for a blocking child.
+
+## One-attempt LLM clients
+
+Legacy `LLMClient.chat()` retains its provider-level retry behavior for
+compatibility. New resilient call sites use `chat_once()` through
+`llm_chat_target`, so the outer `ExecutionPolicy` is the only retry owner:
+
+```python
+from zeo_core.integrations.llms import OllamaClient, llm_chat_target
+
+client = OllamaClient(model="qwen3:latest", timeout=90)
+ollama_target = llm_chat_target("ollama-local", client, messages)
+```
+
+The adapter classifies only structured HTTP status codes. It never guesses an
+authentication, rate-limit, or transient condition from provider prose, and it
+does not retain that prose in execution evidence. Streaming callbacks are not
+accepted by this adapter because retrying after partial streamed output is not
+replay-safe. For a hard deadline around an LLM implemented as a separate
+process, use `subprocess_target`; an in-process SDK remains cooperative with its
+own configured network timeout.

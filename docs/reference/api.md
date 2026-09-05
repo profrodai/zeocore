@@ -384,11 +384,13 @@ from zeo_core.execution import (
     AttemptContext,
     AttemptError,
     ExecutionPolicy,
+    SubprocessInvocation,
     SyncExecutionTarget,
     async_capability_target,
     run_async,
     run_sync,
     sync_capability_target,
+    subprocess_target,
 )
 ```
 
@@ -404,9 +406,21 @@ of the target that actually succeeded. They do not retain provider exception
 text. The async runner enforces each timeout; synchronous callbacks must apply
 the supplied `AttemptContext.timeout_seconds` to their blocking I/O.
 
+`subprocess_target` supplies that hard boundary for shell-free child
+processes. It sends request bytes over stdin, starts an isolated process group,
+terminates the group on timeout or cancellation, defaults to an empty child
+environment, and admits only parsed typed stdout as a result. Raw child output
+and errors never enter attempt records.
+
 `sync_capability_target` and `async_capability_target` adapt exactly-`READ`
 `BoundCapability` values. Effectful execution is currently refused because it
 requires persisted dispatch and reconciliation rather than an in-memory retry.
+
+`LLMClient.chat_once()` and `llm_chat_target` expose existing OpenAI,
+Anthropic, Ollama, and mock clients as one-attempt leaves so this policy, rather
+than a nested provider loop, owns retry and fallback. The adapter trusts only
+structured status codes for failure classification; use `subprocess_target`
+when the call also needs a hard process deadline.
 
 <a id="contracts"></a>
 

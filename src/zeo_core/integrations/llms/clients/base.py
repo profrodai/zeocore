@@ -91,33 +91,13 @@ class LLMClient(ABC, LLMProviderProtocol):
             IntegrationResult[str]: Result of the chat completion request
         """
         try:
-            # Validate inputs
-            if not messages:
-                raise ZeoIntegrationError("No messages provided for chat request")
-
-            # Normalize messages
-            normalized_messages = self._normalize_messages(messages)
-
-            # Use default options if not provided
-            request_options = options or LLMOptions()
-            if request_options.model is None:
-                # Override with instance model if not specified in options
-                try:
-                    request_options.model = self.model
-                except ValueError:
-                    # If model is not specified, let the concrete
-                    # implementation handle it
-                    pass
-
             # Apply retry logic
             retry_count = 0
             delay = self._initial_retry_delay
 
             while True:
                 try:
-                    return self._chat_with_provider(
-                        normalized_messages, request_options, callback
-                    )
+                    return self.chat_once(messages, options, callback)
                 except ZeoApiError as e:
                     retry_count += 1
                     if retry_count > self._retry_count:
@@ -144,6 +124,25 @@ class LLMClient(ABC, LLMProviderProtocol):
         except Exception as e:
             self.logger.error(f"Unexpected error during chat request: {e}")
             return IntegrationResult.error_result(f"Unexpected error: {e}")
+
+    def chat_once(
+        self,
+        messages: Sequence[ChatMessage] | Sequence[dict],
+        options: LLMOptions | None = None,
+        callback: Callable[[str], None] | None = None,
+    ) -> IntegrationResult[str]:
+        """Make exactly one provider call and preserve typed exceptions."""
+
+        if not messages:
+            raise ZeoIntegrationError("No messages provided for chat request")
+        normalized_messages = self._normalize_messages(messages)
+        request_options = options or LLMOptions()
+        if request_options.model is None:
+            try:
+                request_options.model = self.model
+            except ValueError:
+                pass
+        return self._chat_with_provider(normalized_messages, request_options, callback)
 
     @abstractmethod
     def _chat_with_provider(
