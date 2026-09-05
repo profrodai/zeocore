@@ -260,7 +260,9 @@ class TestNotionClientWrite:
     ) -> None:
         client.update_page("page-1", archived=True)
 
-        fake_sdk.pages.update.assert_called_once_with(page_id="page-1", archived=True)
+        # ``archived`` remains a caller compatibility alias, but API
+        # 2026-03-11 removed that wire key in favour of ``in_trash``.
+        fake_sdk.pages.update.assert_called_once_with(page_id="page-1", in_trash=True)
 
     def test_append_blocks(self, client: NotionClient, fake_sdk: MagicMock) -> None:
         children = [

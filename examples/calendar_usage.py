@@ -18,7 +18,7 @@ GAP NOTED (named here rather than silently invented): neither
 `examples/` nor docs/README/GET-STARTED name an existing env-var
 convention for a Drive/Gmail example script pointing at a client-secrets
 file -- no `examples/drive_usage.py` or `examples/mail_usage.py` exists at
-all to follow (checked: only notion_usage.py, jupytext_usage.py,
+all to follow (checked: only notion_demo.py, jupytext_usage.py,
 ffmpeg_usage.py exist as real integration examples; drive/mail have none).
 This script therefore defines and documents its own env var,
 `ZEO_GOOGLE_CALENDAR_CLIENT_SECRETS`, pointing at a real client-secrets
@@ -26,7 +26,7 @@ JSON file, as the graceful-skip precondition -- a sensible, self-contained
 choice given no existing convention to match.
 
 This example demonstrates the graceful-skip path (matching
-examples/notion_usage.py's own pattern) when
+examples/notion_demo.py's own pattern) when
 ZEO_GOOGLE_CALENDAR_CLIENT_SECRETS isn't set: it still shows integration
 construction and the real calling shapes, just without making a live API
 call or running the interactive OAuth local-server flow. Set

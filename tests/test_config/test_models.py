@@ -167,7 +167,8 @@ class TestConfigModels:
         config = NotionConfig(
             api_key="test_api_key", database_ids={"projects": "db1", "tasks": "db2"}
         )
-        assert config.api_key == "test_api_key"
+        assert config.api_key is not None
+        assert config.api_key.get_secret_value() == "test_api_key"
         assert config.database_ids == {"projects": "db1", "tasks": "db2"}
 
     def test_integrations_config(self) -> None:
@@ -204,7 +205,8 @@ class TestConfigModels:
         google_config = GoogleConfig(client_secrets_file=secrets_path)
         notion_config = NotionConfig(api_key="test_api_key")
         assert google_config.client_secrets_file == secrets_path
-        assert notion_config.api_key == "test_api_key"
+        assert notion_config.api_key is not None
+        assert notion_config.api_key.get_secret_value() == "test_api_key"
 
     def test_general_config(self) -> None:
         """Test the GeneralConfig model."""

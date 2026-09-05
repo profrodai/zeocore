@@ -1,198 +1,145 @@
-# Notion integration, end to end: auth setup through a real read + write example
+# Notion API 2026-03-11
 
-**Created:** 2026-08-20 · **Status:** ACTIVE
+**Created:** 2026-08-20 · **Last-updated:** 2026-09-05 · **Status:** ACTIVE
 
-`zeo_core.integrations.notion` gives you a full read + write surface
-against Notion's API through zeocore's usual typed, `IntegrationResult`-
-returning shape. This tutorial walks the whole path — creating an
-integration token, the one real gotcha in getting `initialize()` to
-succeed, then a real search, a real database query, and a real page
-creation — with every code block verified against the live source before
-being written here.
+ZeoCore uses `notion-client>=3.1.0`, explicitly opts into Notion API
+`2026-03-11`, and offers two layers:
 
-Requires the `notion` extra:
+- `NotionIntegration` returns ZeoCore `IntegrationResult` objects and retains
+  the common page/database/block convenience calls.
+- `NotionClient.execute(NotionOperation, **payload)` reaches the complete
+  current data API. `paged()` preserves one cursor page and `iterate()` walks
+  all pages.
+
+Install and prove the credential-free path first:
 
 ```bash
 uv pip install "zeocore[notion]"
+uv run python examples/notion_demo.py --simulated
 ```
 
-## Step 1 — create an integration token
+## Create and store the credential
 
-Notion's auth model is a single bearer **integration token**, not OAuth —
-structurally the same shape as a GitHub personal access token, and
-simpler to set up than the Google integrations' OAuth flow.
+For a private/internal connection:
 
-1. Go to [notion.so/my-integrations](https://www.notion.so/my-integrations)
-   and create a new internal integration. Give it a name (e.g.
-   "zeocore-dev") and the capabilities you need (read content, insert
-   content, update content — check all three if you're following this
-   tutorial's write example too).
-2. Copy the "Internal Integration Secret" it generates — this is your
-   token.
-3. **Share at least one page with the integration.** This step is easy to
-   miss and is the single most common reason a correctly-configured
-   integration sees nothing: an integration token authenticates fine but
-   has access to *zero* pages/databases until you explicitly share them
-   with it. Open a page in Notion, click "..." → "Connections" → find
-   your integration by name → connect it. Anything nested under that
-   page (including databases) becomes visible too.
+1. Open the [Notion integrations portal](https://www.notion.so/my-integrations).
+2. Create an internal integration and select only the content, comment, user,
+   and file capabilities your application needs.
+3. Copy its integration secret once.
+4. Share each required root page/database with that integration from Notion's
+   `…` → `Connections` menu. Authentication alone grants access to nothing.
+5. In your application directory, copy ZeoCore's `.env.example` to `.env` and
+   replace only the placeholder:
 
-Set the token as an environment variable:
+   ```dotenv
+   NOTION_TOKEN=ntn_your_real_value
+   ```
+
+   `.env` is gitignored. Do not put the token in YAML, source code, shell
+   history, an exception, or a notebook cell.
+
+ZeoCore does not implicitly read files on import. Either load `.env` once in
+your entrypoint or let `uv` inject it:
 
 ```bash
-export NOTION_TOKEN=secret_xxxxxxxxxxxxxxxxxxxxxxxx
+uv run --env-file .env python examples/notion_demo.py --live-read
 ```
 
-## Step 2 — the one real gotcha: `initialize()` needs a config file to exist
+The demo never writes. Live mutation requires application code that names the
+target IDs and invokes a write operation deliberately.
 
-This is worth stating plainly because it's easy to assume otherwise:
-**`NOTION_TOKEN` alone, with zero config file anywhere on disk, is not
-enough.** Verified directly against the source
-(`zeo_core/integrations/core/base.py`'s `BaseIntegrationService.initialize()`):
-loading configuration through zeocore's default-locations lookup
-(`./zeo_config.yaml`, `./config/zeo_config.yaml`, `~/.zeo/config.yaml`)
-*raises* if no file is found at any of them — there's no silent
-fallback-to-defaults for this integration the way there is for, say, the
-jupytext integration. `NotionConfigProvider` does correctly backfill the
-token from `NOTION_TOKEN` once a config file (even an empty one) is
-loaded — the gotcha is specifically the file's *existence*, not the
-token's presence in it.
-
-The fix is a one-line file. Create `zeo_config.yaml` in your project root:
-
-```yaml
-integrations:
-  notion: {}
-```
-
-That's the entire file — an empty `notion` block is sufficient; the
-token itself comes from `NOTION_TOKEN`.
-
-## Step 3 — initialize and do a real read
+## Common typed calls
 
 ```python
 from zeo_core.integrations.notion import NotionIntegration
 
-notion = NotionIntegration()  # picks up ./zeo_config.yaml by default
-init_result = notion.initialize()
-if not init_result.success:
-    raise SystemExit(f"Failed to initialize: {init_result.error}")
-print(f"Notion integration initialized: {init_result.message}")
+notion = NotionIntegration()
+initialized = notion.initialize()  # NOTION_TOKEN is sufficient; no YAML needed
+if not initialized.success:
+    raise RuntimeError(initialized.error)
 
-# search() with no filter lists everything shared with this integration --
-# useful as a first sanity check that sharing (Step 1.3) actually worked.
-search_result = notion.search(query="")
-if not search_result.success:
-    raise SystemExit(f"search failed: {search_result.error}")
-
-for obj in search_result.content or []:
-    print(f"{obj['object']}: {obj.get('id')}")
+page = notion.get_page("page-id")
+blocks = notion.list_page_blocks("page-id")
 ```
 
-Every method on `NotionIntegration` returns an `IntegrationResult`
-(`.success`, `.content`, `.error`, `.message`) — check `.success` before
-touching `.content`; on failure `.content` is `None` and `.error` carries
-a string (Notion API errors, including invalid-token and
-object-not-found, are caught and surfaced this way, never raised as
-exceptions from these methods).
-
-If `search_result.content` comes back empty even with a valid token,
-that's almost always Step 1.3 (nothing shared with the integration yet),
-not a code problem — go share a page.
-
-### Querying a database
-
-Notion's API changed its underlying model on 2025-09-03: a "database" is
-now a container for one or more "data sources," and querying happens
-against a data source ID, not the database ID directly. `zeo_core`'s
-Notion integration hides this from you for the common case — you keep
-passing a `database_id` and it resolves the (usually singular) data
-source internally:
+Notion databases are containers and data sources are queryable tables. The
+legacy `query_database()` convenience call now proceeds only when the database
+has exactly one data source; zero or multiple sources are rejected. For a
+multi-source database, choose the ID explicitly:
 
 ```python
-query_result = notion.query_database(
-    "your-database-id",
-    filter={"property": "Status", "select": {"equals": "Done"}},
-)
-if query_result.success:
-    for page in query_result.content or []:
-        print(page.id, page.url)
+from zeo_core.integrations.notion import NotionClient
+
+client = notion.client
+assert isinstance(client, NotionClient)
+sources = client.list_data_sources("database-id")
+rows, cursor = client.query_data_source(sources[0].id)
 ```
 
-(If you ever have a database with genuinely multiple data sources, the
-lower-level `list_data_sources()`/`query_data_source()` methods on
-`zeo_core.integrations.notion.NotionClient` — not on `NotionIntegration`
-— expose that explicitly. Most databases have exactly one data source, so
-you won't need them.)
+The old `archived=` Python argument remains as a compatibility alias, but the
+wire request always uses `in_trash`, as required by API 2026-03-11. Block
+insertion uses `position={"type": "start" | "end" | "after_block", ...}`;
+the removed `after` parameter is never sent.
 
-## Step 4 — a real write: create a page, then append a block to it
+## Complete operation matrix
+
+Every row is a `NotionOperation` value accepted by `execute`; the same list is
+available mechanically as `client.supported_operations`.
+
+| Resource | Operations |
+|---|---|
+| Pages | retrieve, retrieve property, create, update, move, retrieve markdown, update markdown |
+| Blocks | retrieve, update, delete, list/append children, query meeting notes |
+| Databases | retrieve, create, update |
+| Data sources | retrieve, query, create, update, list templates |
+| Users | list, retrieve, current bot |
+| Search | cursor-paginated search; filters use `page` or `data_source` |
+| Comments | create, list, retrieve, update, delete |
+| File uploads | create, send part, complete, retrieve, list |
+| Views | create, retrieve, update, delete, list |
+| View queries | create cached query, page results, delete query |
+| Custom emoji | list |
+
+Example—walk every comment without dropping cursor state:
 
 ```python
-create_result = notion.create_page(
-    parent={"type": "page_id", "page_id": "the-page-id-you-shared-in-step-1"},
-    properties={"title": [{"text": {"content": "Created by zeocore"}}]},
-)
-if not create_result.success:
-    raise SystemExit(f"create_page failed: {create_result.error}")
+from zeo_core.integrations.notion import NotionOperation
 
-new_page = create_result.content
-print(f"Created page: {new_page.id} ({new_page.url})")
-
-append_result = notion.append_blocks(
-    new_page.id,
-    children=[
-        {
-            "object": "block",
-            "type": "paragraph",
-            "paragraph": {
-                "rich_text": [
-                    {"type": "text", "text": {"content": "Hello from zeocore."}}
-                ]
-            },
-        }
-    ],
-)
-print(f"append_blocks succeeded: {append_result.success}")
+for comment in client.iterate(
+    NotionOperation.COMMENT_LIST,
+    block_id="page-or-block-id",
+    page_size=100,
+):
+    print(comment["id"])
 ```
 
-`create_result.content` is a real `NotionPage` model (`.id`, `.url`,
-`.properties`, `.created_time`, ...), not a raw dict — pull `.id` off it
-directly for the follow-up `append_blocks()` call, as shown above.
+The SDK performs bounded retries for `429` and server failures. After
+exhaustion, ZeoCore raises `NotionAPIError` with stable code/status/retry
+metadata and a sanitized message; it never copies the provider response body.
 
-For creating a row inside a database instead of a bare page, the shape is
-almost identical — `create_database_entry(database_id, properties=...)`
-handles the same data-source resolution `query_database()` does, so you
-still just pass a `database_id`.
+## Public OAuth
 
-## Full write surface, for reference
+`NotionOAuthBroker` covers exchange, refresh, introspection, and revocation
+separately from the data-operation registry. Set `NOTION_OAUTH_CLIENT_ID` and
+`NOTION_OAUTH_CLIENT_SECRET` in `.env`, inject a ZeoCore `SecretStore`, and
+call `exchange(code=...)`. The access and optional refresh token are placed
+directly into custody; the returned `NotionOAuthGrant` carries only redacted
+`SecretRef` values and workspace metadata. Introspection and revocation read
+the bearer value from `NOTION_TOKEN` so no public method accepts or returns it.
+For rotation, inject the prior refresh credential as
+`NOTION_OAUTH_REFRESH_TOKEN` and call `refresh_environment_grant()`; its
+replacement credentials go straight into the same custody path. A deployment
+secret manager should inject that value—never copy a SecretRef's material back
+through application code or a YAML file.
 
-Everything demonstrated above plus what wasn't: `get_page(page_id)`,
-`list_page_blocks(page_id)`, `get_database(database_id)`,
-`create_database_entry(database_id, properties, children=None)`,
-`update_page(page_id, properties=None, archived=None)`,
-`update_block` (client-level only, via `NotionClient`, not
-`NotionIntegration`). All follow the same `IntegrationResult` shape
-demonstrated above.
+OAuth is deliberately not an `execute()` operation: the token endpoint creates
+new credential material, while every operation in that registry returns an
+ordinary dictionary. Mixing the two would turn a correct data API into a
+credential-disclosure channel.
 
-## What doesn't work yet, stated plainly
+## Current-version sources
 
-The `auth_provider=` constructor argument on `NotionIntegration` is
-accepted but currently discarded internally — the only auth path that
-actually works today is the config-file + `NOTION_TOKEN` path this
-tutorial walks. If you were expecting to inject a custom
-`NotionAuthProvider` and have `NotionIntegration` use it, that wiring
-isn't connected yet; `NotionAuthProvider` is real and independently
-testable but not reachable through `NotionIntegration`'s own
-initialization path.
-
-## See also
-
-- [`examples/notion_usage.py`](../../examples/notion_usage.py) — a
-  runnable version of this tutorial's Steps 2–4, with a graceful skip
-  when `NOTION_TOKEN` isn't set (so it's safe to run in CI or without
-  credentials).
-- [GET-STARTED.md](../../GET-STARTED.md)'s "Working with Notion
-  Integration" section — the condensed reference version.
-- [MCP server tutorial](mcp-server-with-claude-code.md) — for wiring a
-  tool that uses this integration (via `ctx.services`) up to an
-  MCP-native agent.
+- [Notion versioning](https://developers.notion.com/reference/versioning)
+- [2026-03-11 upgrade guide](https://developers.notion.com/guides/get-started/upgrade-guide-2026-03-11)
+- [Pagination](https://developers.notion.com/reference/intro#pagination)
+- [Request limits and Retry-After](https://developers.notion.com/reference/request-limits)

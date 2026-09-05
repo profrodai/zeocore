@@ -957,7 +957,7 @@ Each integration is its own import and its own extra. The parent package
 | `zeo_core.integrations.google.drive` | `drive` / `google` | `GoogleDriveService`, `DriveFile`, `DriveFolder`, `create_integration` |
 | `zeo_core.integrations.google.mail` | `gmail` / `google` | `GoogleMailService`, `create_integration` |
 | `zeo_core.integrations.google.calendar` | `calendar` / `google` | `GoogleCalendarService`, `Calendar`, `CalendarEvent`, `EventAttendee`, `EventDateTime`, `CalendarIntegrationProtocol`, `create_integration` |
-| `zeo_core.integrations.notion` | `notion` | `NotionIntegration`, `NotionClient`, `NotionAuthProvider`, `NotionConfigProvider`, `NotionIntegrationProtocol`, `NotionPage`, `NotionDatabase`, `NotionBlock`, `NotionUser` |
+| `zeo_core.integrations.notion` | `notion` | `NotionIntegration`, `NotionClient`, `NotionOperation`, `NotionAPIError`, `NotionPageResult`, typed page/database/data-source/block/user models |
 | `zeo_core.integrations.llms` | `llms` | `LLMClient`, `OpenAIClient`, `AnthropicClient`, `OllamaClient`, `MockLLMClient`, `FallbackLLMClient`, `LLMConfig`, `ChatMessage`, `FunctionCall` |
 | `zeo_core.integrations.pandoc` | `pandoc` | `PandocIntegration`, `DocumentConverter`, `PandocConfig`, `ConversionMetrics`, `ConversionTask`, `FileInfo`, `create_integration` |
 | `zeo_core.integrations.jupytext` | `jupytext` | `JupytextIntegration`, `NotebookConverter`, `JupytextConfig`, `ConversionDetails`, `NotebookInfo`, `create_integration` |

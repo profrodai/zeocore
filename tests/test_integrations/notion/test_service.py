@@ -24,10 +24,11 @@ def mock_config_provider() -> MagicMock:
 
 
 @pytest.fixture
-def integration(mock_config_provider: MagicMock) -> NotionIntegration:
-    """A NotionIntegration wired to a fake config (token in config, no
-    auth_provider needed -- mirrors GitHubIntegration's "token in config"
-    branch)."""
+def integration(
+    mock_config_provider: MagicMock, monkeypatch: pytest.MonkeyPatch
+) -> NotionIntegration:
+    """A NotionIntegration wired to a process-local fake environment token."""
+    monkeypatch.setenv("NOTION_TOKEN", "test-only-token")
     svc = NotionIntegration(config_provider=mock_config_provider, auth_provider=None)
     result = svc.initialize()
     assert result.success is True

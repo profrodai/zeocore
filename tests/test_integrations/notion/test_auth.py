@@ -71,14 +71,16 @@ class TestNotionAuthProvider:
     def test_loads_token_from_env_on_init(self) -> None:
         with patch.dict(os.environ, {"NOTION_TOKEN": "env_token"}):
             provider = NotionAuthProvider()
-            assert provider.token == "env_token"  # noqa: S105
+            credentials = provider.get_credentials()
+            assert isinstance(credentials, dict)
+            assert credentials["configured"] is True
 
     def test_authenticate_with_provided_token(self, fake_factory: MagicMock) -> None:
         provider = NotionAuthProvider(sdk_client_factory=fake_factory)
         result = provider.authenticate(token="explicit_token")  # noqa: S106 -- test fixture, fake credential value
 
         assert result.success is True
-        assert provider.token == "explicit_token"  # noqa: S105 -- provider-owned fake credential
+        fake_factory.assert_called_with("explicit_token")
         assert provider.authenticated is True
         fake_factory.assert_called_once_with("explicit_token")
 
@@ -112,7 +114,7 @@ class TestNotionAuthProvider:
 
         assert result.success is False
         assert result.error is not None
-        assert "boom" in result.error
+        assert result.error == "Notion API authentication failed"
 
     def test_authenticate_loads_from_credentials_file(
         self, notion_creds_relpath: Path, fake_factory: MagicMock
@@ -127,7 +129,7 @@ class TestNotionAuthProvider:
             result = provider.authenticate()
 
             assert result.success is True
-            assert provider.token == "file_token"  # noqa: S105 -- provider-owned fake credential
+            fake_factory.assert_called_with("file_token")
 
     def test_refresh_credentials_no_token(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
@@ -139,25 +141,27 @@ class TestNotionAuthProvider:
 
     def test_refresh_credentials_valid(self, fake_factory: MagicMock) -> None:
         provider = NotionAuthProvider(sdk_client_factory=fake_factory)
-        provider.token = "good_token"  # noqa: S105
+        provider._token = "good_token"  # noqa: S105 -- private test fixture
 
         result = provider.refresh_credentials()
 
         assert result.success is True
-        assert provider.token == "good_token"  # noqa: S105 -- provider-owned fake credential
+        credentials = provider.get_credentials()
+        assert isinstance(credentials, dict)
+        assert credentials["configured"] is True
 
     def test_refresh_credentials_failure(self) -> None:
         factory = MagicMock(
             side_effect=lambda token: _FakeSDKClient(error=RuntimeError("dead"))
         )
         provider = NotionAuthProvider(sdk_client_factory=factory)
-        provider.token = "stale_token"  # noqa: S105
+        provider._token = "stale_token"  # noqa: S105 -- private test fixture
 
         result = provider.refresh_credentials()
 
         assert result.success is False
         assert result.error is not None
-        assert "dead" in result.error
+        assert result.error == "Failed to validate Notion token"
 
     def test_get_credentials(self, fake_factory: MagicMock) -> None:
         provider = NotionAuthProvider(sdk_client_factory=fake_factory)
@@ -165,7 +169,8 @@ class TestNotionAuthProvider:
 
         creds = provider.get_credentials()
         assert isinstance(creds, dict)
-        assert creds["token"] == "tok"  # noqa: S105
+        assert creds["configured"] is True
+        assert "token" not in creds
         assert creds["user_info"] == {"id": "bot-1", "name": "Test Bot"}
 
     def test_save_and_load_credentials_round_trip(
@@ -187,7 +192,8 @@ class TestNotionAuthProvider:
         with patch.dict(os.environ, {}, clear=True):
             creds = provider2.get_credentials()
             assert isinstance(creds, dict)
-            assert creds["token"] == "round_trip_token"  # noqa: S105
+            assert creds["configured"] is True
+            assert "token" not in creds
 
     @pytest.mark.skipif(platform.system() == "Windows", reason="POSIX file modes only")
     def test_save_credentials_writes_file_at_mode_0600(
@@ -212,7 +218,7 @@ class TestNotionAuthProvider:
 
     def test_save_credentials_no_token_returns_false(self) -> None:
         provider = NotionAuthProvider()
-        provider.token = None
+        provider._token = None
         assert provider.save_credentials() is False
 
     def test_build_client_uses_real_sdk_when_no_factory_injected(self) -> None:
@@ -232,13 +238,13 @@ class TestNotionAuthProvider:
         falls through to the NOTION_TOKEN env-var check inside
         authenticate() itself (not just __init__'s own env read)."""
         provider = NotionAuthProvider(sdk_client_factory=fake_factory)
-        provider.token = None  # simulate __init__ having found nothing
+        provider._token = None  # simulate __init__ having found nothing
 
         with patch.dict(os.environ, {"NOTION_TOKEN": "late_env_token"}):
             result = provider.authenticate()
 
             assert result.success is True
-            assert provider.token == "late_env_token"  # noqa: S105 -- provider-owned fake credential
+            fake_factory.assert_called_with("late_env_token")
 
     def test_load_credentials_file_does_not_exist(
         self, notion_creds_relpath: Path

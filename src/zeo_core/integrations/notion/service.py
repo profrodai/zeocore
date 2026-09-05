@@ -1,5 +1,6 @@
 """Notion core integration service for zeo_core."""
 
+import os
 from typing import Any
 
 from zeo_core.core.logging import LOG_LEVELS, LogLevel, get_logger
@@ -11,7 +12,7 @@ from zeo_core.integrations.core import (
 )
 
 from .auth import NotionAuthProvider
-from .client import NotionClient
+from .client import NotionAPIError, NotionClient, NotionOperation
 from .config import NotionConfigProvider
 from .models import NotionBlock, NotionDatabase, NotionPage
 from .protocols import NotionIntegrationProtocol
@@ -185,15 +186,13 @@ class NotionIntegration(BaseIntegrationService, NotionIntegrationProtocol):
                 message="Notion configuration is not available",
             )
 
-        token = self.config.get("token")
-
+        token = os.environ.get("NOTION_TOKEN")
         if token:
-            error_result = self._authenticate_with_config_token(token)
-            if error_result:
-                return None, error_result
             return token, None
-
-        return self._get_token_from_auth_provider()
+        return None, IntegrationResult.error_result(
+            error="NOTION_TOKEN is not configured",
+            message="Set NOTION_TOKEN in the process environment",
+        )
 
     def _create_notion_client(self, token: str) -> IntegrationResult:
         """Create the Notion client and mark the integration initialized."""
@@ -261,6 +260,40 @@ class NotionIntegration(BaseIntegrationService, NotionIntegrationProtocol):
     def is_available(self) -> bool:
         """Check if the Notion integration is available."""
         return self._initialized and self.client is not None
+
+    def execute(
+        self,
+        operation: NotionOperation | str,
+        **kwargs: Any,  # noqa: ANN401
+    ) -> IntegrationResult[dict[str, Any]]:
+        """Execute any current public Notion operation by stable name.
+
+        This is the endpoint-complete surface. The named convenience methods
+        below remain for common workflows and backward compatibility.
+        """
+        init_error = self._ensure_initialized()
+        if init_error:
+            return init_error
+        if self.client is None:
+            return IntegrationResult.error_result(
+                error="Notion client is not initialized",
+                message="Notion client is not initialized",
+            )
+        try:
+            content = self.client.execute(operation, **kwargs)
+            return IntegrationResult.success_result(
+                content=content,
+                message=f"Notion operation {operation} completed",
+            )
+        except NotionAPIError as error:
+            return IntegrationResult.error_result(
+                error=f"{error.code}: {error}", message=str(error)
+            )
+        except (TypeError, ValueError) as error:
+            return IntegrationResult.error_result(
+                error=f"Invalid Notion request: {error}",
+                message=f"Invalid Notion request: {error}",
+            )
 
     # ------------------------------------------------------------------
     # Read: pages
@@ -488,7 +521,7 @@ class NotionIntegration(BaseIntegrationService, NotionIntegrationProtocol):
         properties: dict[str, Any] | None = None,
         archived: bool | None = None,
     ) -> IntegrationResult[NotionPage]:
-        """Update a page's properties or archived state."""
+        """Update a page's properties or trash state."""
         init_error = self._ensure_initialized()
         if init_error:
             return init_error

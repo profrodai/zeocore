@@ -47,13 +47,13 @@ class NotionAuthProvider(BaseAuthProvider):
                 shaped callable, for testing. Defaults to the real SDK client.
         """
         super().__init__(credentials_file=credentials_file, log_level=log_level)
-        self.token: str | None = None
+        self._token: str | None = None
         self._user_info: dict[str, Any] | None = None
         self._sdk_client_factory = sdk_client_factory
 
         env_token = os.environ.get("NOTION_TOKEN")
         if env_token:
-            self.token = env_token
+            self._token = env_token
             logger.debug("Loaded Notion token from environment variable")
 
     @property
@@ -81,21 +81,21 @@ class NotionAuthProvider(BaseAuthProvider):
             Authentication result
         """
         if token:
-            self.token = token
+            self._token = token
             logger.debug("Using provided token for authentication")
         else:
             credentials = self._load_credentials()
             if credentials and credentials.get("token"):
-                self.token = credentials.get("token")
+                self._token = credentials.get("token")
                 logger.debug("Loaded token from credentials file")
 
-        if not self.token:
+        if not self._token:
             env_token = os.environ.get("NOTION_TOKEN")
             if env_token:
-                self.token = env_token
+                self._token = env_token
                 logger.debug("Using token from environment variable")
 
-        if not self.token:
+        if not self._token:
             logger.error("No Notion token available for authentication")
             return AuthResult.error_result(
                 error="No Notion token provided",
@@ -106,7 +106,7 @@ class NotionAuthProvider(BaseAuthProvider):
             )
 
         try:
-            sdk_client = self._build_client(self.token)
+            sdk_client = self._build_client(self._token)
             # Validate the token: notion_client raises APIResponseError with
             # code Unauthorized on a bad token (confirmed against
             # notion_client.errors.APIErrorCode.Unauthorized), so a
@@ -114,7 +114,7 @@ class NotionAuthProvider(BaseAuthProvider):
             bot_user = sdk_client.users.me()
 
             self._user_info = bot_user if isinstance(bot_user, dict) else dict(bot_user)
-            self._save_token_data(self.token)
+            self._save_token_data(self._token)
             self.authenticated = True
 
             return AuthResult.success_result(
@@ -123,16 +123,15 @@ class NotionAuthProvider(BaseAuthProvider):
                 content={"user_info": self._user_info},
             )
         except Exception as e:
-            error_message = str(e)
             status = getattr(e, "status", None)
             if status == 401:
                 return AuthResult.error_result(
                     error="Invalid Notion token (unauthorized)",
-                    message=error_message,
+                    message="Notion authentication failed",
                 )
             return AuthResult.error_result(
-                error=f"Notion API authentication failed: {error_message}",
-                message=error_message,
+                error="Notion API authentication failed",
+                message="Notion authentication failed without exposing provider data",
             )
 
     def refresh_credentials(self) -> AuthResult:
@@ -146,13 +145,13 @@ class NotionAuthProvider(BaseAuthProvider):
         Returns:
             Authentication result
         """
-        if not self.token:
+        if not self._token:
             return AuthResult.error_result(
                 error="No Notion token available to refresh",
             )
 
         try:
-            sdk_client = self._build_client(self.token)
+            sdk_client = self._build_client(self._token)
             bot_user = sdk_client.users.me()
             self._user_info = bot_user if isinstance(bot_user, dict) else dict(bot_user)
 
@@ -160,9 +159,9 @@ class NotionAuthProvider(BaseAuthProvider):
                 message="Notion token is still valid",
                 credentials_path=self.credentials_file,
             )
-        except Exception as e:
+        except Exception:
             return AuthResult.error_result(
-                error=f"Failed to validate Notion token: {str(e)}",
+                error="Failed to validate Notion token",
             )
 
     def get_credentials(self) -> object:
@@ -171,12 +170,12 @@ class NotionAuthProvider(BaseAuthProvider):
         Returns:
             Dictionary with token and bot user information
         """
-        if not self.token:
+        if not self._token:
             credentials = self._load_credentials()
             if credentials and credentials.get("token"):
-                self.token = credentials.get("token")
+                self._token = credentials.get("token")
 
-        return {"token": self.token, "user_info": self._user_info}
+        return {"configured": self._token is not None, "user_info": self._user_info}
 
     def save_credentials(self) -> bool:
         """Save Notion credentials to file.
@@ -184,7 +183,7 @@ class NotionAuthProvider(BaseAuthProvider):
         Returns:
             True if credentials were saved, False otherwise
         """
-        return self._save_token_data(self.token)
+        return self._save_token_data(self._token)
 
     def _load_credentials(self) -> dict[str, Any] | None:
         """Load Notion credentials from file."""
