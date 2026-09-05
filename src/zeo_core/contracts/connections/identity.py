@@ -58,6 +58,10 @@ _CONFIRMATION_EVIDENCE_REF_PATTERN = re.compile(
     r"\Azeo-evidence:v1:"
     r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\Z"
 )
+_OBSERVATION_ARTIFACT_REF_PATTERN = re.compile(
+    r"\Azeo-observation-artifact:v1:"
+    r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\Z"
+)
 
 
 class _NonEmptyIdentity(BaseModel):
@@ -124,6 +128,23 @@ class AuthorizationId(_NonEmptyIdentity):
 
 class ExecutionId(_NonEmptyIdentity):
     """Identity of one durable execution of an admitted business operation."""
+
+
+class ObservationId(_NonEmptyIdentity):
+    """Identity of one durable execution of an admitted read operation."""
+
+
+class ObservationArtifactRef(_NonEmptyIdentity):
+    """Opaque locator for bounded observation bytes held by an artifact store."""
+
+    @field_validator("value")
+    @classmethod
+    def _matches_canonical_shape(cls, value: str) -> str:
+        if not _OBSERVATION_ARTIFACT_REF_PATTERN.match(value):
+            raise ValueError(
+                "ObservationArtifactRef must be a kernel-shaped UUIDv4 locator"
+            )
+        return value
 
 
 class IdempotencyKey(_NonEmptyIdentity):

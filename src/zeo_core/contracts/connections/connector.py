@@ -56,6 +56,7 @@ class BusinessOperation(BaseModel):
     redaction_paths: tuple[str, ...] = Field(default_factory=tuple)
     idempotency_mode: IdempotencyMode
     reconciliation_strategy: str | None = None
+    resource_argument: str | None = None
 
     @field_validator("allowed_origin")
     @classmethod

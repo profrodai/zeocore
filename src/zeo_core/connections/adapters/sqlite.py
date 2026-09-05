@@ -25,11 +25,16 @@ from zeo_core.contracts.connections import (
     ExecutionId,
     ExecutionReceipt,
     ExecutionState,
+    IdempotencyKey,
+    ObservationId,
+    ObservationReceipt,
+    ObservationRecord,
+    ObservationState,
     OrganizationId,
     is_allowed_transition,
 )
 
-_SCHEMA_VERSION = 1
+_SCHEMA_VERSION = 2
 
 
 class ConnectionStoreError(RuntimeError):
@@ -45,6 +50,13 @@ def _json_bytes(model: BaseModel) -> str:
 
 def _same_execution_identity(left: Execution, right: Execution) -> bool:
     excluded = {"state", "updated_at", "completed_at"}
+    return left.model_dump(exclude=excluded) == right.model_dump(exclude=excluded)
+
+
+def _same_observation_identity(
+    left: ObservationRecord, right: ObservationRecord
+) -> bool:
+    excluded = {"state", "completed_at"}
     return left.model_dump(exclude=excluded) == right.model_dump(exclude=excluded)
 
 
@@ -167,6 +179,28 @@ class SQLiteConnectionStore:
                     nonce TEXT NOT NULL,
                     recorded_at TEXT NOT NULL,
                     PRIMARY KEY (organization_id, nonce)
+                );
+                CREATE TABLE IF NOT EXISTS observations (
+                    organization_id TEXT NOT NULL,
+                    observation_id TEXT NOT NULL,
+                    connection_id TEXT NOT NULL,
+                    connector_revision TEXT NOT NULL,
+                    operation_id TEXT NOT NULL,
+                    idempotency_key TEXT NOT NULL,
+                    request_digest TEXT NOT NULL,
+                    state TEXT NOT NULL,
+                    document TEXT NOT NULL,
+                    PRIMARY KEY (organization_id, observation_id),
+                    UNIQUE (
+                        organization_id, connection_id, connector_revision,
+                        operation_id, idempotency_key
+                    )
+                );
+                CREATE TABLE IF NOT EXISTS observation_receipts (
+                    organization_id TEXT NOT NULL,
+                    observation_id TEXT NOT NULL,
+                    document TEXT NOT NULL,
+                    PRIMARY KEY (organization_id, observation_id)
                 );
                 """
             )
@@ -827,6 +861,173 @@ class SQLiteConnectionStore:
                 raise ConnectionStoreError(
                     "authorization nonce was already used"
                 ) from error
+
+    def get_observation(
+        self, *, organization_id: OrganizationId, observation_id: ObservationId
+    ) -> ObservationRecord | None:
+        with self._lock:
+            row = self._connection.execute(
+                """SELECT document FROM observations
+                WHERE organization_id = ? AND observation_id = ?""",
+                (str(organization_id), str(observation_id)),
+            ).fetchone()
+        return (
+            None
+            if row is None
+            else ObservationRecord.model_validate_json(row["document"])
+        )
+
+    def get_observation_by_idempotency(
+        self,
+        *,
+        organization_id: OrganizationId,
+        connection_id: ConnectionId,
+        connector_revision: ConnectorRevisionId,
+        operation_id: str,
+        idempotency_key: IdempotencyKey,
+    ) -> ObservationRecord | None:
+        with self._lock:
+            row = self._connection.execute(
+                """SELECT document FROM observations
+                WHERE organization_id = ? AND connection_id = ?
+                AND connector_revision = ? AND operation_id = ?
+                AND idempotency_key = ?""",
+                (
+                    str(organization_id),
+                    str(connection_id),
+                    str(connector_revision),
+                    operation_id,
+                    str(idempotency_key),
+                ),
+            ).fetchone()
+        return (
+            None
+            if row is None
+            else ObservationRecord.model_validate_json(row["document"])
+        )
+
+    def claim_observation(
+        self,
+        *,
+        organization_id: OrganizationId,
+        nonce: str,
+        nonce_recorded_at: datetime,
+        observation: ObservationRecord,
+    ) -> tuple[ObservationRecord, bool]:
+        self._require_scope(organization_id, observation.organization_id, "observation")
+        if observation.state is not ObservationState.CLAIMED:
+            raise ConnectionStoreError("new observation must start CLAIMED")
+        try:
+            with self._transaction() as database:
+                database.execute(
+                    """INSERT INTO authorization_nonces
+                    (organization_id, nonce, recorded_at) VALUES (?, ?, ?)""",
+                    (str(organization_id), nonce, nonce_recorded_at.isoformat()),
+                )
+                database.execute(
+                    """INSERT INTO observations (
+                        organization_id, observation_id, connection_id,
+                        connector_revision, operation_id, idempotency_key,
+                        request_digest, state, document
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        str(organization_id),
+                        str(observation.observation_id),
+                        str(observation.connection_id),
+                        str(observation.connector_revision),
+                        str(observation.operation_id),
+                        str(observation.idempotency_key),
+                        observation.request_digest,
+                        observation.state.value,
+                        _json_bytes(observation),
+                    ),
+                )
+        except sqlite3.IntegrityError as error:
+            existing = self.get_observation_by_idempotency(
+                organization_id=organization_id,
+                connection_id=observation.connection_id,
+                connector_revision=observation.connector_revision,
+                operation_id=str(observation.operation_id),
+                idempotency_key=observation.idempotency_key,
+            )
+            if existing is not None:
+                return existing, False
+            raise ConnectionStoreError(
+                "authorization nonce or observation identity was already used"
+            ) from error
+        return observation, True
+
+    def commit_observation(
+        self,
+        *,
+        organization_id: OrganizationId,
+        observation: ObservationRecord,
+        receipt: ObservationReceipt,
+    ) -> None:
+        self._require_scope(organization_id, observation.organization_id, "observation")
+        self._require_scope(
+            organization_id, receipt.organization_id, "observation receipt"
+        )
+        if observation.state is ObservationState.CLAIMED:
+            raise ConnectionStoreError("committed observation must be terminal")
+        if receipt.observation_id != observation.observation_id:
+            raise ConnectionStoreError("observation receipt identity mismatch")
+        if receipt.connection_id != observation.connection_id:
+            raise ConnectionStoreError("observation receipt connection mismatch")
+        if receipt.request_digest != observation.request_digest:
+            raise ConnectionStoreError("observation receipt request mismatch")
+        if receipt.final_state is not observation.state:
+            raise ConnectionStoreError("observation receipt state mismatch")
+        try:
+            with self._transaction() as database:
+                row = database.execute(
+                    """SELECT document FROM observations
+                    WHERE organization_id = ? AND observation_id = ?""",
+                    (str(organization_id), str(observation.observation_id)),
+                ).fetchone()
+                if row is None:
+                    raise ConnectionStoreError("observation claim does not exist")
+                previous = ObservationRecord.model_validate_json(row["document"])
+                if previous.state is not ObservationState.CLAIMED:
+                    raise ConnectionStoreError("observation is already terminal")
+                if not _same_observation_identity(previous, observation):
+                    raise ConnectionStoreError("observation identity is immutable")
+                database.execute(
+                    """UPDATE observations SET state = ?, document = ?
+                    WHERE organization_id = ? AND observation_id = ?""",
+                    (
+                        observation.state.value,
+                        _json_bytes(observation),
+                        str(organization_id),
+                        str(observation.observation_id),
+                    ),
+                )
+                database.execute(
+                    """INSERT INTO observation_receipts
+                    (organization_id, observation_id, document) VALUES (?, ?, ?)""",
+                    (
+                        str(organization_id),
+                        str(observation.observation_id),
+                        _json_bytes(receipt),
+                    ),
+                )
+        except sqlite3.IntegrityError as error:
+            raise ConnectionStoreError("observation outcome already exists") from error
+
+    def get_observation_receipt(
+        self, *, organization_id: OrganizationId, observation_id: ObservationId
+    ) -> ObservationReceipt | None:
+        with self._lock:
+            row = self._connection.execute(
+                """SELECT document FROM observation_receipts
+                WHERE organization_id = ? AND observation_id = ?""",
+                (str(organization_id), str(observation_id)),
+            ).fetchone()
+        return (
+            None
+            if row is None
+            else ObservationReceipt.model_validate_json(row["document"])
+        )
 
     @staticmethod
     def _require_execution(

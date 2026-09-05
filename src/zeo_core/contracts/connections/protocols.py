@@ -47,8 +47,14 @@ from zeo_core.contracts.connections.identity import (
     ConnectionId,
     ConnectorRevisionId,
     ExecutionId,
+    IdempotencyKey,
+    ObservationId,
     OrganizationId,
     SecretRef,
+)
+from zeo_core.contracts.connections.observation import (
+    ObservationReceipt,
+    ObservationRecord,
 )
 from zeo_core.contracts.connections.receipt import ExecutionReceipt
 from zeo_core.contracts.connections.verdicts import (
@@ -387,6 +393,50 @@ class BrokerExecutionStore(ConnectionStore, Protocol):
     def record_authorization_nonce(
         self, *, organization_id: OrganizationId, nonce: str, recorded_at: datetime
     ) -> None: ...
+
+
+@runtime_checkable
+class ObservationStore(ConnectionStore, Protocol):
+    """Durable adapter-neutral persistence required by read orchestration."""
+
+    def get_observation(
+        self, *, organization_id: OrganizationId, observation_id: ObservationId
+    ) -> ObservationRecord | None: ...
+
+    def get_observation_by_idempotency(
+        self,
+        *,
+        organization_id: OrganizationId,
+        connection_id: ConnectionId,
+        connector_revision: ConnectorRevisionId,
+        operation_id: str,
+        idempotency_key: IdempotencyKey,
+    ) -> ObservationRecord | None: ...
+
+    def claim_observation(
+        self,
+        *,
+        organization_id: OrganizationId,
+        nonce: str,
+        nonce_recorded_at: datetime,
+        observation: ObservationRecord,
+    ) -> tuple[ObservationRecord, bool]: ...
+
+    def commit_observation(
+        self,
+        *,
+        organization_id: OrganizationId,
+        observation: ObservationRecord,
+        receipt: ObservationReceipt,
+    ) -> None: ...
+
+    def get_observation_receipt(
+        self, *, organization_id: OrganizationId, observation_id: ObservationId
+    ) -> ObservationReceipt | None: ...
+
+    def has_authorization_nonce(
+        self, *, organization_id: OrganizationId, nonce: str
+    ) -> bool: ...
 
 
 @runtime_checkable

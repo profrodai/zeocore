@@ -48,6 +48,15 @@ from zeo_core.connections.authorization import (
     AuthorizationSignatureVerifier,
     ExactAuthorizationVerifier,
 )
+from zeo_core.connections.observations import (
+    ObservationDispatcher,
+    ObservationDispatchRequest,
+    ObservationDispatchResult,
+    ObservationDisposition,
+    ObservationExecutionResult,
+    ObservationOrchestrator,
+    ObservationPreflightError,
+)
 from zeo_core.connections.orchestration import (
     DispatchDisposition,
     EffectDispatcher,
@@ -60,7 +69,17 @@ from zeo_core.connections.orchestration import (
     ReconciliationDisposition,
     ReconciliationResult,
 )
-from zeo_core.contracts.connections import BrokerExecutionStore, ConfirmationEvidence
+from zeo_core.contracts.connections import (
+    BrokerExecutionStore,
+    ConfirmationEvidence,
+    ObservationArtifact,
+    ObservationArtifactRef,
+    ObservationId,
+    ObservationReceipt,
+    ObservationRecord,
+    ObservationState,
+    ObservationStore,
+)
 
 __all__ = [
     "AuthorizationNonceLookup",
@@ -81,6 +100,20 @@ __all__ = [
     "KeychainEffectDispatcher",
     "KeychainEffectReconciler",
     "KeychainSecretStore",
+    "ObservationArtifact",
+    "ObservationArtifactRef",
+    "ObservationDispatchRequest",
+    "ObservationDispatchResult",
+    "ObservationDispatcher",
+    "ObservationDisposition",
+    "ObservationExecutionResult",
+    "ObservationId",
+    "ObservationOrchestrator",
+    "ObservationPreflightError",
+    "ObservationReceipt",
+    "ObservationRecord",
+    "ObservationState",
+    "ObservationStore",
     "ReconciliationDisposition",
     "ReconciliationResult",
     "SQLiteConnectionStore",

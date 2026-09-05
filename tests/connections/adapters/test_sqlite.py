@@ -520,8 +520,44 @@ def test_schema_version_is_recorded_and_future_schema_refuses(tmp_path: Path) ->
     store = SQLiteConnectionStore(path)
     store.close()
     with sqlite3.connect(path) as database:
-        assert database.execute("PRAGMA user_version").fetchone()[0] == 1
-        database.execute("PRAGMA user_version = 2")
+        assert database.execute("PRAGMA user_version").fetchone()[0] == 2
+        database.execute("PRAGMA user_version = 3")
 
     with pytest.raises(ConnectionStoreError, match="newer"):
         SQLiteConnectionStore(path)
+
+
+def test_version_one_store_upgrades_without_losing_connections(
+    tmp_path: Path, connection: Connection
+) -> None:
+    path = tmp_path / "connections.sqlite3"
+    first = SQLiteConnectionStore(path)
+    first.save_connection(
+        organization_id=connection.organization_id, connection=connection
+    )
+    first.close()
+    with sqlite3.connect(path) as database:
+        database.execute("DROP TABLE observations")
+        database.execute("DROP TABLE observation_receipts")
+        database.execute("PRAGMA user_version = 1")
+
+    upgraded = SQLiteConnectionStore(path)
+    try:
+        assert (
+            upgraded.get_connection(
+                organization_id=connection.organization_id,
+                connection_id=connection.connection_id,
+            )
+            == connection
+        )
+        with sqlite3.connect(path) as database:
+            assert database.execute("PRAGMA user_version").fetchone()[0] == 2
+            tables = {
+                row[0]
+                for row in database.execute(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'"
+                )
+            }
+        assert {"observations", "observation_receipts"}.issubset(tables)
+    finally:
+        upgraded.close()
