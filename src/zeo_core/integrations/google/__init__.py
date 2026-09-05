@@ -33,6 +33,11 @@ from zeo_core.integrations.google.drive import (
     GoogleDriveService,
 )
 from zeo_core.integrations.google.mail import GoogleMailService
+from zeo_core.integrations.google.ports import (
+    DiscoveryGoogleApiClientFactory,
+    GoogleApiClientFactory,
+    GoogleCredentialSource,
+)
 
 __all__ = [
     "GoogleAuthProvider",
@@ -44,4 +49,7 @@ __all__ = [
     "GoogleCalendarService",
     "Calendar",
     "CalendarEvent",
+    "DiscoveryGoogleApiClientFactory",
+    "GoogleApiClientFactory",
+    "GoogleCredentialSource",
 ]

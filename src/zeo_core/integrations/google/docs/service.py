@@ -49,6 +49,11 @@ from zeo_core.integrations.google.docs.protocols import (
     GoogleCredentials,
 )
 from zeo_core.integrations.google.docs.request_builder import DocsRequestBuilder
+from zeo_core.integrations.google.ports import (
+    DiscoveryGoogleApiClientFactory,
+    GoogleApiClientFactory,
+    GoogleCredentialSource,
+)
 
 # mypy's nonetype-type check rejects `types.NoneType` used as a type
 # expression directly; google/drive/service.py and google/mail/service.py
@@ -75,6 +80,9 @@ class GoogleDocsService(BaseIntegrationService, DocsIntegrationProtocol):
         config_path: str | None = None,
         scopes: list[str] | None = None,
         log_level: int = logging.INFO,
+        *,
+        credential_source: GoogleCredentialSource | None = None,
+        client_factory: GoogleApiClientFactory | None = None,
     ) -> None:
         """
         Initialize the Google Docs integration service.
@@ -111,7 +119,11 @@ class GoogleDocsService(BaseIntegrationService, DocsIntegrationProtocol):
                 "credentials_file": credentials_file,
             }
 
+        if credential_source is not None and scopes is None:
+            raise ValueError("injected Google credentials require explicit scopes")
         self.scopes: list[str] = list(scopes) if scopes is not None else self.SCOPES
+        self._credential_source = credential_source
+        self._client_factory = client_factory or DiscoveryGoogleApiClientFactory()
 
         self.auth_provider: GoogleAuthProvider | None = None
         # Typed Any, matching drive/service.py's `self.drive_service: Any`
@@ -193,6 +205,9 @@ class GoogleDocsService(BaseIntegrationService, DocsIntegrationProtocol):
         Returns:
             IntegrationResult indicating success or failure.
         """
+        if self._credential_source is not None:
+            return self._initialize_injected()
+
         init_result: IntegrationResult[NoneType] = super().initialize()
         if not init_result.success:
             return init_result
@@ -229,11 +244,9 @@ class GoogleDocsService(BaseIntegrationService, DocsIntegrationProtocol):
                 )
 
             try:
-                from googleapiclient.discovery import build
-
                 self.docs_service = cast(
                     DocsService,
-                    build(
+                    self._client_factory.build(
                         "docs",
                         "v1",
                         credentials=cast(GoogleCredentials, credentials),
@@ -265,6 +278,33 @@ class GoogleDocsService(BaseIntegrationService, DocsIntegrationProtocol):
             return IntegrationResult.error_result(
                 f"Failed to initialize Google Docs service: {e}"
             )
+
+    def _initialize_injected(self) -> IntegrationResult[NoneType]:
+        """Build from broker-owned memory without touching auth/config files."""
+
+        if self._initialized:
+            return IntegrationResult.success_result(
+                message="Google Docs service already initialized"
+            )
+        try:
+            source = self._credential_source
+            if source is None:  # defensive narrowing
+                raise RuntimeError("credential source is unavailable")
+            credentials = source.get_credentials()
+            self.docs_service = cast(
+                DocsService,
+                self._client_factory.build("docs", "v1", credentials=credentials),
+            )
+        except Exception:
+            self._initialized = False
+            self.logger.error("Injected Google Docs construction failed")
+            return IntegrationResult.error_result(
+                "Failed to initialize injected Google Docs service"
+            )
+        self._initialized = True
+        return IntegrationResult.success_result(
+            message="Google Docs service initialized successfully"
+        )
 
     # ------------------------------------------------------------------
     # Plain-text extraction (recursive body walk)
