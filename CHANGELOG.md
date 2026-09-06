@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Native, consent-bound ZEOconnect composition with explicit `fake`, `local`,
+  `hosted`, and isolated `governed` profiles. Applications declare existing
+  service/operation identities once and receive structured connection states
+  without import-time or resolution-time networking.
+- An explicit device-pairing lifecycle, rotating device sessions, macOS
+  Keychain custody, deterministic in-memory test custody, sanitized connection
+  selection, and a fixed-origin/versioned ZEOconnect HTTP transport.
+- A deterministic Drive fake and conformance proof that one Drive-read business
+  function runs unchanged under fake, local, and hosted composition.
+
+### Changed
+
+- `httpx` is now a base dependency because the hosted bridge is part of normal
+  ZeoCore installations. Construction remains inert and ignores ambient proxy
+  configuration.
+- New hosted invocation requests omit connector revisions. ZEOconnect derives
+  the immutable revision from the authenticated connection; the 0.9 request
+  field remains optional for source compatibility during server migration.
+
+### Security
+
+- Hosted resolution and Supabase remain separate boundaries: the ZeoCore client
+  accepts no Supabase URL, key, database role, Vault reference, tenant ID, or
+  provider credential.
+- Governed resolution cannot instantiate a hosted client, load a paired-device
+  session, or fall back to member authority. Effects never receive the safe-read
+  transport retry granted to the first Drive observation.
+
 ## [0.9.0] - 2026-09-06
 
 ### Added

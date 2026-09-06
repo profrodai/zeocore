@@ -41,6 +41,9 @@ dependencies = [
     # zeo_core.config.load_dotenv_file(). Core, not an extra: every
     # integration reads its own secrets from os.environ, not just Google's.
     "python-dotenv>=1.0.0",
+    # Native ZEOconnect transport: normal installs are connection-ready, but
+    # importing and local resolution remain zero-network.
+    "httpx>=0.27",
 ]
 
 [project.optional-dependencies]
@@ -48,14 +51,12 @@ dependencies = [
 http = [
     "fastapi>=0.112",
     "uvicorn[standard]>=0.30",
-    "pydantic>=2",
-    "httpx>=0.27"
+    "pydantic>=2"
 ]
 http-dev = [
     "fastapi>=0.112",
     "uvicorn[standard]>=0.30",
     "pydantic>=2",
-    "httpx>=0.27",
     "pytest-asyncio>=0.21"
 ]
 # MCP Adapter dependencies.

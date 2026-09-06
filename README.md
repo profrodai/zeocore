@@ -52,6 +52,12 @@ pip install zeocore
 
 The package is `zeocore`; the module you import is `zeo_core`.
 
+Normal installations also include the inert
+[ZEOconnect managed-profile client](docs/tutorials/zeoconnect-hosted-profile.md).
+It performs no import-time or default-profile networking. Applications opt into
+hosted execution explicitly and pair through the browser; provider credentials
+never enter application code.
+
 ## Your first capability
 
 ```python

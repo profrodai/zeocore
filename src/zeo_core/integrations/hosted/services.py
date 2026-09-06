@@ -30,10 +30,10 @@ from zeo_core.integrations.social.bluesky import (
 
 @dataclass(frozen=True)
 class HostedServiceBinding:
-    """One selected remote connection and immutable connector revision."""
+    """One selected remote connection; revision is a 0.9 compatibility input."""
 
     connection_id: str
-    connector_revision: str
+    connector_revision: str | None = None
 
 
 @dataclass(frozen=True)
