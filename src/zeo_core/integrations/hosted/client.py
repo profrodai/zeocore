@@ -64,7 +64,11 @@ class HostedOperationRequest(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     connection_id: str = Field(..., min_length=1, max_length=200)
-    connector_revision: str = Field(..., min_length=1, max_length=200)
+    # Compatibility-only input. New managed-profile callers leave this unset;
+    # ZEOconnect derives the immutable revision from the authenticated
+    # connection and returns it in the broker receipt. Existing 0.9 callers
+    # may continue to send their binding until the private server migrates.
+    connector_revision: str | None = Field(default=None, min_length=1, max_length=200)
     operation_id: str = Field(..., min_length=1, max_length=200)
     arguments: dict[str, JsonValue]
     idempotency_key: str = Field(..., min_length=1, max_length=200)
