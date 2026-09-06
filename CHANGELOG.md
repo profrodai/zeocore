@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- First-class Supabase integration through the maintained `supabase>=2.31,<3`
+  Python SDK. The `zeocore[supabase]` extra exposes runtime-checkable,
+  injectable services for bounded PostgREST CRUD and named RPC, secret-free
+  Auth dispositions, bounded Storage, named Edge Functions, and explicit async
+  Realtime subscriptions.
+- Typed filters, ordering, row pages, user/session status, bucket metadata,
+  Function results, and Realtime changes. Update/delete require filters;
+  identifiers, object paths, response sizes, caller headers, and project URLs
+  fail closed.
+
+### Security
+
+- Supabase keys remain owned by the auth/client-construction seam and are
+  absent from configuration and public results. Privileged server keys require
+  explicit opt-in and never imply application authorization.
+- Raw SQL, arbitrary URLs, signed bearer URLs, the Management API, and
+  `vault.decrypted_secrets` are deliberately absent. Provider exception text is
+  discarded before it can carry credentials into logs or receipts.
+
 ## [0.8.0] - 2026-09-05
 
 ### Added

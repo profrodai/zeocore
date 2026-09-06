@@ -197,6 +197,7 @@ Integrations ship as extras, so you install only what you use:
 | `zeocore[google]` | Drive + Gmail + **Docs** auth plumbing together |
 | `zeocore[bluesky]` | Bluesky posting via an app password — no OAuth, no developer app |
 | `zeocore[notion]` | Notion (read + write) |
+| `zeocore[supabase]` | Supabase Database, Auth, Storage, Edge Functions, and async Realtime |
 | `zeocore[pandoc]` | Document conversion via Pandoc |
 | `zeocore[llms]` | OpenAI / Anthropic / tiktoken clients — chat, tool-calling, prompt caching |
 | `zeocore[jupytext]` | Script ↔ Jupyter notebook conversion |
@@ -220,7 +221,7 @@ The `dev` and `lint` extras are for contributors; see
 | `zeo_core.adapters` | Optional adapters: HTTP, MCP, and `llm_tools` (OpenAI-compatible function projection from one `CapabilityManifest`). |
 | `zeo_core.core` | Filesystem operations, path resolution, a typed error hierarchy, MIME detection, serialization, logging, an operation registry. |
 | `zeo_core.config` | YAML/env-var configuration loading and per-tool config models. |
-| `zeo_core.integrations` | Adapters for GitHub, Google Drive/Mail/Calendar, LLM providers, Notion, Pandoc, jupytext, and ffmpeg. Database integrations were evaluated and **not built** — see [CHANGELOG.md](CHANGELOG.md). |
+| `zeo_core.integrations` | Adapters for GitHub, Google Workspace, Supabase, LLM providers, Notion, Pandoc, jupytext, ffmpeg, and Bluesky. Supabase covers Database, Auth, Storage, Edge Functions, and async Realtime while deliberately excluding raw SQL and Vault plaintext access. |
 | `zeo_core.modules` | Plugin discovery and explicit-loading registry. |
 | `zeo_core.prompt` | Prompt template selection and enhancement utilities. |
 | `zeo_core.contract_pack` | Versioned consumption contract pack for ecosystem runners (no `sovereign_agent` import). |
