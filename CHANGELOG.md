@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-06
+
+### Added
+
+- First-class Supabase integration through the maintained `supabase>=2.31,<3`
+  Python SDK. The `zeocore[supabase]` extra exposes runtime-checkable,
+  injectable services for bounded PostgREST CRUD and named RPC, secret-free
+  Auth dispositions, bounded Storage, named Edge Functions, and explicit async
+  Realtime subscriptions.
+- Typed filters, ordering, row pages, user/session status, bucket metadata,
+  Function results, and Realtime changes. Update/delete require filters;
+  identifiers, object paths, response sizes, caller headers, and project URLs
+  fail closed.
+
+### Security
+
+- Supabase keys remain owned by the auth/client-construction seam and are
+  absent from configuration and public results. Privileged server keys require
+  explicit opt-in and never imply application authorization.
+- Raw SQL, arbitrary URLs, signed bearer URLs, the Management API, and
+  `vault.decrypted_secrets` are deliberately absent. Provider exception text is
+  discarded before it can carry credentials into logs or receipts.
+- Supabase OAuth start rejects an authorization URL outside the configured
+  project origin. Lazy Realtime construction keeps its project key opaque and
+  releases the local reference after SDK construction.
+
+### Fixed
+
+- Supabase convenience methods now return a structured uninitialized result
+  instead of raising while resolving the absent client.
+
+### Documentation
+
+- The Supabase tutorial now walks from project creation and publishable-key
+  selection through Row Level Security, first read, Auth, Storage, Functions,
+  Realtime, privileged-key isolation, and production verification.
+- The Notion tutorial now teaches the admitted `notion.page.upsert` contract,
+  deterministic marker, cited content, dispatch/reconciliation boundary, and
+  hosted versus local custody paths. A credential-free runnable example makes
+  the request and connector revision inspectable without issuing an effect.
+
 ## [0.8.0] - 2026-09-05
 
 ### Added
@@ -523,6 +564,7 @@ MIT-licensed package.
   own test suite, and this package has never had a public release, so no
   back-compat was owed for it.
 
+[0.9.0]: https://github.com/profrodai/zeocore/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/profrodai/zeocore/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/profrodai/zeocore/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/profrodai/zeocore/compare/v0.5.0...v0.6.0

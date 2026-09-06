@@ -51,6 +51,29 @@ SAFE_EXAMPLES = (
         "refusal ok: False\n"
         "refusal reason: unsupported JSON Schema keyword 'not' cannot be preserved\n",
     ),
+    ExampleCase(
+        "notion_demo.py",
+        "Notion API NotionClient(api_version='2026-03-11', "
+        "timeout_ms=60000, max_retries=3)\n"
+        "user.list: 1 item, has_more=False\n"
+        "search: 1 item, has_more=False\n"
+        "data_source.query: 1 item, has_more=False\n"
+        "block.list_children: 1 item, has_more=False\n"
+        "comment.list: 1 item, has_more=False\n"
+        "SIMULATED: 5 current API calls, no network or credential\n",
+    ),
+    ExampleCase(
+        "notion_governed_upsert.py",
+        "operation: notion.page.upsert\n"
+        "revision: notion.page-upsert@1\n"
+        "marker bound: True\n"
+        "source cited: True\n"
+        "provider called: False\n",
+    ),
+    ExampleCase(
+        "supabase_usage.py",
+        "Supabase not configured; set SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY\n",
+    ),
 )
 
 

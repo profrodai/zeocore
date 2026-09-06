@@ -109,7 +109,7 @@ from zeo_core import (
     ToolEnvInitializerMixin,
 )
 
-__version__  # "0.5.0"
+__version__  # derived from the installed distribution metadata
 ```
 
 It does **not** re-export `zeo_core.config`, `zeo_core.core`,

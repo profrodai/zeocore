@@ -117,6 +117,54 @@ The SDK performs bounded retries for `429` and server failures. After
 exhaustion, ZeoCore raises `NotionAPIError` with stable code/status/retry
 metadata and a sanitized message; it never copies the provider response body.
 
+## Governed `notion.page.upsert`
+
+The 44-operation client is a provider API surface. It does not mean an actor is
+authorized to call any of those operations. ZeoCore separately admits one
+narrow, reconcilable business effect: `notion.page.upsert` revision
+`notion.page-upsert@1`.
+
+Inspect its closed request contract without a credential or network call:
+
+```bash
+uv run python examples/notion_governed_upsert.py
+```
+
+The example hashes the source meeting artifact, binds that digest and the
+destination data-source ID into a deterministic idempotency marker, requires a
+source citation for every interpreted statement, and renders canonical
+Markdown. Extra fields, malformed Notion IDs, missing citations, and a marker
+for a different artifact or destination fail validation before dispatch.
+
+Behind the scenes, an authorized production invocation follows this path:
+
+1. `notion_page_upsert_revision()` fixes the operation ID, effect class,
+   argument schema, Notion origin/path, idempotency mode, and reconciler.
+2. `EffectOrchestrator` verifies the exact authorization and durable
+   idempotency claim, then records dispatch start before a provider call.
+3. `KeychainEffectDispatcher` (local) or a conforming hosted custody dispatcher
+   resolves the opaque `SecretRef` only inside the provider boundary.
+4. `NotionPageUpsertDispatcher` searches the destination's `ZEO Idempotency`
+   property. It creates when absent, returns the matching page when identical,
+   and replaces content only when the existing title still agrees.
+5. It reads the page back and confirms only when title, marker, and canonical
+   Markdown match the request.
+6. If the provider call may have happened but confirmation was lost, the
+   execution becomes `AMBIGUOUS`. `NotionPageUpsertReconciler` performs only the
+   marker lookup and read-back; it never creates or updates a page.
+
+A destination data source used by this operation needs a title property named
+`Name` and a rich-text property named `ZEO Idempotency`. The integration must be
+connected to that data source. Reusing an idempotency key with different
+canonical arguments is refused by orchestration; finding multiple pages with
+the same marker fails safe rather than choosing one.
+
+The example intentionally stops at request construction. A live effect also
+needs a stored connector revision, connection, opaque credential reference,
+exact `EffectAuthorization`, durable `BrokerExecutionStore`, dispatcher, and
+reconciler. This ceremony prevents a tutorial from teaching that possession of
+`NOTION_TOKEN` is mutation authority.
+
 ## Public OAuth
 
 `NotionOAuthBroker` covers exchange, refresh, introspection, and revocation
