@@ -22,6 +22,12 @@ class ExampleCase(NamedTuple):
 
 SAFE_EXAMPLES = (
     ExampleCase(
+        "hubspot_usage.py",
+        "Draft created through registered capability: 123\n"
+        "HTTP operations: POST, GET, PATCH, GET, POST\n"
+        "SIMULATED: no network, no live send, provider delivery unverified\n",
+    ),
+    ExampleCase(
         "minimal_tool.py",
         "Tool initialized: word_count initialized\n"
         "Result: Word count completed\n"

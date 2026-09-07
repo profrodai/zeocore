@@ -238,6 +238,12 @@ designed.
 
 ## Integrations
 
+### HubSpot marketing
+
+Run python examples/hubspot_usage.py for a credential-free demonstration of
+registered draft and publish capabilities through a simulated HTTP boundary.
+It performs no live send. See the [HubSpot guide](../docs/tutorials/hubspot-marketing.md).
+
 The most advanced group: real external tools and real accounts. Each script
 checks its precondition first and **skips gracefully** rather than crashing,
 so all four are safe to run before you have set anything up.

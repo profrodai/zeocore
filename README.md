@@ -190,6 +190,12 @@ however your shell or tooling prefers (e.g. `uv run --env-file .env ...`) —
 see [GET-STARTED.md's "Secrets and `.env`"](GET-STARTED.md#secrets-and-env)
 section.
 
+## HubSpot marketing
+
+[HubSpot newsletters and automation](docs/tutorials/hubspot-marketing.md) provides
+registered capabilities for drafts, campaigns, subscription preferences and
+marketing email sequences. Available from source; no extra dependency is needed.
+
 ## Optional integrations
 
 Integrations ship as extras, so you install only what you use:

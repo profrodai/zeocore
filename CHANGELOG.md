@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- HubSpot marketing integration and eleven registered agent capabilities for
+  newsletter drafts, reviewed publishing and scheduling, campaigns, subscription
+  preferences and marketing email workflows. Includes bounded pagination, safe
+  error outcomes, workflow ID mapping, an offline example and account-tier docs.
+
 - Native, consent-bound ZEOconnect composition with explicit `fake`, `local`,
   `hosted`, and isolated `governed` profiles. Applications declare existing
   service/operation identities once and receive structured connection states
