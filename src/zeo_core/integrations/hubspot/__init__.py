@@ -13,6 +13,7 @@ from .models import (
     PublishRequest,
     SequenceStep,
     SubscriptionChange,
+    send_spec_digest,
 )
 from .service import HubSpotIntegration, create_integration
 from .transport import HubSpotAPIError, HubSpotTransport
@@ -34,4 +35,5 @@ __all__ = [
     "SequenceStep",
     "SubscriptionChange",
     "create_integration",
+    "send_spec_digest",
 ]

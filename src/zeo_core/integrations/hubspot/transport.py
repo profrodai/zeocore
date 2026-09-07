@@ -2,11 +2,40 @@
 
 from __future__ import annotations
 
+import logging
+from contextvars import ContextVar
 from typing import Any
 from urllib.parse import unquote
 
 import httpx
 from pydantic import SecretStr
+
+_private_request: ContextVar[bool] = ContextVar(
+    "hubspot_private_request", default=False
+)
+
+
+class _PrivateHTTPLogs(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return not _private_request.get()
+
+
+_private_filter = _PrivateHTTPLogs()
+
+
+def _protect_http_logs() -> None:
+    # Filter only this request's standard library HTTP logs. Other callers and
+    # threads retain their logging. Host tracing/injected transports remain a
+    # separate redaction responsibility.
+    for name in (
+        "httpx",
+        "httpcore.connection",
+        "httpcore.http11",
+        "httpcore.http2",
+        "httpcore.proxy",
+        "httpcore.socks",
+    ):
+        logging.getLogger(name).addFilter(_private_filter)
 
 
 class HubSpotAPIError(RuntimeError):
@@ -42,6 +71,7 @@ class HubSpotTransport:
             raise ValueError("HubSpot access token is required")
         if not 0 < timeout <= 120:
             raise ValueError("HubSpot timeout must be between zero and 120 seconds")
+        _protect_http_logs()
         self._token = access_token
         self._http = httpx.Client(
             transport=transport,
@@ -84,6 +114,7 @@ class HubSpotTransport:
         ):
             raise ValueError("HubSpot route is outside the marketing integration")
         mutation = method != "GET" and not read_only
+        private_token = _private_request.set(True)
         try:
             response = self._http.request(
                 method,
@@ -104,6 +135,8 @@ class HubSpotTransport:
                 ),
                 outcome_unknown=mutation,
             ) from None
+        finally:
+            _private_request.reset(private_token)
         if not 200 <= response.status_code < 300:
             status = response.status_code
             code, message = {

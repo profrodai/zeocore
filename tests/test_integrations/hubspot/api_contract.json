@@ -279,6 +279,16 @@
             "suppressGraymail"
           ]
         }
+      },
+      "provenance": {
+        "commit": "7f4f0c203d7895e594c9f60543dc0542b4f6305d",
+        "path": "PublicApiSpecs/Marketing/Marketing Emails/Rollouts/145892/2026-03/marketingEmails.json",
+        "git_blob_sha1": "fe2f9443a030a428255d951d3a0be773a93998d5",
+        "content_sha256": "29776c0440c1e9391728e982adc8b5e288a05752a17eb6c56f4476ffc946bc42"
+      },
+      "recipient_items_type": {
+        "include": "string",
+        "exclude": "string"
       }
     },
     "automationV4": {
@@ -446,6 +456,12 @@
             "type"
           ]
         }
+      },
+      "provenance": {
+        "commit": "7f4f0c203d7895e594c9f60543dc0542b4f6305d",
+        "path": "PublicApiSpecs/Automation/Automation V4/Rollouts/144908/v4/automationV4.json",
+        "git_blob_sha1": "4fd638032a37d79da3d03521986b233057889524",
+        "content_sha256": "b466ec13cc65a9c7e3d6918fa23238838df38a8cba41146de446ac6c18dd4b1c"
       }
     },
     "campaigns": {
@@ -661,7 +677,13 @@
           }
         }
       },
-      "schemas": {}
+      "schemas": {},
+      "provenance": {
+        "commit": "7f4f0c203d7895e594c9f60543dc0542b4f6305d",
+        "path": "PublicApiSpecs/Marketing/Campaigns Public Api/Rollouts/177944/2026-03/campaignsPublicApi.json",
+        "git_blob_sha1": "5f66de66b6e13f3c7faebe69dfa4811d5ad0c5a9",
+        "content_sha256": "e1ceb31cbda9c725e499612bb7662e93362949a63efcf2623a970d162bb0ae64"
+      }
     },
     "subscriptions": {
       "paths": {
@@ -786,6 +808,12 @@
             "subscriptionId"
           ]
         }
+      },
+      "provenance": {
+        "commit": "7f4f0c203d7895e594c9f60543dc0542b4f6305d",
+        "path": "PublicApiSpecs/Communication Preferences/Subscriptions/Rollouts/176901/2026-03/subscriptions.json",
+        "git_blob_sha1": "4f11e0736f10dcc9ed97b8baf8bb650b13153595",
+        "content_sha256": "da1b66ee25a9732c57eb2fe35d621745cf75f5049432574abe0250b491267ce4"
       }
     }
   }

@@ -29,6 +29,7 @@ from zeo_core.integrations.hubspot import (
     PublishRequest,
     SequenceStep,
     SubscriptionChange,
+    send_spec_digest,
 )
 from zeo_core.tools import CapabilityRegistry, ToolContext, invoke_sync
 from zeo_core.tools.builtin.hubspot import (
@@ -174,6 +175,7 @@ def test_sequence_activation_and_pause_through_capability(
                 200,
                 json={
                     "type": "AUTOMATED_EMAIL",
+                    "updatedAt": REVISION,
                     "isPublished": True,
                     "isTransactional": False,
                 },
@@ -182,6 +184,7 @@ def test_sequence_activation_and_pause_through_capability(
                 200,
                 json={
                     "type": "AUTOMATED_EMAIL",
+                    "updatedAt": REVISION,
                     "isPublished": True,
                     "isTransactional": False,
                 },
@@ -192,9 +195,14 @@ def test_sequence_activation_and_pause_through_capability(
     registry = CapabilityRegistry()
     register_capabilities(registry)
     result = invoke_sync(
-        registry.get("hubspot.marketing.sequence.save@1.0.0"),
+        registry.get("hubspot.marketing.workflow.save@1.0.0"),
         SequenceRequest(
-            sequence=spec, flow_id="456", revision_id="7", enabled=True, confirm=True
+            sequence=spec,
+            flow_id="456",
+            revision_id="7",
+            enabled=True,
+            confirm=True,
+            email_versions={"1": REVISION, "2": REVISION},
         ),
         context(client),
     )
@@ -211,7 +219,33 @@ def test_sequence_enrollment_capability_and_unenrollment(
     for remove in (False, True):
         responses.extend(
             [
-                httpx.Response(200, json=sequence().to_api(enabled=True)),
+                httpx.Response(
+                    200, json={**sequence().to_api(enabled=True), "revisionId": "7"}
+                ),
+                *(
+                    []
+                    if remove
+                    else [
+                        httpx.Response(
+                            200,
+                            json={
+                                "type": "AUTOMATED_EMAIL",
+                                "isPublished": True,
+                                "isTransactional": False,
+                                "updatedAt": REVISION,
+                            },
+                        ),
+                        httpx.Response(
+                            200,
+                            json={
+                                "type": "AUTOMATED_EMAIL",
+                                "isPublished": True,
+                                "isTransactional": False,
+                                "updatedAt": REVISION,
+                            },
+                        ),
+                    ]
+                ),
                 httpx.Response(
                     200, json={"results": [{"flowId": 456, "workflowId": 99}]}
                 ),
@@ -219,9 +253,14 @@ def test_sequence_enrollment_capability_and_unenrollment(
             ]
         )
         result = invoke_sync(
-            registry.get("hubspot.marketing.sequence.enrollment@1.0.0"),
+            registry.get("hubspot.marketing.workflow.enrollment@1.0.0"),
             EnrollmentRequest(
-                flow_id="456", email="reader@example.com", remove=remove, confirm=True
+                flow_id="456",
+                email="reader@example.com",
+                remove=remove,
+                confirm=True,
+                revision_id="7",
+                email_versions={"1": REVISION, "2": REVISION},
             ),
             context(client),
         )
@@ -273,17 +312,27 @@ def test_publish_preflight_then_schedule_and_publish(
     setup_client: ClientFixture, draft: EmailDraft, scheduled: bool
 ) -> None:
     client, calls, responses = setup_client
+    send_at = datetime.now(UTC) + timedelta(days=1) if scheduled else None
+    configured = {**email_data(draft), "sendOnPublish": not scheduled}
+    if send_at:
+        configured["publishDate"] = send_at.isoformat()
     responses.extend(
         [
             httpx.Response(200, json=email_data(draft)),
             httpx.Response(200, json={"id": "123"}),
+            httpx.Response(200, json=configured),
             httpx.Response(204),
         ]
     )
-    send_at = datetime.now(UTC) + timedelta(days=1) if scheduled else None
     request = PublishRequest(
         email_id="123",
         expected_updated_at=REVISION,
+        expected_send_spec_sha256=send_spec_digest(
+            email_data(draft), send_at=send_at, audience_mode="dynamic_segments"
+        ),
+        render_evidence_ref="reviews/render-1",
+        audience_mode="dynamic_segments",
+        audience_policy_ref="reviews/dynamic-audience-1",
         audience=draft.audience,
         subscription_id="5",
         send_at=send_at,
@@ -291,7 +340,7 @@ def test_publish_preflight_then_schedule_and_publish(
     )
     result = client.publish_email(request)
     assert result.data == {}  # API acceptance has no delivery-state body.
-    assert [r.method for r in calls] == ["GET", "PATCH", "POST"]
+    assert [r.method for r in calls] == ["GET", "PATCH", "GET", "POST"]
     assert calls[-1].url.path == "/marketing/emails/2026-03/123/publish"
     assert calls[-1].content == b""
     body = json.loads(calls[1].content)
@@ -325,6 +374,12 @@ def test_publish_refuses_stale_or_wrong_target(
             PublishRequest(
                 email_id="123",
                 expected_updated_at=REVISION,
+                expected_send_spec_sha256=send_spec_digest(
+                    email_data(draft), audience_mode="dynamic_segments"
+                ),
+                render_evidence_ref="reviews/render-1",
+                audience_mode="dynamic_segments",
+                audience_policy_ref="reviews/dynamic-audience-1",
                 audience=draft.audience,
                 subscription_id="5",
                 confirm=True,
@@ -342,6 +397,12 @@ def test_publish_requires_confirmation_before_network(
             PublishRequest(
                 email_id="123",
                 expected_updated_at=REVISION,
+                expected_send_spec_sha256=send_spec_digest(
+                    email_data(draft), audience_mode="dynamic_segments"
+                ),
+                render_evidence_ref="reviews/render-1",
+                audience_mode="dynamic_segments",
+                audience_policy_ref="reviews/dynamic-audience-1",
                 audience=draft.audience,
                 subscription_id="5",
             )
@@ -366,7 +427,13 @@ def test_audience_rejects_ambiguous_input(kwargs: dict[str, Any]) -> None:
 def test_empty_draft_audience_is_allowed_but_send_is_not() -> None:
     assert not Audience().contact_ids
     with pytest.raises(ValidationError):
-        PublishRequest(email_id="1", expected_updated_at=REVISION, subscription_id="5")
+        PublishRequest(
+            email_id="1",
+            expected_updated_at=REVISION,
+            subscription_id="5",
+            expected_send_spec_sha256="0" * 64,
+            render_evidence_ref="review/test",
+        )
 
 
 @pytest.mark.parametrize(
@@ -378,6 +445,8 @@ def test_invalid_schedule(send_at: datetime) -> None:
             email_id="1",
             expected_updated_at=REVISION,
             subscription_id="5",
+            expected_send_spec_sha256="0" * 64,
+            render_evidence_ref="review/test",
             audience=Audience(contact_ids=("2",)),
             send_at=send_at,
         )
@@ -498,8 +567,8 @@ def test_campaign_routes_and_subscription_contract(setup_client: ClientFixture) 
     client.update_campaign(
         "campaign-1", CampaignProperties(properties={"hs_name": "New"})
     )
-    client.associate_asset("campaign-1", "EMAIL", "123")
-    client.associate_asset("campaign-1", "EMAIL", "123", remove=True)
+    client.associate_asset("campaign-1", "MARKETING_EMAIL", "123")
+    client.associate_asset("campaign-1", "MARKETING_EMAIL", "123", remove=True)
     client.subscription_status("reader+news@example.com", business_unit_id=0)
     client.update_subscription(
         SubscriptionChange(
@@ -508,7 +577,8 @@ def test_campaign_routes_and_subscription_contract(setup_client: ClientFixture) 
     )
     assert json.loads(calls[0].content) == {"properties": {"hs_name": "Launch"}}
     assert (
-        calls[2].url.path == "/marketing/campaigns/2026-03/campaign-1/assets/EMAIL/123"
+        calls[2].url.path
+        == "/marketing/campaigns/2026-03/campaign-1/assets/MARKETING_EMAIL/123"
     )
     assert calls[3].method == "DELETE"
     assert calls[4].url.params["channel"] == "EMAIL"
@@ -532,6 +602,7 @@ def test_consent_is_never_invented() -> None:
         status="SUBSCRIBED",
         legal_basis="CONSENT_WITH_NOTICE",
         legal_basis_explanation="Reader opted in through the newsletter form",
+        consent_evidence_ref="consent-records/form-submission-1",
     )
     assert change.to_api()["legalBasis"] == "CONSENT_WITH_NOTICE"
 
@@ -576,13 +647,42 @@ def test_enrollment_maps_ids_before_effect(setup_client: ClientFixture) -> None:
     client, calls, responses = setup_client
     responses.extend(
         [
-            httpx.Response(200, json=sequence().to_api(enabled=True)),
+            httpx.Response(
+                200, json={**sequence().to_api(enabled=True), "revisionId": "7"}
+            ),
+            httpx.Response(
+                200,
+                json={
+                    "type": "AUTOMATED_EMAIL",
+                    "isPublished": True,
+                    "isTransactional": False,
+                    "updatedAt": REVISION,
+                },
+            ),
+            httpx.Response(
+                200,
+                json={
+                    "type": "AUTOMATED_EMAIL",
+                    "isPublished": True,
+                    "isTransactional": False,
+                    "updatedAt": REVISION,
+                },
+            ),
             httpx.Response(200, json={"results": [{"flowId": 456, "workflowId": 99}]}),
             httpx.Response(204),
         ]
     )
-    assert client.enroll("456", "reader@example.com", confirm=True).data == {}
-    assert json.loads(calls[1].content) == {
+    assert (
+        client.enroll(
+            "456",
+            "reader@example.com",
+            confirm=True,
+            revision_id="7",
+            email_versions={"1": REVISION, "2": REVISION},
+        ).data
+        == {}
+    )
+    assert json.loads(calls[3].content) == {
         "inputs": [{"flowId": "456", "type": "FLOW_ID"}]
     }
     assert (
@@ -607,13 +707,39 @@ def test_bad_mapping_prevents_enrollment(
     client, calls, responses = setup_client
     responses.extend(
         [
-            httpx.Response(200, json=sequence().to_api(enabled=True)),
+            httpx.Response(
+                200, json={**sequence().to_api(enabled=True), "revisionId": "7"}
+            ),
+            httpx.Response(
+                200,
+                json={
+                    "type": "AUTOMATED_EMAIL",
+                    "isPublished": True,
+                    "isTransactional": False,
+                    "updatedAt": REVISION,
+                },
+            ),
+            httpx.Response(
+                200,
+                json={
+                    "type": "AUTOMATED_EMAIL",
+                    "isPublished": True,
+                    "isTransactional": False,
+                    "updatedAt": REVISION,
+                },
+            ),
             httpx.Response(200, json=mapping),
         ]
     )
     with pytest.raises(HubSpotAPIError):
-        client.enroll("456", "reader@example.com", confirm=True)
-    assert len(calls) == 2
+        client.enroll(
+            "456",
+            "reader@example.com",
+            confirm=True,
+            revision_id="7",
+            email_versions={"1": REVISION, "2": REVISION},
+        )
+    assert len(calls) == 4
 
 
 def test_nonmarketing_workflow_refused_before_mutation(
@@ -704,16 +830,20 @@ def test_capability_ambiguous_result_is_structured(
         "campaign_metrics",
         "subscription_types",
         "subscription_status",
-        "sequences",
-        "sequence",
-        "sequence_metrics",
+        "workflows",
+        "workflow",
+        "workflow_metrics",
     ],
 )
 def test_every_read_capability_dispatches(
     setup_client: ClientFixture, operation: str
 ) -> None:
     client, calls, responses = setup_client
-    payload = {**sequence().to_api(), "results": [{"id": "1", "objectTypeId": "0-1"}]}
+    payload = (
+        sequence().to_api()
+        if operation in {"workflow", "workflow_metrics"}
+        else {"results": [{"id": "1", "objectTypeId": "0-1"}]}
+    )
     responses.extend([httpx.Response(200, json=payload), httpx.Response(200, json={})])
     registry = CapabilityRegistry()
     register_capabilities(registry)
@@ -746,7 +876,7 @@ def test_every_read_capability_dispatches(
         ),
         (
             "campaign.asset",
-            AssetRequest(campaign_id="1", asset_id="2", asset_type="EMAIL"),
+            AssetRequest(campaign_id="1", asset_id="2", asset_type="MARKETING_EMAIL"),
         ),
         (
             "subscription.update",
@@ -754,7 +884,7 @@ def test_every_read_capability_dispatches(
                 email="reader@example.com", subscription_id=5, status="UNSUBSCRIBED"
             ),
         ),
-        ("sequence.save", SequenceRequest(sequence=sequence())),
+        ("workflow.save", SequenceRequest(sequence=sequence())),
         ("archive", ArchiveRequest(resource="email", resource_id="1", confirm=True)),
         ("archive", ArchiveRequest(resource="campaign", resource_id="1", confirm=True)),
     ],
@@ -781,7 +911,9 @@ def test_invalid_requests_reject_without_network() -> None:
         lambda: ReadRequest(operation="email"),
         lambda: ReadRequest(operation="subscription_status"),
         lambda: SequenceRequest(sequence=sequence(), enabled=True),
-        lambda: EnrollmentRequest(flow_id="../deals", email="reader@example.com"),
+        lambda: EnrollmentRequest(
+            flow_id="../deals", revision_id="7", email="reader@example.com"
+        ),
     ]:
         with pytest.raises(ValidationError):
             construct()

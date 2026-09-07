@@ -47,13 +47,13 @@ class ReadRequest(RequestModel):
         "campaign_metrics",
         "subscription_types",
         "subscription_status",
-        "sequences",
-        "sequence",
-        "sequence_metrics",
+        "workflows",
+        "workflow",
+        "workflow_metrics",
     ]
     resource_id: Identifier | None = None
     email: EmailAddress | None = None
-    asset_type: AssetType = "EMAIL"
+    asset_type: AssetType = "MARKETING_EMAIL"
     business_unit_id: int | None = Field(default=None, ge=0)
     page: PageRequest = Field(default_factory=PageRequest)
 
@@ -66,8 +66,8 @@ class ReadRequest(RequestModel):
                 "campaign",
                 "campaign_assets",
                 "campaign_metrics",
-                "sequence",
-                "sequence_metrics",
+                "workflow",
+                "workflow_metrics",
             }
             and self.resource_id is None
         ):
@@ -113,6 +113,7 @@ class SequenceRequest(RequestModel):
     sequence: EmailSequence
     flow_id: Identifier | None = None
     revision_id: Identifier | None = None
+    email_versions: dict[str, Text] = Field(default_factory=dict)
     enabled: bool = False
     confirm: bool = False
 
@@ -129,13 +130,15 @@ class SequenceRequest(RequestModel):
 
 class EnrollmentRequest(RequestModel):
     flow_id: Identifier
+    revision_id: Identifier
+    email_versions: dict[str, Text] = Field(default_factory=dict)
     email: EmailAddress
     remove: bool = False
     confirm: bool = False
 
 
 class ArchiveRequest(RequestModel):
-    resource: Literal["email", "campaign", "sequence"]
+    resource: Literal["email", "campaign", "workflow"]
     resource_id: Identifier
     confirm: bool = False
 
@@ -209,11 +212,11 @@ def read(request: ReadRequest, ctx: ToolContext) -> CapabilityResult[MarketingRe
             "subscription_status": lambda: client.subscription_status(
                 request.email or "", business_unit_id=request.business_unit_id
             ),
-            "sequences": lambda: MarketingRecord(
+            "workflows": lambda: MarketingRecord(
                 data=client.list_sequences(request.page).model_dump()
             ),
-            "sequence": lambda: client.get_sequence(request.resource_id or ""),
-            "sequence_metrics": lambda: client.sequence_metrics(
+            "workflow": lambda: client.get_sequence(request.resource_id or ""),
+            "workflow_metrics": lambda: client.sequence_metrics(
                 request.resource_id or ""
             ),
         }
@@ -302,6 +305,8 @@ def clone_email(
             request={
                 "email_id": "123",
                 "expected_updated_at": "2026-09-07T10:00:00Z",
+                "expected_send_spec_sha256": "0" * 64,
+                "render_evidence_ref": "review/example-render",
                 "subscription_id": "1",
                 "audience": {"contact_ids": ["42"]},
                 "confirm": True,
@@ -365,7 +370,7 @@ def save_campaign(
 @capability(
     id="hubspot.marketing.campaign.asset@1.0.0",
     description=(
-        "Associate or remove a marketing EMAIL, WORKFLOW or OBJECT_LIST "
+        "Associate or remove MARKETING_EMAIL, AUTOMATION_PLATFORM_FLOW or OBJECT_LIST "
         "asset from a campaign."
     ),
     effects={EffectKind.WRITE, EffectKind.DELETE},
@@ -373,7 +378,7 @@ def save_campaign(
         CapabilityExample(
             request={
                 "campaign_id": "campaign-1",
-                "asset_type": "EMAIL",
+                "asset_type": "MARKETING_EMAIL",
                 "asset_id": "123",
             },
             response={"data": {}},
@@ -422,7 +427,7 @@ def update_subscription(
 
 
 @capability(
-    id="hubspot.marketing.sequence.save@1.0.0",
+    id="hubspot.marketing.workflow.save@1.0.0",
     description=(
         "Create, edit, activate or pause a marketing drip sequence of "
         "automated emails and delays. Create is disabled with manual "
@@ -449,6 +454,7 @@ def save_sequence(
                 request.flow_id,
                 request.sequence,
                 revision_id=request.revision_id or "",
+                email_versions=request.email_versions,
                 enabled=request.enabled,
                 confirm=request.confirm,
             )
@@ -459,7 +465,7 @@ def save_sequence(
 
 
 @capability(
-    id="hubspot.marketing.sequence.enrollment@1.0.0",
+    id="hubspot.marketing.workflow.enrollment@1.0.0",
     description=(
         "Enroll or unenroll an existing contact in an email marketing "
         "workflow. Maps v4 flow ID to legacy workflow ID. Enrollment may "
@@ -469,7 +475,13 @@ def save_sequence(
     effects={EffectKind.WRITE, EffectKind.EXTERNAL_COMMUNICATION},
     examples=(
         CapabilityExample(
-            request={"flow_id": "456", "email": "reader@example.com", "confirm": True},
+            request={
+                "flow_id": "456",
+                "revision_id": "7",
+                "email_versions": {"123": "2026-09-07T10:00:00Z"},
+                "email": "reader@example.com",
+                "confirm": True,
+            },
             response={"data": {}},
         ),
     ),
@@ -483,6 +495,8 @@ def enrollment(
         lambda client: client.enroll(
             request.flow_id,
             request.email,
+            revision_id=request.revision_id,
+            email_versions=request.email_versions,
             remove=request.remove,
             confirm=request.confirm,
         ),
@@ -515,7 +529,7 @@ def archive(
                 return client.archive_email(request.resource_id)
             case "campaign":
                 return client.archive_campaign(request.resource_id)
-            case "sequence":
+            case "workflow":
                 return client.archive_sequence(request.resource_id)
 
     return _run(ctx, execute)

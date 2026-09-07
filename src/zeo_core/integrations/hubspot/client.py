@@ -20,14 +20,16 @@ from .models import (
     PageRequest,
     PublishRequest,
     SubscriptionChange,
+    send_spec_digest,
 )
 from .transport import HubSpotAPIError, HubSpotTransport
+from .workflow import validate_workflow
 
 EMAILS = "/marketing/emails/2026-03"
 CAMPAIGNS = "/marketing/campaigns/2026-03"
 PREFERENCES = "/communication-preferences/2026-03"
 FLOWS = "/automation/v4/flows"
-AssetType = Literal["EMAIL", "WORKFLOW", "OBJECT_LIST"]
+AssetType = Literal["MARKETING_EMAIL", "AUTOMATION_PLATFORM_FLOW", "OBJECT_LIST"]
 _DEFAULT_PAGE = PageRequest()
 
 
@@ -98,7 +100,11 @@ class HubSpotClient:
             raise HubSpotAPIError(
                 "RESPONSE", "HubSpot returned an invalid or repeated cursor"
             )
-        return MarketingPage(results=results, next_after=after)
+        return MarketingPage(
+            results=results,
+            next_after=after,
+            complete=page.after is None and after is None,
+        )
 
     def list_emails(
         self, page: PageRequest = _DEFAULT_PAGE, *, campaign_id: str | None = None
@@ -177,13 +183,45 @@ class HubSpotClient:
         if request.kind == "newsletter":
             request.audience.require_recipients()
             self._check_audience(data, request.audience)
+        if (
+            send_spec_digest(
+                data, send_at=request.send_at, audience_mode=request.audience_mode
+            )
+            != request.expected_send_spec_sha256
+        ):
+            raise ValueError("Email send specification changed since approval")
         body: dict[str, Any] = {
             "sendOnPublish": request.kind == "newsletter" and request.send_at is None,
         }
         if request.send_at is not None:
             body["publishDate"] = request.send_at.astimezone(UTC).isoformat()
         self._record("PATCH", f"{EMAILS}/{request.email_id}", body=body)
+        self._check_configured_send(request, body)
+        # A privileged edit after this GET remains a provider-side race.
         return self._record("POST", f"{EMAILS}/{request.email_id}/publish")
+
+    def _check_configured_send(
+        self, request: PublishRequest, body: dict[str, Any]
+    ) -> None:
+        final = self.get_email(request.email_id).data
+        if (
+            send_spec_digest(
+                final, send_at=request.send_at, audience_mode=request.audience_mode
+            )
+            != request.expected_send_spec_sha256
+        ):
+            raise ValueError("Email changed during send configuration; review again")
+        if final.get("sendOnPublish") is not body["sendOnPublish"]:
+            raise ValueError("Provider send configuration does not match approval")
+        if request.send_at is not None:
+            published_at = final.get("publishDate")
+            if (
+                not isinstance(published_at, str)
+                or datetime.fromisoformat(published_at) != request.send_at
+            ):
+                raise ValueError("Provider schedule does not match approval")
+            if request.send_at <= datetime.now(UTC):
+                raise ValueError("Schedule expired before publish")
 
     @staticmethod
     def _check_audience(data: dict[str, Any], audience: Audience) -> None:
@@ -302,6 +340,7 @@ class HubSpotClient:
         return MarketingPage(
             results=[row for row in result.results if row.get("objectTypeId") == "0-1"],
             next_after=result.next_after,
+            complete=result.complete,
         )
 
     def get_sequence(self, flow_id: str) -> MarketingRecord:
@@ -311,26 +350,28 @@ class HubSpotClient:
 
     @staticmethod
     def _require_marketing_flow(data: dict[str, Any]) -> None:
-        if (
-            data.get("type") != "CONTACT_FLOW"
-            or data.get("objectTypeId") != "0-1"
-            or data.get("flowType") != "WORKFLOW"
-        ):
-            raise ValueError("Only contact-based marketing workflows are supported")
-        actions = data.get("actions")
-        if not isinstance(actions, list) or not actions:
-            raise ValueError("Workflow must have marketing email actions")
-        if any(
-            not isinstance(action, dict)
-            or action.get("actionTypeId") not in {"0-1", "0-4"}
-            or action.get("type") != "SINGLE_CONNECTION"
-            for action in actions
-        ):
+        validate_workflow(data)
+
+    def _review_flow_emails(
+        self, sequence: EmailSequence, versions: dict[str, str]
+    ) -> None:
+        if set(versions) != {step.email_id for step in sequence.steps}:
             raise ValueError(
-                "Workflow contains actions outside marketing email and delay"
+                "Review must bind exactly every referenced marketing email"
             )
-        if not any(action.get("actionTypeId") == "0-4" for action in actions):
-            raise ValueError("Workflow has no marketing email action")
+        for step in sequence.steps:
+            email = self.get_email(step.email_id).data
+            if (
+                email.get("type") != "AUTOMATED_EMAIL"
+                or email.get("isPublished") is not True
+                or email.get("isTransactional") is not False
+                or not versions[step.email_id]
+                or email.get("updatedAt") != versions[step.email_id]
+            ):
+                raise ValueError(
+                    "Workflow email changed or is not published "
+                    "nontransactional automated email"
+                )
 
     def create_sequence(self, sequence: EmailSequence) -> MarketingRecord:
         return self._record("POST", FLOWS, body=sequence.to_api())
@@ -341,6 +382,7 @@ class HubSpotClient:
         sequence: EmailSequence,
         *,
         revision_id: str,
+        email_versions: dict[str, str] | None = None,
         enabled: bool = False,
         confirm: bool = False,
     ) -> MarketingRecord:
@@ -350,20 +392,13 @@ class HubSpotClient:
         if current.get("revisionId") != _id(revision_id):
             raise ValueError("Workflow revision changed; review before updating")
         if enabled:
-            for step in sequence.steps:
-                email = self.get_email(step.email_id).data
-                if (
-                    email.get("type") != "AUTOMATED_EMAIL"
-                    or email.get("isPublished") is not True
-                    or email.get("isTransactional") is not False
-                ):
-                    raise ValueError(
-                        "Sequence emails must be published nontransactional "
-                        "automated "
-                        "marketing emails"
-                    )
+            self._review_flow_emails(sequence, email_versions or {})
         body = sequence.to_api(enabled=enabled)
         body["revisionId"] = revision_id
+        # Description/UUID are the only additional supported writable metadata.
+        for key in ("description", "uuid"):
+            if key in current:
+                body[key] = current[key]
         # PUT has a distinct schema; never round-trip create-only or read-only fields.
         for key in ("objectTypeId", "flowType", "dataSources"):
             del body[key]
@@ -378,7 +413,14 @@ class HubSpotClient:
         return self._record("DELETE", f"{FLOWS}/{_id(flow_id)}")
 
     def enroll(
-        self, flow_id: str, email: str, *, remove: bool = False, confirm: bool = False
+        self,
+        flow_id: str,
+        email: str,
+        *,
+        revision_id: str,
+        email_versions: dict[str, str] | None = None,
+        remove: bool = False,
+        confirm: bool = False,
     ) -> MarketingRecord:
         encoded_email = _email(email)
         if not remove and not confirm:
@@ -386,6 +428,10 @@ class HubSpotClient:
                 "Enrollment may send email; explicit confirmation is required"
             )
         current = self.get_sequence(flow_id).data
+        if current.get("revisionId") != _id(revision_id):
+            raise ValueError("Workflow changed since enrollment review")
+        if not remove:
+            self._review_flow_emails(validate_workflow(current), email_versions or {})
         if not remove and current.get("isEnabled") is not True:
             raise ValueError("Sequence must be enabled before enrollment")
         mapping = self._transport.request(

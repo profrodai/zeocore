@@ -15,6 +15,7 @@ from zeo_core.integrations.hubspot import (
     HubSpotIntegration,
     HubSpotTransport,
     PublishRequest,
+    send_spec_digest,
 )
 from zeo_core.tools import CapabilityRegistry, ToolContext, invoke_sync
 from zeo_core.tools.builtin.hubspot import (
@@ -84,20 +85,24 @@ def main() -> None:
             SaveEmailRequest(draft=draft),
             ctx,
         )
-        assert saved.data is not None
+        if saved.data is None:
+            raise RuntimeError("Offline draft failed")
         print("Draft created through registered capability:", saved.data.data["id"])
         published = invoke_sync(
             registry.get("hubspot.marketing.email.publish@1.0.0"),
             PublishRequest(
                 email_id="123",
                 expected_updated_at="2026-09-07T10:00:00Z",
+                expected_send_spec_sha256=send_spec_digest(saved.data.data),
+                render_evidence_ref="offline-example/render-reviewed",
                 audience=draft.audience,
                 subscription_id="5",
                 confirm=True,
             ),
             ctx,
         )
-        assert published.data is not None
+        if published.data is None:
+            raise RuntimeError("Offline publish failed")
         print("HTTP operations:", ", ".join(calls))
         print("SIMULATED: no network, no live send, provider delivery unverified")
     finally:

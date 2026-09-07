@@ -24,7 +24,7 @@ SAFE_EXAMPLES = (
     ExampleCase(
         "hubspot_usage.py",
         "Draft created through registered capability: 123\n"
-        "HTTP operations: POST, GET, PATCH, POST\n"
+        "HTTP operations: POST, GET, PATCH, GET, POST\n"
         "SIMULATED: no network, no live send, provider delivery unverified\n",
     ),
     ExampleCase(

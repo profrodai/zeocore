@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from datetime import UTC, datetime
 from typing import Annotated, Any, Literal, Self
 
@@ -126,9 +128,49 @@ class EmailDraft(RequestModel):
         return data
 
 
+Digest = Annotated[str, StringConstraints(pattern=r"^[a-f0-9]{64}$")]
+AudienceMode = Literal["fixed_contacts", "dynamic_segments"]
+
+
+def send_spec_digest(
+    email: dict[str, Any],
+    *,
+    send_at: datetime | None = None,
+    audience_mode: AudienceMode = "fixed_contacts",
+) -> str:
+    """Bind provider content/metadata and requested execution policy to review.
+
+    This is a comparison helper, not authority to approve a send. The host binds
+    its render evidence and approval to this digest before execution. Mutable
+    template assets and dynamic segment membership are not snapshotted here.
+    """
+    payload = {
+        "email": {
+            key: value
+            for key, value in email.items()
+            if key not in {"updatedAt", "stats", "sendOnPublish", "publishDate"}
+        },
+        "send_at": send_at.astimezone(UTC).isoformat() if send_at else None,
+        "audience_mode": audience_mode,
+    }
+    return hashlib.sha256(
+        json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode()
+    ).hexdigest()
+
+
 class PublishRequest(RequestModel):
     email_id: Identifier
     expected_updated_at: Text
+    expected_send_spec_sha256: Digest
+    render_evidence_ref: Text
+    audience_mode: AudienceMode = "fixed_contacts"
+    audience_policy_ref: Text | None = None
     kind: Literal["newsletter", "automated"] = "newsletter"
     audience: Audience = Field(default_factory=Audience)
     subscription_id: Identifier
@@ -137,6 +179,14 @@ class PublishRequest(RequestModel):
 
     @model_validator(mode="after")
     def validate_publish(self) -> Self:
+        if self.audience.list_ids or self.audience.exclude_list_ids:
+            if self.audience_mode != "dynamic_segments" or not self.audience_policy_ref:
+                raise ValueError(
+                    "Segment membership requires explicit "
+                    "dynamic audience authorization"
+                )
+        elif self.audience_mode != "fixed_contacts":
+            raise ValueError("Dynamic audience mode requires segment IDs")
         if self.kind == "newsletter":
             self.audience.require_recipients()
         elif self.send_at is not None:
@@ -240,14 +290,18 @@ class SubscriptionChange(RequestModel):
         | None
     ) = None
     legal_basis_explanation: Text | None = None
+    consent_evidence_ref: Text | None = None
 
     @model_validator(mode="after")
     def require_consent_evidence(self) -> Self:
         if self.status == "SUBSCRIBED" and (
-            not self.legal_basis or not self.legal_basis_explanation
+            not self.legal_basis
+            or not self.legal_basis_explanation
+            or not self.consent_evidence_ref
         ):
             raise ValueError(
-                "Subscribing requires caller-supplied legal basis and explanation"
+                "Subscribing requires legal basis, explanation "
+                "and independent consent evidence reference"
             )
         if bool(self.legal_basis) != bool(self.legal_basis_explanation):
             raise ValueError("Legal basis and explanation must be supplied together")
@@ -276,3 +330,5 @@ class MarketingRecord(BaseModel):
 class MarketingPage(BaseModel):
     results: list[dict[str, Any]]
     next_after: str | None = None
+    complete: bool = False
+    # Only true for an unpaginated first-page result. Never a snapshot guarantee.
