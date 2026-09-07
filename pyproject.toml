@@ -227,6 +227,7 @@ llms = "zeo_core.integrations.llms:create_integration"
 ffmpeg = "zeo_core.integrations.ffmpeg:create_integration"
 notion = "zeo_core.integrations.notion:create_integration"
 supabase = "zeo_core.integrations.database.supabase:create_integration"
+"hubspot.marketing" = "zeo_core.integrations.hubspot:create_integration"
 jupytext = "zeo_core.integrations.jupytext:create_integration"
 "social.bluesky" = "zeo_core.integrations.social.bluesky:create_integration"
 

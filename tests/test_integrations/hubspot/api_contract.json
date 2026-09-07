@@ -1,0 +1,792 @@
+{
+  "source": "https://github.com/HubSpot/HubSpot-public-api-spec-collection",
+  "observed_head": "7f4f0c203d7895e594c9f60543dc0542b4f6305d",
+  "retrieved": "2026-09-07",
+  "contracts": {
+    "marketingEmails": {
+      "paths": {
+        "/marketing/emails/2026-03": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "after",
+              "archived",
+              "campaign",
+              "createdAfter",
+              "createdAt",
+              "createdBefore",
+              "includedProperties",
+              "includeStats",
+              "isPublished",
+              "limit",
+              "marketingCampaignNames",
+              "publishedAfter",
+              "publishedAt",
+              "publishedBefore",
+              "sort",
+              "type",
+              "updatedAfter",
+              "updatedAt",
+              "updatedBefore",
+              "variantStats",
+              "workflowNames"
+            ]
+          },
+          "post": {
+            "success_codes": [
+              "201"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/emails/2026-03/ab-test/create-variation": {
+          "post": {
+            "success_codes": [
+              "201"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/emails/2026-03/clone": {
+          "post": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/emails/2026-03/statistics/histogram": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "emailIds",
+              "endTimestamp",
+              "interval",
+              "startTimestamp"
+            ]
+          }
+        },
+        "/marketing/emails/2026-03/statistics/list": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "emailIds",
+              "endTimestamp",
+              "property",
+              "startTimestamp"
+            ]
+          }
+        },
+        "/marketing/emails/2026-03/{emailId}": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "archived",
+              "includedProperties",
+              "includeStats",
+              "marketingCampaignNames",
+              "variantStats",
+              "workflowNames"
+            ]
+          },
+          "delete": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": [
+              "archived"
+            ]
+          },
+          "patch": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "archived"
+            ]
+          }
+        },
+        "/marketing/emails/2026-03/{emailId}/ab-test/get-variation": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "archived",
+              "includedProperties",
+              "includeStats",
+              "marketingCampaignNames",
+              "variantStats",
+              "workflowNames"
+            ]
+          }
+        },
+        "/marketing/emails/2026-03/{emailId}/draft": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          },
+          "patch": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/emails/2026-03/{emailId}/draft/reset": {
+          "post": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/emails/2026-03/{emailId}/publish": {
+          "post": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/emails/2026-03/{emailId}/revisions": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "after",
+              "before",
+              "limit"
+            ]
+          }
+        },
+        "/marketing/emails/2026-03/{emailId}/revisions/{revisionId}": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/emails/2026-03/{emailId}/revisions/{revisionId}/restore": {
+          "post": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/emails/2026-03/{emailId}/revisions/{revisionId}/restore-to-draft": {
+          "post": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/emails/2026-03/{emailId}/unpublish": {
+          "post": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          }
+        }
+      },
+      "schemas": {
+        "EmailCreateRequest": {
+          "required": [],
+          "fields": [
+            "activeDomain",
+            "archived",
+            "businessUnitId",
+            "campaign",
+            "content",
+            "feedbackSurveyId",
+            "folderIdV2",
+            "from",
+            "jitterSendTime",
+            "language",
+            "name",
+            "publishDate",
+            "rssData",
+            "sendOnPublish",
+            "state",
+            "subcategory",
+            "subject",
+            "subscriptionDetails",
+            "testing",
+            "to",
+            "webversion"
+          ]
+        },
+        "EmailUpdateRequest": {
+          "required": [],
+          "fields": [
+            "activeDomain",
+            "archived",
+            "businessUnitId",
+            "campaign",
+            "content",
+            "folderIdV2",
+            "from",
+            "jitterSendTime",
+            "language",
+            "name",
+            "publishDate",
+            "rssData",
+            "sendOnPublish",
+            "state",
+            "subcategory",
+            "subject",
+            "subscriptionDetails",
+            "testing",
+            "to",
+            "webversion"
+          ]
+        },
+        "PublicEmailContent": {
+          "required": [],
+          "fields": [
+            "flexAreas",
+            "plainTextVersion",
+            "smartFields",
+            "styleSettings",
+            "templatePath",
+            "themeSettingsValues",
+            "widgetContainers",
+            "widgets"
+          ]
+        },
+        "PublicEmailToDetails": {
+          "required": [],
+          "fields": [
+            "contactIds",
+            "contactIlsLists",
+            "contactLists",
+            "limitSendFrequency",
+            "suppressGraymail"
+          ]
+        }
+      }
+    },
+    "automationV4": {
+      "paths": {
+        "/automation/v4/flows": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "after",
+              "limit"
+            ]
+          },
+          "post": {
+            "success_codes": [
+              "201"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/automation/v4/flows/batch/read": {
+          "post": {
+            "success_codes": [
+              "200",
+              "207"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/automation/v4/flows/email-campaigns": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "after",
+              "before",
+              "flowId",
+              "limit"
+            ]
+          }
+        },
+        "/automation/v4/flows/performance/{flowId}": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "bucketType",
+              "end",
+              "firstDay",
+              "start"
+            ]
+          }
+        },
+        "/automation/v4/flows/{flowId}": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          },
+          "put": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          },
+          "delete": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/automation/v4/workflow-id-mappings/batch/read": {
+          "post": {
+            "success_codes": [
+              "200",
+              "207"
+            ],
+            "query_parameters": []
+          }
+        }
+      },
+      "schemas": {
+        "ApiContactFlowCreateRequest": {
+          "required": [
+            "actions",
+            "blockedDates",
+            "canEnrollFromSalesforce",
+            "customProperties",
+            "dataSources",
+            "flowType",
+            "isEnabled",
+            "objectTypeId",
+            "suppressionListIds",
+            "timeWindows",
+            "type"
+          ],
+          "fields": [
+            "actions",
+            "blockedDates",
+            "canEnrollFromSalesforce",
+            "customProperties",
+            "dataSources",
+            "description",
+            "enrollmentCriteria",
+            "enrollmentSchedule",
+            "eventAnchor",
+            "flowType",
+            "goalFilterBranch",
+            "isEnabled",
+            "name",
+            "objectTypeId",
+            "startActionId",
+            "suppressionListIds",
+            "timeWindows",
+            "type",
+            "unEnrollmentSetting",
+            "uuid"
+          ]
+        },
+        "ApiContactFlowPutRequest": {
+          "required": [
+            "actions",
+            "blockedDates",
+            "canEnrollFromSalesforce",
+            "customProperties",
+            "isEnabled",
+            "revisionId",
+            "suppressionListIds",
+            "timeWindows",
+            "type"
+          ],
+          "fields": [
+            "actions",
+            "blockedDates",
+            "canEnrollFromSalesforce",
+            "customProperties",
+            "description",
+            "enrollmentCriteria",
+            "enrollmentSchedule",
+            "eventAnchor",
+            "goalFilterBranch",
+            "isEnabled",
+            "name",
+            "revisionId",
+            "startActionId",
+            "suppressionListIds",
+            "timeWindows",
+            "type",
+            "unEnrollmentSetting",
+            "uuid"
+          ]
+        },
+        "ApiManualEnrollmentCriteria": {
+          "required": [
+            "shouldReEnroll",
+            "type"
+          ],
+          "fields": [
+            "shouldReEnroll",
+            "type"
+          ]
+        }
+      }
+    },
+    "campaigns": {
+      "paths": {
+        "/marketing/campaigns/2026-03": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "after",
+              "limit",
+              "name",
+              "properties",
+              "sort"
+            ]
+          },
+          "post": {
+            "success_codes": [
+              "201"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/campaigns/2026-03/batch/archive": {
+          "post": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/campaigns/2026-03/batch/create": {
+          "post": {
+            "success_codes": [
+              "201",
+              "207"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/campaigns/2026-03/batch/read": {
+          "post": {
+            "success_codes": [
+              "200",
+              "207"
+            ],
+            "query_parameters": [
+              "endDate",
+              "properties",
+              "startDate"
+            ]
+          }
+        },
+        "/marketing/campaigns/2026-03/batch/update": {
+          "post": {
+            "success_codes": [
+              "200",
+              "207"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "endDate",
+              "properties",
+              "startDate"
+            ]
+          },
+          "delete": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          },
+          "patch": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}/assets/{assetType}": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "after",
+              "endDate",
+              "limit",
+              "startDate"
+            ]
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}/assets/{assetType}/{assetId}": {
+          "put": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          },
+          "delete": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}/budget": {
+          "post": {
+            "success_codes": [
+              "201"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}/budget/totals": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}/budget/{budgetId}": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          },
+          "put": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          },
+          "delete": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}/reports/contacts/{contactType}": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "after",
+              "endDate",
+              "limit",
+              "startDate"
+            ]
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}/reports/metrics": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "endDate",
+              "startDate"
+            ]
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}/reports/revenue": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "attributionModel",
+              "endDate",
+              "startDate"
+            ]
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}/spend": {
+          "post": {
+            "success_codes": [
+              "201"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/marketing/campaigns/2026-03/{campaignGuid}/spend/{spendId}": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          },
+          "put": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          },
+          "delete": {
+            "success_codes": [
+              "204"
+            ],
+            "query_parameters": []
+          }
+        }
+      },
+      "schemas": {}
+    },
+    "subscriptions": {
+      "paths": {
+        "/communication-preferences/2026-03/definitions": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "businessUnitId",
+              "includeTranslations"
+            ]
+          }
+        },
+        "/communication-preferences/2026-03/links/generate": {
+          "post": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "channel",
+              "businessUnitId"
+            ]
+          }
+        },
+        "/communication-preferences/2026-03/statuses/batch/read": {
+          "post": {
+            "success_codes": [
+              "200",
+              "207"
+            ],
+            "query_parameters": [
+              "channel",
+              "businessUnitId"
+            ]
+          }
+        },
+        "/communication-preferences/2026-03/statuses/batch/unsubscribe-all": {
+          "post": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "channel",
+              "businessUnitId",
+              "verbose"
+            ]
+          }
+        },
+        "/communication-preferences/2026-03/statuses/batch/unsubscribe-all/read": {
+          "post": {
+            "success_codes": [
+              "200",
+              "207"
+            ],
+            "query_parameters": [
+              "channel",
+              "businessUnitId"
+            ]
+          }
+        },
+        "/communication-preferences/2026-03/statuses/batch/write": {
+          "post": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/communication-preferences/2026-03/statuses/{subscriberIdString}": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "channel",
+              "businessUnitId"
+            ]
+          },
+          "post": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": []
+          }
+        },
+        "/communication-preferences/2026-03/statuses/{subscriberIdString}/unsubscribe-all": {
+          "get": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "channel",
+              "businessUnitId",
+              "verbose"
+            ]
+          },
+          "post": {
+            "success_codes": [
+              "200"
+            ],
+            "query_parameters": [
+              "channel",
+              "businessUnitId",
+              "verbose"
+            ]
+          }
+        }
+      },
+      "schemas": {
+        "PartialPublicStatusRequest": {
+          "required": [
+            "channel",
+            "statusState",
+            "subscriptionId"
+          ],
+          "fields": [
+            "channel",
+            "legalBasis",
+            "legalBasisExplanation",
+            "statusState",
+            "subscriptionId"
+          ]
+        }
+      }
+    }
+  }
+}

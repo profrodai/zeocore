@@ -47,6 +47,9 @@ Step-by-step guides for people building on ZeoCore.
 
 **Integrations and adapters**
 
+- [HubSpot marketing](tutorials/hubspot-marketing.md) — newsletters, campaigns,
+  subscriptions and email drip sequences, with agent capabilities.
+
 - [ZEOconnect managed profile](tutorials/zeoconnect-hosted-profile.md) — run
   one typed service under fake, local, hosted, or governed placement without
   putting provider credentials in application code.
