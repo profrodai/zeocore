@@ -485,6 +485,9 @@ def test_paging_uses_cursor_not_provider_link(setup_client: ClientFixture) -> No
         {"results": [1]},
         {"results": [], "paging": []},
         {"results": [], "paging": {"next": []}},
+        {"results": [], "paging": {"next": {"link": "https://evil.example/next"}}},
+        {"results": [], "paging": {"next": {"after": "x" * 2049}}},
+        {"results": [{"id": str(i)} for i in range(101)]},
         {"results": [], "paging": {"next": {"after": "same"}}},
     ],
 )

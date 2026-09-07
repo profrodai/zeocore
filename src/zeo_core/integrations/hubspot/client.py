@@ -86,6 +86,7 @@ class HubSpotClient:
         paging = data.get("paging", {})
         if (
             not isinstance(results, list)
+            or len(results) > page.limit
             or not all(isinstance(row, dict) for row in results)
             or not isinstance(paging, dict)
         ):
@@ -94,8 +95,14 @@ class HubSpotClient:
         if not isinstance(next_page, dict):
             raise HubSpotAPIError("RESPONSE", "HubSpot returned invalid pagination")
         after = next_page.get("after")
-        if after is not None and (
-            not isinstance(after, str) or not after or after == page.after
+        if (next_page and after is None) or (
+            after is not None
+            and (
+                not isinstance(after, str)
+                or not after
+                or len(after) > 2048
+                or after == page.after
+            )
         ):
             raise HubSpotAPIError(
                 "RESPONSE", "HubSpot returned an invalid or repeated cursor"
