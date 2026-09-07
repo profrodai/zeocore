@@ -50,6 +50,7 @@ class ReadRequest(RequestModel):
         "workflows",
         "workflow",
         "workflow_metrics",
+        "workflow_identity",
     ]
     resource_id: Identifier | None = None
     email: EmailAddress | None = None
@@ -68,6 +69,7 @@ class ReadRequest(RequestModel):
                 "campaign_metrics",
                 "workflow",
                 "workflow_metrics",
+                "workflow_identity",
             }
             and self.resource_id is None
         ):
@@ -216,6 +218,9 @@ def read(request: ReadRequest, ctx: ToolContext) -> CapabilityResult[MarketingRe
                 data=client.list_sequences(request.page).model_dump()
             ),
             "workflow": lambda: client.get_sequence(request.resource_id or ""),
+            "workflow_identity": lambda: client.get_workflow_identity(
+                request.resource_id or ""
+            ),
             "workflow_metrics": lambda: client.sequence_metrics(
                 request.resource_id or ""
             ),

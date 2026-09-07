@@ -137,7 +137,12 @@ revision_id=reviewed_revision, email_versions=reviewed_versions, confirm=True)`;
 to remove one, use `remove=True` and the current `revision_id`. Retrieved
 workflows must match the bounded linear, manual-enrollment subset, including
 action versions, edges, suppression and trigger settings. Unsupported definitions
-are refused before update, activation, enrollment, unenrollment or archive.
+are refused before update, activation, enrollment or archive. Null-valued optional
+provider settings and action decorations are tolerated; nonempty unknown behavior
+and empty trigger objects still fail closed. Unenrollment is deliberately narrower:
+use the `workflow_identity` read to review the current revision, then remove the
+contact. It validates contact-workflow identity and revision without requiring the
+entire action graph to remain within our authoring subset.
 Agent capability IDs are `hubspot.marketing.workflow.save@1.0.0` and
 `hubspot.marketing.workflow.enrollment@1.0.0`; read operations use `workflow`,
 `workflows` and `workflow_metrics`. These never call the Sales Sequences API. The client resolves the v4 flow ID to the v2 workflow ID before
