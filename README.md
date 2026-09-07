@@ -190,6 +190,12 @@ however your shell or tooling prefers (e.g. `uv run --env-file .env ...`) —
 see [GET-STARTED.md's "Secrets and `.env`"](GET-STARTED.md#secrets-and-env)
 section.
 
+## Kit marketing
+
+[Kit newsletters and sequences](docs/tutorials/kit-marketing.md) provides
+broadcasts, sequence authoring, subscriber consent, tags and reporting through
+thirteen registered agent capabilities. Run `python examples/kit_usage.py` offline.
+
 ## HubSpot marketing
 
 [HubSpot newsletters and automation](docs/tutorials/hubspot-marketing.md) provides

@@ -47,6 +47,9 @@ Step-by-step guides for people building on ZeoCore.
 
 **Integrations and adapters**
 
+- [Kit marketing](tutorials/kit-marketing.md) — newsletters, sequence authoring,
+  subscriber consent, tags and metrics through agent capabilities.
+
 - [HubSpot marketing](tutorials/hubspot-marketing.md) — newsletters, campaigns,
   subscriptions and email drip sequences, with agent capabilities.
 

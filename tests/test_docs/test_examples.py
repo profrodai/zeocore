@@ -22,6 +22,13 @@ class ExampleCase(NamedTuple):
 
 SAFE_EXAMPLES = (
     ExampleCase(
+        "kit_usage.py",
+        "Draft created through registered capability: 57\n"
+        "Track the new send object: 58\n"
+        "HTTP operations: POST, GET, GET, POST\n"
+        "SIMULATED: no network, no live send, provider delivery unverified\n",
+    ),
+    ExampleCase(
         "hubspot_usage.py",
         "Draft created through registered capability: 123\n"
         "HTTP operations: POST, GET, PATCH, GET, POST\n"

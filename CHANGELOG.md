@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Kit marketing integration and thirteen registered capabilities for broadcasts,
+  sequence authoring, subscriber consent, tags and reporting. Includes explicit
+  reviewed sends, safe error outcomes, an offline example and provider-contract tests.
+- HubSpot postmerge review corrections: tolerate inert null workflow decorations,
+  allow reviewed unenrollment despite unrelated graph drift, and sanitize malformed
+  provider schedule errors.
+
 - HubSpot marketing integration and eleven registered agent capabilities for
   newsletter drafts, reviewed publishing and scheduling, campaigns, subscription
   preferences and marketing email workflows. Includes bounded pagination, safe
