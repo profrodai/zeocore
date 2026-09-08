@@ -1,5 +1,10 @@
 # Bluesky integration: posting, and the byte-offset hazard
 
+For credential creation, test accounts, production accounts and environment-isolated
+execution, follow the [account setup guide](../integrations/bluesky.md) first.
+The direct-constructor examples below also work outside the managed launcher;
+use the launcher when you need its separation guarantees.
+
 **Created:** 2026-09-01 · **Status:** ACTIVE
 
 `zeo_core.integrations.social.bluesky` posts to Bluesky with typed,

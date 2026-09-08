@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from collections.abc import Callable, Sequence
@@ -91,6 +92,13 @@ class KeychainSecureSessionStore:
         if runner is None and sys.platform != "darwin":
             raise SecureStoreError("secure session storage is unavailable")
         self._runner = runner or RealSubprocessRunner()
+        from zeo_core.integrations.environment import managed_state_dir
+
+        state = managed_state_dir()
+        self._service = _KEYCHAIN_SERVICE
+        if state is not None:
+            digest = hashlib.sha256(str(state).encode()).hexdigest()[:16]
+            self._service = f"{_KEYCHAIN_SERVICE}.{state.name}.{digest}"
 
     def load(self) -> DeviceSession | None:
         result = self._runner.run(
@@ -100,7 +108,7 @@ class KeychainSecureSessionStore:
                 "-a",
                 _KEYCHAIN_ACCOUNT,
                 "-s",
-                _KEYCHAIN_SERVICE,
+                self._service,
                 "-w",
             ]
         )
@@ -143,7 +151,7 @@ class KeychainSecureSessionStore:
                     "-a",
                     _KEYCHAIN_ACCOUNT,
                     "-s",
-                    _KEYCHAIN_SERVICE,
+                    self._service,
                     "-U",
                     "-w",
                 ],
@@ -162,7 +170,7 @@ class KeychainSecureSessionStore:
                 "-a",
                 _KEYCHAIN_ACCOUNT,
                 "-s",
-                _KEYCHAIN_SERVICE,
+                self._service,
             ]
         )
         if result.returncode not in {0, *_KEYCHAIN_NOT_FOUND}:

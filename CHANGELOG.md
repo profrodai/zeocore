@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Explicit test and production integration environments with a process launcher,
+  scoped credential inputs, secure prompts and separate configuration, credential
+  caches, temporary files and working directories. All sixteen integration entry
+  points plus hosted ZEOconnect have detailed account and E2E setup guides.
+- Managed LLM runs fail on the selected provider instead of silently substituting
+  another provider or mock; offline mock use requires explicit test fixtures.
+
 - Kit marketing integration and thirteen registered capabilities for broadcasts,
   sequence authoring, subscriber consent, tags and reporting. Includes explicit
   reviewed sends, safe error outcomes, an offline example and provider-contract tests.

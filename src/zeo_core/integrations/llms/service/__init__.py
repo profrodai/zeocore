@@ -13,6 +13,7 @@ from zeo_core.core.errors import ZeoIntegrationError
 from zeo_core.core.logging import LOG_LEVELS, LogLevel
 from zeo_core.integrations.core.base import BaseIntegrationService
 from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.environment import managed_state_dir
 from zeo_core.integrations.llms.clients import LLMClient, MockLLMClient
 from zeo_core.integrations.llms.config import LLMConfig, LLMConfigProvider
 from zeo_core.integrations.llms.fallback import FallbackConfig
@@ -176,6 +177,13 @@ class LLMIntegration(BaseIntegrationService):
             init_result = super().initialize()
             if not init_result.success:
                 return init_result
+
+            if managed_state_dir() is not None:
+                from zeo_core.integrations.llms.service.managed import (
+                    initialize_managed,
+                )
+
+                return initialize_managed(self, self._extract_config())
 
             # Check available LLM providers
             deps_available, deps_message, available_providers = check_llm_dependencies()

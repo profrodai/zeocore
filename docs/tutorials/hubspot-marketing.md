@@ -1,5 +1,10 @@
 # HubSpot newsletters and marketing automation
 
+For credential creation, test accounts, production accounts and environment-isolated
+execution, follow the [account setup guide](../integrations/hubspot.md) first.
+The direct-constructor examples below also work outside the managed launcher;
+use the launcher when you need its separation guarantees.
+
 The `hubspot.marketing` integration covers newsletters, automated marketing
 emails, campaigns, subscription preferences, and email drip workflows. It uses
 the existing `httpx` dependency. These APIs are available in the source tree
