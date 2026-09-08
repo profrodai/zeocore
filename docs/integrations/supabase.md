@@ -1,6 +1,6 @@
 # Supabase account setup
 
-**Reviewed:** 2026-09-08. Integration: `supabase`. Install with
+**Reviewed:** 2026-09-09. Integration: `supabase`. Install with
 `uv pip install -e ".[supabase]"`. Read [environment setup](environments.md) and the
 [full Supabase tutorial](../tutorials/supabase-integration.md).
 
@@ -101,6 +101,12 @@ with separate user authentication where needed. Use the production HTTPS URL and
 leave `allow_local_http` false. Run an equivalent bounded read of an approved
 production resource with `--mode production`, using its actual table/row IDs.
 Do not seed synthetic users into production or run a local reset against it.
+
+Use separate projects, not just separate keys within one project. When both live
+namespaces supply the same nonempty `SUPABASE_URL`, the launcher refuses either
+mode before starting the application, even with different keys. This is an exact
+URL comparison; aliases/custom domains and an absent opposite-mode URL cannot
+establish project separation. Verify the project identity in the dashboard too.
 
 ## Bounded E2E and cleanup
 
