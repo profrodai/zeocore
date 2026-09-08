@@ -14,6 +14,7 @@ from typing import Any
 
 from zeo_core.integrations.core.artifacts import artifact_fact, validate_output
 from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.notebook.identity import resolved_identity
 from zeo_core.integrations.notebook.models import (
     NotebookExecutionReceipt,
     NotebookExecutionRequest,
@@ -92,6 +93,18 @@ def _run_worker(
 ) -> tuple[dict[str, Any], bool]:
     env = _environment(temp, request.environment_allowlist)
     _kernel(temp)
+    identity = resolved_identity(
+        temp / "data/kernels/python3/kernel.json",
+        absolute_paths=request.absolute_provenance_paths,
+    )
+    if request.expected_environment_sha256 is not None and (
+        identity["environment_sha256"] != request.expected_environment_sha256
+    ):
+        return {
+            "status": "FAILED",
+            "failure_kind": "ENVIRONMENT_MISMATCH",
+            "kernel_identity": identity,
+        }, True
     result_path, executed = temp / "result.json", temp / "executed.ipynb"
     payload = request.model_dump()
     payload.update(
@@ -123,6 +136,9 @@ def _run_worker(
     try:
         while process.poll() is None:
             tracker.observe()
+            if tracker.worker_memory() > request.max_worker_memory_bytes:
+                result = {"status": "FAILED", "failure_kind": "WORKER_MEMORY_LIMIT"}
+                break
             if result_path.exists():
                 result = json.loads(result_path.read_text())
                 break
@@ -131,9 +147,21 @@ def _run_worker(
                 break
             time.sleep(0.01)
     finally:
-        cleaned = tracker.cleanup()
+        cleaned = tracker.cleanup(request.cleanup_timeout_seconds)
         if process.stdin:
             process.stdin.close()
+    progress = temp / "progress.json"
+    if progress.exists():
+        observations = json.loads(progress.read_text())
+        for name in (
+            "code_cells_attempted",
+            "code_cells_completed",
+            "code_cells_failed",
+            "captured_output_bytes",
+        ):
+            result.setdefault(name, observations.get(name, 0))
+        result.setdefault("failed_cell_id", observations.get("active_cell_id"))
+    result["kernel_identity"] = identity
     return result, cleaned
 
 
@@ -156,6 +184,22 @@ def _inventory(source: Path) -> tuple[int, int]:
     return len(code), skipped
 
 
+def _accounting(receipt: NotebookExecutionReceipt, result: dict[str, Any]) -> None:
+    """Timeout and crash leave attempted cells failed, never completed."""
+    for name in (
+        "code_cells_attempted",
+        "code_cells_completed",
+        "code_cells_failed",
+        "captured_output_bytes",
+    ):
+        setattr(receipt, name, result.get(name, 0))
+    if result["status"] != "SUCCEEDED":
+        receipt.code_cells_failed = max(
+            receipt.code_cells_failed,
+            receipt.code_cells_attempted - receipt.code_cells_completed,
+        )
+
+
 def execute_notebook(
     request: NotebookExecutionRequest,
 ) -> IntegrationResult[NotebookExecutionReceipt]:
@@ -171,16 +215,29 @@ def execute_notebook(
         source, output, cwd, root = _paths(request)
         _environment(root, request.environment_allowlist)  # validate before writes
         total, skipped = _inventory(source)
+        if total > request.max_code_cells:
+            raise ValueError("CODE_CELL_LIMIT")
+        lock = None
+        if request.environment_lock_path is not None:
+            lock_path = Path(request.environment_lock_path)
+            lock = artifact_fact(
+                lock_path if lock_path.is_absolute() else root / lock_path, "lock", root
+            )
         receipt = NotebookExecutionReceipt(
             source=artifact_fact(source, "ipynb", root),
             kernel_name=request.kernel_name,
             executor_version=version("nbclient"),
             code_cells_total=total,
             code_cells_skipped=skipped,
+            environment_lock=lock,
+            output_limit_bytes=request.max_output_bytes,
+            cleanup_timeout_seconds=request.cleanup_timeout_seconds,
         )
         with tempfile.TemporaryDirectory(prefix=".execution-", dir=root) as temporary:
             temp = Path(temporary)
             result, cleaned = _run_worker(request, source, cwd, temp)
+            _accounting(receipt, result)
+            receipt.kernel_identity = result.get("kernel_identity", {})
             receipt.cleanup = "SUCCEEDED" if cleaned else "FAILED"
             receipt.status = result["status"]
             receipt.failure_kind = result.get("failure_kind")
@@ -201,6 +258,7 @@ def execute_notebook(
                     receipt.executed_output = fact.model_copy(
                         update={"path": str(output.relative_to(root))}
                     )
+            receipt.sanitized_error = receipt.failure_kind
             return IntegrationResult(
                 success=receipt.status == "SUCCEEDED",
                 content=receipt,
@@ -211,6 +269,7 @@ def execute_notebook(
             str(exc)
             if str(exc)
             in {
+                "CODE_CELL_LIMIT",
                 "EMPTY_INPUT",
                 "ZERO_CELLS",
                 "NO_CODE_CELLS",

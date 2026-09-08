@@ -67,3 +67,49 @@ execution establishes student learning or human visual approval.
 
 Run `make verify`. The real-kernel tests include stale-output, fresh-state,
 synthetic-secret and child-process controls after every important exit path.
+
+## Execution contract after elder review
+
+`max_output_bytes` bounds retained stream, stderr and rich-output message content
+before nbclient accumulates it (default 10 MiB). `max_code_cells` bounds code-cell
+inventory (default 1000). Exceeding either limit fails. A polled worker-RSS fuse
+(default 512 MiB) protects against oversized incoming messages while the receiver
+is decoding them; it is not an OS-enforced peak-memory bound. Trusted kernel code
+can still allocate memory, and strict memory isolation requires an external OS
+boundary. The receipt's captured byte count never exceeds the retention limit.
+
+`timeout_seconds` covers worker/kernel startup and cell execution.
+`startup_timeout_seconds` additionally bounds Jupyter's readiness wait. Cleanup
+has its own declared `cleanup_timeout_seconds` allowance (default 5, maximum 30).
+The total advertised process lifetime is startup/execution deadline plus cleanup
+allowance, with ordinary scheduler/syscall overhead. Receipts name the cleanup
+scope as observed process identities and sessions; complete descendant cleanup
+is explicitly UNAVAILABLE. A detached child observed before kernel exit is
+covered. Hostile daemonization between observations is outside that guarantee.
+
+Kernel identity records the actual generated kernelspec SHA-256, interpreter
+binary SHA-256, and a versioned installed-distribution inventory SHA-256. The
+kernelspec location is a managed logical path. Absolute local provenance paths
+require `absolute_provenance_paths=True`. Only the generated private Python spec
+is used; ambient same-name specs and their environment values are excluded.
+`expected_environment_sha256` refuses unexpected installed environments before
+executing cells. `environment_lock_path` records the full hash and relative path
+of the consumer's declared lockfile; when omitted its evidence is unavailable.
+A lock reference alone does not certify that every installed dependency matches
+that lock: compare the recorded actual inventory identity with an approved one.
+Course-release policy should require both the lock and expected identity.
+
+Receipts count attempted, completed, failed and intentionally skipped cells.
+A timeout or crash marks unfinished attempted cells failed. `no-execute` cells
+are intentional skips; the generic executor reports them, while the consumer
+must reject undeclared skips. All-skipped and no-code inputs fail. `allow_errors`
+accepts only False; continuing for diagnostics is not a release-acceptance mode.
+Expected-failure exercises should catch and assert their precise expected
+exception and evidence, then complete normally.
+
+Execution receipts describe individual observations. Exact output hashes may
+legitimately differ across runs; they identify the bytes observed, not semantic
+equivalence or learning. Stable-content semantic comparison is a separate gate.
+Network isolation remains UNAVAILABLE because this executor does not enforce or
+measure egress policy. An external runner must supply separate measured network
+policy evidence; callers cannot turn an unverified assertion into ENFORCED here.

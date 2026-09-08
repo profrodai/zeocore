@@ -6,9 +6,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from zeo_core.integrations.notebook.bounded_client import BoundedNotebookClient
+
 
 def _failure(exc: Exception) -> dict[str, str]:
     kind = {
+        "OutputLimitError": ("FAILED", "OUTPUT_LIMIT"),
         "NoSuchKernel": ("KERNEL_UNAVAILABLE", "MISSING_KERNEL"),
         "CellTimeoutError": ("TIMED_OUT", "CELL_TIMEOUT"),
         "DeadKernelError": ("FAILED", "KERNEL_CRASH"),
@@ -30,7 +33,6 @@ def main() -> None:
     """Execute once, report fixed error codes, then wait for parent cleanup."""
     request = json.loads(Path(sys.argv[1]).read_text())
     nbformat = importlib.import_module("nbformat")
-    nbclient = importlib.import_module("nbclient")
     notebook = nbformat.read(request["source_path"], as_version=4)
     for cell in notebook.cells:
         if cell.cell_type == "code":
@@ -46,8 +48,11 @@ def main() -> None:
             ensure_native_kernel=False,
         ),
     )
-    client = nbclient.NotebookClient(
-        notebook,
+    client = BoundedNotebookClient(
+        output_limit=request["max_output_bytes"],
+        progress=Path(request["result_path"]).with_name("progress.json"),
+        startup_timeout=request["startup_timeout_seconds"],
+        nb=notebook,
         km=manager,
         timeout=request["cell_timeout_seconds"],
         kernel_name=request["kernel_name"],
@@ -83,6 +88,8 @@ def main() -> None:
             if cell.cell_type == "code" and cell.execution_count is not None:
                 result["code_cells_executed"] += 1
                 result["failed_cell_id"] = cell.get("id")
+    result.update(client.observations)
+    result["failed_cell_id"] = client.observations.get("active_cell_id")
     result["python_version"] = notebook.metadata.get("language_info", {}).get("version")
     Path(request["result_path"]).write_text(json.dumps(result))
     # Parent retains a live ancestry root until all observed descendants are gone.

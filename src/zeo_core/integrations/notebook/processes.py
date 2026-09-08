@@ -43,8 +43,16 @@ class ProcessTracker:
                     pass
         self.observe()
 
-    def cleanup(self) -> bool:
+    def worker_memory(self) -> int:
+        """A polled RSS fuse; this is not an OS-enforced peak-memory limit."""
+        try:
+            return int(self.psutil.Process(self.process.pid).memory_info().rss)
+        except self.psutil.Error:
+            return 0
+
+    def cleanup(self, timeout: float = 5) -> bool:
         """Kill known sessions and reap our worker on every exit path."""
+        deadline = time.monotonic() + timeout
         self._freeze()
         for group in self.groups:
             try:
@@ -57,8 +65,14 @@ class ProcessTracker:
             except self.psutil.NoSuchProcess:
                 pass
         self.process.kill()
-        self.process.wait(timeout=10)
-        deadline = time.monotonic() + 5
+        try:
+            self.process.wait(timeout=max(0.001, deadline - time.monotonic()))
+        except subprocess.TimeoutExpired:
+            return False
+        return self._wait_for_descendants(deadline)
+
+    def _wait_for_descendants(self, deadline: float) -> bool:
+        """Observe termination within the remaining cleanup allowance."""
         while time.monotonic() < deadline:
             alive = []
             for process in self.observed.values():
