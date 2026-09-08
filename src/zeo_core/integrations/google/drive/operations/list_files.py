@@ -49,7 +49,7 @@ def list_files(
                     "files(id, name, mimeType, webViewLink, webContentLink, "
                     "size, createdTime, modifiedTime, parents, shared, trashed)"
                 ),
-                page_size=100,
+                pageSize=100,
             ),
             "Failed to list files from Google Drive",
             "files.list",

@@ -133,7 +133,7 @@ search query. Keep downloaded mail under `production/work`.
 ### Drive
 
 Use `google.drive`, script name `drive`, and a folder ID copied from the
-folder's browser URL. Seed a file there. The first listing uses
+folder's browser URL. Seed a file there. The first listing returns up to 100 items and uses
 `drive.metadata.readonly`; file download needs a content-reading scope such as
 `drive.readonly`. For a selected-file application, explicitly use
 `scope_profile="selected-file"` (`drive.file`) and select/grant files through

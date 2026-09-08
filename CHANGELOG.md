@@ -40,6 +40,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Google Drive listing now uses the SDK's `pageSize` keyword in both listing
+  paths. Real discovery-builder regression tests prevent permissive mocks from
+  hiding a broken first account check.
 - Bind full HubSpot workflow reads to the requested ID before graph review or
   follow-up enrollment, update, activation, metrics and archive requests.
 - Kit mutation responses now require a valid operation-bound resource ID; a

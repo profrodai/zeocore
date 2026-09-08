@@ -607,7 +607,7 @@ class GoogleDriveService(BaseIntegrationService, StorageIntegrationProtocol):
                             "files(id, name, mimeType, webViewLink, webContentLink, "
                             "size, createdTime, modifiedTime, parents, shared, trashed)"
                         ),
-                        page_size=100,
+                        pageSize=100,
                     )
                     .execute()
                 )

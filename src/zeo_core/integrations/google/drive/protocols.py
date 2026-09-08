@@ -103,7 +103,7 @@ class DriveFilesResource(Protocol):
         self,
         q: str | None = None,
         fields: str | None = None,
-        page_size: int | None = None,
+        pageSize: int | None = None,
     ) -> DriveRequest[dict[str, object]]:
         """
         List files.
@@ -111,7 +111,7 @@ class DriveFilesResource(Protocol):
         Args:
             q: Query string.
             fields: Fields to include in the response.
-            page_size: Maximum number of files to return.
+            pageSize: Maximum number of files to return.
 
         Returns:
             DriveRequest: Request object for listing files.
