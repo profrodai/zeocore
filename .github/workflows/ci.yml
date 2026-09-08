@@ -75,6 +75,9 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
 
+      - name: Install Pandoc for real authoring receipt tests
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
       - name: make setup (env + install-all + install-dev + install-lint)
         run: make setup PYTHON_VERSION=${{ matrix.python-version }}
 

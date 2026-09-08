@@ -38,3 +38,5 @@ and provide both tracks before their setup is considered complete.
 Test mode is a ZeoCore environment selection. It does not turn an ordinary
 provider account into a vendor sandbox. Provider credentials, account permissions,
 selected resources and recipients still determine what the provider can change.
+
+For staged notebook/document releases, use [authoring conversion receipts](authoring-receipts.md).

@@ -13,6 +13,7 @@ from zeo_core.core.errors import ZeoIntegrationError
 from zeo_core.core.fs.service import FileSystemService
 from zeo_core.core.logging import LOG_LEVELS, LogLevel
 from zeo_core.core.paths.service import PathService
+from zeo_core.integrations.core.artifacts import ConversionReceipt
 from zeo_core.integrations.core.base import BaseIntegrationService
 from zeo_core.integrations.core.protocols import ConfigProviderProtocol
 from zeo_core.integrations.core.results import IntegrationResult
@@ -308,6 +309,40 @@ class PandocIntegration(BaseIntegrationService):
             return True
         except Exception:
             return False
+
+    def markdown_to_docx_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionReceipt]:
+        """Convert Markdown with structural evidence and no visual approval claim."""
+        if not self._initialized or self.converter is None:
+            return IntegrationResult.error_result("NOT_INITIALIZED")
+        return self.converter.convert_file_with_receipt(
+            input_path,
+            output_path,
+            "docx",
+            workspace_root=workspace_root,
+        )
+
+    def html_to_markdown_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionReceipt]:
+        """Import HTML into a new review draft, never over canonical Markdown."""
+        if not self._initialized or self.converter is None:
+            return IntegrationResult.error_result("NOT_INITIALIZED")
+        return self.converter.convert_file_with_receipt(
+            input_path,
+            output_path,
+            "markdown",
+            workspace_root=workspace_root,
+        )
 
     def html_to_markdown(
         self,

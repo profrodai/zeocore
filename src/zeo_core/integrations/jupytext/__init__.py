@@ -15,6 +15,11 @@ conventions (config, error handling, entry-point registration) and adds the
 inverse direction (notebook -> script) for a complete, reusable wrapper.
 """
 
+from zeo_core.integrations.core.artifacts import (
+    ConversionBatchReceipt,
+    ConversionReceipt,
+    RequiredConversionTask,
+)
 from zeo_core.integrations.core.protocols import IntegrationProtocol
 from zeo_core.integrations.jupytext.config import JupytextConfig, JupytextConfigProvider
 from zeo_core.integrations.jupytext.converter import NotebookConverter
@@ -23,9 +28,18 @@ from zeo_core.integrations.jupytext.models import (
     ConversionTask,
     NotebookInfo,
 )
+from zeo_core.integrations.jupytext.parity import (
+    NotebookParityReceipt,
+    compare_notebook_semantics,
+)
 from zeo_core.integrations.jupytext.service import JupytextIntegration
 
 __all__ = [
+    "ConversionReceipt",
+    "ConversionBatchReceipt",
+    "RequiredConversionTask",
+    "NotebookParityReceipt",
+    "compare_notebook_semantics",
     # Main integration class
     "JupytextIntegration",
     # Configuration

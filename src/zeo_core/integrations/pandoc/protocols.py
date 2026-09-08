@@ -10,6 +10,7 @@ File resolution and normalization are delegated to zeo_core.core.fs.
 from collections.abc import Sequence
 from typing import Protocol, TypeVar, runtime_checkable
 
+from zeo_core.integrations.core.artifacts import ConversionReceipt
 from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.integrations.pandoc.models import ConversionTask
 
@@ -143,3 +144,39 @@ class PandocConversionProtocol(Protocol):
             of output file paths.
         """
         ...
+
+
+@runtime_checkable
+class PandocReceiptProtocol(Protocol):
+    """Additive receipt surface; legacy path protocols remain unchanged."""
+
+    def markdown_to_docx_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionReceipt]: ...
+
+    def html_to_markdown_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionReceipt]: ...
+
+
+@runtime_checkable
+class DocumentReceiptConverterProtocol(Protocol):
+    """Receipt-bearing converter, separate from the legacy converter protocol."""
+
+    def convert_file_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        output_format: str,
+        *,
+        workspace_root: str,
+        absolute_paths: bool = False,
+    ) -> IntegrationResult[ConversionReceipt]: ...
