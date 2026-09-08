@@ -78,8 +78,9 @@ class ConversionBatchItem(BaseModel):
 
 
 class ConversionBatchReceipt(BaseModel):
-    """A directory promotion transaction, not a list of files that happened to work."""
+    """A staged conversion transaction; never chapter release acceptance."""
 
+    scope: Literal["CONVERSION_STAGE"] = "CONVERSION_STAGE"
     items: tuple[ConversionBatchItem, ...]
     status: Literal["SUCCEEDED", "FAILED"]
     promoted: bool = False

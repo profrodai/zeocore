@@ -1,0 +1,373 @@
+{
+  "artifacts": [
+    {
+      "format": "txt",
+      "path": "asset.txt",
+      "sha256": "dc3d4277c40a080b5f5f2cad371625fbb56d4eca7c0c31c587bc1185e75842ba",
+      "size_bytes": 14
+    },
+    {
+      "format": "txt",
+      "path": "clean/asset.txt",
+      "sha256": "dc3d4277c40a080b5f5f2cad371625fbb56d4eca7c0c31c587bc1185e75842ba",
+      "size_bytes": 14
+    },
+    {
+      "format": "ipynb",
+      "path": "clean/lesson.ipynb",
+      "sha256": "f9d1c3cbfce669997b0f210cc4f575f701796ab11d251500608640849cc679df",
+      "size_bytes": 1696
+    },
+    {
+      "format": "lock",
+      "path": "environment.lock",
+      "sha256": "628df00d2c281a4f5f994985fcaa519d30bce506143e41d5229072c34cc27a96",
+      "size_bytes": 436541
+    },
+    {
+      "format": "ipynb",
+      "path": "executed.ipynb",
+      "sha256": "e376d5c80348aeb183e0d59d37cf9572f74ea4cc7bc7fd9e94997dfe75a54c90",
+      "size_bytes": 2069
+    },
+    {
+      "format": "json",
+      "path": "expected.json",
+      "sha256": "c58b89ded80cdbf55362939c64dfe09d93fb88b424752552ad5860164e4eb7e5",
+      "size_bytes": 220
+    },
+    {
+      "format": "docx",
+      "path": "review.docx",
+      "sha256": "46af1fdfa53ac3a64dfa67eefb5b066529fd02dfd1b4ea44456a44449d81c30f",
+      "size_bytes": 11018
+    },
+    {
+      "format": "md",
+      "path": "roundtrip.md",
+      "sha256": "7b45fadf792ccb00956705feae306181e614a59dfa07d9cfc849c57dbaff6f3e",
+      "size_bytes": 821
+    },
+    {
+      "format": "md",
+      "path": "source.md",
+      "sha256": "6f067bda100556f67ea89a3ebafba86fe5e2a3b93268d83daf3d0eac1957425e",
+      "size_bytes": 790
+    }
+  ],
+  "human_visual_approval": false,
+  "normalization": [
+    "conversion receipts: details.conversion_time only"
+  ],
+  "pandoc_source_date_epoch": "315532800",
+  "publication_status": "NOT_PUBLISHED",
+  "receipts": {
+    "batch": {
+      "content": {
+        "failure_policy": "CLEAN",
+        "items": [
+          {
+            "error": null,
+            "receipt": {
+              "cells": [
+                {
+                  "attachments_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+                  "cell_id": "e43718656781534eb713232aa0615b9179c39676924bba7199893e778345ae85",
+                  "cell_type": "markdown",
+                  "metadata_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+                  "ordinal": 0,
+                  "source_sha256": "33b29ba05fb959944cea2690305aed55802e7fe4092c5ed2ff9a66596923c84b",
+                  "tags": []
+                },
+                {
+                  "attachments_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+                  "cell_id": "ecf9392dd94b33071b043c35e9f35e4cae2b9ee17239e063a0c9205f651f6715",
+                  "cell_type": "code",
+                  "metadata_sha256": "56a44527d2a19f7468ea2be89011f48d71eca17fbf6bfe60fe8721c78c186370",
+                  "ordinal": 1,
+                  "source_sha256": "98f8a470e851353a96daebaaf330eae1f4ef136c2287d4fc7c81a5764e0d5386",
+                  "tags": [
+                    "exercise"
+                  ]
+                },
+                {
+                  "attachments_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+                  "cell_id": "ffcc866af356dd8e31032f81ba7b491dfabeff5bde23dfffe99e5d891b1646d2",
+                  "cell_type": "markdown",
+                  "metadata_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+                  "ordinal": 2,
+                  "source_sha256": "056a63ed08a4373bbca282120c658821ba8198b8d8877909a32a984fd4cc8897",
+                  "tags": []
+                },
+                {
+                  "attachments_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+                  "cell_id": "f2ca50524f4722500767149968f4e9fadd3aae5d9695f8446fefb9c03c1cb0e9",
+                  "cell_type": "code",
+                  "metadata_sha256": "c1a364701aa1d2acf0d5305d0dacccbb4f46c301430479673dd48406a1927110",
+                  "ordinal": 3,
+                  "source_sha256": "b7c5104539351ac9d6c589d85120371b393b95c9949aefe298f484c26f1692dd",
+                  "tags": [
+                    "solution-only"
+                  ]
+                },
+                {
+                  "attachments_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+                  "cell_id": "5e9ad2ed78c6001a45f284b9f0c575cd0339d918ac5f046e66f82ec1fc851063",
+                  "cell_type": "markdown",
+                  "metadata_sha256": "d5bef942da46f734607b200a152199ee073dc9c39e7534f16b27b7e3c7e4e8a5",
+                  "ordinal": 4,
+                  "source_sha256": "e8dfaf77a6cd21c8eaef726ab2892d5cb8fab1129920db4ee8025afef6a4070e",
+                  "tags": []
+                }
+              ],
+              "converter_version": "1.19.5",
+              "details": {
+                "cell_count": 5,
+                "conversion_time": 0.01832127571105957,
+                "input_size": 790,
+                "output_size": 1696,
+                "source_format": "md:markdown",
+                "target_format": "ipynb",
+                "validation_errors": []
+              },
+              "human_visual_approval": false,
+              "integration_id": "jupytext",
+              "integration_version": "1.0.0",
+              "intended_use": "DERIVED_ARTIFACT",
+              "output": {
+                "format": "ipynb",
+                "path": "clean/lesson.ipynb",
+                "sha256": "f9d1c3cbfce669997b0f210cc4f575f701796ab11d251500608640849cc679df",
+                "size_bytes": 1696
+              },
+              "source": {
+                "format": "md",
+                "path": "source.md",
+                "sha256": "6f067bda100556f67ea89a3ebafba86fe5e2a3b93268d83daf3d0eac1957425e",
+                "size_bytes": 790
+              },
+              "status": "SUCCEEDED",
+              "structural_validation": "PASSED",
+              "validation_errors": [],
+              "warnings": []
+            },
+            "required": true,
+            "status": "SUCCEEDED",
+            "task_id": "notebook"
+          }
+        ],
+        "output_directory": "clean",
+        "promoted": true,
+        "scope": "CONVERSION_STAGE",
+        "status": "SUCCEEDED"
+      },
+      "error": null,
+      "message": null,
+      "success": true
+    },
+    "execution": {
+      "content": {
+        "captured_output_bytes": 40,
+        "cleanup": "SUCCEEDED",
+        "cleanup_scope": "OBSERVED_IDENTITIES_AND_SESSIONS",
+        "cleanup_timeout_seconds": 5.0,
+        "code_cells_attempted": 2,
+        "code_cells_completed": 2,
+        "code_cells_executed": 2,
+        "code_cells_failed": 0,
+        "code_cells_skipped": 0,
+        "code_cells_total": 2,
+        "complete_descendant_cleanup": "UNAVAILABLE",
+        "environment_lock": {
+          "format": "lock",
+          "path": "environment.lock",
+          "sha256": "628df00d2c281a4f5f994985fcaa519d30bce506143e41d5229072c34cc27a96",
+          "size_bytes": 436541
+        },
+        "executed_output": {
+          "format": "ipynb",
+          "path": "executed.ipynb",
+          "sha256": "e376d5c80348aeb183e0d59d37cf9572f74ea4cc7bc7fd9e94997dfe75a54c90",
+          "size_bytes": 2069
+        },
+        "executor_version": "0.11.0",
+        "failed_cell_id": null,
+        "failure_kind": null,
+        "kernel_identity": {
+          "environment_identity_schema": "python-environment-v1",
+          "environment_sha256": "720efa651628235d37d7552d9a33f0fe0efc414110c953cf84054de75c5f7503",
+          "executable_sha256": "5e7cec3fb68a25f439c81d0a8510f8e2e0309ef194e68f916aa0443cd8506657",
+          "kernelspec_location": "managed/data/kernels/python3/kernel.json",
+          "kernelspec_sha256": "82da4b817d2cd493807e91efb384a35183a527f906149f5a648d601b14e649d8"
+        },
+        "kernel_name": "python3",
+        "network_isolation": "UNAVAILABLE",
+        "output_limit_bytes": 10485760,
+        "process_isolation": "UNAVAILABLE",
+        "python_version": "3.14.3",
+        "sanitized_error": null,
+        "source": {
+          "format": "ipynb",
+          "path": "clean/lesson.ipynb",
+          "sha256": "f9d1c3cbfce669997b0f210cc4f575f701796ab11d251500608640849cc679df",
+          "size_bytes": 1696
+        },
+        "status": "SUCCEEDED"
+      },
+      "error": null,
+      "message": null,
+      "success": true
+    },
+    "independent_fixture_checks": "PASSED",
+    "optional_docx": {
+      "receipt": {
+        "content": {
+          "cells": null,
+          "converter_version": "3.11",
+          "details": {
+            "conversion_time": 0.09541177749633789,
+            "input_size": 790,
+            "output_size": 11018,
+            "source_format": "markdown",
+            "target_format": "docx",
+            "validation_errors": []
+          },
+          "human_visual_approval": false,
+          "integration_id": "pandoc",
+          "integration_version": "1.0.0",
+          "intended_use": "DERIVED_ARTIFACT",
+          "output": {
+            "format": "docx",
+            "path": "review.docx",
+            "sha256": "46af1fdfa53ac3a64dfa67eefb5b066529fd02dfd1b4ea44456a44449d81c30f",
+            "size_bytes": 11018
+          },
+          "source": {
+            "format": "markdown",
+            "path": "source.md",
+            "sha256": "6f067bda100556f67ea89a3ebafba86fe5e2a3b93268d83daf3d0eac1957425e",
+            "size_bytes": 790
+          },
+          "status": "SUCCEEDED",
+          "structural_validation": "PASSED",
+          "validation_errors": [],
+          "warnings": []
+        },
+        "error": null,
+        "message": null,
+        "success": true
+      },
+      "status": "SUCCEEDED"
+    },
+    "parity": {
+      "content": {
+        "derived_digest": "745707fb41a841a4b840cf191b21c1e835a297d7814889b5c561a5da99869500",
+        "equivalent": true,
+        "mismatch": null,
+        "normalizations": [
+          "jupytext.text_representation.jupytext_version",
+          "line endings CRLF to LF",
+          "execution counters and outputs excluded from semantic content",
+          "parser-generated IDs in text representations are not declared IDs"
+        ],
+        "semantic_schema": "zeocore.notebook-semantics.v1",
+        "source_digest": "745707fb41a841a4b840cf191b21c1e835a297d7814889b5c561a5da99869500"
+      },
+      "error": null,
+      "message": null,
+      "success": true
+    },
+    "roundtrip": {
+      "content": {
+        "cells": [
+          {
+            "attachments_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+            "cell_id": null,
+            "cell_type": "markdown",
+            "metadata_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+            "ordinal": 0,
+            "source_sha256": "33b29ba05fb959944cea2690305aed55802e7fe4092c5ed2ff9a66596923c84b",
+            "tags": []
+          },
+          {
+            "attachments_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+            "cell_id": null,
+            "cell_type": "code",
+            "metadata_sha256": "56a44527d2a19f7468ea2be89011f48d71eca17fbf6bfe60fe8721c78c186370",
+            "ordinal": 1,
+            "source_sha256": "98f8a470e851353a96daebaaf330eae1f4ef136c2287d4fc7c81a5764e0d5386",
+            "tags": [
+              "exercise"
+            ]
+          },
+          {
+            "attachments_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+            "cell_id": null,
+            "cell_type": "markdown",
+            "metadata_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+            "ordinal": 2,
+            "source_sha256": "056a63ed08a4373bbca282120c658821ba8198b8d8877909a32a984fd4cc8897",
+            "tags": []
+          },
+          {
+            "attachments_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+            "cell_id": null,
+            "cell_type": "code",
+            "metadata_sha256": "c1a364701aa1d2acf0d5305d0dacccbb4f46c301430479673dd48406a1927110",
+            "ordinal": 3,
+            "source_sha256": "b7c5104539351ac9d6c589d85120371b393b95c9949aefe298f484c26f1692dd",
+            "tags": [
+              "solution-only"
+            ]
+          },
+          {
+            "attachments_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+            "cell_id": null,
+            "cell_type": "markdown",
+            "metadata_sha256": "d5bef942da46f734607b200a152199ee073dc9c39e7534f16b27b7e3c7e4e8a5",
+            "ordinal": 4,
+            "source_sha256": "e8dfaf77a6cd21c8eaef726ab2892d5cb8fab1129920db4ee8025afef6a4070e",
+            "tags": []
+          }
+        ],
+        "converter_version": "1.19.5",
+        "details": {
+          "cell_count": 5,
+          "conversion_time": 0.001055002212524414,
+          "input_size": 1696,
+          "output_size": 821,
+          "source_format": "ipynb",
+          "target_format": "md",
+          "validation_errors": []
+        },
+        "human_visual_approval": false,
+        "integration_id": "jupytext",
+        "integration_version": "1.0.0",
+        "intended_use": "DERIVED_ARTIFACT",
+        "output": {
+          "format": "md",
+          "path": "roundtrip.md",
+          "sha256": "7b45fadf792ccb00956705feae306181e614a59dfa07d9cfc849c57dbaff6f3e",
+          "size_bytes": 821
+        },
+        "source": {
+          "format": "ipynb",
+          "path": "clean/lesson.ipynb",
+          "sha256": "f9d1c3cbfce669997b0f210cc4f575f701796ab11d251500608640849cc679df",
+          "size_bytes": 1696
+        },
+        "status": "SUCCEEDED",
+        "structural_validation": "PASSED",
+        "validation_errors": [],
+        "warnings": []
+      },
+      "error": null,
+      "message": null,
+      "success": true
+    }
+  },
+  "scope": "AUTHORING_SUBSTRATE_REFERENCE",
+  "status": "SUCCEEDED",
+  "student_learning_evidence": "UNAVAILABLE",
+  "zeocore_version": "0.9.0"
+}
