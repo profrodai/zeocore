@@ -187,7 +187,12 @@ Transport failures, mutation 5xx responses, and malformed success responses repo
 `outcome_unknown=True`. Never automatically replay them: reconcile against Kit and
 the host's durable attempt ledger. A 401 requires new authorization; a 403 requires
 an access/plan check; a 429 includes numeric retry timing when present. Error
-messages omit provider bodies and request credentials. Returned account/subscriber
+messages omit provider bodies and request credentials. Keyed mutation responses
+must contain a strictly positive integer resource ID. Update and membership
+responses must identify the requested target; a broadcast send must return a
+new ID distinct from its source draft. Invalid response identity after dispatch
+is an unknown outcome, including through agent capabilities; it never authorizes
+automatic replay. Returned account/subscriber
 records and email HTML remain sensitive data; the host controls their access,
 retention and tracing. Injected HTTP transports must provide their own redaction.
 

@@ -26,6 +26,7 @@ def workflow() -> dict[str, Any]:
     return {
         **EmailSequence(name="Test", steps=(SequenceStep(email_id="9"),)).to_api(),
         "revisionId": "7",
+        "id": "456",
     }
 
 

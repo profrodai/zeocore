@@ -74,6 +74,7 @@ class KitClient:
         *,
         body: dict[str, Any] | None = None,
         params: dict[str, str | int | bool] | None = None,
+        different_from_id: int | None = None,
     ) -> Record:
         data = self._transport.request(method, path, body=body, params=params)
         value = data.get(key) if key else data
@@ -90,6 +91,22 @@ class KitClient:
             ):
                 raise KitAPIError(
                     "RESPONSE", "Kit returned a different resource identity"
+                )
+        if key and method != "GET":
+            identity = value.get("id")
+            target = path.rsplit("/", 1)[-1]
+            # Every keyed mutation returns an identified resource. A trailing ID
+            # names the updated resource or the existing subscriber being added.
+            if (
+                type(identity) is not int
+                or identity <= 0
+                or (target.isdigit() and str(identity) != target)
+                or identity == different_from_id
+            ):
+                raise KitAPIError(
+                    "RESPONSE",
+                    "Kit returned an invalid resource identity",
+                    outcome_unknown=True,
                 )
         return Record(data=value)
 
@@ -280,7 +297,13 @@ class KitClient:
         body = self._send_body(current, request)
         if request.send_at is not None and aware(request.send_at) <= datetime.now(UTC):
             raise ValueError("Kit schedule expired during preflight")
-        return self._record("POST", "/v4/broadcasts", "broadcast", body=body)
+        return self._record(
+            "POST",
+            "/v4/broadcasts",
+            "broadcast",
+            body=body,
+            different_from_id=request.broadcast_id,
+        )
 
     def delete_broadcast(
         self, broadcast_id: int, *, expected_digest: str, confirm: bool

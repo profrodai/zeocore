@@ -355,7 +355,12 @@ class HubSpotClient:
 
     def get_workflow_identity(self, flow_id: str) -> MarketingRecord:
         """Minimal contact-workflow metadata for reviewed risk-reducing removal."""
-        data = self._record("GET", f"{FLOWS}/{_id(flow_id)}").data
+        requested_id = _id(flow_id)
+        data = self._record("GET", f"{FLOWS}/{requested_id}").data
+        if type(data.get("id")) is not str or data["id"] != requested_id:
+            raise HubSpotAPIError(
+                "RESPONSE", "HubSpot returned an invalid workflow identity"
+            )
         if (
             data.get("type") != "CONTACT_FLOW"
             or data.get("objectTypeId") != "0-1"
