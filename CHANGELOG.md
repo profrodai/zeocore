@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Bind full HubSpot workflow reads to the requested ID before graph review or
+  follow-up enrollment, update, activation, metrics and archive requests.
 - Kit mutation responses now require a valid operation-bound resource ID; a
   newsletter send must return a new ID distinct from its source draft. Invalid
   identities retain an unknown outcome without retrying.

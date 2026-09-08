@@ -170,7 +170,7 @@ def test_sequence_activation_and_pause_through_capability(
     spec = sequence()
     responses.extend(
         [
-            httpx.Response(200, json={**spec.to_api(), "revisionId": "7"}),
+            httpx.Response(200, json={**spec.to_api(), "revisionId": "7", "id": "456"}),
             httpx.Response(
                 200,
                 json={
@@ -623,7 +623,7 @@ def test_sequence_compilation_and_distinct_put_schema(
     responses.extend(
         [
             httpx.Response(201, json={"id": "456"}),
-            httpx.Response(200, json={**spec.to_api(), "revisionId": "7"}),
+            httpx.Response(200, json={**spec.to_api(), "revisionId": "7", "id": "456"}),
             httpx.Response(200, json={"id": "456"}),
         ]
     )
@@ -656,7 +656,12 @@ def test_enrollment_maps_ids_before_effect(setup_client: ClientFixture) -> None:
     responses.extend(
         [
             httpx.Response(
-                200, json={**sequence().to_api(enabled=True), "revisionId": "7"}
+                200,
+                json={
+                    **sequence().to_api(enabled=True),
+                    "revisionId": "7",
+                    "id": "456",
+                },
             ),
             httpx.Response(
                 200,
@@ -716,7 +721,12 @@ def test_bad_mapping_prevents_enrollment(
     responses.extend(
         [
             httpx.Response(
-                200, json={**sequence().to_api(enabled=True), "revisionId": "7"}
+                200,
+                json={
+                    **sequence().to_api(enabled=True),
+                    "revisionId": "7",
+                    "id": "456",
+                },
             ),
             httpx.Response(
                 200,
@@ -754,7 +764,7 @@ def test_nonmarketing_workflow_refused_before_mutation(
     setup_client: ClientFixture,
 ) -> None:
     client, calls, responses = setup_client
-    flow = sequence().to_api(enabled=True)
+    flow = {**sequence().to_api(enabled=True), "id": "456"}
     flow["actions"][0]["actionTypeId"] = "0-14"
     responses.append(httpx.Response(200, json=flow))
     with pytest.raises(ValueError, match="outside marketing"):
@@ -848,7 +858,7 @@ def test_every_read_capability_dispatches(
 ) -> None:
     client, calls, responses = setup_client
     payload = (
-        sequence().to_api()
+        {**sequence().to_api(), "id": "123"}
         if operation in {"workflow", "workflow_metrics"}
         else {"results": [{"id": "1", "objectTypeId": "0-1"}]}
     )
