@@ -18,7 +18,9 @@ result = execute_notebook(NotebookExecutionRequest(
     timeout_seconds=120,
     cell_timeout_seconds=30,
 ))
-assert result.status == "SUCCEEDED"
+assert result.success
+assert result.content is not None
+assert result.content.status == "SUCCEEDED"
 print(result.model_dump_json(indent=2))
 ```
 
