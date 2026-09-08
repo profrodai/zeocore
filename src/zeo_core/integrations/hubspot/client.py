@@ -222,10 +222,13 @@ class HubSpotClient:
             raise ValueError("Provider send configuration does not match approval")
         if request.send_at is not None:
             published_at = final.get("publishDate")
-            if (
-                not isinstance(published_at, str)
-                or datetime.fromisoformat(published_at) != request.send_at
-            ):
+            if not isinstance(published_at, str):
+                raise ValueError("Provider schedule does not match approval")
+            try:
+                parsed = datetime.fromisoformat(published_at)
+            except ValueError:
+                raise ValueError("Provider schedule is invalid") from None
+            if parsed != request.send_at:
                 raise ValueError("Provider schedule does not match approval")
             if request.send_at <= datetime.now(UTC):
                 raise ValueError("Schedule expired before publish")
@@ -350,6 +353,30 @@ class HubSpotClient:
             complete=result.complete,
         )
 
+    def get_workflow_identity(self, flow_id: str) -> MarketingRecord:
+        """Minimal contact-workflow metadata for reviewed risk-reducing removal."""
+        data = self._record("GET", f"{FLOWS}/{_id(flow_id)}").data
+        if (
+            data.get("type") != "CONTACT_FLOW"
+            or data.get("objectTypeId") != "0-1"
+            or data.get("flowType") != "WORKFLOW"
+        ):
+            raise ValueError("Only contact-based workflows support unenrollment")
+        return MarketingRecord(
+            data={
+                key: data[key]
+                for key in (
+                    "id",
+                    "name",
+                    "type",
+                    "objectTypeId",
+                    "flowType",
+                    "revisionId",
+                )
+                if key in data
+            }
+        )
+
     def get_sequence(self, flow_id: str) -> MarketingRecord:
         result = self._record("GET", f"{FLOWS}/{_id(flow_id)}")
         self._require_marketing_flow(result.data)
@@ -434,7 +461,11 @@ class HubSpotClient:
             raise ValueError(
                 "Enrollment may send email; explicit confirmation is required"
             )
-        current = self.get_sequence(flow_id).data
+        current = (
+            self.get_workflow_identity(flow_id).data
+            if remove
+            else self.get_sequence(flow_id).data
+        )
         if current.get("revisionId") != _id(revision_id):
             raise ValueError("Workflow changed since enrollment review")
         if not remove:

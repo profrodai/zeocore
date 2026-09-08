@@ -13,6 +13,9 @@ def validate_workflow(data: dict[str, Any]) -> EmailSequence:
     Deliberately accepts only compiler-shaped workflows. Unknown behavior is
     refused, not silently discarded by a replacement PUT.
     """
+    # Documented optional behavior fields with null values express absence.
+    # Empty objects are NOT assumed inert: an unrecognized trigger fails closed.
+    data = _without_null_decorations(data)
     if (
         data.get("type") != "CONTACT_FLOW"
         or data.get("objectTypeId") != "0-1"
@@ -53,6 +56,29 @@ def validate_workflow(data: dict[str, Any]) -> EmailSequence:
     if criteria.get("shouldReEnroll") is not False:
         raise ValueError("Re-enrollment is unsupported")
     return sequence
+
+
+def _without_null_decorations(data: dict[str, Any]) -> dict[str, Any]:
+    optional = {
+        "enrollmentSchedule",
+        "eventAnchor",
+        "goalFilterBranch",
+        "unEnrollmentSetting",
+    }
+    result = {
+        key: value
+        for key, value in data.items()
+        if key not in optional or value is not None
+    }
+    actions = result.get("actions")
+    if isinstance(actions, list) and all(
+        isinstance(action, dict) for action in actions
+    ):
+        result["actions"] = [
+            {key: value for key, value in action.items() if value is not None}
+            for action in actions
+        ]
+    return result
 
 
 def _parse_steps(actions: list[dict[str, Any]]) -> list[SequenceStep]:

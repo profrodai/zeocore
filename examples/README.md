@@ -238,6 +238,12 @@ designed.
 
 ## Integrations
 
+### Kit marketing
+
+Run `python examples/kit_usage.py` for an offline draft and send demonstration.
+It prints the distinct draft and send IDs and performs no live network call.
+See the [Kit guide](../docs/tutorials/kit-marketing.md).
+
 ### HubSpot marketing
 
 Run python examples/hubspot_usage.py for a credential-free demonstration of
