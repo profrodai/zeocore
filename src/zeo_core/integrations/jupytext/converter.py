@@ -14,13 +14,22 @@ import logging
 import os
 from collections.abc import Sequence
 from datetime import datetime
+from pathlib import Path
 
+from zeo_core.integrations.core.artifacts import (
+    ConversionBatchReceipt,
+    ConversionReceipt,
+    RequiredConversionTask,
+)
+from zeo_core.integrations.core.conversion_receipts import convert_with_receipt
 from zeo_core.integrations.core.results import IntegrationResult
+from zeo_core.integrations.core.strict_batch import convert_batch_strict
 from zeo_core.integrations.jupytext.config import JupytextConfig
 from zeo_core.integrations.jupytext.models import ConversionDetails, ConversionTask
 from zeo_core.integrations.jupytext.operations.to_notebook import convert_to_notebook
 from zeo_core.integrations.jupytext.operations.to_script import convert_to_script
 from zeo_core.integrations.jupytext.operations.utils import verify_jupytext
+from zeo_core.integrations.jupytext.parity import notebook_semantics
 from zeo_core.integrations.jupytext.protocols import (
     BatchConverterProtocol,
     NotebookConverterProtocol,
@@ -76,6 +85,65 @@ class NotebookConverter(NotebookConverterProtocol, BatchConverterProtocol):
             )
 
         return self._unwrap(result)
+
+    def convert_file_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        output_format: str | None = None,
+        *,
+        workspace_root: str,
+        absolute_paths: bool = False,
+    ) -> IntegrationResult[ConversionReceipt]:
+        """Retain low-level details and certify fresh, separately written output."""
+        target = output_format or self._guess_target_format(output_path)
+        source = Path(input_path)
+        source = source if source.is_absolute() else Path(workspace_root) / source
+
+        def operation(staged: str) -> IntegrationResult:
+            if target == "ipynb":
+                return convert_to_notebook(
+                    str(source),
+                    staged,
+                    self.config,
+                    deterministic_cell_ids=True,
+                )
+            return convert_to_script(
+                str(source), staged, self.config, target_format=target
+            )
+
+        return convert_with_receipt(
+            str(source),
+            output_path,
+            workspace_root=workspace_root,
+            source_format=source.suffix.lstrip("."),
+            target_format=target,
+            integration_id="jupytext",
+            converter_version=self.jupytext_version,
+            operation=operation,
+            cells=lambda p: notebook_semantics(p)[1],
+            absolute_paths=absolute_paths,
+        )
+
+    def convert_batch_strict(
+        self,
+        tasks: Sequence[RequiredConversionTask],
+        output_dir: str,
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionBatchReceipt]:
+        """Stage a required release set and atomically promote its directory."""
+        return convert_batch_strict(
+            tasks,
+            output_dir,
+            workspace_root=workspace_root,
+            converter=lambda source, output, fmt: self.convert_file_with_receipt(
+                source,
+                output,
+                fmt,
+                workspace_root=workspace_root,
+            ),
+        )
 
     def convert_batch(
         self,

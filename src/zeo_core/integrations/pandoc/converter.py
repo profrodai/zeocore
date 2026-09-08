@@ -11,10 +11,13 @@ are delegated to the zeo_core.core.fs service functions.
 import os
 from collections.abc import Sequence
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 from zeo_core.core.errors import ZeoIntegrationError
 from zeo_core.core.logging import get_logger
+from zeo_core.integrations.core.artifacts import ConversionReceipt
+from zeo_core.integrations.core.conversion_receipts import convert_with_receipt
 from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.integrations.pandoc import PandocConfig
 from zeo_core.integrations.pandoc.models import ConversionMetrics, ConversionTask
@@ -232,6 +235,63 @@ class DocumentConverter(DocumentConverterProtocol, BatchConverterProtocol):
         except Exception as e:
             logger.error(f"Unexpected error during conversion: {str(e)}")
             return IntegrationResult.error_result(f"Conversion error: {str(e)}")
+
+    def convert_file_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        output_format: str,
+        *,
+        workspace_root: str,
+        absolute_paths: bool = False,
+    ) -> IntegrationResult[ConversionReceipt]:
+        """Retain Pandoc details. Markdown imports are new review drafts only."""
+        from zeo_core.integrations.pandoc.operations import (
+            convert_html_to_markdown,
+            convert_markdown_to_docx,
+        )
+
+        source = Path(input_path)
+        source = source if source.is_absolute() else Path(workspace_root) / source
+        try:
+            source_format = get_file_info(str(source)).format
+            version = verify_pandoc()
+        except Exception:
+            return IntegrationResult.error_result("PANDOC_OR_SOURCE_UNAVAILABLE")
+        if (source_format, output_format) not in (
+            ("html", "markdown"),
+            ("markdown", "docx"),
+        ):
+            return IntegrationResult.error_result("UNSUPPORTED_CONVERSION")
+
+        def operation(staged: str) -> IntegrationResult:
+            if output_format == "docx":
+                return convert_markdown_to_docx(
+                    str(source), staged, self.config, self.metrics
+                )
+            return convert_html_to_markdown(
+                str(source), staged, self.config, self.metrics
+            )
+
+        return convert_with_receipt(
+            str(source),
+            output_path,
+            workspace_root=workspace_root,
+            source_format=source_format,
+            target_format=output_format,
+            integration_id="pandoc",
+            converter_version=version,
+            operation=operation,
+            absolute_paths=absolute_paths,
+            review_draft=output_format == "markdown",
+            validator=(
+                lambda path: validate_docx_structure(
+                    path, self.config.validation.check_links
+                )[0]
+            )
+            if output_format == "docx"
+            else None,
+        )
 
     def _resolve_batch_output_path(
         self, task: ConversionTask, batch_output_dir: str

@@ -11,6 +11,7 @@ and result-envelope conventions (matching the pandoc integration's operations
 modules).
 """
 
+import hashlib
 import importlib
 import time
 from typing import Any
@@ -174,6 +175,8 @@ def convert_to_notebook(
     output_path: str,
     config: JupytextConfig,
     source_format: str | None = None,
+    *,
+    deterministic_cell_ids: bool = False,
 ) -> IntegrationResult[tuple[str, ConversionDetails]]:
     """
     Convert a paired script/markdown source file to a Jupyter notebook.
@@ -198,6 +201,12 @@ def convert_to_notebook(
         fmt = source_format or detect_format(text, input_path)
 
         notebook = _parse_notebook(text, fmt)
+        if deterministic_cell_ids and fmt != "ipynb":
+            # Text formats do not persist nbformat IDs. Generate repeatable IDs
+            # from ordinal, type and exact source for the receipt-bearing API.
+            for index, cell in enumerate(notebook.cells):
+                identity = f"{index}:{cell.cell_type}:{cell.source}"
+                cell["id"] = hashlib.sha256(identity.encode()).hexdigest()
         if config.metadata.inject_provenance:
             _apply_default_metadata(notebook, config)
 

@@ -10,8 +10,14 @@ objects, matching the pandoc integration's convention.
 from collections.abc import Sequence
 from typing import Protocol, runtime_checkable
 
+from zeo_core.integrations.core.artifacts import (
+    ConversionBatchReceipt,
+    ConversionReceipt,
+    RequiredConversionTask,
+)
 from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.integrations.jupytext.models import ConversionTask
+from zeo_core.integrations.jupytext.parity import NotebookParityReceipt
 
 
 @runtime_checkable
@@ -144,3 +150,54 @@ class JupytextConversionProtocol(Protocol):
             of output file paths.
         """
         ...
+
+
+@runtime_checkable
+class JupytextReceiptProtocol(Protocol):
+    """Additive receipt surface; legacy path protocols remain unchanged."""
+
+    def script_to_notebook_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionReceipt]: ...
+
+    def notebook_to_script_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        script_format: str = "md",
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionReceipt]: ...
+
+    def convert_batch_strict(
+        self,
+        tasks: Sequence[RequiredConversionTask],
+        output_dir: str,
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionBatchReceipt]: ...
+
+    def compare_notebook_semantics(
+        self,
+        source_path: str,
+        derived_path: str,
+    ) -> IntegrationResult[NotebookParityReceipt]: ...
+
+
+@runtime_checkable
+class NotebookReceiptConverterProtocol(Protocol):
+    """Receipt-bearing converter, separate from the legacy converter protocol."""
+
+    def convert_file_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        output_format: str | None = None,
+        *,
+        workspace_root: str,
+        absolute_paths: bool = False,
+    ) -> IntegrationResult[ConversionReceipt]: ...

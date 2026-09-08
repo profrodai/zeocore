@@ -8,18 +8,28 @@ conversion _ops to the ``NotebookConverter``. Structurally mirrors
 
 import logging
 import os
+from collections.abc import Sequence
 from typing import Any
 
 from zeo_core.core.errors import ZeoConfigurationError, ZeoIntegrationError
 from zeo_core.core.fs.service import FileSystemService
 from zeo_core.core.logging import LOG_LEVELS, LogLevel
 from zeo_core.core.paths.service import PathService
+from zeo_core.integrations.core.artifacts import (
+    ConversionBatchReceipt,
+    ConversionReceipt,
+    RequiredConversionTask,
+)
 from zeo_core.integrations.core.base import BaseIntegrationService
 from zeo_core.integrations.core.protocols import ConfigProviderProtocol
 from zeo_core.integrations.core.results import IntegrationResult
 from zeo_core.integrations.jupytext.config import JupytextConfig, JupytextConfigProvider
 from zeo_core.integrations.jupytext.converter import NotebookConverter
 from zeo_core.integrations.jupytext.operations.utils import verify_jupytext
+from zeo_core.integrations.jupytext.parity import (
+    NotebookParityReceipt,
+    compare_notebook_semantics,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -332,6 +342,65 @@ class JupytextIntegration(BaseIntegrationService):
             return True
         except Exception:
             return False
+
+    def convert_batch_strict(
+        self,
+        tasks: Sequence[RequiredConversionTask],
+        output_dir: str,
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionBatchReceipt]:
+        """Promote only a complete required set through the supported service."""
+        if not self._initialized or self.converter is None:
+            return IntegrationResult.error_result("NOT_INITIALIZED")
+        return self.converter.convert_batch_strict(
+            tasks,
+            output_dir,
+            workspace_root=workspace_root,
+        )
+
+    def compare_notebook_semantics(
+        self,
+        source_path: str,
+        derived_path: str,
+    ) -> IntegrationResult[NotebookParityReceipt]:
+        """Compare diagnostic text pairs or notebook pairs without executing cells."""
+        return compare_notebook_semantics(source_path, derived_path)
+
+    def script_to_notebook_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionReceipt]:
+        """Convert to a new notebook with portable provenance."""
+        if not self._initialized or self.converter is None:
+            return IntegrationResult.error_result("NOT_INITIALIZED")
+        return self.converter.convert_file_with_receipt(
+            input_path,
+            output_path,
+            "ipynb",
+            workspace_root=workspace_root,
+        )
+
+    def notebook_to_script_with_receipt(
+        self,
+        input_path: str,
+        output_path: str,
+        script_format: str = "md",
+        *,
+        workspace_root: str,
+    ) -> IntegrationResult[ConversionReceipt]:
+        """Convert to a new diagnostic text artifact with portable provenance."""
+        if not self._initialized or self.converter is None:
+            return IntegrationResult.error_result("NOT_INITIALIZED")
+        return self.converter.convert_file_with_receipt(
+            input_path,
+            output_path,
+            script_format,
+            workspace_root=workspace_root,
+        )
 
     def script_to_notebook(
         self,
