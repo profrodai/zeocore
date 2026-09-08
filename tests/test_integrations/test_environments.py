@@ -427,3 +427,25 @@ def test_documented_jupytext_example_runs_in_both_modes(tmp_path: Path) -> None:
         assert env.run([sys.executable, "-c", match[1]]) == 0
         assert (env.work_dir / "probe.ipynb").is_file()
         assert "value = 2 + 3" in (env.work_dir / "roundtrip.py").read_text()
+
+
+def test_child_requests_never_uses_ambient_netrc(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    home.mkdir()
+    netrc = home / ".netrc"
+    netrc.write_text(
+        "machine api.github.com login ambient-user password ambient-password\n"
+    )
+    netrc.chmod(0o600)
+    script = """
+import requests
+request = requests.Session().prepare_request(requests.Request(
+    'GET', 'https://api.github.com/user',
+    headers={'Authorization': 'Bearer selected-token'},
+))
+assert request.headers['Authorization'] == 'Bearer selected-token'
+"""
+    for mode in ("test", "production"):
+        env = IntegrationEnvironment(mode, tmp_path / "state", ("github",))
+        source = {"HOME": str(home), "PATH": os.environ["PATH"], "NETRC": str(netrc)}
+        assert env.run([sys.executable, "-c", script], source=source) == 0

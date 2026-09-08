@@ -109,7 +109,9 @@ production account. Check account identity and resource access in the provider U
 
 Repeat `--integration` for a process using several providers. Only those providers'
 allowed variables are forwarded. Bare keys, opposite-mode keys, ambient proxies,
-`PYTHONPATH`, and unrelated provider variables are not inherited. Local converter
+`PYTHONPATH`, and unrelated provider variables are not inherited. Ambient netrc
+lookup is disabled so `requests` cannot replace an explicit provider token with
+credentials from `~/.netrc` or a parent `NETRC` override. Local converter
 settings such as `ZEO_TEST_ZEO_PANDOC_OUTPUT_DIR` become `ZEO_PANDOC_OUTPUT_DIR`.
 Other application settings belong in the selected non-secret config or command
 arguments. The launcher does **not** parse `.env` files or load arbitrary shell files.

@@ -62,6 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- Managed integration children disable ambient netrc lookup, preventing HTTP
+  clients from replacing a selected token with credentials from the user home.
 - Hosted resolution and Supabase remain separate boundaries: the ZeoCore client
   accepts no Supabase URL, key, database role, Vault reference, tenant ID, or
   provider credential.

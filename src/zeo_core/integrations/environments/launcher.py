@@ -137,6 +137,8 @@ class IntegrationEnvironment:
                 "ZEO_INTEGRATION_BACKEND": self.backend,
                 "ZEO_INTEGRATION_STATE_DIR": str(self.state_dir),
                 "ZEO_INTEGRATION_IDS": ",".join(self.integrations),
+                # Prevent requests from replacing explicit tokens with HOME/.netrc.
+                "NETRC": os.devnull,
                 "TMPDIR": str(self.state_dir / "tmp"),
                 "TMP": str(self.state_dir / "tmp"),
                 "TEMP": str(self.state_dir / "tmp"),
