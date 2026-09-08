@@ -28,6 +28,7 @@ from zeo_core.core.fs.results import DataResult, FileInfoResult, OperationResult
 from zeo_core.core.fs.service import create_service, standalone
 from zeo_core.core.fs.service.full_class import FileSystemService
 from zeo_core.core.logging import get_logger
+from zeo_core.integrations.environment import managed_path, managed_state_dir
 
 logger = get_logger(__name__)
 
@@ -136,6 +137,8 @@ def create_directory_with_fallback(path: str, exist_ok: bool = True) -> Operatio
 def platformdirs_config_dir() -> str:
     """The OS-appropriate per-user config directory for zeocore's Google
     credentials, per RULING-408's adoption of DESIGN-01 approach C."""
+    if state := managed_state_dir():
+        return str(state / "credentials" / "google")
     return platformdirs.user_config_dir("zeocore", appauthor=False)
 
 
@@ -247,7 +250,9 @@ def resolve_credentials_path(explicit: str | None = None) -> str:
     the two well-known locations and the (now authoritative) new path is
     returned."""
     if explicit is not None:
-        return explicit
+        return managed_path(explicit)
+    if managed_state_dir() is not None:
+        return managed_path(default_credentials_path())
     return migrate_one_shot(
         LEGACY_CREDENTIALS_PATH,
         default_credentials_path(),
@@ -257,7 +262,9 @@ def resolve_credentials_path(explicit: str | None = None) -> str:
 
 def resolve_client_secret_path(explicit: str | None = None) -> str:
     if explicit is not None:
-        return explicit
+        return managed_path(explicit)
+    if managed_state_dir() is not None:
+        return managed_path(default_client_secret_path())
     return migrate_one_shot(
         LEGACY_CLIENT_SECRET_PATH,
         default_client_secret_path(),

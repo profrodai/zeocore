@@ -383,7 +383,12 @@ class HubSpotClient:
         )
 
     def get_sequence(self, flow_id: str) -> MarketingRecord:
-        result = self._record("GET", f"{FLOWS}/{_id(flow_id)}")
+        requested_id = _id(flow_id)
+        result = self._record("GET", f"{FLOWS}/{requested_id}")
+        if type(result.data.get("id")) is not str or result.data["id"] != requested_id:
+            raise HubSpotAPIError(
+                "RESPONSE", "HubSpot returned an invalid workflow identity"
+            )
         self._require_marketing_flow(result.data)
         return result
 

@@ -1,5 +1,10 @@
 # ZEOconnect managed profile
 
+For credential creation, test accounts, production accounts and environment-isolated
+execution, follow the [account setup guide](../integrations/zeoconnect.md) first.
+The direct-constructor examples below also work outside the managed launcher;
+use the launcher when you need its separation guarantees.
+
 ZEOconnect is ZeoCore's optional managed execution profile. Your application
 declares the service and existing operation identities it needs; the same
 business function can then receive a deterministic fake, a local connector, or

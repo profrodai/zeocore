@@ -243,7 +243,7 @@ class MockDriveFilesResource(DriveFilesResource):
         self,
         q: str | None = None,
         fields: str | None = None,
-        page_size: int | None = None,
+        pageSize: int | None = None,
     ) -> DriveRequest[dict[str, object]]:
         """
         Mock list method for listing files.
@@ -251,7 +251,7 @@ class MockDriveFilesResource(DriveFilesResource):
         Args:
             q: Query string
             fields: Fields to include in the response
-            page_size: Maximum number of files to return
+            pageSize: Maximum number of files to return
 
         Returns:
             A mock request that will return the files list
@@ -259,7 +259,7 @@ class MockDriveFilesResource(DriveFilesResource):
         self.list_call_count += 1
         self.last_list_query = q
         self.last_list_fields = fields
-        self.last_list_page_size = page_size
+        self.last_list_page_size = pageSize
 
         # Customize response based on query. dict is invariant in its value
         # type (mypy note: "dict" is invariant -- consider "Mapping"), so

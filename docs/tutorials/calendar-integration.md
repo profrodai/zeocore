@@ -1,5 +1,10 @@
 # Google Calendar integration, end to end: OAuth setup through a real read + write example
 
+For credential creation, test accounts, production accounts and environment-isolated
+execution, follow the [account setup guide](../integrations/google.md) first.
+The direct-constructor examples below also work outside the managed launcher;
+use the launcher when you need its separation guarantees.
+
 **Created:** 2026-08-20 · **Status:** ACTIVE
 
 `zeo_core.integrations.google.calendar` gives you a full read + write

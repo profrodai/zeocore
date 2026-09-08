@@ -1,5 +1,10 @@
 # Kit newsletters and marketing sequences
 
+For credential creation, test accounts, production accounts and environment-isolated
+execution, follow the [account setup guide](../integrations/kit.md) first.
+The direct-constructor examples below also work outside the managed launcher;
+use the launcher when you need its separation guarantees.
+
 Kit marketing is a first-class provider alongside [HubSpot](hubspot-marketing.md).
 It provides thirteen explicit agent capabilities for broadcasts, sequence authoring,
 subscriber consent, tags, segmentation reads and marketing metrics. It uses the

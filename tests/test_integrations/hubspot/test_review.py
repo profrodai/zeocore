@@ -96,6 +96,7 @@ def flow() -> dict[str, Any]:
             steps=(SequenceStep(email_id="9"),),
             suppression_list_ids=(11,),
         ).to_api(enabled=True),
+        "id": "456",
         "revisionId": "7",
         "description": "Preserve this description",
     }

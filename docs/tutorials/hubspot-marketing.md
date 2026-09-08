@@ -1,5 +1,10 @@
 # HubSpot newsletters and marketing automation
 
+For credential creation, test accounts, production accounts and environment-isolated
+execution, follow the [account setup guide](../integrations/hubspot.md) first.
+The direct-constructor examples below also work outside the managed launcher;
+use the launcher when you need its separation guarantees.
+
 The `hubspot.marketing` integration covers newsletters, automated marketing
 emails, campaigns, subscription preferences, and email drip workflows. It uses
 the existing `httpx` dependency. These APIs are available in the source tree
@@ -139,7 +144,11 @@ workflows must match the bounded linear, manual-enrollment subset, including
 action versions, edges, suppression and trigger settings. Unsupported definitions
 are refused before update, activation, enrollment or archive. Null-valued optional
 provider settings and action decorations are tolerated; nonempty unknown behavior
-and empty trigger objects still fail closed. Unenrollment is deliberately narrower:
+and empty trigger objects still fail closed. Full workflow reads also require the
+returned string ID to match the requested workflow before validating its graph
+or revision. Missing, malformed or mismatched IDs stop updates, activation,
+enrollment, metrics and archive after the first GET, with a sanitized response
+error and no follow-up request. Unenrollment is deliberately narrower:
 use the `workflow_identity` read to review the current revision, then remove the
 contact. It requires the returned workflow ID to match the requested ID before exposing
 metadata or mapping an unenrollment. Missing, malformed or mismatched IDs fail

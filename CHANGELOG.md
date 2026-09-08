@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Explicit test and production integration environments with a process launcher,
+  scoped credential inputs, secure prompts and separate configuration, credential
+  caches, temporary files and working directories. All sixteen integration entry
+  points plus hosted ZEOconnect have detailed account and E2E setup guides.
+- Managed LLM runs fail on the selected provider instead of silently substituting
+  another provider or mock; offline mock use requires explicit test fixtures.
+
 - Kit marketing integration and thirteen registered capabilities for broadcasts,
   sequence authoring, subscriber consent, tags and reporting. Includes explicit
   reviewed sends, safe error outcomes, an offline example and provider-contract tests.
@@ -33,6 +40,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Google Drive listing now uses the SDK's `pageSize` keyword in both listing
+  paths. Real discovery-builder regression tests prevent permissive mocks from
+  hiding a broken first account check.
+- Bind full HubSpot workflow reads to the requested ID before graph review or
+  follow-up enrollment, update, activation, metrics and archive requests.
 - Kit mutation responses now require a valid operation-bound resource ID; a
   newsletter send must return a new ID distinct from its source draft. Invalid
   identities retain an unknown outcome without retrying.
@@ -50,6 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- Managed integration children disable ambient netrc lookup, preventing HTTP
+  clients from replacing a selected token with credentials from the user home.
 - Hosted resolution and Supabase remain separate boundaries: the ZeoCore client
   accepts no Supabase URL, key, database role, Vault reference, tenant ID, or
   provider credential.

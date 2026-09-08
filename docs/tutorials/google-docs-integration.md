@@ -1,5 +1,10 @@
 # Google Docs integration: read, create, and edit a document
 
+For credential creation, test accounts, production accounts and environment-isolated
+execution, follow the [account setup guide](../integrations/google.md) first.
+The direct-constructor examples below also work outside the managed launcher;
+use the launcher when you need its separation guarantees.
+
 **Created:** 2026-09-01 · **Status:** ACTIVE
 
 `zeo_core.integrations.google.docs` wraps the Docs v1 REST API

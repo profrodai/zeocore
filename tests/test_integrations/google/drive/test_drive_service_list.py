@@ -67,7 +67,7 @@ class TestGoogleDriveServiceList:
                 q="query",
                 fields="files(id, name, mimeType, webViewLink, webContentLink, "
                 "size, createdTime, modifiedTime, parents, shared, trashed)",
-                page_size=100,
+                pageSize=100,
             )
             mock_query.assert_called_once_with("folder123", "*.txt")
 
