@@ -15,9 +15,16 @@ def environment_identity() -> dict[str, str]:
     return {
         "executable_sha256": executable_hash,
         "environment_sha256": hashlib.sha256(
-            json.dumps(inventory).encode()
+            json.dumps(
+                {
+                    "distributions": inventory,
+                    "executable_sha256": executable_hash,
+                    "python": sys.version,
+                },
+                sort_keys=True,
+            ).encode()
         ).hexdigest(),
-        "environment_identity_schema": "installed-distributions-v1",
+        "environment_identity_schema": "python-environment-v1",
     }
 
 

@@ -88,7 +88,8 @@ is explicitly UNAVAILABLE. A detached child observed before kernel exit is
 covered. Hostile daemonization between observations is outside that guarantee.
 
 Kernel identity records the actual generated kernelspec SHA-256, interpreter
-binary SHA-256, and a versioned installed-distribution inventory SHA-256. The
+binary SHA-256, and a versioned environment SHA-256 covering that executable,
+Python version and the installed-distribution inventory. The
 kernelspec location is a managed logical path. Absolute local provenance paths
 require `absolute_provenance_paths=True`. Only the generated private Python spec
 is used; ambient same-name specs and their environment values are excluded.
