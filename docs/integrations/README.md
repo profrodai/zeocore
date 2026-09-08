@@ -40,3 +40,5 @@ provider account into a vendor sandbox. Provider credentials, account permission
 selected resources and recipients still determine what the provider can change.
 
 For staged notebook/document releases, use [authoring conversion receipts](authoring-receipts.md).
+
+Trusted notebook execution is a separate [optional local API](notebook-execution.md).
