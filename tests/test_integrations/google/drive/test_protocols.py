@@ -108,7 +108,7 @@ class TestDriveProtocols:
         assert mock_files.last_get_media_file_id == "file123"
 
         # Test list
-        result = mock_files.list(q="query", fields="files", page_size=100)
+        result = mock_files.list(q="query", fields="files", pageSize=100)
         assert isinstance(result, DriveRequest)
         assert mock_files.list_call_count == 1
         assert mock_files.last_list_query == "query"

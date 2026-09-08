@@ -9,6 +9,7 @@ consistent behavior.
 import os
 from abc import ABC, abstractmethod
 from pathlib import Path
+from types import ModuleType
 from typing import Any
 
 from zeo_core.core.errors import ZeoConfigurationError
@@ -24,6 +25,7 @@ from zeo_core.integrations.core.results import (
     ConfigResult,
     IntegrationResult,
 )
+from zeo_core.integrations.environment import managed_path, managed_state_dir
 
 
 class BaseAuthProvider(ABC, AuthProviderProtocol):
@@ -43,6 +45,8 @@ class BaseAuthProvider(ABC, AuthProviderProtocol):
         self.authenticated = False
 
     def _resolve_path(self, file_path: str) -> str:
+        if managed_state_dir() is not None:
+            return managed_path(file_path)
         try:
             from zeo_core.core.fs.service import standalone
 
@@ -115,7 +119,22 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
     def name(self) -> str: ...
 
     def load_config(self, config_path: str | None = None) -> ConfigResult:
-        from zeo_core.core.fs.service import standalone
+        from zeo_core.core.fs.service import (
+            FileSystemService,
+            create_service,
+            standalone,
+        )
+
+        file_service: FileSystemService | ModuleType
+
+        state = managed_state_dir()
+        if state is not None:
+            config_path = managed_path(
+                config_path or str(state / "config" / "integrations.yaml")
+            )
+            file_service = create_service(base_dir=str(Path(config_path).parent))
+        else:
+            file_service = standalone
 
         if not config_path:
             config_path = self._find_config_file()
@@ -126,14 +145,14 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
 
         config_path_str = coerce_path_str(config_path)
 
-        file_info = standalone.get_file_info(config_path_str)
+        file_info = file_service.get_file_info(config_path_str)
         if not file_info.success or not file_info.exists:
             raise ZeoConfigurationError(
                 f"Configuration file not found: {config_path_str}",
                 config_path=config_path_str,
             )
 
-        yaml_result = standalone.read_yaml(config_path_str)
+        yaml_result = file_service.read_yaml(config_path_str)
         if not yaml_result.success:
             raise ZeoConfigurationError(
                 f"Failed to read YAML configuration: {yaml_result.error}",
@@ -244,6 +263,9 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
         return None
 
     def _find_config_file(self) -> str | None:
+        if state := managed_state_dir():
+            candidate = state / "config" / "integrations.yaml"
+            return managed_path(str(candidate)) if candidate.is_file() else None
         if path := self._config_path_from_env_var():
             return path
 
@@ -255,6 +277,8 @@ class BaseConfigProvider(ABC, ConfigProviderProtocol):
         return self._config_path_from_project_root_fallback(project_root)
 
     def _resolve_path(self, file_path: str) -> str:
+        if managed_state_dir() is not None:
+            return managed_path(file_path)
         try:
             from zeo_core.core.fs.service import standalone
 
@@ -296,6 +320,9 @@ class BaseIntegrationService(ABC, IntegrationProtocol):
             self._set_config_path(config_path)
 
     def _set_config_path(self, config_path: str) -> None:
+        if managed_state_dir() is not None:
+            self.config_path = managed_path(config_path)
+            return
         self.config_path = config_path
         try:
             from zeo_core.core.fs.service import standalone

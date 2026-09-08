@@ -33,6 +33,7 @@ def _public_markdown_files() -> Iterable[Path]:
     )
     yield REPO_ROOT / "docs" / "README.md"
     yield from sorted((REPO_ROOT / "docs" / "tutorials").glob("*.md"))
+    yield from sorted((REPO_ROOT / "docs" / "integrations").glob("*.md"))
     yield from sorted((REPO_ROOT / "src" / "zeo_core" / "contracts").glob("*.md"))
 
 
@@ -77,7 +78,10 @@ def test_repository_relative_documentation_links_are_valid() -> None:
 
     for source in _public_markdown_files():
         markdown = source.read_text(encoding="utf-8")
-        for raw_target in LINK_PATTERN.findall(markdown):
+        prose = re.sub(
+            r"^(`{3,}|~{3,})[^\n]*\n.*?^\1\s*$", "", markdown, flags=re.M | re.S
+        )
+        for raw_target in LINK_PATTERN.findall(prose):
             parsed = urlsplit(raw_target)
             if parsed.scheme or raw_target.startswith("//"):
                 continue

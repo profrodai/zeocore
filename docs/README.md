@@ -1,5 +1,11 @@
 # ZeoCore Documentation
 
+<!-- Teaches CLAUDE.md Rev 17; integration setup index added 2026-09-08. -->
+
+**Connecting a service?** Start with [integration account setup](integrations/README.md)
+for exact credential screens, separate test/production accounts and E2E checks
+for every supported integration.
+
 This is the learning hub. It tells you what to read, in what order, and what
 each piece is for.
 

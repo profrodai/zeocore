@@ -1,5 +1,10 @@
 # Supabase integration
 
+For credential creation, test accounts, production accounts and environment-isolated
+execution, follow the [account setup guide](../integrations/supabase.md) first.
+The direct-constructor examples below also work outside the managed launcher;
+use the launcher when you need its separation guarantees.
+
 ZeoCore's Supabase integration covers the application SDK surface: Database,
 Auth, Storage, Edge Functions, and Realtime. It does not administer a Supabase
 project and it does not expose Vault plaintext.

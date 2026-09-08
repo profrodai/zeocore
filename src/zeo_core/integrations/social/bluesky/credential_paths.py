@@ -30,6 +30,7 @@ from zeo_core.core.fs.results import FileInfoResult, OperationResult
 from zeo_core.core.fs.service import create_service, standalone
 from zeo_core.core.fs.service.full_class import FileSystemService
 from zeo_core.core.logging import get_logger
+from zeo_core.integrations.environment import managed_state_dir
 
 logger = get_logger(__name__)
 
@@ -106,6 +107,8 @@ def platformdirs_config_dir() -> str:
     (`platformdirs.user_config_dir("zeocore", appauthor=False)`), so every
     zeocore integration's credentials converge on one per-user home rather
     than each picking its own."""
+    if state := managed_state_dir():
+        return str(state / "credentials")
     return platformdirs.user_config_dir("zeocore", appauthor=False)
 
 

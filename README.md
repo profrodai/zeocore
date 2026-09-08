@@ -19,6 +19,10 @@ a callable tool. You don't rewrite it for each destination.
 an empty folder to a running capability in about ten minutes, and assumes no
 prior knowledge of ZeoCore.
 
+Connect external services with the [integration account setup guides](docs/integrations/README.md):
+credential acquisition, test accounts, production accounts and runnable checks
+for every supported integration.
+
 ## Who this is for
 
 - **Students and newcomers** learning how to structure real Python tools —

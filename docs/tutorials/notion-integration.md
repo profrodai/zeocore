@@ -1,5 +1,10 @@
 # Notion API 2026-03-11
 
+For credential creation, test accounts, production accounts and environment-isolated
+execution, follow the [account setup guide](../integrations/notion.md) first.
+The direct-constructor examples below also work outside the managed launcher;
+use the launcher when you need its separation guarantees.
+
 **Created:** 2026-08-20 · **Last-updated:** 2026-09-05 · **Status:** ACTIVE
 
 ZeoCore uses `notion-client>=3.1.0`, explicitly opts into Notion API
