@@ -31,6 +31,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A deterministic Drive fake and conformance proof that one Drive-read business
   function runs unchanged under fake, local, and hosted composition.
 
+### Fixed
+
+- Kit mutation responses now require a valid operation-bound resource ID; a
+  newsletter send must return a new ID distinct from its source draft. Invalid
+  identities retain an unknown outcome without retrying.
+- HubSpot unenrollment rejects metadata for missing, malformed or mismatched
+  workflow IDs before mapping or deletion, while permitting unrelated graph drift.
+
 ### Changed
 
 - `httpx` is now a base dependency because the hosted bridge is part of normal

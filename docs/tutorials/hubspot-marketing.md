@@ -141,7 +141,10 @@ are refused before update, activation, enrollment or archive. Null-valued option
 provider settings and action decorations are tolerated; nonempty unknown behavior
 and empty trigger objects still fail closed. Unenrollment is deliberately narrower:
 use the `workflow_identity` read to review the current revision, then remove the
-contact. It validates contact-workflow identity and revision without requiring the
+contact. It requires the returned workflow ID to match the requested ID before exposing
+metadata or mapping an unenrollment. Missing, malformed or mismatched IDs fail
+with a sanitized response error before any mapping or deletion. It validates
+contact-workflow identity and revision without requiring the
 entire action graph to remain within our authoring subset.
 Agent capability IDs are `hubspot.marketing.workflow.save@1.0.0` and
 `hubspot.marketing.workflow.enrollment@1.0.0`; read operations use `workflow`,

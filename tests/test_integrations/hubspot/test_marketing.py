@@ -220,7 +220,12 @@ def test_sequence_enrollment_capability_and_unenrollment(
         responses.extend(
             [
                 httpx.Response(
-                    200, json={**sequence().to_api(enabled=True), "revisionId": "7"}
+                    200,
+                    json={
+                        **sequence().to_api(enabled=True),
+                        "revisionId": "7",
+                        "id": "456",
+                    },
                 ),
                 *(
                     []
