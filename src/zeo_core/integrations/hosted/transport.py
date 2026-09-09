@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 import httpx
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, SecretStr, ValidationError
 
+from zeo_core.core.managed_execution import is_managed_execution
 from zeo_core.integrations.hosted.client import (
     HostedClientError,
     HostedOperationRequest,
@@ -188,6 +189,10 @@ class ZEOconnectHTTPTransport:
         return tuple(summaries)
 
     def invoke(self, request: HostedOperationRequest) -> HostedOperationResponse:
+        if is_managed_execution():
+            raise HostedClientError(
+                "managed execution requires the Runtime effect service"
+            )
         body = request.model_dump(mode="json", exclude_none=True)
         attempts = 2 if request.operation_id in _SAFE_RETRY_OPERATIONS else 1
         last_error: HostedClientError | None = None
@@ -215,6 +220,10 @@ class ZEOconnectHTTPTransport:
     def fetch_artifact(self, *, artifact_id: str, max_bytes: int) -> bytes:
         if max_bytes < 0 or max_bytes > _MAX_ARTIFACT_BYTES:
             raise HostedClientError("hosted artifact exceeds the client limit")
+        if is_managed_execution():
+            raise HostedClientError(
+                "managed artifact retrieval requires Runtime authority"
+            )
         session = self._active_session()
         headers = self._headers(session)
         try:
@@ -265,6 +274,8 @@ class ZEOconnectHTTPTransport:
         authenticated: bool,
         expect_empty: bool = False,
     ) -> JsonValue | None:
+        if is_managed_execution():
+            raise HostedClientError("managed execution forbids member API fallback")
         headers = self._headers(session) if authenticated else self._headers(None)
         if json_body is not None:
             encoded = httpx.Request(
