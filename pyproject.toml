@@ -184,7 +184,7 @@ all = [
 [project.urls]
 "Homepage" = "https://github.com/profrodai/zeocore"
 "Bug Tracker" = "https://github.com/profrodai/zeocore/issues"
-"Documentation" = "https://github.com/profrodai/zeocore/blob/main/docs/README.md"
+"Documentation" = "https://profrodai.github.io/zeocore/"
 "Changelog" = "https://github.com/profrodai/zeocore/blob/main/CHANGELOG.md"
 
 [tool.hatch.version]
@@ -363,4 +363,11 @@ markers = [
     "e2e: marks tests as end-to-end tests (testing complete workflows)",
     "unit: marks tests as unit tests",
     "smoke: marks tests as smoke tests (basic functionality tests)"
+]
+
+[dependency-groups]
+documentation = [
+    "mkdocs==1.6.1",
+    "mkdocs-material==9.7.7",
+    "mkdocstrings-python==2.0.8",
 ]

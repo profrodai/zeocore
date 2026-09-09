@@ -1,0 +1,62 @@
+name: Documentation
+
+on:
+  pull_request:
+    paths: ["docs/**", "examples/**", "src/**", "*.md", "mkdocs.yml", "pyproject.toml", "uv.lock", "tools/mkdocs_hooks_v1.py", "tests/docs_site/**", "Makefile", ".github/workflows/docs.yml"]
+  push:
+    branches: [main]
+    paths: ["docs/**", "examples/**", "src/**", "*.md", "mkdocs.yml", "pyproject.toml", "uv.lock", "tools/mkdocs_hooks_v1.py", "tests/docs_site/**", "Makefile", ".github/workflows/docs.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: documentation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          python-version: "3.14"
+      - name: Install the locked documentation toolchain
+        run: uv sync --frozen --only-group documentation
+      - name: Build and validate documentation
+        run: make docs-build
+      - name: Publish to gh-pages
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: uv run --no-sync mkdocs gh-deploy --strict
+      - name: Request the Pages build explicitly
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # GITHUB_TOKEN pushes do not themselves trigger a Pages build.
+        run: |
+          expected=$(git ls-remote origin refs/heads/gh-pages | cut -f1)
+          test -n "$expected"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
+          for attempt in $(seq 1 60); do
+            gh api "repos/${GITHUB_REPOSITORY}/pages/builds/latest" > /tmp/pages-build.json
+            commit=$(jq -r .commit /tmp/pages-build.json)
+            status=$(jq -r .status /tmp/pages-build.json)
+            if [ "$commit" = "$expected" ]; then
+              if [ "$status" = built ]; then exit 0; fi
+              if [ "$status" = errored ]; then
+                jq .error /tmp/pages-build.json
+                exit 1
+              fi
+            fi
+            sleep 5
+          done
+          echo "::error::Pages did not publish the expected gh-pages commit within five minutes"
+          exit 1

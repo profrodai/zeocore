@@ -115,7 +115,7 @@ install-all: install ## Install zeocore with all optional integrations
 install-dev: ## Install development dependencies
 	@echo "${BLUE}Installing development tools...${RESET}"
 	@if [ ! -f "$(PYTHON)" ]; then $(MAKE) --no-print-directory env; fi
-	uv pip install -e ".[dev]" --python $(PYTHON)
+	uv pip install -e ".[dev]" --group documentation --python $(PYTHON)
 	@echo "${GREEN}Development dependencies installed${RESET}"
 
 .PHONY: install-lint
@@ -210,6 +210,7 @@ verify: ## The doctrine gate: format-check + ruff + mypy + hygiene + tests
 	@echo "${BLUE}[8/8] tests + coverage${RESET}"
 	@$(MAKE) --no-print-directory test
 	@echo ""
+	@$(MAKE) --no-print-directory docs-build
 	@echo "${GREEN}✓ verify complete: doctrine gate passes${RESET}"
 
 .PHONY: verify-full
@@ -283,6 +284,14 @@ test-fast: ## Run tests without coverage (quick inner-loop feedback)
 test-docs: ## Check documentation links and safe beginner examples
 	@echo "${BLUE}Checking documentation and beginner examples...${RESET}"
 	$(PYTHON) -m pytest $(TESTS)/test_docs $(PYTEST_ARGS)
+
+.PHONY: docs-build docs-serve
+docs-build: ## Build the searchable documentation and check links strictly
+	$(PYTHON) -m unittest discover -s tests/docs_site -v
+	$(PYTHON) -m mkdocs build --strict
+
+docs-serve: ## Preview the documentation locally
+	$(PYTHON) -m mkdocs serve
 
 .PHONY: test-module
 test-module: ## Run one module's tests: make test-module M=test_integrations/pandoc
