@@ -31,7 +31,7 @@ file under examples/ — every one of them is runnable as printed
 - [docs/tutorials/](docs/tutorials/): MCP with Claude Code/Cursor, Notion,
   Google Calendar.
 - [CHANGELOG.md](CHANGELOG.md): Version history (Keep a Changelog).
-  RELEASE_NOTES.md is the short 0.5.0 announcement; CHANGELOG.md is the
+  RELEASE_NOTES.md describes the current 0.10.0 release; CHANGELOG.md is the
   full history.
 - [CONTRIBUTING.md](CONTRIBUTING.md): Dev setup, the gate
   (`make verify` / `make verify-full`), code style, canonical import
@@ -111,8 +111,9 @@ file under examples/ — every one of them is runnable as printed
   `LLMOptions.tools` for tool-calling and `LLMOptions.cache_system_prompt`
   for Anthropic prompt caching — see GET-STARTED.md for the one known
   gap: tool_use response blocks aren't parsed back into structured
-  output yet). Database integrations (BigQuery/Supabase/SQLite) were
-  evaluated and explicitly not built — do not assume they exist.
+  output yet). `supabase` is shipped (Database, Auth, Storage, Edge Functions and Realtime);
+  raw SQL and Vault plaintext access are excluded. Do not infer BigQuery or a
+  general SQLite integration from the internal SQLite effect broker.
 - `zeo_core.contract_pack`: `PACK_VERSION` / `PACK_SCHEMA` for ecosystem
   consumption tests; does not import `sovereign_agent`.
 - `zeo_core.modules`: Plugin discovery and explicit-loading registry.
@@ -120,6 +121,24 @@ file under examples/ — every one of them is runnable as printed
 - `zeo_core.tools.catalog`: in-tree **reference** capabilities, not a
   public API. `zeo_core.tools.compat.sovereign_style_capability` is
   transitional, not canonical.
+
+## 0.10.0 integration and authoring additions
+
+- `zeo_core.integrations.hubspot` and `.kit`: registered marketing capabilities;
+  [HubSpot](docs/tutorials/hubspot-marketing.md) and [Kit](docs/tutorials/kit-marketing.md).
+  Simulated examples do not send email. Live sends require explicit authorization.
+- `zeo_core.integrations.environments.IntegrationEnvironment`: explicit test or
+  production state and credential selection. Start with [account setup](docs/integrations/README.md).
+- `zeo_core.integrations.hosted`: `ServiceResolver`, `ServiceRequirement`,
+  `ExecutionProfile`, `Ready`; profiles require explicit placement and services.
+- `zeo_core.integrations.gemini`: `ImageGenerationService`, `ImageGenerationRequest`,
+  `ImageArtifactStore`; admitted connections, host signatures and Keychain custody.
+  Request construction grants no authority. [Guide](docs/integrations/gemini-images.md).
+- `zeo_core.integrations.notebook`: `NotebookExecutionRequest`, `execute_notebook`;
+  trusted local Python, a fresh kernel, time/output bounds and failure receipts.
+  It is not a security sandbox. [Guide](docs/integrations/notebook-execution.md).
+- [Authoring reference](docs/integrations/authoring-reference.md): conversion and
+  staging receipts; staging does not upload or publish.
 
 ## Conventions worth knowing before you guess
 

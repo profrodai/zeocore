@@ -7,8 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-09-09
+
 ### Added
 
+- Governed Gemini reference-image commissioning with durable dispatch markers,
+  private hashed artifacts, project-bound custody and read-only reconciliation.
+  Image candidates remain unreviewed; ambiguous delivery never triggers another POST.
+- Conversion receipts, versioned notebook semantic comparison and strict staged
+  batches through the public Jupytext/Pandoc APIs. A complete reference consumer
+  independently checks fixtures and runs in separate test/production roots.
+- Optional `notebook` extra for fresh-kernel execution with parent-enforced
+  deadlines, bounded output, observed process cleanup, resolved interpreter and
+  environment identity, declared lock provenance and explicit cell accounting.
 - Explicit test and production integration environments with a process launcher,
   scoped credential inputs, secure prompts and separate configuration, credential
   caches, temporary files and working directories. All sixteen integration entry
@@ -40,6 +51,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Native fake and hosted service imports no longer require optional local Google or Bluesky dependencies; SDK loading is deferred until local service construction.
+
+- Notebook worker results are published atomically so polling parents cannot
+  observe partially written JSON. Successful and failed publication paths have
+  deterministic regression controls.
 - Google Drive listing now uses the SDK's `pageSize` keyword in both listing
   paths. Real discovery-builder regression tests prevent permissive mocks from
   hiding a broken first account check.
@@ -630,6 +646,7 @@ MIT-licensed package.
   own test suite, and this package has never had a public release, so no
   back-compat was owed for it.
 
+[0.10.0]: https://github.com/profrodai/zeocore/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/profrodai/zeocore/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/profrodai/zeocore/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/profrodai/zeocore/compare/v0.6.0...v0.7.0

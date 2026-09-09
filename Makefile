@@ -172,6 +172,7 @@ doctor: ## Check this machine is ready to develop/release zeocore (never stops a
 # the failure count.
 .PHONY: release-check
 release-check: ## Pre-tag gate: version + floor agreement, CHANGELOG entry, index availability
+	@$(PYTHON) tools/check-release-identity-v1.py
 	@bash tools/release-check.sh "$(REPO_ROOT)" "$(PYTHON)"
 
 # ============================================================

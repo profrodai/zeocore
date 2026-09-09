@@ -67,8 +67,14 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
 
+      - name: Install Pandoc for real authoring receipt tests
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
       - name: make setup
         run: make setup
+
+      - name: Check release metadata and tag identity
+        run: .venv/bin/python tools/check-release-identity-v1.py
 
       - name: make verify (the doctrine gate -- must pass before publish)
         run: make verify
@@ -276,7 +282,12 @@ jobs:
               sys.exit(1)
           from zeo_core.tools import BaseZeoTool, ToolContext
           from zeo_core.contracts import CapabilityResult
-          print('import OK: BaseZeoTool, ToolContext, CapabilityResult')
+          from zeo_core.integrations.hosted import ServiceResolver, ExecutionProfile
+          from zeo_core.integrations.hubspot import HubSpotIntegration
+          from zeo_core.integrations.kit import KitIntegration
+          from zeo_core.integrations.gemini import ImageGenerationRequest
+          from zeo_core.integrations.environments import IntegrationEnvironment
+          print('import OK: authoring, native profiles, marketing, Gemini and environments')
           print('SMOKE TEST PASSED: zeocore==' + installed + ' installs and imports on the published floor')
           "
 
@@ -320,7 +331,12 @@ jobs:
               sys.exit(1)
           from zeo_core.tools import BaseZeoTool, ToolContext
           from zeo_core.contracts import CapabilityResult
-          print('import OK: BaseZeoTool, ToolContext, CapabilityResult')
+          from zeo_core.integrations.hosted import ServiceResolver, ExecutionProfile
+          from zeo_core.integrations.hubspot import HubSpotIntegration
+          from zeo_core.integrations.kit import KitIntegration
+          from zeo_core.integrations.gemini import ImageGenerationRequest
+          from zeo_core.integrations.environments import IntegrationEnvironment
+          print('import OK: authoring, native profiles, marketing, Gemini and environments')
           print('SMOKE TEST PASSED: zeocore==' + installed + ' installs and imports on the published floor')
           "
 

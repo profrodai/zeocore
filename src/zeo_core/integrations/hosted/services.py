@@ -8,11 +8,10 @@ import os
 import uuid
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
+from typing import TYPE_CHECKING
 
 from zeo_core.core.fs.service import standalone
 from zeo_core.integrations.core import IntegrationResult
-from zeo_core.integrations.google.docs import DocsReadProtocol, GoogleDocsService
-from zeo_core.integrations.google.drive import DriveDownloadProtocol, GoogleDriveService
 from zeo_core.integrations.hosted.client import (
     HostedClientError,
     HostedConnectionClient,
@@ -20,12 +19,15 @@ from zeo_core.integrations.hosted.client import (
     HostedOperationResponse,
     HostedOperationStatus,
 )
-from zeo_core.integrations.social.bluesky import (
-    BlueskyIntegration,
-    BlueskyIntegrationProtocol,
-    LinkSpan,
-    MentionSpan,
-)
+
+if TYPE_CHECKING:
+    from zeo_core.integrations.google.docs import DocsReadProtocol
+    from zeo_core.integrations.google.drive import DriveDownloadProtocol
+    from zeo_core.integrations.social.bluesky import (
+        BlueskyIntegrationProtocol,
+        LinkSpan,
+        MentionSpan,
+    )
 
 
 @dataclass(frozen=True)
@@ -239,6 +241,10 @@ def build_services(
 
     selected_profile = profile or os.getenv("ZEOCORE_CONNECTION_PROFILE", "local")
     if selected_profile == "local":
+        from zeo_core.integrations.google.docs import GoogleDocsService
+        from zeo_core.integrations.google.drive import GoogleDriveService
+        from zeo_core.integrations.social.bluesky import BlueskyIntegration
+
         return ConnectionServices(
             google_drive=GoogleDriveService(),
             google_docs=GoogleDocsService(),

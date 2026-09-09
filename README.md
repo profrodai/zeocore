@@ -184,7 +184,7 @@ none are illustrative fragments. Run any of them with
 - [`config_usage.py`](examples/config_usage.py) — `load_config()`'s three
   real behaviors.
 
-The [docs hub](docs/README.md#runnable-examples) indexes all fifteen,
+The [docs hub](docs/README.md#runnable-examples) indexes the runnable examples,
 grouped by topic.
 
 Examples that need a credential (`NOTION_TOKEN`, `GITHUB_TOKEN`, an LLM API
@@ -204,11 +204,24 @@ thirteen registered agent capabilities. Run `python examples/kit_usage.py` offli
 
 [HubSpot newsletters and automation](docs/tutorials/hubspot-marketing.md) provides
 registered capabilities for drafts, campaigns, subscription preferences and
-marketing email sequences. Available from source; no extra dependency is needed.
+marketing email sequences. Included in 0.10.0; no extra dependency is needed.
+
+## New in 0.10.0
+
+[Managed environments](docs/integrations/environments.md) keep test and production
+credentials and state separate. The [account setup index](docs/integrations/README.md)
+covers acquisition of keys, test accounts, real accounts and bounded E2E checks.
+[Gemini reference images](docs/integrations/gemini-images.md) use admitted effects,
+private artifacts and reconciliation. [Notebook execution](docs/integrations/notebook-execution.md)
+and [the authoring reference](docs/integrations/authoring-reference.md) provide
+fresh-kernel execution and independently checked staging receipts.
+See [release notes](RELEASE_NOTES.md) for migration and remaining qualification limits.
 
 ## Optional integrations
 
-Integrations ship as extras, so you install only what you use:
+Optional SDKs ship as extras. HubSpot, Kit, managed environments and the Gemini
+adapter are in the base package; their live operations still require configured
+accounts and authorization. Install additional dependencies only as needed:
 
 | Extra | What it adds |
 |---|---|
@@ -222,7 +235,8 @@ Integrations ship as extras, so you install only what you use:
 | `zeocore[supabase]` | Supabase Database, Auth, Storage, Edge Functions, and async Realtime |
 | `zeocore[pandoc]` | Document conversion via Pandoc |
 | `zeocore[llms]` | OpenAI / Anthropic / tiktoken clients — chat, tool-calling, prompt caching |
-| `zeocore[jupytext]` | Script ↔ Jupyter notebook conversion |
+| `zeocore[jupytext]` | Script ↔ Jupyter notebook conversion and semantic receipts |
+| `zeocore[notebook]` | Fresh-kernel execution with bounded output and cleanup |
 | `zeocore[ffmpeg]` | Media probing/transcoding via the org's `ffmpeg-zeo` package |
 | `zeocore[http]` | FastAPI-based HTTP adapter for exposing tools over REST |
 | `zeocore[mcp]` | MCP adapter for exposing tools to Claude Code, Cursor, and other MCP-native agents |
@@ -243,7 +257,7 @@ The `dev` and `lint` extras are for contributors; see
 | `zeo_core.adapters` | Optional adapters: HTTP, MCP, and `llm_tools` (OpenAI-compatible function projection from one `CapabilityManifest`). |
 | `zeo_core.core` | Filesystem operations, path resolution, a typed error hierarchy, MIME detection, serialization, logging, an operation registry. |
 | `zeo_core.config` | YAML/env-var configuration loading and per-tool config models. |
-| `zeo_core.integrations` | Adapters for GitHub, Google Workspace, Supabase, LLM providers, Notion, Pandoc, jupytext, ffmpeg, and Bluesky. Supabase covers Database, Auth, Storage, Edge Functions, and async Realtime while deliberately excluding raw SQL and Vault plaintext access. |
+| `zeo_core.integrations` | Adapters for GitHub, Google Workspace, Supabase, LLM providers, Notion, HubSpot, Kit, Gemini images, Pandoc, jupytext, notebooks, ffmpeg, and Bluesky; managed environments and native service profiles. Supabase covers Database, Auth, Storage, Edge Functions, and async Realtime while deliberately excluding raw SQL and Vault plaintext access. |
 | `zeo_core.modules` | Plugin discovery and explicit-loading registry. |
 | `zeo_core.prompt` | Prompt template selection and enhancement utilities. |
 | `zeo_core.contract_pack` | Versioned consumption contract pack for ecosystem runners (no `sovereign_agent` import). |
@@ -265,7 +279,7 @@ module by module.
 
 ## Project status
 
-ZeoCore **0.9.0** is a beta library: the API is typed and tested, and this
+ZeoCore **0.10.0** is a beta library: the API is typed and tested, and this
 release is the canonical capability-authoring surface for the Zero Employee
 ecosystem. The surface may still shift before 1.0. Issues, questions, and API
 feedback are welcome.

@@ -1,87 +1,103 @@
-# zeocore 0.9.0
+# zeocore 0.10.0
 
-This file is the short release announcement. Full history is in
+ZeoCore 0.10.0 brings marketing automation, explicit integration environments,
+governed image commissioning and receipt-bearing notebook authoring into one
+release. Python 3.14 or newer remains required. The complete history is in
 [CHANGELOG.md](CHANGELOG.md).
 
-**Supabase becomes a first-class integration, with complete teaching paths for
-Supabase and governed Notion work.**
+## Newsletter and marketing automation
 
-ZeoCore 0.9.0 adds the maintained Supabase Python SDK behind ZeoCore's typed,
-bounded integration conventions. It also makes the Notion API 2026-03-11 and
-the admitted `notion.page.upsert` effect substantially easier to learn and
-operate. Python 3.14 or newer remains required.
+HubSpot adds eleven registered agent capabilities for marketing email drafts,
+reviewed publishing/scheduling, campaigns, subscription preferences and marketing
+workflows. Its scope is marketing automation; it does not expose a general CRM
+integration. Account entitlements, beta access and recipient restrictions still
+apply. [HubSpot setup](docs/integrations/hubspot.md) explains test and real accounts,
+private-app tokens, scopes, sender requirements and a bounded delivery check.
 
-## Supabase: five product surfaces, one explicit boundary
+Kit adds thirteen registered capabilities for broadcasts, sequence authoring,
+consent-bound subscribers, tags and reporting. Draft review binds the exact send;
+mutation results must identify the correct resource. A lost or malformed response
+remains uncertain rather than authorizing a blind retry.
+[Kit setup](docs/integrations/kit.md) covers API v4 keys versus OAuth, dedicated
+test accounts, designated recipients and production sender setup.
 
-Install `zeocore[supabase]` to use:
+Both ship in the base package. Their runnable examples use explicit simulated
+HTTP transports and send no real mail.
 
-- bounded PostgREST select, insert, upsert, update, delete, and named RPC;
-- end-user Auth flows whose public results contain identity and expiry, never
-  access or refresh tokens;
-- bounded Storage bucket and object operations with traversal-resistant paths;
-- named Edge Function invocation that rejects caller-supplied credential
-  headers; and
-- explicit async Realtime subscriptions with caller-owned lifecycle policy.
+## Separate test and production environments
 
-Publishable keys are the default and Row Level Security remains authoritative.
-Privileged server keys require explicit opt-in and do not imply application
-authorization. OAuth authorization URLs must stay on the configured Supabase
-project origin, provider exception text is discarded, and lazy Realtime client
-construction does not retain a raw project key.
+The managed launcher selects one provider namespace and separate configuration,
+credential caches, working directories and temporary files. Secure prompts do not
+echo or save secrets. Missing credentials cannot fall back to ambient keys or the
+opposite track; managed live LLM calls cannot silently select a mock or another
+provider. Fixtures are explicitly test-only and require injected test transports.
 
-This is an application integration, not a project-administration or custody
-escape hatch. It exposes no raw SQL, arbitrary provider URL, signed bearer URL,
-Management API, or `vault.decrypted_secrets` surface. Product-specific RLS,
-database roles, encrypted credential envelopes, deployment isolation, backups,
-and tenant proofs remain the host application's responsibility.
+The [setup index](docs/integrations/README.md) links every supported service to
+key acquisition, test-account creation, production setup, E2E checks and cleanup.
+Providers without a sandbox use dedicated accounts/resources. Gemini images and
+local notebook execution are now named launcher composition surfaces as well.
 
-## Notion: complete current API plus governed upsert
+Identical Supabase project URLs across live tracks are refused even with distinct
+keys. HTTP clients cannot replace a selected token with ambient netrc credentials.
+Google Drive pagination now uses the real SDK keyword. Preserved HOME can still
+expose third-party Google ADC/AWS credential files; the guide states that limit.
+This is a boundary for trusted code, not an operating-system sandbox.
 
-The Notion integration continues to cover all 44 operations in API
-`2026-03-11`: pages, blocks, databases, data sources, users, search, comments,
-file uploads, views, meeting notes, Markdown, cursor pagination, and current
-request shapes.
+## Native ZEOconnect and Gemini images
 
-The documentation now separately teaches `notion.page.upsert`, the narrow
-effect contract introduced in 0.8.0. Its request binds cited interpreted
-content, the source artifact digest, destination, and a deterministic marker.
-The dispatcher creates once, recognizes exact replay, replaces only the bound
-page, and verifies by read-back. A lost response moves to read-only marker
-reconciliation instead of issuing a blind second create.
+Native fake and hosted profiles import without optional local Google/Bluesky SDKs.
+Native ZEOconnect composition offers fake, local, hosted and governed profiles,
+explicit pairing/session custody and consent-bound resolution. Governed authority
+cannot fall back to an ordinary paired member session. Existing hosted request
+revision fields remain optional for compatibility; the server derives its bound
+revision from the authenticated connection.
 
-Hosted refresh, introspection, and revocation can use organization-bound
-`SecretRef` objects through a custody-internal dispatcher. The local environment
-credential path remains available, but it is not the hosted multi-tenant path.
+Gemini reference-image operations use admitted connections, exact authorization,
+durable dispatch markers, private hashed artifacts and read-only reconciliation.
+Known interactions are recovered without a second generation POST. Lost responses
+without a durable provider ID remain ambiguous. Returned images are unreviewed
+candidates; provider acceptance does not establish artistic quality or zero cost.
+[Gemini setup](docs/integrations/gemini-images.md) explains Google project/key
+provisioning and separate test/production host custody.
 
-## Documentation and examples
+## Document and notebook authoring
 
-- `docs/tutorials/supabase-integration.md` now starts at project creation and
-  RLS, then walks every supported surface and the production security boundary.
-- `examples/supabase_usage.py` remains read-only and does nothing until both a
-  project and an explicit demo table are configured.
-- `docs/tutorials/notion-integration.md` covers the complete current operation
-  matrix, credentials, pagination, OAuth custody, and governed page upsert.
-- `examples/notion_demo.py` is credential-free by default, while
-  `examples/notion_governed_upsert.py` renders the exact closed effect request
-  and immutable connector revision without contacting Notion.
+Jupytext and Pandoc expose conversion receipts, source/output identities and strict
+staging batches. Notebook semantic digests carry a versioned schema and remain
+separate from exact file hashes and individual execution observations.
 
-## Compatibility
+The optional notebook executor creates a fresh Python kernel, removes stale output,
+uses parent-enforced deadlines, bounds output capture and tracks observed process
+cleanup. Receipts include interpreter/environment identity, declared lock provenance
+and attempted/completed/failed/skipped cells. Worker results are published atomically
+so a polling parent cannot see partially written JSON.
 
-Existing 0.8 APIs remain available. Supabase is an optional extra and adds no
-dependency to the base installation. This beta release adds public Supabase
-protocols and models; no existing connector is removed or renamed.
+The [authoring reference](docs/integrations/authoring-reference.md) combines conversion,
+independent fixture checks, parity, fresh execution and optional DOCX, with real runs
+in separate test and production roots. Its receipts mean **staged, not published**.
+They do not establish chapter acceptance, learner success, complete descendant
+containment or OS/network isolation.
 
-## Install
+## Install and upgrade
 
 ```bash
-uv pip install "zeocore==0.9.0"
+uv pip install --upgrade "zeocore==0.10.0"
+uv pip install "zeocore[jupytext,pandoc,notebook]==0.10.0"
 ```
 
-Install only the provider extras you use, for example:
+The second command is for local authoring. Pandoc itself must also be installed.
+Install only the optional provider/adaptor extras you use; `httpx` is now a base
+dependency. The notebook extra adds nbclient, ipykernel and psutil. The base import
+remains usable without those optional packages.
 
-```bash
-uv pip install "zeocore[notion,supabase]==0.9.0"
-```
+Existing direct integration construction keeps its historical configuration
+behavior. Move the application entry point to the
+[managed launcher](docs/integrations/environments.md) to adopt the separate tracks.
+Do not reuse an initialized client across modes. Semantic digest consumers must
+retain the new schema label; old and new digest values are not interchangeable.
 
-The public repository, issues, documentation and changelog are at
-[github.com/profrodai/zeocore](https://github.com/profrodai/zeocore).
+The [examples catalog](examples/README.md), [API reference](docs/reference/api.md)
+and [resources repository](https://github.com/profrodai/sovereign-agent-resources)
+provide runnable paths. Resources migrate to this exact version after publication.
+No live provider delivery, account entitlement, classroom result or visual image
+qualification is asserted by the package release.

@@ -8,6 +8,81 @@ effect broker, and Keychain custody callback. The provider is Gemini's
 `gemini-3.1-flash-image` model, also called Nano Banana 2. No UI or ComfyUI process
 is involved. Returned images are candidates with `UNREVIEWED` qualification.
 
+## Install and choose an account track
+
+Available in `zeocore==0.10.0`; the adapter needs no Google SDK extra.
+Start with [managed environments](environments.md). Its integration ID is
+`gemini.images`. The launcher isolates configuration and process state; this
+integration deliberately forwards no raw API-key environment variables.
+The Runtime host supplies Keychain custody and broker authorization below.
+
+### Obtain a key
+
+1. Sign in to [Google AI Studio](https://aistudio.google.com/), accept its terms,
+   and open **Dashboard → Projects**. Import the Google Cloud project you intend
+   to use, or create a dedicated project.
+2. Open **API keys** and create a key in that project. Follow Google's current
+   [API-key instructions](https://ai.google.dev/gemini-api/docs/api-key): new keys
+   use authorization keys bound to service accounts; do not provision a new
+   integration with a deprecated standard key.
+3. If creation is unavailable, have the project's administrator grant the
+   project, API-key, service-enablement and service-account permissions listed
+   in that guide. Confirm model access and [billing](https://ai.google.dev/gemini-api/docs/billing)
+   for the selected project before a live request. A key does not guarantee
+   image-model entitlement or a free generation allowance.
+4. Copy the key once into the trusted host's secret provisioning flow. Keep it
+   out of notebook cells, command arguments, repository files and issue comments.
+
+### Test account and offline E2E
+
+Google project separation is the test variant; ZeoCore does not turn a live
+image generation into a sandbox call. Create a dedicated test Cloud project,
+use synthetic reference images, and grant only the required API access.
+A separate Google login is optional; the project, key and local stores must
+be distinct from production.
+
+For a fully offline first run, use `python examples/gemini_request.py` from
+this release's checkout. It verifies local image bytes and constructs a typed
+request without obtaining a key or calling Google. For broker E2E, run
+`pytest tests/test_integrations/test_gemini_images.py`: its fake HTTP/Keychain
+fixtures exercise real broker persistence, custody boundaries and reconciliation.
+Those fixtures must never become production trust verifiers.
+
+### Production account and custody
+
+Use a production Cloud project and newly provisioned production key. Configure
+separate private broker databases and artifact directories for both tracks.
+`KeychainSecretStore(service_prefix=...)` does **not** automatically read the
+managed environment: the host must derive distinct prefixes from the selected
+mode and canonical state root and pass them explicitly. Provision through
+`KeychainSecretStore.put(organization_id=..., material=...)` inside the trusted
+host and retain only its opaque handle in the admitted connection. Its default
+backend uses macOS Keychain; another platform needs a reviewed host custody
+implementation, not a plaintext substitute.
+
+Bind each connection to its organization and allowed Google project IDs, and
+configure the host's real issuer, audience and signature verifier. The host
+must attest which project owns the key; the key itself is not identity proof.
+The account transition is new admission plus new authorization, not copying a
+test database or changing an environment label.
+
+### Bounded live verification, cleanup and rotation
+
+First run the revision's read-only model health probe through the host's
+connection admission flow. Record the mode, admitted project, revision and
+health result without the key. To qualify actual generation, explicitly approve
+one request with synthetic inputs, its cost and its output destination. Invoke
+through `ImageGenerationService`, verify the receipt and image digests, and
+inspect the generated candidate separately. A request-only example or passing
+fixture suite is not proof of a live Google generation.
+
+Delete only artifacts created by that test after retaining the required audit
+receipts. Local deletion does not delete Google's stored interaction; consult
+the provider's retention policy. Rotate by provisioning a new key/handle,
+validating and admitting the replacement, then revoking the old key in AI Studio
+and retiring its connection. Never retry an ambiguous billed request merely
+because the local output is absent; follow the reconciliation rules below.
+
 ## Host wiring
 
 The Runtime host supplies an `EffectOrchestrator` configured with its durable

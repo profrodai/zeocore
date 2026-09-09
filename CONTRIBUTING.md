@@ -148,15 +148,24 @@ token is stored as a repo secret for either index.
 1. Bump `pyproject.toml`'s `[project] version`. It is the single source of
    truth: installed `zeo_core.__version__` reads the distribution metadata
    through `importlib.metadata`, so there is no second version literal to edit.
-2. Add a dated entry to `CHANGELOG.md` (Keep a Changelog format).
-3. Before cutting a real tag, stage a publish to TestPyPI to catch any
-   packaging problem (or a trusted-publisher misconfiguration) somewhere
-   that doesn't risk the real index: Actions tab -> "Publish" workflow ->
-   "Run workflow" -> target `testpypi`. Confirm it installs cleanly:
-   `pip install --index-url https://test.pypi.org/simple/
-   --extra-index-url https://pypi.org/simple/ zeocore`.
-4. Tag and push: `git tag -a vX.Y.Z -m "..."` then `git push origin vX.Y.Z`.
-   This triggers the same workflow against real PyPI.
+2. Add a dated entry to `CHANGELOG.md`, update `RELEASE_NOTES.md` with the
+   exact heading `# zeocore X.Y.Z`, update docs/examples, and run `uv lock`.
+   Run `make verify`, `make build`, and `make release-check`. The latter
+   verifies metadata consistency and that the version is unused on both
+   indexes, using live positive controls. Run it before staging consumes
+   the TestPyPI version. Index filenames cannot be reused.
+3. Stage through Actions -> "Publish" -> "Run workflow", selecting the
+   release branch and target `testpypi`. Require every job, including the
+   clean-environment install, to pass. That smoke job gets the exact wheel
+   URL from `https://test.pypi.org/pypi/zeocore/X.Y.Z/json`, verifies its
+   TestPyPI file host, and installs that URL while resolving dependencies
+   exclusively from `https://pypi.org/simple/`. Do not combine package indexes
+   or install an unpinned latest version as evidence for this release.
+4. After the reviewed release changes land on main, tag that verified commit:
+   `git tag -a vX.Y.Z -m "Release zeocore X.Y.Z"`, then
+   `git push origin vX.Y.Z`. This triggers real PyPI publication. The workflow
+   refuses a tag that disagrees with package metadata or release notes and
+   creates the GitHub release from `RELEASE_NOTES.md` after the PyPI smoke passes.
 5. The workflow's own `smoke-test` job installs the just-published package
    into a clean venv and imports it -- treat that job's failure as the
    release having NOT actually succeeded, even if the publish step itself

@@ -1,12 +1,11 @@
 # Integration account setup
 
-<!-- Teaches CLAUDE.md Rev 17; user documentation reviewed 2026-09-08. -->
+<!-- Teaches CLAUDE.md Rev 17; user documentation reviewed 2026-09-09. -->
 
 Start with [test and production environments](environments.md). It explains the
 launcher, secure key prompts, file locations, offline fixtures, and promotion.
-Then follow your provider's complete account guide. These instructions apply to
-the source checkout containing this feature; do not assume an older published
-wheel includes the environment launcher.
+Then follow your provider's complete account guide. These instructions target
+ZeoCore 0.10.0 or newer. Earlier wheels do not include this complete surface.
 
 | Integration ID | Get credentials and configure accounts | Test track |
 |---|---|---|
@@ -27,9 +26,13 @@ wheel includes the environment launcher.
 | `ffmpeg` | [FFmpeg](local-tools.md#ffmpeg) | Local synthetic media and separate output directory |
 | `jupytext` | [Jupytext](local-tools.md#jupytext) | Local sample notebooks and separate output directory |
 | `zeoconnect` | [Hosted connection and pairing](zeoconnect.md) | Fake service or separately paired test identity/resources |
+| `gemini.images` | [Gemini keys and host custody](gemini-images.md) | Offline request/provider fixtures or separate Google project |
+| `notebook` | [Notebook execution](notebook-execution.md) | Local synthetic notebook; no account or key |
 
-The first sixteen rows are package entry points. ZEOconnect is an additional
-composition surface. The `database.sqlite` and `database.bigquery` directories
+The first sixteen rows are package entry points. ZEOconnect, Gemini images and
+notebook execution are additional composition APIs. Their launcher selections
+forward no provider keys: Gemini uses explicitly provisioned host custody and
+notebook execution is local. The `database.sqlite` and `database.bigquery` directories
 are placeholders with no implemented service or credential workflow; they are
 not supported integrations. HTTP/MCP are adapters for exposing capabilities,
 not additional provider accounts. Future integrations must join this inventory
