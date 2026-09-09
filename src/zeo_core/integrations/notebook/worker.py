@@ -91,7 +91,10 @@ def main() -> None:
     result.update(client.observations)
     result["failed_cell_id"] = client.observations.get("active_cell_id")
     result["python_version"] = notebook.metadata.get("language_info", {}).get("version")
-    Path(request["result_path"]).write_text(json.dumps(result))
+    result_path = Path(request["result_path"])
+    pending = result_path.with_suffix(".pending")
+    pending.write_text(json.dumps(result))
+    pending.replace(result_path)
     # Parent retains a live ancestry root until all observed descendants are gone.
     sys.stdin.read(1)
 
