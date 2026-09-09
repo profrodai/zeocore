@@ -1,0 +1,4264 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Typed capabilities for scripts, services and sovereign agents.">
+      
+      
+      
+        <link rel="canonical" href="https://profrodai.github.io/zeocore/reference/api/">
+      
+      
+        <link rel="prev" href="../../project/examples/">
+      
+      
+        <link rel="next" href="../generated/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Public API map - ZeoCore</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#zeocore-api-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="ZeoCore" class="md-header__button md-logo" aria-label="ZeoCore" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ZeoCore
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Public API map
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/profrodai/zeocore" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    profrodai/zeocore
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ZeoCore" class="md-nav__button md-logo" aria-label="ZeoCore" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ZeoCore
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/profrodai/zeocore" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    profrodai/zeocore
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-path/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning path
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/QUICKSTART/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/GET-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/capability-authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Write a capability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/results-and-errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Results and errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/context-config-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context and files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/resilient-execution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resilient execution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/hubspot-marketing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HubSpot marketing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/kit-marketing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kit marketing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/zeoconnect-hosted-profile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Managed profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/mcp-server-with-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/notion-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/supabase-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/calendar-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Google Calendar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/google-docs-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Google Docs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/bluesky-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bluesky
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../integrations/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration setup
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integration setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test and production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/hubspot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HubSpot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/kit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/google/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Google Workspace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/github/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/notion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/supabase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/bluesky/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bluesky
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/llms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/gemini-images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gemini images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/zeoconnect/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ZEOconnect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/local-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/notebook-execution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebook execution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/authoring-receipts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring receipts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/authoring-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../project/src/zeo_core/contracts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public API map
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public API map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-one-import-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one import rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stability-what-this-page-promises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stability: what this page promises
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_core-top-level-authoring-shortcut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core — top-level authoring shortcut
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coretools-capability-authoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.tools — capability authoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="zeo_core.tools — capability authoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declare-a-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declare a capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#invoke-a-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Invoke a capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register capabilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-based-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class-based tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adapt-a-class-tool-into-a-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adapt a class tool into a capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toolcontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ToolContext
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixins-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixins (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runner-supplied-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runner-supplied services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protocols-builders-and-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protocols, builders, and errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreexecution-bounded-retries-and-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.execution — bounded retries and fallback
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreconnections-durable-effect-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.connections — durable effect orchestration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_corecontracts-data-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.contracts — data contracts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="zeo_core.contracts — data contracts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-result-envelope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The result envelope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity-definition-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity, definition, manifest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#guards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#artifacts-and-run-manifests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Artifacts and run manifests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enums-ids-time-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enums, ids, time, versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result-states-status-outcome-and-error-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result states: status, outcome, and error codes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_corecore-filesystem-paths-errors-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core — filesystem, paths, errors, registry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="zeo_core.core — filesystem, paths, errors, registry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zeo_corecorefs-filesystem-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core.fs — filesystem service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_corecorepaths-project-aware-path-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core.paths — project-aware path resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_corecoreerrors-typed-exceptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core.errors — typed exceptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_corecoreregistry-operation-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core.registry — operation registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_corecorejobs-async-job-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core.jobs — async job execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-zeo_corecore-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other zeo_core.core modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreconfig-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.config — configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coremodules-plugin-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.modules — plugin discovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreprompt-prompt-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.prompt — prompt strategies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreadapters-http-mcp-llm-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.adapters — HTTP, MCP, LLM tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="zeo_core.adapters — HTTP, MCP, LLM tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zeo_coreadaptershttp-rest-zeocorehttp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.adapters.http — REST (zeocore[http])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_coreadaptersmcp-model-context-protocol-zeocoremcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.adapters.mcp — Model Context Protocol (zeocore[mcp])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_coreadaptersllm_tools-openai-function-projection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.adapters.llm_tools — OpenAI function projection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreintegrations-external-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.integrations — external services
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_corecontract_pack-ecosystem-pin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.contract_pack — ecosystem pin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optional-extras" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional extras
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#not-public-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not public API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to go next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../generated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generated API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/src/zeo_core/contracts/EXAMPLES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contract examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../project/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/RELEASE_NOTES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/CHANGELOG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../publishing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation publishing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/CODE_OF_CONDUCT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code of conduct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/capability-symbol-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reports/sovereign-agent-capability-replacement-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent readiness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-one-import-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one import rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stability-what-this-page-promises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stability: what this page promises
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_core-top-level-authoring-shortcut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core — top-level authoring shortcut
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coretools-capability-authoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.tools — capability authoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="zeo_core.tools — capability authoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declare-a-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declare a capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#invoke-a-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Invoke a capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register capabilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-based-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class-based tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adapt-a-class-tool-into-a-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adapt a class tool into a capability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toolcontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ToolContext
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixins-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixins (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runner-supplied-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runner-supplied services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protocols-builders-and-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protocols, builders, and errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreexecution-bounded-retries-and-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.execution — bounded retries and fallback
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreconnections-durable-effect-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.connections — durable effect orchestration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_corecontracts-data-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.contracts — data contracts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="zeo_core.contracts — data contracts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-result-envelope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The result envelope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity-definition-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity, definition, manifest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#guards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#artifacts-and-run-manifests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Artifacts and run manifests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enums-ids-time-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enums, ids, time, versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result-states-status-outcome-and-error-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result states: status, outcome, and error codes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_corecore-filesystem-paths-errors-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core — filesystem, paths, errors, registry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="zeo_core.core — filesystem, paths, errors, registry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zeo_corecorefs-filesystem-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core.fs — filesystem service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_corecorepaths-project-aware-path-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core.paths — project-aware path resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_corecoreerrors-typed-exceptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core.errors — typed exceptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_corecoreregistry-operation-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core.registry — operation registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_corecorejobs-async-job-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.core.jobs — async job execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-zeo_corecore-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other zeo_core.core modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreconfig-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.config — configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coremodules-plugin-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.modules — plugin discovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreprompt-prompt-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.prompt — prompt strategies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreadapters-http-mcp-llm-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.adapters — HTTP, MCP, LLM tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="zeo_core.adapters — HTTP, MCP, LLM tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zeo_coreadaptershttp-rest-zeocorehttp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.adapters.http — REST (zeocore[http])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_coreadaptersmcp-model-context-protocol-zeocoremcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.adapters.mcp — Model Context Protocol (zeocore[mcp])
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zeo_coreadaptersllm_tools-openai-function-projection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.adapters.llm_tools — OpenAI function projection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_coreintegrations-external-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.integrations — external services
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zeo_corecontract_pack-ecosystem-pin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zeo_core.contract_pack — ecosystem pin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optional-extras" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional extras
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#not-public-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not public API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-go-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to go next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/profrodai/zeocore/edit/main/docs/reference/api.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="zeocore-api-reference">ZeoCore API reference<a class="headerlink" href="#zeocore-api-reference" title="Permanent link">&para;</a></h1>
+<p>A curated map of ZeoCore's <strong>public</strong> surface: the canonical import path for
+each symbol, the signatures you actually call, and where the boundary sits
+between "supported API" and "internal detail you should not import".</p>
+<p>This page is hand-written and covers ZeoCore <strong>0.10.0</strong> (beta — see
+<a href="#stability">Stability</a>). It is not generated from
+docstrings, and it is not exhaustive: every entry links to the source file,
+which is the authoritative signature. If a symbol is not listed here and not
+in a module's <code>__all__</code>, treat it as internal.</p>
+<p><strong>New to ZeoCore?</strong> Read <a href="../../project/">README.md</a> first, then run the
+offline examples in <a href="../../project/examples/"><code>examples/README.md</code></a>. Come
+back here when you need to look something up.</p>
+<p><strong>Added integration surfaces in 0.10.0</strong></p>
+<table>
+<thead>
+<tr>
+<th>Public import</th>
+<th>Contract and guide</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>zeo_core.integrations.hubspot</code></td>
+<td><a href="../../tutorials/hubspot-marketing/">Marketing capabilities</a>: email, campaigns, subscription consent and automation.</td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.kit</code></td>
+<td><a href="../../tutorials/kit-marketing/">Marketing capabilities</a>: broadcasts, sequences, subscribers and tags.</td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.environments.IntegrationEnvironment</code></td>
+<td><a href="../../integrations/environments/">Managed launch</a> with distinct test/production state.</td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.hosted.ServiceResolver</code></td>
+<td><a href="../../tutorials/zeoconnect-hosted-profile/">Native profiles</a>, explicit requirements and typed resolution results.</td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.gemini.ImageGenerationService</code></td>
+<td><a href="../../integrations/gemini-images/">Reference image generation</a> through admitted connections and durable effects.</td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.notebook.execute_notebook</code></td>
+<td><a href="../../integrations/notebook-execution/">Fresh-kernel execution</a> with bounded output and cleanup.</td>
+</tr>
+</tbody>
+</table>
+<p>For conversion contracts and filesystem staging, use the
+<a href="../../integrations/authoring-reference/">authoring reference</a>, which links the
+public request/receipt models and a complete executable consumer.</p>
+<p><strong>Contents</strong></p>
+<ul>
+<li><a href="#import-rule">The one import rule</a></li>
+<li><a href="#stability">Stability: what this page promises</a></li>
+<li><a href="#top-level"><code>zeo_core</code> — top-level authoring shortcut</a></li>
+<li><a href="#tools"><code>zeo_core.tools</code> — capability authoring</a></li>
+<li><a href="#execution"><code>zeo_core.execution</code> — bounded retries and fallback</a></li>
+<li><a href="#connections"><code>zeo_core.connections</code> — durable effect orchestration</a></li>
+<li><a href="#contracts"><code>zeo_core.contracts</code> — data contracts</a></li>
+<li><a href="#result-states">Result states: status, outcome, and error codes</a></li>
+<li><a href="#core"><code>zeo_core.core</code> — filesystem, paths, errors, registry</a></li>
+<li><a href="#config"><code>zeo_core.config</code> — configuration</a></li>
+<li><a href="#modules"><code>zeo_core.modules</code> — plugin discovery</a></li>
+<li><a href="#prompt"><code>zeo_core.prompt</code> — prompt strategies</a></li>
+<li><a href="#adapters"><code>zeo_core.adapters</code> — HTTP, MCP, LLM tools</a></li>
+<li><a href="#integrations"><code>zeo_core.integrations</code> — external services</a></li>
+<li><a href="#contract-pack"><code>zeo_core.contract_pack</code> — ecosystem pin</a></li>
+<li><a href="#extras">Optional extras</a></li>
+<li><a href="#not-public">Not public API</a></li>
+<li><a href="#next">Where to go next</a></li>
+</ul>
+<hr />
+<p><a id="import-rule"></a></p>
+<h2 id="the-one-import-rule">The one import rule<a class="headerlink" href="#the-one-import-rule" title="Permanent link">&para;</a></h2>
+<p>Import from the <strong>package</strong>, never from the module inside it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Canonical</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseZeoTool</span><span class="p">,</span> <span class="n">ToolContext</span><span class="p">,</span> <span class="n">capability</span><span class="p">,</span> <span class="n">invoke_sync</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">CapabilityResult</span><span class="p">,</span> <span class="n">EffectKind</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.core.fs</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_service</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Not supported — these are implementation files, and they move</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools.mixins.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">LifecycleMixin</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools.invoke</span><span class="w"> </span><span class="kn">import</span> <span class="n">invoke_sync</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.core.fs._ops.read_ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_text</span>
+</code></pre></div>
+<p>Every public name in this page is reachable from the package path shown in
+its heading. Set <code>ZEO_WARN_NONCANONICAL_IMPORTS=1</code> to get a runtime
+<code>FutureWarning</code> on some non-canonical mixin imports; the module docstrings in
+<a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/tools/mixins"><code>src/zeo_core/tools/mixins/</code></a> are the
+reliable signal.</p>
+<p>Tool and capability authors normally need exactly two imports:
+<code>zeo_core.tools</code> and <code>zeo_core.contracts</code>. Everything else on this page is
+either infrastructure you may use (<code>zeo_core.core.fs</code>, <code>zeo_core.config</code>) or
+wiring a <em>host application</em> does (<code>zeo_core.adapters</code>).</p>
+<p><a id="stability"></a></p>
+<h2 id="stability-what-this-page-promises">Stability: what this page promises<a class="headerlink" href="#stability-what-this-page-promises" title="Permanent link">&para;</a></h2>
+<p>ZeoCore 0.10.0 is a <strong>beta</strong> library. The API is typed and tested
+(mypy <code>--strict</code> across the tree), but the surface may still shift before
+1.0. Breaking changes are recorded in <a href="../../project/CHANGELOG/">CHANGELOG.md</a>.</p>
+<p>Three tiers, used throughout this page:</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>What it means</th>
+<th>How to recognize it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Public</strong></td>
+<td>Documented here, exported in the module's <code>__all__</code>, safe to import.</td>
+<td>Listed in <code>__all__</code> of the package you import from.</td>
+</tr>
+<tr>
+<td><strong>Documented, no <code>__all__</code></strong></td>
+<td>Real API used by ZeoCore's own adapters and shipped examples, but the module does not declare <code>__all__</code>. Treat <em>the names listed here</em> as supported, not the whole module.</td>
+<td>Called out inline below (<code>zeo_core.core.registry</code>, <code>zeo_core.core.jobs</code>, <code>zeo_core.core.mime</code>).</td>
+</tr>
+<tr>
+<td><strong>Internal</strong></td>
+<td>Not API. May be renamed or deleted in any release, including patch releases.</td>
+<td>Leading <code>_</code> in the path (<code>_internal</code>, <code>_ops</code>, <code>_dev</code>), or listed under <a href="#not-public">Not public API</a>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>zeo_core.core.fs</code> actively enforces its boundary: attribute access to
+<code>_internal</code> / <code>_ops</code> raises <code>AttributeError</code> with an explanatory message
+rather than returning the module.</p>
+<hr />
+<p><a id="top-level"></a></p>
+<h2 id="zeo_core-top-level-authoring-shortcut"><code>zeo_core</code> — top-level authoring shortcut<a class="headerlink" href="#zeo_core-top-level-authoring-shortcut" title="Permanent link">&para;</a></h2>
+<p>Source: <a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/__init__.py"><code>src/zeo_core/__init__.py</code></a></p>
+<p>The package root re-exports a <strong>deliberately small</strong> slice — the names a
+class-based tool's <code>run()</code> signature needs — so <code>import zeo_core</code> gives you
+something usable without further exploration:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">BaseZeoTool</span><span class="p">,</span>          <span class="c1"># base class for class-style tools</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">ToolContext</span><span class="p">,</span>          <span class="c1"># immutable dependency container</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">CapabilityResult</span><span class="p">,</span>     <span class="c1"># the result envelope run() returns</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">ZeoToolProtocol</span><span class="p">,</span>      <span class="c1"># structural protocol for tool detection</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">IntegrationEnabledMixin</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">LifecycleMixin</span><span class="p">,</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">ToolEnvInitializerMixin</span><span class="p">,</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">)</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">__version__</span>  <span class="c1"># derived from the installed distribution metadata</span>
+</code></pre></div>
+<p>It does <strong>not</strong> re-export <code>zeo_core.config</code>, <code>zeo_core.core</code>,
+<code>zeo_core.integrations</code>, <code>zeo_core.modules</code>, or the rest of
+<code>zeo_core.contracts</code>. That is intentional namespacing, which also means
+<code>dir(zeo_core)</code> and editor autocomplete will undersell the package. Use the
+per-module sections below.</p>
+<p><a id="tools"></a></p>
+<h2 id="zeo_coretools-capability-authoring"><code>zeo_core.tools</code> — capability authoring<a class="headerlink" href="#zeo_coretools-capability-authoring" title="Permanent link">&para;</a></h2>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/tools"><code>src/zeo_core/tools/</code></a> ·
+Tutorial: <a href="../../tutorials/capability-authoring/">capability authoring</a> ·
+Examples: <a href="https://github.com/profrodai/zeocore/blob/main/examples/capability_authoring.py"><code>capability_authoring.py</code></a>,
+<a href="https://github.com/profrodai/zeocore/blob/main/examples/minimal_tool.py"><code>minimal_tool.py</code></a></p>
+<p>The whole authoring surface lives behind one import. A <strong>capability</strong> is the
+abstract function; a <strong>tool</strong> is a class implementing one; a
+<code>CapabilityResult</code> is the machine-readable outcome.</p>
+<h3 id="declare-a-capability">Declare a capability<a class="headerlink" href="#declare-a-capability" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">capability</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">capability</span><span class="p">(</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="o">*</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>                                  <span class="c1"># "namespace.name@1.2.3"</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">effects</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">EffectKind</span><span class="p">],</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">examples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">CapabilityExample</span><span class="p">],</span>    <span class="c1"># at least one is required</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">error_codes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">concurrency</span><span class="p">:</span> <span class="n">ConcurrencyMode</span> <span class="o">=</span> <span class="n">ConcurrencyMode</span><span class="o">.</span><span class="n">PARALLEL_SAFE</span><span class="p">,</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="n">resource_key_fields</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="n">requirements</span><span class="p">:</span> <span class="n">CapabilityRequirements</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    <span class="n">tags</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="n">metadata</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">JsonValue</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    <span class="n">deprecation</span><span class="p">:</span> <span class="n">CapabilityDeprecation</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>    <span class="n">projection_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RequestGuard</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    <span class="n">register_to</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>        <span class="c1"># a CapabilityRegistry, or nothing</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">]],</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">]]:</span> <span class="o">...</span>
+</code></pre></div>
+<p>The decorated function must have the canonical signature — anything else
+raises <code>CapabilityAuthoringError</code> at decoration time (import time, not call
+time):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">RequestModel</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ToolContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CapabilityResult</span><span class="p">[</span><span class="n">ResponseModel</span><span class="p">]:</span> <span class="o">...</span>
+</code></pre></div>
+<p><code>RequestModel</code> and <code>ResponseModel</code> must be Pydantic <code>BaseModel</code> subclasses;
+their JSON Schemas are generated from the models, not from annotations.
+<code>*args</code> / untyped <code>**kwargs</code> are rejected. Decoration does <strong>not</strong> register
+anything globally unless you pass <code>register_to</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">bound_capability_of</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BoundCapability</span>
+</code></pre></div>
+<p>Retrieves the <code>BoundCapability</code> the decorator attached to the function
+(<code>fn.__zeo_capability__</code>). Raises <code>CapabilityAuthoringError</code> if <code>fn</code> was not
+decorated.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/tools/authoring.py"><code>authoring.py</code></a></p>
+<h3 id="invoke-a-capability">Invoke a capability<a class="headerlink" href="#invoke-a-capability" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">invoke_sync</span><span class="p">,</span> <span class="n">invoke_async</span><span class="p">,</span> <span class="n">BoundCapability</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">invoke_sync</span><span class="p">(</span><span class="n">capability</span><span class="p">:</span> <span class="n">BoundCapability</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ToolContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CapabilityResult</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">await</span> <span class="n">invoke_async</span><span class="p">(</span><span class="n">capability</span><span class="p">:</span> <span class="n">BoundCapability</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ToolContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CapabilityResult</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+</code></pre></div>
+<p>Both run the same pipeline and <strong>never raise</strong> for handler failures — they
+convert everything into a <code>CapabilityResult</code>:</p>
+<ol>
+<li>cancellation check (via the optional <code>"cancellation"</code> service),</li>
+<li>request validation against <code>capability.request_model</code>,</li>
+<li>guards (<code>RequestGuard.check</code>),</li>
+<li>availability (declared <code>requirements</code> present in <code>ctx</code>),</li>
+<li>the handler,</li>
+<li>return-value normalization.</li>
+</ol>
+<p>Calling <code>invoke_sync</code> on an <code>async def</code> capability returns an
+<code>invalid_return</code> error result rather than a coroutine. <code>BoundCapability</code>
+itself exposes <code>definition</code>, <code>request_model</code>, <code>guards</code>, <code>is_async</code>,
+<code>is_available(ctx)</code>, and <code>invoke(request, ctx)</code> (which dispatches to the
+right helper).</p>
+<p>Also public here, mostly for runners:</p>
+<ul>
+<li><code>invocation_record(*, capability, request, result, ctx, invocation_id, started_at, ended_at) -&gt; CapabilityInvocationRecord</code> — a redacted, digest-based audit record.</li>
+<li><code>resource_coordination_key(capability, request) -&gt; str | None</code> — deterministic lock key from <code>resource_key_fields</code>. ZeoCore computes the key; it does not take locks.</li>
+</ul>
+<p>Source: <a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/tools/invoke.py"><code>invoke.py</code></a></p>
+<h3 id="register-capabilities">Register capabilities<a class="headerlink" href="#register-capabilities" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="n">CapabilityRegistry</span><span class="p">,</span> <span class="n">CapabilityProvenance</span><span class="p">,</span> <span class="n">CapabilityRegistryError</span><span class="p">,</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">get_capability_registry</span><span class="p">,</span> <span class="n">reset_capability_registry</span><span class="p">,</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="p">)</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="n">registry</span> <span class="o">=</span> <span class="n">CapabilityRegistry</span><span class="p">()</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">cap</span><span class="p">,</span> <span class="n">provenance</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>          <span class="c1"># duplicate identity → CapabilityRegistryError</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"demo.greet@1.0.0"</span><span class="p">)</span>                 <span class="c1"># or a CapabilityId; version optional</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="n">registry</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="s2">"demo.greet"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>     <span class="c1"># highest matching version, or None</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="n">registry</span><span class="o">.</span><span class="n">resolve_compatible</span><span class="p">(</span><span class="n">capability_id</span><span class="p">)</span>       <span class="c1"># lowest same-major version &gt;= requested</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="n">registry</span><span class="o">.</span><span class="n">list_all</span><span class="p">()</span>                              <span class="c1"># sorted by canonical id</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="n">registry</span><span class="o">.</span><span class="n">manifests</span><span class="p">()</span>                             <span class="c1"># list[CapabilityManifest]</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="n">registry</span><span class="o">.</span><span class="n">provenance_of</span><span class="p">(</span><span class="n">identity</span><span class="p">)</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="n">registry</span><span class="o">.</span><span class="n">load_entry_points</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="s2">"zeo_core.capabilities"</span><span class="p">)</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="n">registry</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</code></pre></div>
+<p>Instances are the intended usage. <code>get_capability_registry()</code> returns a
+process-global convenience instance (<code>reset_capability_registry()</code> clears
+it) — handy in scripts and tests, never required by a runner.</p>
+<p>Third-party packages publish capabilities through the
+<code>zeo_core.capabilities</code> entry-point group, loaded explicitly with
+<code>load_entry_points()</code>. Nothing is auto-loaded on import.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/tools/registry.py"><code>registry.py</code></a></p>
+<h3 id="class-based-tools">Class-based tools<a class="headerlink" href="#class-based-tools" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseZeoTool</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyTool</span><span class="p">(</span><span class="n">BaseZeoTool</span><span class="p">):</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">name</span> <span class="o">=</span> <span class="s2">"my_tool"</span>          <span class="c1"># required (class attribute or __init__ arg)</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">version</span> <span class="o">=</span> <span class="s2">"1.0.0"</span>         <span class="c1"># defaults to "1.0.0"</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="n">namespace</span> <span class="o">=</span> <span class="s2">"zeo"</span>         <span class="c1"># used when adapting to a capability id</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">MyRequest</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ToolContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CapabilityResult</span><span class="p">[</span><span class="n">MyResponse</span><span class="p">]:</span> <span class="o">...</span>
+</code></pre></div>
+<p><code>run()</code> is the only abstract method. <code>initialize(ctx)</code> and
+<code>is_available(ctx)</code> are optional hooks that default to success/<code>True</code>.
+Identity is frozen after <code>__init__</code>: assigning to <code>name</code> or <code>version</code> later
+raises <code>AttributeError</code>, because runners may cache identity for routing.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/tools/base.py"><code>base.py</code></a> ·
+Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/minimal_tool.py"><code>minimal_tool.py</code></a></p>
+<h3 id="adapt-a-class-tool-into-a-capability">Adapt a class tool into a capability<a class="headerlink" href="#adapt-a-class-tool-into-a-capability" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">tool_to_capability</span><span class="p">,</span> <span class="n">ToolAdapterError</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">tool_to_capability</span><span class="p">(</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">tool</span><span class="p">:</span> <span class="n">BaseZeoTool</span><span class="p">,</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="o">*</span><span class="p">,</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">examples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">CapabilityExample</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="n">effects</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">EffectKind</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="n">error_codes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    <span class="n">concurrency</span><span class="p">:</span> <span class="n">ConcurrencyMode</span> <span class="o">=</span> <span class="n">ConcurrencyMode</span><span class="o">.</span><span class="n">PARALLEL_SAFE</span><span class="p">,</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>    <span class="n">resource_key_fields</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>    <span class="n">requirements</span><span class="p">:</span> <span class="n">CapabilityRequirements</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>    <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RequestGuard</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BoundCapability</span>
+</code></pre></div>
+<p>The adapter reads the tool's own <code>run()</code> type hints for the request/response
+models, derives the id as <code>namespace.name@version</code> (unless the class sets
+<code>capability_id</code>), and picks up optional class attributes:
+<code>capability_examples</code>, <code>capability_description</code>, <code>capability_effects</code>,
+<code>capability_error_codes</code>, <code>capability_concurrency</code>,
+<code>capability_resource_key_fields</code>, <code>capability_requirements</code>,
+<code>capability_tags</code>, <code>capability_guards</code>.</p>
+<p>At least one example and a description are mandatory — missing either raises
+<code>ToolAdapterError</code>. Invoking through the adapter runs
+<code>initialize</code> → <code>pre_run</code> → <code>run</code> → <code>post_run</code>; calling <code>tool.run()</code> directly
+still works and needs no definition at all.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/tools/adapter.py"><code>adapter.py</code></a> ·
+Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/tool_to_capability.py"><code>tool_to_capability.py</code></a></p>
+<h3 id="toolcontext"><code>ToolContext</code><a class="headerlink" href="#toolcontext" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolContext</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">ctx</span> <span class="o">=</span> <span class="n">ToolContext</span><span class="p">(</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">run_id</span><span class="o">=</span><span class="s2">"run-001"</span><span class="p">,</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="n">tool_name</span><span class="o">=</span><span class="s2">"greet"</span><span class="p">,</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="n">tool_version</span><span class="o">=</span><span class="s2">"1.0.0"</span><span class="p">,</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="n">logger</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"greet"</span><span class="p">),</span>   <span class="c1"># runner-provided</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    <span class="n">fs</span><span class="o">=</span><span class="n">get_fs_service</span><span class="p">(),</span>                 <span class="c1"># runner-provided</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    <span class="n">work_dir</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>                        <span class="c1"># str | Path, stored as str</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>    <span class="n">output_dir</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>    <span class="n">services</span><span class="o">=</span><span class="p">{},</span>                         <span class="c1"># optional: name -&gt; service instance</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>    <span class="n">metadata</span><span class="o">=</span><span class="p">{},</span>                         <span class="c1"># optional: must be JSON-serializable</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="p">)</span>
+</code></pre></div>
+<p>A frozen Pydantic model. <code>services</code> and <code>metadata</code> are wrapped in
+<code>MappingProxyType</code>, so the top level cannot be reassigned or mutated;
+<code>metadata</code> is additionally validated as JSON-safe at construction
+(<code>Path</code> → <code>str</code>, <code>datetime</code> → ISO, <code>Enum</code> → value, Pydantic models via
+<code>model_dump()</code>), and a non-serializable value fails immediately.</p>
+<p>Accessors: <code>work_path</code> / <code>output_path</code> (as <code>Path</code>), <code>require_logger()</code>,
+<code>require_fs()</code>, <code>get_service(name)</code>, <code>require_service(name)</code> (raises with a
+list of available services), plus <code>get_clock()</code>, <code>get_cancellation()</code>,
+<code>get_artifact_sink()</code>.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/tools/context.py"><code>context.py</code></a></p>
+<h3 id="mixins-optional">Mixins (optional)<a class="headerlink" href="#mixins-optional" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegrationEnabledMixin</span><span class="p">,</span> <span class="n">LifecycleMixin</span><span class="p">,</span> <span class="n">ToolEnvInitializerMixin</span>
+</code></pre></div>
+<ul>
+<li><strong><code>IntegrationEnabledMixin</code></strong> — <code>get_service(name, ctx, expected_type=None)</code> returns <code>None</code> when the runner did not wire the service; <code>require_service(name, ctx, expected_type=None)</code> raises. A wrong <code>expected_type</code> raises <code>TypeError</code>.</li>
+<li><strong><code>LifecycleMixin</code></strong> — <code>pre_run(request, ctx)</code>, <code>post_run(request, result, ctx)</code>, <code>validate(request, ctx)</code>, <code>cleanup(ctx)</code>. All default to success and all return <code>CapabilityResult</code>. <code>ZeoToolLifecycleMixin</code> is a backward-compatible alias.</li>
+<li><strong><code>ToolEnvInitializerMixin</code></strong> — environment/directory setup helpers for tools that need them.</li>
+</ul>
+<p>A tool with none of these is still a complete, valid tool.</p>
+<p>Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/toolkit_usage.py"><code>toolkit_usage.py</code></a></p>
+<h3 id="runner-supplied-services">Runner-supplied services<a class="headerlink" href="#runner-supplied-services" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemClock</span><span class="p">,</span> <span class="n">NeverCancelled</span><span class="p">,</span> <span class="n">RecordingArtifactSink</span>
+</code></pre></div>
+<p>Default implementations of the optional services <code>invoke_sync</code> /
+<code>invoke_async</code> look up in <code>ctx.services</code> by name: <code>"clock"</code>,
+<code>"cancellation"</code>, <code>"artifacts"</code>, <code>"redaction_paths"</code>. When absent, invoke
+falls back to <code>SystemClock()</code> and <code>NeverCancelled()</code>.
+<code>RecordingArtifactSink</code> collects <code>ArtifactRef</code>s in memory for a runner to
+persist afterwards.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/tools/services.py"><code>services.py</code></a></p>
+<h3 id="protocols-builders-and-errors">Protocols, builders, and errors<a class="headerlink" href="#protocols-builders-and-errors" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ZeoCapability</code></td>
+<td>Runtime-checkable protocol: <code>definition</code>, <code>invoke()</code>, <code>is_available()</code>. Inheritance not required.</td>
+</tr>
+<tr>
+<td><code>ZeoToolProtocol</code></td>
+<td>Structural protocol for detecting class tools.</td>
+</tr>
+<tr>
+<td><code>build_definition(...)</code></td>
+<td>Build a <code>CapabilityDefinition</code> from Pydantic models directly (what <code>@capability</code> calls internally).</td>
+</tr>
+<tr>
+<td><code>coordination_key(request, fields)</code></td>
+<td>Deterministic <code>"a\|b"</code> key from dotted request fields.</td>
+</tr>
+<tr>
+<td><code>register_capability_operation(...)</code></td>
+<td>Bind a <code>BoundCapability</code> into an <code>OperationRegistry</code> — see <a href="#adapters">adapters</a>.</td>
+</tr>
+<tr>
+<td><code>CapabilityAuthoringError</code></td>
+<td>Invalid <code>@capability</code> signature or contract (subclasses <code>TypeError</code>).</td>
+</tr>
+<tr>
+<td><code>ToolAdapterError</code></td>
+<td>A <code>BaseZeoTool</code> cannot be adapted (subclasses <code>TypeError</code>).</td>
+</tr>
+<tr>
+<td><code>CapabilityRegistryError</code></td>
+<td>Registry contract violation (subclasses <code>ValueError</code>).</td>
+</tr>
+</tbody>
+</table>
+<p><a id="execution"></a></p>
+<h2 id="zeo_coreexecution-bounded-retries-and-fallback"><code>zeo_core.execution</code> — bounded retries and fallback<a class="headerlink" href="#zeo_coreexecution-bounded-retries-and-fallback" title="Permanent link">&para;</a></h2>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/execution"><code>src/zeo_core/execution/</code></a> ·
+Tutorial: <a href="../../tutorials/resilient-execution/">bounded retries and explicit fallback</a></p>
+<p>The public execution package wraps one-attempt callbacks with an immutable
+policy. Its principal entry points are:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.execution</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    <span class="n">AsyncExecutionTarget</span><span class="p">,</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="n">AttemptContext</span><span class="p">,</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    <span class="n">AttemptError</span><span class="p">,</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="n">ExecutionPolicy</span><span class="p">,</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>    <span class="n">SubprocessInvocation</span><span class="p">,</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>    <span class="n">SyncExecutionTarget</span><span class="p">,</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>    <span class="n">async_capability_target</span><span class="p">,</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>    <span class="n">run_async</span><span class="p">,</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>    <span class="n">run_sync</span><span class="p">,</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>    <span class="n">sync_capability_target</span><span class="p">,</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>    <span class="n">subprocess_target</span><span class="p">,</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="p">)</span>
+</code></pre></div>
+<p><code>ExecutionPolicy</code> declares one total timeout, one per-attempt ceiling, the
+complete ordered target plan, bounded backoff and optional jitter, retryable
+classifications, and whether explicit simulation is allowed. Its default
+retry classification does not create retries: one target ID still means one
+attempt.</p>
+<p><code>run_sync</code> and <code>run_async</code> return <code>ResilientExecutionResult</code>, including an
+immutable record for every started attempt and the identity and execution mode
+of the target that actually succeeded. They do not retain provider exception
+text. The async runner enforces each timeout; synchronous callbacks must apply
+the supplied <code>AttemptContext.timeout_seconds</code> to their blocking I/O.</p>
+<p><code>subprocess_target</code> supplies that hard boundary for shell-free child
+processes. It sends request bytes over stdin, starts an isolated process group,
+terminates the group on timeout or cancellation, defaults to an empty child
+environment, and admits only parsed typed stdout as a result. Raw child output
+and errors never enter attempt records.</p>
+<p><code>sync_capability_target</code> and <code>async_capability_target</code> adapt exactly-<code>READ</code>
+<code>BoundCapability</code> values. Effectful execution is currently refused because it
+requires persisted dispatch and reconciliation rather than an in-memory retry.</p>
+<p><code>LLMClient.chat_once()</code> and <code>llm_chat_target</code> expose existing OpenAI,
+Anthropic, Ollama, and mock clients as one-attempt leaves so this policy, rather
+than a nested provider loop, owns retry and fallback. The adapter trusts only
+structured status codes for failure classification; use <code>subprocess_target</code>
+when the call also needs a hard process deadline.</p>
+<p><a id="connections"></a></p>
+<h2 id="zeo_coreconnections-durable-effect-orchestration"><code>zeo_core.connections</code> — durable effect orchestration<a class="headerlink" href="#zeo_coreconnections-durable-effect-orchestration" title="Permanent link">&para;</a></h2>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/connections"><code>src/zeo_core/connections/</code></a> ·
+Tutorial: <a href="../../tutorials/resilient-execution/#effectful-calls-use-durable-orchestration">durable effect orchestration</a></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.connections</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>    <span class="n">ConnectorAdmissionError</span><span class="p">,</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="n">EffectDispatchResult</span><span class="p">,</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>    <span class="n">EffectOrchestrator</span><span class="p">,</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="n">ExactAuthorizationVerifier</span><span class="p">,</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>    <span class="n">KeychainEffectDispatcher</span><span class="p">,</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>    <span class="n">KeychainSecretStore</span><span class="p">,</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>    <span class="n">ReconciliationResult</span><span class="p">,</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>    <span class="n">SQLiteConnectionStore</span><span class="p">,</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>    <span class="n">validate_connector_revision</span><span class="p">,</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="p">)</span>
+</code></pre></div>
+<p><code>SQLiteConnectionStore</code> is the organization-scoped durable implementation for
+connections, immutable connector revisions, execution history, append-only
+receipts, sanitized confirmation evidence, and authorization replay nonces.
+<code>ExactAuthorizationVerifier</code> refuses absent, mismatched, expired, replayed,
+wrong-audience, untrusted-issuer, or cryptographically unverifiable effect
+authorizations without reconstructing organizational policy. Construction
+requires an <code>AuthorizationSignatureVerifier</code>, an expected audience, and a
+non-empty issuer allowlist; there is no permissive default verifier.</p>
+<p><code>EffectOrchestrator.execute(...)</code> accepts trusted organization, connection,
+revision, and operation identities separately from the authorization. It
+persists <code>DISPATCH_STARTED</code> before invoking an <code>EffectDispatcher</code>. A provider
+exception after that point records <code>AMBIGUOUS</code> and invokes the supplied
+<code>EffectReconciler</code> without redispatch. Direct and reconciled success require a
+positive confirmation digest; state, receipt, and confirmation evidence commit
+atomically.</p>
+<p><code>validate_connector_revision</code> and the related connection/request validators
+keep execution business-operation-shaped: provider origins and paths come from
+the immutable revision, request schemas are closed, and caller-selected
+transport fields are refused. <code>KeychainSecretStore</code> keeps credential material
+in macOS Keychain; <code>KeychainEffectDispatcher</code> consumes one expiring lease and
+exposes material only inside the provider callback.</p>
+<p><code>EffectDispatchResult</code> and <code>ReconciliationResult</code> reject raw provider detail.
+They admit only closed dispositions, normalized errors, and lowercase SHA-256
+digests. Provider-specific dispatch and reconciliation implementations are host
+wiring, not permissive defaults supplied by ZeoCore.</p>
+<p><a id="contracts"></a></p>
+<h2 id="zeo_corecontracts-data-contracts"><code>zeo_core.contracts</code> — data contracts<a class="headerlink" href="#zeo_corecontracts-data-contracts" title="Permanent link">&para;</a></h2>
+<p>Source: <a href="../../project/src/zeo_core/contracts/"><code>src/zeo_core/contracts/</code></a> ·
+Deeper: <a href="../../project/src/zeo_core/contracts/">contracts/README.md</a>,
+<a href="../../project/src/zeo_core/contracts/EXAMPLES/">contracts/EXAMPLES.md</a></p>
+<p>The versionable kernel: no business logic, no side effects. Everything below
+is a frozen or strictly-validated Pydantic model.</p>
+<h3 id="the-result-envelope">The result envelope<a class="headerlink" href="#the-result-envelope" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">CapabilityResult</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="n">CapabilityResult</span><span class="o">.</span><span class="n">ok</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">"Success"</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration_sec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="n">CapabilityResult</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="n">reason</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="n">CapabilityResult</span><span class="o">.</span><span class="n">unavailable</span><span class="p">(</span><span class="n">reason</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s2">"ZEO_CAP_UNAVAILABLE"</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="n">CapabilityResult</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>                      <span class="n">outcome</span><span class="o">=</span><span class="n">CapabilityOutcome</span><span class="o">.</span><span class="n">integration_failure</span><span class="p">)</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="n">CapabilityResult</span><span class="o">.</span><span class="n">fail_from_exc</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+<p>Fields: <code>status</code>, <code>outcome</code>, <code>data</code>, <code>run_id</code>, <code>timestamp</code>, <code>duration_sec</code>,
+<code>human_message</code>, <code>machine_message</code>, <code>error</code>, <code>logs</code>, <code>metadata</code>.
+Prefer the constructors above over building one by hand — see
+<a href="#result-states">result states</a> for the invariants they enforce.</p>
+<p><code>CapabilityError</code> (structured <code>code</code> / <code>message</code> / <code>details</code>) and
+<code>CapabilityLogEvent</code> are the other two envelope types.</p>
+<h3 id="identity-definition-manifest">Identity, definition, manifest<a class="headerlink" href="#identity-definition-manifest" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">CapabilityId</span><span class="p">,</span> <span class="n">CapabilityDefinition</span><span class="p">,</span> <span class="n">CapabilityManifest</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="n">CapabilityId</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">"google.calendar.event.create@1.0.0"</span><span class="p">)</span>   <span class="c1"># or CapabilityId(namespace=..., name=..., version=...)</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="n">cap_id</span><span class="o">.</span><span class="n">canonical</span><span class="p">()</span>                                         <span class="c1"># "namespace.name@1.2.3"</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="n">CapabilityManifest</span><span class="o">.</span><span class="n">from_definition</span><span class="p">(</span><span class="n">cap</span><span class="o">.</span><span class="n">definition</span><span class="p">)</span>         <span class="c1"># provider-neutral discovery document</span>
+</code></pre></div>
+<p>Identity is <code>namespace.name@semver</code>: dotted lowercase namespace segments, a
+single lowercase name, a real semantic version. Anything else raises at
+construction. A <code>CapabilityManifest</code> carries <code>schema_version</code>, <code>id</code>,
+<code>description</code>, <code>request_schema</code>, <code>response_schema</code>, <code>examples</code>,
+<code>error_codes</code>, <code>effects</code>, <code>requirements</code>, <code>tags</code>, <code>metadata</code>,
+<code>deprecation</code>, and <code>projection_name</code>.</p>
+<p>Declaration models: <code>CapabilityExample</code> (<code>request</code>, optional <code>response</code>,
+<code>name</code>, <code>description</code>), <code>CapabilityEffects</code> (<code>kinds</code>, <code>concurrency</code>,
+<code>resource_key_fields</code>), <code>CapabilityRequirements</code> (<code>services</code>,
+<code>credentials</code>, <code>binaries</code>, <code>network</code>, <code>filesystem</code>), <code>NetworkRequirement</code>,
+<code>FilesystemRequirement</code>, <code>CapabilityDeprecation</code>, and
+<code>schemas_from_models(request_model, response_model)</code>.</p>
+<p>Effects are a <strong>declaration for inspection, not a permission grant</strong> —
+authorization lives outside ZeoCore.</p>
+<h3 id="guards">Guards<a class="headerlink" href="#guards" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestGuard</span><span class="p">,</span> <span class="n">GuardResult</span><span class="p">,</span> <span class="n">GuardIssue</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">NonEmptyNameGuard</span><span class="p">:</span>                      <span class="c1"># structural: no base class needed</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GuardResult</span><span class="p">:</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>            <span class="k">return</span> <span class="n">GuardResult</span><span class="o">.</span><span class="n">reject</span><span class="p">(</span><span class="s2">"name must not be blank"</span><span class="p">,</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>                                      <span class="n">issues</span><span class="o">=</span><span class="p">(</span><span class="n">GuardIssue</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"name"</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">"blank"</span><span class="p">),))</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>        <span class="k">return</span> <span class="n">GuardResult</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+</code></pre></div>
+<p>Pydantic validates <em>shape</em>; a guard is a side-effect-free <em>policy</em> check over
+an already-validated request. A rejection short-circuits before the handler
+body runs and produces <code>CapabilityOutcome.guard_rejected</code>.
+<code>GuardResult.reject()</code> defaults to code <code>ZEO_CAP_GUARD_REJECTED</code>.</p>
+<p>Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/capability_guards.py"><code>capability_guards.py</code></a></p>
+<h3 id="artifacts-and-run-manifests">Artifacts and run manifests<a class="headerlink" href="#artifacts-and-run-manifests" title="Permanent link">&para;</a></h3>
+<p><code>ArtifactRef</code>, <code>StorageRef</code>, <code>Checksum</code>, <code>ToolInfo</code>, <code>Provenance</code>,
+<code>ManifestInput</code>, <code>RunManifest</code>. Tools <em>describe</em> artifacts; the runner
+creates the <code>RunManifest</code> and owns persistence.</p>
+<h3 id="enums-ids-time-versions">Enums, ids, time, versions<a class="headerlink" href="#enums-ids-time-versions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Symbols</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Status</td>
+<td><code>CapabilityStatus</code>, <code>CapabilityOutcome</code></td>
+</tr>
+<tr>
+<td>Declarations</td>
+<td><code>EffectKind</code>, <code>ConcurrencyMode</code></td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><code>ArtifactKind</code>, <code>StorageScheme</code>, <code>ChecksumAlgorithm</code></td>
+</tr>
+<tr>
+<td>Logging</td>
+<td><code>LogLevel</code></td>
+</tr>
+<tr>
+<td>Ids</td>
+<td><code>generate_run_id()</code>, <code>generate_artifact_id()</code>, <code>generate_invocation_id()</code>, <code>is_valid_uuid()</code></td>
+</tr>
+<tr>
+<td>Time</td>
+<td><code>utcnow()</code>, <code>utcnow_iso()</code></td>
+</tr>
+<tr>
+<td>Versions</td>
+<td><code>CONTRACTS_VERSION</code>, <code>MANIFEST_VERSION</code>, <code>ARTIFACT_SCHEMA_VERSION</code>, <code>ENVELOPE_VERSION</code>, <code>CAPABILITY_MANIFEST_SCHEMA_VERSION</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>EffectKind</code>: <code>READ</code>, <code>WRITE</code>, <code>DELETE</code>, <code>EXTERNAL_COMMUNICATION</code>,
+<code>FINANCIAL</code>, <code>SECURITY_SENSITIVE</code>.
+<code>ConcurrencyMode</code>: <code>PARALLEL_SAFE</code>, <code>SERIAL_PER_CAPABILITY</code>,
+<code>SERIAL_PER_RESOURCE</code>, <code>EXCLUSIVE</code>.</p>
+<p><code>EchoRequest</code> and <code>VideoRefRequest</code> are exported demo <strong>models</strong>; the demo
+implementations behind them are internal.</p>
+<hr />
+<p><a id="result-states"></a></p>
+<h2 id="result-states-status-outcome-and-error-codes">Result states: status, outcome, and error codes<a class="headerlink" href="#result-states-status-outcome-and-error-codes" title="Permanent link">&para;</a></h2>
+<p>Every capability returns one envelope, and callers branch on it instead of
+catching a matrix of exceptions.</p>
+<p><code>CapabilityStatus</code> is the three-way branch orchestrators use.
+<code>CapabilityOutcome</code> refines it. The mapping is enforced: constructing a
+result whose outcome contradicts its status raises <code>ValueError</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Constructor</th>
+<th><code>status</code></th>
+<th><code>outcome</code></th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.ok(data=...)</code></td>
+<td><code>success</code></td>
+<td><code>success</code></td>
+<td>The capability did its job.</td>
+</tr>
+<tr>
+<td><code>.skip(reason, code)</code></td>
+<td><code>skipped</code></td>
+<td><code>policy_skipped</code></td>
+<td>A deliberate policy decision (input too short, already done).</td>
+</tr>
+<tr>
+<td><code>.unavailable(reason)</code></td>
+<td><code>skipped</code></td>
+<td><code>unavailable</code></td>
+<td>A declared dependency was not wired in.</td>
+</tr>
+<tr>
+<td><code>.fail(msg, code)</code></td>
+<td><code>error</code></td>
+<td><code>integration_failure</code> (default)</td>
+<td>An expected downstream failure.</td>
+</tr>
+<tr>
+<td><code>.fail_from_exc(msg, code, exc)</code></td>
+<td><code>error</code></td>
+<td><code>unexpected_exception</code></td>
+<td>An exception you caught and are reporting.</td>
+</tr>
+</tbody>
+</table>
+<p>Three more outcomes are produced by the invoke pipeline rather than by you:
+<code>guard_rejected</code>, <code>invalid_return</code>, and <code>cancelled</code>. Human approval and
+externally imposed timeouts are deliberately <strong>not</strong> result states.</p>
+<p>Field invariants (validated on construction):</p>
+<ul>
+<li><code>status=error</code> requires both <code>error</code> and <code>machine_message</code>.</li>
+<li><code>status=skipped</code> requires <code>machine_message</code> and forbids <code>error</code> — skips are decisions, not failures.</li>
+<li><code>status=success</code> forbids both — success is the default path and needs no routing code.</li>
+<li><code>machine_message</code> must start with <code>ZEO_</code> (current convention), <code>ZC_</code> (short alias), or <code>QC_</code> (accepted for pre-rename orchestrators). Use <code>ZEO_&lt;AREA&gt;_&lt;DETAIL&gt;</code>, e.g. <code>ZEO_VAL_TOO_SHORT</code>.</li>
+</ul>
+<p>Codes the invoke pipeline emits on your behalf:</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Outcome</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ZEO_CAP_GUARD_REJECTED</code></td>
+<td><code>guard_rejected</code></td>
+<td>A guard rejected the request, or request validation failed.</td>
+</tr>
+<tr>
+<td><code>ZEO_CAP_UNAVAILABLE</code></td>
+<td><code>unavailable</code></td>
+<td>Declared services / <code>fs</code> missing from <code>ctx</code>; the message names what is missing.</td>
+</tr>
+<tr>
+<td><code>ZEO_CAP_INVALID_RETURN</code></td>
+<td><code>invalid_return</code></td>
+<td>The handler returned something other than <code>CapabilityResult</code>, or an async capability was called with <code>invoke_sync</code>.</td>
+</tr>
+<tr>
+<td><code>ZEO_CAP_UNEXPECTED</code></td>
+<td><code>unexpected_exception</code></td>
+<td>The handler raised.</td>
+</tr>
+<tr>
+<td><code>ZEO_CAP_CANCELLED</code></td>
+<td><code>cancelled</code></td>
+<td>The injected cancellation token reported cancellation.</td>
+</tr>
+</tbody>
+</table>
+<p>Exceptions still exist for genuinely exceptional conditions — that is what
+the <code>ZeoError</code> family in <a href="#errors"><code>zeo_core.core.errors</code></a> is for.
+Reach for a result when the <em>tool</em> expects the condition, and for an
+exception when the <em>caller</em> would not.</p>
+<p>Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/capability_guards.py"><code>capability_guards.py</code></a> prints
+each of <code>outcome</code>, <code>machine_message</code>, and <code>data</code> for an accepted and a
+rejected request.</p>
+<hr />
+<p><a id="core"></a></p>
+<h2 id="zeo_corecore-filesystem-paths-errors-registry"><code>zeo_core.core</code> — filesystem, paths, errors, registry<a class="headerlink" href="#zeo_corecore-filesystem-paths-errors-registry" title="Permanent link">&para;</a></h2>
+<p><code>zeo_core.core</code> itself exports nothing: always import the subpackage
+(<code>zeo_core.core.fs</code>, not <code>zeo_core.core</code>).</p>
+<h3 id="zeo_corecorefs-filesystem-service"><code>zeo_core.core.fs</code> — filesystem service<a class="headerlink" href="#zeo_corecorefs-filesystem-service" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.core.fs</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_service</span><span class="p">,</span> <span class="n">create_service</span><span class="p">,</span> <span class="n">FileSystemService</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="n">fs</span> <span class="o">=</span> <span class="n">get_service</span><span class="p">()</span>                                  <span class="c1"># cached singleton, base_dir = CWD</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="n">fs</span> <span class="o">=</span> <span class="n">create_service</span><span class="p">(</span><span class="n">base_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=...</span><span class="p">,</span> <span class="n">unsafe_allow_absolute_paths</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="n">result</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s2">"notes.md"</span><span class="p">)</span>
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Sandboxing:</strong> by default the service refuses paths outside its <code>base_dir</code>
+(the current working directory). <code>unsafe_allow_absolute_paths=True</code> relaxes
+that trust boundary while still blocking <code>..</code> escapes — this is why some
+examples write scratch files under the repo instead of <code>/tmp</code>.</p>
+<p>Operation groups on <code>FileSystemService</code>: reads (<code>read_text</code>, <code>read_bytes</code>,
+<code>read_lines</code>, <code>read_json</code>, <code>read_yaml</code>), writes (<code>write_text</code>,
+<code>write_bytes</code>, <code>write_lines</code>, <code>write_json</code>, <code>write_yaml</code>, <code>atomic_write</code>),
+directories (<code>create_directory</code>, <code>ensure_dir</code>, <code>list_dir</code>, <code>list_directory</code>),
+lifecycle (<code>copy</code>, <code>move</code>, <code>delete</code>, <code>create_temp_file</code>,
+<code>create_temp_directory</code>), inspection (<code>exists</code>, <code>is_file</code>, <code>is_dir</code>,
+<code>get_file_info</code>, <code>get_file_size_str</code>, <code>get_mime_type</code>, <code>stat</code>), search
+(<code>find_files</code>, <code>find_files_by_content</code>), paths (<code>resolve_path</code>,
+<code>normalize_path</code>, <code>join_path</code>, <code>split_path</code>, <code>is_safe_path</code>,
+<code>is_subdirectory</code>, <code>get_unique_filename</code>), and integrity (<code>compute_checksum</code>,
+<code>hash_file</code>).</p>
+<p>Result models — <code>OperationResult</code>, <code>BoolResult</code>, <code>ReadResult</code>,
+<code>WriteResult</code>, <code>FileInfoResult</code>, <code>DirectoryInfoResult</code>, <code>FindResult</code>,
+<code>DataResult</code>, <code>PathResult</code>, <code>ErrorInfo</code> — all carry <code>ok</code>, <code>path</code>,
+<code>message</code>, <code>error_info</code>, <code>meta</code>. <strong><code>ok</code> is canonical</strong>; <code>.success</code> is a
+deprecated alias kept for existing callers, and <code>.error_info</code> supersedes the
+legacy <code>.error</code> string.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/core/fs"><code>src/zeo_core/core/fs/</code></a></p>
+<h3 id="zeo_corecorepaths-project-aware-path-resolution"><code>zeo_core.core.paths</code> — project-aware path resolution<a class="headerlink" href="#zeo_corecorepaths-project-aware-path-resolution" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.core.paths</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_path_service</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">paths</span> <span class="o">=</span> <span class="n">get_path_service</span><span class="p">()</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="n">root</span> <span class="o">=</span> <span class="n">paths</span><span class="o">.</span><span class="n">get_project_root</span><span class="p">()</span>                     <span class="c1"># PathResult(success, path, error)</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="n">cfg</span>  <span class="o">=</span> <span class="n">paths</span><span class="o">.</span><span class="n">resolve_project_path</span><span class="p">(</span><span class="s2">"config/settings.yaml"</span><span class="p">)</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="n">ctx</span>  <span class="o">=</span> <span class="n">paths</span><span class="o">.</span><span class="n">detect_project_context</span><span class="p">()</span>               <span class="c1"># ContextResult(success, context, error)</span>
+</code></pre></div>
+<p>Public: <code>PathService</code>, <code>PathResolver</code>, <code>get_path_service()</code>, models
+<code>ProjectContext</code>, <code>ContentContext</code>, <code>ProjectDirectory</code>, and results
+<code>PathResult</code>, <code>StringResult</code>, <code>ContextResult</code> (these use <code>.success</code>, unlike
+the <code>fs</code> results above). Other methods: <code>resolve_relative_to_project</code>,
+<code>get_relative_path</code>, <code>find_nearest_directory</code>, <code>get_known_directory</code>,
+<code>get_module_path</code>, <code>infer_module_from_path</code>, <code>detect_content_context</code>.</p>
+<p>This package deliberately does <strong>not</strong> expose low-level join/split — use
+<code>zeo_core.core.fs</code> for filesystem primitives.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/core/paths"><code>src/zeo_core/core/paths/</code></a></p>
+<p><a id="errors"></a></p>
+<h3 id="zeo_corecoreerrors-typed-exceptions"><code>zeo_core.core.errors</code> — typed exceptions<a class="headerlink" href="#zeo_corecoreerrors-typed-exceptions" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZeoError</span><span class="p">,</span> <span class="n">ZeoFileNotFoundError</span><span class="p">,</span> <span class="n">wrap_io_errors</span>
+</code></pre></div>
+<p>One root (<code>ZeoError</code>) with a structured <code>.context</code> dict, so you catch types
+instead of parsing strings:</p>
+<ul>
+<li>I/O: <code>ZeoIOError</code>, <code>ZeoFileNotFoundError</code>, <code>ZeoFileExistsError</code>, <code>ZeoPermissionError</code></li>
+<li>Data: <code>ZeoValidationError</code>, <code>ZeoFormatError</code></li>
+<li>Setup: <code>ZeoConfigurationError</code>, <code>ZeoPluginError</code></li>
+<li>Auth / integrations: <code>ZeoBaseAuthError</code>, <code>ZeoAuthenticationError</code>, <code>ZeoIntegrationError</code>, <code>ZeoApiError</code>, <code>ZeoQuotaExceededError</code></li>
+</ul>
+<p><code>@wrap_io_errors</code> converts unhandled builtins (<code>OSError</code>, <code>ValueError</code>, …)
+raised inside the decorated function into the matching <code>ZeoError</code> subclass,
+so callers only handle one family.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/core/errors"><code>src/zeo_core/core/errors/</code></a> ·
+Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/error_handling.py"><code>error_handling.py</code></a></p>
+<h3 id="zeo_corecoreregistry-operation-registry"><code>zeo_core.core.registry</code> — operation registry<a class="headerlink" href="#zeo_corecoreregistry-operation-registry" title="Permanent link">&para;</a></h3>
+<p><em>Documented, no <code>__all__</code>.</em> This is the shared surface both adapters read.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.core.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">OperationRegistry</span><span class="p">,</span> <span class="n">Operation</span><span class="p">,</span> <span class="n">get_registry</span><span class="p">,</span> <span class="n">reset_registry</span><span class="p">,</span> <span class="n">invoke_operation</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="n">ops</span> <span class="o">=</span> <span class="n">OperationRegistry</span><span class="p">()</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="n">ops</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">callable_</span><span class="p">,</span> <span class="n">request_model</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="n">ops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="n">ops</span><span class="o">.</span><span class="n">get_or_error</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="n">ops</span><span class="o">.</span><span class="n">has_operation</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="n">ops</span><span class="o">.</span><span class="n">list_operations</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">/</span> <span class="n">ops</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="n">ops</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</code></pre></div>
+<p>Registering the same name twice raises <code>ValueError</code>. Prefer
+<code>zeo_core.tools.register_capability_operation()</code> over calling <code>register()</code> by
+hand: it reuses the capability's own request model instead of a second
+hand-written schema.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/core/registry.py"><code>registry.py</code></a></p>
+<h3 id="zeo_corecorejobs-async-job-execution"><code>zeo_core.core.jobs</code> — async job execution<a class="headerlink" href="#zeo_corecorejobs-async-job-execution" title="Permanent link">&para;</a></h3>
+<p><em>Documented, no <code>__all__</code>.</em> Backing store and runner for the HTTP adapter's
+<code>/jobs</code> endpoints: <code>JobStatus</code>, <code>JobData</code>, the <code>JobStore</code> / <code>JobRunner</code>
+abstract bases, and the concrete <code>InMemoryJobStore</code> and
+<code>ThreadPoolJobRunner</code>.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/core/jobs.py"><code>jobs.py</code></a> ·
+Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/http_adapter_usage.py"><code>http_adapter_usage.py</code></a></p>
+<h3 id="other-zeo_corecore-modules">Other <code>zeo_core.core</code> modules<a class="headerlink" href="#other-zeo_corecore-modules" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>zeo_core.core.logging</code></strong> — <code>get_logger</code>, <code>configure_logger</code>, <code>LOG_LEVELS</code>, <code>LogLevel</code> (declared in <code>__all__</code>).</li>
+<li><strong><code>zeo_core.core.mime</code></strong> <em>(documented, no <code>__all__</code>)</em> — <code>get_content_type</code>, <code>is_binary_extension</code>, <code>is_text_extension</code>.</li>
+<li><strong><code>zeo_core.core.serialization</code></strong> <em>(documented, no <code>__all__</code>)</em> — <code>normalize_for_json</code>, the JSON-safety check <code>ToolContext.metadata</code> uses.</li>
+</ul>
+<p><a id="config"></a></p>
+<h2 id="zeo_coreconfig-configuration"><code>zeo_core.config</code> — configuration<a class="headerlink" href="#zeo_coreconfig-configuration" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">ZeoConfig</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">()</span>                        <span class="c1"># default locations; falls back to defaults + env</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">"zeo_config.yaml"</span><span class="p">)</span>       <span class="c1"># explicit path; raises if it does not exist</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="n">config</span><span class="o">.</span><span class="n">general</span><span class="o">.</span><span class="n">project_name</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="n">config</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">level</span>
+</code></pre></div>
+<p>Public: <code>load_config(config_path=None, merge_env=True, merge_defaults=True)</code>,
+<code>merge_configs(base, override)</code>, <code>get_env</code>, <code>get_config_value</code>,
+<code>validate_required_config</code>, models <code>ZeoConfig</code>, <code>GeneralConfig</code>,
+<code>LoggingConfig</code>, <code>PathsConfig</code>, <code>PluginsConfig</code>, plus the legacy globals
+<code>get_config()</code> and the <code>config</code> proxy (discouraged in new code — pass config
+explicitly).</p>
+<p>The two <code>load_config()</code> forms behave differently on purpose: the
+no-argument form never raises (it merges built-in defaults with environment
+variables), while an explicit path is a promise the file exists and raises
+<code>ZeoConfigurationError</code> if it does not. Default locations searched:
+<code>./zeo_config.yaml</code>, <code>./config/zeo_config.yaml</code>, <code>~/.zeo/config.yaml</code>,
+<code>/etc/zeo/config.yaml</code>, plus the same two file names under the detected
+project root.</p>
+<p>Importing this package performs <strong>no</strong> I/O.</p>
+<p><code>zeo_core.config.tooling</code> is a separate declared surface for per-tool
+config and logging: <code>ZeoToolConfigModel</code>, <code>load_tool_config</code>,
+<code>update_tool_config</code>, <code>setup_tool_logging</code>, <code>get_logger</code>.</p>
+<p>Secrets belong in <code>.env</code> (gitignored), not in committed YAML — see
+<a href="https://github.com/profrodai/zeocore/blob/main/.env.example"><code>.env.example</code></a> and GET-STARTED's
+<a href="../../project/GET-STARTED/#secrets-and-env">Secrets and <code>.env</code></a>.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/config"><code>src/zeo_core/config/</code></a> ·
+Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/config_usage.py"><code>config_usage.py</code></a></p>
+<p><a id="modules"></a></p>
+<h2 id="zeo_coremodules-plugin-discovery"><code>zeo_core.modules</code> — plugin discovery<a class="headerlink" href="#zeo_coremodules-plugin-discovery" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.modules</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_available_entry_points</span><span class="p">,</span> <span class="n">load_enabled_entry_points</span><span class="p">,</span> <span class="n">registry</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="n">available</span> <span class="o">=</span> <span class="n">list_available_entry_points</span><span class="p">()</span>      <span class="c1"># lists WITHOUT instantiating anything</span>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="n">result</span> <span class="o">=</span> <span class="n">load_enabled_entry_points</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="p">[</span><span class="s2">"fs"</span><span class="p">,</span> <span class="s2">"paths"</span><span class="p">,</span> <span class="s2">"config"</span><span class="p">],</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>                                   <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_register</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">loaded</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">warnings</span>
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="n">plugin</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get_plugin</span><span class="p">(</span><span class="s2">"fs"</span><span class="p">)</span>
+</code></pre></div>
+<p>Importing <code>zeo_core.modules</code> has <strong>no side effects</strong> — nothing is discovered,
+loaded, or registered until you ask. <code>strict=True</code> is all-or-nothing: one
+unknown id means nothing loads. <code>strict=False</code> loads what it can and reports
+the rest in <code>warnings</code>.</p>
+<p>Public: <code>PluginRegistry</code>, <code>PluginLoader</code>, the protocols
+(<code>PluginRegistryProtocol</code>, <code>PluginLoaderProtocol</code>, <code>ZeoPluginProtocol</code>,
+<code>CommandPluginProtocol</code>, <code>WorkflowPluginProtocol</code>, <code>ExtensionPluginProtocol</code>,
+<code>ProviderPluginProtocol</code>, <code>ConfigurablePluginProtocol</code>), the models
+(<code>ZeoPluginMetadata</code>, <code>PluginEntryPoint</code>, <code>LoadResult</code>), the loading
+functions (<code>list_available_entry_points</code>, <code>load_enabled_entry_points</code>,
+<code>load_enabled_modules</code>), and the globals <code>registry</code> and <code>loader</code>.</p>
+<p>Built-in plugin ids (entry-point group <code>zeo_core.modules</code>): <code>fs</code>, <code>paths</code>,
+<code>config</code>, <code>prompt</code>.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/modules"><code>src/zeo_core/modules/</code></a> ·
+Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/explicit_plugin_loading_example.py"><code>explicit_plugin_loading_example.py</code></a></p>
+<p><a id="prompt"></a></p>
+<h2 id="zeo_coreprompt-prompt-strategies"><code>zeo_core.prompt</code> — prompt strategies<a class="headerlink" href="#zeo_coreprompt-prompt-strategies" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.prompt</span><span class="w"> </span><span class="kn">import</span> <span class="n">PromptService</span><span class="p">,</span> <span class="n">create_default_prompt_service</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="n">service</span> <span class="o">=</span> <span class="n">create_default_prompt_service</span><span class="p">()</span>      <span class="c1"># internal strategies pre-loaded</span>
+</code></pre></div>
+<p>Public: <code>PromptService</code>, <code>create_default_prompt_service()</code>, models
+<code>PromptStrategy</code>, <code>StrategyInfo</code>, and results <code>PromptRenderResult</code>,
+<code>StrategyListResult</code>, <code>GetStrategyResult</code>, <code>RegisterStrategyResult</code>,
+<code>LoadPackResult</code>.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/prompt"><code>src/zeo_core/prompt/</code></a></p>
+<p><a id="adapters"></a></p>
+<h2 id="zeo_coreadapters-http-mcp-llm-tools"><code>zeo_core.adapters</code> — HTTP, MCP, LLM tools<a class="headerlink" href="#zeo_coreadapters-http-mcp-llm-tools" title="Permanent link">&para;</a></h2>
+<p>One capability, three front ends. HTTP and MCP both read the same
+<code>OperationRegistry</code>, so registering once exposes a capability to both.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_capability_operation</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="n">register_capability_operation</span><span class="p">(</span>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>    <span class="n">capability</span><span class="p">,</span>                 <span class="c1"># BoundCapability</span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>    <span class="o">*</span><span class="p">,</span>
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>    <span class="n">registry</span><span class="p">,</span>                   <span class="c1"># OperationRegistry</span>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>    <span class="n">context_factory</span><span class="p">,</span>            <span class="c1"># callable(capability) -&gt; ToolContext</span>
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>    <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>                  <span class="c1"># defaults to the canonical capability id</span>
+<a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>    <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a>    <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>                        <span class="c1"># the registered operation name</span>
+</code></pre></div>
+<h3 id="zeo_coreadaptershttp-rest-zeocorehttp"><code>zeo_core.adapters.http</code> — REST (<code>zeocore[http]</code>)<a class="headerlink" href="#zeo_coreadaptershttp-rest-zeocorehttp" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.adapters.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span><span class="p">,</span> <span class="n">HttpAdapterConfig</span><span class="p">,</span> <span class="n">run</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">job_store</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">job_runner</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># -&gt; FastAPI</span>
+<a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="n">run</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>                                                                    <span class="c1"># uvicorn, blocking</span>
+</code></pre></div>
+<p><code>HttpAdapterConfig</code> fields: <code>host</code> (<code>"0.0.0.0"</code>), <code>port</code> (<code>8080</code>),
+<code>cors_origins</code>, <code>auth_token</code>, <code>hmac_secret</code>, <code>public_base_url</code>,
+<code>job_ttl_seconds</code> (<code>3600</code>), <code>max_workers</code> (<code>4</code>),
+<code>request_timeout_seconds</code> (<code>900</code>).</p>
+<p>Endpoints: <code>GET /health/live</code> and <code>GET /health/ready</code> (no auth), <code>GET /ops</code>,
+<code>POST /ops/{op_name}</code>, <code>POST /jobs</code>, <code>GET /jobs/{job_id}</code>. Set
+<code>auth_token=None</code> only for local experiments.</p>
+<p>Without the extra installed, importing the package still succeeds but every
+symbol is a stub that raises <code>ImportError</code> with an install hint when called.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/adapters/http"><code>src/zeo_core/adapters/http/</code></a> ·
+Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/http_adapter_usage.py"><code>http_adapter_usage.py</code></a></p>
+<h3 id="zeo_coreadaptersmcp-model-context-protocol-zeocoremcp"><code>zeo_core.adapters.mcp</code> — Model Context Protocol (<code>zeocore[mcp]</code>)<a class="headerlink" href="#zeo_coreadaptersmcp-model-context-protocol-zeocoremcp" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.adapters.mcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_tool</span><span class="p">,</span> <span class="n">create_server</span><span class="p">,</span> <span class="n">run</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="n">register_tool</span><span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>              <span class="n">work_dir</span><span class="o">=</span><span class="s2">"."</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s2">"."</span><span class="p">,</span> <span class="n">services</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="n">create_server</span><span class="p">(</span><span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"zeocore"</span><span class="p">,</span> <span class="n">version</span><span class="o">=...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MCPServer</span>
+<a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a><span class="n">run</span><span class="p">(</span><span class="n">registry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"zeocore"</span><span class="p">,</span> <span class="n">version</span><span class="o">=...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>    <span class="c1"># stdio transport</span>
+</code></pre></div>
+<p><code>register_tool()</code> derives the MCP <code>inputSchema</code> from the tool's own
+<code>run(request, ctx)</code> type hint — a tool needs zero MCP-specific code. <code>run()</code>
+serves over stdio, the transport Claude Code and Cursor speak by default;
+for HTTP/SSE, build the server with <code>create_server()</code> and call the MCP SDK's
+own transport methods.</p>
+<p>Same stub behavior as the HTTP adapter when <code>zeocore[mcp]</code> is not installed.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/adapters/mcp"><code>src/zeo_core/adapters/mcp/</code></a> ·
+Tutorial: <a href="../../tutorials/mcp-server-with-claude-code/">MCP server with Claude Code / Cursor</a> ·
+Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/mcp_server_usage.py"><code>mcp_server_usage.py</code></a></p>
+<h3 id="zeo_coreadaptersllm_tools-openai-function-projection"><code>zeo_core.adapters.llm_tools</code> — OpenAI function projection<a class="headerlink" href="#zeo_coreadaptersllm_tools-openai-function-projection" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.adapters.llm_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">project_openai_tool</span><span class="p">,</span> <span class="n">openai_function_name</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="n">result</span> <span class="o">=</span> <span class="n">project_openai_tool</span><span class="p">(</span><span class="n">manifest</span><span class="p">)</span>     <span class="c1"># OpenAIProjectionResult</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="n">result</span><span class="o">.</span><span class="n">ok</span>                                  <span class="c1"># tool present and no incompatibility</span>
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="n">result</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">function</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span>               <span class="c1"># e.g. "demo_greet_v1_0_0"</span>
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a><span class="n">result</span><span class="o">.</span><span class="n">incompatibility</span><span class="o">.</span><span class="n">reason</span>              <span class="c1"># typed refusal, when not ok</span>
+</code></pre></div>
+<p>Pure, no network, no API key, no extra required. The projection <strong>refuses</strong>
+rather than silently weakening a schema: unsupported JSON Schema keywords
+(<code>not</code>, <code>if</code>/<code>then</code>/<code>else</code>, <code>patternProperties</code>, <code>dependentSchemas</code>,
+<code>contentEncoding</code>) produce a <code>ProjectionIncompatibility</code> with the offending
+path. <code>required</code>, <code>$ref</code>, enums, and nullability are never dropped;
+returns/examples/effects are omitted because the provider format has nowhere
+to put them.</p>
+<p>Public: <code>project_openai_tool</code>, <code>openai_function_name</code>, <code>OpenAIFunctionTool</code>,
+<code>OpenAIProjectionResult</code>, <code>ProjectionIncompatibility</code>.</p>
+<p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/adapters/llm_tools"><code>src/zeo_core/adapters/llm_tools/</code></a> ·
+Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/llm_tools_usage.py"><code>llm_tools_usage.py</code></a></p>
+<p><a id="integrations"></a></p>
+<h2 id="zeo_coreintegrations-external-services"><code>zeo_core.integrations</code> — external services<a class="headerlink" href="#zeo_coreintegrations-external-services" title="Permanent link">&para;</a></h2>
+<p>Each integration is its own import and its own extra. The parent package
+<code>zeo_core.integrations</code> exports nothing; import the leaf.</p>
+<table>
+<thead>
+<tr>
+<th>Import</th>
+<th>Extra</th>
+<th>Public names (abridged)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>zeo_core.integrations.github</code></td>
+<td><code>github</code></td>
+<td><code>GitHubIntegration</code>, <code>GitHubClient</code>, <code>GitHubAuthProvider</code>, <code>GitHubConfigProvider</code>, <code>GitHubIntegrationProtocol</code>, <code>GitHubRepo</code>, <code>GitHubUser</code>, <code>PullRequest</code>, <code>create_integration</code></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.google.drive</code></td>
+<td><code>drive</code> / <code>google</code></td>
+<td><code>GoogleDriveService</code>, <code>DriveFile</code>, <code>DriveFolder</code>, <code>create_integration</code></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.google.mail</code></td>
+<td><code>gmail</code> / <code>google</code></td>
+<td><code>GoogleMailService</code>, <code>create_integration</code></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.google.calendar</code></td>
+<td><code>calendar</code> / <code>google</code></td>
+<td><code>GoogleCalendarService</code>, <code>Calendar</code>, <code>CalendarEvent</code>, <code>EventAttendee</code>, <code>EventDateTime</code>, <code>CalendarIntegrationProtocol</code>, <code>create_integration</code></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.hosted</code></td>
+<td>base install</td>
+<td><code>ServiceRequirement</code>, <code>ServiceResolver</code>, <code>ExecutionProfile</code>, resolution states, <code>build_hosted_runtime</code>, <code>ZEOconnectHTTPTransport</code>, <code>KeychainSecureSessionStore</code>, hosted service proxies</td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.notion</code></td>
+<td><code>notion</code></td>
+<td><code>NotionIntegration</code>, <code>NotionClient</code>, <code>NotionOperation</code>, <code>NotionAPIError</code>, <code>NotionPageResult</code>, typed page/database/data-source/block/user models</td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.llms</code></td>
+<td><code>llms</code></td>
+<td><code>LLMClient</code>, <code>OpenAIClient</code>, <code>AnthropicClient</code>, <code>OllamaClient</code>, <code>MockLLMClient</code>, <code>FallbackLLMClient</code>, <code>LLMConfig</code>, <code>ChatMessage</code>, <code>FunctionCall</code></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.pandoc</code></td>
+<td><code>pandoc</code></td>
+<td><code>PandocIntegration</code>, <code>DocumentConverter</code>, <code>PandocConfig</code>, <code>ConversionMetrics</code>, <code>ConversionTask</code>, <code>FileInfo</code>, <code>create_integration</code></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.jupytext</code></td>
+<td><code>jupytext</code></td>
+<td><code>JupytextIntegration</code>, <code>NotebookConverter</code>, <code>JupytextConfig</code>, <code>ConversionDetails</code>, <code>NotebookInfo</code>, <code>create_integration</code></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.ffmpeg</code></td>
+<td><code>ffmpeg</code></td>
+<td><code>FFmpegIntegration</code>, <code>FFmpegConfig</code>, <code>RenderMetrics</code>, <code>create_integration</code></td>
+</tr>
+</tbody>
+</table>
+<p>Shared vocabulary lives in <code>zeo_core.integrations.core</code>:
+<code>BaseIntegrationService</code>, <code>BaseAuthProvider</code>, <code>BaseConfigProvider</code>, the
+protocols (<code>IntegrationProtocol</code>, <code>StorageIntegrationProtocol</code>,
+<code>AuthProviderProtocol</code>, <code>ConfigProviderProtocol</code>), and the results
+<code>IntegrationResult</code>, <code>AuthResult</code>, <code>ConfigResult</code>, <code>IntegrationLoadReport</code>.</p>
+<p><strong>Integration results are not <code>CapabilityResult</code>.</strong> They use
+<code>.success</code> / <code>.content</code> / <code>.error</code> / <code>.message</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="n">result</span> <span class="o">=</span> <span class="n">notion</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">content</span> <span class="ow">or</span> <span class="p">[]:</span>
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>        <span class="o">...</span>
+</code></pre></div>
+<p>Two import-time behaviors worth knowing, because they change how a script
+fails:</p>
+<ul>
+<li>The <strong>Google</strong> integrations import their Google client libraries eagerly, so <code>import zeo_core.integrations.google.drive</code> raises <code>ImportError</code> without the extra.</li>
+<li><strong>Notion, jupytext, ffmpeg</strong> import cleanly without their extra and fail later, inside <code>initialize()</code>, with a message naming the missing package.</li>
+</ul>
+<p>Database integrations (<code>bigquery</code>, <code>sqlite</code>, <code>supabase</code>) appear as empty
+placeholder packages: they were evaluated and <strong>not built</strong>. Do not import
+them.</p>
+<p><a id="contract-pack"></a></p>
+<h2 id="zeo_corecontract_pack-ecosystem-pin"><code>zeo_core.contract_pack</code> — ecosystem pin<a class="headerlink" href="#zeo_corecontract_pack-ecosystem-pin" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.contract_pack</span><span class="w"> </span><span class="kn">import</span> <span class="n">PACK_VERSION</span><span class="p">,</span> <span class="n">PACK_SCHEMA</span>   <span class="c1"># "1.0.0", "zeo_core.contract_pack.v1"</span>
+</code></pre></div>
+<p>A versioned consumption contract for ecosystem runners that need to pin what
+they consume without importing Sovereign Agent.</p>
+<p><a id="extras"></a></p>
+<h2 id="optional-extras">Optional extras<a class="headerlink" href="#optional-extras" title="Permanent link">&para;</a></h2>
+<p>Declared in <a href="https://github.com/profrodai/zeocore/blob/main/pyproject.toml"><code>pyproject.toml</code></a>; <code>uv pip install "zeocore[name]"</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Extra</th>
+<th>Adds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http</code></td>
+<td>FastAPI HTTP adapter</td>
+</tr>
+<tr>
+<td><code>mcp</code></td>
+<td>MCP adapter (pinned to <code>mcp&gt;=2,&lt;3</code>)</td>
+</tr>
+<tr>
+<td><code>github</code></td>
+<td>GitHub API</td>
+</tr>
+<tr>
+<td><code>drive</code>, <code>gmail</code>, <code>calendar</code>, <code>google</code></td>
+<td>Google Drive / Gmail / Calendar (<code>google</code> is the shared auth plumbing)</td>
+</tr>
+<tr>
+<td><code>notion</code></td>
+<td>Notion read + write</td>
+</tr>
+<tr>
+<td><code>llms</code></td>
+<td>OpenAI / Anthropic / tiktoken</td>
+</tr>
+<tr>
+<td><code>pandoc</code></td>
+<td>Document conversion</td>
+</tr>
+<tr>
+<td><code>jupytext</code></td>
+<td>Script ↔ notebook conversion</td>
+</tr>
+<tr>
+<td><code>ffmpeg</code></td>
+<td>Media probing/transcoding via <code>ffmpeg-zeo</code> (needs an <code>ffmpeg</code> binary too)</td>
+</tr>
+<tr>
+<td><code>all</code></td>
+<td>Every integration above — <strong>not</strong> <code>http</code> or <code>mcp</code>; use <code>zeocore[all,mcp]</code></td>
+</tr>
+<tr>
+<td><code>dev</code>, <code>lint</code>, <code>http-dev</code>, <code>mcp-dev</code></td>
+<td>Contributor tooling — see <a href="../../project/CONTRIBUTING/">CONTRIBUTING.md</a></td>
+</tr>
+</tbody>
+</table>
+<p>Python <strong>3.14 or newer</strong> is required.</p>
+<p>Credentials are read from the process environment, never from committed
+YAML: <code>NOTION_TOKEN</code>, <code>GITHUB_TOKEN</code>, <code>OPENAI_API_KEY</code>, <code>ANTHROPIC_API_KEY</code>
+(see <a href="https://github.com/profrodai/zeocore/blob/main/.env.example"><code>.env.example</code></a>). Google integrations use an OAuth
+client-secrets JSON file instead of a single token.</p>
+<p><a id="not-public"></a></p>
+<h2 id="not-public-api">Not public API<a class="headerlink" href="#not-public-api" title="Permanent link">&para;</a></h2>
+<p>Importing any of these couples you to internals that change without notice:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Why it is not API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>zeo_core.core.fs._internal</code>, <code>zeo_core.core.fs._ops</code></td>
+<td>Implementation of <code>FileSystemService</code>. Attribute access is actively blocked.</td>
+</tr>
+<tr>
+<td><code>zeo_core.core.paths._internal</code></td>
+<td>Implementation of <code>PathService</code>. <code>PathResolver</code> is re-exported from <code>zeo_core.core.paths</code> — import it from there.</td>
+</tr>
+<tr>
+<td><code>zeo_core.tools.mixins.*</code>, <code>zeo_core.tools.invoke</code>, <code>zeo_core.tools.authoring</code>, …</td>
+<td>Implementation files behind <code>zeo_core.tools</code>. Import the package.</td>
+</tr>
+<tr>
+<td><code>zeo_core.tools.catalog</code></td>
+<td><strong>Reference</strong> capability implementations (add, checksum, GitHub read, calendar create, pandoc). Read them for learning; do not depend on them.</td>
+</tr>
+<tr>
+<td><code>zeo_core.tools.compat.sovereign_style</code></td>
+<td><strong>Transitional</strong> adapter for keyword-argument functions. Not the canonical authoring surface.</td>
+</tr>
+<tr>
+<td><code>zeo_core._dev</code></td>
+<td>Local development helpers.</td>
+</tr>
+<tr>
+<td><code>zeo_core.contracts.capabilities.demo</code> implementations</td>
+<td>Only the demo <em>models</em> (<code>EchoRequest</code>, <code>VideoRefRequest</code>) are exported.</td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.database.*</code></td>
+<td>Empty placeholders; evaluated and not built.</td>
+</tr>
+<tr>
+<td>Anything with a leading underscore</td>
+<td>Standard Python convention, enforced here.</td>
+</tr>
+</tbody>
+</table>
+<p>The commented-out media contracts in
+<a href="https://github.com/profrodai/zeocore/blob/main/src/zeo_core/contracts/__init__.py"><code>contracts/__init__.py</code></a>
+(<code>SliceVideoRequest</code>, <code>TranscribeResponse</code>, …) are deliberately <strong>not</strong>
+declared stable yet.</p>
+<p><a id="next"></a></p>
+<h2 id="where-to-go-next">Where to go next<a class="headerlink" href="#where-to-go-next" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../project/">README.md</a> — the 30-second version, install, and the module map.</li>
+<li><a href="../../project/GET-STARTED/">GET-STARTED.md</a> — module-by-module walkthrough, including <a href="../../project/GET-STARTED/#capabilities">Capabilities</a> and <a href="../../project/GET-STARTED/#core-modules-overview">Core Modules Overview</a>.</li>
+<li><a href="../../project/examples/"><code>examples/README.md</code></a> — all 15 runnable scripts, ordered by difficulty, with an offline beginner path.</li>
+<li><a href="../../tutorials/capability-authoring/">Capability authoring tutorial</a> — the worked end-to-end walkthrough.</li>
+<li><a href="../../project/src/zeo_core/contracts/">contracts/README.md</a> and <a href="../../project/src/zeo_core/contracts/EXAMPLES/">contracts/EXAMPLES.md</a> — the contracts kernel in depth.</li>
+<li><a href="../../">docs/README.md</a> — index of tutorials and maintainer reports.</li>
+<li><a href="https://github.com/profrodai/zeocore/blob/main/llms.txt">llms.txt</a> — condensed import map for coding agents.</li>
+<li><a href="../../project/CHANGELOG/">CHANGELOG.md</a> — what changed, and what broke.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../project/examples/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Examples">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Examples
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../generated/" class="md-footer__link md-footer__link--next" aria-label="Next: Generated API">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Generated API
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.action.edit", "content.code.copy", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.sections", "navigation.top", "search.highlight", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

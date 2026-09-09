@@ -1,0 +1,2697 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Typed capabilities for scripts, services and sovereign agents.">
+      
+      
+      
+        <link rel="canonical" href="https://profrodai.github.io/zeocore/project/">
+      
+      
+        <link rel="prev" href="src/zeo_core/contracts/EXAMPLES/">
+      
+      
+        <link rel="next" href="RELEASE_NOTES/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Overview - ZeoCore</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#zeocore" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ZeoCore" class="md-header__button md-logo" aria-label="ZeoCore" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ZeoCore
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/profrodai/zeocore" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    profrodai/zeocore
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ZeoCore" class="md-nav__button md-logo" aria-label="ZeoCore" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ZeoCore
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/profrodai/zeocore" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    profrodai/zeocore
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../learning-path/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning path
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="QUICKSTART/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="GET-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/capability-authoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Write a capability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/results-and-errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Results and errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/context-config-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context and files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/resilient-execution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resilient execution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/hubspot-marketing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HubSpot marketing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/kit-marketing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kit marketing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/zeoconnect-hosted-profile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Managed profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/mcp-server-with-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/notion-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/supabase-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/calendar-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Google Calendar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/google-docs-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Google Docs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/bluesky-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bluesky
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../integrations/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration setup
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integration setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test and production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/hubspot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HubSpot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/kit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/google/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Google Workspace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/github/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/notion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/supabase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/bluesky/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bluesky
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/llms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Language models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/gemini-images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gemini images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/zeoconnect/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ZEOconnect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/local-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/notebook-execution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebook execution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/authoring-receipts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring receipts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integrations/authoring-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authoring reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="src/zeo_core/contracts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public API map
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/generated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generated API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="src/zeo_core/contracts/EXAMPLES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contract examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="./" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="RELEASE_NOTES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CHANGELOG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../publishing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation publishing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CODE_OF_CONDUCT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code of conduct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/capability-symbol-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability audit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sovereign-agent-capability-replacement-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent readiness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#who-this-is-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Who this is for
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#your-first-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your first capability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-mental-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The mental model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#learn-zeocore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learn ZeoCore
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kit-marketing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kit marketing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hubspot-marketing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HubSpot marketing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-in-0100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New in 0.10.0
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optional-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional integrations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-in-the-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's in the package
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality bar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contributing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project links
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/profrodai/zeocore/edit/main/README.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="zeocore">ZeoCore<a class="headerlink" href="#zeocore" title="Permanent link">&para;</a></h1>
+<p><a href="https://profrodai.github.io/zeocore/">Documentation</a> · <a href="RELEASE_NOTES/">Release notes</a></p>
+<p><a href="https://github.com/profrodai/zeocore/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/profrodai/zeocore/workflows/CI/badge.svg" /></a>
+<a href="https://pypi.org/project/zeocore/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/zeocore.svg" /></a>
+<a href="https://pypi.org/project/zeocore/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/zeocore.svg" /></a>
+<a href="https://github.com/profrodai/zeocore"><img alt="Coverage" src="https://img.shields.io/badge/coverage-90%25-brightgreen.svg" /></a>
+<a href="https://github.com/profrodai/zeocore/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg" /></a></p>
+<p><strong>ZeoCore is a Python framework for writing capabilities: small, typed,
+named units of work that anything can call.</strong></p>
+<p>You write a function once — giving it an identity, a typed request and
+response, a declaration of its side effects, and a structured result — and
+that same function can then be run by a script, served over HTTP, exposed to
+an MCP-native coding agent like Claude Code or Cursor, or handed to an LLM as
+a callable tool. You don't rewrite it for each destination.</p>
+<p><strong>New here? Start with the <a href="QUICKSTART/">Quickstart</a>.</strong> It takes you from
+an empty folder to a running capability in about ten minutes, and assumes no
+prior knowledge of ZeoCore.</p>
+<p>Connect external services with the <a href="../integrations/">integration account setup guides</a>:
+credential acquisition, test accounts, production accounts and runnable checks
+for every supported integration.</p>
+<h2 id="who-this-is-for">Who this is for<a class="headerlink" href="#who-this-is-for" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Students and newcomers</strong> learning how to structure real Python tools —
+  typed inputs, explicit error handling, no hidden global state.</li>
+<li><strong>Developers</strong> building automation, content pipelines, or integrations who
+  don't want to re-solve configuration, filesystem, and error handling in
+  every project.</li>
+<li><strong>Teams</strong> in the Zero Employee ecosystem who need one authoring surface
+  that runners, HTTP services, and agents can all consume.</li>
+</ul>
+<p>You should be comfortable writing Python functions and classes. You do <em>not</em>
+need prior experience with Pydantic, MCP, or agent frameworks.</p>
+<h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
+<p><strong>Python 3.14 or newer.</strong> That's the only hard requirement. (The floor moved
+to <code>&gt;=3.14</code> in 0.6.0, matching sovereign-agent; if you're pinned to an older
+interpreter, stay on 0.5.0, which requires <code>&gt;=3.13</code>.)</p>
+<p>Not sure what you have? Run <code>python3 --version</code> on macOS/Linux or
+<code>py --version</code> on Windows. The <a href="QUICKSTART/#step-1-check-your-python-version">Quickstart</a>
+walks through installing 3.14 if you need it.</p>
+<h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>zeocore
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># or, without uv</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pip<span class="w"> </span>install<span class="w"> </span>zeocore
+</code></pre></div>
+<p>The package is <code>zeocore</code>; the module you import is <code>zeo_core</code>.</p>
+<p>Normal installations also include the inert
+<a href="../tutorials/zeoconnect-hosted-profile/">ZEOconnect managed-profile client</a>.
+It performs no import-time or default-profile networking. Applications opt into
+hosted execution explicitly and pair through the browser; provider credentials
+never enter application code.</p>
+<h2 id="your-first-capability">Your first capability<a class="headerlink" href="#your-first-capability" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">tempfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemporaryDirectory</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">CapabilityExample</span><span class="p">,</span> <span class="n">CapabilityResult</span><span class="p">,</span> <span class="n">EffectKind</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.core.fs</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_service</span> <span class="k">as</span> <span class="n">get_fs_service</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">ToolContext</span><span class="p">,</span> <span class="n">bound_capability_of</span><span class="p">,</span> <span class="n">capability</span><span class="p">,</span> <span class="n">invoke_sync</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">GreetRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="k">class</span><span class="w"> </span><span class="nc">GreetResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="nd">@capability</span><span class="p">(</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    <span class="nb">id</span><span class="o">=</span><span class="s2">"demo.greet@1.0.0"</span><span class="p">,</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>    <span class="n">description</span><span class="o">=</span><span class="s2">"Greet a person by name."</span><span class="p">,</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>    <span class="n">effects</span><span class="o">=</span><span class="p">{</span><span class="n">EffectKind</span><span class="o">.</span><span class="n">READ</span><span class="p">},</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>    <span class="n">examples</span><span class="o">=</span><span class="p">(</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>        <span class="n">CapabilityExample</span><span class="p">(</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>            <span class="n">request</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"World"</span><span class="p">},</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>            <span class="n">response</span><span class="o">=</span><span class="p">{</span><span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Hello, World!"</span><span class="p">},</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>        <span class="p">),</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>    <span class="p">),</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="p">)</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="k">def</span><span class="w"> </span><span class="nf">greet</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">GreetRequest</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ToolContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CapabilityResult</span><span class="p">[</span><span class="n">GreetResponse</span><span class="p">]:</span>
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>    <span class="n">ctx</span><span class="o">.</span><span class="n">require_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"greeting </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>    <span class="k">return</span> <span class="n">CapabilityResult</span><span class="o">.</span><span class="n">ok</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">GreetResponse</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Hello, </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">!"</span><span class="p">))</span>
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>    <span class="n">ctx</span> <span class="o">=</span> <span class="n">ToolContext</span><span class="p">(</span>
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>        <span class="n">run_id</span><span class="o">=</span><span class="s2">"demo-run-001"</span><span class="p">,</span>
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>        <span class="n">tool_name</span><span class="o">=</span><span class="s2">"greet"</span><span class="p">,</span>
+<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>        <span class="n">tool_version</span><span class="o">=</span><span class="s2">"1.0.0"</span><span class="p">,</span>
+<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>        <span class="n">logger</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"greet"</span><span class="p">),</span>
+<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>        <span class="n">fs</span><span class="o">=</span><span class="n">get_fs_service</span><span class="p">(),</span>
+<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>        <span class="n">work_dir</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+<a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>        <span class="n">output_dir</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+<a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>    <span class="p">)</span>
+<a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">invoke_sync</span><span class="p">(</span><span class="n">bound_capability_of</span><span class="p">(</span><span class="n">greet</span><span class="p">),</span> <span class="n">GreetRequest</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"World"</span><span class="p">),</span> <span class="n">ctx</span><span class="p">)</span>
+<a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s2">"|"</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</code></pre></div>
+<p>Expected output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>success | Hello, World!
+</code></pre></div>
+<p>Line-by-line explanation of that script lives in
+<a href="QUICKSTART/#what-each-part-of-that-file-does">QUICKSTART.md</a>.</p>
+<h2 id="the-mental-model">The mental model<a class="headerlink" href="#the-mental-model" title="Permanent link">&para;</a></h2>
+<p>Four ideas carry the whole framework.</p>
+<p><strong>1. A capability is identified, not just named.</strong> Identity is
+<code>namespace.name@semver</code> (<code>demo.greet@1.0.0</code>), so versions can coexist and
+callers can pin one.</p>
+<p><strong>2. The request and response are Pydantic models.</strong> JSON Schema is generated
+from those models, which is how HTTP, MCP, and LLM adapters can call your
+capability without you hand-writing schema for each.</p>
+<p><strong>3. Everything from the outside world arrives via <code>ToolContext</code>.</strong> Logger,
+filesystem, config, and any services the caller wired in — your capability
+asks the context instead of reaching for ambient global state. Absence of a
+declared service fails closed.</p>
+<p><strong>4. Expected failures are returned, not raised.</strong> A <code>CapabilityResult</code> is
+success, skip, or error, always structured. Exceptions are for what the
+<em>caller</em> didn't expect; a <code>CapabilityResult</code> is for what the <em>tool</em> expects
+and needs to report cleanly — validation failed, a downstream API errored, an
+optional integration wasn't configured. Callers get one shape to check
+(<code>result.status</code>, plus fine-grained <code>result.outcome</code>) instead of a
+<code>try</code>/<code>except</code> matrix, so a runner orchestrating many tools can log, retry,
+or persist every result the same way. For genuinely exceptional cases,
+ZeoCore's typed <code>ZeoError</code> hierarchy gives you catchable types instead of
+string parsing — see <a href="https://github.com/profrodai/zeocore/blob/main/examples/error_handling.py"><code>examples/error_handling.py</code></a>.</p>
+<p>Class-based tools are still supported: subclass <code>BaseZeoTool</code>, implement
+<code>run(request, ctx) -&gt; CapabilityResult</code>, and adapt with <code>tool_to_capability</code>.
+See <a href="https://github.com/profrodai/zeocore/blob/main/examples/minimal_tool.py"><code>examples/minimal_tool.py</code></a> and
+<a href="https://github.com/profrodai/zeocore/blob/main/examples/tool_to_capability.py"><code>examples/tool_to_capability.py</code></a>.</p>
+<p>mypy checks all of it end to end.</p>
+<h2 id="learn-zeocore">Learn ZeoCore<a class="headerlink" href="#learn-zeocore" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Start here</th>
+<th>What it gives you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="QUICKSTART/">QUICKSTART.md</a></td>
+<td>Install Python 3.14, make a venv, write and run your first capability. No prior knowledge assumed.</td>
+</tr>
+<tr>
+<td><a href="../">docs/README.md</a></td>
+<td>The learning hub: tutorials, a guided path through the examples, and reference material.</td>
+</tr>
+<tr>
+<td><a href="../tutorials/capability-authoring/">docs/tutorials/capability-authoring.md</a></td>
+<td>The canonical authoring tutorial — registry, guards, manifests, adapter binding.</td>
+</tr>
+<tr>
+<td><a href="GET-STARTED/">GET-STARTED.md</a></td>
+<td>The full manual: configuration, paths, filesystem, plugins, every integration, adapters, troubleshooting.</td>
+</tr>
+<tr>
+<td><a href="../reference/api/">docs/reference/api.md</a></td>
+<td>The public API surface, symbol by symbol, and which import paths are supported.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/profrodai/zeocore/blob/main/llms.txt">llms.txt</a></td>
+<td>A condensed import map for coding agents.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<p>Every example under <a href="examples/"><code>examples/</code></a> is a real, runnable script —
+none are illustrative fragments. Run any of them with
+<code>uv run examples/&lt;name&gt;.py</code>.</p>
+<ul>
+<li><a href="https://github.com/profrodai/zeocore/blob/main/examples/capability_authoring.py"><code>capability_authoring.py</code></a> — canonical
+  <code>@capability</code> authoring, registry, and <code>invoke_sync</code>.</li>
+<li><a href="https://github.com/profrodai/zeocore/blob/main/examples/minimal_tool.py"><code>minimal_tool.py</code></a> — the smallest class tool: no
+  mixins, no services, just <code>run()</code>.</li>
+<li><a href="https://github.com/profrodai/zeocore/blob/main/examples/capability_guards.py"><code>capability_guards.py</code></a> — a <code>RequestGuard</code>
+  rejecting a request before the handler runs.</li>
+<li><a href="https://github.com/profrodai/zeocore/blob/main/examples/error_handling.py"><code>error_handling.py</code></a> — the <code>ZeoError</code> family.</li>
+<li><a href="https://github.com/profrodai/zeocore/blob/main/examples/config_usage.py"><code>config_usage.py</code></a> — <code>load_config()</code>'s three
+  real behaviors.</li>
+</ul>
+<p>The <a href="../#runnable-examples">docs hub</a> indexes the runnable examples,
+grouped by topic.</p>
+<p>Examples that need a credential (<code>NOTION_TOKEN</code>, <code>GITHUB_TOKEN</code>, an LLM API
+key, …) read it from the process environment. Copy
+<a href="https://github.com/profrodai/zeocore/blob/main/.env.example"><code>.env.example</code></a> to <code>.env</code>, fill in real values, and load it
+however your shell or tooling prefers (e.g. <code>uv run --env-file .env ...</code>) —
+see <a href="GET-STARTED/#secrets-and-env">GET-STARTED.md's "Secrets and <code>.env</code>"</a>
+section.</p>
+<h2 id="kit-marketing">Kit marketing<a class="headerlink" href="#kit-marketing" title="Permanent link">&para;</a></h2>
+<p><a href="../tutorials/kit-marketing/">Kit newsletters and sequences</a> provides
+broadcasts, sequence authoring, subscriber consent, tags and reporting through
+thirteen registered agent capabilities. Run <code>python examples/kit_usage.py</code> offline.</p>
+<h2 id="hubspot-marketing">HubSpot marketing<a class="headerlink" href="#hubspot-marketing" title="Permanent link">&para;</a></h2>
+<p><a href="../tutorials/hubspot-marketing/">HubSpot newsletters and automation</a> provides
+registered capabilities for drafts, campaigns, subscription preferences and
+marketing email sequences. Included in 0.10.0; no extra dependency is needed.</p>
+<h2 id="new-in-0100">New in 0.10.0<a class="headerlink" href="#new-in-0100" title="Permanent link">&para;</a></h2>
+<p><a href="../integrations/environments/">Managed environments</a> keep test and production
+credentials and state separate. The <a href="../integrations/">account setup index</a>
+covers acquisition of keys, test accounts, real accounts and bounded E2E checks.
+<a href="../integrations/gemini-images/">Gemini reference images</a> use admitted effects,
+private artifacts and reconciliation. <a href="../integrations/notebook-execution/">Notebook execution</a>
+and <a href="../integrations/authoring-reference/">the authoring reference</a> provide
+fresh-kernel execution and independently checked staging receipts.
+See <a href="RELEASE_NOTES/">release notes</a> for migration and remaining qualification limits.</p>
+<h2 id="optional-integrations">Optional integrations<a class="headerlink" href="#optional-integrations" title="Permanent link">&para;</a></h2>
+<p>Optional SDKs ship as extras. HubSpot, Kit, managed environments and the Gemini
+adapter are in the base package; their live operations still require configured
+accounts and authorization. Install additional dependencies only as needed:</p>
+<table>
+<thead>
+<tr>
+<th>Extra</th>
+<th>What it adds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>zeocore[github]</code></td>
+<td>GitHub API integration</td>
+</tr>
+<tr>
+<td><code>zeocore[drive]</code></td>
+<td>Google Drive</td>
+</tr>
+<tr>
+<td><code>zeocore[gmail]</code></td>
+<td>Gmail</td>
+</tr>
+<tr>
+<td><code>zeocore[calendar]</code></td>
+<td>Google Calendar (read + write)</td>
+</tr>
+<tr>
+<td><code>zeocore[google]</code></td>
+<td>Drive + Gmail + <strong>Docs</strong> auth plumbing together</td>
+</tr>
+<tr>
+<td><code>zeocore[bluesky]</code></td>
+<td>Bluesky posting via an app password — no OAuth, no developer app</td>
+</tr>
+<tr>
+<td><code>zeocore[notion]</code></td>
+<td>Notion (read + write)</td>
+</tr>
+<tr>
+<td><code>zeocore[supabase]</code></td>
+<td>Supabase Database, Auth, Storage, Edge Functions, and async Realtime</td>
+</tr>
+<tr>
+<td><code>zeocore[pandoc]</code></td>
+<td>Document conversion via Pandoc</td>
+</tr>
+<tr>
+<td><code>zeocore[llms]</code></td>
+<td>OpenAI / Anthropic / tiktoken clients — chat, tool-calling, prompt caching</td>
+</tr>
+<tr>
+<td><code>zeocore[jupytext]</code></td>
+<td>Script ↔ Jupyter notebook conversion and semantic receipts</td>
+</tr>
+<tr>
+<td><code>zeocore[notebook]</code></td>
+<td>Fresh-kernel execution with bounded output and cleanup</td>
+</tr>
+<tr>
+<td><code>zeocore[ffmpeg]</code></td>
+<td>Media probing/transcoding via the org's <code>ffmpeg-zeo</code> package</td>
+</tr>
+<tr>
+<td><code>zeocore[http]</code></td>
+<td>FastAPI-based HTTP adapter for exposing tools over REST</td>
+</tr>
+<tr>
+<td><code>zeocore[mcp]</code></td>
+<td>MCP adapter for exposing tools to Claude Code, Cursor, and other MCP-native agents</td>
+</tr>
+<tr>
+<td><code>zeocore[all]</code></td>
+<td>Every integration above, no <code>http</code>/<code>mcp</code>/<code>dev</code>/<code>lint</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>mcp</code> and <code>mcp-dev</code> are real, separate extras — <code>zeocore[all]</code> does <strong>not</strong>
+pull in the MCP adapter. Install it explicitly (e.g. <code>zeocore[all,mcp]</code>).
+The <code>dev</code> and <code>lint</code> extras are for contributors; see
+<a href="CONTRIBUTING/">CONTRIBUTING.md</a>.</p>
+<h2 id="whats-in-the-package">What's in the package<a class="headerlink" href="#whats-in-the-package" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>What it's for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>zeo_core.tools</code></td>
+<td>Authoring — <code>@capability</code>, <code>CapabilityRegistry</code>, <code>invoke_sync</code> / <code>invoke_async</code>, <code>BaseZeoTool</code>, <code>ToolContext</code>, <code>tool_to_capability</code>, optional mixins.</td>
+</tr>
+<tr>
+<td><code>zeo_core.execution</code></td>
+<td>Host-side bounded execution — one total deadline, explicit retries/fallback, cancellation, truthful target identity, and sanitized attempt records for read-only/advisory work.</td>
+</tr>
+<tr>
+<td><code>zeo_core.contracts</code></td>
+<td>Data contracts — <code>CapabilityId</code>, <code>CapabilityDefinition</code>, <code>CapabilityManifest</code>, <code>CapabilityResult</code>, <code>CapabilityOutcome</code>, guards, invocation records. See <a href="src/zeo_core/contracts/">contracts/README.md</a>.</td>
+</tr>
+<tr>
+<td><code>zeo_core.adapters</code></td>
+<td>Optional adapters: HTTP, MCP, and <code>llm_tools</code> (OpenAI-compatible function projection from one <code>CapabilityManifest</code>).</td>
+</tr>
+<tr>
+<td><code>zeo_core.core</code></td>
+<td>Filesystem operations, path resolution, a typed error hierarchy, MIME detection, serialization, logging, an operation registry.</td>
+</tr>
+<tr>
+<td><code>zeo_core.config</code></td>
+<td>YAML/env-var configuration loading and per-tool config models.</td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations</code></td>
+<td>Adapters for GitHub, Google Workspace, Supabase, LLM providers, Notion, HubSpot, Kit, Gemini images, Pandoc, jupytext, notebooks, ffmpeg, and Bluesky; managed environments and native service profiles. Supabase covers Database, Auth, Storage, Edge Functions, and async Realtime while deliberately excluding raw SQL and Vault plaintext access.</td>
+</tr>
+<tr>
+<td><code>zeo_core.modules</code></td>
+<td>Plugin discovery and explicit-loading registry.</td>
+</tr>
+<tr>
+<td><code>zeo_core.prompt</code></td>
+<td>Prompt template selection and enhancement utilities.</td>
+</tr>
+<tr>
+<td><code>zeo_core.contract_pack</code></td>
+<td>Versioned consumption contract pack for ecosystem runners (no <code>sovereign_agent</code> import).</td>
+</tr>
+</tbody>
+</table>
+<p><a href="GET-STARTED/#core-modules-overview">GET-STARTED.md</a> walks through these
+module by module.</p>
+<h2 id="quality-bar">Quality bar<a class="headerlink" href="#quality-bar" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>mypy --strict</strong>, clean across the whole source tree.</li>
+<li>The <strong>full test suite</strong> runs on every change (a handful are environment-gated
+  and skip/run depending on credentials or OS behavior), with 90.00%+ coverage
+  enforced as a two-decimal hard CI floor
+  (<code>--cov-fail-under=90</code>) — a pull request that drops coverage fails the gate.</li>
+<li><strong>CI runs the full suite on Python 3.14</strong> (the minimum supported
+  interpreter) on every push.</li>
+<li>Production code is not allowed to detect that it's under test (a dedicated
+  CI check fails the build if it finds <code>"pytest" in sys.modules</code> or similar).</li>
+</ul>
+<h2 id="project-status">Project status<a class="headerlink" href="#project-status" title="Permanent link">&para;</a></h2>
+<p>ZeoCore <strong>0.10.0</strong> is a beta library: the API is typed and tested, and this
+release is the canonical capability-authoring surface for the Zero Employee
+ecosystem. The surface may still shift before 1.0. Issues, questions, and API
+feedback are welcome.</p>
+<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
+<p>New contributors start at <a href="CONTRIBUTING/">CONTRIBUTING.md</a>, which covers
+dev environment setup (<code>make setup</code>), the verification gate (<code>make verify</code>),
+and how to submit a change. This project follows the
+<a href="CODE_OF_CONDUCT/">Contributor Covenant</a>. Security reports go through
+<a href="SECURITY/">SECURITY.md</a>.</p>
+<h2 id="project-links">Project links<a class="headerlink" href="#project-links" title="Permanent link">&para;</a></h2>
+<p><a href="https://pypi.org/project/zeocore/">PyPI</a> ·
+<a href="https://github.com/profrodai/zeocore">Source</a> ·
+<a href="https://github.com/profrodai/zeocore/issues">Issues</a> ·
+<a href="QUICKSTART/">Quickstart</a> ·
+<a href="../">Docs</a> ·
+<a href="GET-STARTED/">Manual</a> ·
+<a href="CHANGELOG/">Changelog</a> ·
+<a href="CONTRIBUTING/">Contributing</a> ·
+<a href="SECURITY/">Security</a></p>
+<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
+<p>MIT — see <a href="https://github.com/profrodai/zeocore/blob/main/LICENSE">LICENSE</a>. SPDX: <code>MIT</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="src/zeo_core/contracts/EXAMPLES/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Contract examples">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Contract examples
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="RELEASE_NOTES/" class="md-footer__link md-footer__link--next" aria-label="Next: Release notes">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Release notes
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.action.edit", "content.code.copy", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.sections", "navigation.top", "search.highlight", "search.suggest"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
