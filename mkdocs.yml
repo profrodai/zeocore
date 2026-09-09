@@ -1,0 +1,129 @@
+site_name: ZeoCore
+site_description: Typed capabilities for scripts, services and sovereign agents.
+site_url: https://profrodai.github.io/zeocore/
+repo_url: https://github.com/profrodai/zeocore
+repo_name: profrodai/zeocore
+edit_uri: edit/main/docs/
+strict: true
+theme:
+  name: material
+  font:
+    text: Inter
+    code: JetBrains Mono
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - content.action.edit
+    - content.code.copy
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.suggest
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_root_heading: true
+            show_source: true
+            separate_signature: true
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+hooks:
+  - tools/mkdocs_hooks_v1.py
+extra_css:
+  - stylesheets/extra.css
+validation:
+  links:
+    not_found: warn
+    anchors: warn
+nav:
+  - Home: README.md
+  - Getting started:
+      - Learning path: learning-path.md
+      - Quickstart: project/QUICKSTART.md
+      - Full manual: project/GET-STARTED.md
+      - Concepts: concepts.md
+      - Glossary: glossary.md
+  - Tutorials:
+      - Write a capability: tutorials/capability-authoring.md
+      - Results and errors: tutorials/results-and-errors.md
+      - Context and files: tutorials/context-config-files.md
+      - Resilient execution: tutorials/resilient-execution.md
+      - HubSpot marketing: tutorials/hubspot-marketing.md
+      - Kit marketing: tutorials/kit-marketing.md
+      - Managed profiles: tutorials/zeoconnect-hosted-profile.md
+      - MCP server: tutorials/mcp-server-with-claude-code.md
+      - Notion: tutorials/notion-integration.md
+      - Supabase: tutorials/supabase-integration.md
+      - Google Calendar: tutorials/calendar-integration.md
+      - Google Docs: tutorials/google-docs-integration.md
+      - Bluesky: tutorials/bluesky-integration.md
+  - Integration setup:
+      - Choose an integration: integrations/README.md
+      - Test and production: integrations/environments.md
+      - HubSpot: integrations/hubspot.md
+      - Kit: integrations/kit.md
+      - Google Workspace: integrations/google.md
+      - GitHub: integrations/github.md
+      - Notion: integrations/notion.md
+      - Supabase: integrations/supabase.md
+      - Bluesky: integrations/bluesky.md
+      - Language models: integrations/llms.md
+      - Gemini images: integrations/gemini-images.md
+      - ZEOconnect: integrations/zeoconnect.md
+      - Local tools: integrations/local-tools.md
+      - Notebook execution: integrations/notebook-execution.md
+      - Authoring receipts: integrations/authoring-receipts.md
+      - Authoring reference: integrations/authoring-reference.md
+  - Examples: project/examples/README.md
+  - Reference:
+      - Public API map: reference/api.md
+      - Generated API: reference/generated.md
+      - Contracts kernel: project/src/zeo_core/contracts/README.md
+      - Contract examples: project/src/zeo_core/contracts/EXAMPLES.md
+  - Project:
+      - Overview: project/README.md
+      - Release notes: project/RELEASE_NOTES.md
+      - Changelog: project/CHANGELOG.md
+      - Contributing: project/CONTRIBUTING.md
+      - Documentation publishing: publishing.md
+      - Security: project/SECURITY.md
+      - Code of conduct: project/CODE_OF_CONDUCT.md
+      - Capability audit: reports/capability-symbol-audit.md
+      - Agent readiness: reports/sovereign-agent-capability-replacement-readiness.md

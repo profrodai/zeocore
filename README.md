@@ -1,5 +1,7 @@
 # ZeoCore
 
+[Documentation](https://profrodai.github.io/zeocore/) · [Release notes](RELEASE_NOTES.md)
+
 [![CI](https://github.com/profrodai/zeocore/workflows/CI/badge.svg)](https://github.com/profrodai/zeocore/actions/workflows/ci.yml)
 [![PyPI version](https://img.shields.io/pypi/v/zeocore.svg)](https://pypi.org/project/zeocore/)
 [![Python versions](https://img.shields.io/pypi/pyversions/zeocore.svg)](https://pypi.org/project/zeocore/)
