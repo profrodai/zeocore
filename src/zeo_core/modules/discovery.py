@@ -601,6 +601,23 @@ class PluginLoader:
                 self.logger.warning(error_msg)
                 return True
 
+    @staticmethod
+    def _unambiguous_entry_points(
+        group: str, enabled: list[str]
+    ) -> dict[str, EntryPoint]:
+        ep_map: dict[str, EntryPoint] = {}
+        ambiguous: set[str] = set()
+        for ep in entry_points(group=group):
+            if ep.name in ep_map:
+                ambiguous.add(ep.name)
+            ep_map[ep.name] = ep
+        requested = sorted(set(enabled) & ambiguous)
+        if requested:
+            raise ZeoPluginError(
+                f"Ambiguous installed entry points: {requested}. No modules loaded."
+            )
+        return ep_map
+
     def load_enabled_entry_points(
         self,
         enabled: list[str],
@@ -645,9 +662,8 @@ class PluginLoader:
 
         # Get all available entry points
         try:
-            eps = entry_points(group=group)
-            ep_map = {ep.name: ep for ep in eps}
-        except (ImportError, AttributeError) as e:
+            ep_map = self._unambiguous_entry_points(group, enabled)
+        except (ImportError, AttributeError, ZeoPluginError) as e:
             result.success = False
             result.errors.append(f"Failed to load entry points: {e}")
             return result

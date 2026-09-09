@@ -11,6 +11,7 @@ Following Python 3.13 best practices:
 - Thread-safe _ops where needed
 """
 
+from threading import RLock
 from typing import TypeVar
 
 from zeo_core.core.errors import ZeoPluginError
@@ -48,6 +49,8 @@ class PluginRegistry:
         Args:
             log_level: Logging level for registry _ops
         """
+        self._lock = RLock()
+        self._revision = 0
         self.logger = get_logger(__name__)
         self.logger.setLevel(log_level)
 
@@ -66,6 +69,10 @@ class PluginRegistry:
         self._workflows: dict[str, WorkflowPluginProtocol] = {}
         # Extensions map from target plugin_id to list of extension modules
         self._extensions: dict[str, list[ExtensionPluginProtocol]] = {}
+        # Snapshot contributions once; unload never executes plugin callbacks.
+        self._command_names: dict[str, tuple[str, ...]] = {}
+        self._workflow_names: dict[str, tuple[str, ...]] = {}
+        self._extension_targets: dict[str, str] = {}
 
     def _get_plugin_id(self, plugin: ZeoPluginProtocol) -> str:
         """
@@ -94,6 +101,11 @@ class PluginRegistry:
         return plugin.name
 
     def register(self, plugin: ZeoPluginProtocol) -> None:
+        """Validate private contributions, then publish under the registry lock."""
+        with self._lock:
+            self._register(plugin)
+
+    def _register(self, plugin: ZeoPluginProtocol) -> None:
         """
         Register a plugin with the registry.
 
@@ -111,12 +123,35 @@ class PluginRegistry:
                 plugin_name=plugin_id,
             )
 
-        # Register in main registry
-        self._plugins[plugin_id] = plugin
+        # Registration callbacks run against private copies. A failing callback
+        # cannot leave a partial plugin or shadow an existing command.
+        revision = self._revision
+        candidate = PluginRegistry(self.logger.level)
+        fields = (
+            "_plugins",
+            "_command_plugins",
+            "_workflow_plugins",
+            "_extension_plugins",
+            "_provider_plugins",
+            "_commands",
+            "_workflows",
+            "_extensions",
+            "_command_names",
+            "_workflow_names",
+            "_extension_targets",
+        )
+        for name in fields:
+            setattr(candidate, name, dict(getattr(self, name)))
+        candidate._extensions = {
+            key: list(value) for key, value in self._extensions.items()
+        }
+        candidate._register_by_type(plugin, plugin_id)
+        candidate._plugins[plugin_id] = plugin
         self.logger.debug(f"Registered plugin: {plugin_id} (name: {plugin.name})")
-
-        # Register in type-specific registries
-        self._register_by_type(plugin, plugin_id)
+        if self._revision != revision:
+            raise ZeoPluginError("Registry changed during registration callback")
+        self.__dict__.update({name: getattr(candidate, name) for name in fields})
+        self._revision += 1
 
     def _register_by_type(self, plugin: ZeoPluginProtocol, plugin_id: str) -> None:
         """
@@ -149,7 +184,8 @@ class PluginRegistry:
             plugin: Command plugin to register
             plugin_id: Stable plugin identifier
         """
-        commands = plugin.list_commands()
+        commands = tuple(plugin.list_commands())
+        self._command_names[plugin_id] = commands
         for command in commands:
             if command in self._commands:
                 existing_plugin_id = self._get_plugin_id(self._commands[command])
@@ -173,7 +209,8 @@ class PluginRegistry:
             plugin: Workflow plugin to register
             plugin_id: Stable plugin identifier
         """
-        workflows = plugin.list_workflows()
+        workflows = tuple(plugin.list_workflows())
+        self._workflow_names[plugin_id] = workflows
         for workflow in workflows:
             if workflow in self._workflows:
                 existing_plugin_id = self._get_plugin_id(self._workflows[workflow])
@@ -198,12 +235,19 @@ class PluginRegistry:
             plugin_id: Stable plugin identifier
         """
         target = plugin.get_target_plugin()
+        self._extension_targets[plugin_id] = target
         self._extensions.setdefault(target, []).append(plugin)
         self.logger.debug(
             f"Registered extension plugin '{plugin_id}' targeting '{target}'"
         )
 
     def unregister(self, plugin_id: str) -> None:
+        """Remove owned snapshots without calling plugin discovery again."""
+        with self._lock:
+            self._unregister(plugin_id)
+            self._revision += 1
+
+    def _unregister(self, plugin_id: str) -> None:
         """
         Unregister a plugin by its ID.
 
@@ -235,12 +279,12 @@ class PluginRegistry:
             plugin_id: Stable plugin identifier
         """
         self._command_plugins.pop(plugin_id, None)
-        for command in plugin.list_commands():
-            # Only remove if this plugin still owns the command
-            if command in self._commands:
-                owner_id = self._get_plugin_id(self._commands[command])
-                if owner_id == plugin_id:
-                    self._commands.pop(command, None)
+        self._command_names.pop(plugin_id, None)
+        self._commands = {
+            command: owner
+            for owner_id, owner in self._command_plugins.items()
+            for command in self._command_names[owner_id]
+        }
 
     def _unregister_workflow_plugin(
         self, plugin: WorkflowPluginProtocol, plugin_id: str
@@ -253,12 +297,12 @@ class PluginRegistry:
             plugin_id: Stable plugin identifier
         """
         self._workflow_plugins.pop(plugin_id, None)
-        for workflow in plugin.list_workflows():
-            # Only remove if this plugin still owns the workflow
-            if workflow in self._workflows:
-                owner_id = self._get_plugin_id(self._workflows[workflow])
-                if owner_id == plugin_id:
-                    self._workflows.pop(workflow, None)
+        self._workflow_names.pop(plugin_id, None)
+        self._workflows = {
+            workflow: owner
+            for owner_id, owner in self._workflow_plugins.items()
+            for workflow in self._workflow_names[owner_id]
+        }
 
     def _unregister_extension_plugin(
         self, plugin: ExtensionPluginProtocol, plugin_id: str
@@ -271,7 +315,7 @@ class PluginRegistry:
             plugin_id: Stable plugin identifier
         """
         self._extension_plugins.pop(plugin_id, None)
-        target = plugin.get_target_plugin()
+        target = self._extension_targets.pop(plugin_id)
         if target in self._extensions:
             self._extensions[target] = [
                 p
@@ -302,6 +346,12 @@ class PluginRegistry:
             self._provider_plugins.pop(plugin_id, None)
 
     def clear(self) -> None:
+        """Clear the registry while serializing mutations."""
+        with self._lock:
+            self._clear()
+            self._revision += 1
+
+    def _clear(self) -> None:
         """
         Clear all registered modules.
 
@@ -316,6 +366,9 @@ class PluginRegistry:
         self._commands.clear()
         self._workflows.clear()
         self._extensions.clear()
+        self._command_names.clear()
+        self._workflow_names.clear()
+        self._extension_targets.clear()
         self.logger.debug("Cleared all registered modules")
 
     def execute_command(self, command: str, *args: object, **kwargs: object) -> object:
