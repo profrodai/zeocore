@@ -1,6 +1,6 @@
 # Test and production environments
 
-**Reviewed:** 2026-09-08. Applies to every integration in the [setup index](README.md).
+**Reviewed:** 2026-09-09. Applies to every integration in the [setup index](README.md).
 
 Use one application process per environment. The same application runs in either
 track; the launcher supplies the chosen credentials, config and working directory.
@@ -104,8 +104,13 @@ use interactive prompts in CI; missing credentials should fail. Examples:
 
 Apply the same prefix to every variable listed in the provider guides. When both
 namespaces contain the same secret value for a provider variable, launch is refused.
-This catches direct key reuse; it cannot detect two different keys for the same
-production account. Check account identity and resource access in the provider UI.
+For selected live Supabase runs, nonempty identical `SUPABASE_URL` values in both
+namespaces are also refused, even when the keys differ: separate keys can address
+the same project. This compares the exact supplied URLs only when both are present;
+it does not resolve custom domains or aliases. Identical Bluesky service URLs are
+allowed because different accounts can share that public service. These checks
+cannot generally detect two different keys for the same production account.
+Check account identity and resource access in the provider UI.
 
 Repeat `--integration` for a process using several providers. Only those providers'
 allowed variables are forwarded. Bare keys, opposite-mode keys, ambient proxies,
@@ -154,6 +159,22 @@ one process or reuse an initialized service across modes. This launcher is an
 operational boundary for trusted application code, not an OS sandbox: explicitly
 opening an outside file, using arbitrary subprocesses or hardcoding production
 credentials/resources can defeat application-level separation.
+
+Third-party SDK default credential chains can also read files under the preserved
+`HOME`, including in fixture mode. Dropping `GOOGLE_APPLICATION_CREDENTIALS` from
+the child environment does **not** disable Google Application Default Credentials:
+on Linux/macOS the SDK can still discover
+`~/.config/gcloud/application_default_credentials.json`, and on cloud hosts it
+may use an attached service account. See the
+[Google ADC search order](https://docs.cloud.google.com/docs/authentication/application-default-credentials).
+AWS SDKs can automatically load `~/.aws/credentials` and `~/.aws/config`; see the
+[AWS shared-file locations](https://docs.aws.amazon.com/sdkref/latest/guide/file-location.html).
+The launcher does not relocate or disable those third-party SDK stores. When your
+application uses such SDKs directly, pass the selected credentials explicitly and
+avoid default credential discovery. For E2E or fixture runs requiring stronger
+isolation, use a dedicated host/container with no ambient production credentials
+or production cloud identity, and deny network access for offline fixtures. Mode
+selection alone does not provide that isolation.
 
 ## Offline and E2E checks
 

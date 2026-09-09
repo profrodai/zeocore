@@ -1,0 +1,7 @@
+{
+  "cell_types": ["markdown", "code", "markdown", "code", "markdown"],
+  "tags": {"1": ["exercise"], "3": ["solution-only"]},
+  "reflection": {"purpose": "reflection"},
+  "output": "total=10\n",
+  "executed_cells": 2
+}

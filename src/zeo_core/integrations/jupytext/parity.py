@@ -4,7 +4,7 @@ import hashlib
 import importlib
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
@@ -16,6 +16,9 @@ from zeo_core.integrations.jupytext.operations.utils import detect_format
 class NotebookParityReceipt(BaseModel):
     """Semantic equality excluding execution outputs and named tool version metadata."""
 
+    semantic_schema: Literal["zeocore.notebook-semantics.v1"] = (
+        "zeocore.notebook-semantics.v1"
+    )
     equivalent: bool
     source_digest: str
     derived_digest: str
@@ -23,6 +26,7 @@ class NotebookParityReceipt(BaseModel):
     normalizations: tuple[str, ...] = (
         "jupytext.text_representation.jupytext_version",
         "line endings CRLF to LF",
+        "execution counters and outputs excluded from semantic content",
         "parser-generated IDs in text representations are not declared IDs",
     )
 
@@ -109,8 +113,12 @@ def compare_notebook_semantics(
                     break
         receipt = NotebookParityReceipt(
             equivalent=mismatch is None,
-            source_digest=_digest(left),
-            derived_digest=_digest(right),
+            source_digest=_digest(
+                {"schema": "zeocore.notebook-semantics.v1", "content": left}
+            ),
+            derived_digest=_digest(
+                {"schema": "zeocore.notebook-semantics.v1", "content": right}
+            ),
             mismatch=mismatch,
         )
         return IntegrationResult(
