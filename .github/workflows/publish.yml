@@ -67,8 +67,14 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
 
+      - name: Install Pandoc for real authoring receipt tests
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
       - name: make setup
         run: make setup
+
+      - name: Check release metadata and tag identity
+        run: .venv/bin/python tools/check-release-identity-v1.py
 
       - name: make verify (the doctrine gate -- must pass before publish)
         run: make verify

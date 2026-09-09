@@ -1,7 +1,8 @@
 # Authoring reference consumer
 
-**Updated:** 2026-09-09. Development API: use the reviewed source checkout until
-these changes are released. Do not assume an older published wheel has them.
+**Updated:** 2026-09-09. The APIs are available in ZeoCore 0.10.0.
+Use the v0.10.0 checkout for these repository examples; examples are not installed
+as package commands. Do not use an older wheel for this API surface.
 
 The [self-contained consumer](../../examples/authoring_reference/run.py) uses
 only public ZeoCore conversion, comparison, execution and environment APIs.

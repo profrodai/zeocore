@@ -12,6 +12,17 @@ Where each document fits: [README.md](README.md) is the one-page overview,
 [docs/README.md](docs/README.md) is the guided learning path with tutorials,
 and this manual covers everything in depth.
 
+## Added in 0.10.0
+
+For newsletter operations, start with [HubSpot marketing](docs/tutorials/hubspot-marketing.md)
+or [Kit marketing](docs/tutorials/kit-marketing.md). Both expose registered agent
+capabilities. Follow the [account setup index](docs/integrations/README.md) for
+key acquisition and separate test/production tracks before enabling live effects.
+The [release workflow guide](docs/README.md#release-0100-workflows) also covers
+managed environments, native profiles, Gemini images, notebook execution and
+conversion/staging receipts. [Release notes](RELEASE_NOTES.md) list installation
+extras and the boundaries that still require host authorization or live validation.
+
 ## Contents
 
 - [Introduction](#introduction)

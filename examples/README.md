@@ -1,6 +1,6 @@
 # ZeoCore examples
 
-Fifteen runnable scripts. Every one of them runs as-is — none are
+Runnable scripts and a complete authoring reference. The scripts run as-is — none are
 illustrative fragments, and none require you to fill in a placeholder before
 they do something.
 
@@ -24,12 +24,12 @@ walkthroughs, see [GET-STARTED.md](../GET-STARTED.md) and
 **Python 3.14+ and ZeoCore installed.** From a clone:
 
 ```bash
-uv pip install -e .            # base install: the eight offline examples below
+uv pip install -e .            # base install: the offline examples below
 uv pip install -e ".[all]"     # every integration extra
 uv pip install -e ".[http]"    # single extras, as needed
 ```
 
-**Extras.** Seven scripts need an optional extra. Each one says so in its
+**Extras.** Some scripts need an optional extra. Each one says so in its
 own module docstring, and the groups below list them.
 
 **Credentials.** Scripts that need a secret read it from the process
@@ -173,6 +173,24 @@ silently dropping them.
 
 ---
 
+## New in 0.10.0: environments, profiles and authoring
+
+These base-install examples run offline and need no key:
+
+| Run from the checkout root | Observable result |
+|---|---|
+| `python examples/environment_usage.py` | Distinct private test/production state; an ambient Kit key is excluded. |
+| `python examples/zeoconnect_usage.py` | A typed service requirement resolves under the explicit fake profile and downloads exact fixture bytes. |
+| `python examples/gemini_request.py` | Private reference bytes are verified and a Gemini request is constructed; no authorization or generation occurs. |
+| `python examples/notion_governed_upsert.py` | A governed upsert request binds its marker and source without dispatching. |
+| `python examples/supabase_usage.py` | Shows the configuration precondition; follow the [Supabase account guide](../docs/integrations/supabase.md) before live use. |
+
+For conversion, fresh-kernel notebook execution and staging, follow the
+[authoring reference](../docs/integrations/authoring-reference.md). It requires
+`zeocore[jupytext,notebook,pandoc]` plus the Pandoc binary. The examples are
+checkout assets, not installed shell commands. Run the release's examples with
+its matching installed package. Staging produces receipts; it does not publish.
+
 ## Adapters and mixins
 
 Intermediate. Each needs one extra, and each is about *hosting* capabilities
@@ -250,9 +268,10 @@ Run python examples/hubspot_usage.py for a credential-free demonstration of
 registered draft and publish capabilities through a simulated HTTP boundary.
 It performs no live send. See the [HubSpot guide](../docs/tutorials/hubspot-marketing.md).
 
-The most advanced group: real external tools and real accounts. Each script
-checks its precondition first and **skips gracefully** rather than crashing,
-so all four are safe to run before you have set anything up.
+For real accounts, use the [setup index](../docs/integrations/README.md) first:
+choose separate test and production accounts, obtain credentials, and follow
+that provider's bounded E2E check. Installing an extra alone does not authorize
+an external write. The examples below document their own preconditions.
 
 ### [`jupytext_usage.py`](jupytext_usage.py) — script ↔ notebook round trip
 

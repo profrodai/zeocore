@@ -1,6 +1,6 @@
 # Authoring conversion receipts
 
-**Updated:** 2026-09-09. ZeoCore 0.9.0 development API, pending release.
+**Updated:** 2026-09-09. Available in ZeoCore 0.10.0.
 
 Receipt APIs are additive. Existing path-returning methods and legacy partial
 batch behavior keep their return shapes. Use the strict API for required releases.

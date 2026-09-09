@@ -22,6 +22,22 @@ class ExampleCase(NamedTuple):
 
 SAFE_EXAMPLES = (
     ExampleCase(
+        "environment_usage.py",
+        "test: private state prepared; ambient key excluded\n"
+        "production: private state prepared; ambient key excluded\n"
+        "LOCAL: no provider request; temporary state removed on exit\n",
+    ),
+    ExampleCase(
+        "gemini_request.py",
+        "Operation: gemini.generate_reference_image\n"
+        "Reference bytes verified: True\n"
+        "REQUEST ONLY: no authorization minted; no provider called\n",
+    ),
+    ExampleCase(
+        "zeoconnect_usage.py",
+        "FAKE: selected Drive bytes verified; no credential or network\n",
+    ),
+    ExampleCase(
         "kit_usage.py",
         "Draft created through registered capability: 57\n"
         "Track the new send object: 58\n"

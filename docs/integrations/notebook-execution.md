@@ -1,6 +1,6 @@
 # Fresh-kernel notebook execution
 
-**Updated:** 2026-09-09. Development API, pending release.
+**Updated:** 2026-09-09. Available in ZeoCore 0.10.0.
 
 Install the optional `zeocore[notebook]` extra. It includes nbclient, the Python
 kernel and psutil for descendant tracking. Ordinary ZeoCore consumers do not
@@ -67,6 +67,24 @@ execution establishes student learning or human visual approval.
 
 Run `make verify`. The real-kernel tests include stale-output, fresh-state,
 synthetic-secret and child-process controls after every important exit path.
+
+## Test and production tracks
+
+No vendor account, API key or OAuth is required. Install
+`zeocore[notebook]==0.10.0` in Python 3.14 and use the
+[managed environment launcher](environments.md) with `--integration notebook`.
+Use `--mode test` for synthetic notebooks and `--mode production` for approved
+trusted notebooks, with separate roots/working directories and output paths.
+The child still needs the installed notebook extra; a mode does not install it.
+Fixture mode does not replace the kernel automatically or block network access.
+
+For a test E2E, execute one notebook containing `assert 2 + 2 == 4`, inspect its
+receipt and separately written output, then execute an assertion failure and
+verify there is no promoted output. Use the [authoring reference](authoring-reference.md)
+for a complete runnable example. In production, require the approved interpreter,
+dependency inventory and lock identity before cells run; select only reviewed
+inputs. Clean up only the selected run's artifacts after retaining its receipt.
+No production credential should be accessible to a test kernel.
 
 ## Execution contract after elder review
 

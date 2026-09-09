@@ -4,7 +4,7 @@ A curated map of ZeoCore's **public** surface: the canonical import path for
 each symbol, the signatures you actually call, and where the boundary sits
 between "supported API" and "internal detail you should not import".
 
-This page is hand-written and covers ZeoCore **0.5.0** (beta — see
+This page is hand-written and covers ZeoCore **0.10.0** (beta — see
 [Stability](#stability)). It is not generated from
 docstrings, and it is not exhaustive: every entry links to the source file,
 which is the authoritative signature. If a symbol is not listed here and not
@@ -13,6 +13,21 @@ in a module's `__all__`, treat it as internal.
 **New to ZeoCore?** Read [README.md](../../README.md) first, then run the
 offline examples in [`examples/README.md`](../../examples/README.md). Come
 back here when you need to look something up.
+
+**Added integration surfaces in 0.10.0**
+
+| Public import | Contract and guide |
+|---|---|
+| `zeo_core.integrations.hubspot` | [Marketing capabilities](../tutorials/hubspot-marketing.md): email, campaigns, subscription consent and automation. |
+| `zeo_core.integrations.kit` | [Marketing capabilities](../tutorials/kit-marketing.md): broadcasts, sequences, subscribers and tags. |
+| `zeo_core.integrations.environments.IntegrationEnvironment` | [Managed launch](../integrations/environments.md) with distinct test/production state. |
+| `zeo_core.integrations.hosted.ServiceResolver` | [Native profiles](../tutorials/zeoconnect-hosted-profile.md), explicit requirements and typed resolution results. |
+| `zeo_core.integrations.gemini.ImageGenerationService` | [Reference image generation](../integrations/gemini-images.md) through admitted connections and durable effects. |
+| `zeo_core.integrations.notebook.execute_notebook` | [Fresh-kernel execution](../integrations/notebook-execution.md) with bounded output and cleanup. |
+
+For conversion contracts and filesystem staging, use the
+[authoring reference](../integrations/authoring-reference.md), which links the
+public request/receipt models and a complete executable consumer.
 
 **Contents**
 
@@ -70,7 +85,7 @@ wiring a *host application* does (`zeo_core.adapters`).
 
 ## Stability: what this page promises
 
-ZeoCore 0.5.0 is a **beta** library. The API is typed and tested
+ZeoCore 0.10.0 is a **beta** library. The API is typed and tested
 (mypy `--strict` across the tree), but the surface may still shift before
 1.0. Breaking changes are recorded in [CHANGELOG.md](../../CHANGELOG.md).
 

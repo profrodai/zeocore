@@ -125,6 +125,22 @@ gracefully when the credential isn't set, rather than crashing.
 - [`ffmpeg_usage.py`](../examples/ffmpeg_usage.py) — probe, transcode, and
   thumbnail a synthetic test video it generates itself.
 
+## Release 0.10.0 workflows
+
+- [Managed test and production](integrations/environments.md) and
+  [`environment_usage.py`](../examples/environment_usage.py): explicit state and
+  credential selection before launching an application.
+- [Native service profiles](tutorials/zeoconnect-hosted-profile.md) and
+  [`zeoconnect_usage.py`](../examples/zeoconnect_usage.py): an offline fake first,
+  then deliberately configured local, hosted or governed placement.
+- [Gemini reference images](integrations/gemini-images.md) and
+  [`gemini_request.py`](../examples/gemini_request.py): key acquisition, separate
+  projects, host custody, admission and reconciliation.
+- [Notebook execution](integrations/notebook-execution.md) and the
+  [authoring reference](integrations/authoring-reference.md): local conversion,
+  execution and staging with observable receipts.
+- [Release notes](../RELEASE_NOTES.md): upgrade instructions and qualification limits.
+
 ## Reference
 
 - [API reference](reference/api.md) — the public surface, symbol by symbol,
