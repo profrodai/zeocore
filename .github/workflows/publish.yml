@@ -282,7 +282,12 @@ jobs:
               sys.exit(1)
           from zeo_core.tools import BaseZeoTool, ToolContext
           from zeo_core.contracts import CapabilityResult
-          print('import OK: BaseZeoTool, ToolContext, CapabilityResult')
+          from zeo_core.integrations.hosted import ServiceResolver, ExecutionProfile
+          from zeo_core.integrations.hubspot import HubSpotIntegration
+          from zeo_core.integrations.kit import KitIntegration
+          from zeo_core.integrations.gemini import ImageGenerationRequest
+          from zeo_core.integrations.environments import IntegrationEnvironment
+          print('import OK: authoring, native profiles, marketing, Gemini and environments')
           print('SMOKE TEST PASSED: zeocore==' + installed + ' installs and imports on the published floor')
           "
 
@@ -326,7 +331,12 @@ jobs:
               sys.exit(1)
           from zeo_core.tools import BaseZeoTool, ToolContext
           from zeo_core.contracts import CapabilityResult
-          print('import OK: BaseZeoTool, ToolContext, CapabilityResult')
+          from zeo_core.integrations.hosted import ServiceResolver, ExecutionProfile
+          from zeo_core.integrations.hubspot import HubSpotIntegration
+          from zeo_core.integrations.kit import KitIntegration
+          from zeo_core.integrations.gemini import ImageGenerationRequest
+          from zeo_core.integrations.environments import IntegrationEnvironment
+          print('import OK: authoring, native profiles, marketing, Gemini and environments')
           print('SMOKE TEST PASSED: zeocore==' + installed + ' installs and imports on the published floor')
           "
 

@@ -51,6 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Native fake and hosted service imports no longer require optional local Google or Bluesky dependencies; SDK loading is deferred until local service construction.
+
 - Notebook worker results are published atomically so polling parents cannot
   observe partially written JSON. Successful and failed publication paths have
   deterministic regression controls.

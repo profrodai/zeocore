@@ -45,6 +45,7 @@ This is a boundary for trusted code, not an operating-system sandbox.
 
 ## Native ZEOconnect and Gemini images
 
+Native fake and hosted profiles import without optional local Google/Bluesky SDKs.
 Native ZEOconnect composition offers fake, local, hosted and governed profiles,
 explicit pairing/session custody and consent-bound resolution. Governed authority
 cannot fall back to an ordinary paired member session. Existing hosted request
