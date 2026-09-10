@@ -12,7 +12,7 @@ so scripts, services, Zeocreator and Sovereign Agent can call the same capabilit
 [Register a provider](how-to/provider-registration.md){ .md-button }
 
 ```bash
-uv pip install "zeocore==0.10.0"
+uv pip install "zeocore==0.11.0"
 ```
 
 Python **3.14+** · Package `zeocore` · Import `zeo_core`
@@ -60,13 +60,13 @@ Capabilities describe and perform bounded work. Your host supplies authorization
 credentials, scheduling and delivery policy. Marketing examples start offline;
 real sending requires explicit setup and host authorization.
 
-## Current source workflows
+## New in 0.11.0
 
 The [Runtime host](how-to/runtime-host.md) and [meeting adapters](integrations/meetings.md)
-are newer than the published 0.10.0 wheel. From this source checkout:
+are available from 0.11.0. Run these examples from the matching `v0.11.0` checkout:
 
 ```bash
-uv pip install -e ".[runtime-host]"
+uv pip install "zeocore[runtime-host]==0.11.0"
 python examples/runtime_host_catalogue_v1.py
 python examples/meeting_request_v1.py
 ```
@@ -86,7 +86,7 @@ required before deploying the generic host.
 | Run working examples | [Example catalog](../examples/README.md) |
 | Look up supported imports | [Public API map](reference/api.md) |
 | Inspect signatures and docstrings | [Generated API reference](reference/generated.md) |
-| Upgrade to 0.10.0 | [Release notes](../RELEASE_NOTES.md) |
+| Upgrade to 0.11.0 | [Release notes](../RELEASE_NOTES.md) |
 | Use complete agent projects | [Sovereign Agent Resources](https://github.com/profrodai/sovereign-agent-resources) |
 
 ## Runnable examples

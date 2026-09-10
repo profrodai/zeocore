@@ -31,7 +31,7 @@ file under examples/ — every one of them is runnable as printed
 - [docs/tutorials/](docs/tutorials/): MCP with Claude Code/Cursor, Notion,
   Google Calendar.
 - [CHANGELOG.md](CHANGELOG.md): Version history (Keep a Changelog).
-  RELEASE_NOTES.md describes the current 0.10.0 release; CHANGELOG.md is the
+  RELEASE_NOTES.md describes the current 0.11.0 release; CHANGELOG.md is the
   full history.
 - [CONTRIBUTING.md](CONTRIBUTING.md): Dev setup, the gate
   (`make verify` / `make verify-full`), code style, canonical import
@@ -140,10 +140,10 @@ file under examples/ — every one of them is runnable as printed
 - [Authoring reference](docs/integrations/authoring-reference.md): conversion and
   staging receipts; staging does not upload or publish.
 
-## Current source: Runtime and meeting APIs
+## 0.11.0 Runtime and meeting APIs
 
-These APIs are newer than the published 0.10.0 wheel. Install this checkout with
-`uv pip install -e ".[runtime-host]"`; `all` does not include that extra.
+These APIs ship in 0.11.0. Install with
+`uv pip install "zeocore[runtime-host]==0.11.0"`; `all` does not include that extra.
 
 - [Provider registration](docs/how-to/provider-registration.md): capability,
   provider, registry, adapter, integration and legacy plugin terminology.

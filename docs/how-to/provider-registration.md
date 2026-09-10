@@ -29,11 +29,11 @@ the adapter's operation registry. See the [API map](../reference/api.md#adapters
 
 ## 2. Prepare the Runtime inventory
 
-The Runtime host and meeting APIs are newer than the published 0.10.0 wheel.
-Use this reviewed source checkout until a release includes them:
+The Runtime host and meeting APIs are available from 0.11.0. Install the package
+and run this example from the matching `v0.11.0` checkout:
 
 ```bash
-uv pip install -e ".[runtime-host]"
+uv pip install "zeocore[runtime-host]==0.11.0"
 python examples/runtime_host_catalogue_v1.py
 ```
 

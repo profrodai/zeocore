@@ -236,6 +236,9 @@ jobs:
       EXPECTED_VERSION: ${{ needs.build.outputs.version }}
       PYTHON_FLOOR: ${{ needs.build.outputs.python-floor }}
     steps:
+      - name: Check out release examples
+        uses: actions/checkout@v4
+
       - name: Install uv
         uses: astral-sh/setup-uv@v3
 
@@ -290,6 +293,21 @@ jobs:
           print('import OK: authoring, native profiles, marketing, Gemini and environments')
           print('SMOKE TEST PASSED: zeocore==' + installed + ' installs and imports on the published floor')
           "
+          uv pip install --python /tmp/smoke-pypi/bin/python --no-cache \
+            --default-index https://pypi.org/simple/ "zeocore[runtime-host]==${EXPECTED_VERSION}"
+          /tmp/smoke-pypi/bin/python examples/runtime_host_catalogue_v1.py
+          /tmp/smoke-pypi/bin/python examples/meeting_request_v1.py
+          /tmp/smoke-pypi/bin/python -c "
+          import json
+          import subprocess
+          result = subprocess.run(['/tmp/smoke-pypi/bin/zeo-capability', 'invoke'], capture_output=True, text=True)
+          assert result.returncode == 8, result
+          envelope = json.loads(result.stdout)
+          assert envelope['state'] == 'protocol_error', envelope
+          assert envelope['error_code'] == 'ZEO_HOST_PROTOCOL', envelope
+          assert envelope['binding'] is None and envelope['artifact_refs'] == [], envelope
+          print('Runtime CLI refuses invocation without launch authority')
+          "
 
       - name: Install from TestPyPI and smoke-test
         if: needs.publish-testpypi.result == 'success' && needs.publish-pypi.result != 'success'
@@ -339,6 +357,21 @@ jobs:
           print('import OK: authoring, native profiles, marketing, Gemini and environments')
           print('SMOKE TEST PASSED: zeocore==' + installed + ' installs and imports on the published floor')
           "
+          uv pip install --python /tmp/smoke-testpypi/bin/python --no-cache \
+            --default-index https://pypi.org/simple/ "zeocore[runtime-host] @ ${wheel_url}"
+          /tmp/smoke-testpypi/bin/python examples/runtime_host_catalogue_v1.py
+          /tmp/smoke-testpypi/bin/python examples/meeting_request_v1.py
+          /tmp/smoke-testpypi/bin/python -c "
+          import json
+          import subprocess
+          result = subprocess.run(['/tmp/smoke-testpypi/bin/zeo-capability', 'invoke'], capture_output=True, text=True)
+          assert result.returncode == 8, result
+          envelope = json.loads(result.stdout)
+          assert envelope['state'] == 'protocol_error', envelope
+          assert envelope['error_code'] == 'ZEO_HOST_PROTOCOL', envelope
+          assert envelope['binding'] is None and envelope['artifact_refs'] == [], envelope
+          print('Runtime CLI refuses invocation without launch authority')
+          "
 
   # --------------------------------------------------------------------------
   # Create the GitHub Release from RELEASE_NOTES.md.
@@ -356,8 +389,10 @@ jobs:
   # --------------------------------------------------------------------------
   github-release:
     name: create the GitHub Release
-    needs: publish-pypi
-    if: needs.publish-pypi.result == 'success' && startsWith(github.ref, 'refs/tags/v')
+    needs: [publish-pypi, smoke-test]
+    if: >-
+      always() && needs.publish-pypi.result == 'success' &&
+      needs.smoke-test.result == 'success' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write

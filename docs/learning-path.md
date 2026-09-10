@@ -51,10 +51,10 @@ Step-by-step guides for people building on ZeoCore.
   one total deadline, explicit attempt plans, cancellation, and truthful
   live/simulated labels.
 
-**Current source, after capability authoring**
+**Added in 0.11.0, after capability authoring**
 
 - [Provider registration](how-to/provider-registration.md) — terminology,
-  an explicit factory and the source-only offline catalogue example.
+  an explicit factory and the offline catalogue example.
 - [Runtime host](how-to/runtime-host.md) — trusted launch context, admission,
   canonical bytes and Runtime-owned results; requires `runtime-host`.
 - [Meeting operations](integrations/meetings.md) — admitted reads, Notion upsert

@@ -18,9 +18,9 @@ Use the [public API map](api.md) for supported import paths and the
 
 ::: zeo_core.tools.invoke_sync
 
-## Current source: Runtime and meetings
+## Added in 0.11.0: Runtime and meetings
 
-These APIs are newer than the published 0.10.0 wheel. The generic host protocol
+These APIs ship in 0.11.0. The generic host protocol
 is a candidate; consult its [guide](../how-to/runtime-host.md) before integration.
 
 ::: zeo_core.contracts.runtime.LaunchContext

@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 
 @pytest.mark.parametrize(
@@ -36,3 +37,13 @@ def test_release_identity_gate(
         check=False,
     )
     assert (result.returncode == 0) is ok, result.stderr
+
+
+def test_release_announcement_waits_for_installed_package_smoke() -> None:
+    """A successful upload alone must never announce a verified release."""
+    workflow = Path(__file__).resolve().parents[1] / ".github/workflows/publish.yml"
+    jobs = yaml.safe_load(workflow.read_text())["jobs"]
+    release = jobs["github-release"]
+    assert {"publish-pypi", "smoke-test"} <= set(release["needs"])
+    assert "needs.smoke-test.result == 'success'" in release["if"]
+    assert "needs.publish-pypi.result == 'success'" in release["if"]

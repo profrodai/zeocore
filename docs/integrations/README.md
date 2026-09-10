@@ -5,7 +5,7 @@
 Start with [test and production environments](environments.md). It explains the
 launcher, secure key prompts, file locations, offline fixtures, and promotion.
 Then follow your provider's complete account guide. These instructions target
-ZeoCore 0.10.0 or newer. Earlier wheels do not include this complete surface.
+ZeoCore 0.11.0 or newer. Earlier wheels do not include this complete surface.
 
 | Integration ID | Get credentials and configure accounts | Test track |
 |---|---|---|
@@ -44,7 +44,7 @@ selected resources and recipients still determine what the provider can change.
 
 For staged notebook/document releases, use [authoring conversion receipts](authoring-receipts.md).
 
-For runtime-admitted meeting actions, use the source-only
+For runtime-admitted meeting actions, use the
 [meeting adapters](meetings.md).
 
 Trusted notebook execution is a separate [optional local API](notebook-execution.md).

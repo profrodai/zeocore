@@ -13,11 +13,11 @@ or deployment acceptance. A test IPC peer is not that acceptance proof.
 
 ## Install and prepare a provider
 
-This API is newer than the published 0.10.0 wheel. From the reviewed source
-checkout with Python 3.14+:
+This API is available from 0.11.0 and requires Python 3.14+. Run the example
+from the matching `v0.11.0` checkout:
 
 ```bash
-uv pip install -e ".[runtime-host]"
+uv pip install "zeocore[runtime-host]==0.11.0"
 python examples/runtime_host_catalogue_v1.py
 ```
 
