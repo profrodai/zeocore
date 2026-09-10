@@ -18,9 +18,30 @@ class ExampleCase(NamedTuple):
 
     script: str
     stdout: str
+    extra_module: str | None = None
 
 
 SAFE_EXAMPLES = (
+    ExampleCase(
+        "runtime_host_catalogue_v1.py",
+        "Capability: demo.greet@1.0.0\n"
+        "Catalogue entries: 1\n"
+        'Normalized request: {"arguments":{"name":"World"},'
+        '"capability_id":"demo.greet@1.0.0"}\n'
+        "Request digest: sha256:"
+        "d7370ae8be73acf22a73ad8eef6f22c80ad84b5571bfd029c4890f716dc1ea7d\n"
+        "PREPARATION ONLY: no Runtime admission, handler invocation or provider call\n",
+        "rfc8785",
+    ),
+    ExampleCase(
+        "meeting_request_v1.py",
+        "Operation: sheets.values.read\n"
+        "Resource: sheets:example-sheet:Agenda!A1:C10\n"
+        "Request digest: "
+        "6bf86c1a8dc8716e377c458e68c33a0e7c78c38e75dbdcc9244027eba3f14b5c\n"
+        "Changed range changes digest: True\n"
+        "REQUEST ONLY: no authorization minted, Runtime contacted or provider called\n",
+    ),
     ExampleCase(
         "environment_usage.py",
         "test: private state prepared; ambient key excluded\n"
@@ -109,6 +130,8 @@ SAFE_EXAMPLES = (
 @pytest.mark.parametrize("case", SAFE_EXAMPLES, ids=lambda case: case.script)
 def test_beginner_example_runs_offline(case: ExampleCase, tmp_path: Path) -> None:
     """Run an allowlisted example without credentials or user configuration."""
+    if case.extra_module:
+        pytest.importorskip(case.extra_module)
     environment = {
         "HOME": str(tmp_path),
         "PATH": os.environ.get("PATH", ""),

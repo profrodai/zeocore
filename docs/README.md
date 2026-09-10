@@ -1,5 +1,7 @@
 # One capability. Every caller.
 
+<!-- Teaches CLAUDE.md Rev 17; reviewed 2026-09-10: Runtime host and meeting source APIs. -->
+
 <div class="hero" markdown>
 ZeoCore gives Python functions typed inputs, explicit effects and structured results,
 so scripts, services, Zeocreator and Sovereign Agent can call the same capability.
@@ -7,6 +9,7 @@ so scripts, services, Zeocreator and Sovereign Agent can call the same capabilit
 
 [Start in ten minutes](../QUICKSTART.md){ .md-button .md-button--primary }
 [Connect a service](integrations/README.md){ .md-button }
+[Register a provider](how-to/provider-registration.md){ .md-button }
 
 ```bash
 uv pip install "zeocore==0.10.0"
@@ -56,6 +59,24 @@ flowchart LR
 Capabilities describe and perform bounded work. Your host supplies authorization,
 credentials, scheduling and delivery policy. Marketing examples start offline;
 real sending requires explicit setup and host authorization.
+
+## Current source workflows
+
+The [Runtime host](how-to/runtime-host.md) and [meeting adapters](integrations/meetings.md)
+are newer than the published 0.10.0 wheel. From this source checkout:
+
+```bash
+uv pip install -e ".[runtime-host]"
+python examples/runtime_host_catalogue_v1.py
+python examples/meeting_request_v1.py
+```
+
+These examples prepare real catalogues and request bytes offline; they do not
+create admission or call providers. Start with [provider registration](how-to/provider-registration.md)
+for terminology and setup, then follow the protocol guide for trusted host wiring.
+Runtime owns admission, operation state and artifact access. ZEOconnect owns
+connector credentials and authorized dispatch. Cross-system acceptance remains
+required before deploying the generic host.
 
 ## Explore the library
 

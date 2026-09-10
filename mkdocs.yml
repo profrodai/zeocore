@@ -82,6 +82,8 @@ nav:
       - Glossary: glossary.md
   - Tutorials:
       - Write a capability: tutorials/capability-authoring.md
+      - Register a provider: how-to/provider-registration.md
+      - Runtime host: how-to/runtime-host.md
       - Results and errors: tutorials/results-and-errors.md
       - Context and files: tutorials/context-config-files.md
       - Resilient execution: tutorials/resilient-execution.md

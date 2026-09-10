@@ -1,0 +1,145 @@
+{
+  "$defs": {
+    "AttemptBinding": {
+      "additionalProperties": false,
+      "description": "Stable identity and exact inputs; a new attempt preserves operation ID.",
+      "properties": {
+        "attempt_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "capability_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Capability Id",
+          "type": "string"
+        },
+        "fencing_generation": {
+          "minimum": 1,
+          "title": "Fencing Generation",
+          "type": "integer"
+        },
+        "manifest_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Manifest Digest",
+          "type": "string"
+        },
+        "operation_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "organization_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "packet_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Packet Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "request_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Request Digest",
+          "type": "string"
+        },
+        "runtime_binding_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Runtime Binding Id",
+          "type": "string"
+        },
+        "seat_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Seat Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "organization_id",
+        "project_id",
+        "seat_id",
+        "runtime_binding_id",
+        "packet_id",
+        "operation_id",
+        "attempt_id",
+        "fencing_generation",
+        "capability_id",
+        "request_digest",
+        "manifest_digest"
+      ],
+      "title": "AttemptBinding",
+      "type": "object"
+    },
+    "JsonValue": {}
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "binding": {
+      "$ref": "#/$defs/AttemptBinding"
+    },
+    "data": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Data",
+      "type": "object"
+    },
+    "host_nonce": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Host Nonce",
+      "type": "string"
+    },
+    "protocol_version": {
+      "const": 1,
+      "title": "Protocol Version",
+      "type": "integer"
+    },
+    "request_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Request Digest",
+      "type": "string"
+    },
+    "sequence": {
+      "minimum": 1,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "state": {
+      "enum": [
+        "allowed",
+        "refused",
+        "cancelled",
+        "waiting_approval",
+        "needs_reconciliation"
+      ],
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "sequence",
+    "host_nonce",
+    "binding",
+    "request_digest",
+    "state"
+  ],
+  "title": "RuntimeReply",
+  "type": "object"
+}

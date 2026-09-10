@@ -51,6 +51,15 @@ Step-by-step guides for people building on ZeoCore.
   one total deadline, explicit attempt plans, cancellation, and truthful
   live/simulated labels.
 
+**Current source, after capability authoring**
+
+- [Provider registration](how-to/provider-registration.md) — terminology,
+  an explicit factory and the source-only offline catalogue example.
+- [Runtime host](how-to/runtime-host.md) — trusted launch context, admission,
+  canonical bytes and Runtime-owned results; requires `runtime-host`.
+- [Meeting operations](integrations/meetings.md) — admitted reads, Notion upsert
+  and Gmail draft operations, with a request-only offline example.
+
 **Integrations and adapters**
 
 - [Kit marketing](tutorials/kit-marketing.md) — newsletters, sequence authoring,

@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Version-1 supervised Runtime capability host and `zeo-capability` CLI with
+  explicit provider binding, canonical schemas/vectors and private inherited IPC.
+  The `runtime-host` extra is separate from `all`. Joint Runtime/ZEOconnect wire
+  agreement and real application acceptance remain required.
+- Runtime-admitted meeting-v1 adapters for Notion upsert, Sheets/Calendar reads
+  and Gmail draft creation, retrieval and reconciliation, using their existing
+  meeting request/receipt protocol.
+- Offline catalogue and meeting-request examples, provider-registration guidance,
+  and source-versus-release installation guidance throughout the public docs.
+
+### Fixed
+
+- Legacy plugin registration publishes transactionally, restores surviving
+  shadowed contributions on unload, uses registration snapshots for cleanup,
+  and refuses ambiguous selected entry points before import.
+
 ## [0.10.0] - 2026-09-09
 
 ### Added

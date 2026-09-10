@@ -843,6 +843,11 @@ Public: `PluginRegistry`, `PluginLoader`, the protocols
 functions (`list_available_entry_points`, `load_enabled_entry_points`,
 `load_enabled_modules`), and the globals `registry` and `loader`.
 
+Current-source registration publishes only after callbacks succeed. Unloading
+restores the latest surviving contribution using registration snapshots. Selected
+duplicate entry-point names refuse before import. This legacy registry does not
+admit Runtime providers; see [provider registration](../how-to/provider-registration.md).
+
 Built-in plugin ids (entry-point group `zeo_core.modules`): `fs`, `paths`,
 `config`, `prompt`.
 
@@ -868,10 +873,11 @@ Source: [`src/zeo_core/prompt/`](../../src/zeo_core/prompt/)
 
 <a id="adapters"></a>
 
-## `zeo_core.adapters` — HTTP, MCP, LLM tools
+## `zeo_core.adapters` — HTTP, MCP, LLM tools and Runtime host
 
-One capability, three front ends. HTTP and MCP both read the same
-`OperationRegistry`, so registering once exposes a capability to both.
+HTTP and MCP both read the same `OperationRegistry`, so registering once
+exposes a capability to both. LLM tools project its manifest. The Runtime host
+uses an explicitly admitted provider `CapabilityRegistry` and its own protocol.
 
 ```python
 from zeo_core.tools import register_capability_operation
@@ -959,11 +965,26 @@ Public: `project_openai_tool`, `openai_function_name`, `OpenAIFunctionTool`,
 Source: [`src/zeo_core/adapters/llm_tools/`](../../src/zeo_core/adapters/llm_tools/) ·
 Example: [`llm_tools_usage.py`](../../examples/llm_tools_usage.py)
 
+### Runtime host — current source, `zeocore[runtime-host]`
+
+Use `zeo-capability` for inherited-FD discovery and supervised invocation. Python
+composition uses `zeo_core.adapters.runtime_host.host.ManagedHost` and
+`parse_result`, with `RuntimeChannel` from `adapters.runtime_host.channel`.
+Wire models live in `zeo_core.contracts.runtime`: `ProviderBinding`,
+`AttemptBinding`, `LaunchContext`, `InvocationRequest`, `EffectRequest`,
+`RuntimeReply` and `HostResult`.
+
+The executable [schemas and canonical vectors](../../contracts/runtime-host-v1/)
+and [protocol guide](../how-to/runtime-host.md) define this candidate surface.
+It is newer than the 0.10.0 wheel and requires joint Runtime/ZEOconnect acceptance.
+Do not treat it as an unauthenticated replacement for direct Python invocation.
+
 <a id="integrations"></a>
 
 ## `zeo_core.integrations` — external services
 
-Each integration is its own import and its own extra. The parent package
+Import each integration from its own leaf package. Some ship in the base
+installation; others require the extra shown below. The parent package
 `zeo_core.integrations` exports nothing; import the leaf.
 
 | Import | Extra | Public names (abridged) |
@@ -972,6 +993,12 @@ Each integration is its own import and its own extra. The parent package
 | `zeo_core.integrations.google.drive` | `drive` / `google` | `GoogleDriveService`, `DriveFile`, `DriveFolder`, `create_integration` |
 | `zeo_core.integrations.google.mail` | `gmail` / `google` | `GoogleMailService`, `create_integration` |
 | `zeo_core.integrations.google.calendar` | `calendar` / `google` | `GoogleCalendarService`, `Calendar`, `CalendarEvent`, `EventAttendee`, `EventDateTime`, `CalendarIntegrationProtocol`, `create_integration` |
+| `zeo_core.integrations.meetings` | current source base | `MeetingRunner`, `MeetingAdapters`, `UnixMeetingRuntime`, `InvocationAuthorization`, `InvocationReceipt`, `request_digest` |
+| `zeo_core.integrations.database.supabase` | `supabase` | `SupabaseIntegration`, `SupabaseClient`, `SupabaseRealtimeClient`; see [Supabase](../integrations/supabase.md) |
+| `zeo_core.integrations.hubspot` | base install | `HubSpotIntegration`, `HubSpotClient`; [marketing guide](../tutorials/hubspot-marketing.md) |
+| `zeo_core.integrations.kit` | base install | `KitIntegration`, `KitClient`; [marketing guide](../tutorials/kit-marketing.md) |
+| `zeo_core.integrations.environments` | base install | `IntegrationEnvironment`; [test and production](../integrations/environments.md) |
+| `zeo_core.integrations.notebook` | `notebook` | `execute_notebook`; [execution guide](../integrations/notebook-execution.md) |
 | `zeo_core.integrations.hosted` | base install | `ServiceRequirement`, `ServiceResolver`, `ExecutionProfile`, resolution states, `build_hosted_runtime`, `ZEOconnectHTTPTransport`, `KeychainSecureSessionStore`, hosted service proxies |
 | `zeo_core.integrations.notion` | `notion` | `NotionIntegration`, `NotionClient`, `NotionOperation`, `NotionAPIError`, `NotionPageResult`, typed page/database/data-source/block/user models |
 | `zeo_core.integrations.llms` | `llms` | `LLMClient`, `OpenAIClient`, `AnthropicClient`, `OllamaClient`, `MockLLMClient`, `FallbackLLMClient`, `LLMConfig`, `ChatMessage`, `FunctionCall` |
@@ -1001,9 +1028,9 @@ fails:
 - The **Google** integrations import their Google client libraries eagerly, so `import zeo_core.integrations.google.drive` raises `ImportError` without the extra.
 - **Notion, jupytext, ffmpeg** import cleanly without their extra and fail later, inside `initialize()`, with a message naming the missing package.
 
-Database integrations (`bigquery`, `sqlite`, `supabase`) appear as empty
-placeholder packages: they were evaluated and **not built**. Do not import
-them.
+Supabase is implemented at `zeo_core.integrations.database.supabase`, covering
+Database, Auth, Storage, Edge Functions and async Realtime. Raw SQL and Vault
+plaintext access are excluded. The `bigquery` and `sqlite` packages remain placeholders.
 
 <a id="contract-pack"></a>
 
@@ -1033,7 +1060,11 @@ Declared in [`pyproject.toml`](../../pyproject.toml); `uv pip install "zeocore[n
 | `pandoc` | Document conversion |
 | `jupytext` | Script ↔ notebook conversion |
 | `ffmpeg` | Media probing/transcoding via `ffmpeg-zeo` (needs an `ffmpeg` binary too) |
-| `all` | Every integration above — **not** `http` or `mcp`; use `zeocore[all,mcp]` |
+| `supabase` | Database, Auth, Storage, Edge Functions and Realtime |
+| `notebook` | Fresh-kernel notebook execution |
+| `bluesky` | Bluesky client |
+| `runtime-host` | Current-source supervised host, JSON Schema validation and RFC 8785 |
+| `all` | Integration extras; excludes `http`, `mcp` and `runtime-host`; select those explicitly |
 | `dev`, `lint`, `http-dev`, `mcp-dev` | Contributor tooling — see [CONTRIBUTING.md](../../CONTRIBUTING.md) |
 
 Python **3.14 or newer** is required.
@@ -1058,7 +1089,7 @@ Importing any of these couples you to internals that change without notice:
 | `zeo_core.tools.compat.sovereign_style` | **Transitional** adapter for keyword-argument functions. Not the canonical authoring surface. |
 | `zeo_core._dev` | Local development helpers. |
 | `zeo_core.contracts.capabilities.demo` implementations | Only the demo *models* (`EchoRequest`, `VideoRefRequest`) are exported. |
-| `zeo_core.integrations.database.*` | Empty placeholders; evaluated and not built. |
+| `zeo_core.integrations.database.bigquery`, `zeo_core.integrations.database.sqlite` | Placeholder packages. Supabase has a supported public API. |
 | Anything with a leading underscore | Standard Python convention, enforced here. |
 
 The commented-out media contracts in
@@ -1072,7 +1103,7 @@ declared stable yet.
 
 - [README.md](../../README.md) — the 30-second version, install, and the module map.
 - [GET-STARTED.md](../../GET-STARTED.md) — module-by-module walkthrough, including [Capabilities](../../GET-STARTED.md#capabilities) and [Core Modules Overview](../../GET-STARTED.md#core-modules-overview).
-- [`examples/README.md`](../../examples/README.md) — all 15 runnable scripts, ordered by difficulty, with an offline beginner path.
+- [`examples/README.md`](../../examples/README.md) — runnable scripts, required extras and the offline beginner path.
 - [Capability authoring tutorial](../tutorials/capability-authoring.md) — the worked end-to-end walkthrough.
 - [contracts/README.md](../../src/zeo_core/contracts/README.md) and [contracts/EXAMPLES.md](../../src/zeo_core/contracts/EXAMPLES.md) — the contracts kernel in depth.
 - [docs/README.md](../README.md) — index of tutorials and maintainer reports.

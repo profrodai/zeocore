@@ -1,0 +1,639 @@
+{
+  "$defs": {
+    "AttemptBinding": {
+      "additionalProperties": false,
+      "description": "Stable identity and exact inputs; a new attempt preserves operation ID.",
+      "properties": {
+        "attempt_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "capability_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Capability Id",
+          "type": "string"
+        },
+        "fencing_generation": {
+          "minimum": 1,
+          "title": "Fencing Generation",
+          "type": "integer"
+        },
+        "manifest_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Manifest Digest",
+          "type": "string"
+        },
+        "operation_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "organization_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "packet_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Packet Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "request_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Request Digest",
+          "type": "string"
+        },
+        "runtime_binding_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Runtime Binding Id",
+          "type": "string"
+        },
+        "seat_id": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Seat Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "organization_id",
+        "project_id",
+        "seat_id",
+        "runtime_binding_id",
+        "packet_id",
+        "operation_id",
+        "attempt_id",
+        "fencing_generation",
+        "capability_id",
+        "request_digest",
+        "manifest_digest"
+      ],
+      "title": "AttemptBinding",
+      "type": "object"
+    },
+    "CapabilityDeprecation": {
+      "additionalProperties": false,
+      "description": "Optional deprecation status on a definition/manifest.",
+      "properties": {
+        "deprecated": {
+          "default": false,
+          "title": "Deprecated",
+          "type": "boolean"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "successor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Successor"
+        }
+      },
+      "title": "CapabilityDeprecation",
+      "type": "object"
+    },
+    "CapabilityEffects": {
+      "additionalProperties": false,
+      "description": "Side-effect and concurrency declarations. Not permission grants.",
+      "properties": {
+        "concurrency": {
+          "$ref": "#/$defs/ConcurrencyMode",
+          "default": "parallel_safe"
+        },
+        "kinds": {
+          "items": {
+            "$ref": "#/$defs/EffectKind"
+          },
+          "title": "Kinds",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "resource_key_fields": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Resource Key Fields",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kinds"
+      ],
+      "title": "CapabilityEffects",
+      "type": "object"
+    },
+    "CapabilityExample": {
+      "additionalProperties": false,
+      "description": "A declared request/response example. Authors must supply at least one.",
+      "properties": {
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "request": {
+          "additionalProperties": true,
+          "title": "Request",
+          "type": "object"
+        },
+        "response": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Response"
+        }
+      },
+      "required": [
+        "request"
+      ],
+      "title": "CapabilityExample",
+      "type": "object"
+    },
+    "CapabilityId": {
+      "additionalProperties": false,
+      "description": "Immutable capability identity. Mutation after construction is forbidden.",
+      "properties": {
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "namespace": {
+          "minLength": 1,
+          "title": "Namespace",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "namespace",
+        "name",
+        "version"
+      ],
+      "title": "CapabilityId",
+      "type": "object"
+    },
+    "CapabilityManifest": {
+      "additionalProperties": false,
+      "description": "Discovery document for a capability.\n\nAvailability is evaluated against runner-supplied context and is never a\npermanent property of this manifest.",
+      "properties": {
+        "deprecation": {
+          "$ref": "#/$defs/CapabilityDeprecation"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "effects": {
+          "$ref": "#/$defs/CapabilityEffects"
+        },
+        "error_codes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Error Codes",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "examples": {
+          "items": {
+            "$ref": "#/$defs/CapabilityExample"
+          },
+          "title": "Examples",
+          "type": "array"
+        },
+        "id": {
+          "$ref": "#/$defs/CapabilityId"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "projection_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Projection Name"
+        },
+        "request_schema": {
+          "additionalProperties": true,
+          "title": "Request Schema",
+          "type": "object"
+        },
+        "requirements": {
+          "$ref": "#/$defs/CapabilityRequirements"
+        },
+        "response_schema": {
+          "additionalProperties": true,
+          "title": "Response Schema",
+          "type": "object"
+        },
+        "schema_version": {
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "description",
+        "request_schema",
+        "response_schema",
+        "examples",
+        "error_codes",
+        "effects",
+        "requirements",
+        "tags",
+        "metadata",
+        "deprecation"
+      ],
+      "title": "CapabilityManifest",
+      "type": "object"
+    },
+    "CapabilityRequirements": {
+      "additionalProperties": false,
+      "description": "Inspectable dependencies. Credential names only — never secret values.",
+      "properties": {
+        "binaries": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Binaries",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "credentials": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Credentials",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "filesystem": {
+          "$ref": "#/$defs/FilesystemRequirement"
+        },
+        "network": {
+          "$ref": "#/$defs/NetworkRequirement"
+        },
+        "services": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Services",
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "title": "CapabilityRequirements",
+      "type": "object"
+    },
+    "ConcurrencyMode": {
+      "description": "Declared coordination requirement. The runner owns locks.",
+      "enum": [
+        "parallel_safe",
+        "serial_per_capability",
+        "serial_per_resource",
+        "exclusive"
+      ],
+      "title": "ConcurrencyMode",
+      "type": "string"
+    },
+    "EffectKind": {
+      "description": "Declared side-effect kind. Declarations are not permission grants.",
+      "enum": [
+        "read",
+        "write",
+        "delete",
+        "external_communication",
+        "financial",
+        "security_sensitive"
+      ],
+      "title": "EffectKind",
+      "type": "string"
+    },
+    "FilesystemRequirement": {
+      "additionalProperties": false,
+      "description": "Filesystem need declared as roles, not ambient host paths.",
+      "properties": {
+        "read": {
+          "default": false,
+          "title": "Read",
+          "type": "boolean"
+        },
+        "roles": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Roles",
+          "type": "array"
+        },
+        "write": {
+          "default": false,
+          "title": "Write",
+          "type": "boolean"
+        }
+      },
+      "title": "FilesystemRequirement",
+      "type": "object"
+    },
+    "NetworkRequirement": {
+      "additionalProperties": false,
+      "description": "Network need without host secrets or ambient probing.",
+      "properties": {
+        "hosts": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Hosts",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "required": {
+          "default": false,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "title": "NetworkRequirement",
+      "type": "object"
+    },
+    "ProviderBinding": {
+      "additionalProperties": false,
+      "description": "Static admitted inventory; factory is chosen by the trusted launcher.",
+      "properties": {
+        "distribution": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Distribution",
+          "type": "string"
+        },
+        "environment_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Environment Digest",
+          "type": "string"
+        },
+        "factory": {
+          "pattern": "^[a-zA-Z_]\\w*(?:\\.[a-zA-Z_]\\w*)*:[a-zA-Z_]\\w*$",
+          "title": "Factory",
+          "type": "string"
+        },
+        "generation": {
+          "minimum": 1,
+          "title": "Generation",
+          "type": "integer"
+        },
+        "manifest_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Manifest Digest",
+          "type": "string"
+        },
+        "manifests": {
+          "items": {
+            "$ref": "#/$defs/CapabilityManifest"
+          },
+          "title": "Manifests",
+          "type": "array"
+        },
+        "protocol_version": {
+          "const": 1,
+          "title": "Protocol Version",
+          "type": "integer"
+        },
+        "python_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Python Version",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "distribution",
+        "version",
+        "python_version",
+        "environment_digest",
+        "factory",
+        "manifests",
+        "manifest_digest",
+        "generation"
+      ],
+      "title": "ProviderBinding",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Delivered on a private inherited FD, not supplied in request JSON.",
+  "properties": {
+    "admitted_capabilities": {
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Admitted Capabilities",
+      "type": "array"
+    },
+    "attempt": {
+      "$ref": "#/$defs/AttemptBinding"
+    },
+    "binaries": {
+      "default": [],
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Binaries",
+      "type": "array"
+    },
+    "bootstrap_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Bootstrap Id",
+      "type": "string"
+    },
+    "credentials": {
+      "default": [],
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Credentials",
+      "type": "array"
+    },
+    "deadline_unix_ms": {
+      "exclusiveMinimum": 0,
+      "title": "Deadline Unix Ms",
+      "type": "integer"
+    },
+    "filesystem_read": {
+      "default": false,
+      "title": "Filesystem Read",
+      "type": "boolean"
+    },
+    "filesystem_write": {
+      "default": false,
+      "title": "Filesystem Write",
+      "type": "boolean"
+    },
+    "max_message_bytes": {
+      "default": 1048576,
+      "maximum": 1048576,
+      "minimum": 1024,
+      "title": "Max Message Bytes",
+      "type": "integer"
+    },
+    "network_allowed": {
+      "default": false,
+      "title": "Network Allowed",
+      "type": "boolean"
+    },
+    "network_hosts": {
+      "default": [],
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Network Hosts",
+      "type": "array"
+    },
+    "protocol_version": {
+      "const": 1,
+      "title": "Protocol Version",
+      "type": "integer"
+    },
+    "provider": {
+      "$ref": "#/$defs/ProviderBinding"
+    },
+    "rpc_timeout_ms": {
+      "default": 5000,
+      "maximum": 30000,
+      "minimum": 1,
+      "title": "Rpc Timeout Ms",
+      "type": "integer"
+    },
+    "services": {
+      "default": [],
+      "items": {
+        "maxLength": 256,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Services",
+      "type": "array"
+    },
+    "total_dispatch_budget": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Total Dispatch Budget",
+      "type": "integer"
+    },
+    "workspace": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Workspace",
+      "type": "string"
+    }
+  },
+  "required": [
+    "protocol_version",
+    "provider",
+    "attempt",
+    "bootstrap_id",
+    "admitted_capabilities",
+    "deadline_unix_ms",
+    "workspace"
+  ],
+  "title": "LaunchContext",
+  "type": "object"
+}

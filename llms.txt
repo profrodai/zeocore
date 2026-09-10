@@ -140,6 +140,24 @@ file under examples/ — every one of them is runnable as printed
 - [Authoring reference](docs/integrations/authoring-reference.md): conversion and
   staging receipts; staging does not upload or publish.
 
+## Current source: Runtime and meeting APIs
+
+These APIs are newer than the published 0.10.0 wheel. Install this checkout with
+`uv pip install -e ".[runtime-host]"`; `all` does not include that extra.
+
+- [Provider registration](docs/how-to/provider-registration.md): capability,
+  provider, registry, adapter, integration and legacy plugin terminology.
+- [Runtime host](docs/how-to/runtime-host.md): `zeo-capability` and
+  `zeo_core.contracts.runtime` wire models. Requires trusted inherited descriptors,
+  live Runtime admission and accepted artifacts; no standalone fallback.
+- [Meeting operations](docs/integrations/meetings.md):
+  `zeo_core.integrations.meetings` has a separate meeting-v1 protocol and digest.
+- [Catalogue example](examples/runtime_host_catalogue_v1.py) and
+  [meeting request example](examples/meeting_request_v1.py): preparation only,
+  offline, no manufactured authority or provider calls.
+- Legacy `zeo_core.modules` registration is transactional and restores surviving
+  contributions on unload; it does not admit a Runtime provider.
+
 ## Conventions worth knowing before you guess
 
 - Tools report expected failure/skip conditions via
@@ -164,5 +182,6 @@ file under examples/ — every one of them is runnable as printed
   stub package needed.
 - `zeo_core.adapters.http`'s FastAPI app exposes an OpenAPI schema at the
   usual FastAPI routes (`/openapi.json`) when that adapter is running;
-  there is no static, pre-generated OpenAPI/JSON-Schema artifact checked
-  into this repo as of this writing.
+  Runtime host JSON Schemas and RFC 8785 vectors are checked in under
+  `contracts/runtime-host-v1/`. They describe the separate host wire protocol,
+  not the HTTP adapter OpenAPI schema.

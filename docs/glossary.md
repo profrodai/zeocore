@@ -1,8 +1,9 @@
 # Glossary
 
 **Adapter**  
-A boundary that exposes a canonical capability through another interface, such
-as HTTP, MCP, or an LLM function-tool schema.
+A boundary between interfaces or services: for example, HTTP/MCP projection,
+the supervised Runtime host, or translating an admitted meeting request into
+a provider operation.
 
 **Artifact**  
 A file or other durable output referenced by an invocation. The runner owns
@@ -102,6 +103,25 @@ A stable result code used for programmatic branching. New codes should use
 **Metadata**  
 Additional JSON-safe context on a definition, result, or `ToolContext`.
 Metadata should not contain secret values.
+
+**Module / legacy plugin**
+
+An explicitly loaded contribution to `zeo_core.modules`. The historical module
+name does not mean Runtime admission. Discovery, loading and registration are
+separate acts; failed registration does not publish partial contributions.
+
+**Provider**
+
+An installed package supplying capabilities through an explicit factory that
+returns `CapabilityRegistry`. The trusted Runtime binding selects its factory,
+version and environment. See [provider registration](how-to/provider-registration.md).
+
+**Runtime host**
+
+The `zeo-capability` process or Python `ManagedHost` that validates an admitted
+provider and invokes its typed capability. Runtime supplies authority, durable
+operation state and artifact access. Installation or catalogue visibility alone
+gives no invocation permission.
 
 **Pydantic model**  
 The typed `BaseModel` used as a capability's request and response. ZeoCore

@@ -1,0 +1,49 @@
+{
+  "$defs": {
+    "JsonValue": {}
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A request to Runtime, not a connector dispatch authorization.",
+  "properties": {
+    "arguments": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Arguments",
+      "type": "object"
+    },
+    "connection_ref": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Connection Ref",
+      "type": "string"
+    },
+    "connector_revision": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Connector Revision",
+      "type": "string"
+    },
+    "logical_effect_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Logical Effect Id",
+      "type": "string"
+    },
+    "operation": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Operation",
+      "type": "string"
+    }
+  },
+  "required": [
+    "logical_effect_id",
+    "connection_ref",
+    "connector_revision",
+    "operation",
+    "arguments"
+  ],
+  "title": "EffectRequest",
+  "type": "object"
+}

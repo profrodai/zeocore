@@ -1,5 +1,7 @@
 # ZeoCore
 
+<!-- Teaches CLAUDE.md Rev 17; reviewed 2026-09-10: Runtime host and meeting source APIs. -->
+
 [Documentation](https://profrodai.github.io/zeocore/) · [Release notes](RELEASE_NOTES.md)
 
 [![CI](https://github.com/profrodai/zeocore/workflows/CI/badge.svg)](https://github.com/profrodai/zeocore/actions/workflows/ci.yml)
@@ -24,6 +26,10 @@ prior knowledge of ZeoCore.
 Connect external services with the [integration account setup guides](docs/integrations/README.md):
 credential acquisition, test accounts, production accounts and runnable checks
 for every supported integration.
+
+For Runtime-supervised applications, start with the
+[provider registration guide](docs/how-to/provider-registration.md) and the
+[current-source setup](#current-source-runtime-host-and-meeting-operations).
 
 ## Who this is for
 
@@ -219,6 +225,36 @@ and [the authoring reference](docs/integrations/authoring-reference.md) provide
 fresh-kernel execution and independently checked staging receipts.
 See [release notes](RELEASE_NOTES.md) for migration and remaining qualification limits.
 
+## Current source: Runtime host and meeting operations
+
+The source checkout includes additions newer than the published **0.10.0** wheel.
+Install this reviewed checkout to try them; installing `zeocore==0.10.0` does not
+provide the Runtime host or meeting adapters.
+
+```bash
+uv pip install -e ".[runtime-host]"
+python examples/runtime_host_catalogue_v1.py
+python examples/meeting_request_v1.py
+```
+
+The first example builds a provider catalogue and a validated, canonical request.
+The second prepares an exact meeting read request. Both run offline without
+credentials, admission or provider calls.
+
+- [Provider registration](docs/how-to/provider-registration.md) explains capabilities,
+  providers, adapters, integrations and the existing plugin registry.
+- [Runtime host](docs/how-to/runtime-host.md) documents `zeo-capability`, trusted
+  launch context, bounded IPC, managed effects and Runtime-owned artifacts. The
+  Unix protocol is a candidate awaiting joint wire and application acceptance.
+- [Meeting operations](docs/integrations/meetings.md) covers Notion upsert, Sheets
+  and Calendar reads, and Gmail draft creation, retrieval and reconciliation.
+  This meeting-v1 protocol has separate bindings from the generic host.
+
+Registering a capability never grants permission to execute it. Runtime owns
+admission and durable operations; ZEOconnect owns protected connector dispatch.
+Legacy plugin registration now publishes transactionally and restores surviving
+contributions on unload. It remains an explicit local loading API.
+
 ## Optional integrations
 
 Optional SDKs ship as extras. HubSpot, Kit, managed environments and the Gemini
@@ -242,7 +278,10 @@ accounts and authorization. Install additional dependencies only as needed:
 | `zeocore[ffmpeg]` | Media probing/transcoding via the org's `ffmpeg-zeo` package |
 | `zeocore[http]` | FastAPI-based HTTP adapter for exposing tools over REST |
 | `zeocore[mcp]` | MCP adapter for exposing tools to Claude Code, Cursor, and other MCP-native agents |
-| `zeocore[all]` | Every integration above, no `http`/`mcp`/`dev`/`lint` |
+| `zeocore[runtime-host]` | Source-only supervised capability host and canonical wire validation |
+| `zeocore[all]` | Integration extras; excludes `http`, `mcp`, `runtime-host`, `dev` and `lint` |
+
+`runtime-host` must also be installed explicitly from the current source.
 
 `mcp` and `mcp-dev` are real, separate extras — `zeocore[all]` does **not**
 pull in the MCP adapter. Install it explicitly (e.g. `zeocore[all,mcp]`).
@@ -256,7 +295,9 @@ The `dev` and `lint` extras are for contributors; see
 | `zeo_core.tools` | Authoring — `@capability`, `CapabilityRegistry`, `invoke_sync` / `invoke_async`, `BaseZeoTool`, `ToolContext`, `tool_to_capability`, optional mixins. |
 | `zeo_core.execution` | Host-side bounded execution — one total deadline, explicit retries/fallback, cancellation, truthful target identity, and sanitized attempt records for read-only/advisory work. |
 | `zeo_core.contracts` | Data contracts — `CapabilityId`, `CapabilityDefinition`, `CapabilityManifest`, `CapabilityResult`, `CapabilityOutcome`, guards, invocation records. See [contracts/README.md](src/zeo_core/contracts/README.md). |
-| `zeo_core.adapters` | Optional adapters: HTTP, MCP, and `llm_tools` (OpenAI-compatible function projection from one `CapabilityManifest`). |
+| `zeo_core.adapters` | HTTP, MCP, LLM function projection, and the source-only Runtime capability host. |
+| `zeo_core.contracts.runtime` | Version-1 launch, attempt, request, effect and result bindings for the Runtime host. |
+| `zeo_core.integrations.meetings` | Source-only Runtime-admitted meeting reads, Notion upsert and Gmail draft operations. |
 | `zeo_core.core` | Filesystem operations, path resolution, a typed error hierarchy, MIME detection, serialization, logging, an operation registry. |
 | `zeo_core.config` | YAML/env-var configuration loading and per-tool config models. |
 | `zeo_core.integrations` | Adapters for GitHub, Google Workspace, Supabase, LLM providers, Notion, HubSpot, Kit, Gemini images, Pandoc, jupytext, notebooks, ffmpeg, and Bluesky; managed environments and native service profiles. Supabase covers Database, Auth, Storage, Edge Functions, and async Realtime while deliberately excluding raw SQL and Vault plaintext access. |
