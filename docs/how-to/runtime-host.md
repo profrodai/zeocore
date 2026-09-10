@@ -11,6 +11,27 @@ tests are executable. Joint Runtime/ZEOconnect wire review, the Go adapter and t
 real Creator/Newsroom/agent/effect proofs remain required before interoperability
 or deployment acceptance. A test IPC peer is not that acceptance proof.
 
+## Install and prepare a provider
+
+This API is newer than the published 0.10.0 wheel. From the reviewed source
+checkout with Python 3.14+:
+
+```bash
+uv pip install -e ".[runtime-host]"
+python examples/runtime_host_catalogue_v1.py
+```
+
+The [complete offline example](../../examples/runtime_host_catalogue_v1.py)
+exports a real provider factory, builds its catalogue and prints a normalized
+request and digest. It does not invoke a handler or manufacture launch authority.
+The [registration guide](provider-registration.md) explains how to package the
+factory and how this differs from legacy plugin loading. `runtime-host` is a
+separate extra, not included by `zeocore[all]`; `make setup` includes it for tests.
+
+The inherited Unix socket/descriptor protocol is supported by the exercised
+macOS and Linux Python 3.14 environments. A Windows launcher is not provided.
+A trusted Runtime supervisor is still required for every host invocation.
+
 ## Ownership and launcher prerequisites
 
 Runtime owns organizational admission, durable operation and logical-effect IDs,

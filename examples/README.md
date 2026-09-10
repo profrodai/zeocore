@@ -1,5 +1,7 @@
 # ZeoCore examples
 
+<!-- Teaches CLAUDE.md Rev 17; reviewed 2026-09-10: Runtime host and meeting source APIs. -->
+
 Runnable scripts and a complete authoring reference. The scripts run as-is — none are
 illustrative fragments, and none require you to fill in a placeholder before
 they do something.
@@ -25,7 +27,7 @@ walkthroughs, see [GET-STARTED.md](../GET-STARTED.md) and
 
 ```bash
 uv pip install -e .            # base install: the offline examples below
-uv pip install -e ".[all]"     # every integration extra
+uv pip install -e ".[all]"     # integration extras; excludes HTTP, MCP and Runtime host
 uv pip install -e ".[http]"    # single extras, as needed
 ```
 
@@ -190,6 +192,32 @@ For conversion, fresh-kernel notebook execution and staging, follow the
 `zeocore[jupytext,notebook,pandoc]` plus the Pandoc binary. The examples are
 checkout assets, not installed shell commands. Run the release's examples with
 its matching installed package. Staging produces receipts; it does not publish.
+
+## Current source: provider and meeting requests
+
+These examples require the current checkout, newer than the published 0.10.0
+wheel. Run them with its matching editable installation:
+
+```bash
+uv pip install -e ".[runtime-host]"
+python examples/runtime_host_catalogue_v1.py
+python examples/meeting_request_v1.py
+```
+
+| Example | What it demonstrates | Requirements |
+| --- | --- | --- |
+| [`runtime_host_catalogue_v1.py`](runtime_host_catalogue_v1.py) | A real provider factory, manifest inventory, default-materialized input and RFC 8785 request digest | Source plus `runtime-host` extra |
+| [`meeting_request_v1.py`](meeting_request_v1.py) | Exact Sheets resource and request digest; changing the range changes the binding | Source base install |
+
+Both are preparation-only: no Runtime session, credentials or provider calls.
+The meeting digest is its existing sorted-JSON protocol; the generic host uses
+RFC 8785 with a `sha256:` prefix. Do not substitute one for the other.
+
+Use the [registration guide](../docs/how-to/provider-registration.md),
+[host protocol](../docs/how-to/runtime-host.md) and
+[meeting guide](../docs/integrations/meetings.md) to move from these examples to
+an admitted caller. The host CLI requires trusted inherited descriptors; running
+`zeo-capability invoke` alone cannot authorize work.
 
 ## Adapters and mixins
 

@@ -23,6 +23,17 @@ managed environments, native profiles, Gemini images, notebook execution and
 conversion/staging receipts. [Release notes](RELEASE_NOTES.md) list installation
 extras and the boundaries that still require host authorization or live validation.
 
+## Current source additions
+
+The [provider registration guide](docs/how-to/provider-registration.md),
+[Runtime host protocol](docs/how-to/runtime-host.md) and
+[meeting operations](docs/integrations/meetings.md) cover APIs newer than the
+published 0.10.0 wheel. Use the source installation and offline commands in
+[the example catalogue](examples/README.md#current-source-provider-and-meeting-requests).
+The existing Python, HTTP and MCP paths remain available. The generic host adds
+Runtime admission and artifact acceptance; legacy plugin loading does not confer
+that authority. Meeting-v1 retains a separate request and receipt protocol.
+
 ## Contents
 
 - [Introduction](#introduction)

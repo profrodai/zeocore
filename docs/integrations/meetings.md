@@ -35,6 +35,24 @@ and the table's exact resource string when obtaining the lease. Changing even
 an optional field after admission changes the request. Provider credentials are
 host-owned and never belong in the payload or runtime receipt.
 
+## Prepare a request offline
+
+From the current checkout, install the source and run the complete example:
+
+```bash
+uv pip install -e .
+python examples/meeting_request_v1.py
+```
+
+The [script](../../examples/meeting_request_v1.py) prepares a bounded Sheets
+resource and its exact request digest. It shows that changing the range changes
+the digest. It creates no lease, contacts no runtime and makes no Google call.
+
+This meeting-v1 API predates the [generic capability host](../how-to/runtime-host.md).
+Its method names, authorization/receipt models and sorted-JSON digest are distinct
+from that host's versioned attempt bindings and RFC 8785 `sha256:` digests. Do not
+connect one client's frames to the other's endpoint.
+
 ## Host composition
 
 ```python

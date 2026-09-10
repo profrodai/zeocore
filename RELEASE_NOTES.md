@@ -1,5 +1,10 @@
 # zeocore 0.10.0
 
+Current-source additions are listed under [Unreleased](CHANGELOG.md#unreleased).
+The Runtime capability host and meeting-v1 adapters are not in the published
+0.10.0 wheel; use the source installation in [provider registration](docs/how-to/provider-registration.md)
+and the [meeting guide](docs/integrations/meetings.md). The release below remains 0.10.0.
+
 ZeoCore 0.10.0 brings marketing automation, explicit integration environments,
 governed image commissioning and receipt-bearing notebook authoring into one
 release. Python 3.14 or newer remains required. The complete history is in
