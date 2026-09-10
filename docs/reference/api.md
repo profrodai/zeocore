@@ -4,7 +4,7 @@ A curated map of ZeoCore's **public** surface: the canonical import path for
 each symbol, the signatures you actually call, and where the boundary sits
 between "supported API" and "internal detail you should not import".
 
-This page is hand-written and covers ZeoCore **0.10.0** (beta — see
+This page is hand-written and covers ZeoCore **0.11.0** (beta — see
 [Stability](#stability)). It is not generated from
 docstrings, and it is not exhaustive: every entry links to the source file,
 which is the authoritative signature. If a symbol is not listed here and not
@@ -85,7 +85,7 @@ wiring a *host application* does (`zeo_core.adapters`).
 
 ## Stability: what this page promises
 
-ZeoCore 0.10.0 is a **beta** library. The API is typed and tested
+ZeoCore 0.11.0 is a **beta** library. The API is typed and tested
 (mypy `--strict` across the tree), but the surface may still shift before
 1.0. Breaking changes are recorded in [CHANGELOG.md](../../CHANGELOG.md).
 
@@ -843,7 +843,7 @@ Public: `PluginRegistry`, `PluginLoader`, the protocols
 functions (`list_available_entry_points`, `load_enabled_entry_points`,
 `load_enabled_modules`), and the globals `registry` and `loader`.
 
-Current-source registration publishes only after callbacks succeed. Unloading
+From 0.11.0, registration publishes only after callbacks succeed. Unloading
 restores the latest surviving contribution using registration snapshots. Selected
 duplicate entry-point names refuse before import. This legacy registry does not
 admit Runtime providers; see [provider registration](../how-to/provider-registration.md).
@@ -965,7 +965,7 @@ Public: `project_openai_tool`, `openai_function_name`, `OpenAIFunctionTool`,
 Source: [`src/zeo_core/adapters/llm_tools/`](../../src/zeo_core/adapters/llm_tools/) ·
 Example: [`llm_tools_usage.py`](../../examples/llm_tools_usage.py)
 
-### Runtime host — current source, `zeocore[runtime-host]`
+### Runtime host — added in 0.11.0, `zeocore[runtime-host]`
 
 Use `zeo-capability` for inherited-FD discovery and supervised invocation. Python
 composition uses `zeo_core.adapters.runtime_host.host.ManagedHost` and
@@ -976,7 +976,7 @@ Wire models live in `zeo_core.contracts.runtime`: `ProviderBinding`,
 
 The executable [schemas and canonical vectors](../../contracts/runtime-host-v1/)
 and [protocol guide](../how-to/runtime-host.md) define this candidate surface.
-It is newer than the 0.10.0 wheel and requires joint Runtime/ZEOconnect acceptance.
+It ships in 0.11.0; joint Runtime/ZEOconnect interoperability acceptance is still required.
 Do not treat it as an unauthenticated replacement for direct Python invocation.
 
 <a id="integrations"></a>
@@ -993,7 +993,7 @@ installation; others require the extra shown below. The parent package
 | `zeo_core.integrations.google.drive` | `drive` / `google` | `GoogleDriveService`, `DriveFile`, `DriveFolder`, `create_integration` |
 | `zeo_core.integrations.google.mail` | `gmail` / `google` | `GoogleMailService`, `create_integration` |
 | `zeo_core.integrations.google.calendar` | `calendar` / `google` | `GoogleCalendarService`, `Calendar`, `CalendarEvent`, `EventAttendee`, `EventDateTime`, `CalendarIntegrationProtocol`, `create_integration` |
-| `zeo_core.integrations.meetings` | current source base | `MeetingRunner`, `MeetingAdapters`, `UnixMeetingRuntime`, `InvocationAuthorization`, `InvocationReceipt`, `request_digest` |
+| `zeo_core.integrations.meetings` | base install, from 0.11.0 | `MeetingRunner`, `MeetingAdapters`, `UnixMeetingRuntime`, `InvocationAuthorization`, `InvocationReceipt`, `request_digest` |
 | `zeo_core.integrations.database.supabase` | `supabase` | `SupabaseIntegration`, `SupabaseClient`, `SupabaseRealtimeClient`; see [Supabase](../integrations/supabase.md) |
 | `zeo_core.integrations.hubspot` | base install | `HubSpotIntegration`, `HubSpotClient`; [marketing guide](../tutorials/hubspot-marketing.md) |
 | `zeo_core.integrations.kit` | base install | `KitIntegration`, `KitClient`; [marketing guide](../tutorials/kit-marketing.md) |
@@ -1063,7 +1063,7 @@ Declared in [`pyproject.toml`](../../pyproject.toml); `uv pip install "zeocore[n
 | `supabase` | Database, Auth, Storage, Edge Functions and Realtime |
 | `notebook` | Fresh-kernel notebook execution |
 | `bluesky` | Bluesky client |
-| `runtime-host` | Current-source supervised host, JSON Schema validation and RFC 8785 |
+| `runtime-host` | Supervised host from 0.11.0, JSON Schema validation and RFC 8785 |
 | `all` | Integration extras; excludes `http`, `mcp` and `runtime-host`; select those explicitly |
 | `dev`, `lint`, `http-dev`, `mcp-dev` | Contributor tooling — see [CONTRIBUTING.md](../../CONTRIBUTING.md) |
 

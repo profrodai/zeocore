@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-10
+
 ### Added
 
 - Version-1 supervised Runtime capability host and `zeo-capability` CLI with
@@ -17,13 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and Gmail draft creation, retrieval and reconciliation, using their existing
   meeting request/receipt protocol.
 - Offline catalogue and meeting-request examples, provider-registration guidance,
-  and source-versus-release installation guidance throughout the public docs.
+  and versioned installation guidance throughout the public docs.
+- Searchable documentation with generated API reference and GitHub Pages publishing.
 
 ### Fixed
 
 - Legacy plugin registration publishes transactionally, restores surviving
   shadowed contributions on unload, uses registration snapshots for cleanup,
   and refuses ambiguous selected entry points before import.
+- GitHub release announcements wait for published-package smoke checks, including
+  the installed Runtime host extra, offline examples and missing-authority refusal.
 
 ## [0.10.0] - 2026-09-09
 
@@ -664,6 +669,8 @@ MIT-licensed package.
   own test suite, and this package has never had a public release, so no
   back-compat was owed for it.
 
+[Unreleased]: https://github.com/profrodai/zeocore/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/profrodai/zeocore/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/profrodai/zeocore/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/profrodai/zeocore/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/profrodai/zeocore/compare/v0.7.0...v0.8.0

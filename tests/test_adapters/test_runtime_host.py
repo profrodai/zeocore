@@ -15,6 +15,7 @@ import sys
 import threading
 import time
 from collections.abc import Callable, Iterator
+from importlib.metadata import version
 from pathlib import Path
 from typing import Any
 
@@ -88,7 +89,7 @@ def binding() -> ProviderBinding:
     return ProviderBinding(
         protocol_version=1,
         distribution="zeocore",
-        version="0.10.0",
+        version=version("zeocore"),
         python_version=platform.python_version(),
         environment_digest="sha256:" + "0" * 64,
         factory="unavailable_module:factory",

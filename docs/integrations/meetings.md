@@ -2,10 +2,9 @@
 
 <!-- Teaches CLAUDE.md Rev 17; reviewed 2026-09-09. -->
 
-This source-only API is newer than Zeocore 0.10.0. Install the reviewed source
-revision to use `zeo_core.integrations.meetings`; the published 0.10.0 wheel does
-not contain it. It connects a host's meeting invocation to the existing local
-meeting runtime and host-configured provider clients.
+`zeo_core.integrations.meetings` is included in the base package from 0.11.0.
+It connects a host's meeting invocation to the existing local meeting runtime
+and host-configured provider clients.
 
 The host supplies the confirmed meeting action and current lease/attempt. The
 runtime validates and durably consumes authority before a provider operation.
@@ -37,10 +36,10 @@ host-owned and never belong in the payload or runtime receipt.
 
 ## Prepare a request offline
 
-From the current checkout, install the source and run the complete example:
+From the `v0.11.0` checkout, install the matching package and run the example:
 
 ```bash
-uv pip install -e .
+uv pip install "zeocore==0.11.0"
 python examples/meeting_request_v1.py
 ```
 

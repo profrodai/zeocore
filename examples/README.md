@@ -193,21 +193,21 @@ For conversion, fresh-kernel notebook execution and staging, follow the
 checkout assets, not installed shell commands. Run the release's examples with
 its matching installed package. Staging produces receipts; it does not publish.
 
-## Current source: provider and meeting requests
+## New in 0.11.0: provider and meeting requests
 
-These examples require the current checkout, newer than the published 0.10.0
-wheel. Run them with its matching editable installation:
+These examples are checkout assets. Use the `v0.11.0` checkout and install
+the matching package:
 
 ```bash
-uv pip install -e ".[runtime-host]"
+uv pip install "zeocore[runtime-host]==0.11.0"
 python examples/runtime_host_catalogue_v1.py
 python examples/meeting_request_v1.py
 ```
 
 | Example | What it demonstrates | Requirements |
 | --- | --- | --- |
-| [`runtime_host_catalogue_v1.py`](runtime_host_catalogue_v1.py) | A real provider factory, manifest inventory, default-materialized input and RFC 8785 request digest | Source plus `runtime-host` extra |
-| [`meeting_request_v1.py`](meeting_request_v1.py) | Exact Sheets resource and request digest; changing the range changes the binding | Source base install |
+| [`runtime_host_catalogue_v1.py`](runtime_host_catalogue_v1.py) | A real provider factory, manifest inventory, default-materialized input and RFC 8785 request digest | 0.11.0 plus `runtime-host` extra |
+| [`meeting_request_v1.py`](meeting_request_v1.py) | Exact Sheets resource and request digest; changing the range changes the binding | 0.11.0 base install |
 
 Both are preparation-only: no Runtime session, credentials or provider calls.
 The meeting digest is its existing sorted-JSON protocol; the generic host uses
