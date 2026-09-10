@@ -544,6 +544,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -604,6 +608,62 @@
     
   
     Write a capability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-to/provider-registration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Register a provider
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-to/runtime-host/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime host
   
 
     
@@ -2064,8 +2124,9 @@
 
 <h1 id="glossary">Glossary<a class="headerlink" href="#glossary" title="Permanent link">&para;</a></h1>
 <p><strong>Adapter</strong><br />
-A boundary that exposes a canonical capability through another interface, such
-as HTTP, MCP, or an LLM function-tool schema.</p>
+A boundary between interfaces or services: for example, HTTP/MCP projection,
+the supervised Runtime host, or translating an admitted meeting request into
+a provider operation.</p>
 <p><strong>Artifact</strong><br />
 A file or other durable output referenced by an invocation. The runner owns
 artifact collection and retention; a capability may use an injected artifact
@@ -2141,6 +2202,19 @@ A stable result code used for programmatic branching. New codes should use
 <p><strong>Metadata</strong><br />
 Additional JSON-safe context on a definition, result, or <code>ToolContext</code>.
 Metadata should not contain secret values.</p>
+<p><strong>Module / legacy plugin</strong></p>
+<p>An explicitly loaded contribution to <code>zeo_core.modules</code>. The historical module
+name does not mean Runtime admission. Discovery, loading and registration are
+separate acts; failed registration does not publish partial contributions.</p>
+<p><strong>Provider</strong></p>
+<p>An installed package supplying capabilities through an explicit factory that
+returns <code>CapabilityRegistry</code>. The trusted Runtime binding selects its factory,
+version and environment. See <a href="../how-to/provider-registration/">provider registration</a>.</p>
+<p><strong>Runtime host</strong></p>
+<p>The <code>zeo-capability</code> process or Python <code>ManagedHost</code> that validates an admitted
+provider and invokes its typed capability. Runtime supplies authority, durable
+operation state and artifact access. Installation or catalogue visibility alone
+gives no invocation permission.</p>
 <p><strong>Pydantic model</strong><br />
 The typed <code>BaseModel</code> used as a capability's request and response. ZeoCore
 derives JSON Schema from these models.</p>

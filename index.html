@@ -335,6 +335,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#current-source-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current source workflows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#explore-the-library" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -621,6 +632,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -681,6 +696,62 @@
     
   
     Write a capability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="how-to/provider-registration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Register a provider
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="how-to/runtime-host/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime host
   
 
     
@@ -2134,6 +2205,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#current-source-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current source workflows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#explore-the-library" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2192,12 +2274,15 @@
 
 
 <h1 id="one-capability-every-caller">One capability. Every caller.<a class="headerlink" href="#one-capability-every-caller" title="Permanent link">&para;</a></h1>
+<!-- Teaches CLAUDE.md Rev 17; reviewed 2026-09-10: Runtime host and meeting source APIs. -->
+
 <div class="hero">
 <p>ZeoCore gives Python functions typed inputs, explicit effects and structured results,
 so scripts, services, Zeocreator and Sovereign Agent can call the same capability.</p>
 </div>
 <p><a class="md-button md-button--primary" href="project/QUICKSTART/">Start in ten minutes</a>
-<a class="md-button" href="integrations/">Connect a service</a></p>
+<a class="md-button" href="integrations/">Connect a service</a>
+<a class="md-button" href="how-to/provider-registration/">Register a provider</a></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"zeocore==0.10.0"</span>
 </code></pre></div>
 <p>Python <strong>3.14+</strong> · Package <code>zeocore</code> · Import <code>zeo_core</code></p>
@@ -2235,6 +2320,19 @@ so scripts, services, Zeocreator and Sovereign Agent can call the same capabilit
 <p>Capabilities describe and perform bounded work. Your host supplies authorization,
 credentials, scheduling and delivery policy. Marketing examples start offline;
 real sending requires explicit setup and host authorization.</p>
+<h2 id="current-source-workflows">Current source workflows<a class="headerlink" href="#current-source-workflows" title="Permanent link">&para;</a></h2>
+<p>The <a href="how-to/runtime-host/">Runtime host</a> and <a href="integrations/meetings/">meeting adapters</a>
+are newer than the published 0.10.0 wheel. From this source checkout:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[runtime-host]"</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>python<span class="w"> </span>examples/runtime_host_catalogue_v1.py
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>python<span class="w"> </span>examples/meeting_request_v1.py
+</code></pre></div>
+<p>These examples prepare real catalogues and request bytes offline; they do not
+create admission or call providers. Start with <a href="how-to/provider-registration/">provider registration</a>
+for terminology and setup, then follow the protocol guide for trusted host wiring.
+Runtime owns admission, operation state and artifact access. ZEOconnect owns
+connector credentials and authorized dispatch. Cross-system acceptance remains
+required before deploying the generic host.</p>
 <h2 id="explore-the-library">Explore the library<a class="headerlink" href="#explore-the-library" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

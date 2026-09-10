@@ -532,6 +532,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -592,6 +596,62 @@
     
   
     Write a capability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/provider-registration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Register a provider
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/runtime-host/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime host
   
 
     
@@ -1696,6 +1756,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#current-source-provider-and-meeting-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current source: provider and meeting requests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#adapters-and-mixins" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2490,6 +2561,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#current-source-provider-and-meeting-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current source: provider and meeting requests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#adapters-and-mixins" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2670,6 +2752,8 @@
 
 
 <h1 id="zeocore-examples">ZeoCore examples<a class="headerlink" href="#zeocore-examples" title="Permanent link">&para;</a></h1>
+<!-- Teaches CLAUDE.md Rev 17; reviewed 2026-09-10: Runtime host and meeting source APIs. -->
+
 <p>Runnable scripts and a complete authoring reference. The scripts run as-is — none are
 illustrative fragments, and none require you to fill in a placeholder before
 they do something.</p>
@@ -2686,7 +2770,7 @@ walkthroughs, see <a href="../GET-STARTED/">GET-STARTED.md</a> and
 <h2 id="before-you-start">Before you start<a class="headerlink" href="#before-you-start" title="Permanent link">&para;</a></h2>
 <p><strong>Python 3.14+ and ZeoCore installed.</strong> From a clone:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="w">            </span><span class="c1"># base install: the offline examples below</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[all]"</span><span class="w">     </span><span class="c1"># every integration extra</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[all]"</span><span class="w">     </span><span class="c1"># integration extras; excludes HTTP, MCP and Runtime host</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[http]"</span><span class="w">    </span><span class="c1"># single extras, as needed</span>
 </code></pre></div>
 <p><strong>Extras.</strong> Some scripts need an optional extra. Each one says so in its
@@ -2822,6 +2906,42 @@ guaranteed to keep working.</p>
 <code>zeocore[jupytext,notebook,pandoc]</code> plus the Pandoc binary. The examples are
 checkout assets, not installed shell commands. Run the release's examples with
 its matching installed package. Staging produces receipts; it does not publish.</p>
+<h2 id="current-source-provider-and-meeting-requests">Current source: provider and meeting requests<a class="headerlink" href="#current-source-provider-and-meeting-requests" title="Permanent link">&para;</a></h2>
+<p>These examples require the current checkout, newer than the published 0.10.0
+wheel. Run them with its matching editable installation:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[runtime-host]"</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>python<span class="w"> </span>examples/runtime_host_catalogue_v1.py
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>python<span class="w"> </span>examples/meeting_request_v1.py
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>What it demonstrates</th>
+<th>Requirements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/profrodai/zeocore/blob/main/examples/runtime_host_catalogue_v1.py"><code>runtime_host_catalogue_v1.py</code></a></td>
+<td>A real provider factory, manifest inventory, default-materialized input and RFC 8785 request digest</td>
+<td>Source plus <code>runtime-host</code> extra</td>
+</tr>
+<tr>
+<td><a href="https://github.com/profrodai/zeocore/blob/main/examples/meeting_request_v1.py"><code>meeting_request_v1.py</code></a></td>
+<td>Exact Sheets resource and request digest; changing the range changes the binding</td>
+<td>Source base install</td>
+</tr>
+</tbody>
+</table>
+<p>Both are preparation-only: no Runtime session, credentials or provider calls.
+The meeting digest is its existing sorted-JSON protocol; the generic host uses
+RFC 8785 with a <code>sha256:</code> prefix. Do not substitute one for the other.</p>
+<p>Use the <a href="../../how-to/provider-registration/">registration guide</a>,
+<a href="../../how-to/runtime-host/">host protocol</a> and
+<a href="../../integrations/meetings/">meeting guide</a> to move from these examples to
+an admitted caller. The host CLI requires trusted inherited descriptors; running
+<code>zeo-capability invoke</code> alone cannot authorize work.</p>
 <h2 id="adapters-and-mixins">Adapters and mixins<a class="headerlink" href="#adapters-and-mixins" title="Permanent link">&para;</a></h2>
 <p>Intermediate. Each needs one extra, and each is about <em>hosting</em> capabilities
 rather than writing them.</p>
@@ -2833,7 +2953,7 @@ import rather than skipping.
 <p>Layers <code>IntegrationEnabledMixin</code> (service lookup from <code>ctx.services</code>) and
 <code>LifecycleMixin</code> (<code>pre_run</code> / <code>post_run</code>) onto a tool that reads JSON,
 computes statistics, and <em>optionally</em> uploads to Drive.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/toolkit_usage.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/toolkit_usage.py
 </code></pre></div>
 <p>Requests the upload with no <code>google_drive</code> service wired into the context, so
 the tool logs the absence and continues: <code>Uploaded file id: None</code>, then
@@ -2845,7 +2965,7 @@ path — a missing optional service is not an error — is the lesson.</p>
 <p>Binds a capability into <code>OperationRegistry</code> with
 <code>register_capability_operation()</code>, builds the FastAPI app exactly as a real
 server would, and drives it with <code>TestClient</code>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/http_adapter_usage.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/http_adapter_usage.py
 </code></pre></div>
 <p>Prints three <code>200</code> responses: <code>/health/live</code>, <code>/ops</code> listing the registered
 <code>greet</code> operation, and <code>POST /ops/greet</code> returning the full serialized
@@ -2857,7 +2977,7 @@ no subprocess, no network.</p>
 <p><code>register_tool()</code> derives an MCP tool from an ordinary <code>BaseZeoTool</code> by
 reading its <code>run()</code> type hint. The tool class here is identical to
 <code>minimal_tool.py</code>'s: nothing about a tool changes to make it MCP-reachable.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/mcp_server_usage.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/mcp_server_usage.py
 </code></pre></div>
 <p>Registers the tool, creates the server, lists <code>['word_count']</code> through the
 real MCP SDK client, calls it, and prints the JSON result. Without the extra
@@ -2880,7 +3000,7 @@ an external write. The examples below document their own preconditions.</p>
 <h3 id="jupytext_usagepy-script-notebook-round-trip"><a href="https://github.com/profrodai/zeocore/blob/main/examples/jupytext_usage.py"><code>jupytext_usage.py</code></a> — script ↔ notebook round trip<a class="headerlink" href="#jupytext_usagepy-script-notebook-round-trip" title="Permanent link">&para;</a></h3>
 <p><strong>Extra:</strong> <code>zeocore[jupytext]</code>.
 <strong>Credentials:</strong> none. Fully local.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/jupytext_usage.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/jupytext_usage.py
 </code></pre></div>
 <p>Writes a percent-format <code>.py</code> into <code>./tmp_jupytext_example/</code>, converts it to
 <code>.ipynb</code>, converts it back, and confirms the round trip preserved the
@@ -2892,7 +3012,7 @@ integration's <code>initialize()</code> returns a failure result and the script 
 <strong>External tool:</strong> a real <code>ffmpeg</code> / <code>ffprobe</code> on <code>PATH</code> (<code>brew install ffmpeg</code>,
 <code>apt install ffmpeg</code>), or resolvable through <code>ffmpeg-zeo</code>'s own download
 mechanism.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/ffmpeg_usage.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/ffmpeg_usage.py
 </code></pre></div>
 <p>Generates a one-second synthetic test video with ffmpeg's <code>lavfi</code> source (no
 media file needed), probes it, transcodes to H.264, writes a thumbnail, and
@@ -2906,8 +3026,8 @@ hint.</p>
 <a href="https://www.notion.so/my-integrations">https://www.notion.so/my-integrations</a>, <strong>shared with at least one page</strong>
 from Notion's UI (creating the token is not enough; Notion's model requires
 explicitly sharing each page or database with it).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/notion_demo.py<span class="w"> </span>--simulated
-<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>uv<span class="w"> </span>run<span class="w"> </span>--env-file<span class="w"> </span>.env<span class="w"> </span>examples/notion_demo.py<span class="w"> </span>--live-read
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/notion_demo.py<span class="w"> </span>--simulated
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>uv<span class="w"> </span>run<span class="w"> </span>--env-file<span class="w"> </span>.env<span class="w"> </span>examples/notion_demo.py<span class="w"> </span>--live-read
 </code></pre></div>
 <p>Simulated mode exercises users, search, data sources, blocks, comments, and
 pagination without network or credentials. Live-read mode searches objects
@@ -2920,9 +3040,9 @@ without it the script fails on import.
 client-secrets JSON file (Google Cloud Console → APIs &amp; Services →
 Credentials → OAuth client ID → <em>Desktop app</em>, with the Calendar API enabled
 on that project). There is no single-token shortcut here, unlike Notion.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/calendar_usage.py<span class="w">                     </span><span class="c1"># skips, shows the call shapes</span>
-<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nv">ZEO_GOOGLE_CALENDAR_CLIENT_SECRETS</span><span class="o">=</span>/path/to/client_secrets.json<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">    </span>uv<span class="w"> </span>run<span class="w"> </span>examples/calendar_usage.py<span class="w">                 </span><span class="c1"># live: opens a browser</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>uv<span class="w"> </span>run<span class="w"> </span>examples/calendar_usage.py<span class="w">                     </span><span class="c1"># skips, shows the call shapes</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nv">ZEO_GOOGLE_CALENDAR_CLIENT_SECRETS</span><span class="o">=</span>/path/to/client_secrets.json<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">    </span>uv<span class="w"> </span>run<span class="w"> </span>examples/calendar_usage.py<span class="w">                 </span><span class="c1"># live: opens a browser</span>
 </code></pre></div>
 <p>Without the file: prints a skip notice plus the calling shapes for
 <code>list_calendars</code>, <code>list_events</code>, <code>create_event</code>, <code>update_event</code>, and

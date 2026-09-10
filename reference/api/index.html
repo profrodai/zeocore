@@ -532,6 +532,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -592,6 +596,62 @@
     
   
     Write a capability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/provider-registration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Register a provider
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/runtime-host/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime host
   
 
     
@@ -2039,15 +2099,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#zeo_coreadapters-http-mcp-llm-tools" class="md-nav__link">
+  <a href="#zeo_coreadapters-http-mcp-llm-tools-and-runtime-host" class="md-nav__link">
     <span class="md-ellipsis">
       
-        zeo_core.adapters — HTTP, MCP, LLM tools
+        zeo_core.adapters — HTTP, MCP, LLM tools and Runtime host
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="zeo_core.adapters — HTTP, MCP, LLM tools">
+    <nav class="md-nav" aria-label="zeo_core.adapters — HTTP, MCP, LLM tools and Runtime host">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2077,6 +2137,17 @@
     <span class="md-ellipsis">
       
         zeo_core.adapters.llm_tools — OpenAI function projection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-host-current-source-zeocoreruntime-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime host — current source, zeocore[runtime-host]
       
     </span>
   </a>
@@ -2928,15 +2999,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#zeo_coreadapters-http-mcp-llm-tools" class="md-nav__link">
+  <a href="#zeo_coreadapters-http-mcp-llm-tools-and-runtime-host" class="md-nav__link">
     <span class="md-ellipsis">
       
-        zeo_core.adapters — HTTP, MCP, LLM tools
+        zeo_core.adapters — HTTP, MCP, LLM tools and Runtime host
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="zeo_core.adapters — HTTP, MCP, LLM tools">
+    <nav class="md-nav" aria-label="zeo_core.adapters — HTTP, MCP, LLM tools and Runtime host">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2966,6 +3037,17 @@
     <span class="md-ellipsis">
       
         zeo_core.adapters.llm_tools — OpenAI function projection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-host-current-source-zeocoreruntime-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime host — current source, zeocore[runtime-host]
       
     </span>
   </a>
@@ -3886,6 +3968,10 @@ the rest in <code>warnings</code>.</p>
 (<code>ZeoPluginMetadata</code>, <code>PluginEntryPoint</code>, <code>LoadResult</code>), the loading
 functions (<code>list_available_entry_points</code>, <code>load_enabled_entry_points</code>,
 <code>load_enabled_modules</code>), and the globals <code>registry</code> and <code>loader</code>.</p>
+<p>Current-source registration publishes only after callbacks succeed. Unloading
+restores the latest surviving contribution using registration snapshots. Selected
+duplicate entry-point names refuse before import. This legacy registry does not
+admit Runtime providers; see <a href="../../how-to/provider-registration/">provider registration</a>.</p>
 <p>Built-in plugin ids (entry-point group <code>zeo_core.modules</code>): <code>fs</code>, <code>paths</code>,
 <code>config</code>, <code>prompt</code>.</p>
 <p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/modules"><code>src/zeo_core/modules/</code></a> ·
@@ -3902,9 +3988,10 @@ Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/explic
 <code>LoadPackResult</code>.</p>
 <p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/prompt"><code>src/zeo_core/prompt/</code></a></p>
 <p><a id="adapters"></a></p>
-<h2 id="zeo_coreadapters-http-mcp-llm-tools"><code>zeo_core.adapters</code> — HTTP, MCP, LLM tools<a class="headerlink" href="#zeo_coreadapters-http-mcp-llm-tools" title="Permanent link">&para;</a></h2>
-<p>One capability, three front ends. HTTP and MCP both read the same
-<code>OperationRegistry</code>, so registering once exposes a capability to both.</p>
+<h2 id="zeo_coreadapters-http-mcp-llm-tools-and-runtime-host"><code>zeo_core.adapters</code> — HTTP, MCP, LLM tools and Runtime host<a class="headerlink" href="#zeo_coreadapters-http-mcp-llm-tools-and-runtime-host" title="Permanent link">&para;</a></h2>
+<p>HTTP and MCP both read the same <code>OperationRegistry</code>, so registering once
+exposes a capability to both. LLM tools project its manifest. The Runtime host
+uses an explicitly admitted provider <code>CapabilityRegistry</code> and its own protocol.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_capability_operation</span>
 <a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
 <a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="n">register_capability_operation</span><span class="p">(</span>
@@ -3970,9 +4057,21 @@ to put them.</p>
 <code>OpenAIProjectionResult</code>, <code>ProjectionIncompatibility</code>.</p>
 <p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/adapters/llm_tools"><code>src/zeo_core/adapters/llm_tools/</code></a> ·
 Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/llm_tools_usage.py"><code>llm_tools_usage.py</code></a></p>
+<h3 id="runtime-host-current-source-zeocoreruntime-host">Runtime host — current source, <code>zeocore[runtime-host]</code><a class="headerlink" href="#runtime-host-current-source-zeocoreruntime-host" title="Permanent link">&para;</a></h3>
+<p>Use <code>zeo-capability</code> for inherited-FD discovery and supervised invocation. Python
+composition uses <code>zeo_core.adapters.runtime_host.host.ManagedHost</code> and
+<code>parse_result</code>, with <code>RuntimeChannel</code> from <code>adapters.runtime_host.channel</code>.
+Wire models live in <code>zeo_core.contracts.runtime</code>: <code>ProviderBinding</code>,
+<code>AttemptBinding</code>, <code>LaunchContext</code>, <code>InvocationRequest</code>, <code>EffectRequest</code>,
+<code>RuntimeReply</code> and <code>HostResult</code>.</p>
+<p>The executable <a href="https://github.com/profrodai/zeocore/tree/main/contracts/runtime-host-v1">schemas and canonical vectors</a>
+and <a href="../../how-to/runtime-host/">protocol guide</a> define this candidate surface.
+It is newer than the 0.10.0 wheel and requires joint Runtime/ZEOconnect acceptance.
+Do not treat it as an unauthenticated replacement for direct Python invocation.</p>
 <p><a id="integrations"></a></p>
 <h2 id="zeo_coreintegrations-external-services"><code>zeo_core.integrations</code> — external services<a class="headerlink" href="#zeo_coreintegrations-external-services" title="Permanent link">&para;</a></h2>
-<p>Each integration is its own import and its own extra. The parent package
+<p>Import each integration from its own leaf package. Some ship in the base
+installation; others require the extra shown below. The parent package
 <code>zeo_core.integrations</code> exports nothing; import the leaf.</p>
 <table>
 <thead>
@@ -4002,6 +4101,36 @@ Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/llm_to
 <td><code>zeo_core.integrations.google.calendar</code></td>
 <td><code>calendar</code> / <code>google</code></td>
 <td><code>GoogleCalendarService</code>, <code>Calendar</code>, <code>CalendarEvent</code>, <code>EventAttendee</code>, <code>EventDateTime</code>, <code>CalendarIntegrationProtocol</code>, <code>create_integration</code></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.meetings</code></td>
+<td>current source base</td>
+<td><code>MeetingRunner</code>, <code>MeetingAdapters</code>, <code>UnixMeetingRuntime</code>, <code>InvocationAuthorization</code>, <code>InvocationReceipt</code>, <code>request_digest</code></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.database.supabase</code></td>
+<td><code>supabase</code></td>
+<td><code>SupabaseIntegration</code>, <code>SupabaseClient</code>, <code>SupabaseRealtimeClient</code>; see <a href="../../integrations/supabase/">Supabase</a></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.hubspot</code></td>
+<td>base install</td>
+<td><code>HubSpotIntegration</code>, <code>HubSpotClient</code>; <a href="../../tutorials/hubspot-marketing/">marketing guide</a></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.kit</code></td>
+<td>base install</td>
+<td><code>KitIntegration</code>, <code>KitClient</code>; <a href="../../tutorials/kit-marketing/">marketing guide</a></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.environments</code></td>
+<td>base install</td>
+<td><code>IntegrationEnvironment</code>; <a href="../../integrations/environments/">test and production</a></td>
+</tr>
+<tr>
+<td><code>zeo_core.integrations.notebook</code></td>
+<td><code>notebook</code></td>
+<td><code>execute_notebook</code>; <a href="../../integrations/notebook-execution/">execution guide</a></td>
 </tr>
 <tr>
 <td><code>zeo_core.integrations.hosted</code></td>
@@ -4053,9 +4182,9 @@ fails:</p>
 <li>The <strong>Google</strong> integrations import their Google client libraries eagerly, so <code>import zeo_core.integrations.google.drive</code> raises <code>ImportError</code> without the extra.</li>
 <li><strong>Notion, jupytext, ffmpeg</strong> import cleanly without their extra and fail later, inside <code>initialize()</code>, with a message naming the missing package.</li>
 </ul>
-<p>Database integrations (<code>bigquery</code>, <code>sqlite</code>, <code>supabase</code>) appear as empty
-placeholder packages: they were evaluated and <strong>not built</strong>. Do not import
-them.</p>
+<p>Supabase is implemented at <code>zeo_core.integrations.database.supabase</code>, covering
+Database, Auth, Storage, Edge Functions and async Realtime. Raw SQL and Vault
+plaintext access are excluded. The <code>bigquery</code> and <code>sqlite</code> packages remain placeholders.</p>
 <p><a id="contract-pack"></a></p>
 <h2 id="zeo_corecontract_pack-ecosystem-pin"><code>zeo_core.contract_pack</code> — ecosystem pin<a class="headerlink" href="#zeo_corecontract_pack-ecosystem-pin" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.contract_pack</span><span class="w"> </span><span class="kn">import</span> <span class="n">PACK_VERSION</span><span class="p">,</span> <span class="n">PACK_SCHEMA</span>   <span class="c1"># "1.0.0", "zeo_core.contract_pack.v1"</span>
@@ -4110,8 +4239,24 @@ they consume without importing Sovereign Agent.</p>
 <td>Media probing/transcoding via <code>ffmpeg-zeo</code> (needs an <code>ffmpeg</code> binary too)</td>
 </tr>
 <tr>
+<td><code>supabase</code></td>
+<td>Database, Auth, Storage, Edge Functions and Realtime</td>
+</tr>
+<tr>
+<td><code>notebook</code></td>
+<td>Fresh-kernel notebook execution</td>
+</tr>
+<tr>
+<td><code>bluesky</code></td>
+<td>Bluesky client</td>
+</tr>
+<tr>
+<td><code>runtime-host</code></td>
+<td>Current-source supervised host, JSON Schema validation and RFC 8785</td>
+</tr>
+<tr>
 <td><code>all</code></td>
-<td>Every integration above — <strong>not</strong> <code>http</code> or <code>mcp</code>; use <code>zeocore[all,mcp]</code></td>
+<td>Integration extras; excludes <code>http</code>, <code>mcp</code> and <code>runtime-host</code>; select those explicitly</td>
 </tr>
 <tr>
 <td><code>dev</code>, <code>lint</code>, <code>http-dev</code>, <code>mcp-dev</code></td>
@@ -4164,8 +4309,8 @@ client-secrets JSON file instead of a single token.</p>
 <td>Only the demo <em>models</em> (<code>EchoRequest</code>, <code>VideoRefRequest</code>) are exported.</td>
 </tr>
 <tr>
-<td><code>zeo_core.integrations.database.*</code></td>
-<td>Empty placeholders; evaluated and not built.</td>
+<td><code>zeo_core.integrations.database.bigquery</code>, <code>zeo_core.integrations.database.sqlite</code></td>
+<td>Placeholder packages. Supabase has a supported public API.</td>
 </tr>
 <tr>
 <td>Anything with a leading underscore</td>
@@ -4182,7 +4327,7 @@ declared stable yet.</p>
 <ul>
 <li><a href="../../project/">README.md</a> — the 30-second version, install, and the module map.</li>
 <li><a href="../../project/GET-STARTED/">GET-STARTED.md</a> — module-by-module walkthrough, including <a href="../../project/GET-STARTED/#capabilities">Capabilities</a> and <a href="../../project/GET-STARTED/#core-modules-overview">Core Modules Overview</a>.</li>
-<li><a href="../../project/examples/"><code>examples/README.md</code></a> — all 15 runnable scripts, ordered by difficulty, with an offline beginner path.</li>
+<li><a href="../../project/examples/"><code>examples/README.md</code></a> — runnable scripts, required extras and the offline beginner path.</li>
 <li><a href="../../tutorials/capability-authoring/">Capability authoring tutorial</a> — the worked end-to-end walkthrough.</li>
 <li><a href="../../project/src/zeo_core/contracts/">contracts/README.md</a> and <a href="../../project/src/zeo_core/contracts/EXAMPLES/">contracts/EXAMPLES.md</a> — the contracts kernel in depth.</li>
 <li><a href="../../">docs/README.md</a> — index of tutorials and maintainer reports.</li>

@@ -532,6 +532,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -592,6 +596,62 @@
     
   
     Write a capability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/provider-registration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Register a provider
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/runtime-host/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime host
   
 
     
@@ -1435,6 +1495,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#prepare-a-request-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prepare a request offline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#host-composition" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2138,6 +2209,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#prepare-a-request-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prepare a request offline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#host-composition" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2258,29 +2340,41 @@ Unicode preserved and non-finite numbers refused. The host must use that digest
 and the table's exact resource string when obtaining the lease. Changing even
 an optional field after admission changes the request. Provider credentials are
 host-owned and never belong in the payload or runtime receipt.</p>
+<h2 id="prepare-a-request-offline">Prepare a request offline<a class="headerlink" href="#prepare-a-request-offline" title="Permanent link">&para;</a></h2>
+<p>From the current checkout, install the source and run the complete example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>examples/meeting_request_v1.py
+</code></pre></div>
+<p>The <a href="https://github.com/profrodai/zeocore/blob/main/examples/meeting_request_v1.py">script</a> prepares a bounded Sheets
+resource and its exact request digest. It shows that changing the range changes
+the digest. It creates no lease, contacts no runtime and makes no Google call.</p>
+<p>This meeting-v1 API predates the <a href="../../how-to/runtime-host/">generic capability host</a>.
+Its method names, authorization/receipt models and sorted-JSON digest are distinct
+from that host's versioned attempt bindings and RFC 8785 <code>sha256:</code> digests. Do not
+connect one client's frames to the other's endpoint.</p>
 <h2 id="host-composition">Host composition<a class="headerlink" href="#host-composition" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.integrations.meetings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">GoogleMeetingReads</span><span class="p">,</span> <span class="n">InvocationAuthorization</span><span class="p">,</span> <span class="n">MeetingAdapters</span><span class="p">,</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">MeetingRunner</span><span class="p">,</span> <span class="n">UnixMeetingRuntime</span><span class="p">,</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">)</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.integrations.google.sheets</span><span class="w"> </span><span class="kn">import</span> <span class="n">GoogleSheetsService</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.integrations.google.calendar</span><span class="w"> </span><span class="kn">import</span> <span class="n">GoogleCalendarService</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># Configure these existing services through the host's test/production setup.</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Construction performs no authentication; reads initialize after admission.</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">reads</span> <span class="o">=</span> <span class="n">GoogleMeetingReads</span><span class="p">(</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">sheets</span><span class="o">=</span><span class="n">GoogleSheetsService</span><span class="p">(</span><span class="n">scopes</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        <span class="s2">"https://www.googleapis.com/auth/spreadsheets.readonly"</span><span class="p">,</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="p">]),</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">calendar</span><span class="o">=</span><span class="n">GoogleCalendarService</span><span class="p">(</span><span class="n">scopes</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        <span class="s2">"https://www.googleapis.com/auth/calendar.readonly"</span><span class="p">,</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="p">]),</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="p">)</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="n">runtime</span> <span class="o">=</span> <span class="n">UnixMeetingRuntime</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">"/private/host/runtime/service/zeo.sock"</span><span class="p">))</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="n">runner</span> <span class="o">=</span> <span class="n">MeetingRunner</span><span class="p">(</span><span class="n">runtime</span><span class="o">=</span><span class="n">runtime</span><span class="p">,</span> <span class="n">adapters</span><span class="o">=</span><span class="n">MeetingAdapters</span><span class="p">(</span><span class="n">reads</span><span class="o">=</span><span class="n">reads</span><span class="p">))</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="c1"># authority_document and payload come from the host's admitted meeting action:</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="c1"># receipt = runner.execute(InvocationAuthorization.model_validate(authority_document), payload)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.integrations.meetings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">GoogleMeetingReads</span><span class="p">,</span> <span class="n">InvocationAuthorization</span><span class="p">,</span> <span class="n">MeetingAdapters</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">MeetingRunner</span><span class="p">,</span> <span class="n">UnixMeetingRuntime</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.integrations.google.sheets</span><span class="w"> </span><span class="kn">import</span> <span class="n">GoogleSheetsService</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.integrations.google.calendar</span><span class="w"> </span><span class="kn">import</span> <span class="n">GoogleCalendarService</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1"># Configure these existing services through the host's test/production setup.</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># Construction performs no authentication; reads initialize after admission.</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">reads</span> <span class="o">=</span> <span class="n">GoogleMeetingReads</span><span class="p">(</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">sheets</span><span class="o">=</span><span class="n">GoogleSheetsService</span><span class="p">(</span><span class="n">scopes</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>        <span class="s2">"https://www.googleapis.com/auth/spreadsheets.readonly"</span><span class="p">,</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="p">]),</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="n">calendar</span><span class="o">=</span><span class="n">GoogleCalendarService</span><span class="p">(</span><span class="n">scopes</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        <span class="s2">"https://www.googleapis.com/auth/calendar.readonly"</span><span class="p">,</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="p">]),</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="p">)</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="n">runtime</span> <span class="o">=</span> <span class="n">UnixMeetingRuntime</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">"/private/host/runtime/service/zeo.sock"</span><span class="p">))</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="n">runner</span> <span class="o">=</span> <span class="n">MeetingRunner</span><span class="p">(</span><span class="n">runtime</span><span class="o">=</span><span class="n">runtime</span><span class="p">,</span> <span class="n">adapters</span><span class="o">=</span><span class="n">MeetingAdapters</span><span class="p">(</span><span class="n">reads</span><span class="o">=</span><span class="n">reads</span><span class="p">))</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="c1"># authority_document and payload come from the host's admitted meeting action:</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="c1"># receipt = runner.execute(InvocationAuthorization.model_validate(authority_document), payload)</span>
 </code></pre></div>
 <p>Use <a href="../google/">Google account setup</a> for a dedicated test account and disposable
 Sheet/Calendar before production. The example path is a host-supplied runtime

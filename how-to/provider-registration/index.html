@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://profrodai.github.io/zeocore/integrations/zeoconnect/">
+        <link rel="canonical" href="https://profrodai.github.io/zeocore/how-to/provider-registration/">
       
       
-        <link rel="prev" href="../gemini-images/">
+        <link rel="prev" href="../../tutorials/capability-authoring/">
       
       
-        <link rel="next" href="../meetings/">
+        <link rel="next" href="../runtime-host/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>ZEOconnect - ZeoCore</title>
+        <title>Register a provider - ZeoCore</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#zeoconnect-hosted-account-setup" class="md-skip">
+        <a href="#register-a-capability-provider" class="md-skip">
           Skip to content
         </a>
       
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ZEOconnect
+              Register a provider
             
           </span>
         </div>
@@ -501,8 +501,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -545,11 +547,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
@@ -570,7 +572,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -613,10 +615,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../how-to/provider-registration/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Register a provider
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -632,6 +661,70 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-export-an-explicit-factory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Export an explicit factory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-prepare-the-runtime-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Prepare the Runtime inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-let-runtime-admit-the-invocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Let Runtime admit the invocation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-plugin-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing plugin users
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -644,7 +737,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/runtime-host/" class="md-nav__link">
+      <a href="../runtime-host/" class="md-nav__link">
         
   
   
@@ -1012,8 +1105,6 @@
       
   
   
-    
-  
   
   
     
@@ -1064,15 +1155,15 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../integrations/" class="md-nav__link ">
               
   
   
@@ -1096,7 +1187,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1116,7 +1207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../environments/" class="md-nav__link">
+      <a href="../../integrations/environments/" class="md-nav__link">
         
   
   
@@ -1144,7 +1235,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../hubspot/" class="md-nav__link">
+      <a href="../../integrations/hubspot/" class="md-nav__link">
         
   
   
@@ -1172,7 +1263,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../kit/" class="md-nav__link">
+      <a href="../../integrations/kit/" class="md-nav__link">
         
   
   
@@ -1200,7 +1291,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../google/" class="md-nav__link">
+      <a href="../../integrations/google/" class="md-nav__link">
         
   
   
@@ -1228,7 +1319,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../github/" class="md-nav__link">
+      <a href="../../integrations/github/" class="md-nav__link">
         
   
   
@@ -1256,7 +1347,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../notion/" class="md-nav__link">
+      <a href="../../integrations/notion/" class="md-nav__link">
         
   
   
@@ -1284,7 +1375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../supabase/" class="md-nav__link">
+      <a href="../../integrations/supabase/" class="md-nav__link">
         
   
   
@@ -1312,7 +1403,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../bluesky/" class="md-nav__link">
+      <a href="../../integrations/bluesky/" class="md-nav__link">
         
   
   
@@ -1340,7 +1431,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../llms/" class="md-nav__link">
+      <a href="../../integrations/llms/" class="md-nav__link">
         
   
   
@@ -1368,7 +1459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gemini-images/" class="md-nav__link">
+      <a href="../../integrations/gemini-images/" class="md-nav__link">
         
   
   
@@ -1393,37 +1484,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ZEOconnect
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../integrations/zeoconnect/" class="md-nav__link">
         
   
   
@@ -1439,70 +1503,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#offline-test-track" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Offline test track
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#live-test-account-and-pairing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Live test account and pairing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#production-account-and-pairing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Production account and pairing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#e2e-verification-and-cleanup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        E2E verification and cleanup
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1515,7 +1515,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../meetings/" class="md-nav__link">
+      <a href="../../integrations/meetings/" class="md-nav__link">
         
   
   
@@ -1543,7 +1543,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../local-tools/" class="md-nav__link">
+      <a href="../../integrations/local-tools/" class="md-nav__link">
         
   
   
@@ -1571,7 +1571,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../notebook-execution/" class="md-nav__link">
+      <a href="../../integrations/notebook-execution/" class="md-nav__link">
         
   
   
@@ -1599,7 +1599,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../authoring-receipts/" class="md-nav__link">
+      <a href="../../integrations/authoring-receipts/" class="md-nav__link">
         
   
   
@@ -1627,7 +1627,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../authoring-reference/" class="md-nav__link">
+      <a href="../../integrations/authoring-reference/" class="md-nav__link">
         
   
   
@@ -2187,10 +2187,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#offline-test-track" class="md-nav__link">
+  <a href="#1-export-an-explicit-factory" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Offline test track
+        1. Export an explicit factory
       
     </span>
   </a>
@@ -2198,10 +2198,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#live-test-account-and-pairing" class="md-nav__link">
+  <a href="#2-prepare-the-runtime-inventory" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Live test account and pairing
+        2. Prepare the Runtime inventory
       
     </span>
   </a>
@@ -2209,10 +2209,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#production-account-and-pairing" class="md-nav__link">
+  <a href="#3-let-runtime-admit-the-invocation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Production account and pairing
+        3. Let Runtime admit the invocation
       
     </span>
   </a>
@@ -2220,10 +2220,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#e2e-verification-and-cleanup" class="md-nav__link">
+  <a href="#existing-plugin-users" class="md-nav__link">
     <span class="md-ellipsis">
       
-        E2E verification and cleanup
+        Existing plugin users
       
     </span>
   </a>
@@ -2247,7 +2247,7 @@
 
 
   
-    <a href="https://github.com/profrodai/zeocore/edit/main/docs/integrations/zeoconnect.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/profrodai/zeocore/edit/main/docs/how-to/provider-registration.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -2255,78 +2255,104 @@
   
 
 
-<h1 id="zeoconnect-hosted-account-setup">ZEOconnect hosted account setup<a class="headerlink" href="#zeoconnect-hosted-account-setup" title="Permanent link">&para;</a></h1>
-<!-- Teaches CLAUDE.md Rev 17; user documentation reviewed 2026-09-08. -->
-
-<p>This optional composition surface uses a paired device session rather than a
-provider API key in ZeoCore. Provider OAuth and token custody belong to
-ZEOconnect. Start with <a href="../environments/">test and production environments</a>,
-then follow the <a href="../../tutorials/zeoconnect-hosted-profile/">complete pairing and service-resolution tutorial</a>.
-The current native slice supplies Drive, Docs and Bluesky bindings; it is not
-a claim that every local integration is available through the hosted service.
-Live operation also requires a compatible deployed ZEOconnect Member API.</p>
-<h2 id="offline-test-track">Offline test track<a class="headerlink" href="#offline-test-track" title="Permanent link">&para;</a></h2>
-<p>No account or key is needed. Inject <code>FakeGoogleDriveService</code> and use
-<code>ExecutionProfile.FAKE</code> as shown in the tutorial. Use
-<code>InMemorySecureSessionStore</code> for pairing protocol fixtures. Run those scripts
-with <code>--mode test --fixture --integration zeoconnect</code> so fixture state and
-outputs cannot be confused with a paired live test run. Assert the known fake
-bytes and resolution/operation outcomes. These tests prove client composition,
-not deployed membership, browser pairing or provider delivery.</p>
-<h2 id="live-test-account-and-pairing">Live test account and pairing<a class="headerlink" href="#live-test-account-and-pairing" title="Permanent link">&para;</a></h2>
-<ol>
-<li>Provision a separate test identity/member in the deployed ZEOconnect
-   application at <a href="https://connect.zeroemployee.org">connect.zeroemployee.org</a>.
-   If membership or the required connector is not available, that is a live
-   prerequisite; no ZeoCore API key can bypass it.</li>
-<li>In that identity's connection setup, authorize a dedicated provider test
-   account, using the <a href="../google/">Google</a> or <a href="../bluesky/">Bluesky</a> account
-   separation guidance. Select only disposable test resources. The OAuth
-   browser must show the test account before consent is granted.</li>
-<li>In your client application construct <code>KeychainSecureSessionStore</code> on macOS,
-   <code>ZEOconnectHTTPTransport(session_store=store)</code>, and
-   <code>build_hosted_runtime(transport=transport, session_store=store)</code>. The
-   <a href="../../tutorials/zeoconnect-hosted-profile/#hosted-pairing-is-an-explicit-second-action">tutorial's pairing code</a>
-   shows the exact requirement, challenge, browser approval and polling calls.</li>
-<li>Launch that application explicitly in test mode:</li>
-</ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>-m<span class="w"> </span>zeo_core.integrations.environments<span class="w"> </span>--mode<span class="w"> </span><span class="nb">test</span><span class="w">   </span>--root<span class="w"> </span><span class="s2">"</span><span class="nv">$ZEO_ENV_ROOT</span><span class="s2">"</span><span class="w"> </span>--integration<span class="w"> </span>zeoconnect<span class="w"> </span>--<span class="w">   </span>python<span class="w"> </span>/absolute/path/your_pairing_application.py
+<h1 id="register-a-capability-provider">Register a capability provider<a class="headerlink" href="#register-a-capability-provider" title="Permanent link">&para;</a></h1>
+<p>Start with a typed <a href="../../tutorials/capability-authoring/">capability</a>, then choose
+how its caller will discover and execute it. These names describe different jobs:</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Job</th>
+<th>Setup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capability</td>
+<td>One versioned operation with typed input/output and declared effects</td>
+<td>Use <code>@capability</code> and an ID such as <code>demo.greet@1.0.0</code></td>
+</tr>
+<tr>
+<td>Provider</td>
+<td>An installed Python package supplying capabilities</td>
+<td>Export a factory returning a fresh <code>CapabilityRegistry</code></td>
+</tr>
+<tr>
+<td>Registry</td>
+<td>An explicit in-process catalogue</td>
+<td>Register bound capabilities by exact canonical ID</td>
+</tr>
+<tr>
+<td>Adapter</td>
+<td>A boundary between interfaces or services</td>
+<td>Choose HTTP, MCP, the Runtime host, or a provider-specific adapter</td>
+</tr>
+<tr>
+<td>Integration</td>
+<td>Code for an external service or local tool</td>
+<td>Configure the required client and inject its service into context</td>
+</tr>
+<tr>
+<td>Legacy plugin/module</td>
+<td>A contribution to <code>zeo_core.modules</code></td>
+<td>Discover and explicitly load selected entry points; this does not admit a Runtime provider</td>
+</tr>
+</tbody>
+</table>
+<p>A package may contain several of these. Registration describes what exists;
+the caller still supplies authorization, required services and account selection.</p>
+<h2 id="1-export-an-explicit-factory">1. Export an explicit factory<a class="headerlink" href="#1-export-an-explicit-factory" title="Permanent link">&para;</a></h2>
+<p>The complete <a href="https://github.com/profrodai/zeocore/blob/main/examples/runtime_host_catalogue_v1.py">catalogue example</a>
+defines <code>demo.greet@1.0.0</code> and exports <code>build_registry()</code>. Its factory creates a
+new registry, registers the bound function and returns it without network or
+credential access. Put the equivalent factory in your installed package, for
+example <code>my_provider:build_registry</code>.</p>
+<p>For direct Python use, the caller can use that registry with the existing
+<code>invoke_sync</code> or <code>invoke_async</code> helpers. For HTTP/MCP, bind the capabilities into
+the adapter's operation registry. See the <a href="../../reference/api/#adapters">API map</a>.</p>
+<h2 id="2-prepare-the-runtime-inventory">2. Prepare the Runtime inventory<a class="headerlink" href="#2-prepare-the-runtime-inventory" title="Permanent link">&para;</a></h2>
+<p>The Runtime host and meeting APIs are newer than the published 0.10.0 wheel.
+Use this reviewed source checkout until a release includes them:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[runtime-host]"</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>examples/runtime_host_catalogue_v1.py
 </code></pre></div>
-<p>Approve the displayed device code in the test member's browser session. Wait at
-least the challenge's polling interval before each completion attempt. Pairing
-stores a rotating device session, not provider credentials. Keychain entries
-are separated by mode and a hash of the environment root; a production device
-session is not loaded automatically into test mode. Keep that root stable for
-a deployment. No global paired session is migrated into managed mode.</p>
-<p>For a non-macOS host, inject a secure session-store adapter supplied by your
-deployment, with separate namespaces for each mode/root. The native Keychain
-adapter cannot work there. The in-memory adapter loses sessions on process exit
-and is intended for fixtures; no plaintext fallback is provided.</p>
-<h2 id="production-account-and-pairing">Production account and pairing<a class="headerlink" href="#production-account-and-pairing" title="Permanent link">&para;</a></h2>
-<p>Provision the real production member and provider connection separately. Start
-the same application with <code>--mode production</code> and the same environment root:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>-m<span class="w"> </span>zeo_core.integrations.environments<span class="w"> </span>--mode<span class="w"> </span>production<span class="w">   </span>--root<span class="w"> </span><span class="s2">"</span><span class="nv">$ZEO_ENV_ROOT</span><span class="s2">"</span><span class="w"> </span>--integration<span class="w"> </span>zeoconnect<span class="w"> </span>--<span class="w">   </span>python<span class="w"> </span>/absolute/path/your_pairing_application.py
-</code></pre></div>
-<p>Pair again in the production member's browser session and select production
-resources explicitly. Do not copy the test device session. If several eligible
-connections exist, present the returned selection state to the user; do not
-choose the first account silently. Test mode uses the same deployed API unless
-an explicitly configured localhost development transport is used. It does not
-turn the hosted product into a vendor sandbox.</p>
-<h2 id="e2e-verification-and-cleanup">E2E verification and cleanup<a class="headerlink" href="#e2e-verification-and-cleanup" title="Permanent link">&para;</a></h2>
-<p>Start with a seeded selected Drive file. Resolve its requirement, complete
-pairing, select the intended connection/resource, then download and compare the
-known bytes. Verify the provider account and selected-resource display in the
-application. Repeat in production with its own harmless resource. For mutations
-use the application's explicit approval flow; pairing alone does not approve a
-post or document change. An ambiguous effect must stop automatic dispatch.</p>
-<p>Exercise device revocation and confirm the old session can no longer perform
-operations. Re-pair only in the same intended mode. For cleanup, revoke the test
-device and test provider connection in their respective account controls and
-remove disposable provider artifacts. On a revoked/repair-required connection,
-show that state; do not substitute another account. On protocol/version errors,
-check the deployed server compatibility described in the tutorial. A successful
-fake-server test does not establish that the production service is compatible.</p>
+<p>The example constructs real manifests and validates/default-materializes a
+request before hashing it. <code>name</code> becomes <code>World</code> before the digest is computed.
+It performs no admission or invocation. Python 3.14+ is required; the supervised
+host protocol uses inherited Unix descriptors on macOS/Linux.</p>
+<p>The trusted Runtime launcher selects the installed provider version, interpreter,
+factory and verified environment digest. It supplies the admitted static
+<code>ProviderBinding</code>; model-generated request arguments cannot select a factory.
+The host checks schemas, examples, identities, projection collisions and the
+inventory digest without importing that factory during discovery. Empty
+inventories are valid; duplicate canonical IDs refuse the candidate.</p>
+<p>During execution, the host constructs and validates the full executable candidate
+before publishing one generation. A failed candidate does not replace a working
+generation, and cleanup from an older generation cannot remove its replacement.</p>
+<h2 id="3-let-runtime-admit-the-invocation">3. Let Runtime admit the invocation<a class="headerlink" href="#3-let-runtime-admit-the-invocation" title="Permanent link">&para;</a></h2>
+<p>Follow the <a href="../runtime-host/">Runtime host protocol</a> for inherited binding/context
+FDs, private IPC, current attempt/fence checks, scoped requirements and artifact
+acceptance. <code>zeo-capability</code> has no unauthenticated standalone invoke mode.
+Installing the extra or validating a catalogue does not create a Runtime session.</p>
+<p>A capability declaring <code>runtime.effects</code> can use the injected effect port for an
+exact protected request. Runtime owns admission and durable effect accounting;
+ZEOconnect owns credential custody and authorized dispatch. The host cannot fill
+missing application services from ambient credentials. Unsupported service or
+filesystem requirements are reported unavailable.</p>
+<p>The version-1 host is an implementation candidate. Joint Runtime/ZEOconnect wire
+agreement and real application proofs remain required. The earlier
+<a href="../../integrations/meetings/">meeting-v1 API</a> has its own socket methods, binding
+models and request digest; sharing a four-byte frame prefix does not make the two
+protocols interchangeable.</p>
+<h2 id="existing-plugin-users">Existing plugin users<a class="headerlink" href="#existing-plugin-users" title="Permanent link">&para;</a></h2>
+<p><code>zeo_core.modules</code> remains an explicit legacy loading API. Importing it does not
+load plugins. A selected duplicate entry-point name refuses before plugin import.
+Registration callbacks must finish before their contributions are published;
+unregistering restores the latest surviving owner of a shadowed name, using the
+names captured at registration rather than asking the plugin to enumerate again.</p>
+<p>Continue using the <a href="https://github.com/profrodai/zeocore/blob/main/examples/explicit_plugin_loading_example.py">plugin-loading example</a>
+for that API. New Runtime providers use a trusted factory binding and
+<code>CapabilityRegistry</code>; they do not self-admit through the legacy plugin registry.</p>
 
 
 
@@ -2362,7 +2388,7 @@ fake-server test does not establish that the production service is compatible.</
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../gemini-images/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Gemini images">
+          <a href="../../tutorials/capability-authoring/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Write a capability">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2372,20 +2398,20 @@ fake-server test does not establish that the production service is compatible.</
                 Previous
               </span>
               <div class="md-ellipsis">
-                Gemini images
+                Write a capability
               </div>
             </div>
           </a>
         
         
           
-          <a href="../meetings/" class="md-footer__link md-footer__link--next" aria-label="Next: Meeting operations">
+          <a href="../runtime-host/" class="md-footer__link md-footer__link--next" aria-label="Next: Runtime host">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Meeting operations
+                Runtime host
               </div>
             </div>
             <div class="md-footer__button md-icon">

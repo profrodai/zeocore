@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://profrodai.github.io/zeocore/integrations/zeoconnect/">
+        <link rel="canonical" href="https://profrodai.github.io/zeocore/how-to/runtime-host/">
       
       
-        <link rel="prev" href="../gemini-images/">
+        <link rel="prev" href="../provider-registration/">
       
       
-        <link rel="next" href="../meetings/">
+        <link rel="next" href="../../tutorials/results-and-errors/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>ZEOconnect - ZeoCore</title>
+        <title>Runtime host - ZeoCore</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#zeoconnect-hosted-account-setup" class="md-skip">
+        <a href="#runtime-supervised-capability-host" class="md-skip">
           Skip to content
         </a>
       
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ZEOconnect
+              Runtime host
             
           </span>
         </div>
@@ -501,8 +501,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -545,11 +547,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
@@ -570,7 +572,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -616,7 +618,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../how-to/provider-registration/" class="md-nav__link">
+      <a href="../provider-registration/" class="md-nav__link">
         
   
   
@@ -641,10 +643,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../how-to/runtime-host/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime host
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -660,6 +689,103 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#install-and-prepare-a-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install and prepare a provider
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ownership-and-launcher-prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ownership and launcher prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#static-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static discovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#invocation-and-runtime-ipc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Invocation and Runtime IPC
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#canonical-bytes-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical bytes and validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result-truth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result truth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1012,8 +1138,6 @@
       
   
   
-    
-  
   
   
     
@@ -1064,15 +1188,15 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../integrations/" class="md-nav__link ">
               
   
   
@@ -1096,7 +1220,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1116,7 +1240,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../environments/" class="md-nav__link">
+      <a href="../../integrations/environments/" class="md-nav__link">
         
   
   
@@ -1144,7 +1268,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../hubspot/" class="md-nav__link">
+      <a href="../../integrations/hubspot/" class="md-nav__link">
         
   
   
@@ -1172,7 +1296,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../kit/" class="md-nav__link">
+      <a href="../../integrations/kit/" class="md-nav__link">
         
   
   
@@ -1200,7 +1324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../google/" class="md-nav__link">
+      <a href="../../integrations/google/" class="md-nav__link">
         
   
   
@@ -1228,7 +1352,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../github/" class="md-nav__link">
+      <a href="../../integrations/github/" class="md-nav__link">
         
   
   
@@ -1256,7 +1380,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../notion/" class="md-nav__link">
+      <a href="../../integrations/notion/" class="md-nav__link">
         
   
   
@@ -1284,7 +1408,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../supabase/" class="md-nav__link">
+      <a href="../../integrations/supabase/" class="md-nav__link">
         
   
   
@@ -1312,7 +1436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../bluesky/" class="md-nav__link">
+      <a href="../../integrations/bluesky/" class="md-nav__link">
         
   
   
@@ -1340,7 +1464,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../llms/" class="md-nav__link">
+      <a href="../../integrations/llms/" class="md-nav__link">
         
   
   
@@ -1368,7 +1492,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gemini-images/" class="md-nav__link">
+      <a href="../../integrations/gemini-images/" class="md-nav__link">
         
   
   
@@ -1393,37 +1517,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ZEOconnect
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../integrations/zeoconnect/" class="md-nav__link">
         
   
   
@@ -1439,70 +1536,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#offline-test-track" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Offline test track
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#live-test-account-and-pairing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Live test account and pairing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#production-account-and-pairing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Production account and pairing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#e2e-verification-and-cleanup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        E2E verification and cleanup
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1515,7 +1548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../meetings/" class="md-nav__link">
+      <a href="../../integrations/meetings/" class="md-nav__link">
         
   
   
@@ -1543,7 +1576,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../local-tools/" class="md-nav__link">
+      <a href="../../integrations/local-tools/" class="md-nav__link">
         
   
   
@@ -1571,7 +1604,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../notebook-execution/" class="md-nav__link">
+      <a href="../../integrations/notebook-execution/" class="md-nav__link">
         
   
   
@@ -1599,7 +1632,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../authoring-receipts/" class="md-nav__link">
+      <a href="../../integrations/authoring-receipts/" class="md-nav__link">
         
   
   
@@ -1627,7 +1660,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../authoring-reference/" class="md-nav__link">
+      <a href="../../integrations/authoring-reference/" class="md-nav__link">
         
   
   
@@ -2187,10 +2220,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#offline-test-track" class="md-nav__link">
+  <a href="#install-and-prepare-a-provider" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Offline test track
+        Install and prepare a provider
       
     </span>
   </a>
@@ -2198,10 +2231,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#live-test-account-and-pairing" class="md-nav__link">
+  <a href="#ownership-and-launcher-prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Live test account and pairing
+        Ownership and launcher prerequisites
       
     </span>
   </a>
@@ -2209,10 +2242,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#production-account-and-pairing" class="md-nav__link">
+  <a href="#static-discovery" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Production account and pairing
+        Static discovery
       
     </span>
   </a>
@@ -2220,10 +2253,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#e2e-verification-and-cleanup" class="md-nav__link">
+  <a href="#invocation-and-runtime-ipc" class="md-nav__link">
     <span class="md-ellipsis">
       
-        E2E verification and cleanup
+        Invocation and Runtime IPC
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#canonical-bytes-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical bytes and validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result-truth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result truth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification boundary
       
     </span>
   </a>
@@ -2247,7 +2313,7 @@
 
 
   
-    <a href="https://github.com/profrodai/zeocore/edit/main/docs/integrations/zeoconnect.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/profrodai/zeocore/edit/main/docs/how-to/runtime-host.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -2255,78 +2321,227 @@
   
 
 
-<h1 id="zeoconnect-hosted-account-setup">ZEOconnect hosted account setup<a class="headerlink" href="#zeoconnect-hosted-account-setup" title="Permanent link">&para;</a></h1>
-<!-- Teaches CLAUDE.md Rev 17; user documentation reviewed 2026-09-08. -->
-
-<p>This optional composition surface uses a paired device session rather than a
-provider API key in ZeoCore. Provider OAuth and token custody belong to
-ZEOconnect. Start with <a href="../environments/">test and production environments</a>,
-then follow the <a href="../../tutorials/zeoconnect-hosted-profile/">complete pairing and service-resolution tutorial</a>.
-The current native slice supplies Drive, Docs and Bluesky bindings; it is not
-a claim that every local integration is available through the hosted service.
-Live operation also requires a compatible deployed ZEOconnect Member API.</p>
-<h2 id="offline-test-track">Offline test track<a class="headerlink" href="#offline-test-track" title="Permanent link">&para;</a></h2>
-<p>No account or key is needed. Inject <code>FakeGoogleDriveService</code> and use
-<code>ExecutionProfile.FAKE</code> as shown in the tutorial. Use
-<code>InMemorySecureSessionStore</code> for pairing protocol fixtures. Run those scripts
-with <code>--mode test --fixture --integration zeoconnect</code> so fixture state and
-outputs cannot be confused with a paired live test run. Assert the known fake
-bytes and resolution/operation outcomes. These tests prove client composition,
-not deployed membership, browser pairing or provider delivery.</p>
-<h2 id="live-test-account-and-pairing">Live test account and pairing<a class="headerlink" href="#live-test-account-and-pairing" title="Permanent link">&para;</a></h2>
+<h1 id="runtime-supervised-capability-host">Runtime-supervised capability host<a class="headerlink" href="#runtime-supervised-capability-host" title="Permanent link">&para;</a></h1>
+<p>The host invokes an explicitly admitted Python capability provider through the
+existing <code>CapabilityRegistry</code> and typed invocation helper. Install
+<code>zeocore[runtime-host]</code> and run <code>zeo-capability</code> (or
+<code>python -m zeo_core.adapters.runtime_host</code>). It does not install providers,
+discover arbitrary entry points, load login profiles or authorize itself.</p>
+<p><strong>Protocol status:</strong> implementation candidate version 1. The Python models and
+tests are executable. Joint Runtime/ZEOconnect wire review, the Go adapter and the
+real Creator/Newsroom/agent/effect proofs remain required before interoperability
+or deployment acceptance. A test IPC peer is not that acceptance proof.</p>
+<h2 id="install-and-prepare-a-provider">Install and prepare a provider<a class="headerlink" href="#install-and-prepare-a-provider" title="Permanent link">&para;</a></h2>
+<p>This API is newer than the published 0.10.0 wheel. From the reviewed source
+checkout with Python 3.14+:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[runtime-host]"</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>examples/runtime_host_catalogue_v1.py
+</code></pre></div>
+<p>The <a href="https://github.com/profrodai/zeocore/blob/main/examples/runtime_host_catalogue_v1.py">complete offline example</a>
+exports a real provider factory, builds its catalogue and prints a normalized
+request and digest. It does not invoke a handler or manufacture launch authority.
+The <a href="../provider-registration/">registration guide</a> explains how to package the
+factory and how this differs from legacy plugin loading. <code>runtime-host</code> is a
+separate extra, not included by <code>zeocore[all]</code>; <code>make setup</code> includes it for tests.</p>
+<p>The inherited Unix socket/descriptor protocol is supported by the exercised
+macOS and Linux Python 3.14 environments. A Windows launcher is not provided.
+A trusted Runtime supervisor is still required for every host invocation.</p>
+<h2 id="ownership-and-launcher-prerequisites">Ownership and launcher prerequisites<a class="headerlink" href="#ownership-and-launcher-prerequisites" title="Permanent link">&para;</a></h2>
+<p>Runtime owns organizational admission, durable operation and logical-effect IDs,
+attempt fencing, resource reservations, total budgets, cancellation, artifact
+storage/retrieval and the agent facade. The host owns Python provider validation
+and invocation. ZEOconnect owns credential custody and exact authorized provider
+dispatch. Applications retain their business logic and persistent service jobs.</p>
+<p>The <strong>trusted launcher</strong> must:</p>
 <ol>
-<li>Provision a separate test identity/member in the deployed ZEOconnect
-   application at <a href="https://connect.zeroemployee.org">connect.zeroemployee.org</a>.
-   If membership or the required connector is not available, that is a live
-   prerequisite; no ZeoCore API key can bypass it.</li>
-<li>In that identity's connection setup, authorize a dedicated provider test
-   account, using the <a href="../google/">Google</a> or <a href="../bluesky/">Bluesky</a> account
-   separation guidance. Select only disposable test resources. The OAuth
-   browser must show the test account before consent is granted.</li>
-<li>In your client application construct <code>KeychainSecureSessionStore</code> on macOS,
-   <code>ZEOconnectHTTPTransport(session_store=store)</code>, and
-   <code>build_hosted_runtime(transport=transport, session_store=store)</code>. The
-   <a href="../../tutorials/zeoconnect-hosted-profile/#hosted-pairing-is-an-explicit-second-action">tutorial's pairing code</a>
-   shows the exact requirement, challenge, browser approval and polling calls.</li>
-<li>Launch that application explicitly in test mode:</li>
+<li>Select an exact interpreter, installed distribution version, factory and
+   immutable environment digest. Independently verify the environment/image
+   against that digest. The host checks installed version and interpreter; a
+   string in a context document cannot measure an environment's integrity.</li>
+<li>Create a fresh private connected Unix stream socket pair. Retain the Runtime
+   endpoint and pass only the child's endpoint to that host, normally FD 4.
+   Never accept a model-selected socket address or reusable device credential.</li>
+<li>Supply <code>LaunchContext</code> on a private inherited FD (normally 3). Close its write
+   end after writing bounded UTF-8 JSON. Send <code>InvocationRequest</code> on stdin.</li>
+<li>Strip ambient credentials, enforce the admitted workspace/egress policy and
+   supervise the owned process group with a deadline and shutdown grace. The
+   process, factory allowlist and SDK routing guards are not a Python sandbox.</li>
+<li>Bind the retained channel to the actual child process/session and atomically
+   redeem its bootstrap ID. Refuse reuse from a second child or an old attempt.
+   The child-generated nonce is a reply correlation value, not authentication.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>-m<span class="w"> </span>zeo_core.integrations.environments<span class="w"> </span>--mode<span class="w"> </span><span class="nb">test</span><span class="w">   </span>--root<span class="w"> </span><span class="s2">"</span><span class="nv">$ZEO_ENV_ROOT</span><span class="s2">"</span><span class="w"> </span>--integration<span class="w"> </span>zeoconnect<span class="w"> </span>--<span class="w">   </span>python<span class="w"> </span>/absolute/path/your_pairing_application.py
+<p>Pure Python composition remains inside an admitted invocation. Every protected
+service effect must enter the Runtime service port. The host sets an irreversible
+process-local managed-mode latch before importing a provider; the member/device
+HTTP transport refuses in that mode, including connection listing and artifact
+retrieval. Existing standalone programs retain their normal member path.</p>
+<h2 id="static-discovery">Static discovery<a class="headerlink" href="#static-discovery" title="Permanent link">&para;</a></h2>
+<p>These commands read <code>ProviderBinding</code> from the inherited binding FD. They validate
+the inventory without importing its factory, reading credentials or making a
+network request:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>zeo-capability describe --json --binding-fd 3
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>zeo-capability doctor --json --binding-fd 3
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>zeo-capability capabilities list --limit 20 --offset 0 --json --binding-fd 3
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>zeo-capability capabilities describe creator.plan_content_portfolio@1.0.0 --json --binding-fd 3
 </code></pre></div>
-<p>Approve the displayed device code in the test member's browser session. Wait at
-least the challenge's polling interval before each completion attempt. Pairing
-stores a rotating device session, not provider credentials. Keychain entries
-are separated by mode and a hash of the environment root; a production device
-session is not loaded automatically into test mode. Keep that root stable for
-a deployment. No global paired session is migrated into managed mode.</p>
-<p>For a non-macOS host, inject a secure session-store adapter supplied by your
-deployment, with separate namespaces for each mode/root. The native Keychain
-adapter cannot work there. The in-memory adapter loses sessions on process exit
-and is intended for fixtures; no plaintext fallback is provided.</p>
-<h2 id="production-account-and-pairing">Production account and pairing<a class="headerlink" href="#production-account-and-pairing" title="Permanent link">&para;</a></h2>
-<p>Provision the real production member and provider connection separately. Start
-the same application with <code>--mode production</code> and the same environment root:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>-m<span class="w"> </span>zeo_core.integrations.environments<span class="w"> </span>--mode<span class="w"> </span>production<span class="w">   </span>--root<span class="w"> </span><span class="s2">"</span><span class="nv">$ZEO_ENV_ROOT</span><span class="s2">"</span><span class="w"> </span>--integration<span class="w"> </span>zeoconnect<span class="w"> </span>--<span class="w">   </span>python<span class="w"> </span>/absolute/path/your_pairing_application.py
+<p>An empty inventory is valid. Missing metadata, duplicate canonical IDs,
+projection collisions, invalid examples, external schema references and manifest
+digest mismatch refuse. Pagination is deterministic and limited to 100 entries
+per page; the overall message is limited to 1 MiB. Static readiness is explicitly
+not availability or authority. Runtime filters catalogue visibility by scope and
+applies per-account consent separately. Canonical IDs stay data arguments in the
+preferred search/describe/run facade.</p>
+<h2 id="invocation-and-runtime-ipc">Invocation and Runtime IPC<a class="headerlink" href="#invocation-and-runtime-ipc" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>zeo-capability invoke --request - --context-fd 3 --runtime-fd 4
 </code></pre></div>
-<p>Pair again in the production member's browser session and select production
-resources explicitly. Do not copy the test device session. If several eligible
-connections exist, present the returned selection state to the user; do not
-choose the first account silently. Test mode uses the same deployed API unless
-an explicitly configured localhost development transport is used. It does not
-turn the hosted product into a vendor sandbox.</p>
-<h2 id="e2e-verification-and-cleanup">E2E verification and cleanup<a class="headerlink" href="#e2e-verification-and-cleanup" title="Permanent link">&para;</a></h2>
-<p>Start with a seeded selected Drive file. Resolve its requirement, complete
-pairing, select the intended connection/resource, then download and compare the
-known bytes. Verify the provider account and selected-resource display in the
-application. Repeat in production with its own harmless resource. For mutations
-use the application's explicit approval flow; pairing alone does not approve a
-post or document change. An ambiguous effect must stop automatic dispatch.</p>
-<p>Exercise device revocation and confirm the old session can no longer perform
-operations. Re-pair only in the same intended mode. For cleanup, revoke the test
-device and test provider connection in their respective account controls and
-remove disposable provider artifacts. On a revoked/repair-required connection,
-show that state; do not substitute another account. On protocol/version errors,
-check the deployed server compatibility described in the tutorial. A successful
-fake-server test does not establish that the production service is compatible.</p>
+<p><code>InvocationRequest</code> contains only version, exact canonical capability ID and
+arguments. Context contains the admitted provider inventory, organization,
+project, stable seat, runtime binding, packet, operation, attempt/fence, manifest
+and normalized request digests, scope, deadline, workspace and bounds. These
+claims gain authority only through the retained Runtime channel.</p>
+<p>Each IPC message is one <strong>4-byte unsigned big-endian length</strong> followed by UTF-8
+JSON. Both directions reject empty or over-limit messages. The limit is at most
+1 MiB; each exchange has a total deadline of at most 30 seconds, further bounded
+by the operation deadline. There is no transport retry. A broken exchange poisons
+the session. Runtime must enforce equivalent bounds on its endpoint.</p>
+<p>Every request carries <code>protocol_version</code>, monotonic <code>sequence</code>, <code>host_nonce</code>, the
+full <code>AttemptBinding</code>, <code>method</code> and <code>payload</code>. Every reply carries the same
+correlation fields, the exact canonical digest of that request, a state and data.
+The host rejects a mismatched nonce, sequence, attempt or digest. Runtime must
+also reject unexpected sequence, changed launch context and stale fencing.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Payload and enforcing obligation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bootstrap</code></td>
+<td>Bootstrap ID, child PID and canonical launch-context digest. Runtime consumes the ID against the actual supervised child/session and its recorded context. Multiple effects may subsequently use that session.</td>
+</tr>
+<tr>
+<td><code>invoke.admit</code></td>
+<td>Validated/default-materialized arguments. Runtime rechecks current authority, request/manifest binding, deadline, fence, requirements and resource reservation after provider loading and immediately before invocation.</td>
+</tr>
+<tr>
+<td><code>effect.request</code></td>
+<td>Stable logical effect ID, opaque connection reference, connector revision digest, exact operation and arguments. Runtime recovers or creates the durable logical effect, rejects changed-input reuse, allocates the total budget and authorizes the specific effect. ZEOconnect consumes it atomically against current revocation/fencing before dispatch.</td>
+</tr>
+<tr>
+<td><code>result.publish</code></td>
+<td>Validated business data and its canonical digest. Runtime checks the attempt/fence/deadline, stores an immutable scoped artifact and durably accepts the result before returning its artifact references and matching data digest.</td>
+</tr>
+</tbody>
+</table>
+<p>Runtime replies use <code>allowed</code>, <code>refused</code>, <code>cancelled</code>, <code>waiting_approval</code> or
+<code>needs_reconciliation</code>. An allowed effect response must contain
+<code>logical_effect_id</code>, <code>effect_request_digest</code>, <code>authorization_id</code>, <code>receipt_id</code> and
+<code>effect_disposition: confirmed</code>. Only Runtime/ZEOconnect evidence can establish
+that disposition. A refused/waiting/cancelled effect response asserts that this
+request was not consumed; if consumption or dispatch is uncertain, return
+<code>needs_reconciliation</code> instead. The protocol intentionally does not let the
+worker possess connector credentials or directly consume an authorization.</p>
+<p>Same-effect redelivery preserves identity and is not permission for another
+upstream request. Runtime's persistent ledger, not the host's temporary budget
+counter, governs recovery across a restarted host. A new provider call during
+reconciliation requires appropriate current authority. Consumption before
+cancellation can leave an unresolved effect; no exactly-once provider guarantee
+is implied by a local transaction. Connection consent never expands with a new
+provider generation, and selecting between accounts must be explicit.</p>
+<p>The currently provided injected service is <code>ctx.require_service("runtime.effects")</code>.
+It accepts a typed <code>EffectRequest</code>. Unsupported services or filesystem bindings
+are reported unavailable; the host never creates ambient clients to satisfy
+them. Application-specific service implementations require reviewed injection
+bindings. Newsroom retains its independent persistent service adapter.</p>
+<h2 id="canonical-bytes-and-validation">Canonical bytes and validation<a class="headerlink" href="#canonical-bytes-and-validation" title="Permanent link">&para;</a></h2>
+<p>Managed digests use <code>sha256:</code> plus lowercase hex over RFC 8785 bytes. They do not
+change existing redacted invocation/audit digests. Duplicate keys, non-finite
+numbers, integers outside the safe JCS integer domain and lone Unicode surrogates
+are rejected. Precision-sensitive amounts belong in decimal strings.</p>
+<p>Manifest inventories are sorted by canonical ID. Only declared set fields are
+sorted: <code>error_codes</code>, <code>tags</code>, <code>effects.kinds</code>, requirements
+<code>services</code>/<code>credentials</code>/<code>binaries</code>, and <code>requirements.network.hosts</code>. Request
+arrays, examples, resource-key fields and filesystem role tuples retain order.
+The launch digest uses that same ordered manifest projection inside the provider
+binding. Other launch arrays retain their supplied order and are bound exactly.</p>
+<p>The authorization request digest covers exactly
+<code>{"capability_id": ..., "arguments": ...}</code> after JSON Schema validation and
+the capability's Pydantic validation/default materialization. Runtime must bind
+those same bytes; hashing raw input before applying defaults is not equivalent.
+Reference byte vectors and generated JSON Schemas accompany this contract.</p>
+<h2 id="result-truth">Result truth<a class="headerlink" href="#result-truth" title="Permanent link">&para;</a></h2>
+<p>The host builds the entire registry privately, compares its complete inventory
+and executable request schemas with the admitted manifests, validates examples,
+then publishes one generation. Failure cannot expose an intermediate candidate.
+Cleanup uses generation identity so an old handle cannot delete a replacement.
+After invocation, response data must validate against its declared schema.
+Provider prints and native stdout/stderr writes are directed to a sink during
+execution; the machine FD carries one bounded JSON result. Provider exception
+messages and tracebacks are not exposed because they may contain credentials.</p>
+<table>
+<thead>
+<tr>
+<th>Result state</th>
+<th>Exit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>succeeded</code></td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>invalid_request</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>refused</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>unavailable</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>cancelled</code></td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>timed_out</code></td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>protocol_error</code></td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>queued</code>, <code>running</code>, <code>waiting_approval</code>, <code>needs_reconciliation</code></td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p>Consumers parse and validate the envelope on <strong>every exit code</strong>, including
+unexpected ones. Bind operation, attempt, request, schema and permitted state
+transition against durable Runtime state. The Python <code>parse_result</code> helper
+checks strict JSON, model coherence, exact attempt binding and exit agreement;
+the durable state transition check belongs to Runtime. Protocol disagreement
+never resolves toward the exit code or authorizes redispatch. A lost result can
+mean Runtime already accepted an artifact: reconnect to the existing operation.
+Unknown effects stay unknown. Correct digests do not grant artifact retrieval
+permission; Runtime must independently enforce organization and scope.</p>
+<h2 id="verification-boundary">Verification boundary<a class="headerlink" href="#verification-boundary" title="Permanent link">&para;</a></h2>
+<p>Run <code>make verify</code> and the host tests in <code>tests/test_adapters/test_runtime_host.py</code>.
+The tests use a labelled protocol simulator. Runtime must run the shared byte
+vectors in Go and prove bootstrap replay/fencing with its durable store, total
+dispatch accounting, controller restart, cancellation and artifact ownership.
+The first acceptance path is its real Creator portfolio planner without a
+connection; Newsroom, a real agent turn and a confirmed external effect follow.</p>
 
 
 
@@ -2362,7 +2577,7 @@ fake-server test does not establish that the production service is compatible.</
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../gemini-images/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Gemini images">
+          <a href="../provider-registration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Register a provider">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2372,20 +2587,20 @@ fake-server test does not establish that the production service is compatible.</
                 Previous
               </span>
               <div class="md-ellipsis">
-                Gemini images
+                Register a provider
               </div>
             </div>
           </a>
         
         
           
-          <a href="../meetings/" class="md-footer__link md-footer__link--next" aria-label="Next: Meeting operations">
+          <a href="../../tutorials/results-and-errors/" class="md-footer__link md-footer__link--next" aria-label="Next: Results and errors">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Meeting operations
+                Results and errors
               </div>
             </div>
             <div class="md-footer__button md-icon">
