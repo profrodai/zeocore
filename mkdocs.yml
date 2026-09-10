@@ -108,6 +108,7 @@ nav:
       - Language models: integrations/llms.md
       - Gemini images: integrations/gemini-images.md
       - ZEOconnect: integrations/zeoconnect.md
+      - Meeting operations: integrations/meetings.md
       - Local tools: integrations/local-tools.md
       - Notebook execution: integrations/notebook-execution.md
       - Authoring receipts: integrations/authoring-receipts.md
