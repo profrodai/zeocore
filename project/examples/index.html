@@ -1756,10 +1756,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#current-source-provider-and-meeting-requests" class="md-nav__link">
+  <a href="#new-in-0110-provider-and-meeting-requests" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current source: provider and meeting requests
+        New in 0.11.0: provider and meeting requests
       
     </span>
   </a>
@@ -2561,10 +2561,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#current-source-provider-and-meeting-requests" class="md-nav__link">
+  <a href="#new-in-0110-provider-and-meeting-requests" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current source: provider and meeting requests
+        New in 0.11.0: provider and meeting requests
       
     </span>
   </a>
@@ -2906,10 +2906,10 @@ guaranteed to keep working.</p>
 <code>zeocore[jupytext,notebook,pandoc]</code> plus the Pandoc binary. The examples are
 checkout assets, not installed shell commands. Run the release's examples with
 its matching installed package. Staging produces receipts; it does not publish.</p>
-<h2 id="current-source-provider-and-meeting-requests">Current source: provider and meeting requests<a class="headerlink" href="#current-source-provider-and-meeting-requests" title="Permanent link">&para;</a></h2>
-<p>These examples require the current checkout, newer than the published 0.10.0
-wheel. Run them with its matching editable installation:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[runtime-host]"</span>
+<h2 id="new-in-0110-provider-and-meeting-requests">New in 0.11.0: provider and meeting requests<a class="headerlink" href="#new-in-0110-provider-and-meeting-requests" title="Permanent link">&para;</a></h2>
+<p>These examples are checkout assets. Use the <code>v0.11.0</code> checkout and install
+the matching package:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"zeocore[runtime-host]==0.11.0"</span>
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>python<span class="w"> </span>examples/runtime_host_catalogue_v1.py
 <a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>python<span class="w"> </span>examples/meeting_request_v1.py
 </code></pre></div>
@@ -2925,12 +2925,12 @@ wheel. Run them with its matching editable installation:</p>
 <tr>
 <td><a href="https://github.com/profrodai/zeocore/blob/main/examples/runtime_host_catalogue_v1.py"><code>runtime_host_catalogue_v1.py</code></a></td>
 <td>A real provider factory, manifest inventory, default-materialized input and RFC 8785 request digest</td>
-<td>Source plus <code>runtime-host</code> extra</td>
+<td>0.11.0 plus <code>runtime-host</code> extra</td>
 </tr>
 <tr>
 <td><a href="https://github.com/profrodai/zeocore/blob/main/examples/meeting_request_v1.py"><code>meeting_request_v1.py</code></a></td>
 <td>Exact Sheets resource and request digest; changing the range changes the binding</td>
-<td>Source base install</td>
+<td>0.11.0 base install</td>
 </tr>
 </tbody>
 </table>

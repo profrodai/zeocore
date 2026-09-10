@@ -2144,10 +2144,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#runtime-host-current-source-zeocoreruntime-host" class="md-nav__link">
+  <a href="#runtime-host-added-in-0110-zeocoreruntime-host" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Runtime host — current source, zeocore[runtime-host]
+        Runtime host — added in 0.11.0, zeocore[runtime-host]
       
     </span>
   </a>
@@ -3044,10 +3044,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#runtime-host-current-source-zeocoreruntime-host" class="md-nav__link">
+  <a href="#runtime-host-added-in-0110-zeocoreruntime-host" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Runtime host — current source, zeocore[runtime-host]
+        Runtime host — added in 0.11.0, zeocore[runtime-host]
       
     </span>
   </a>
@@ -3143,7 +3143,7 @@
 <p>A curated map of ZeoCore's <strong>public</strong> surface: the canonical import path for
 each symbol, the signatures you actually call, and where the boundary sits
 between "supported API" and "internal detail you should not import".</p>
-<p>This page is hand-written and covers ZeoCore <strong>0.10.0</strong> (beta — see
+<p>This page is hand-written and covers ZeoCore <strong>0.11.0</strong> (beta — see
 <a href="#stability">Stability</a>). It is not generated from
 docstrings, and it is not exhaustive: every entry links to the source file,
 which is the authoritative signature. If a symbol is not listed here and not
@@ -3235,7 +3235,7 @@ either infrastructure you may use (<code>zeo_core.core.fs</code>, <code>zeo_core
 wiring a <em>host application</em> does (<code>zeo_core.adapters</code>).</p>
 <p><a id="stability"></a></p>
 <h2 id="stability-what-this-page-promises">Stability: what this page promises<a class="headerlink" href="#stability-what-this-page-promises" title="Permanent link">&para;</a></h2>
-<p>ZeoCore 0.10.0 is a <strong>beta</strong> library. The API is typed and tested
+<p>ZeoCore 0.11.0 is a <strong>beta</strong> library. The API is typed and tested
 (mypy <code>--strict</code> across the tree), but the surface may still shift before
 1.0. Breaking changes are recorded in <a href="../../project/CHANGELOG/">CHANGELOG.md</a>.</p>
 <p>Three tiers, used throughout this page:</p>
@@ -3968,7 +3968,7 @@ the rest in <code>warnings</code>.</p>
 (<code>ZeoPluginMetadata</code>, <code>PluginEntryPoint</code>, <code>LoadResult</code>), the loading
 functions (<code>list_available_entry_points</code>, <code>load_enabled_entry_points</code>,
 <code>load_enabled_modules</code>), and the globals <code>registry</code> and <code>loader</code>.</p>
-<p>Current-source registration publishes only after callbacks succeed. Unloading
+<p>From 0.11.0, registration publishes only after callbacks succeed. Unloading
 restores the latest surviving contribution using registration snapshots. Selected
 duplicate entry-point names refuse before import. This legacy registry does not
 admit Runtime providers; see <a href="../../how-to/provider-registration/">provider registration</a>.</p>
@@ -4057,7 +4057,7 @@ to put them.</p>
 <code>OpenAIProjectionResult</code>, <code>ProjectionIncompatibility</code>.</p>
 <p>Source: <a href="https://github.com/profrodai/zeocore/tree/main/src/zeo_core/adapters/llm_tools"><code>src/zeo_core/adapters/llm_tools/</code></a> ·
 Example: <a href="https://github.com/profrodai/zeocore/blob/main/examples/llm_tools_usage.py"><code>llm_tools_usage.py</code></a></p>
-<h3 id="runtime-host-current-source-zeocoreruntime-host">Runtime host — current source, <code>zeocore[runtime-host]</code><a class="headerlink" href="#runtime-host-current-source-zeocoreruntime-host" title="Permanent link">&para;</a></h3>
+<h3 id="runtime-host-added-in-0110-zeocoreruntime-host">Runtime host — added in 0.11.0, <code>zeocore[runtime-host]</code><a class="headerlink" href="#runtime-host-added-in-0110-zeocoreruntime-host" title="Permanent link">&para;</a></h3>
 <p>Use <code>zeo-capability</code> for inherited-FD discovery and supervised invocation. Python
 composition uses <code>zeo_core.adapters.runtime_host.host.ManagedHost</code> and
 <code>parse_result</code>, with <code>RuntimeChannel</code> from <code>adapters.runtime_host.channel</code>.
@@ -4066,7 +4066,7 @@ Wire models live in <code>zeo_core.contracts.runtime</code>: <code>ProviderBindi
 <code>RuntimeReply</code> and <code>HostResult</code>.</p>
 <p>The executable <a href="https://github.com/profrodai/zeocore/tree/main/contracts/runtime-host-v1">schemas and canonical vectors</a>
 and <a href="../../how-to/runtime-host/">protocol guide</a> define this candidate surface.
-It is newer than the 0.10.0 wheel and requires joint Runtime/ZEOconnect acceptance.
+It ships in 0.11.0; joint Runtime/ZEOconnect interoperability acceptance is still required.
 Do not treat it as an unauthenticated replacement for direct Python invocation.</p>
 <p><a id="integrations"></a></p>
 <h2 id="zeo_coreintegrations-external-services"><code>zeo_core.integrations</code> — external services<a class="headerlink" href="#zeo_coreintegrations-external-services" title="Permanent link">&para;</a></h2>
@@ -4104,7 +4104,7 @@ installation; others require the extra shown below. The parent package
 </tr>
 <tr>
 <td><code>zeo_core.integrations.meetings</code></td>
-<td>current source base</td>
+<td>base install, from 0.11.0</td>
 <td><code>MeetingRunner</code>, <code>MeetingAdapters</code>, <code>UnixMeetingRuntime</code>, <code>InvocationAuthorization</code>, <code>InvocationReceipt</code>, <code>request_digest</code></td>
 </tr>
 <tr>
@@ -4252,7 +4252,7 @@ they consume without importing Sovereign Agent.</p>
 </tr>
 <tr>
 <td><code>runtime-host</code></td>
-<td>Current-source supervised host, JSON Schema validation and RFC 8785</td>
+<td>Supervised host from 0.11.0, JSON Schema validation and RFC 8785</td>
 </tr>
 <tr>
 <td><code>all</code></td>

@@ -2280,10 +2280,9 @@
 <h1 id="runtime-admitted-meeting-operations">Runtime-admitted meeting operations<a class="headerlink" href="#runtime-admitted-meeting-operations" title="Permanent link">&para;</a></h1>
 <!-- Teaches CLAUDE.md Rev 17; reviewed 2026-09-09. -->
 
-<p>This source-only API is newer than Zeocore 0.10.0. Install the reviewed source
-revision to use <code>zeo_core.integrations.meetings</code>; the published 0.10.0 wheel does
-not contain it. It connects a host's meeting invocation to the existing local
-meeting runtime and host-configured provider clients.</p>
+<p><code>zeo_core.integrations.meetings</code> is included in the base package from 0.11.0.
+It connects a host's meeting invocation to the existing local meeting runtime
+and host-configured provider clients.</p>
 <p>The host supplies the confirmed meeting action and current lease/attempt. The
 runtime validates and durably consumes authority before a provider operation.
 Zeocore validates the exact request and resource, dispatches once, and admits a
@@ -2341,8 +2340,8 @@ and the table's exact resource string when obtaining the lease. Changing even
 an optional field after admission changes the request. Provider credentials are
 host-owned and never belong in the payload or runtime receipt.</p>
 <h2 id="prepare-a-request-offline">Prepare a request offline<a class="headerlink" href="#prepare-a-request-offline" title="Permanent link">&para;</a></h2>
-<p>From the current checkout, install the source and run the complete example:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+<p>From the <code>v0.11.0</code> checkout, install the matching package and run the example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"zeocore==0.11.0"</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>examples/meeting_request_v1.py
 </code></pre></div>
 <p>The <a href="https://github.com/profrodai/zeocore/blob/main/examples/meeting_request_v1.py">script</a> prepares a bounded Sheets

@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#zeocore-0100" class="md-skip">
+        <a href="#zeocore-0110" class="md-skip">
           Skip to content
         </a>
       
@@ -1905,10 +1905,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#newsletter-and-marketing-automation" class="md-nav__link">
+  <a href="#runtime-capability-host" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Newsletter and marketing automation
+        Runtime capability host
       
     </span>
   </a>
@@ -1916,10 +1916,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#separate-test-and-production-environments" class="md-nav__link">
+  <a href="#meeting-operations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Separate test and production environments
+        Meeting operations
       
     </span>
   </a>
@@ -1927,21 +1927,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#native-zeoconnect-and-gemini-images" class="md-nav__link">
+  <a href="#registration-fixes-and-documentation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Native ZEOconnect and Gemini images
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#document-and-notebook-authoring" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Document and notebook authoring
+        Registration fixes and documentation
       
     </span>
   </a>
@@ -2198,10 +2187,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#newsletter-and-marketing-automation" class="md-nav__link">
+  <a href="#runtime-capability-host" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Newsletter and marketing automation
+        Runtime capability host
       
     </span>
   </a>
@@ -2209,10 +2198,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#separate-test-and-production-environments" class="md-nav__link">
+  <a href="#meeting-operations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Separate test and production environments
+        Meeting operations
       
     </span>
   </a>
@@ -2220,21 +2209,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#native-zeoconnect-and-gemini-images" class="md-nav__link">
+  <a href="#registration-fixes-and-documentation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Native ZEOconnect and Gemini images
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#document-and-notebook-authoring" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Document and notebook authoring
+        Registration fixes and documentation
       
     </span>
   </a>
@@ -2277,91 +2255,57 @@
   
 
 
-<h1 id="zeocore-0100">zeocore 0.10.0<a class="headerlink" href="#zeocore-0100" title="Permanent link">&para;</a></h1>
-<p>Current-source additions are listed under <a href="../CHANGELOG/#unreleased">Unreleased</a>.
-The Runtime capability host and meeting-v1 adapters are not in the published
-0.10.0 wheel; use the source installation in <a href="../../how-to/provider-registration/">provider registration</a>
-and the <a href="../../integrations/meetings/">meeting guide</a>. The release below remains 0.10.0.</p>
-<p>ZeoCore 0.10.0 brings marketing automation, explicit integration environments,
-governed image commissioning and receipt-bearing notebook authoring into one
-release. Python 3.14 or newer remains required. The complete history is in
-<a href="../CHANGELOG/">CHANGELOG.md</a>.</p>
-<h2 id="newsletter-and-marketing-automation">Newsletter and marketing automation<a class="headerlink" href="#newsletter-and-marketing-automation" title="Permanent link">&para;</a></h2>
-<p>HubSpot adds eleven registered agent capabilities for marketing email drafts,
-reviewed publishing/scheduling, campaigns, subscription preferences and marketing
-workflows. Its scope is marketing automation; it does not expose a general CRM
-integration. Account entitlements, beta access and recipient restrictions still
-apply. <a href="../../integrations/hubspot/">HubSpot setup</a> explains test and real accounts,
-private-app tokens, scopes, sender requirements and a bounded delivery check.</p>
-<p>Kit adds thirteen registered capabilities for broadcasts, sequence authoring,
-consent-bound subscribers, tags and reporting. Draft review binds the exact send;
-mutation results must identify the correct resource. A lost or malformed response
-remains uncertain rather than authorizing a blind retry.
-<a href="../../integrations/kit/">Kit setup</a> covers API v4 keys versus OAuth, dedicated
-test accounts, designated recipients and production sender setup.</p>
-<p>Both ship in the base package. Their runnable examples use explicit simulated
-HTTP transports and send no real mail.</p>
-<h2 id="separate-test-and-production-environments">Separate test and production environments<a class="headerlink" href="#separate-test-and-production-environments" title="Permanent link">&para;</a></h2>
-<p>The managed launcher selects one provider namespace and separate configuration,
-credential caches, working directories and temporary files. Secure prompts do not
-echo or save secrets. Missing credentials cannot fall back to ambient keys or the
-opposite track; managed live LLM calls cannot silently select a mock or another
-provider. Fixtures are explicitly test-only and require injected test transports.</p>
-<p>The <a href="../../integrations/">setup index</a> links every supported service to
-key acquisition, test-account creation, production setup, E2E checks and cleanup.
-Providers without a sandbox use dedicated accounts/resources. Gemini images and
-local notebook execution are now named launcher composition surfaces as well.</p>
-<p>Identical Supabase project URLs across live tracks are refused even with distinct
-keys. HTTP clients cannot replace a selected token with ambient netrc credentials.
-Google Drive pagination now uses the real SDK keyword. Preserved HOME can still
-expose third-party Google ADC/AWS credential files; the guide states that limit.
-This is a boundary for trusted code, not an operating-system sandbox.</p>
-<h2 id="native-zeoconnect-and-gemini-images">Native ZEOconnect and Gemini images<a class="headerlink" href="#native-zeoconnect-and-gemini-images" title="Permanent link">&para;</a></h2>
-<p>Native fake and hosted profiles import without optional local Google/Bluesky SDKs.
-Native ZEOconnect composition offers fake, local, hosted and governed profiles,
-explicit pairing/session custody and consent-bound resolution. Governed authority
-cannot fall back to an ordinary paired member session. Existing hosted request
-revision fields remain optional for compatibility; the server derives its bound
-revision from the authenticated connection.</p>
-<p>Gemini reference-image operations use admitted connections, exact authorization,
-durable dispatch markers, private hashed artifacts and read-only reconciliation.
-Known interactions are recovered without a second generation POST. Lost responses
-without a durable provider ID remain ambiguous. Returned images are unreviewed
-candidates; provider acceptance does not establish artistic quality or zero cost.
-<a href="../../integrations/gemini-images/">Gemini setup</a> explains Google project/key
-provisioning and separate test/production host custody.</p>
-<h2 id="document-and-notebook-authoring">Document and notebook authoring<a class="headerlink" href="#document-and-notebook-authoring" title="Permanent link">&para;</a></h2>
-<p>Jupytext and Pandoc expose conversion receipts, source/output identities and strict
-staging batches. Notebook semantic digests carry a versioned schema and remain
-separate from exact file hashes and individual execution observations.</p>
-<p>The optional notebook executor creates a fresh Python kernel, removes stale output,
-uses parent-enforced deadlines, bounds output capture and tracks observed process
-cleanup. Receipts include interpreter/environment identity, declared lock provenance
-and attempted/completed/failed/skipped cells. Worker results are published atomically
-so a polling parent cannot see partially written JSON.</p>
-<p>The <a href="../../integrations/authoring-reference/">authoring reference</a> combines conversion,
-independent fixture checks, parity, fresh execution and optional DOCX, with real runs
-in separate test and production roots. Its receipts mean <strong>staged, not published</strong>.
-They do not establish chapter acceptance, learner success, complete descendant
-containment or OS/network isolation.</p>
+<h1 id="zeocore-0110">zeocore 0.11.0<a class="headerlink" href="#zeocore-0110" title="Permanent link">&para;</a></h1>
+<p>ZeoCore 0.11.0 adds a supervised Runtime capability host, Runtime-admitted meeting
+operations, safer legacy plugin registration and searchable documentation.
+Python 3.14 or newer remains required. See <a href="../CHANGELOG/">CHANGELOG.md</a> for the
+complete history.</p>
+<h2 id="runtime-capability-host">Runtime capability host<a class="headerlink" href="#runtime-capability-host" title="Permanent link">&para;</a></h2>
+<p>The optional <code>runtime-host</code> extra provides the <code>zeo-capability</code> CLI, explicit
+provider factories, manifest inventories, canonical request validation and a
+version-1 protocol over private inherited Unix descriptors. The host validates
+provider bindings and invokes admitted capabilities; Runtime owns admission,
+durable operations and accepted artifacts, while ZEOconnect owns protected
+connector dispatch. Registration alone never authorizes execution.</p>
+<p>This is a packaged implementation candidate. Joint Runtime/ZEOconnect wire
+agreement, the Go adapter and real application/effect acceptance remain required.
+The package release does not certify deployment interoperability. The exercised
+host environments are macOS and Linux; no Windows launcher is provided.</p>
+<p>Start with <a href="../../how-to/provider-registration/">provider registration</a> and the
+<a href="../../how-to/runtime-host/">Runtime host guide</a>. <code>runtime-host</code> is deliberately
+separate from the <code>all</code> extra. Existing Python, HTTP and MCP paths remain available.</p>
+<h2 id="meeting-operations">Meeting operations<a class="headerlink" href="#meeting-operations" title="Permanent link">&para;</a></h2>
+<p>The base package includes <code>zeo_core.integrations.meetings</code> for six closed operations:
+Notion page upsert, bounded Sheets reads, Calendar event reads, and Gmail draft
+creation, retrieval and reconciliation. The existing meeting-v1 protocol binds the
+exact request and resource to Runtime authority before dispatch and requires an
+admitted receipt. It has separate bindings from the generic host protocol.</p>
+<p>There is no Gmail send operation or Calendar mutation route. Lost or ambiguous
+provider responses do not authorize another mutation. Credentials stay with the
+host. See the <a href="../../integrations/meetings/">meeting guide</a> for limits and setup.</p>
+<h2 id="registration-fixes-and-documentation">Registration fixes and documentation<a class="headerlink" href="#registration-fixes-and-documentation" title="Permanent link">&para;</a></h2>
+<p>Legacy plugin registration now publishes transactionally, restores surviving
+shadowed contributions on unload, uses registration snapshots for cleanup, and
+refuses ambiguous selected entry points before importing them.</p>
+<p>The documentation adds searchable navigation, generated API references, a clear
+provider/integration/adapter terminology guide and two offline examples. The
+catalogue example constructs manifests and a normalized request; the meeting
+example demonstrates exact resource and digest binding. Neither calls a provider
+or manufactures Runtime authority.</p>
 <h2 id="install-and-upgrade">Install and upgrade<a class="headerlink" href="#install-and-upgrade" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span><span class="s2">"zeocore==0.10.0"</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"zeocore[jupytext,pandoc,notebook]==0.10.0"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span><span class="s2">"zeocore==0.11.0"</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"zeocore[runtime-host]==0.11.0"</span>
 </code></pre></div>
-<p>The second command is for local authoring. Pandoc itself must also be installed.
-Install only the optional provider/adaptor extras you use; <code>httpx</code> is now a base
-dependency. The notebook extra adds nbclient, ipykernel and psutil. The base import
-remains usable without those optional packages.</p>
-<p>Existing direct integration construction keeps its historical configuration
-behavior. Move the application entry point to the
-<a href="../../integrations/environments/">managed launcher</a> to adopt the separate tracks.
-Do not reuse an initialized client across modes. Semantic digest consumers must
-retain the new schema label; old and new digest values are not interchangeable.</p>
-<p>The <a href="../examples/">examples catalog</a>, <a href="../../reference/api/">API reference</a>
-and <a href="https://github.com/profrodai/sovereign-agent-resources">resources repository</a>
-provide runnable paths. Resources migrate to this exact version after publication.
-No live provider delivery, account entitlement, classroom result or visual image
-qualification is asserted by the package release.</p>
+<p>The first command includes meeting request/receipt APIs. The second adds canonical
+wire validation and the supervised host. Install other provider extras only as
+needed. To run the new examples, use the matching <code>v0.11.0</code> repository checkout:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>examples/runtime_host_catalogue_v1.py
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>python<span class="w"> </span>examples/meeting_request_v1.py
+</code></pre></div>
+<p>Examples are repository assets, not installed shell commands. A trusted Runtime
+supervisor must provide the inherited descriptors for actual <code>zeo-capability</code>
+invocation. The <a href="../examples/">example catalog</a> and
+<a href="../../reference/api/">API reference</a> describe the supported public imports.</p>
 
 
 

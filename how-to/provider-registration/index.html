@@ -2311,9 +2311,9 @@ example <code>my_provider:build_registry</code>.</p>
 <code>invoke_sync</code> or <code>invoke_async</code> helpers. For HTTP/MCP, bind the capabilities into
 the adapter's operation registry. See the <a href="../../reference/api/#adapters">API map</a>.</p>
 <h2 id="2-prepare-the-runtime-inventory">2. Prepare the Runtime inventory<a class="headerlink" href="#2-prepare-the-runtime-inventory" title="Permanent link">&para;</a></h2>
-<p>The Runtime host and meeting APIs are newer than the published 0.10.0 wheel.
-Use this reviewed source checkout until a release includes them:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[runtime-host]"</span>
+<p>The Runtime host and meeting APIs are available from 0.11.0. Install the package
+and run this example from the matching <code>v0.11.0</code> checkout:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"zeocore[runtime-host]==0.11.0"</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>examples/runtime_host_catalogue_v1.py
 </code></pre></div>
 <p>The example constructs real manifests and validates/default-materializes a

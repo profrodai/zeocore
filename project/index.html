@@ -2206,10 +2206,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#current-source-runtime-host-and-meeting-operations" class="md-nav__link">
+  <a href="#new-in-0110-runtime-host-and-meeting-operations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current source: Runtime host and meeting operations
+        New in 0.11.0: Runtime host and meeting operations
       
     </span>
   </a>
@@ -2342,7 +2342,7 @@ credential acquisition, test accounts, production accounts and runnable checks
 for every supported integration.</p>
 <p>For Runtime-supervised applications, start with the
 <a href="../how-to/provider-registration/">provider registration guide</a> and the
-<a href="#current-source-runtime-host-and-meeting-operations">current-source setup</a>.</p>
+<a href="#new-in-0110-runtime-host-and-meeting-operations">0.11.0 setup</a>.</p>
 <h2 id="who-this-is-for">Who this is for<a class="headerlink" href="#who-this-is-for" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Students and newcomers</strong> learning how to structure real Python tools —
@@ -2528,11 +2528,10 @@ private artifacts and reconciliation. <a href="../integrations/notebook-executio
 and <a href="../integrations/authoring-reference/">the authoring reference</a> provide
 fresh-kernel execution and independently checked staging receipts.
 See <a href="RELEASE_NOTES/">release notes</a> for migration and remaining qualification limits.</p>
-<h2 id="current-source-runtime-host-and-meeting-operations">Current source: Runtime host and meeting operations<a class="headerlink" href="#current-source-runtime-host-and-meeting-operations" title="Permanent link">&para;</a></h2>
-<p>The source checkout includes additions newer than the published <strong>0.10.0</strong> wheel.
-Install this reviewed checkout to try them; installing <code>zeocore==0.10.0</code> does not
-provide the Runtime host or meeting adapters.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[runtime-host]"</span>
+<h2 id="new-in-0110-runtime-host-and-meeting-operations">New in 0.11.0: Runtime host and meeting operations<a class="headerlink" href="#new-in-0110-runtime-host-and-meeting-operations" title="Permanent link">&para;</a></h2>
+<p>The Runtime host and meeting adapters are available in <strong>0.11.0</strong>. Install the
+package below and run the examples from the matching <code>v0.11.0</code> checkout:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"zeocore[runtime-host]==0.11.0"</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>python<span class="w"> </span>examples/runtime_host_catalogue_v1.py
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>python<span class="w"> </span>examples/meeting_request_v1.py
 </code></pre></div>
@@ -2627,7 +2626,7 @@ accounts and authorization. Install additional dependencies only as needed:</p>
 </tr>
 <tr>
 <td><code>zeocore[runtime-host]</code></td>
-<td>Source-only supervised capability host and canonical wire validation</td>
+<td>Supervised capability host and canonical wire validation</td>
 </tr>
 <tr>
 <td><code>zeocore[all]</code></td>
@@ -2635,7 +2634,7 @@ accounts and authorization. Install additional dependencies only as needed:</p>
 </tr>
 </tbody>
 </table>
-<p><code>runtime-host</code> must also be installed explicitly from the current source.</p>
+<p><code>runtime-host</code> must be installed explicitly; it is available from 0.11.0.</p>
 <p><code>mcp</code> and <code>mcp-dev</code> are real, separate extras — <code>zeocore[all]</code> does <strong>not</strong>
 pull in the MCP adapter. Install it explicitly (e.g. <code>zeocore[all,mcp]</code>).
 The <code>dev</code> and <code>lint</code> extras are for contributors; see
@@ -2663,7 +2662,7 @@ The <code>dev</code> and <code>lint</code> extras are for contributors; see
 </tr>
 <tr>
 <td><code>zeo_core.adapters</code></td>
-<td>HTTP, MCP, LLM function projection, and the source-only Runtime capability host.</td>
+<td>HTTP, MCP, LLM function projection, and the Runtime capability host.</td>
 </tr>
 <tr>
 <td><code>zeo_core.contracts.runtime</code></td>
@@ -2671,7 +2670,7 @@ The <code>dev</code> and <code>lint</code> extras are for contributors; see
 </tr>
 <tr>
 <td><code>zeo_core.integrations.meetings</code></td>
-<td>Source-only Runtime-admitted meeting reads, Notion upsert and Gmail draft operations.</td>
+<td>Runtime-admitted meeting reads, Notion upsert and Gmail draft operations.</td>
 </tr>
 <tr>
 <td><code>zeo_core.core</code></td>
@@ -2714,7 +2713,7 @@ module by module.</p>
   CI check fails the build if it finds <code>"pytest" in sys.modules</code> or similar).</li>
 </ul>
 <h2 id="project-status">Project status<a class="headerlink" href="#project-status" title="Permanent link">&para;</a></h2>
-<p>ZeoCore <strong>0.10.0</strong> is a beta library: the API is typed and tested, and this
+<p>ZeoCore <strong>0.11.0</strong> is a beta library: the API is typed and tested, and this
 release is the canonical capability-authoring surface for the Zero Employee
 ecosystem. The surface may still shift before 1.0. Issues, questions, and API
 feedback are welcome.</p>
