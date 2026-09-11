@@ -54,7 +54,7 @@ class ServiceRequirement(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    service: str = Field(..., pattern=r"^[a-z][a-z0-9]*(?:\.[a-z0-9]+)+$")
+    service: str = Field(..., pattern=r"^[a-z][a-z0-9]*(?:\.[a-z0-9]+)*$")
     operations: tuple[str, ...] = Field(..., min_length=1, max_length=20)
 
     @field_validator("operations")
