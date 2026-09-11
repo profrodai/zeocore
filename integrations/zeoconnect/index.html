@@ -1456,6 +1456,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#setup-metadata-and-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup metadata and availability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#offline-test-track" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2187,6 +2198,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#setup-metadata-and-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup metadata and availability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#offline-test-track" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2265,6 +2287,47 @@ then follow the <a href="../../tutorials/zeoconnect-hosted-profile/">complete pa
 The current native slice supplies Drive, Docs and Bluesky bindings; it is not
 a claim that every local integration is available through the hosted service.
 Live operation also requires a compatible deployed ZEOconnect Member API.</p>
+<h2 id="setup-metadata-and-availability">Setup metadata and availability<a class="headerlink" href="#setup-metadata-and-availability" title="Permanent link">&para;</a></h2>
+<p>The unreleased <code>zeo_core.integrations.hosted.setup_catalog</code> module exposes
+<code>SETUP_CATALOGUE</code> and <code>setup_manifest(integration_id)</code>. Its nineteen entries
+separate business accounts, builder connections, model access, local tools and
+product sign-in. The catalogue contains reviewed presentation data. It neither
+probes an account nor supplies authorization/callback URLs. Unknown integrations
+return <code>None</code>; they do not receive a generic credential form.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.integrations.hosted.setup_catalog</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_manifest</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">manifest</span> <span class="o">=</span> <span class="n">setup_manifest</span><span class="p">(</span><span class="s2">"hubspot.marketing"</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">assert</span> <span class="n">manifest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">manifest</span><span class="o">.</span><span class="n">display_name</span><span class="p">,</span> <span class="n">manifest</span><span class="o">.</span><span class="n">purpose</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="k">for</span> <span class="n">profile</span> <span class="ow">in</span> <span class="n">manifest</span><span class="o">.</span><span class="n">profiles</span><span class="p">:</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">profile</span><span class="o">.</span><span class="n">profile</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">support</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</code></pre></div>
+<p>Named operations reuse existing <code>ServiceRequirement</code> identities and capability
+versions. Single-component service names such as <code>github</code> are accepted, matching
+the existing capability service registry. The operation must still use the exact
+service prefix. Other local SDK methods are explicitly unmapped; this metadata
+does not expose them as new hosted operations. Existing hosted directions remain
+<code>not_admitted</code> until their deployment and provider qualification is complete.
+A local implementation entry does not mean that a binary or account is ready.</p>
+<p><code>AvailabilitySnapshot</code> in <code>zeo_core.integrations.hosted.setup</code> requires one fact
+for each of implementation, entitlement, provider consent, account health,
+resource binding, Runtime authority and reachability. Each fact carries its own
+revision, observation time and expiry. Calling <code>evaluate(now=...)</code> returns every
+blocker and a deterministic primary blocker. A valid connection with insufficient
+provider features remains a feature problem, rather than an authentication error.
+At expiry the snapshot is stale; future observations are unknown. Known revocation
+remains visible even when its observation becomes stale.</p>
+<p><code>AvailabilityView.dispatch_recheck_required</code> is always true, including when the
+blocker list is empty. The host must authenticate and admit the exact operation
+again at dispatch. Fixed action identifiers select vetted UI components; they
+are not network instructions or approval tokens. Preserve the initiating work
+when presenting or repairing any blocker.</p>
+<p><code>HostedResourceSelection</code> extends the existing resource summary with connection,
+provider identity/version, observation time and grant revision. Exact objects,
+enumerated fixed collections, and dynamic containers have different semantics.
+Future members require an explicitly dynamic selection. A folder name does not
+grant recursive access. This is presentation metadata: the Broker must enforce
+current organization, connection, app-access and resource ceilings independently.</p>
 <h2 id="offline-test-track">Offline test track<a class="headerlink" href="#offline-test-track" title="Permanent link">&para;</a></h2>
 <p>No account or key is needed. Inject <code>FakeGoogleDriveService</code> and use
 <code>ExecutionProfile.FAKE</code> as shown in the tutorial. Use
@@ -2290,7 +2353,7 @@ not deployed membership, browser pairing or provider delivery.</p>
    shows the exact requirement, challenge, browser approval and polling calls.</li>
 <li>Launch that application explicitly in test mode:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>-m<span class="w"> </span>zeo_core.integrations.environments<span class="w"> </span>--mode<span class="w"> </span><span class="nb">test</span><span class="w">   </span>--root<span class="w"> </span><span class="s2">"</span><span class="nv">$ZEO_ENV_ROOT</span><span class="s2">"</span><span class="w"> </span>--integration<span class="w"> </span>zeoconnect<span class="w"> </span>--<span class="w">   </span>python<span class="w"> </span>/absolute/path/your_pairing_application.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>-m<span class="w"> </span>zeo_core.integrations.environments<span class="w"> </span>--mode<span class="w"> </span><span class="nb">test</span><span class="w">   </span>--root<span class="w"> </span><span class="s2">"</span><span class="nv">$ZEO_ENV_ROOT</span><span class="s2">"</span><span class="w"> </span>--integration<span class="w"> </span>zeoconnect<span class="w"> </span>--<span class="w">   </span>python<span class="w"> </span>/absolute/path/your_pairing_application.py
 </code></pre></div>
 <p>Approve the displayed device code in the test member's browser session. Wait at
 least the challenge's polling interval before each completion attempt. Pairing
@@ -2305,7 +2368,7 @@ and is intended for fixtures; no plaintext fallback is provided.</p>
 <h2 id="production-account-and-pairing">Production account and pairing<a class="headerlink" href="#production-account-and-pairing" title="Permanent link">&para;</a></h2>
 <p>Provision the real production member and provider connection separately. Start
 the same application with <code>--mode production</code> and the same environment root:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>-m<span class="w"> </span>zeo_core.integrations.environments<span class="w"> </span>--mode<span class="w"> </span>production<span class="w">   </span>--root<span class="w"> </span><span class="s2">"</span><span class="nv">$ZEO_ENV_ROOT</span><span class="s2">"</span><span class="w"> </span>--integration<span class="w"> </span>zeoconnect<span class="w"> </span>--<span class="w">   </span>python<span class="w"> </span>/absolute/path/your_pairing_application.py
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>-m<span class="w"> </span>zeo_core.integrations.environments<span class="w"> </span>--mode<span class="w"> </span>production<span class="w">   </span>--root<span class="w"> </span><span class="s2">"</span><span class="nv">$ZEO_ENV_ROOT</span><span class="s2">"</span><span class="w"> </span>--integration<span class="w"> </span>zeoconnect<span class="w"> </span>--<span class="w">   </span>python<span class="w"> </span>/absolute/path/your_pairing_application.py
 </code></pre></div>
 <p>Pair again in the production member's browser session and select production
 resources explicitly. Do not copy the test device session. If several eligible
