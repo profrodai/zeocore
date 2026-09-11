@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Versioned, inert setup manifests for all nineteen integration tracks, with
+  current operation/capability mappings and explicit unadmitted hosted profiles.
+- Seven-dimension availability snapshots that preserve every blocker, expiry
+  and known revocation without conferring dispatch authority.
+- Versioned resource-selection metadata distinguishing exact objects, fixed
+  collections and explicitly dynamic future membership.
+
+### Fixed
+
+- Service requirements accept existing single-component service identities such
+  as `github`, while retaining exact operation-prefix validation.
+
 ## [0.11.0] - 2026-09-10
 
 ### Added

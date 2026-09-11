@@ -10,6 +10,55 @@ The current native slice supplies Drive, Docs and Bluesky bindings; it is not
 a claim that every local integration is available through the hosted service.
 Live operation also requires a compatible deployed ZEOconnect Member API.
 
+## Setup metadata and availability
+
+The unreleased `zeo_core.integrations.hosted.setup_catalog` module exposes
+`SETUP_CATALOGUE` and `setup_manifest(integration_id)`. Its nineteen entries
+separate business accounts, builder connections, model access, local tools and
+product sign-in. The catalogue contains reviewed presentation data. It neither
+probes an account nor supplies authorization/callback URLs. Unknown integrations
+return `None`; they do not receive a generic credential form.
+
+```python
+from zeo_core.integrations.hosted.setup_catalog import setup_manifest
+
+manifest = setup_manifest("hubspot.marketing")
+assert manifest is not None
+print(manifest.display_name, manifest.purpose)
+for profile in manifest.profiles:
+    print(profile.profile.value, profile.support.value)
+```
+
+Named operations reuse existing `ServiceRequirement` identities and capability
+versions. Single-component service names such as `github` are accepted, matching
+the existing capability service registry. The operation must still use the exact
+service prefix. Other local SDK methods are explicitly unmapped; this metadata
+does not expose them as new hosted operations. Existing hosted directions remain
+`not_admitted` until their deployment and provider qualification is complete.
+A local implementation entry does not mean that a binary or account is ready.
+
+`AvailabilitySnapshot` in `zeo_core.integrations.hosted.setup` requires one fact
+for each of implementation, entitlement, provider consent, account health,
+resource binding, Runtime authority and reachability. Each fact carries its own
+revision, observation time and expiry. Calling `evaluate(now=...)` returns every
+blocker and a deterministic primary blocker. A valid connection with insufficient
+provider features remains a feature problem, rather than an authentication error.
+At expiry the snapshot is stale; future observations are unknown. Known revocation
+remains visible even when its observation becomes stale.
+
+`AvailabilityView.dispatch_recheck_required` is always true, including when the
+blocker list is empty. The host must authenticate and admit the exact operation
+again at dispatch. Fixed action identifiers select vetted UI components; they
+are not network instructions or approval tokens. Preserve the initiating work
+when presenting or repairing any blocker.
+
+`HostedResourceSelection` extends the existing resource summary with connection,
+provider identity/version, observation time and grant revision. Exact objects,
+enumerated fixed collections, and dynamic containers have different semantics.
+Future members require an explicitly dynamic selection. A folder name does not
+grant recursive access. This is presentation metadata: the Broker must enforce
+current organization, connection, app-access and resource ceilings independently.
+
 ## Offline test track
 
 No account or key is needed. Inject `FakeGoogleDriveService` and use
