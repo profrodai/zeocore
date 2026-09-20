@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Versioned, inert setup manifests for all nineteen integration tracks, with
+- Read-only Revolut Business client (`zeo_core.integrations.revolut`): accounts
+  and one bounded, explicitly paged transaction page over a fixed origin, with
+  exact `Decimal` amounts, declared normalization and no credential path of its
+  own. Offline contract only; no live provider request has been made.
+- Versioned, inert setup manifests for all twenty integration tracks, with
   current operation/capability mappings and explicit unadmitted hosted profiles.
 - Seven-dimension availability snapshots that preserve every blocker, expiry
   and known revocation without conferring dispatch authority.

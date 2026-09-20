@@ -13,7 +13,7 @@ Live operation also requires a compatible deployed ZEOconnect Member API.
 ## Setup metadata and availability
 
 The unreleased `zeo_core.integrations.hosted.setup_catalog` module exposes
-`SETUP_CATALOGUE` and `setup_manifest(integration_id)`. Its nineteen entries
+`SETUP_CATALOGUE` and `setup_manifest(integration_id)`. Its twenty entries
 separate business accounts, builder connections, model access, local tools and
 product sign-in. The catalogue contains reviewed presentation data. It neither
 probes an account nor supplies authorization/callback URLs. Unknown integrations

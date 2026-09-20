@@ -28,11 +28,13 @@ ZeoCore 0.11.0 or newer. Earlier wheels do not include this complete surface.
 | `zeoconnect` | [Hosted connection and pairing](zeoconnect.md) | Fake service or separately paired test identity/resources |
 | `gemini.images` | [Gemini keys and host custody](gemini-images.md) | Offline request/provider fixtures or separate Google project |
 | `notebook` | [Notebook execution](notebook-execution.md) | Local synthetic notebook; no account or key |
+| `revolut.business` | [Revolut Business read client](revolut-business.md) | Offline fixtures or a separate Revolut sandbox account |
 
-The first sixteen rows are package entry points. ZEOconnect, Gemini images and
-notebook execution are additional composition APIs. Their launcher selections
-forward no provider keys: Gemini uses explicitly provisioned host custody and
-notebook execution is local. The `database.sqlite` and `database.bigquery` directories
+The first sixteen rows are package entry points. ZEOconnect, Gemini images,
+notebook execution and the Revolut Business read client are additional
+composition APIs. Their launcher selections forward no provider keys: Gemini
+uses explicitly provisioned host custody, notebook execution is local and the
+Revolut client receives its token from the credential owner. The `database.sqlite` and `database.bigquery` directories
 are placeholders with no implemented service or credential workflow; they are
 not supported integrations. HTTP/MCP are adapters for exposing capabilities,
 not additional provider accounts. Future integrations must join this inventory

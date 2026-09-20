@@ -51,4 +51,5 @@ CATALOG: dict[str, IntegrationSetup] = {
     "zeoconnect": IntegrationSetup("zeoconnect.md", entry_point=False),
     "gemini.images": IntegrationSetup("gemini-images.md", entry_point=False),
     "notebook": IntegrationSetup("notebook-execution.md", entry_point=False),
+    "revolut.business": IntegrationSetup("revolut-business.md", entry_point=False),
 }
