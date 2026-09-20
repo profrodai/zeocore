@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from pydantic import SecretStr, TypeAdapter, ValidationError
 
 from .models import (
+    MAX_RESULT_BYTES,
     Account,
     RevolutEnvironment,
     Transaction,
@@ -17,6 +18,7 @@ from .transport import RevolutAPIError, RevolutTransport
 
 _ACCOUNTS = TypeAdapter(tuple[Account, ...])
 _TRANSACTIONS = TypeAdapter(tuple[Transaction, ...])
+_TOO_LARGE = "Normalized Revolut result exceeded the size limit; nothing was returned"
 
 
 def _instant(value: datetime) -> str:
@@ -44,17 +46,22 @@ class RevolutBusinessClient:
 
     def list_accounts(self) -> tuple[Account, ...]:
         try:
-            return _ACCOUNTS.validate_python(self._transport.get("/accounts"))
+            accounts = _ACCOUNTS.validate_python(self._transport.get("/accounts"))
         except ValidationError:
             raise _unrecognized() from None
+        if len(_ACCOUNTS.dump_json(accounts)) > MAX_RESULT_BYTES:
+            raise RevolutAPIError("RESPONSE_TOO_LARGE", _TOO_LARGE)
+        return accounts
 
     def list_transactions(
         self, query: TransactionQuery | None = None
     ) -> TransactionPage:
-        """Return one page, newest first, and the cursor for the next older page.
+        """Return one observed page and the cursor for the next older page.
 
         There is no collect-everything form: the caller owns the loop, its
-        checkpoint and deduplication by transaction ``id``.
+        checkpoint and replacement by transaction ``id``. Any error, including
+        ``PAGINATION_STALLED`` and ``RESPONSE_TOO_LARGE``, means the window
+        was not fully read: record an incomplete sync, never completion.
         """
         query = query or TransactionQuery()
         params: dict[str, str | int] = {"count": query.count}
@@ -72,6 +79,7 @@ class RevolutBusinessClient:
             )
         except ValidationError:
             raise _unrecognized() from None
+        observed_at = datetime.now(UTC)
         next_to = None
         if len(transactions) >= query.count:
             next_to = min(item.created_at for item in transactions)
@@ -80,7 +88,15 @@ class RevolutBusinessClient:
                     "PAGINATION_STALLED",
                     "Revolut returned a full page that does not advance the cursor",
                 )
-        return TransactionPage(transactions=transactions, next_to=next_to)
+        page = TransactionPage(
+            transactions=transactions, observed_at=observed_at, next_to=next_to
+        )
+        # Never truncate: a partial page would silently lose matching evidence.
+        if len(page.model_dump_json().encode()) > MAX_RESULT_BYTES:
+            raise RevolutAPIError(
+                "RESPONSE_TOO_LARGE", _TOO_LARGE + "; lower count or narrow the window"
+            )
+        return page
 
 
 def _unrecognized() -> RevolutAPIError:

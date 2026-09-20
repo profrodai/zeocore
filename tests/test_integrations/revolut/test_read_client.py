@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from typing import Any
@@ -15,6 +15,8 @@ import pytest
 from pydantic import SecretStr, ValidationError
 
 from zeo_core.integrations.revolut import (
+    MAX_RESULT_BYTES,
+    MAX_UPSTREAM_BYTES,
     NORMALIZATION_VERSION,
     RevolutAPIError,
     RevolutBusinessClient,
@@ -143,6 +145,7 @@ def test_transactions_drop_card_holder_data_and_keep_money_exact() -> None:
     }
     assert page.normalization_version == NORMALIZATION_VERSION
     assert page.next_to is None
+    assert abs(datetime.now(UTC) - page.observed_at) < timedelta(minutes=1)
     (transaction,) = page.transactions
     (leg,) = transaction.legs
     assert (leg.amount, leg.bill_amount, leg.fee) == (
@@ -234,7 +237,7 @@ def test_transport_failure_is_not_retried_and_keeps_no_context() -> None:
         _json(["not-an-object"]),
         _json([{"id": "not-a-uuid"}]),
         _json([_account(reference=CANARY)]),
-        lambda request: httpx.Response(200, content=b" " * (16 * 1024 * 1024 + 1)),
+        lambda request: httpx.Response(200, content=b'[{"id": "' + CANARY.encode()),
     ],
 )
 def test_unreviewed_or_credential_bearing_responses_are_refused(
@@ -245,6 +248,68 @@ def test_unreviewed_or_credential_bearing_responses_are_refused(
     assert caught.value.code == "RESPONSE"
     assert CANARY not in str(caught.value) and "not-a-uuid" not in str(caught.value)
     assert caught.value.__cause__ is None
+
+
+def test_oversized_upstream_body_is_refused_before_parsing() -> None:
+    served = 0
+
+    def body() -> Iterator[bytes]:
+        nonlocal served
+        while True:
+            served += 1
+            yield b" " * (1024 * 1024)
+
+    with pytest.raises(RevolutAPIError) as caught:
+        _client(lambda request: httpx.Response(200, content=body())).list_accounts()
+    assert caught.value.code == "RESPONSE_TOO_LARGE"
+    assert served <= MAX_UPSTREAM_BYTES // (1024 * 1024) + 2
+
+
+def test_oversized_normalized_results_are_refused_never_truncated() -> None:
+    instant = datetime(2025, 3, 1, 12, tzinfo=UTC)
+    wide = "x" * 2000
+    rows = [_transaction(i, instant, reference=wide) for i in range(400)]
+    with pytest.raises(RevolutAPIError) as caught:
+        _client(_json(rows)).list_transactions(TransactionQuery(count=1000))
+    assert caught.value.code == "RESPONSE_TOO_LARGE"
+    assert "lower count" in str(caught.value)
+    accounts = [_account(name=wide) for _ in range(400)]
+    assert len(json.dumps(accounts)) > MAX_RESULT_BYTES
+    with pytest.raises(RevolutAPIError) as caught:
+        _client(_json(accounts)).list_accounts()
+    assert caught.value.code == "RESPONSE_TOO_LARGE"
+
+
+def test_error_bodies_are_never_read() -> None:
+    def body() -> Iterator[bytes]:
+        raise AssertionError("an error body was read")
+        yield b""
+
+    with pytest.raises(RevolutAPIError) as caught:
+        _client(lambda request: httpx.Response(401, content=body())).list_accounts()
+    assert caught.value.code == "AUTHENTICATION"
+    assert "expired" not in str(caught.value) and "revoked" not in str(caught.value)
+
+
+def test_credential_is_absent_from_representations_and_debug_logs(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    caplog.set_level(logging.DEBUG)
+    handlers: list[Handler] = [
+        _json([_account()]),
+        _json({"message": CANARY}, 401),
+        _json([{"id": CANARY}]),
+        lambda request: httpx.Response(200, content=b"\xff" + CANARY.encode()),
+    ]
+    for handler in handlers:
+        client = _client(handler)
+        seen = [repr(client), repr(client._transport), repr(vars(client._transport))]
+        try:
+            seen.append(repr(client.list_accounts()))
+        except RevolutAPIError as error:
+            seen += [repr(error), str(error), repr(error.args), repr(vars(error))]
+        assert not [text for text in seen if CANARY in text]
+    assert not [r for r in caplog.records if CANARY in r.getMessage()]
 
 
 def test_unrecognized_transaction_page_is_refused() -> None:
