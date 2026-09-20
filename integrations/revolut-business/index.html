@@ -1491,10 +1491,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#size-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Size bounds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#normalization" class="md-nav__link">
     <span class="md-ellipsis">
       
         Normalization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-credential-tests-do-and-do-not-show" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the credential tests do and do not show
       
     </span>
   </a>
@@ -2283,10 +2305,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#size-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Size bounds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#normalization" class="md-nav__link">
     <span class="md-ellipsis">
       
         Normalization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-credential-tests-do-and-do-not-show" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the credential tests do and do not show
       
     </span>
   </a>
@@ -2386,12 +2430,17 @@ fixtures only. No sandbox or production request has been made with this client.<
 <p>The access token is a constructor argument valid for the life of the object.
 Revolut access tokens last about 40 minutes and refreshing invalidates the
 previous token, so the credential owner must coordinate refresh per connection
-and construct a client with the current token. A <code>RevolutAPIError</code> with code
-<code>AUTHENTICATION</code> means the supplied token was rejected; this client never
-refreshes, retries or falls back to another credential source.</p>
-<p>There is deliberately no local credential path. The setup catalogue reports the
-local profile as unsupported, and a hosted failure never falls back to local
-credentials. Start with <a href="../environments/">managed environments</a>: the
+and construct a client with the current token. This client never refreshes,
+retries or falls back to another credential source.</p>
+<p>Error codes are sanitized categories, not diagnoses. <code>AUTHENTICATION</code> (401)
+does not establish that a token expired, and <code>ACCESS</code> (403) does not establish
+that a connection was revoked. The credential owner combines the category with
+its own credential state and refresh evidence, and must bound and account for
+any refresh-and-repeat it performs.</p>
+<p>There is deliberately no supported local enrollment flow. The setup catalogue
+reports the local profile as unsupported, and a hosted failure never falls back
+to local credentials. The class can still be constructed anywhere a token is
+injected, which the Broker and tests rely on. Start with <a href="../environments/">managed environments</a>: the
 <code>revolut.business</code> selection forwards no provider variables.</p>
 <h2 id="use">Use<a class="headerlink" href="#use" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">SecretStr</span>
@@ -2415,18 +2464,39 @@ credentials. Start with <a href="../environments/">managed environments</a>: the
 <p><code>token</code> is a <code>SecretStr</code> supplied by the credential owner. <code>environment</code>
 selects one of two fixed origins; a caller can never supply a provider URL.</p>
 <h2 id="paging-contract">Paging contract<a class="headerlink" href="#paging-contract" title="Permanent link">&para;</a></h2>
-<p>Revolut pages transactions backwards by <code>created_at</code> and has no cursor token.
-<code>list_transactions</code> returns one page, newest first. When the page is full,
-<code>next_to</code> is the oldest <code>created_at</code> in it; pass it as the next <code>to</code>.</p>
+<p>Revolut's published description pages transactions by a <code>from</code>/<code>to</code> window on
+<code>created_at</code> with a <code>count</code>, and has no cursor token. <code>list_transactions</code>
+returns one page. When the page is full, <code>next_to</code> is the oldest <code>created_at</code>
+in it, computed without assuming any provider ordering; pass it as the next <code>to</code>.</p>
+<p><strong>A page is an observation, not a snapshot.</strong> The same window and cursor can
+return different records later: transactions change state, and new ones can
+appear inside a window already read. Each page carries <code>observed_at</code>.</p>
 <ul>
-<li>Adjacent pages can overlap at that instant, and whether Revolut treats <code>to</code>
-  as inclusive is unverified. <strong>Deduplicate by transaction <code>id</code>.</strong></li>
-<li>A full page that cannot move the cursor raises <code>PAGINATION_STALLED</code> instead
-  of looping or silently dropping transactions. Narrow the window or raise
-  <code>count</code> (maximum 1000).</li>
-<li>There is no collect-everything helper: a hosted operation must stay inside
-  its response limit and a replay must be deterministic.</li>
+<li>Key stored transactions by <code>id</code>. A projection with a later <code>updated_at</code>
+  replaces the earlier one; keep earlier observations as history, do not
+  discard them as duplicates.</li>
+<li>Adjacent pages can overlap at <code>next_to</code>. Whether Revolut treats <code>to</code> as
+  inclusive, how it orders results and how it breaks <code>created_at</code> ties are
+  <strong>unverified against the live API</strong>; replacement by <code>id</code> is what makes the
+  loop safe under any of those answers.</li>
+<li>Progress is detected, not assumed: a full page whose oldest instant does not
+  move below the requested <code>to</code> raises <code>PAGINATION_STALLED</code>. Narrow the window
+  or raise <code>count</code> (maximum 1000).</li>
+<li>Any error means the window was <strong>not</strong> fully read. Record an incomplete sync
+  with the last good cursor; never report completion.</li>
+<li>There is no collect-everything helper.</li>
 </ul>
+<h2 id="size-bounds">Size bounds<a class="headerlink" href="#size-bounds" title="Permanent link">&para;</a></h2>
+<p>A bounded count does not bound bytes, so both sides are bounded explicitly.</p>
+<ul>
+<li>The upstream body is streamed and abandoned once it passes
+  <code>MAX_UPSTREAM_BYTES</code> (8 MiB), before any parsing. Error bodies are never read.</li>
+<li>The normalized, serialized result must fit <code>MAX_RESULT_BYTES</code> (768 KiB, below
+  the 1 MiB hosted JSON limit with room for its envelope).</li>
+</ul>
+<p>Either breach raises <code>RESPONSE_TOO_LARGE</code> and returns nothing. Results are never
+truncated: a silently shortened page would lose evidence needed for matching.
+Lower <code>count</code> or narrow the window and read again.</p>
 <h2 id="normalization">Normalization<a class="headerlink" href="#normalization" title="Permanent link">&para;</a></h2>
 <p>Results carry <code>normalization_version = "revolut-business-read-1"</code>.</p>
 <ul>
@@ -2436,11 +2506,19 @@ selects one of two fixed origins; a caller can never supply a provider URL.</p>
   card <code>id</code> is kept: card number, holder name and phone are discarded.</li>
 <li>Provider enumerations (<code>type</code>, <code>state</code>, <code>account_type</code>) are kept as bounded
   lowercase tokens, so a new provider value does not fail a whole page.</li>
-<li>A response that repeats the request credential anywhere is refused.</li>
 </ul>
 <p>This output is normalized application data. It is not raw provider evidence
-and must not be stored or labelled as raw. Errors never retain provider
-bodies, request URLs or validation detail.</p>
+and must not be stored or labelled as raw.</p>
+<h2 id="what-the-credential-tests-do-and-do-not-show">What the credential tests do and do not show<a class="headerlink" href="#what-the-credential-tests-do-and-do-not-show" title="Permanent link">&para;</a></h2>
+<p>Only declared, typed fields leave the client, errors carry fixed messages with
+no provider body, URL or validation detail, and representations of the client,
+transport and errors omit the token. Tests plant a canary credential and check
+those outputs, malformed and undecodable responses, and debug-level logs.</p>
+<p>That shows the <strong>supplied credential</strong> does not leak through the exercised
+paths. It does not show that provider text can never contain some other
+token-like value: free-text fields such as <code>reference</code> are passed through as
+data. As defence in depth, a response containing the request's own token is
+refused; this is not a general secret scanner.</p>
 <h2 id="test-account-track">Test account track<a class="headerlink" href="#test-account-track" title="Permanent link">&para;</a></h2>
 <p>Use a Revolut Business <strong>sandbox</strong> account and <code>RevolutEnvironment.SANDBOX</code>.
 The sandbox has its own certificate registration, client ID and consent, fully
