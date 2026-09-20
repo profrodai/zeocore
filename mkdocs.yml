@@ -108,6 +108,7 @@ nav:
       - Bluesky: integrations/bluesky.md
       - Language models: integrations/llms.md
       - Gemini images: integrations/gemini-images.md
+      - Revolut Business: integrations/revolut-business.md
       - ZEOconnect: integrations/zeoconnect.md
       - Meeting operations: integrations/meetings.md
       - Local tools: integrations/local-tools.md
