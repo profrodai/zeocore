@@ -2,6 +2,7 @@
 
 from .client import RevolutBusinessClient
 from .models import (
+    MAX_RESULT_BYTES,
     MAX_TRANSACTION_COUNT,
     NORMALIZATION_VERSION,
     Account,
@@ -14,10 +15,12 @@ from .models import (
     TransactionPage,
     TransactionQuery,
 )
-from .transport import RevolutAPIError, RevolutTransport
+from .transport import MAX_UPSTREAM_BYTES, RevolutAPIError, RevolutTransport
 
 __all__ = [
+    "MAX_RESULT_BYTES",
     "MAX_TRANSACTION_COUNT",
+    "MAX_UPSTREAM_BYTES",
     "NORMALIZATION_VERSION",
     "Account",
     "CardReference",

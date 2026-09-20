@@ -19,7 +19,7 @@ _ORIGINS = {
 }
 _API = "/api/1.0"
 _ROUTES = frozenset({"/accounts", "/transactions"})
-_MAX_RESPONSE_BYTES = 16 * 1024 * 1024
+MAX_UPSTREAM_BYTES = 8 * 1024 * 1024
 
 _private_request: ContextVar[bool] = ContextVar(
     "revolut_private_request", default=False
@@ -103,51 +103,15 @@ class RevolutTransport:
     ) -> list[dict[str, Any]]:
         if path not in _ROUTES:
             raise ValueError("Revolut route is outside the read integration")
-        private_token = _private_request.set(True)
-        try:
-            response = self._http.get(
-                self._origin + _API + path,
-                headers={
-                    "Authorization": "Bearer " + self._token.get_secret_value(),
-                    "Accept": "application/json",
-                },
-                params=params,
-            )
-        except httpx.HTTPError:
-            raise RevolutAPIError("TRANSPORT", "Revolut request failed") from None
-        finally:
-            _private_request.reset(private_token)
-        if response.status_code != 200:
-            status = response.status_code
-            code, message = {
-                401: (
-                    "AUTHENTICATION",
-                    "Revolut access token is invalid or expired",
-                ),
-                403: (
-                    "ACCESS",
-                    "Revolut access denied; check granted scopes and IP allowlist",
-                ),
-                404: ("NOT_FOUND", "Revolut resource was not found"),
-                429: (
-                    "RATE_LIMIT",
-                    "Revolut rate limit reached; no automatic retry was attempted",
-                ),
-            }.get(status, ("HTTP", "Revolut rejected the read request"))
-            retry = response.headers.get("Retry-After", "")
+        status, retry, content = self._fetch(path, params)
+        if status != 200:
+            raise _refusal(status, retry)
+        if len(content) > MAX_UPSTREAM_BYTES:
             raise RevolutAPIError(
-                code,
-                message,
-                status_code=status,
-                retry_after_seconds=int(retry)
-                if retry.isascii() and retry.isdigit() and len(retry) < 9
-                else None,
+                "RESPONSE_TOO_LARGE",
+                "Revolut response exceeded the upstream size limit; nothing was kept",
             )
-        content = response.content
-        if len(content) > _MAX_RESPONSE_BYTES:
-            raise RevolutAPIError(
-                "RESPONSE", "Revolut response exceeded the size limit"
-            )
+        # Defence in depth for this one credential, not a general secret scan.
         if self._token.get_secret_value().encode() in content:
             raise RevolutAPIError(
                 "RESPONSE", "Revolut response repeated the request credential"
@@ -164,3 +128,55 @@ class RevolutTransport:
                 "RESPONSE", "Revolut returned an unexpected response shape"
             )
         return data
+
+    def _fetch(
+        self, path: str, params: dict[str, str | int] | None
+    ) -> tuple[int, str, bytes]:
+        content = bytearray()
+        private_token = _private_request.set(True)
+        try:
+            with self._http.stream(
+                "GET",
+                self._origin + _API + path,
+                headers={
+                    "Authorization": "Bearer " + self._token.get_secret_value(),
+                    "Accept": "application/json",
+                },
+                params=params,
+            ) as response:
+                status = response.status_code
+                retry = response.headers.get("Retry-After", "")
+                # Bound the body before it is buffered or parsed; an error
+                # body is never read at all.
+                if status == 200:
+                    for chunk in response.iter_bytes():
+                        content += chunk
+                        if len(content) > MAX_UPSTREAM_BYTES:
+                            break
+        except httpx.HTTPError:
+            raise RevolutAPIError("TRANSPORT", "Revolut request failed") from None
+        finally:
+            _private_request.reset(private_token)
+        return status, retry, bytes(content)
+
+
+def _refusal(status: int, retry: str) -> RevolutAPIError:
+    # Categories only. A 401 does not establish expiry and a 403 does not
+    # establish revocation; the credential owner decides that.
+    code, message = {
+        401: ("AUTHENTICATION", "Revolut did not accept the access token"),
+        403: ("ACCESS", "Revolut refused access to the requested data"),
+        404: ("NOT_FOUND", "Revolut resource was not found"),
+        429: (
+            "RATE_LIMIT",
+            "Revolut rate limit reached; no automatic retry was attempted",
+        ),
+    }.get(status, ("HTTP", "Revolut rejected the read request"))
+    return RevolutAPIError(
+        code,
+        message,
+        status_code=status,
+        retry_after_seconds=int(retry)
+        if retry.isascii() and retry.isdigit() and len(retry) < 9
+        else None,
+    )

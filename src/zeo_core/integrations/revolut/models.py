@@ -24,6 +24,8 @@ from pydantic import (
 
 NORMALIZATION_VERSION: Final = "revolut-business-read-1"
 MAX_TRANSACTION_COUNT = 1000
+# Below the 1 MiB hosted JSON limit, leaving room for the response envelope.
+MAX_RESULT_BYTES = 768 * 1024
 
 Currency = Annotated[str, StringConstraints(pattern=r"^[A-Z]{3}$")]
 # Provider enumerations grow; a new value must not fail a whole bank page.
@@ -124,8 +126,14 @@ class TransactionQuery(BaseModel):
 
 
 class TransactionPage(_Normalized):
-    """Newest first. Pages may overlap at ``next_to``: deduplicate by ``id``."""
+    """One observation of provider state, not a stable snapshot.
+
+    Pages may overlap at ``next_to`` and a transaction may change between
+    observations. Key by ``id``; the projection with the later ``updated_at``
+    replaces the earlier one, and ``observed_at`` dates each observation.
+    """
 
     transactions: tuple[Transaction, ...]
+    observed_at: AwareDatetime
     next_to: datetime | None = None
     normalization_version: Literal["revolut-business-read-1"] = NORMALIZATION_VERSION

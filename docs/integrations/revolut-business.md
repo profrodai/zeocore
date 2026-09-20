@@ -22,13 +22,19 @@ fixtures only. No sandbox or production request has been made with this client.
 The access token is a constructor argument valid for the life of the object.
 Revolut access tokens last about 40 minutes and refreshing invalidates the
 previous token, so the credential owner must coordinate refresh per connection
-and construct a client with the current token. A `RevolutAPIError` with code
-`AUTHENTICATION` means the supplied token was rejected; this client never
-refreshes, retries or falls back to another credential source.
+and construct a client with the current token. This client never refreshes,
+retries or falls back to another credential source.
 
-There is deliberately no local credential path. The setup catalogue reports the
-local profile as unsupported, and a hosted failure never falls back to local
-credentials. Start with [managed environments](environments.md): the
+Error codes are sanitized categories, not diagnoses. `AUTHENTICATION` (401)
+does not establish that a token expired, and `ACCESS` (403) does not establish
+that a connection was revoked. The credential owner combines the category with
+its own credential state and refresh evidence, and must bound and account for
+any refresh-and-repeat it performs.
+
+There is deliberately no supported local enrollment flow. The setup catalogue
+reports the local profile as unsupported, and a hosted failure never falls back
+to local credentials. The class can still be constructed anywhere a token is
+injected, which the Broker and tests rely on. Start with [managed environments](environments.md): the
 `revolut.business` selection forwards no provider variables.
 
 ## Use
@@ -58,17 +64,41 @@ selects one of two fixed origins; a caller can never supply a provider URL.
 
 ## Paging contract
 
-Revolut pages transactions backwards by `created_at` and has no cursor token.
-`list_transactions` returns one page, newest first. When the page is full,
-`next_to` is the oldest `created_at` in it; pass it as the next `to`.
+Revolut's published description pages transactions by a `from`/`to` window on
+`created_at` with a `count`, and has no cursor token. `list_transactions`
+returns one page. When the page is full, `next_to` is the oldest `created_at`
+in it, computed without assuming any provider ordering; pass it as the next `to`.
 
-- Adjacent pages can overlap at that instant, and whether Revolut treats `to`
-  as inclusive is unverified. **Deduplicate by transaction `id`.**
-- A full page that cannot move the cursor raises `PAGINATION_STALLED` instead
-  of looping or silently dropping transactions. Narrow the window or raise
-  `count` (maximum 1000).
-- There is no collect-everything helper: a hosted operation must stay inside
-  its response limit and a replay must be deterministic.
+**A page is an observation, not a snapshot.** The same window and cursor can
+return different records later: transactions change state, and new ones can
+appear inside a window already read. Each page carries `observed_at`.
+
+- Key stored transactions by `id`. A projection with a later `updated_at`
+  replaces the earlier one; keep earlier observations as history, do not
+  discard them as duplicates.
+- Adjacent pages can overlap at `next_to`. Whether Revolut treats `to` as
+  inclusive, how it orders results and how it breaks `created_at` ties are
+  **unverified against the live API**; replacement by `id` is what makes the
+  loop safe under any of those answers.
+- Progress is detected, not assumed: a full page whose oldest instant does not
+  move below the requested `to` raises `PAGINATION_STALLED`. Narrow the window
+  or raise `count` (maximum 1000).
+- Any error means the window was **not** fully read. Record an incomplete sync
+  with the last good cursor; never report completion.
+- There is no collect-everything helper.
+
+## Size bounds
+
+A bounded count does not bound bytes, so both sides are bounded explicitly.
+
+- The upstream body is streamed and abandoned once it passes
+  `MAX_UPSTREAM_BYTES` (8 MiB), before any parsing. Error bodies are never read.
+- The normalized, serialized result must fit `MAX_RESULT_BYTES` (768 KiB, below
+  the 1 MiB hosted JSON limit with room for its envelope).
+
+Either breach raises `RESPONSE_TOO_LARGE` and returns nothing. Results are never
+truncated: a silently shortened page would lose evidence needed for matching.
+Lower `count` or narrow the window and read again.
 
 ## Normalization
 
@@ -80,11 +110,22 @@ Results carry `normalization_version = "revolut-business-read-1"`.
   card `id` is kept: card number, holder name and phone are discarded.
 - Provider enumerations (`type`, `state`, `account_type`) are kept as bounded
   lowercase tokens, so a new provider value does not fail a whole page.
-- A response that repeats the request credential anywhere is refused.
 
 This output is normalized application data. It is not raw provider evidence
-and must not be stored or labelled as raw. Errors never retain provider
-bodies, request URLs or validation detail.
+and must not be stored or labelled as raw.
+
+## What the credential tests do and do not show
+
+Only declared, typed fields leave the client, errors carry fixed messages with
+no provider body, URL or validation detail, and representations of the client,
+transport and errors omit the token. Tests plant a canary credential and check
+those outputs, malformed and undecodable responses, and debug-level logs.
+
+That shows the **supplied credential** does not leak through the exercised
+paths. It does not show that provider text can never contain some other
+token-like value: free-text fields such as `reference` are passed through as
+data. As defence in depth, a response containing the request's own token is
+refused; this is not a general secret scanner.
 
 ## Test account track
 
