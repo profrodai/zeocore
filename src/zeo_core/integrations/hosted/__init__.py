@@ -39,6 +39,12 @@ from zeo_core.integrations.hosted.profile import (
     Unavailable,
     UnavailableCode,
 )
+from zeo_core.integrations.hosted.registry import (
+    REVIEWED_HOSTED_SERVICES,
+    HostedServiceFactory,
+    HostedServiceRegistration,
+    HostedServiceRegistry,
+)
 from zeo_core.integrations.hosted.resolution import (
     GovernedExecutionPort,
     ServiceResolver,
@@ -65,6 +71,10 @@ from zeo_core.integrations.hosted.transport import (
 )
 
 __all__ = [
+    "REVIEWED_HOSTED_SERVICES",
+    "HostedServiceFactory",
+    "HostedServiceRegistration",
+    "HostedServiceRegistry",
     "ConnectionServices",
     "ConnectionRequired",
     "ConnectionSelectionRequired",

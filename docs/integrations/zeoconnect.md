@@ -59,6 +59,22 @@ Future members require an explicitly dynamic selection. A folder name does not
 grant recursive access. This is presentation metadata: the Broker must enforce
 current organization, connection, app-access and resource ceilings independently.
 
+## Which services the hosted profile can resolve
+
+`ServiceResolver` builds hosted proxies only from a `HostedServiceRegistry`. The
+default, `REVIEWED_HOSTED_SERVICES`, registers `google.drive` with
+`google.drive.file.download` and nothing else. A registration names an
+in-process proxy class, the exact operations it implements, and which of them
+need a selected resource. The registry is immutable once constructed, refuses a
+duplicate service identity, an operation outside its service prefix or a
+different member protocol version, and resolves a requirement only when every
+requested operation is registered. Nothing is discovered: there is no
+import-by-name, entry-point scan or provider URL. A host that needs a different
+set constructs its own registry and passes `hosted_registry=` explicitly.
+
+A registration makes a proxy constructible. It does not make hosted enrollment
+available; the setup catalogue above reports the deployed support state.
+
 ## Offline test track
 
 No account or key is needed. Inject `FakeGoogleDriveService` and use

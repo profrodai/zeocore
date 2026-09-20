@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `HostedServiceRegistry`: explicit, immutable registrations replace the hosted
+  resolver's hard-coded service branch. The reviewed default registers exactly
+  the previously resolvable `google.drive` download, so resolution is unchanged.
 - Read-only Revolut Business client (`zeo_core.integrations.revolut`): accounts
   and one bounded, explicitly paged transaction page over a fixed origin, with
   exact `Decimal` amounts, declared normalization, byte bounds on the upstream

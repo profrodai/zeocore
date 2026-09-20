@@ -23,10 +23,11 @@ from zeo_core.integrations.hosted.profile import (
     Unavailable,
     UnavailableCode,
 )
-from zeo_core.integrations.hosted.services import (
-    HostedGoogleDriveService,
-    HostedServiceBinding,
+from zeo_core.integrations.hosted.registry import (
+    REVIEWED_HOSTED_SERVICES,
+    HostedServiceRegistry,
 )
+from zeo_core.integrations.hosted.services import HostedServiceBinding
 
 
 @runtime_checkable
@@ -49,6 +50,7 @@ class ServiceResolver:
         session_store: SecureSessionStore | None = None,
         hosted_connections: Sequence[HostedConnectionSummary] | None = None,
         governed_port: GovernedExecutionPort | None = None,
+        hosted_registry: HostedServiceRegistry = REVIEWED_HOSTED_SERVICES,
     ) -> None:
         self._profile = profile
         self._fake_services = dict(fake_services or {})
@@ -58,6 +60,7 @@ class ServiceResolver:
         self._catalog_loaded = hosted_connections is not None
         self._hosted_connections = tuple(hosted_connections or ())
         self._governed_port = governed_port
+        self._hosted_registry = hosted_registry
 
     def replace_hosted_connections(
         self, connections: Sequence[HostedConnectionSummary]
@@ -169,7 +172,7 @@ class ServiceResolver:
             )
         if selected.status is HostedConnectionStatus.UNAVAILABLE:
             return self._unavailable(requirement, UnavailableCode.SERVICE_NOT_AVAILABLE)
-        if self._requires_selected_resource(requirement) and not any(
+        if self._hosted_registry.requires_selected_resource(requirement) and not any(
             set(requirement.operations).intersection(resource.operations)
             for resource in selected.resources
         ):
@@ -191,18 +194,15 @@ class ServiceResolver:
             )
         return candidates[0] if len(candidates) == 1 else None
 
-    @staticmethod
-    def _requires_selected_resource(requirement: ServiceRequirement) -> bool:
-        return "google.drive.file.download" in requirement.operations
-
     def _hosted_service(
         self,
         requirement: ServiceRequirement,
         connection: HostedConnectionSummary,
     ) -> object | None:
-        if requirement.service != "google.drive" or self._hosted_client is None:
+        if self._hosted_client is None:
             return None
-        return HostedGoogleDriveService(
+        return self._hosted_registry.build(
+            requirement,
             client=self._hosted_client,
             binding=HostedServiceBinding(connection_id=connection.handle.value),
         )
