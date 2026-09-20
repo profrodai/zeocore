@@ -1497,6 +1497,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#which-services-the-hosted-profile-can-resolve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which services the hosted profile can resolve
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#offline-test-track" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2239,6 +2250,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#which-services-the-hosted-profile-can-resolve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which services the hosted profile can resolve
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#offline-test-track" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2358,6 +2380,19 @@ enumerated fixed collections, and dynamic containers have different semantics.
 Future members require an explicitly dynamic selection. A folder name does not
 grant recursive access. This is presentation metadata: the Broker must enforce
 current organization, connection, app-access and resource ceilings independently.</p>
+<h2 id="which-services-the-hosted-profile-can-resolve">Which services the hosted profile can resolve<a class="headerlink" href="#which-services-the-hosted-profile-can-resolve" title="Permanent link">&para;</a></h2>
+<p><code>ServiceResolver</code> builds hosted proxies only from a <code>HostedServiceRegistry</code>. The
+default, <code>REVIEWED_HOSTED_SERVICES</code>, registers <code>google.drive</code> with
+<code>google.drive.file.download</code> and nothing else. A registration names an
+in-process proxy class, the exact operations it implements, and which of them
+need a selected resource. The registry is immutable once constructed, refuses a
+duplicate service identity, an operation outside its service prefix or a
+different member protocol version, and resolves a requirement only when every
+requested operation is registered. Nothing is discovered: there is no
+import-by-name, entry-point scan or provider URL. A host that needs a different
+set constructs its own registry and passes <code>hosted_registry=</code> explicitly.</p>
+<p>A registration makes a proxy constructible. It does not make hosted enrollment
+available; the setup catalogue above reports the deployed support state.</p>
 <h2 id="offline-test-track">Offline test track<a class="headerlink" href="#offline-test-track" title="Permanent link">&para;</a></h2>
 <p>No account or key is needed. Inject <code>FakeGoogleDriveService</code> and use
 <code>ExecutionProfile.FAKE</code> as shown in the tutorial. Use

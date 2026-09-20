@@ -3470,6 +3470,9 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h2 id="unreleased"><a href="https://github.com/profrodai/zeocore/compare/v0.11.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
+<li><code>HostedServiceRegistry</code>: explicit, immutable registrations replace the hosted
+  resolver's hard-coded service branch. The reviewed default registers exactly
+  the previously resolvable <code>google.drive</code> download, so resolution is unchanged.</li>
 <li>Read-only Revolut Business client (<code>zeo_core.integrations.revolut</code>): accounts
   and one bounded, explicitly paged transaction page over a fixed origin, with
   exact <code>Decimal</code> amounts, declared normalization, byte bounds on the upstream
