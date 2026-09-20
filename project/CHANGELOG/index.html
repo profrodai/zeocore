@@ -1053,6 +1053,8 @@
       
         
       
+        
+      
     
     
     
@@ -1374,6 +1376,34 @@
     
   
     Gemini images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../integrations/revolut-business/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Revolut Business
   
 
     
@@ -3440,7 +3470,11 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <h2 id="unreleased"><a href="https://github.com/profrodai/zeocore/compare/v0.11.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Versioned, inert setup manifests for all nineteen integration tracks, with
+<li>Read-only Revolut Business client (<code>zeo_core.integrations.revolut</code>): accounts
+  and one bounded, explicitly paged transaction page over a fixed origin, with
+  exact <code>Decimal</code> amounts, declared normalization and no credential path of its
+  own. Offline contract only; no live provider request has been made.</li>
+<li>Versioned, inert setup manifests for all twenty integration tracks, with
   current operation/capability mappings and explicit unadmitted hosted profiles.</li>
 <li>Seven-dimension availability snapshots that preserve every blocker, expiry
   and known revocation without conferring dispatch authority.</li>

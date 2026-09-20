@@ -1055,6 +1055,8 @@
       
         
       
+        
+      
     
     
     
@@ -1376,6 +1378,34 @@
     
   
     Gemini images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="revolut-business/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Revolut Business
   
 
     
@@ -2223,12 +2253,18 @@ ZeoCore 0.11.0 or newer. Earlier wheels do not include this complete surface.</p
 <td><a href="notebook-execution/">Notebook execution</a></td>
 <td>Local synthetic notebook; no account or key</td>
 </tr>
+<tr>
+<td><code>revolut.business</code></td>
+<td><a href="revolut-business/">Revolut Business read client</a></td>
+<td>Offline fixtures or a separate Revolut sandbox account</td>
+</tr>
 </tbody>
 </table>
-<p>The first sixteen rows are package entry points. ZEOconnect, Gemini images and
-notebook execution are additional composition APIs. Their launcher selections
-forward no provider keys: Gemini uses explicitly provisioned host custody and
-notebook execution is local. The <code>database.sqlite</code> and <code>database.bigquery</code> directories
+<p>The first sixteen rows are package entry points. ZEOconnect, Gemini images,
+notebook execution and the Revolut Business read client are additional
+composition APIs. Their launcher selections forward no provider keys: Gemini
+uses explicitly provisioned host custody, notebook execution is local and the
+Revolut client receives its token from the credential owner. The <code>database.sqlite</code> and <code>database.bigquery</code> directories
 are placeholders with no implemented service or credential workflow; they are
 not supported integrations. HTTP/MCP are adapters for exposing capabilities,
 not additional provider accounts. Future integrations must join this inventory
