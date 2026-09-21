@@ -31,11 +31,19 @@ that a connection was revoked. The credential owner combines the category with
 its own credential state and refresh evidence, and must bound and account for
 any refresh-and-repeat it performs.
 
-There is deliberately no supported local enrollment flow. The setup catalogue
-reports the local profile as unsupported, and a hosted failure never falls back
-to local credentials. The class can still be constructed anywhere a token is
-injected, which the Broker and tests rely on. Start with [managed environments](environments.md): the
-`revolut.business` selection forwards no provider variables.
+This release provides the read client and targets hosted enrollment through
+ZEOconnect. A supported local enrollment profile is planned separately.
+Execution profiles are selected explicitly; hosted failures never fall back to
+local credentials.
+
+Until that local profile is implemented and verified (enrollment, persistence,
+refresh, crash handling and documentation), the setup catalogue reports the
+local profile as unsupported. That describes what this release ships, not a
+permanent policy: ZeoCore remains usable on its own, without any hosted service
+or database. The class can already be constructed anywhere a token is injected,
+which the Broker and tests rely on. Start with
+[managed environments](environments.md): the `revolut.business` selection
+forwards no provider variables.
 
 ## Use
 

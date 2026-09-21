@@ -152,8 +152,9 @@ def _manifest(
                 auth_revision="no-local-credential-path-1",
                 limitations=(
                     (
-                        "No local credential path exists; a hosted failure never "
-                        "falls back to local credentials."
+                        "No local enrollment profile ships in this release; one is "
+                        "planned separately. Profiles are selected explicitly and a "
+                        "hosted failure never falls back to local credentials."
                     ),
                 ),
             ),
