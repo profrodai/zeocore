@@ -35,6 +35,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Local Revolut enrollment no longer clears an unresolved refresh when the
+  owner gives a fresh consent on the same registration. Consent authorizes new
+  tokens; it does not settle what the provider did with a request whose answer
+  was lost. The marker and its block survive: reads continue on the new access
+  token, refreshing stays blocked. A refused grant or a rejected token, which
+  are definite answers, are still cleared by a new grant. A new registration
+  records `follows_unresolved_refresh`, and the guide no longer describes
+  deleting a certificate as certain isolation: no qualified recovery exists.
+- A stored local Revolut enrollment is bound to its environment. Files written
+  for sandbox are refused by a production-selected object, and the reverse,
+  with `ENVIRONMENT_MISMATCH` before any client is built or any credential is
+  sent, including for completion and refresh.
 - Service requirements accept existing single-component service identities such
   as `github`, while retaining exact operation-prefix validation.
 

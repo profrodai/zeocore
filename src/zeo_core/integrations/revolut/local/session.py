@@ -18,10 +18,20 @@ to say whether its stored token still works. Therefore:
   blocked: nothing here refreshes again, however much time passes. Waiting
   longer proves nothing about what the provider did;
 * the stored token keeps serving reads while Revolut accepts it;
-* the way out is a fresh consent (``authorize`` then ``complete``), an explicit
-  act by the account owner. For certainty that the old registration can no
-  longer act, delete its certificate in Revolut Business and run ``setup``
-  with a new key.
+* NOTHING here clears that state. A fresh consent on the same registration
+  authorizes new tokens; it does not settle what the provider did with the lost
+  request, so it stores the new access token and leaves the marker in place:
+  reads continue, refreshing stays blocked. A file lock is local and says
+  nothing about the provider either.
+* No QUALIFIED recovery procedure exists yet. ``setup(new_key=True)`` starts a
+  new registration and records that it followed an unresolved outcome. Whether
+  a new key and client id, or deleting the old certificate at Revolut, isolates
+  the new registration from a late refresh of the old one is unverified, and
+  this module does not claim it.
+
+A stored enrollment is bound to the environment it was created for. It is never
+reinterpreted: a store written for sandbox is refused by a production-selected
+object before any client is built or any credential is sent.
 
 Every error names what was observed, never a diagnosis: a rejected token does
 not establish that consent was revoked.
@@ -113,6 +123,8 @@ class LocalRevolutEnrollment:
             )
         with self._store.locked():
             existing = self._store.read_private(KEY_FILENAME)
+            if not new_key:
+                self._load()  # another environment's files are never adopted
             if existing is not None and not new_key:
                 raise LocalEnrollmentError(
                     "KEY_EXISTS",
@@ -128,9 +140,20 @@ class LocalRevolutEnrollment:
             self._store.write_private(
                 CERTIFICATE_FILENAME, certificate.encode(), mode=0o600
             )
-            # A new key is a new registration: nothing of the old one survives.
+            previous = self._store.load()  # may be another environment's
+            # A new key is a new registration: no credential of the old one
+            # survives. That it FOLLOWED an unresolved outcome is kept, because
+            # a new local binding is not evidence the old request is settled.
             self._store.save(
-                EnrollmentState(environment=self.environment, redirect_uri=redirect_uri)
+                EnrollmentState(
+                    environment=self.environment,
+                    redirect_uri=redirect_uri,
+                    follows_unresolved_refresh=previous is not None
+                    and (
+                        previous.refresh_attempt is not None
+                        or previous.follows_unresolved_refresh
+                    ),
+                )
             )
         return str(self._store.certificate_path)
 
@@ -196,8 +219,12 @@ class LocalRevolutEnrollment:
                 raise LocalEnrollmentError(
                     "EXCHANGE_UNKNOWN", "Revolut issued no refresh token"
                 )
-            # A fresh consent is the owner's explicit act. It replaces the
-            # tokens and clears a blocked state, including an unknown outcome.
+            # Consent authorizes new tokens. It does NOT settle an earlier
+            # refresh whose answer was lost, so an unresolved marker and its
+            # block survive: the new access token serves reads, refreshing
+            # stays blocked. A refused grant or a rejected token, with no
+            # marker, IS answered by a new grant and is cleared.
+            unresolved = state.refresh_attempt is not None
             self._store.save(
                 state.model_copy(
                     update={
@@ -206,14 +233,13 @@ class LocalRevolutEnrollment:
                         "refresh_token": grant.refresh_token,
                         "access_expires_at": self._clock()
                         + timedelta(seconds=grant.expires_in),
-                        "refresh_attempt": None,
-                        "blocked_reason": None,
+                        "blocked_reason": state.blocked_reason if unresolved else None,
                     }
                 )
             )
 
     def status(self) -> EnrollmentState | None:
-        return self._store.load()
+        return self._load()
 
     # -- use ------------------------------------------------------------
 
@@ -225,7 +251,7 @@ class LocalRevolutEnrollment:
         """
 
         with self._store.locked():
-            state = self._store.load()
+            state = self._load()
             if state is None or state.access_token is None:
                 raise _not_enrolled()
             refreshed = False
@@ -308,8 +334,25 @@ class LocalRevolutEnrollment:
             self._store.save(state.model_copy(update={"blocked_reason": reason}))
         return _blocked(state.blocked_reason or reason)
 
-    def _require_state(self) -> EnrollmentState:
+    def _load(self) -> EnrollmentState | None:
+        """Every use of stored credentials goes through here.
+
+        Refuses before any client is built or any credential leaves: an
+        enrollment belongs to the environment it was created for.
+        """
+
         state = self._store.load()
+        if state is not None and state.environment is not self.environment:
+            raise LocalEnrollmentError(
+                "ENVIRONMENT_MISMATCH",
+                f"These files hold a {state.environment.value} enrollment; they "
+                f"are never used for {self.environment.value}. Enroll that "
+                "environment separately",
+            )
+        return state
+
+    def _require_state(self) -> EnrollmentState:
+        state = self._load()
         if state is None:
             raise LocalEnrollmentError("NOT_SET_UP", "Run setup first")
         return state

@@ -101,12 +101,32 @@ token still works. The client therefore:
 - reports what it observed, never a diagnosis. `OUTCOME_UNKNOWN`,
   `GRANT_REFUSED` and `TOKEN_REJECTED` do not establish that you revoked
   consent. `UNAVAILABLE` means nothing reached Revolut and nothing changed.
+- holds the file lock only on your machine. It says nothing about what Revolut
+  is still processing.
 
-The way out of a blocked state is your own fresh consent: run `authorize` and
-`complete` again. To be certain the old registration can no longer act, delete
-its certificate in Revolut Business and run `setup --new-key`, which discards
-every stored token and starts a new registration. Removing local files alone
-does not remove anything at Revolut.
+**What a fresh consent does and does not do.** Running `authorize` and
+`complete` again on the same registration gives you new tokens. It answers a
+`GRANT_REFUSED` or a `TOKEN_REJECTED`, which are definite answers, and clears
+them. It does **not** clear an unknown outcome: your consent authorizes new
+tokens, it does not settle what Revolut did with the request whose answer was
+lost. The new access token serves reads while it is valid and accepted;
+refreshing stays blocked.
+
+**There is no qualified recovery from an unknown outcome yet.** You can start a
+new registration with `setup --new-key`, which discards every stored token,
+creates a new key and certificate, and needs a new client id from Revolut. That
+is a fresh local binding. It is **not established** that a new key and client
+id, or deleting the old certificate in Revolut Business, isolates the new
+registration from a late refresh of the old one; this has not been verified
+against Revolut and this guide does not promise it. The new enrollment records
+`follows_unresolved_refresh` so `status` keeps saying so. Removing local files
+alone removes nothing at Revolut.
+
+**An enrollment belongs to its environment.** Files written for sandbox are
+refused for production, and the reverse, with `ENVIRONMENT_MISMATCH`, before
+any client is built or any credential is sent. This holds even if you copy a
+directory or pass a store explicitly. Moving to another environment is an
+explicit `setup --new-key` there, never a reinterpretation of existing secrets.
 
 ## Hosted profile: ZEOconnect
 

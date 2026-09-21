@@ -232,7 +232,7 @@ def test_refresh_marker_is_durable_before_the_request_and_cleared_after(
 @pytest.mark.parametrize(
     "lost", [KeyboardInterrupt(), SystemExit(1), TokenFailure(kind="unknown")]
 )
-def test_lost_refresh_answer_blocks_for_good_until_a_fresh_consent(
+def test_lost_refresh_answer_blocks_for_good_and_consent_does_not_clear_it(
     harness: Harness, lost: TokenFailure | BaseException
 ) -> None:
     harness.enroll()
@@ -259,13 +259,182 @@ def test_lost_refresh_answer_blocks_for_good_until_a_fresh_consent(
         "refresh_outcome_unknown"
     ]
 
-    # The owner's fresh consent is the way out.
+    # A fresh consent on the SAME registration authorizes new tokens. It does
+    # not settle what Revolut did with the lost request, so nothing is cleared.
     url = harness.enrollment.authorize(client_id="client-id")
     state = parse_qs(urlsplit(url).query)["state"][0]
     harness.enrollment.complete(f"{REDIRECT}?code=again&state={state}")
-    assert harness.raw()["refresh_attempt"] is None
-    assert harness.raw()["blocked_reason"] is None
+    assert harness.raw()["refresh_attempt"] is not None
+    assert harness.raw()["blocked_reason"] == "OUTCOME_UNKNOWN"
+    # The new access token serves reads while it is valid and accepted ...
     assert harness.read() == f"{CANARY}-access-1"
+    # ... and refreshing stays blocked once it is needed, for good.
+    harness.now += timedelta(days=90)
+    with pytest.raises(LocalEnrollmentError) as still:
+        harness.read()
+    assert still.value.code == "OUTCOME_UNKNOWN"
+    assert harness.gateway.refreshes == 1
+
+
+def test_a_refused_grant_is_answered_by_a_new_one_but_an_unknown_is_not(
+    harness: Harness,
+) -> None:
+    harness.enroll()
+    harness.now = NOW + timedelta(minutes=36)
+    harness.gateway.outcome = TokenFailure(kind="refused")
+    with pytest.raises(LocalEnrollmentError):
+        harness.read()
+    assert harness.raw()["blocked_reason"] == "GRANT_REFUSED"
+    assert harness.raw()["refresh_attempt"] is None  # a definite answer
+    harness.gateway.outcome = None
+    url = harness.enrollment.authorize(client_id="client-id")
+    state = parse_qs(urlsplit(url).query)["state"][0]
+    harness.enrollment.complete(f"{REDIRECT}?code=again&state={state}")
+    assert harness.raw()["blocked_reason"] is None
+    harness.now += timedelta(minutes=36)
+    assert harness.read().startswith(CANARY)
+
+
+def test_a_new_registration_records_that_it_followed_an_unresolved_outcome(
+    harness: Harness,
+) -> None:
+    harness.enroll()
+    harness.now = NOW + timedelta(minutes=36)
+    harness.gateway.outcome = TokenFailure(kind="unknown")
+    with pytest.raises(LocalEnrollmentError):
+        harness.read()
+    harness.gateway.outcome = None
+
+    harness.enrollment.setup(redirect_uri=REDIRECT, new_key=True)
+    raw = harness.raw()
+    # No credential of the old registration survives ...
+    assert raw["access_token"] is None and raw["refresh_attempt"] is None
+    # ... but the fact is not laundered away, across any number of new keys.
+    assert raw["follows_unresolved_refresh"] is True
+    harness.enrollment.setup(redirect_uri=REDIRECT, new_key=True)
+    assert harness.raw()["follows_unresolved_refresh"] is True
+    status = harness.enrollment.status()
+    assert status is not None
+    assert json.loads(dump_public(status))["follows_unresolved_refresh"] is True
+
+    clean = Harness(harness.store.directory.parent / "clean")
+    clean.enroll()
+    clean.enrollment.setup(redirect_uri=REDIRECT, new_key=True)
+    assert clean.raw()["follows_unresolved_refresh"] is False
+
+
+@pytest.mark.parametrize(
+    ("stored", "selected"),
+    [
+        (RevolutEnvironment.SANDBOX, RevolutEnvironment.PRODUCTION),
+        (RevolutEnvironment.PRODUCTION, RevolutEnvironment.SANDBOX),
+    ],
+)
+def test_stored_enrollment_is_never_reinterpreted_for_another_environment(
+    tmp_path: Path, stored: RevolutEnvironment, selected: RevolutEnvironment
+) -> None:
+    store = LocalCredentialStore(tmp_path / "private")
+    gateway = FakeGateway(store)
+    built: list[RevolutEnvironment] = []
+
+    def factory(token: SecretStr, environment: RevolutEnvironment) -> FakeClient:
+        built.append(environment)
+        return FakeClient(token, set())
+
+    def enrollment(environment: RevolutEnvironment) -> LocalRevolutEnrollment:
+        return LocalRevolutEnrollment(
+            environment,
+            store=store,
+            gateway=gateway,
+            clock=lambda: NOW + timedelta(minutes=36),  # a refresh would be due
+            client_factory=factory,  # type: ignore[arg-type]
+        )
+
+    owner = enrollment(stored)
+    owner.setup(redirect_uri=REDIRECT)
+    url = owner.authorize(client_id="client-id")
+    state = parse_qs(urlsplit(url).query)["state"][0]
+    other = enrollment(selected)
+
+    # Completion, before any token exists.
+    with pytest.raises(LocalEnrollmentError) as refused:
+        other.complete(f"{REDIRECT}?code=c&state={state}")
+    assert refused.value.code == "ENVIRONMENT_MISMATCH" and gateway.exchanges == []
+
+    owner.complete(f"{REDIRECT}?code=c&state={state}")
+    exchanges = list(gateway.exchanges)
+    for attempt in (
+        lambda: other.read(lambda client: client.list_accounts()),  # and refresh
+        lambda: other.authorize(client_id="client-id"),
+        lambda: other.status(),
+        lambda: other.setup(redirect_uri=REDIRECT),
+    ):
+        with pytest.raises(LocalEnrollmentError) as mismatch:
+            attempt()
+        assert mismatch.value.code == "ENVIRONMENT_MISMATCH"
+    # Nothing was built, exchanged or refreshed for the wrong environment.
+    assert built == [] and gateway.refreshes == 0 and gateway.exchanges == exchanges
+    assert store.load() is not None and store.load().environment is stored  # type: ignore[union-attr]
+
+    # Changing environment is an explicit new setup, never a reinterpretation.
+    other.setup(redirect_uri=REDIRECT, new_key=True)
+    fresh = store.load()
+    assert fresh is not None and fresh.environment is selected
+    assert fresh.access_token is None and fresh.client_id is None
+
+
+# ---------------------------------------------------------------------------
+# Counterexamples from the independent post-merge review of PR 73 (L1, L2).
+# Transplanted with type annotations; scheduling and final assertions are the
+# reviewer's. Both FAILED at the reviewed head 223314c1.
+# ---------------------------------------------------------------------------
+
+
+def test_same_registration_consent_must_not_clear_unresolved_refresh(
+    tmp_path: Path,
+) -> None:
+    h = Harness(tmp_path)
+    h.enroll()
+    h.now = NOW + timedelta(minutes=36)
+    h.gateway.outcome = TokenFailure(kind="unknown")
+    with pytest.raises(LocalEnrollmentError):
+        h.read()
+    before = h.store.load()
+    assert before is not None and before.refresh_attempt is not None
+    assert before.client_id is not None
+    h.gateway.outcome = None
+    url = h.enrollment.authorize(client_id=before.client_id)
+    state = parse_qs(urlsplit(url).query)["state"][0]
+    h.enrollment.complete(f"{REDIRECT}?code=fresh&state={state}")
+    after = h.store.load()
+    assert after is not None and after.refresh_attempt is not None, (
+        "same registration erased unresolved provider outcome"
+    )
+
+
+def test_sandbox_store_must_not_supply_credentials_to_production(
+    tmp_path: Path,
+) -> None:
+    h = Harness(tmp_path)
+    h.enroll()
+    seen: list[RevolutEnvironment] = []
+
+    def factory(token: SecretStr, environment: RevolutEnvironment) -> FakeClient:
+        seen.append(environment)
+        return FakeClient(token, set())
+
+    production = LocalRevolutEnrollment(
+        RevolutEnvironment.PRODUCTION,
+        store=h.store,
+        gateway=h.gateway,
+        clock=lambda: NOW,
+        client_factory=factory,  # type: ignore[arg-type]
+    )
+    try:
+        production.read(lambda client: client.list_accounts())
+    except LocalEnrollmentError:
+        pass
+    assert not seen, "sandbox credential reached a production-selected client"
 
 
 def test_unreachable_provider_changes_nothing_but_a_refusal_blocks(
