@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Local Revolut Business enrollment** (`zeo_core.integrations.revolut.local`,
+  extra `revolut`): use your own account on your own machine, with no hosted
+  service or database. Three explicit steps (`setup`, `authorize`, `complete`)
+  as a CLI or in Python; key, certificate and rotating tokens in owner-only
+  files outside any repository; configuration only from `.env`. One refresh per
+  read; a marker is written durably before a refresh is sent, and a lost answer
+  is a blocked unknown outcome that only a fresh consent clears. Registered as
+  the `revolut.business` entry point; the setup catalogue now reports the local
+  profile as implemented. Offline contract only; no live request has been made.
 - `HostedServiceRegistry`: explicit, immutable registrations replace the hosted
   resolver's hard-coded service branch. The reviewed default registers exactly
   the previously resolvable `google.drive` download, so resolution is unchanged.
