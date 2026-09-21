@@ -2571,12 +2571,30 @@ token still works. The client therefore:</p>
 <li>reports what it observed, never a diagnosis. <code>OUTCOME_UNKNOWN</code>,
   <code>GRANT_REFUSED</code> and <code>TOKEN_REJECTED</code> do not establish that you revoked
   consent. <code>UNAVAILABLE</code> means nothing reached Revolut and nothing changed.</li>
+<li>holds the file lock only on your machine. It says nothing about what Revolut
+  is still processing.</li>
 </ul>
-<p>The way out of a blocked state is your own fresh consent: run <code>authorize</code> and
-<code>complete</code> again. To be certain the old registration can no longer act, delete
-its certificate in Revolut Business and run <code>setup --new-key</code>, which discards
-every stored token and starts a new registration. Removing local files alone
-does not remove anything at Revolut.</p>
+<p><strong>What a fresh consent does and does not do.</strong> Running <code>authorize</code> and
+<code>complete</code> again on the same registration gives you new tokens. It answers a
+<code>GRANT_REFUSED</code> or a <code>TOKEN_REJECTED</code>, which are definite answers, and clears
+them. It does <strong>not</strong> clear an unknown outcome: your consent authorizes new
+tokens, it does not settle what Revolut did with the request whose answer was
+lost. The new access token serves reads while it is valid and accepted;
+refreshing stays blocked.</p>
+<p><strong>There is no qualified recovery from an unknown outcome yet.</strong> You can start a
+new registration with <code>setup --new-key</code>, which discards every stored token,
+creates a new key and certificate, and needs a new client id from Revolut. That
+is a fresh local binding. It is <strong>not established</strong> that a new key and client
+id, or deleting the old certificate in Revolut Business, isolates the new
+registration from a late refresh of the old one; this has not been verified
+against Revolut and this guide does not promise it. The new enrollment records
+<code>follows_unresolved_refresh</code> so <code>status</code> keeps saying so. Removing local files
+alone removes nothing at Revolut.</p>
+<p><strong>An enrollment belongs to its environment.</strong> Files written for sandbox are
+refused for production, and the reverse, with <code>ENVIRONMENT_MISMATCH</code>, before
+any client is built or any credential is sent. This holds even if you copy a
+directory or pass a store explicitly. Moving to another environment is an
+explicit <code>setup --new-key</code> there, never a reinterpretation of existing secrets.</p>
 <h2 id="hosted-profile-zeoconnect">Hosted profile: ZEOconnect<a class="headerlink" href="#hosted-profile-zeoconnect" title="Permanent link">&para;</a></h2>
 <p><code>RevolutBusinessClient</code> holds no credentials of its own. A credential owner
 constructs it with a current access token:</p>
