@@ -59,6 +59,10 @@ class EnrollmentState(BaseModel):
     refresh_attempt: RefreshAttempt | None = None
     # What this client observed when it stopped, never a diagnosis.
     blocked_reason: str | None = None
+    # This registration was created after an earlier one ended with a refresh
+    # whose outcome was never established. Isolation from that request is
+    # unverified; this records the fact instead of pretending it is settled.
+    follows_unresolved_refresh: bool = False
 
     @field_serializer("access_token", "refresh_token", when_used="json")
     def _reveal_for_private_file(self, value: SecretStr | None) -> str | None:
@@ -185,6 +189,7 @@ def dump_public(state: EnrollmentState) -> str:
             if state.access_expires_at
             else None,
             "refresh_outcome_unknown": state.refresh_attempt is not None,
+            "follows_unresolved_refresh": state.follows_unresolved_refresh,
             "blocked_reason": state.blocked_reason,
         },
         indent=2,
