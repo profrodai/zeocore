@@ -2437,11 +2437,18 @@ does not establish that a token expired, and <code>ACCESS</code> (403) does not 
 that a connection was revoked. The credential owner combines the category with
 its own credential state and refresh evidence, and must bound and account for
 any refresh-and-repeat it performs.</p>
-<p>There is deliberately no supported local enrollment flow. The setup catalogue
-reports the local profile as unsupported, and a hosted failure never falls back
-to local credentials. The class can still be constructed anywhere a token is
-injected, which the Broker and tests rely on. Start with <a href="../environments/">managed environments</a>: the
-<code>revolut.business</code> selection forwards no provider variables.</p>
+<p>This release provides the read client and targets hosted enrollment through
+ZEOconnect. A supported local enrollment profile is planned separately.
+Execution profiles are selected explicitly; hosted failures never fall back to
+local credentials.</p>
+<p>Until that local profile is implemented and verified (enrollment, persistence,
+refresh, crash handling and documentation), the setup catalogue reports the
+local profile as unsupported. That describes what this release ships, not a
+permanent policy: ZeoCore remains usable on its own, without any hosted service
+or database. The class can already be constructed anywhere a token is injected,
+which the Broker and tests rely on. Start with
+<a href="../environments/">managed environments</a>: the <code>revolut.business</code> selection
+forwards no provider variables.</p>
 <h2 id="use">Use<a class="headerlink" href="#use" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">SecretStr</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_core.integrations.revolut</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
