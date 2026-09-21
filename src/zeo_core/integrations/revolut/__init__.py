@@ -15,6 +15,7 @@ from .models import (
     TransactionPage,
     TransactionQuery,
 )
+from .service import RevolutBusinessIntegration, create_integration
 from .transport import MAX_UPSTREAM_BYTES, RevolutAPIError, RevolutTransport
 
 __all__ = [
@@ -28,10 +29,12 @@ __all__ = [
     "Merchant",
     "RevolutAPIError",
     "RevolutBusinessClient",
+    "RevolutBusinessIntegration",
     "RevolutEnvironment",
     "RevolutTransport",
     "Transaction",
     "TransactionLeg",
     "TransactionPage",
     "TransactionQuery",
+    "create_integration",
 ]

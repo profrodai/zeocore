@@ -1,51 +1,131 @@
-# Revolut Business read client
+# Revolut Business
 
-Created 2026-09-20. Doctrine Rev 17 with the active operator delegation.
+Created 2026-09-20; local enrollment added 2026-09-21. Doctrine Rev 17 with the
+active operator delegation.
 
-`zeo_core.integrations.revolut.RevolutBusinessClient` performs two reviewed,
-read-only Revolut Business API operations: list accounts and read one bounded
-page of transactions. It is a library client. It holds no credentials of its
-own, reads no environment variable and is not a package entry point.
+ZeoCore reads a Revolut Business account: list accounts and read one bounded
+page of transactions. It never pays, transfers or changes settings.
 
-**Live behaviour is unverified.** The models and routes are derived from
-Revolut's published Business OpenAPI description and exercised against offline
-fixtures only. No sandbox or production request has been made with this client.
+You can use it **on your own**, with your own Revolut account, on your own
+machine, with no hosted service and no database. That is the **local profile**,
+described first. Organizations that prefer guided browser enrollment and
+managed custody can use the **hosted profile** through ZEOconnect instead.
 
-## Who owns what
+Profiles are selected explicitly. Nothing falls back from one to the other: a
+hosted failure stays a hosted failure and never reaches for local credentials.
+
+**Live behaviour is unverified.** Models, routes and the enrollment flow follow
+Revolut's published Business API description and are exercised against offline
+fixtures only. No sandbox or production request has been made by this code.
+
+## Local profile: enroll your own account
+
+Install the extra, which adds `cryptography` for the client key and certificate:
+
+```bash
+pip install "zeocore[revolut]"
+```
+
+Start with [managed environments](environments.md). Configuration, and only
+configuration, may come from `.env` or the launcher:
+
+| Variable | Meaning |
+|---|---|
+| `REVOLUT_ENVIRONMENT` | `sandbox` or `production`. Separate enrollments. |
+| `REVOLUT_REDIRECT_URI` | An `https` URL you control or simply own the name of. |
+| `REVOLUT_CLIENT_ID` | Issued by Revolut after step 1. Not a secret. |
+
+**No variable holds the private key or a token, and none is read.** Those live
+in owner-only files (mode 0600, directory 0700) under the selected managed
+environment, or under your per-user configuration directory, in
+`revolut/<environment>/`. The store refuses a directory inside a git
+repository, a symlink, or a file other users can read.
+
+Revolut issues a client id only after you register a certificate by hand, so
+enrollment is three explicit steps:
+
+```bash
+# 1. Create your key and certificate, then upload the certificate at
+#    Revolut Business -> Settings -> APIs -> Business API, with the same
+#    redirect URI. Revolut shows you a client id.
+python -m zeo_core.integrations.revolut.local setup --redirect-uri https://example.com/revolut
+
+# 2. Record the client id. Open the URL it prints and approve READ access.
+python -m zeo_core.integrations.revolut.local authorize --client-id <client id>
+
+# 3. Revolut redirects your browser to the redirect URI with a one-time code.
+#    The page need not exist: copy the address bar and paste it here. Input is
+#    hidden so the code does not land in your shell history.
+python -m zeo_core.integrations.revolut.local complete
+
+python -m zeo_core.integrations.revolut.local status     # never prints a secret
+python -m zeo_core.integrations.revolut.local accounts   # first live check
+```
+
+The same steps are available in Python as
+`LocalRevolutEnrollment(environment).setup(...)`, `.authorize(...)`,
+`.complete(...)`. The JWT `iss` Revolut checks is the host of your redirect URI.
+
+### Reading
+
+```python
+from zeo_core.integrations.revolut import RevolutEnvironment, TransactionQuery
+from zeo_core.integrations.revolut.local import LocalRevolutEnrollment
+
+revolut = LocalRevolutEnrollment(RevolutEnvironment.SANDBOX)
+accounts = revolut.read(lambda client: client.list_accounts())
+page = revolut.read(
+    lambda client: client.list_transactions(TransactionQuery(from_=since, count=200))
+)
+```
+
+`read` runs one logical operation with **at most one token refresh and one
+repeat**, including the proactive refresh shortly before expiry. Do not wrap it
+in your own retry.
+
+### Local does not mean race-free
+
+Two of your scripts can share these files, and a process can die after Revolut
+has processed a refresh. Revolut invalidates the previous access token when it
+refreshes, so a lost answer leaves the client unable to say whether its stored
+token still works. The client therefore:
+
+- takes an exclusive file lock for the whole operation, so two local processes
+  never refresh at once. POSIX only;
+- writes a marker **durably before** a refresh request is sent, and removes it
+  only once a definite answer is stored;
+- treats a marker found later as an **unknown outcome**. That state is blocked:
+  nothing refreshes again, however long you wait, because waiting proves
+  nothing about what Revolut did. The stored token keeps serving reads while
+  Revolut accepts it;
+- reports what it observed, never a diagnosis. `OUTCOME_UNKNOWN`,
+  `GRANT_REFUSED` and `TOKEN_REJECTED` do not establish that you revoked
+  consent. `UNAVAILABLE` means nothing reached Revolut and nothing changed.
+
+The way out of a blocked state is your own fresh consent: run `authorize` and
+`complete` again. To be certain the old registration can no longer act, delete
+its certificate in Revolut Business and run `setup --new-key`, which discards
+every stored token and starts a new registration. Removing local files alone
+does not remove anything at Revolut.
+
+## Hosted profile: ZEOconnect
+
+`RevolutBusinessClient` holds no credentials of its own. A credential owner
+constructs it with a current access token:
 
 | Concern | Owner |
 |---|---|
-| Typed operations, fixed-origin transport, normalization | This client |
-| Certificate registration, client-assertion signing, consent, token exchange and refresh, custody, revocation | The credential owner: ZEOconnect for hosted use |
+| Typed operations, fixed-origin transport, normalization | The client, in both profiles |
+| Key, certificate, consent, exchange, refresh, files | The local profile above, for one person |
+| Guided enrollment, custody, coordinated refresh across workers, revocation | ZEOconnect, for the hosted profile |
 | Paging loop, checkpoints, deduplication, evidence storage, matching | The consuming application |
 
-The access token is a constructor argument valid for the life of the object.
-Revolut access tokens last about 40 minutes and refreshing invalidates the
-previous token, so the credential owner must coordinate refresh per connection
-and construct a client with the current token. This client never refreshes,
-retries or falls back to another credential source.
+Hosted enrollment is not yet admitted; the setup catalogue reports its state.
+Error codes from the client are sanitized categories, not diagnoses:
+`AUTHENTICATION` (401) does not establish that a token expired, and `ACCESS`
+(403) does not establish that a connection was revoked.
 
-Error codes are sanitized categories, not diagnoses. `AUTHENTICATION` (401)
-does not establish that a token expired, and `ACCESS` (403) does not establish
-that a connection was revoked. The credential owner combines the category with
-its own credential state and refresh evidence, and must bound and account for
-any refresh-and-repeat it performs.
-
-This release provides the read client and targets hosted enrollment through
-ZEOconnect. A supported local enrollment profile is planned separately.
-Execution profiles are selected explicitly; hosted failures never fall back to
-local credentials.
-
-Until that local profile is implemented and verified (enrollment, persistence,
-refresh, crash handling and documentation), the setup catalogue reports the
-local profile as unsupported. That describes what this release ships, not a
-permanent policy: ZeoCore remains usable on its own, without any hosted service
-or database. The class can already be constructed anywhere a token is injected,
-which the Broker and tests rely on. Start with
-[managed environments](environments.md): the `revolut.business` selection
-forwards no provider variables.
-
-## Use
+## Using the client directly
 
 ```python
 from pydantic import SecretStr
@@ -137,23 +217,20 @@ refused; this is not a general secret scanner.
 
 ## Test account track
 
-Use a Revolut Business **sandbox** account and `RevolutEnvironment.SANDBOX`.
-The sandbox has its own certificate registration, client ID and consent, fully
-separate from production. A developer may construct the client with a sandbox
-access token to exercise the transport; that is implementation evidence for
-this client only, not a supported way to run an application.
+Use a Revolut Business **sandbox** account with `REVOLUT_ENVIRONMENT=sandbox`.
+The sandbox has its own certificate registration, client id and consent, fully
+separate from production, and its own directory of private files.
 
 ## Production account track
 
-Production access is obtained only through the credential owner's assisted
-enrollment: register that connection's public certificate in Revolut Business
-settings, complete consent, and verify the business and account binding before
-activation. Request read access only. If the Revolut account enforces an IP
-allowlist, the credential owner's egress addresses must be registered.
+Set `REVOLUT_ENVIRONMENT=production` and enroll again from step 1: a production
+enrollment shares nothing with a sandbox one. Approve READ access only. If your
+Revolut account enforces an IP allowlist, register the address you read from.
 
 ## Bounded E2E
 
-Not yet run. The first live check should be: list accounts, read one page of
+Not yet run. After enrolling, `python -m zeo_core.integrations.revolut.local
+accounts` is the first live check. Then: list accounts, read one page of
 at most ten transactions from a one-day window, and confirm that amounts match
 the Revolut web interface to the minor unit. Record the environment, date and
 outcome alongside the change that claims it.

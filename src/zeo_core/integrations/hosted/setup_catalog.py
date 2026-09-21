@@ -88,7 +88,6 @@ def _manifest(
     prerequisite: str,
     hosted_auth: AuthMethod,
     local_auth: AuthMethod = AuthMethod.GUIDED_SECRET,
-    local_supported: bool = True,
     surface: Literal[
         "business", "builder", "model", "local", "onboarding"
     ] = "business",
@@ -143,20 +142,6 @@ def _manifest(
                 auth_revision="local-core-0.11.0",
                 limitations=(local_limit,),
                 actions=(SetupAction.OPEN_LOCAL_SETTINGS,),
-            )
-            if local_supported
-            else ProfileSetup(
-                profile=ExecutionProfile.LOCAL,
-                support=SupportStatus.UNSUPPORTED,
-                auth_method=AuthMethod.UNSUPPORTED,
-                auth_revision="no-local-credential-path-1",
-                limitations=(
-                    (
-                        "No local enrollment profile ships in this release; one is "
-                        "planned separately. Profiles are selected explicitly and a "
-                        "hosted failure never falls back to local credentials."
-                    ),
-                ),
             ),
             *(
                 ProfileSetup(
@@ -237,12 +222,12 @@ SETUP_CATALOGUE: tuple[SetupManifest, ...] = (
         account="Revolut Business account",
         selection="Choose the exact accounts whose transactions may be read.",
         prerequisite=(
-            "Assisted setup: register the connection's public certificate in "
-            "Revolut Business settings, then verify the business and account "
-            "binding before activation."
+            "Assisted setup in every profile: register that profile's own "
+            "public certificate in Revolut Business settings, then give "
+            "consent. Profiles are selected explicitly and never fall back."
         ),
         hosted_auth=AuthMethod.OAUTH,
-        local_supported=False,
+        local_auth=AuthMethod.OAUTH,
     ),
     _manifest(
         "kit.marketing",

@@ -51,5 +51,10 @@ CATALOG: dict[str, IntegrationSetup] = {
     "zeoconnect": IntegrationSetup("zeoconnect.md", entry_point=False),
     "gemini.images": IntegrationSetup("gemini-images.md", entry_point=False),
     "notebook": IntegrationSetup("notebook-execution.md", entry_point=False),
-    "revolut.business": IntegrationSetup("revolut-business.md", entry_point=False),
+    # Configuration only. The private key and rotating tokens live in private
+    # files under the selected environment, never in these variables.
+    "revolut.business": IntegrationSetup(
+        "revolut-business.md",
+        ("REVOLUT_ENVIRONMENT", "REVOLUT_REDIRECT_URI", "REVOLUT_CLIENT_ID"),
+    ),
 }
