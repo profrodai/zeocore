@@ -33,14 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Versioned resource-selection metadata distinguishing exact objects, fixed
   collections and explicitly dynamic future membership.
 
-### Changed
-
-- The Revolut Business guide and setup catalogue now describe hosted-only
-  enrollment as what this release ships, not a permanent policy. A supported
-  local enrollment profile is planned separately; `local_supported` stays false
-  until it is implemented and verified. Profiles are selected explicitly and a
-  hosted failure never falls back to local credentials.
-
 ### Fixed
 
 - Service requirements accept existing single-component service identities such
