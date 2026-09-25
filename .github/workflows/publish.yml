@@ -53,16 +53,21 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   verify:
     name: verify before publish
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@caf0cab7a618c569241d31dcd442f54681755d39 # v3
         with:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
@@ -83,15 +88,16 @@ jobs:
     name: build sdist + wheel
     needs: verify
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       version: ${{ steps.built-version.outputs.version }}
       python-floor: ${{ steps.python-floor.outputs.floor }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@caf0cab7a618c569241d31dcd442f54681755d39 # v3
         with:
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
@@ -151,7 +157,7 @@ jobs:
           echo "floor=${floor}" >> "$GITHUB_OUTPUT"
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: dist
           path: dist/
@@ -164,6 +170,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' &&
        (github.event.inputs.target == 'testpypi' || github.event.inputs.target == 'both'))
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     environment:
       name: testpypi
       url: https://test.pypi.org/project/zeocore/
@@ -171,13 +178,13 @@ jobs:
       id-token: write
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: dist
           path: dist/
 
       - name: Publish to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
           verbose: true
@@ -191,6 +198,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' &&
        (github.event.inputs.target == 'pypi' || github.event.inputs.target == 'both'))
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     environment:
       name: pypi
       url: https://pypi.org/project/zeocore/
@@ -200,13 +208,13 @@ jobs:
       id-token: write
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: dist
           path: dist/
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
         with:
           verbose: true
           print-hash: true
@@ -224,6 +232,7 @@ jobs:
       always() &&
       (needs.publish-testpypi.result == 'success' || needs.publish-pypi.result == 'success')
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     env:
       # The version THIS RUN published, read from the built sdist filename
       # (the build job's own output), never from "latest" and never
@@ -237,10 +246,10 @@ jobs:
       PYTHON_FLOOR: ${{ needs.build.outputs.python-floor }}
     steps:
       - name: Check out release examples
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@caf0cab7a618c569241d31dcd442f54681755d39 # v3
 
       - name: Fail loudly if the expected version or floor is missing
         run: |
@@ -394,11 +403,12 @@ jobs:
       always() && needs.publish-pypi.result == 'success' &&
       needs.smoke-test.result == 'success' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Fail loudly if RELEASE_NOTES.md is missing
         run: |
