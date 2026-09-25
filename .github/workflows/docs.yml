@@ -13,11 +13,34 @@ permissions:
 
 concurrency:
   group: documentation-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # Build-only: runs on pull requests and on main with a read-only token.
   documentation:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          python-version: "3.14"
+      - name: Install the locked documentation toolchain
+        run: uv sync --frozen --only-group documentation
+      - name: Build and validate documentation
+        run: make docs-build
+
+  # Publish: main only, after the build job passes. The write permissions
+  # live on this job alone.
+  publish:
+    needs: documentation
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    # The Pages wait below polls for up to five minutes.
+    timeout-minutes: 10
     permissions:
       contents: write
       pages: write
@@ -31,13 +54,9 @@ jobs:
           python-version: "3.14"
       - name: Install the locked documentation toolchain
         run: uv sync --frozen --only-group documentation
-      - name: Build and validate documentation
-        run: make docs-build
       - name: Publish to gh-pages
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: uv run --no-sync mkdocs gh-deploy --strict
       - name: Request the Pages build explicitly
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         # GITHUB_TOKEN pushes do not themselves trigger a Pages build.
